@@ -59,6 +59,8 @@ struct TabRendererData {
   bool should_themify_favicon = false;
   bool is_tab_discarded = false;
   bool should_show_discard_status = false;
+  // Amount of memory saved through discarding the tab
+  uint64_t discarded_memory_savings_in_bytes = 0;
   bool is_monochrome_favicon = false;
 };
 

@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "components/performance_manager/public/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -110,6 +112,11 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
       contents->WasDiscarded() && discard_reason.has_value() &&
       discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
 
+  if (contents->WasDiscarded()) {
+    data.discarded_memory_savings_in_bytes =
+        high_efficiency::GetDiscardedMemorySavingsInBytes(contents);
+  }
+
   return data;
 }
 
@@ -135,7 +142,9 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          alert_state == other.alert_state &&
          should_hide_throbber == other.should_hide_throbber &&
          is_tab_discarded == other.is_tab_discarded &&
-         should_show_discard_status == other.should_show_discard_status;
+         should_show_discard_status == other.should_show_discard_status &&
+         discarded_memory_savings_in_bytes ==
+             other.discarded_memory_savings_in_bytes;
 }
 
 bool TabRendererData::IsCrashed() const {

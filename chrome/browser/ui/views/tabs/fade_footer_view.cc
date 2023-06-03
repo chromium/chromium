@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/text/bytes_formatting.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -81,6 +86,7 @@ void FooterRow<T>::UpdateIconAndLabelLayout(int max_footer_width) {
 }
 
 template class FooterRow<AlertFooterRowData>;
+template class FooterRow<PerformanceRowData>;
 
 // FadeAlertFooterRow
 // -----------------------------------------------------------------------
@@ -103,6 +109,35 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   data_ = data;
 }
 
+// FadePerformanceFooterRow
+// -----------------------------------------------------------------------
+
+void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
+  views::Label* const performance_label = footer_label();
+  views::ImageView* const performance_icon = icon();
+  if (data.should_show_discard_status) {
+    if (data.memory_savings_in_bytes > 0) {
+      std::u16string formatted_memory_usage =
+          ui::FormatBytes(data.memory_savings_in_bytes);
+      std::u16string memory_usage_with_placeholder =
+          l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS);
+      performance_label->SetText(l10n_util::FormatString(
+          memory_usage_with_placeholder, {formatted_memory_usage}, nullptr));
+    } else {
+      performance_label->SetText(
+          l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB));
+    }
+    performance_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kHighEfficiencyIcon, ui::kColorMenuIcon, gfx::kFaviconSize));
+    UpdateIconAndLabelLayout(data.footer_row_width);
+  } else {
+    performance_label->SetText(std::u16string());
+    performance_icon->SetImage(ui::ImageModel());
+    performance_icon->layer()->SetOpacity(0.0f);
+  }
+  data_ = data;
+}
+
 // FooterView
 // -----------------------------------------------------------------------
 
@@ -119,6 +154,7 @@ void FooterView::OnThemeChanged() {
 
 gfx::Size FooterView::CalculatePreferredSize() const {
   gfx::Size preferred_size = alert_row_->CalculatePreferredSize();
+  preferred_size += performance_row_->CalculatePreferredSize();
 
   // Add additional margin space when the footer have content to show
   if (preferred_size.width() > 0 && preferred_size.height() > 0) {

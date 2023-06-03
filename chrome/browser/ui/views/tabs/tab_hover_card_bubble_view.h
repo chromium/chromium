@@ -74,6 +74,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
  private:
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
                            HoverCardFooterUpdates);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+                           HoverCardFooterShowsDiscardStatus);
   class ThumbnailView;
 
   // views::BubbleDialogDelegateView:
@@ -84,6 +86,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<ThumbnailView> thumbnail_view_ = nullptr;
   raw_ptr<FooterView> footer_view_ = nullptr;
   absl::optional<TabAlertState> alert_state_;
+  bool show_discard_status_ = false;
   const raw_ptr<const TabStyle> tab_style_;
 
   int corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

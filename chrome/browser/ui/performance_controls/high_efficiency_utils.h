@@ -26,6 +26,9 @@ bool IsSiteInExceptionsList(PrefService* pref_service, const std::string& site);
 void AddSiteToExceptionsList(PrefService* pref_service,
                              const std::string& site);
 
+// Returns how much memory was saved through discarding `contents`
+uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents);
+
 }  // namespace high_efficiency
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_UTILS_H_

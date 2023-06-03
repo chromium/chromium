@@ -38,6 +38,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/display/display.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -300,6 +301,41 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest, HoverCardFooterUpdates) {
   SimulateHoverTab(browser(), 0);
   EXPECT_TRUE(alert_row->footer_label_->GetText().empty());
   EXPECT_TRUE(alert_row->icon_->GetImageModel().IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       HoverCardFooterShowsDiscardStatus) {
+  TabStrip* const tab_strip = GetTabStrip(browser());
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  TabRendererData tab_renderer_data = MakeTabRendererData();
+  tab_renderer_data.should_show_discard_status = true;
+  tab_strip->SetTabData(1, tab_renderer_data);
+
+  auto* const hover_card = SimulateHoverTab(browser(), 1);
+  FadePerformanceFooterRow* performance_row =
+      hover_card->footer_view_->GetPerformanceRow()->primary_view_;
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB),
+            performance_row->footer_label_->GetText());
+  EXPECT_FALSE(performance_row->icon_->GetImageModel().IsEmpty());
+
+  // Hover card footer should update when we hover over another tab that is
+  // not discarded
+  SimulateHoverTab(browser(), 0);
+  EXPECT_TRUE(performance_row->footer_label_->GetText().empty());
+  EXPECT_TRUE(performance_row->icon_->GetImageModel().IsEmpty());
+
+  // Show discard status with memory savings
+  tab_renderer_data.discarded_memory_savings_in_bytes = 1000;
+  tab_strip->SetTabData(1, tab_renderer_data);
+  SimulateHoverTab(browser(), 1);
+  EXPECT_EQ(
+      l10n_util::FormatString(
+          l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS),
+          {ui::FormatBytes(
+              tab_renderer_data.discarded_memory_savings_in_bytes)},
+          nullptr),
+      performance_row->footer_label_->GetText());
 }
 
 using TabHoverCardBubbleViewMetricsTest = TabHoverCardInteractiveUiTest;
