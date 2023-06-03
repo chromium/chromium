@@ -241,7 +241,6 @@ crbug.com/1432886 virtual/prefetch/external/wpt/speculation-rules/prefetch/initi
 # Test might be flaky on Mac12-arm64 as the test server causes network errors probably becauuse of lack of resources on the bot.
 crbug.com/1382361 [ Mac ] external/wpt/speculation-rules/prerender/csp-script-src-self.html [ Failure Pass ]
 crbug.com/1400927 [ Linux Release ] external/wpt/speculation-rules/prerender/csp-script-src-self.html [ Failure Pass ]
-crbug.com/1403316 [ Linux Release ] virtual/prerender/external/wpt/speculation-rules/prerender/csp-script-src-self.html [ Crash Failure ]
 
 # These tests are flaky with BFCache, which is enabled by default.
 crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
