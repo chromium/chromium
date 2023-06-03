@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -73,7 +72,7 @@ void SetAuthTypeIfChanged(
     const AccountId& account_id,
     proximity_auth::mojom::AuthType auth_type,
     const std::u16string& auth_value) {
-  DCHECK(lock_handler);
+  CHECK(lock_handler);
   const proximity_auth::mojom::AuthType existing_auth_type =
       lock_handler->GetAuthType(account_id);
   if (auth_type == existing_auth_type)
@@ -231,14 +230,9 @@ void EasyUnlockService::FinalizeUnlock(bool success) {
   if (!success) {
     auth_attempt_.reset();
     RecordEasyUnlockScreenUnlockEvent(EASY_UNLOCK_FAILURE);
-    if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-      HandleAuthFailure(GetAccountId());
-    }
   }
 
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    NotifySmartLockAuthResult(success);
-  }
+  NotifySmartLockAuthResult(success);
 }
 
 AccountId EasyUnlockService::GetAccountId() const {
@@ -270,10 +264,6 @@ EasyUnlockService::GetRemoteDevicesForTesting() const {
   }
 
   return proximity_auth_system_->GetRemoteDevicesForUser(GetAccountId());
-}
-
-void EasyUnlockService::HandleAuthFailure(const AccountId& account_id) {
-  NotifySmartLockAuthResult(/*success=*/false);
 }
 
 void EasyUnlockService::Initialize() {
@@ -344,7 +334,7 @@ void EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
   if (proximity_auth::ScreenlockBridge::Get()->IsLocked()) {
     auto* lock_handler =
         proximity_auth::ScreenlockBridge::Get()->lock_handler();
-    DCHECK(lock_handler);
+    CHECK(lock_handler);
 
     lock_handler->SetSmartLockState(GetAccountId(), state);
 
@@ -375,7 +365,7 @@ void EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
     auth_attempt_.reset();
 
     if (!IsSmartLockStateValidOnRemoteAuthFailure()) {
-      HandleAuthFailure(GetAccountId());
+      NotifySmartLockAuthResult(/*success=*/false);
     }
   }
 }
@@ -408,9 +398,7 @@ void EasyUnlockService::Shutdown() {
 
 void EasyUnlockService::OnScreenDidLock(
     proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
-    ShowInitialSmartLockState();
-  }
+  ShowInitialSmartLockState();
 
   set_will_authenticate_using_easy_unlock(false);
   lock_screen_last_shown_timestamp_ = base::TimeTicks::Now();
@@ -515,7 +503,7 @@ void EasyUnlockService::OnFeatureStatesChanged(
 }
 
 EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
-  DCHECK(IsEnabled());
+  CHECK(IsEnabled());
 
   if (!smart_lock_state_) {
     return PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER;
@@ -555,7 +543,7 @@ EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
 
 SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
 EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
-  DCHECK(IsEnabled());
+  CHECK(IsEnabled());
 
   if (!smart_lock_state_) {
     return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::

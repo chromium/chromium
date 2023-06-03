@@ -118,9 +118,6 @@ class EasyUnlockService
   // |proximity_auth_system_|.
   const multidevice::RemoteDeviceRefList GetRemoteDevicesForTesting() const;
 
-  // Handles Easy Unlock auth failure for the user.
-  void HandleAuthFailure(const AccountId& account_id);
-
   // Sets the service up and schedules service initialization.
   void Initialize();
 
