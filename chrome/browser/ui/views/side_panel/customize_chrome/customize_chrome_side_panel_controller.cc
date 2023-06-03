@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -67,13 +66,13 @@ void CustomizeChromeSidePanelController::DeregisterEntry() {
 void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
     bool visible,
     CustomizeChromeSection section) {
-  auto* browser_view = GetBrowserView();
-  if (!browser_view)
+  auto* side_panel_ui = GetSidePanelUI();
+  if (!side_panel_ui) {
     return;
+  }
   DCHECK(IsCustomizeChromeEntryAvailable());
   if (visible) {
-    browser_view->side_panel_coordinator()->Show(
-        SidePanelEntry::Id::kCustomizeChrome);
+    side_panel_ui->Show(SidePanelEntry::Id::kCustomizeChrome);
     if (customize_chrome_ui_) {
       customize_chrome_ui_->ScrollToSection(section);
       section_.reset();
@@ -81,17 +80,14 @@ void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
       section_ = section;
     }
   } else {
-    browser_view->side_panel_coordinator()->Close();
+    side_panel_ui->Close();
   }
 }
 
 bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryShowing() const {
-  auto* browser_view = GetBrowserView();
-  if (!browser_view)
-    return false;
-  auto* side_panel_coordinator = browser_view->side_panel_coordinator();
-  return side_panel_coordinator->IsSidePanelShowing() &&
-         (side_panel_coordinator->GetCurrentEntryId() ==
+  auto* side_panel_ui = GetSidePanelUI();
+  return side_panel_ui && side_panel_ui->IsSidePanelShowing() &&
+         (side_panel_ui->GetCurrentEntryId() ==
           SidePanelEntry::Id::kCustomizeChrome);
 }
 
@@ -137,7 +133,7 @@ CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
   return customize_chrome_web_view;
 }
 
-BrowserView* CustomizeChromeSidePanelController::GetBrowserView() const {
+SidePanelUI* CustomizeChromeSidePanelController::GetSidePanelUI() const {
   auto* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
+  return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
 }

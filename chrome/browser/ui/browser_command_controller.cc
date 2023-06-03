@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -785,8 +786,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       OpenFeedbackDialog(browser_, kFeedbackSourceBrowserCommand);
       break;
     case IDC_SHOW_SEARCH_COMPANION:
-      browser_->window()->ShowSidePanel(SidePanelEntryId::kSearchCompanion,
-                                        SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+          SidePanelEntryId::kSearchCompanion, SidePanelOpenTrigger::kAppMenu);
       break;
 #endif
     case IDC_SHOW_CHROME_LABS:
@@ -808,8 +809,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowBookmarkManager(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
-      browser_->window()->ShowSidePanel(SidePanelEntryId::kBookmarks,
-                                        SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+          SidePanelEntryId::kBookmarks, SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_APP_MENU:
       base::RecordAction(base::UserMetricsAction("Accel_Show_App_Menu"));
@@ -1018,8 +1019,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 
     case IDC_READING_LIST_MENU_SHOW_UI:
-      browser_->window()->ShowSidePanel(SidePanelEntryId::kReadingList,
-                                        SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+          SidePanelEntryId::kReadingList, SidePanelOpenTrigger::kAppMenu);
       break;
 
     default:

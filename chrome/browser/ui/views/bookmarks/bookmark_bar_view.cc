@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -68,7 +69,6 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -1704,19 +1704,19 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateOtherBookmarksButton() {
   if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
     // Title is set in Loaded.
     button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
-        [](BookmarkBarView* bar, const ui::Event& event) {
-          SidePanelCoordinator* side_panel_coordinator =
-              bar->browser_view_->side_panel_coordinator();
-          if (side_panel_coordinator->GetCurrentEntryId() ==
+        [](Browser* browser, const ui::Event& event) {
+          SidePanelUI* side_panel_ui =
+              SidePanelUI::GetSidePanelUIForBrowser(browser);
+          if (side_panel_ui->GetCurrentEntryId() ==
               SidePanelEntry::Id::kBookmarks) {
-            side_panel_coordinator->Close();
+            side_panel_ui->Close();
           } else {
-            side_panel_coordinator->Show(
+            side_panel_ui->Show(
                 SidePanelEntry::Id::kBookmarks,
                 SidePanelUtil::SidePanelOpenTrigger::kBookmarkBar);
           }
         },
-        base::Unretained(this)));
+        browser_));
   } else {
     // Title is set in Loaded.
     button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(

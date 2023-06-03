@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -80,16 +80,8 @@ bool SearchCompanionSidePanelCoordinator::IsSupported(
 
 bool SearchCompanionSidePanelCoordinator::Show(
     SidePanelOpenTrigger side_panel_open_trigger) {
-  auto* browser_view = GetBrowserView();
-  if (!browser_view) {
-    return false;
-  }
-
-  if (auto* side_panel_coordinator = browser_view->side_panel_coordinator()) {
-    side_panel_coordinator->Show(SidePanelEntry::Id::kSearchCompanion,
-                                 side_panel_open_trigger);
-  }
-
+  SidePanelUI::GetSidePanelUIForBrowser(&GetBrowser())
+      ->Show(SidePanelEntry::Id::kSearchCompanion, side_panel_open_trigger);
   return true;
 }
 

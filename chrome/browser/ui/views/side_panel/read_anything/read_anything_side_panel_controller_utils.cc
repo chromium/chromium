@@ -4,26 +4,23 @@
 
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 
 void ShowReadAnythingSidePanel(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
+  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  if (!side_panel_ui) {
     return;
   }
-  browser_view->side_panel_coordinator()->Show(
-      SidePanelEntry::Id::kReadAnything,
-      SidePanelUtil::SidePanelOpenTrigger::kReadAnythingContextMenu);
+  side_panel_ui->Show(SidePanelEntryId::kReadAnything,
+                      SidePanelOpenTrigger::kReadAnythingContextMenu);
 }
 
 bool IsReadAnythingEntryShowing(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
+  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  if (!side_panel_ui) {
     return false;
   }
-  auto* side_panel_coordinator = browser_view->side_panel_coordinator();
-  return side_panel_coordinator->IsSidePanelShowing() &&
-         (side_panel_coordinator->GetCurrentEntryId() ==
-          SidePanelEntry::Id::kReadAnything);
+  return side_panel_ui->IsSidePanelShowing() &&
+         (side_panel_ui->GetCurrentEntryId() ==
+          SidePanelEntryId::kReadAnything);
 }

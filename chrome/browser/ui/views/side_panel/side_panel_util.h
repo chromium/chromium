@@ -13,6 +13,7 @@
 class Browser;
 class SidePanelRegistry;
 class SidePanelContentProxy;
+class SidePanelCoordinator;
 
 namespace views {
 class View;
@@ -35,6 +36,9 @@ class SidePanelUtil {
   static std::unique_ptr<views::View> DeregisterAndReturnView(
       SidePanelRegistry* registry,
       SidePanelEntry::Key key);
+
+  static SidePanelCoordinator* GetSidePanelCoordinatorForBrowser(
+      Browser* browser);
 
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);

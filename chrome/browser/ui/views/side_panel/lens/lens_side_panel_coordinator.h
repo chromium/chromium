@@ -18,6 +18,7 @@
 #include "ui/gfx/image/image.h"
 
 class Browser;
+class SidePanelCoordinator;
 
 // LensSidePanelCoordinator handles the creation and registration of the
 // LensUnifiedSidePanelEntry.
@@ -65,6 +66,8 @@ class LensSidePanelCoordinator
   void OnFaviconFetched(const gfx::Image& favicon);
 
   BrowserView* GetBrowserView();
+
+  SidePanelCoordinator* GetSidePanelCoordinator();
 
   // Removes the lens entry from the side panel.
   void DeregisterLensFromSidePanel();

@@ -275,7 +275,8 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 void SidePanel::RecordMetricsIfResized() {
   if (did_resize_) {
     absl::optional<SidePanelEntry::Id> id =
-        browser_view_->side_panel_coordinator()->GetCurrentEntryId();
+        SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())
+            ->GetCurrentEntryId();
     CHECK(id.has_value());
     int side_panel_contents_width = width() - kBorderInsets.width();
     int browser_window_width = browser_view_->width();

@@ -70,11 +70,11 @@ void CompanionSidePanelController::ShowCompanionSidePanel(
 void CompanionSidePanelController::UpdateNewTabButton(GURL url_to_open) {
   open_in_new_tab_url_ = url_to_open;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  BrowserView* browser_view =
-      browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
-  if (browser_view) {
-    browser_view->side_panel_coordinator()->UpdateNewTabButtonState();
+  if (!browser) {
+    return;
   }
+  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser)
+      ->UpdateNewTabButtonState();
 }
 
 content::WebContents*
@@ -142,10 +142,9 @@ void CompanionSidePanelController::DidOpenRequestedURL(
 
   // If a new tab was opened, open companion side panel in it.
   if (new_tab_web_contents && !open_in_current_tab) {
-    BrowserView::GetBrowserViewForBrowser(browser)
-        ->side_panel_coordinator()
-        ->Show(SidePanelEntry::Id::kSearchCompanion,
-               SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
+    SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
+        SidePanelEntry::Id::kSearchCompanion,
+        SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
   }
 }
 

@@ -316,8 +316,7 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
                          : chrome::FindBrowserWithWebContents(web_contents_);
   DCHECK(browser);
 
-  auto* coordinator =
-      BrowserView::GetBrowserViewForBrowser(browser)->side_panel_coordinator();
+  auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
 
   // If the SidePanelEntry for this extension is showing when window.close() is
   // called, close the side panel. Otherwise, clear the entry's cached view.

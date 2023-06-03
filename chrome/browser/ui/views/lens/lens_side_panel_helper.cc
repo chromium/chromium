@@ -75,8 +75,8 @@ views::Widget* OpenLensRegionSearchInstructions(
 }
 
 void CreateLensUnifiedSidePanelEntryForTesting(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  SidePanelCoordinator* coordinator = browser_view->side_panel_coordinator();
+  SidePanelCoordinator* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
   DCHECK(coordinator);
   coordinator->SetNoDelaysForTesting(true);  // IN-TEST
 

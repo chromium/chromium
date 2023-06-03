@@ -35,10 +35,9 @@
 
 LensSidePanelCoordinator::LensSidePanelCoordinator(Browser* browser)
     : BrowserUserData(*browser) {
-  GetBrowserView()->side_panel_coordinator()->AddSidePanelViewStateObserver(
-      this);
+  GetSidePanelCoordinator()->AddSidePanelViewStateObserver(this);
   lens_side_panel_view_ = nullptr;
-  auto* profile = GetBrowserView()->GetProfile();
+  auto* profile = browser->profile();
   favicon_cache_ = std::make_unique<FaviconCache>(
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
@@ -54,11 +53,14 @@ BrowserView* LensSidePanelCoordinator::GetBrowserView() {
   return BrowserView::GetBrowserViewForBrowser(&GetBrowser());
 }
 
+SidePanelCoordinator* LensSidePanelCoordinator::GetSidePanelCoordinator() {
+  return SidePanelUtil::GetSidePanelCoordinatorForBrowser(&GetBrowser());
+}
+
 LensSidePanelCoordinator::~LensSidePanelCoordinator() {
-  if (GetBrowserView() && GetBrowserView()->side_panel_coordinator()) {
-    GetBrowserView()
-        ->side_panel_coordinator()
-        ->RemoveSidePanelViewStateObserver(this);
+  if (SidePanelCoordinator* side_panel_coordinator =
+          GetSidePanelCoordinator()) {
+    side_panel_coordinator->RemoveSidePanelViewStateObserver(this);
   }
 
   if (template_url_service_ != nullptr)
@@ -124,8 +126,7 @@ bool LensSidePanelCoordinator::IsLaunchButtonEnabledForTesting() {
 }
 
 bool LensSidePanelCoordinator::IsDefaultSearchProviderGoogle() {
-  auto* profile = GetBrowserView()->GetProfile();
-  return search::DefaultSearchProviderIsGoogle(profile);
+  return search::DefaultSearchProviderIsGoogle(GetBrowser().profile());
 }
 
 std::u16string LensSidePanelCoordinator::GetComboboxLabel() {
@@ -195,7 +196,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
     global_registry->Register(std::move(entry));
   }
 
-  auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
+  auto* side_panel_coordinator = GetSidePanelCoordinator();
   if (side_panel_coordinator->GetCurrentEntryId() !=
       SidePanelEntry::Id::kLens) {
     if (!side_panel_coordinator->IsSidePanelShowing()) {
@@ -246,8 +247,10 @@ GURL LensSidePanelCoordinator::GetOpenInNewTabURL() const {
 }
 
 void LensSidePanelCoordinator::UpdateNewTabButtonState() {
-  if (GetBrowserView())
-    GetBrowserView()->side_panel_coordinator()->UpdateNewTabButtonState();
+  if (SidePanelCoordinator* side_panel_coordinator =
+          GetSidePanelCoordinator()) {
+    side_panel_coordinator->UpdateNewTabButtonState();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LensSidePanelCoordinator);

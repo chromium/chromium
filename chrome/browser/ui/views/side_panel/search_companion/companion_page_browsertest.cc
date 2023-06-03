@@ -222,8 +222,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->side_panel_coordinator();
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
 
   content::WebContents* GetCompanionWebContents(Browser* browser) {

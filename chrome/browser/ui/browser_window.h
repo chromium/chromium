@@ -640,12 +640,6 @@ class BrowserWindow : public ui::BaseWindow {
   // of a full titlebar. This is only supported for desktop web apps.
   virtual bool IsBorderlessModeEnabled() const = 0;
 
-  // Shows the side panel. If `entry_id` is not provided, shows the last active
-  // entry.
-  virtual void ShowSidePanel(
-      absl::optional<SidePanelEntryId> entry_id = absl::nullopt,
-      absl::optional<SidePanelOpenTrigger> open_trigger = absl::nullopt) = 0;
-
   // Shows the Chrome Labs bubble if enabled.
   virtual void ShowChromeLabs() = 0;
 

@@ -52,6 +52,10 @@ class SideSearchV2Test : public SideSearchBrowserTest {
     SideSearchBrowserTest::SetUp();
   }
 
+  SidePanelCoordinator* side_panel_coordinator() {
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -543,8 +547,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SideSearchCrashesCloseSideSearch) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
+  auto* coordinator = side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
 
   // Open two tabs with the side panel open.
@@ -601,8 +604,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SideSearchCrashesCloseSideSearch) {
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchSidePanelInSingleTab) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
+  auto* coordinator = side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
 
   // Tab 0 with side search available and open.
@@ -628,8 +630,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchSidePanelInSingleTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchTabsWithGlobalSidePanel) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
+  auto* coordinator = side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
 
   // Tab 0 without side search available and open with reading list.
@@ -684,8 +685,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchTabsWithGlobalSidePanel) {
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchTabsWithoutGlobalSidePanel) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
+  auto* coordinator = side_panel_coordinator();
 
   // Tab 0 without side search available.
   NavigateActiveTab(browser(), GetNonMatchingUrl());
@@ -734,13 +734,12 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchTabsWithoutGlobalSidePanel) {
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, CloseSidePanelShouldClearCache) {
-  auto* browser_view = BrowserViewFor(browser());
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   NotifyButtonClick(browser());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            browser_view->side_panel_coordinator()
+            side_panel_coordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()
                 .id());
@@ -750,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, CloseSidePanelShouldClearCache) {
       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
 
-  browser_view->side_panel_coordinator()->Close();
+  side_panel_coordinator()->Close();
 
   // When side panel is closed, side panel web contents is destroyed.
   EXPECT_EQ(nullptr, tab_contents_helper->side_panel_contents_for_testing());
@@ -759,13 +758,12 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, CloseSidePanelShouldClearCache) {
 // Test added for crbug.com/1349687 .
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
                        NewForegroundTabShouldNotDestroySidePanelContents) {
-  auto* browser_view = BrowserViewFor(browser());
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   NotifyButtonClick(browser());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            browser_view->side_panel_coordinator()
+            side_panel_coordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()
                 .id());
@@ -790,13 +788,12 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
 // Test added for crbug.com/1356966 .
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
                        CloseTabWithSideSearchOpenShouldNotCrash) {
-  auto* browser_view = BrowserViewFor(browser());
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   NotifyButtonClick(browser());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            browser_view->side_panel_coordinator()
+            side_panel_coordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()
                 .id());
@@ -806,8 +803,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
 IN_PROC_BROWSER_TEST_F(
     SideSearchV2Test,
     SidePanelAvailabilityChangedShouldNotCloseSidePanelWhenSideSearchIsNotOpen) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
+  auto* coordinator = side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
   coordinator->Show(SidePanelEntry::Id::kReadingList);
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
@@ -1112,7 +1108,8 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
   const auto non_srp_url_2 = GetNonMatchingUrl();
   const auto non_srp_url_3 = GetNonMatchingUrl();
 
-  auto* const coordinator = BrowserViewFor(browser())->side_panel_coordinator();
+  auto* const coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
 
   RunTestSequence(
       InstrumentTab(kPrimaryTabId),
