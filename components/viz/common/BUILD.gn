@@ -148,6 +148,7 @@ if (skia_use_dawn) {
     ]
 
     public_deps = [
+      "//gpu/config",
       "//skia",
       "//third_party/dawn/include/dawn:headers",
     ]

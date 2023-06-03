@@ -332,6 +332,12 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
 // builds. See --skia-graphite-backend flag in gpu_switches.h.
 BASE_FEATURE(kSkiaGraphite, "SkiaGraphite", base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
+             "SkiaGraphiteDawnUseD3D12",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enable GrShaderCache to use with Vulkan backend.
 BASE_FEATURE(kEnableGrShaderCacheForVulkan,
              "EnableGrShaderCacheForVulkan",

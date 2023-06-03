@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
@@ -37,7 +38,9 @@ void LogFatal(WGPUDeviceLostReason reason,
 
 wgpu::BackendType GetDefaultBackendType() {
 #if BUILDFLAG(IS_WIN)
-  return wgpu::BackendType::D3D11;
+  return base::FeatureList::IsEnabled(features::kSkiaGraphiteDawnUseD3D12)
+             ? wgpu::BackendType::D3D12
+             : wgpu::BackendType::D3D11;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return wgpu::BackendType::Vulkan;
 #elif BUILDFLAG(IS_MAC)
