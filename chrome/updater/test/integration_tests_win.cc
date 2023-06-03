@@ -112,12 +112,12 @@ HRESULT CreateLocalServer(GUID clsid,
 
 [[nodiscard]] bool DeleteRegKey(HKEY root, const std::wstring& path) {
   LONG result =
-      base::win::RegKey(root, L"", Wow6432(KEY_READ)).DeleteKey(path.c_str());
+      base::win::RegKey(root, L"", Wow6432(DELETE)).DeleteKey(path.c_str());
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
 [[nodiscard]] bool DeleteRegKeyCOM(HKEY root, const std::wstring& path) {
-  LONG result = base::win::RegKey(root, L"", KEY_READ).DeleteKey(path.c_str());
+  LONG result = base::win::RegKey(root, L"", DELETE).DeleteKey(path.c_str());
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
