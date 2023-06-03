@@ -24,6 +24,8 @@ namespace network_icon {
 enum IconType {
   ICON_TYPE_TRAY_OOBE,     // dark icons with VPN badges, used during OOBE
   ICON_TYPE_TRAY_REGULAR,  // light icons with VPN badges, used outside of OOBE
+  ICON_TYPE_TRAY_ACTIVE,   // icons with VPN badges, used when the tray is
+                           // active
   ICON_TYPE_DEFAULT_VIEW,  // dark icons with VPN badges
   ICON_TYPE_LIST,          // dark icons without VPN badges; in-line status
   ICON_TYPE_FEATURE_POD,   // icons in the network feature pod button in system
@@ -114,7 +116,8 @@ gfx::ImageSkia GetConnectedNetworkWithConnectingVpnImage(
 // Returns the disconnected image for a shill network type.
 gfx::ImageSkia GetDisconnectedImageForNetworkType(
     const ui::ColorProvider* color_provider,
-    chromeos::network_config::mojom::NetworkType network_type);
+    chromeos::network_config::mojom::NetworkType network_type,
+    IconType icon_type);
 
 // Returns the label for |network| when displayed in a list.
 ASH_EXPORT std::u16string GetLabelForNetworkList(

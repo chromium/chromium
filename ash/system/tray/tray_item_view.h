@@ -97,6 +97,10 @@ class ASH_EXPORT TrayItemView : public views::View,
   // user session starts). It should reload any strings the view is using.
   virtual void HandleLocaleChange() = 0;
 
+  // For Material Next: Updates the color of `label_` or `image_view_` based on
+  // whether the view is active or not.
+  virtual void UpdateLabelOrImageViewColor(bool active);
+
   // Temporarily disables the use of animation on visibility changes. Animation
   // will be disabled until the returned scoped closure is run.
   [[nodiscard]] base::ScopedClosureRunner DisableAnimation();
@@ -126,6 +130,8 @@ class ASH_EXPORT TrayItemView : public views::View,
 
   IconizedLabel* label() const { return label_; }
   views::ImageView* image_view() const { return image_view_; }
+
+  bool is_active() { return is_active_; }
 
   // views::View.
   void SetVisible(bool visible) override;
@@ -190,6 +196,11 @@ class ASH_EXPORT TrayItemView : public views::View,
 
   // Use scale in animating in the item to the tray.
   bool use_scale_in_animation_ = true;
+
+  // For Material Next: if this view is active or not in `UnifiedSystemTray`.
+  // This is used for coloring and is set in `UpdateLabelOrImageViewColor()`.
+  // Note: the value is only accurate when the Jelly flag is set.
+  bool is_active_ = false;
 
   // Only one of |label_| and |image_view_| should be non-null.
   raw_ptr<IconizedLabel, ExperimentalAsh> label_ = nullptr;

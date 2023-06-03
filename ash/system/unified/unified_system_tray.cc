@@ -59,6 +59,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -540,6 +541,7 @@ void UnifiedSystemTray::OnShelfConfigUpdated() {
 
 void UnifiedSystemTray::OnOpeningCalendarView() {
   SetIsActive(false);
+  UpdateTrayItemsColor(/*active=*/false);
   for (auto& observer : observers_) {
     observer.OnOpeningCalendarView();
   }
@@ -547,6 +549,7 @@ void UnifiedSystemTray::OnOpeningCalendarView() {
 
 void UnifiedSystemTray::OnTransitioningFromCalendarToMainView() {
   SetIsActive(true);
+  UpdateTrayItemsColor(/*active=*/true);
   for (auto& observer : observers_) {
     observer.OnLeavingCalendarView();
   }
@@ -789,11 +792,13 @@ void UnifiedSystemTray::ShowBubbleInternal() {
     return;
   }
   SetIsActive(true);
+  UpdateTrayItemsColor(/*active=*/true);
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {
   DestroyBubbles();
   SetIsActive(false);
+  UpdateTrayItemsColor(/*active=*/false);
 }
 
 void UnifiedSystemTray::UpdateNotificationInternal() {
@@ -856,6 +861,15 @@ void UnifiedSystemTray::DestroyBubbles() {
     bubble_->unified_system_tray_controller()->RemoveObserver(this);
   }
   bubble_.reset();
+}
+
+void UnifiedSystemTray::UpdateTrayItemsColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  for (auto* tray_item : tray_items_) {
+    tray_item->UpdateLabelOrImageViewColor(active);
+  }
 }
 
 }  // namespace ash

@@ -494,6 +494,12 @@ SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
                  ? color_provider->GetColor(cros_tokens::kCrosSysOnSurface)
                  : ash_color_provider->GetContentLayerColor(
                        AshColorProvider::ContentLayerType::kButtonIconColor);
+    case ICON_TYPE_TRAY_ACTIVE:
+      return use_color_provider
+                 ? color_provider->GetColor(
+                       cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                 : ash_color_provider->GetContentLayerColor(
+                       AshColorProvider::ContentLayerType::kButtonIconColor);
     case ICON_TYPE_FEATURE_POD_TOGGLED:
       return use_color_provider
                  ? color_provider->GetColor(
@@ -645,8 +651,9 @@ gfx::ImageSkia GetConnectedNetworkWithConnectingVpnImage(
 
 gfx::ImageSkia GetDisconnectedImageForNetworkType(
     const ui::ColorProvider* color_provider,
-    NetworkType network_type) {
-  return GetBasicImage(color_provider, ICON_TYPE_LIST, network_type,
+    NetworkType network_type,
+    IconType icon_type) {
+  return GetBasicImage(color_provider, icon_type, network_type,
                        false /* connected */);
 }
 

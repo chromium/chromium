@@ -117,6 +117,10 @@ void TrayItemView::DestroyImageView() {
   image_view_ = nullptr;
 }
 
+void TrayItemView::UpdateLabelOrImageViewColor(bool active) {
+  is_active_ = active;
+}
+
 base::ScopedClosureRunner TrayItemView::DisableAnimation() {
   if (layer()->GetAnimator()->is_animating()) {
     layer()->GetAnimator()->StopAnimating();

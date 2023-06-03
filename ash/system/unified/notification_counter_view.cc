@@ -13,9 +13,11 @@
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -92,9 +94,17 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
   NumberIconImageSource& operator=(const NumberIconImageSource&) = delete;
 
   void Draw(gfx::Canvas* canvas) override {
-    SkColor tray_icon_color =
+    ui::ColorId tray_icon_color_id;
+    if (chromeos::features::IsJellyEnabled()) {
+      tray_icon_color_id = notification_counter_view_->is_active()
+                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                               : cros_tokens::kCrosSysOnSurface;
+    } else {
+      tray_icon_color_id = kColorAshIconColorPrimary;
+    }
+    const SkColor tray_icon_color =
         notification_counter_view_->GetColorProvider()->GetColor(
-            kColorAshIconColorPrimary);
+            tray_icon_color_id);
     // Paint the contents inside the circle background. The color doesn't matter
     // as it will be hollowed out by the XOR operation.
     if (count_ > kTrayNotificationMaxCount) {
@@ -166,6 +176,7 @@ void NotificationCounterView::Update() {
     image_view()->SetImage(
         gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(this,
                                                                      icon_id));
+    UpdateLabelOrImageViewColor(is_active());
     count_for_display_ = icon_id;
   }
   SetVisible(true);
@@ -181,6 +192,21 @@ void NotificationCounterView::HandleLocaleChange() {
 
 void NotificationCounterView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
+  if (!chromeos::features::IsJellyEnabled()) {
+    image_view()->SetImage(
+        gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
+            this, count_for_display_));
+    return;
+  }
+  UpdateLabelOrImageViewColor(is_active());
+}
+
+void NotificationCounterView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
   image_view()->SetImage(
       gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
           this, count_for_display_));
@@ -203,9 +229,13 @@ void QuietModeView::Update() {
   if (message_center::MessageCenter::Get()->IsQuietMode() &&
       Shell::Get()->session_controller()->GetSessionState() ==
           session_manager::SessionState::ACTIVE) {
-    image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemTrayDoNotDisturbIcon, kColorAshIconColorPrimary));
     SetVisible(true);
+    if (!chromeos::features::IsJellyEnabled()) {
+      image_view()->SetImage(ui::ImageModel::FromVectorIcon(
+          kSystemTrayDoNotDisturbIcon, kColorAshIconColorPrimary));
+      return;
+    }
+    UpdateLabelOrImageViewColor(is_active());
   } else {
     SetVisible(false);
   }
@@ -219,6 +249,18 @@ void QuietModeView::HandleLocaleChange() {
 void QuietModeView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
   Update();
+}
+
+void QuietModeView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
+      kSystemTrayDoNotDisturbIcon,
+      active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+             : cros_tokens::kCrosSysOnSurface));
 }
 
 const char* QuietModeView::GetClassName() const {

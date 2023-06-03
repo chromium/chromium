@@ -300,6 +300,10 @@ class ASH_EXPORT UnifiedSystemTray
   // removing bubble related observers.
   void DestroyBubbles();
 
+  // Updates the color of all tray item views in `tray_container()` based on the
+  // active status.
+  void UpdateTrayItemsColor(bool active);
+
   std::unique_ptr<UiDelegate> ui_delegate_;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;

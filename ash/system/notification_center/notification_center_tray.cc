@@ -19,6 +19,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_container.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -147,6 +148,7 @@ void NotificationCenterTray::CloseBubble() {
 
   bubble_.reset();
   SetIsActive(false);
+  UpdateTrayItemsColor(/*active=*/false);
 
   // Inform the message center that the bubble has closed so that popups are
   // created for new notifications.
@@ -172,6 +174,7 @@ void NotificationCenterTray::ShowBubble() {
   bubble_->ShowBubble();
 
   SetIsActive(true);
+  UpdateTrayItemsColor(/*active=*/true);
 }
 
 void NotificationCenterTray::UpdateAfterLoginStatusChange() {
@@ -219,10 +222,20 @@ void NotificationCenterTray::UpdateVisibility() {
       message_center::MessageCenter::Get()->NotificationCount() > 0 &&
       system_tray_visible_;
   SetVisiblePreferred(new_visibility);
+  UpdateTrayItemsColor(is_active());
 
   // We should close the bubble if there are no more notifications to show.
   if (!new_visibility && bubble_) {
     CloseBubble();
+  }
+}
+
+void NotificationCenterTray::UpdateTrayItemsColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  for (auto* tray_item : tray_container()->children()) {
+    static_cast<TrayItemView*>(tray_item)->UpdateLabelOrImageViewColor(active);
   }
 }
 

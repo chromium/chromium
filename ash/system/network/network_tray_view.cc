@@ -10,27 +10,16 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/active_network_icon.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/network_icon_animation.h"
 #include "ash/system/network/tray_network_state_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
-
-namespace {
-
-// OOBE has a white background that makes regular tray icons not visible.
-network_icon::IconType GetIconType() {
-  if (Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::OOBE) {
-    return network_icon::ICON_TYPE_TRAY_OOBE;
-  }
-  return network_icon::ICON_TYPE_TRAY_REGULAR;
-}
-
-}  // namespace
 
 NetworkTrayView::NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type)
     : TrayItemView(shelf), type_(type) {
@@ -78,6 +67,15 @@ void NetworkTrayView::HandleLocaleChange() {
 
 void NetworkTrayView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
+  UpdateNetworkStateHandlerIcon();
+}
+
+void NetworkTrayView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
   UpdateNetworkStateHandlerIcon();
 }
 
@@ -131,6 +129,19 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
       accessible_name_ != prev_accessible_name) {
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
   }
+}
+
+network_icon::IconType NetworkTrayView::GetIconType() {
+  // OOBE has a white background that makes regular tray icons not visible.
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::OOBE) {
+    return network_icon::ICON_TYPE_TRAY_OOBE;
+  }
+  // Active tray has a different icon color.
+  if (is_active()) {
+    return network_icon::ICON_TYPE_TRAY_ACTIVE;
+  }
+  return network_icon::ICON_TYPE_TRAY_REGULAR;
 }
 
 }  // namespace ash

@@ -31,6 +31,7 @@ class PowerTrayView : public TrayItemView, public PowerStatus::Observer {
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;

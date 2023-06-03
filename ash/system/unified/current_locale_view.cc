@@ -13,6 +13,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -38,7 +39,7 @@ void CurrentLocaleView::OnLocaleListSet() {
   SetVisible(locale_model->ShouldShowCurrentLocaleInStatusArea());
   label()->SetText(base::i18n::ToUpper(base::UTF8ToUTF16(
       l10n_util::GetLanguage(locale_model->current_locale_iso_code()))));
-  label()->SetEnabledColorId(kColorAshIconColorPrimary);
+  UpdateLabelOrImageViewColor(is_active());
 
   const std::vector<LocaleInfo>& locales = locale_model->locale_list();
   for (auto& entry : locales) {
@@ -60,6 +61,18 @@ const char* CurrentLocaleView::GetClassName() const {
 void CurrentLocaleView::HandleLocaleChange() {
   // Nothing to do here, when this view is used, the locale will be updated
   // using locale_model.
+}
+
+void CurrentLocaleView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    label()->SetEnabledColorId(kColorAshIconColorPrimary);
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
+  label()->SetEnabledColorId(active
+                                 ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                                 : cros_tokens::kCrosSysOnSurface);
 }
 
 }  // namespace ash

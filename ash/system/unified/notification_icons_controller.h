@@ -57,11 +57,18 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
  private:
+  void UpdateImageViewColor();
+
   // Store the id to make sure we still have it when notification is removed and
   // goes out of scope.
   std::string notification_id_;
+
+  // Stores the notification to update its icon color based on the active state
+  // of this tray.
+  std::unique_ptr<message_center::Notification> notification_;
 
   const raw_ptr<NotificationIconsController,
                 DanglingUntriaged | ExperimentalAsh>

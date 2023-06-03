@@ -27,6 +27,7 @@ class CurrentLocaleView : public TrayItemView, public LocaleModel::Observer {
   // views::TrayItemView:
   const char* GetClassName() const override;
   void HandleLocaleChange() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 };
 
 }  // namespace ash

@@ -97,6 +97,10 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   friend class NotificationCounterViewTest;
   friend class NotificationIconsControllerTest;
 
+  // Updates the color of all tray item views in `tray_container()` based on the
+  // active status.
+  void UpdateTrayItemsColor(bool active);
+
   // Manages notification metrics.
   const std::unique_ptr<NotificationMetricsRecorder>
       notification_metrics_recorder_;

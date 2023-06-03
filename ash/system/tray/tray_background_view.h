@@ -307,6 +307,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Checks if we should use custom visibility animations.
   bool ShouldUseCustomVisibilityAnimations() const;
 
+  // For Material Next: Updates the background color based on active state.
+  void UpdateBackgroundColor(bool active);
+
   // The shelf containing the system tray for this view.
   raw_ptr<Shelf, ExperimentalAsh> shelf_;
 

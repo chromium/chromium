@@ -37,9 +37,12 @@ class ManagedDeviceTrayItemView : public TrayItemView,
   const char* GetClassName() const override;
   void OnThemeChanged() override;
   void HandleLocaleChange() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
  private:
   void Update();
+  // Gets the icon based on user session state.
+  const gfx::VectorIcon* GetIcon();
   void UpdateIcon();
   void UpdateTooltipText();
 };

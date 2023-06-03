@@ -60,6 +60,7 @@ class ASH_EXPORT ScreenCaptureTrayItemView
 
   // TrayItemView:
   void HandleLocaleChange() override {}
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // MultiCaptureServiceClient::Observer:
   void MultiCaptureStarted(const std::string& label,

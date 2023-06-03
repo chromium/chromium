@@ -234,8 +234,13 @@ gfx::ImageSkia ActiveNetworkIcon::GetDualImageCellular(
   if (!active_cellular) {
     if (animating)
       *animating = false;
+    // For the `kCellular` icon in the `UnifiedSystemTray`: if the tray is
+    // active, the icon type should be used to get the correct color.
+    if (icon_type != network_icon::IconType::ICON_TYPE_TRAY_ACTIVE) {
+      icon_type = network_icon::IconType::ICON_TYPE_LIST;
+    }
     return network_icon::GetDisconnectedImageForNetworkType(
-        color_provider, NetworkType::kCellular);
+        color_provider, NetworkType::kCellular, icon_type);
   }
 
   return network_icon::GetImageForNonVirtualNetwork(

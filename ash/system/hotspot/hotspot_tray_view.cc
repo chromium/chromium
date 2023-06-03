@@ -95,6 +95,15 @@ void HotspotTrayView::HandleLocaleChange() {
   UpdateIconVisibilityAndTooltip();
 }
 
+void HotspotTrayView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+  UpdateIconImage();
+}
+
 void HotspotTrayView::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (state != session_manager::SessionState::ACTIVE) {
@@ -115,7 +124,10 @@ void HotspotTrayView::UpdateIconVisibilityAndTooltip() {
 
 void HotspotTrayView::UpdateIconImage() {
   image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-      hotspot_icon::GetIconForHotspot(state_), cros_tokens::kCrosSysOnSurface,
+      hotspot_icon::GetIconForHotspot(state_),
+      GetColorProvider()->GetColor(
+          is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                      : cros_tokens::kCrosSysOnSurface),
       kUnifiedTrayIconSize));
 }
 

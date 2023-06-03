@@ -22,6 +22,7 @@
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -98,28 +99,17 @@ NotificationIconTrayItemView::~NotificationIconTrayItemView() = default;
 void NotificationIconTrayItemView::SetNotification(
     message_center::Notification* notification) {
   notification_id_ = notification->id();
+  notification_ = notification->DeepCopy(
+      *notification, GetColorProvider(), /*include_body_image=*/true,
+      /*include_small_image=*/true, /*include_icon_images=*/true);
 
-  if (!GetWidget())
-    return;
-
-  const auto* color_provider = GetColorProvider();
-  gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
-      kUnifiedTrayIconSize, color_provider->GetColor(kColorAshIconColorPrimary),
-      color_provider->GetColor(ui::kColorNotificationIconBackground),
-      color_provider->GetColor(ui::kColorNotificationIconForeground));
-  if (!masked_small_icon.IsEmpty()) {
-    image_view()->SetImage(masked_small_icon.AsImageSkia());
-  } else {
-    image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-        message_center::kProductIcon, kColorAshIconColorPrimary,
-        kUnifiedTrayIconSize));
-  }
-
+  UpdateImageViewColor();
   image_view()->SetTooltipText(notification->title());
 }
 
 void NotificationIconTrayItemView::Reset() {
   notification_id_ = std::string();
+  notification_.reset();
   image_view()->SetImage(gfx::ImageSkia());
   image_view()->SetTooltipText(std::u16string());
 }
@@ -144,6 +134,38 @@ const char* NotificationIconTrayItemView::GetClassName() const {
 void NotificationIconTrayItemView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
   controller_->UpdateNotificationIcons();
+}
+
+void NotificationIconTrayItemView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
+  UpdateImageViewColor();
+}
+
+void NotificationIconTrayItemView::UpdateImageViewColor() {
+  if (!GetWidget() || !notification_) {
+    return;
+  }
+
+  const auto* color_provider = GetColorProvider();
+  ui::ColorId color_id = kColorAshIconColorPrimary;
+  if (chromeos::features::IsJellyEnabled()) {
+    color_id = is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                           : cros_tokens::kCrosSysOnSurface;
+  }
+  gfx::Image masked_small_icon = notification_->GenerateMaskedSmallIcon(
+      kUnifiedTrayIconSize, color_provider->GetColor(color_id),
+      color_provider->GetColor(ui::kColorNotificationIconBackground),
+      color_provider->GetColor(ui::kColorNotificationIconForeground));
+  if (!masked_small_icon.IsEmpty()) {
+    image_view()->SetImage(masked_small_icon.AsImageSkia());
+  } else {
+    image_view()->SetImage(ui::ImageModel::FromVectorIcon(
+        message_center::kProductIcon, color_id, kUnifiedTrayIconSize));
+  }
 }
 
 NotificationIconsController::NotificationIconsController(
