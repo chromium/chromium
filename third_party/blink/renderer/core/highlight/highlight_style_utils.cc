@@ -482,12 +482,44 @@ absl::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
   return absl::nullopt;
 }
 
-bool HighlightStyleUtils::TextFragmentHasVisualOverflow(const Node* node) {
-  const ComputedStyle& style = node->ComputedStyleRef();
-  if (!style.HighlightData()) {
+bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
+    const Node& node,
+    DocumentMarker::MarkerType type) {
+  // Custom highlights are handled separately. Here we just need to handle
+  // spelling, grammar and target-text. Note that we assume
+  // RuntimeEnabledFeatures::HighlightInheritanceEnabled() is true to avoid
+  // needing a non-const node.
+  const ComputedStyle* style = node.GetComputedStyle();
+  if (!style || !style->HighlightData()) {
     return false;
   }
-  const ComputedStyle* pseudo_style = style.HighlightData()->TargetText();
+  const ComputedStyle* pseudo_style = nullptr;
+  switch (type) {
+    case DocumentMarker::kTextFragment:
+      if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+        pseudo_style = style->HighlightData()->TargetText();
+      }
+      break;
+
+    case DocumentMarker::kSpelling:
+      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
+          RuntimeEnabledFeatures::
+              CSSPaintingForSpellingGrammarErrorsEnabled()) {
+        pseudo_style = style->HighlightData()->SpellingError();
+      }
+      break;
+
+    case DocumentMarker::kGrammar:
+      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
+          RuntimeEnabledFeatures::
+              CSSPaintingForSpellingGrammarErrorsEnabled()) {
+        pseudo_style = style->HighlightData()->GrammarError();
+      }
+      break;
+
+    default:
+      break;
+  }
   if (!pseudo_style) {
     return false;
   }
@@ -498,12 +530,12 @@ bool HighlightStyleUtils::TextFragmentHasVisualOverflow(const Node* node) {
 bool HighlightStyleUtils::CustomHighlightHasVisualOverflow(
     const Node* node,
     const AtomicString& pseudo_argument) {
-  const ComputedStyle& style = node->ComputedStyleRef();
-  if (!style.HighlightData()) {
+  const ComputedStyle* style = node->GetComputedStyle();
+  if (!style || !style->HighlightData()) {
     return false;
   }
   const ComputedStyle* pseudo_style =
-      style.HighlightData()->CustomHighlight(pseudo_argument);
+      style->HighlightData()->CustomHighlight(pseudo_argument);
   if (!pseudo_style) {
     return false;
   }

@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -115,6 +116,18 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
 
   NOTREACHED();
   return nullptr;
+}
+
+void InvalidateVisualOverflowForNode(const Node& node,
+                                     DocumentMarker::MarkerType type) {
+  if (!node.GetLayoutObject() ||
+      !DocumentMarker::MarkerTypes::HighlightPseudos().Intersects(
+          DocumentMarker::MarkerTypes(type))) {
+    return;
+  }
+  if (HighlightStyleUtils::ShouldInvalidateVisualOverflow(node, type)) {
+    node.GetLayoutObject()->InvalidateVisualOverflow();
+  }
 }
 
 void InvalidatePaintForNode(const Node& node) {
@@ -366,6 +379,7 @@ void DocumentMarkerController::AddMarkerToNode(const Text& text,
   markers->Add(new_marker);
 
   InvalidatePaintForNode(text);
+  InvalidateVisualOverflowForNode(text, new_marker->GetType());
 }
 
 // Moves markers from src_node to dst_node. Markers are moved if their start
@@ -404,6 +418,7 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
 
     if (src_markers->MoveMarkers(length, dst_markers)) {
       doc_dirty = true;
+      InvalidateVisualOverflowForNode(dst_node, type);
       for (const auto& marker : dst_markers->GetMarkers()) {
         auto it = marker_groups_.find(marker);
         if (it != marker_groups_.end())
@@ -414,6 +429,7 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
     // the src and dst, in which case both lists may be empty despite
     // MoveMarkers returning false.
     if (src_markers->IsEmpty()) {
+      InvalidateVisualOverflowForNode(src_node, type);
       marker_map->erase(&src_node);
       DidRemoveNodeFromMap(type);
     }
@@ -478,6 +494,7 @@ void DocumentMarkerController::RemoveMarkersInternal(
     }
   }
   if (list->RemoveMarkers(start_offset, length)) {
+    InvalidateVisualOverflowForNode(text, marker_type);
     InvalidatePaintForNode(text);
   }
   if (list->IsEmpty()) {
@@ -1090,6 +1107,7 @@ void DocumentMarkerController::RemoveSpellingMarkersUnderWords(
       DocumentMarkerList* const list = node_markers.value;
       if (To<SpellCheckMarkerListImpl>(list)->RemoveMarkersUnderWords(
               text.data(), words)) {
+        InvalidateVisualOverflowForNode(text, type);
         InvalidatePaintForNode(text);
         if (list->IsEmpty()) {
           nodes_to_remove.insert(node_markers.key);
@@ -1229,6 +1247,7 @@ void DocumentMarkerController::RemoveMarkersFromList(
   list->Clear();
 
   const Text& node = *iterator->key;
+  InvalidateVisualOverflowForNode(node, marker_type);
   InvalidatePaintForNode(node);
   InvalidatePaintForTickmarks(node);
 
@@ -1367,6 +1386,7 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
       did_shift_marker = true;
     }
     if (list->IsEmpty()) {
+      InvalidateVisualOverflowForNode(*node, type);
       marker_map->erase(text_node);
       DidRemoveNodeFromMap(type, false);
     }

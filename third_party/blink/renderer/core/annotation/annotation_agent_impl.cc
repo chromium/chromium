@@ -134,16 +134,6 @@ void AnnotationAgentImpl::Remove() {
       frame->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kFindInPage);
 
-      // Invalidate ink overflow if necessary before removing the marker.
-      document->Markers().ApplyToMarkersOfType(
-          [](WeakMember<Text> node, DocumentMarker*) {
-            if (HighlightStyleUtils::TextFragmentHasVisualOverflow(node)) {
-              if (LayoutObject* layout_object = node->GetLayoutObject()) {
-                layout_object->InvalidateVisualOverflow();
-              }
-            }
-          },
-          DocumentMarker::kTextFragment);
       // TODO(bokan): Base marker type on `type_`.
       document->Markers().RemoveMarkersInRange(
           dom_range, DocumentMarker::MarkerTypes::TextFragment());
@@ -314,17 +304,6 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
         type_ != mojom::blink::AnnotationType::kTextFinder) {
       // TODO(bokan): Add new marker types based on `type_`.
       document->Markers().AddTextFragmentMarker(dom_range);
-      // We need to invalidate ink overflow if the marker has overflowing
-      // content.
-      document->Markers().ApplyToMarkersOfType(
-          [](WeakMember<Text> node, DocumentMarker*) {
-            if (HighlightStyleUtils::TextFragmentHasVisualOverflow(node)) {
-              if (LayoutObject* layout_object = node->GetLayoutObject()) {
-                layout_object->InvalidateVisualOverflow();
-              }
-            }
-          },
-          DocumentMarker::kTextFragment);
     } else {
       TRACE_EVENT_INSTANT("blink", "Markers Intersect!");
     }
