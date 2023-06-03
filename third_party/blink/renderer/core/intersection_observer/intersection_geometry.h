@@ -74,7 +74,7 @@ class CORE_EXPORT IntersectionGeometry {
 
   static const LayoutObject* GetRootLayoutObjectForTarget(
       const Node* root_node,
-      LayoutObject* target,
+      const LayoutObject* target,
       bool check_containing_block_chain);
 
   IntersectionGeometry(const Node* root,

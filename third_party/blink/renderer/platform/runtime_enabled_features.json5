@@ -2050,6 +2050,9 @@
       status: "experimental",
     },
     {
+      "name": "IntersectionOptimization",
+    },
+    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
       base_feature: "none",

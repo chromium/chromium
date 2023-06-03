@@ -230,14 +230,14 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
 //   https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-root
 const LayoutObject* IntersectionGeometry::GetRootLayoutObjectForTarget(
     const Node* root_node,
-    LayoutObject* target,
+    const LayoutObject* target,
     bool check_containing_block_chain) {
   if (!root_node)
     return target ? LocalRootView(*target) : nullptr;
   if (!root_node->isConnected())
     return nullptr;
 
-  LayoutObject* root = nullptr;
+  const LayoutObject* root = nullptr;
   if (root_node->IsDocumentNode()) {
     root = To<Document>(root_node)->GetLayoutView();
   } else {

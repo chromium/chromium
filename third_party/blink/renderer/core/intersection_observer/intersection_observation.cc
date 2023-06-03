@@ -179,19 +179,48 @@ bool IntersectionObservation::CanUseCachedRects() const {
       !observer_->CanUseCachedRects()) {
     return false;
   }
+  CHECK(!observer_->RootIsImplicit());
+
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    if (LayoutObject* target = target_->GetLayoutObject()) {
+      PaintLayer* root_layer = target->GetDocument().GetLayoutView()->Layer();
+      if (!root_layer) {
+        return false;
+      }
+      if (LayoutBox* scroller = target->DeprecatedEnclosingScrollableBox()) {
+        if (scroller->GetNode() == observer_->root()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   // Cached rects can only be used if there are no scrollable objects in the
   // hierarchy between target and root (a scrollable root is ok). The reason is
   // that a scroll change in an intermediate scroller would change the
   // intersection geometry, but it would not properly trigger an invalidation of
   // the cached rects.
-  if (LayoutObject* target = target_->GetLayoutObject()) {
-    PaintLayer* root_layer = target->GetDocument().GetLayoutView()->Layer();
-    if (!root_layer)
-      return false;
-    if (LayoutBox* scroller = target->EnclosingScrollableBox()) {
-      if (scroller->GetNode() == observer_->root())
-        return true;
+  if (const LayoutObject* target = target_->GetLayoutObject()) {
+    const LayoutObject* root =
+        IntersectionGeometry::GetRootLayoutObjectForTarget(
+            observer_->root(), target, /*check_containing_block_chain=*/false);
+    LayoutObject::AncestorSkipInfo skip_info(root);
+    for (const LayoutObject* container = target->Container(&skip_info);
+         container; container = container->Container(&skip_info)) {
+      if (skip_info.AncestorSkipped()) {
+        // |root| is not in the container chain of |target|.
+        // TODO(wangxianzhu): Merge this check with that in
+        // IntersectionGeometry::GetRootLayoutObjectForTarget().
+        return false;
+      }
+      if (container->IsScrollContainer() &&
+          To<LayoutBox>(container)->HasLayoutOverflow()) {
+        return container == root;
+      }
     }
+    // There are no intermediate scrollers.
+    return true;
   }
   return false;
 }
