@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 
 namespace base {
 class UnguessableToken;
@@ -130,6 +131,9 @@ class SerialPort final : public EventTargetWithInlineData,
   HeapHashSet<Member<ScriptPromiseResolver>> signal_resolvers_;
   // Resolver for the Promise returned by close().
   Member<ScriptPromiseResolver> close_resolver_;
+
+  FrameScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
 };
 
 }  // namespace blink

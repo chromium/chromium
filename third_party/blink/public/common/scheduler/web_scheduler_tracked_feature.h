@@ -128,12 +128,14 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // There is a pending IndexedDB event (e.g. versionchange event sent but the
   // connection is not closed yet) that requires the page not to enter BFCache.
   kIndexedDBEvent = 61,
-
+  // Aggressive throttling is disabled when a serial port is opened and
+  // re-enabled when the opened port is closed.
+  kWebSerial = 62,
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
   // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.
-  kMaxValue = kIndexedDBEvent,
+  kMaxValue = kWebSerial,
 };
 
 using WebSchedulerTrackedFeatures =

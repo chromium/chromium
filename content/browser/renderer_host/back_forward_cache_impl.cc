@@ -240,6 +240,11 @@ constexpr WebSchedulerTrackedFeatures kAllowedFeatures = {
     // TODO(crbug.com/1357482): Figure out if this should be allowed.
     WebSchedulerTrackedFeature::kWebNfc};
 
+// WebSchedulerTrackedFeatures that do not affect back/forward cache, but
+// affects other scheduling policies (e.g. aggressive throttling).
+constexpr WebSchedulerTrackedFeatures kNonBackForwardCacheAffectingFeatures = {
+    WebSchedulerTrackedFeature::kWebSerial};
+
 // The BackForwardCache feature is controlled via an experiment. This function
 // returns the allowed URL list where it is enabled.
 std::string GetAllowedURLList() {
@@ -410,7 +415,8 @@ bool IsSameOriginForTreeResult(RenderFrameHostImpl* rfh,
 // static
 BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
     RequestedFeatures requested_features) {
-  WebSchedulerTrackedFeatures result = kAllowedFeatures;
+  WebSchedulerTrackedFeatures result =
+      Union(kAllowedFeatures, kNonBackForwardCacheAffectingFeatures);
   if (IsContentInjectionSupported()) {
     result.PutAll(kInjectionFeatures);
   }

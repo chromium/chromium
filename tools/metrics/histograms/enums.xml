@@ -111441,6 +111441,7 @@ Called by update_scheduler_enums.py.-->
   <int value="59" label="Keepalive request"/>
   <int value="60" label="AuthorizationHeader"/>
   <int value="61" label="IndexedDBEvent"/>
+  <int value="62" label="WebSerial"/>
 </enum>
 
 <enum name="WebShareMethod">

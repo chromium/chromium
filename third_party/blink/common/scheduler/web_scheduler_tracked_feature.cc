@@ -127,6 +127,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"AuthorizationHeader", "Authorization header used"};
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
       return {"IndexedDBEvent", "IndexedDB event is pending"};
+    case WebSchedulerTrackedFeature::kWebSerial:
+      return {"WebSerial", "Serial port open"};
   }
   return {};
 }

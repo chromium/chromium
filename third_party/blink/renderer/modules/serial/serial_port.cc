@@ -633,13 +633,19 @@ void SerialPort::OnOpen(
     return;
   }
 
+  auto* execution_context = GetExecutionContext();
+  feature_handle_for_scheduler_ =
+      execution_context->GetScheduler()->RegisterFeature(
+          SchedulingPolicy::Feature::kWebSerial,
+          SchedulingPolicy{SchedulingPolicy::DisableAggressiveThrottling()});
+
   port_.Bind(std::move(port),
-             GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
+             execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   port_.set_disconnect_handler(
       WTF::BindOnce(&SerialPort::OnConnectionError, WrapWeakPersistent(this)));
   client_receiver_.Bind(
       std::move(client_receiver),
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
+      execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
 
   open_resolver_->Resolve();
   open_resolver_ = nullptr;
@@ -687,6 +693,7 @@ void SerialPort::OnClose() {
   DCHECK(IsClosing());
   close_resolver_->Resolve();
   close_resolver_ = nullptr;
+  feature_handle_for_scheduler_.reset();
 }
 
 void SerialPort::OnForget(ScriptPromiseResolver* resolver) {
