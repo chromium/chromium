@@ -88,7 +88,8 @@ void TriggerTabList() {
 }
 
 // Tests that all tabs are opened when no tab is deselected from the list.
-- (void)testOpenAllTabs {
+// TODO(crbug.com/1450831): The test is flaky.
+- (void)FLAKY_testOpenAllTabs {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
