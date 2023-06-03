@@ -143,7 +143,6 @@ non_web_component_files = [
   "store/store.js",
   "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
-  "quick_unlock/lock_screen_constants.js",
   "util.js",
   "web_ui_listener_behavior.js",
 ]
@@ -158,6 +157,7 @@ non_web_component_files_ts = [
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
   "typescript_utils/strict_query.ts",
+  "quick_unlock/lock_screen_constants.ts",
 ]
 
 mojo_files_ts = [
@@ -246,7 +246,10 @@ ts_library("build_ts") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  definitions = [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/quick_unlock_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+  ]
   extra_deps = [
     ":generate_definitions",
     ":preprocess",
@@ -397,7 +400,6 @@ generate_definitions_js_files = [
   "network/network_listener_behavior.js",
   "network/network_shared.css.js",
   "network/onc_mojo.js",
-  "quick_unlock/lock_screen_constants.js",
   "quick_unlock/pin_keyboard.html.js",
   "quick_unlock/pin_keyboard_icons.html.js",
   "quick_unlock/setup_pin_keyboard.html.js",
@@ -508,7 +510,6 @@ group("closure_compile") {
     "network:closure_compile_module",
     "network_health:closure_compile_module",
     "post_message_api:closure_compile",
-    "quick_unlock:closure_compile_module",
     "smb_shares:closure_compile_module",
     "store:closure_compile_module",
     "traffic_counters:closure_compile_module",

@@ -520,7 +520,6 @@ js_library("pin_setup") {
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
   ]
   extra_deps = [ ":web_components" ]
   externs_list = [

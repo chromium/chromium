@@ -312,7 +312,7 @@ _BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (
           # cleaned up.
           'ash/webui/common/resources/cr.m.js',
           'ash/webui/common/resources/multidevice_setup/multidevice_setup_browser_proxy.js',
-          'ash/webui/common/resources/quick_unlock/lock_screen_constants.js',
+          'ash/webui/common/resources/quick_unlock/lock_screen_constants.ts',
           'ash/webui/common/resources/smb_shares/smb_browser_proxy.js',
           'ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics.js',
           'ash/webui/diagnostics_ui/resources/diagnostics_browser_proxy.ts',
