@@ -2015,7 +2015,6 @@ crbug.com/1218715 external/wpt/content-security-policy/reporting-api/reporting-a
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Crash Failure Pass Timeout ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
-crbug.com/1072022 [ Debug Mac ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Mac10.13 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Mac10.14 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Mac10.15 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
@@ -6627,7 +6626,6 @@ crbug.com/1446040 [ Mac13 ] virtual/oopr-canvas2d/external/wpt/mediacapture-reco
 crbug.com/1446742 virtual/gpu/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
 crbug.com/1446742 virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
 crbug.com/1446742 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
-crbug.com/1446742 [ Debug Linux ] fast/canvas/canvas-drawImage-svg.html [ Failure ]
 
 crbug.com/1447239 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
 crbug.com/1447244 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
