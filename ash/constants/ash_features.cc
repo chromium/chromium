@@ -998,9 +998,7 @@ BASE_FEATURE(kFilesInlineSyncStatusProgressEvents,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables V2 of search functionality in files.
-BASE_FEATURE(kFilesSearchV2,
-             "FilesSearchV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFilesSearchV2, "FilesSearchV2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables partitioning of removable disks in file manager.
 BASE_FEATURE(kFilesSinglePartitionFormat,
