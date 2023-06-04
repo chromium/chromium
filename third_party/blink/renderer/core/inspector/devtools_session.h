@@ -94,6 +94,8 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   void PaintTiming(Document* document, const char* name, double timestamp);
   void DomContentLoadedEventFired(LocalFrame*);
 
+  int RecordReplayId() const { return record_replay_id_; }
+
  private:
   class IOSession;
 
@@ -171,6 +173,8 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   InspectorAgentState v8_session_state_;
   InspectorAgentState::Bytes v8_session_state_cbor_;
   const String session_id_;
+
+  int record_replay_id_ = 0;
 };
 
 }  // namespace blink

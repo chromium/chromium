@@ -191,7 +191,9 @@ void DevToolsAgent::Trace(Visitor* visitor) const {
 }
 
 void DevToolsAgent::Dispose() {
-  HeapHashSet<Member<DevToolsSession>> copy(sessions_);
+  HeapHashSet<Member<DevToolsSession>,
+              WTF::MemberHashRecordReplayId<DevToolsSession>>
+      copy(sessions_);
   for (auto& session : copy)
     session->Detach();
   CleanupConnection();
@@ -280,14 +282,8 @@ void DevToolsAgent::InspectElement(const gfx::Point& point) {
 }
 
 void DevToolsAgent::FlushProtocolNotifications() {
-  // https://linear.app/replay/issue/RUN-885
-  recordreplay::Assert("DevToolsAgent::FlushProtocolNotifications");
-
   for (auto& session : sessions_)
     session->FlushProtocolNotifications();
-
-  // https://linear.app/replay/issue/RUN-885
-  recordreplay::Assert("DevToolsAgent::FlushProtocolNotifications Done");
 }
 
 void DevToolsAgent::ReportChildTargetsPostCallbackToIO(

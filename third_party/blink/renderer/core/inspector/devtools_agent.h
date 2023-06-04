@@ -145,10 +145,12 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       associated_host_remote_{nullptr};
   Member<InspectedFrames> inspected_frames_;
   Member<CoreProbeSink> probe_sink_;
-  HeapHashSet<Member<DevToolsSession>> sessions_;
+  HeapHashSet<Member<DevToolsSession>, WTF::MemberHashRecordReplayId<DevToolsSession>> sessions_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  HashMap<WorkerThread*, std::unique_ptr<WorkerData>>
+  HashMap<WorkerThread*,
+          std::unique_ptr<WorkerData>,
+          WTF::MemberHashRecordReplayRegisteredPointerId<WorkerThread>>
       unreported_child_worker_threads_;
   IOAgent* io_agent_{nullptr};
   bool report_child_workers_ = false;

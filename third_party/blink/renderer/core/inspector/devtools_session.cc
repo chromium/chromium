@@ -150,6 +150,8 @@ DevToolsSession::DevToolsSession(
     for (wtf_size_t i = 0; i < agents_.size(); i++)
       agents_[i]->Restore();
   }
+
+  record_replay_id_ = recordreplay::NewIdAnyThread("DevToolsSession");
 }
 
 DevToolsSession::~DevToolsSession() {
