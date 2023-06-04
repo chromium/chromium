@@ -35,33 +35,21 @@ void VisualDebuggerHandler::Wire(UberDispatcher* dispatcher) {
 
 DispatchResponse VisualDebuggerHandler::FilterStream(
     std::unique_ptr<base::Value::Dict> in_filter) {
-  GpuProcessHost::CallOnIO(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-      /*force_create=*/false,
-      base::BindOnce(
-          [](base::Value::Dict json, GpuProcessHost* host) {
-            host->gpu_host()->FilterVisualDebugStream(std::move(json));
-          },
-          std::move(*in_filter)));
+  auto* host = GpuProcessHost::Get();
+  host->gpu_host()->FilterVisualDebugStream(std::move(*in_filter));
 
   return DispatchResponse::Success();
 }
 
 DispatchResponse VisualDebuggerHandler::StartStream() {
   enabled_ = true;
-  GpuProcessHost::CallOnIO(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-      /*force_create=*/false,
-      base::BindOnce(
-          [](base::RepeatingCallback<void(base::Value)> callback,
-             GpuProcessHost* host) {
-            host->gpu_host()->StartVisualDebugStream(callback);
-          },
-          base::BindPostTask(
-              base::SingleThreadTaskRunner::GetCurrentDefault(),
-              base::BindRepeating(&VisualDebuggerHandler::OnFrameResponse,
-                                  weak_ptr_factory_.GetWeakPtr()),
-              FROM_HERE)));
+
+  auto* host = GpuProcessHost::Get();
+  host->gpu_host()->StartVisualDebugStream(base::BindPostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::BindRepeating(&VisualDebuggerHandler::OnFrameResponse,
+                          weak_ptr_factory_.GetWeakPtr()),
+      FROM_HERE));
   return DispatchResponse::Success();
 }
 
@@ -75,11 +63,8 @@ void VisualDebuggerHandler::OnFrameResponse(base::Value json) {
 
 DispatchResponse VisualDebuggerHandler::StopStream() {
   if (enabled_) {
-    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                             /*force_create=*/false,
-                             base::BindOnce([](GpuProcessHost* host) {
-                               host->gpu_host()->StopVisualDebugStream();
-                             }));
+    auto* host = GpuProcessHost::Get();
+    host->gpu_host()->StopVisualDebugStream();
   }
   enabled_ = false;
   return DispatchResponse::Success();

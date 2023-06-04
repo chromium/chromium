@@ -327,12 +327,14 @@ enum GPUProcessLifetimeEvent {
 };
 
 // Indexed by GpuProcessKind. There is one of each kind maximum. This array may
-// only be accessed from the IO thread.
+// only be accessed from the UI thread.
 GpuProcessHost* g_gpu_process_hosts[GPU_PROCESS_KIND_COUNT];
 
-void RunCallbackOnIO(GpuProcessKind kind,
-                     bool force_create,
-                     base::OnceCallback<void(GpuProcessHost*)> callback) {
+static void RunCallbackOnUI(
+    GpuProcessKind kind,
+    bool force_create,
+    base::OnceCallback<void(GpuProcessHost*)> callback) {
+  // |GpuProcessHost::Get| asserts that we are on the UI thread.
   GpuProcessHost* host = GpuProcessHost::Get(kind, force_create);
   std::move(callback).Run(host);
 }
@@ -615,7 +617,7 @@ void GpuProcessHost::GetHasGpuProcess(base::OnceCallback<void(bool)> callback) {
 }
 
 // static
-void GpuProcessHost::CallOnIO(
+void GpuProcessHost::CallOnUI(
     const base::Location& location,
     GpuProcessKind kind,
     bool force_create,
@@ -624,7 +626,7 @@ void GpuProcessHost::CallOnIO(
   DCHECK_NE(kind, GPU_PROCESS_KIND_INFO_COLLECTION);
 #endif
   GetUIThreadTaskRunner({})->PostTask(
-      location, base::BindOnce(&RunCallbackOnIO, kind, force_create,
+      location, base::BindOnce(&RunCallbackOnUI, kind, force_create,
                                std::move(callback)));
 }
 

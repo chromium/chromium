@@ -550,12 +550,10 @@ Response BrowserHandler::Crash() {
 }
 
 Response BrowserHandler::CrashGpuProcess() {
-  GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
-                           base::BindOnce([](GpuProcessHost* host) {
-                             if (host)
-                               host->gpu_service()->Crash();
-                           }));
+  auto* host = GpuProcessHost::Get();
+  if (host) {
+    host->gpu_service()->Crash();
+  }
   return Response::Success();
 }
 

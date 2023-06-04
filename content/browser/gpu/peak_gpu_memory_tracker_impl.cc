@@ -125,10 +125,12 @@ uint32_t PeakGpuMemoryTrackerImpl::next_sequence_number_ = 0;
 PeakGpuMemoryTrackerImpl::PeakGpuMemoryTrackerImpl(
     PeakGpuMemoryTracker::Usage usage)
     : usage_(usage) {
+  // TODO(thiabaud): Do this call inline, since this happens on the UI thread.
+  //
   // Actually performs request to GPU service to begin memory tracking for
   // |sequence_number_|. This will normally be created from the UI thread, so
   // repost to the IO thread.
-  GpuProcessHost::CallOnIO(
+  GpuProcessHost::CallOnUI(
       FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, /* force_create=*/false,
       base::BindOnce(
           [](uint32_t sequence_num, GpuProcessHost* host) {
@@ -148,7 +150,8 @@ PeakGpuMemoryTrackerImpl::~PeakGpuMemoryTrackerImpl() {
   if (canceled_)
     return;
 
-  GpuProcessHost::CallOnIO(
+  // TODO(thiabaud): Do this call inline, since this happens on the UI thread.
+  GpuProcessHost::CallOnUI(
       FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, /* force_create=*/false,
       base::BindOnce(
           [](uint32_t sequence_num, PeakGpuMemoryTracker::Usage usage,
@@ -173,8 +176,10 @@ PeakGpuMemoryTrackerImpl::~PeakGpuMemoryTrackerImpl() {
 
 void PeakGpuMemoryTrackerImpl::Cancel() {
   canceled_ = true;
+  // TODO(thiabaud): Do this call inline, since this happens on the UI thread.
+  //
   // Notify the GpuProcessHost that we are done observing this sequence.
-  GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+  GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                            /* force_create=*/false,
                            base::BindOnce(
                                [](uint32_t sequence_num, GpuProcessHost* host) {
