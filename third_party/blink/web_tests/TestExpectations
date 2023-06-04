@@ -2846,6 +2846,7 @@ crbug.com/1365604 external/wpt/custom-elements/form-associated/ElementInternals-
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== Test expectations added to unblock wpt-importer ======
+crbug.com/626703 external/wpt/fetch/api/crashtests/body-window-destroy.html [ Crash ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Failure ]
