@@ -442,6 +442,7 @@ aom_dsp_common_intrin_avx2 = [
 
 aom_dsp_common_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve_copy_neon.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/fwd_txfm_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/loopfilter_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/highbd_intrapred_neon.c",

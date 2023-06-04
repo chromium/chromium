@@ -10,6 +10,7 @@
  */
 #ifndef AOM_CONFIG_H_
 #define AOM_CONFIG_H_
+#define AOM_ARCH_AARCH64 1
 #define AOM_ARCH_ARM 1
 #define AOM_ARCH_PPC 0
 #define AOM_ARCH_X86 0
