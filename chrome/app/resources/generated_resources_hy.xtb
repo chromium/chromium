@@ -2446,6 +2446,7 @@
 <translation id="3038272154009688107">Դիտել բոլոր կայքերը</translation>
 <translation id="3038612606416062604">Ավելացնել տպիչ ձեռքով</translation>
 <translation id="3039491566278747710">Չհաջողվեց սարքում կիրառել անցանց ռեժիմում աշխատանքի քաղաքականությունը:</translation>
+<translation id="3040982432432547149">Օգնեք մեզ բարելավել Steam-ը Chromebook-ի համար</translation>
 <translation id="3043016484125065343">Մուտք գործեք՝ ձեր էջանիշները տեսնելու համար</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> կայքից</translation>
@@ -4024,6 +4025,7 @@
 <translation id="4445446646109808714">Վերջնական օգտագործողի հետ լիցենզիոն համաձայնագիր՝ <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Հայելային</translation>
 <translation id="4448914100439890108">Թաքցնել <ph name="USERNAME" /> հաշվի գաղտնաբառը <ph name="DOMAIN" /> տիրույթում</translation>
+<translation id="4449247303975391730">Կառավարել թույլտվությունները</translation>
 <translation id="4449948729197510913">Ձեր օգտանունը պատկանում է ձեր կազմակերպության կորպորատիվ հաշվին։ Սարքերը հաշվում գրանցելու համար նախ հաստատեք տիրույթի պատկանելիությունը ադմինիստրատորի վահանակում։ Հաստատելու համար ձեզ անհրաժեշտ կլինեն հաշվի ադմինիստրատորի արտոնություններ։</translation>
 <translation id="4449996769074858870">Այս ներդիրը աուդիո ֆայլ է նվագարկում:</translation>
 <translation id="4450974146388585462">Ախտորոշել</translation>
@@ -5130,6 +5132,7 @@
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Ցուցադրել կազմակերպության վկայագրերը</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> տարր</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{Կրկնվող գաղտնաբառեր չկան}=1{1 կրկնվող գաղտնաբառ}one{{NUM_REUSED} կրկնվող գաղտնաբառ}other{{NUM_REUSED} կրկնվող գաղտնաբառ}}</translation>
 <translation id="5448293924669608770">Խնդիր առաջացավ մուտք գործելու ընթացքում</translation>
 <translation id="5449551289610225147">Սխալ գաղտնաբառ</translation>
 <translation id="5449588825071916739">Բոլոր ներդիրների էջանշում</translation>

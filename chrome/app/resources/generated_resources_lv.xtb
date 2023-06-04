@@ -2446,6 +2446,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3038272154009688107">Skatīt visas vietnes</translation>
 <translation id="3038612606416062604">Printera manuāla pievienošana</translation>
 <translation id="3039491566278747710">Neizdevās ierīcē instalēt bezsaistes politiku.</translation>
+<translation id="3040982432432547149">Palīdziet mums uzlabot lietotni Steam Chromebook datoriem</translation>
 <translation id="3043016484125065343">Lai skatītu savas grāmatzīmes, pierakstieties</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> — <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">No vietnes <ph name="ORIGIN" /></translation>
@@ -4024,6 +4025,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4445446646109808714">Galalietotāja licences līgums: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Spoguļots</translation>
 <translation id="4448914100439890108">Paslēpt lietotāja <ph name="USERNAME" /> paroli domēnā <ph name="DOMAIN" /></translation>
+<translation id="4449247303975391730">Pārvaldīt atļaujas</translation>
 <translation id="4449948729197510913">Jūsu lietotājvārds pieder jūsu organizācijas kontam. Lai reģistrētu ierīces kontā, vispirms administrēšanas konsolē verificējiet domēna īpašumtiesības. Lai varētu veikt verificēšanu, būs nepieciešamas konta administratora privilēģijas.</translation>
 <translation id="4449996769074858870">Šī cilne atskaņo audio.</translation>
 <translation id="4450974146388585462">Diagnosticēt</translation>
@@ -5127,6 +5129,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Rādīt organizācijas sertifikātus</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> preces</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{Nav atkārtoti izmantotu paroļu}=1{1 atkārtoti izmantota parole}zero{{NUM_REUSED} atkārtoti izmantotu paroļu}one{{NUM_REUSED} atkārtoti izmantota parole}other{{NUM_REUSED} atkārtoti izmantotas paroles}}</translation>
 <translation id="5448293924669608770">Diemžēl pierakstīšanās neizdevās</translation>
 <translation id="5449551289610225147">Parole nav derīga.</translation>
 <translation id="5449588825071916739">Saglabāt visas cilnes kā grāmatzīmes</translation>

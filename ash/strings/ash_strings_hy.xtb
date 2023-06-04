@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Պահված ցանցեր</translation>
 <translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1240638468526743569">Հավելված</translation>
+<translation id="1242704516557658755">Հետ գնալ վերջին օգտագործված պատուհանների ցանկում</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1246890715821376239">Չաջակցվող հավելվածներ</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">Էկրանի ստեղնաշարն անջատված է</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1275285675049378717">Լիցքավորում է <ph name="POWER_SOURCE" /> սարքը</translation>
+<translation id="1276975447697633661">Ընտրեք ֆայլը, ապա սեղմեք <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Տեղորոշել հեռախոսը</translation>
 <translation id="1287002645302686982">«<ph name="DESK_TEMPLATE_NAME" />» անվանումով աշխատասեղան արդեն գոյություն ունի</translation>
@@ -345,6 +347,7 @@
 <translation id="2528111225373402384">Թեժ կետի կարգավորումներ</translation>
 <translation id="2530896289327917474">Միացրեք/անջատեք ստեղնային դիտարկումը</translation>
 <translation id="2531025035050312891">սարքը դանդաղ է</translation>
+<translation id="2531107890083353124">Ներդիրը քաշելով՝ սեղմեք <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Պատճենել ընտրված բովանդակությունը սեղմատախտակին</translation>
 <translation id="2549711466868162843">Լավացնել լուսավորումը</translation>
 <translation id="2549985041256363841">Սկսել տեսագրումը</translation>
@@ -390,6 +393,7 @@
 <translation id="2750932254614666392">«Delete» (Ջնջել)</translation>
 <translation id="2750941250130734256">Ակտիվ պատուհանն ապամրացված է։</translation>
 <translation id="2761723519669354964">Բացել առանձնացված տարրը դարակից</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-ից <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="2782591952652094792">Դուրս գալ տեսագրման ռեժիմից</translation>
 <translation id="2785499565474703580">Միացած է 1 սարք</translation>
@@ -423,6 +427,7 @@
 <translation id="2942350706960889382">Ամրացված խոշորացույց</translation>
 <translation id="2942516765047364088">Դարակի դիրքը</translation>
 <translation id="2946119680249604491">Ավելացնել կապակցում</translation>
+<translation id="2949420361496057765">Սեղմեք <ph name="MODIFIER" />, ապա սեղմեք հղման վրա</translation>
 <translation id="295852781144570696">Սարքի ձայները</translation>
 <translation id="2960314608273155470">Տեսագրման կանխադրված ռեժիմը՝ <ph name="SOURCE" /> <ph name="TYPE" />։ Սեղմեք Tab՝ ստեղնաշարի միջոցով նավիգացիայի համար։</translation>
 <translation id="2961963223658824723">Սխալ առաջացավ: Փորձեք ավելի ուշ:</translation>
@@ -528,6 +533,7 @@
 <translation id="3410336247007142655">Ցույց տալ մուգ թեմայի կարգավորումները</translation>
 <translation id="3413817803639110246">Դեռևս ոչինչ չկա</translation>
 <translation id="3417835166382867856">Որոնել ներդիրներ</translation>
+<translation id="3426253816581969877">Սեղմեք և պահեք <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ստեղները, հպեք <ph name="KEY" /> ներդիրին, մինչև անհրաժեշտ պատուհանը չբացվի, ապա բաց թողեք։</translation>
 <translation id="3428447136709161042">Անջատել «<ph name="NETWORK_NAME" />» ցանցից</translation>
 <translation id="3430396595145920809">Սահեցրեք մատը աջից՝ հետ գնալու համար</translation>
 <translation id="3431517721463707585">Աշխատասեղան 14</translation>
@@ -542,6 +548,7 @@
 <translation id="346243998268439747">Վերականգնել սկզբնական մասշտաբը</translation>
 <translation id="3465223694362104965">Ձեր վերջին մուտքից հետո այս սարքին մեկ այլ ստեղնաշար է միացվել: Նախքան այդ ստեղնաշարն օգտագործելը համոզվեք, որ այն անվտանգ է:</translation>
 <translation id="3465356146291925647">Կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ապա <ph name="KEY_TWO" /> կամ <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl+Shift+Բացատ</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Դարակն ավտոմատ թաքցվում է</translation>
@@ -605,6 +612,7 @@
 <translation id="3677931086890821290">Այս կարգավորումը թույլ է տալիս ChromeOS-ին և բոլոր հավելվածներին ու կայքերին, որոնք ունեն տեղորոշման թույլտվություն, օգտագործել Wi-Fi-ի և բջջային ցանցերի տեղադրության մասին տվյալները։</translation>
 <translation id="3679827876008292680">Անցնել պատուհանի վերջին ներդիր</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ապա <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Վեբկայքեր</translation>
 <translation id="3702809606464356667">Ցուցադրվում են պատուհաններ ընթացիկ աշխատասեղանից։ Սեղմեք վեր սլաքի ստեղնը՝ բոլոր աշխատասեղանների պատուհանները ցուցադրելու համար։</translation>
 <translation id="3702846122927433391">Նիգերիայի բնակչությունը</translation>
@@ -632,6 +640,7 @@
 <translation id="383058930331066723">Մարտկոցի տնտեսման ռեժիմը միացված է</translation>
 <translation id="383629559565718788">Ցուցադրել ստեղնաշարի կարգավորումները</translation>
 <translation id="384082539148746321">Ջնջե՞լ ձևանմուշը</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, ապա՝ <ph name="KEY_ONE" /> կամ <ph name="KEY_TWO" />, կամ <ph name="KEY_THREE" />, կամ <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Ցանցի մասին տեղեկություններ չկան</translation>
 <translation id="385051799172605136">Հետ</translation>
 <translation id="385300504083504382">Սկիզբ</translation>
@@ -847,6 +856,7 @@
 <translation id="4798622944000246716">Ձեր բջջային ցանցը չի աջակցում թեժ կետի գործառույթը</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Անջատել</translation>
+<translation id="4813311884204119883">Ներդիրների հատվածում քաշեք հղումը դեպի դատարկ տարածք</translation>
 <translation id="4814539958450445987">Մուտքի էկրան</translation>
 <translation id="481455355267255546">Հաջորդիվ</translation>
 <translation id="4831034276697007977">Իսկապե՞ս ուզում եք անջատել ավտոմատ սեղմումները:</translation>
@@ -854,6 +864,7 @@
 <translation id="485592688953820832">Ոչ մի գործողություն (դադար)</translation>
 <translation id="485634149294284819">Բացել ստեղնաշարի պատուհանը</translation>
 <translation id="485806788160414322">Նվագարկել/դադարեցնել մեդիաֆայլը</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" />, ապա՝ <ph name="KEY_ONE" /> կամ <ph name="KEY_TWO" />, կամ <ph name="KEY_THREE" />, կամ <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869">Ստուգեք կապը՝ <ph name="FILENAME" /> ֆայլը ներբեռնելու համար</translation>
 <translation id="4864369630010738180">Մուտք...</translation>
 <translation id="4864648187878336334">Աշխատասեղան 15</translation>
@@ -996,6 +1007,7 @@
 <translation id="5463129623250377817">Կտրել ընտրված բովանդակությունը և պատճենել սեղմատախտակին</translation>
 <translation id="5465662442746197494">Օգնությո՞ւն է պետք:</translation>
 <translation id="547979256943495781">Դարակն աջ կողմում է</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> կամ <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Հասանելի են ներկառուցված ծրագրի թարմացումներ</translation>
 <translation id="5503884284981862082">Բացել/փակել Google Օգնականը</translation>
 <translation id="5506975627792768506">Միացնել կամ անջատել խոշորացույցը</translation>
@@ -1187,6 +1199,7 @@
 <translation id="6330012934079202188">Ցուցադրվում են բոլոր աշխատասեղանների պատուհանները։ Սեղմեք վեր սլաքի ստեղնը՝ ընթացիկ աշխատասեղանից պատուհաններ ցուցադրելու համար։</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> աշխատաշրջանը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="6344138931392227467">Զուգակցվեց <ph name="DEVICE_NAME" /> սարքը</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ապա՝ <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" />, ապա <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ՀԱՎԵԼՎԱԾՆԵՐԻ ԱՌԱՋԱՐԿՆԵՐ</translation>
 <translation id="6352082849089527770">Անհայտ ցանցեր</translation>
 <translation id="6359587239691116345">Օգտվեք վերջին գործառույթներից և բարելավված անվտանգությունից։ Եթե չընդունեք այս թարմացումը, հնարավոր է՝ ձեր սարքն այլևս չաշխատի պատշաճ կերպով, և ձեզ մոտ կարող են առաջանալ անվտանգության և արդյունավետության խնդիրներ։</translation>
@@ -1232,6 +1245,7 @@
 <translation id="6537924328260219877">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Ներբեռնումը դադարեցված է, <ph name="FILENAME" /> ֆայլը ստուգվում է</translation>
 <translation id="6542521951477560771">Հեռարձակում «<ph name="RECEIVER_NAME" />» սարքին</translation>
+<translation id="6555373427270923730">Հասցեագոտում մուտքագրեք վեբ հասցեն, ապա սեղմեք <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Նոր տեղադրում</translation>
 <translation id="6559976592393364813">Հարցրեք ադմինիստրատորին</translation>
@@ -1635,6 +1649,7 @@
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8426708595819210923">Բարի երեկո, <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-ից <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Ցանցային կարգավորումներ</translation>
 <translation id="8433977262951327081">Ներածման ընտրանքների պղպջակը դարակում ցուցադրելու դյուրանցումը փոխվել է։ <ph name="OLD_SHORTCUT" />-ի փոխարեն օգտագործեք <ph name="NEW_SHORTCUT" />։</translation>
 <translation id="8443879455002739353">«Պատճենել»</translation>
@@ -1665,6 +1680,7 @@
 <translation id="856298576161209842">Կառավարիչը (<ph name="MANAGER" />) խորհուրդ է տալիս, որ թարմացնեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="8563862697512465947">Ծանուցումների կարգավորումներ</translation>
 <translation id="857201607579416096">Ընտրացանկը տեղափոխվեց էկրանի ներքևի աջ անկյուն։</translation>
+<translation id="8581946341807941670">Սեղմեք <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, ապա սեղմեք հղման վրա</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Դասավորեք ձեր հավելվածներն ըստ անվանման կամ գույնի</translation>
 <translation id="8609384513243082612">Բացել նոր ներդիր</translation>
