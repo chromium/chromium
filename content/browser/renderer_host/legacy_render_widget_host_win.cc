@@ -201,9 +201,11 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
     ax_fragment_root_ = std::make_unique<ui::AXFragmentRootWin>(hwnd(), this);
   }
 
+  // Continue to send honey pot events until we have kWebContents to
+  // ensure screen readers have the opportunity to enable.
   ui::AXMode mode =
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
-  if (!mode.has_mode(ui::AXMode::kNativeAPIs)) {
+  if (!mode.has_mode(ui::AXMode::kWebContents)) {
     // Attempt to detect screen readers or other clients who want full
     // accessibility support, by seeing if they respond to this event.
     NotifyWinEvent(EVENT_SYSTEM_ALERT, hwnd(), kIdScreenReaderHoneyPot,
