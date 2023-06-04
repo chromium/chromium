@@ -253,6 +253,22 @@ static void MaybeStartProfiling() {
   gRecordReplayProfileExecution(path);
 }
 
+static __attribute__((noinline)) void BusyWait() {
+  fprintf(stderr, "Busy-waiting...\n");
+  volatile int x = 1;
+  while (x) {}
+}
+
+static bool RecordReplayRecordingDisabled() {
+  // When RECORD_REPLAY_DONT_RECORD is set we don't record.
+  if (getenv("RECORD_REPLAY_DONT_RECORD")) {
+    if (getenv("RECORD_REPLAY_WAIT_AT_DONT_RECORD"))
+      BusyWait();
+    return true;
+  }
+  return false;
+}
+
 // Return whether the current process should be recorded. May update the arguments.
 static bool RecordReplayShouldRecord(int* pargc, const char*** pargv) {
 #if BUILDFLAG(IS_WIN)
@@ -265,7 +281,10 @@ static bool RecordReplayShouldRecord(int* pargc, const char*** pargv) {
 
   if (type.length()) {
     // Only renderer processes are recorded/replayed.
-    return type == "renderer";
+    if (type == "renderer") {
+      return !RecordReplayRecordingDisabled();
+    }
+    return false;
   }
 
   // Append required switches, see below.
@@ -285,7 +304,10 @@ static bool RecordReplayShouldRecord(int* pargc, const char*** pargv) {
 
   if (type) {
     // Only renderer processes are recorded/replayed.
-    return !strcmp(type, "renderer");
+    if (!strcmp(type, "renderer")) {
+      return !RecordReplayRecordingDisabled();
+    }
+    return false;
   }
 
   // If there is no type, this is the main process. Add a couple command line
@@ -309,18 +331,7 @@ static bool RecordReplayShouldRecord(int* pargc, const char*** pargv) {
   return false;
 }
 
-static __attribute__((noinline)) void BusyWait() {
-  fprintf(stderr, "Busy-waiting...\n");
-  volatile int x = 1;
-  while (x) {}
-}
-
 static void* RecordReplayAttach(int* pargc, const char*** pargv) {
-  // When RECORD_REPLAY_DONT_RECORD we don't record.
-  if (getenv("RECORD_REPLAY_DONT_RECORD")) {
-    return nullptr;
-  }
-
   if (!RecordReplayShouldRecord(pargc, pargv)) {
     return nullptr;
   }
