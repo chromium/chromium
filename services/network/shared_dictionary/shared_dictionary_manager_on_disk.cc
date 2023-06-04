@@ -180,17 +180,30 @@ class SharedDictionaryManagerOnDisk::MismatchingEntryDeletionTask
     if (!token) {
       // 6) If the disk cache entry key is not a valid token, deletes the entry.
       entry->Doom();
+      ++invalid_disk_cache_entry_count_;
     } else if (disk_cache_key_tokens_.erase(*token) != 1) {
       if (!base::Contains(writing_disk_cache_key_tokens_, *token)) {
         // 7) If the disk cache key token is not in the metadata, and is not in
         //    the set of tokens currently being written by the manager, deletes
         //    the entry.
         entry->Doom();
+        ++metadata_missing_dictionary_count_;
       }
     }
     OpenNextEntry();
   }
   void CleanupDatabase() {
+    base::UmaHistogramCounts100(
+        "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount",
+        invalid_disk_cache_entry_count_);
+    base::UmaHistogramCounts100(
+        "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount",
+        metadata_missing_dictionary_count_);
+    base::UmaHistogramCounts100(
+        "Net.SharedDictionaryManagerOnDisk."
+        "DiskCacheEntryMissingDictionaryCount",
+        disk_cache_key_tokens_.size());
+
     if (disk_cache_key_tokens_.empty()) {
       manager_->OnFinishSerializedTask();
       return;
@@ -218,6 +231,8 @@ class SharedDictionaryManagerOnDisk::MismatchingEntryDeletionTask
   std::set<base::UnguessableToken> disk_cache_key_tokens_;
   std::set<base::UnguessableToken> writing_disk_cache_key_tokens_;
   std::unique_ptr<disk_cache::Backend::Iterator> disk_cache_iterator_;
+  uint32_t invalid_disk_cache_entry_count_ = 0;
+  uint32_t metadata_missing_dictionary_count_ = 0;
   base::WeakPtrFactory<MismatchingEntryDeletionTask> weak_factory_{this};
 };
 

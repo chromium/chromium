@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
@@ -1222,8 +1223,16 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   run_loop.Run();
 
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), entry_key));
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), entry_key));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
@@ -1243,8 +1252,16 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   run_loop.Run();
 
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), kTestKey));
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), kTestKey));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
@@ -1281,9 +1298,21 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
     EXPECT_FALSE(GetOnDiskDictionaryMap(storage.get()).empty());
 
+    base::HistogramTester histogram_tester;
     task_environment_.RunUntilIdle();
 
     EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Net.SharedDictionaryManagerOnDisk."
+        "DiskCacheEntryMissingDictionaryCount",
+        1, 1);
+
     // Releasing `storage` and `manager`.
   }
   // FlushCacheTasks() to finish the persistence operation.
@@ -1312,7 +1341,16 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
       base::RepeatingCallback<bool(const GURL&)>(), run_loop1.QuitClosure());
   run_loop1.Run();
+
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 
   const base::UnguessableToken token = base::UnguessableToken::Create();
   const std::string entry_key = token.ToString();
@@ -1361,14 +1399,32 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
   run_loop.Run();
 
+  base::HistogramTester histogram_tester;
   // FlushCacheTasks() to finish the persistence operation.
   FlushCacheTasks();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 
   // Finish writing the dictionary.
   writer->Finish();
 
   // FlushCacheTasks() to finish the persistence operation.
   FlushCacheTasks();
+
+  // There should be no change in MismatchingEntryDeletionTask related metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 
   const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
   EXPECT_THAT(dictionary_map,
@@ -1397,6 +1453,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
   run_loop.Run();
 
+  base::HistogramTester histogram_tester;
+
   // FlushCacheTasks() to finish the persistence operation.
   FlushCacheTasks();
 
@@ -1406,6 +1464,13 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
                   url::SchemeHostPort(GURL("https://target1.test/")),
                   ElementsAre(Pair(
                       "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 }
 
 }  // namespace network
