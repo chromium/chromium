@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -128,6 +129,10 @@ DisplaySizeScreen::~DisplaySizeScreen() = default;
 
 bool DisplaySizeScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (context.skip_post_login_screens_for_tests) {
+    return true;
+  }
+
+  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     return true;
   }
 

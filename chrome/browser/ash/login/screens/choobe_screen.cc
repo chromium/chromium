@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 
@@ -40,6 +41,12 @@ ChoobeScreen::~ChoobeScreen() = default;
 // to check with the ChoobeFlowController whether to skip CHOOBE screen.
 bool ChoobeScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 

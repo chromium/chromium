@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -63,6 +64,10 @@ TouchpadScrollScreen::~TouchpadScrollScreen() = default;
 
 bool TouchpadScrollScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (context.skip_post_login_screens_for_tests) {
+    return true;
+  }
+
+  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     return true;
   }
 
