@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "build/blink_buildflags.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
@@ -1719,6 +1720,13 @@ enum HeaderBehaviour {
           self.fullscreenController->GetCurrentViewportInsets();
       viewFrame = UIEdgeInsetsInsetRect(viewFrame, viewportInsets);
     }
+
+#if BUILDFLAG(USE_BLINK)
+    // Temporary workaround to keep web view under toolbar.
+    CGFloat toolbarHeight = [self expandedTopToolbarHeight];
+    viewFrame = UIEdgeInsetsInsetRect(viewFrame,
+                                      UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+#endif
     view.frame = viewFrame;
 
     [self updateToolbarState];

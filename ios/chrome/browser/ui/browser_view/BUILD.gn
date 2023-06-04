@@ -26,6 +26,7 @@ source_set("browser_view") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:blink_buildflags",
     "//components/bookmarks/browser",
     "//components/feature_engagement/public",
     "//components/image_fetcher/ios",
