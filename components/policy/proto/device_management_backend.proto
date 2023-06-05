@@ -3711,16 +3711,32 @@ message RsuLookupKeyUploadResponse {
 // Information about an eSIM profile installed on an EUICC (Embedded Universal
 // Integrated Circuit Card).
 message ESimProfileInfo {
-  // ICCID of the eSIM profile. Upto 22 decimal digits encoded
-  // as ASCII string.
+  // ICCID of the eSIM profile. Up to 22 decimal digits encoded as ASCII string.
   // Example: 3554020401587593554020.
   optional string iccid = 1;
 
-  // SMDP (Subscription Management - Data Preparation) server address
-  // that was used to install this eSIM profile. Upto 255 characters
+  // SM-DP+ (Subscription Manager - Data Preparation) activation code that was
+  // used to install this eSIM profile. The "address" terminology is historical
+  // since the string is not strictly just an address. This field should be
+  // considered mutually exclusive with |smds_address|. Up to 255 characters
+  // encoded as UTF8 string.
+  // Example: LPA:1$esim.example.com$matchingId
+  optional string smdp_address = 2;
+
+  // SM-DS (Subscription Manager - Discovery Service) activation code that was
+  // used to install this eSIM profile. The "address" terminology is historical
+  // since the string is not strictly just an address. This field should be
+  // considered mutually exclusive with |smdp_address|. Up to 255 characters
   // encoded as UTF8 string.
   // Example: LPA:1$esim.example.com$
-  optional string smdp_address = 2;
+  optional string smds_address = 3;
+
+  // The name of the policy-defined network that resulted in the installation of
+  // this eSIM profile. This metadata is required to guarantee that multiple
+  // policy-defined networks that are configured with the same activation code
+  // are handled correctly, and will result in the appropriate number of eSIM
+  // profiles being installed.
+  optional string name = 4;
 }
 
 // Request from device to server to update information about EUICCs
