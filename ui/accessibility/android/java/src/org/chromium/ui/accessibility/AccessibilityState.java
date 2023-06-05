@@ -7,6 +7,9 @@ package org.chromium.ui.accessibility;
 import static android.accessibilityservice.AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES;
 import static android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_SPOKEN;
 import static android.accessibilityservice.AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
@@ -183,6 +186,11 @@ public class AccessibilityState {
     @Deprecated
     private static boolean sAccessibilitySpeakPasswordEnabled;
 
+    // The recommended multiplier to apply to a timeout for changes to the UI needed by the user.
+    // Uses all content flags, cached from {AccessibilityManager#getRecommendedTimeoutMillis}.
+    // Requires Android Q, for versions < Q, this will always be equal to 1.0f.
+    private static float sRecommendedTimeoutMultiplier;
+
     // The IDs of all running accessibility services.
     private static String[] sServiceIds;
 
@@ -250,6 +258,11 @@ public class AccessibilityState {
         return sAccessibilitySpeakPasswordEnabled;
     }
 
+    public static float getRecommendedTimeoutMultiplier() {
+        if (!sInitialized) updateAccessibilityServices();
+        return sRecommendedTimeoutMultiplier;
+    }
+
     static void updateAccessibilityServices() {
         if (!sInitialized) {
             sState = new State(false, false, false, false, false, false, false, false);
@@ -280,6 +293,15 @@ public class AccessibilityState {
         Context context = ContextUtils.getApplicationContext();
         AccessibilityManager accessibilityManager =
                 (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+
+        sRecommendedTimeoutMultiplier = 1.0f;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            sRecommendedTimeoutMultiplier =
+                    accessibilityManager.getRecommendedTimeoutMillis(
+                            100, FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS)
+                    / 100.0f;
+        }
+
         List<AccessibilityServiceInfo> services =
                 accessibilityManager.getEnabledAccessibilityServiceList(
                         AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
@@ -776,6 +798,13 @@ public class AccessibilityState {
 
         // Explicitly set mask so events can be (ir)relevant to currently enabled service.
         sEventTypeMask = mask;
+    }
+
+    @VisibleForTesting
+    public static void setRecommendedTimeoutMultiplierForTesting(float multiplier) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        sRecommendedTimeoutMultiplier = multiplier;
     }
 
     // clang-format on

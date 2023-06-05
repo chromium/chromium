@@ -4,12 +4,7 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
-import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
-import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
-import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
-
 import android.app.Activity;
-import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,7 +20,7 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -306,19 +301,12 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
         int durationMs = snackbar.getDuration();
         if (durationMs == 0) durationMs = sSnackbarDurationMs;
 
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return ChromeAccessibilityUtil.get().getRecommendedTimeoutMillis(
-                        durationMs, FLAG_CONTENT_ICONS | FLAG_CONTENT_CONTROLS | FLAG_CONTENT_TEXT);
-            } else {
-                durationMs *= 2;
-                if (durationMs < sAccessibilitySnackbarDurationMs) {
-                    durationMs = sAccessibilitySnackbarDurationMs;
-                }
-            }
-        }
-
-        return durationMs;
+        // If no a11y service that can perform gestures is enabled, use the set duration. Otherwise
+        // multiply the duration by the recommended multiplier and use that with a minimum of 30s.
+        return !AccessibilityState.isPerformGesturesEnabled()
+                ? durationMs
+                : Math.max(sAccessibilitySnackbarDurationMs,
+                        (int) (AccessibilityState.getRecommendedTimeoutMultiplier() * durationMs));
     }
 
     /**
@@ -343,7 +331,7 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
      * Clears any overrides set for testing.
      */
     @VisibleForTesting
-    public static void restDurationForTesting() {
+    public static void resetDurationForTesting() {
         sSnackbarDurationMs = DEFAULT_SNACKBAR_DURATION_MS;
         sAccessibilitySnackbarDurationMs = ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS;
     }
