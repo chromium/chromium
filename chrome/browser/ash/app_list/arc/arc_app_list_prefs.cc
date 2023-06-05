@@ -2250,7 +2250,7 @@ void ArcAppListPrefs::OnNotificationsEnabledChanged(
     const std::string* app_package_name =
         app.second.GetDict().FindString(kPackageName);
     if (!app_package_name) {
-      NOTREACHED();
+      LOG(ERROR) << "App is malformed: " << app.first;
       continue;
     }
     if (*app_package_name != package_name) {
