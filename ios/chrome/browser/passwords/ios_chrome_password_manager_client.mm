@@ -319,6 +319,10 @@ IOSChromePasswordManagerClient::GetPasswordRequirementsService() {
       bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
+void IOSChromePasswordManagerClient::UpdateFormManagers() {
+  bridge_.passwordManager->UpdateFormManagers();
+}
+
 bool IOSChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled()
     const {
   return false;

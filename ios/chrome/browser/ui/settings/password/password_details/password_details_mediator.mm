@@ -262,6 +262,10 @@ bool ShouldDisplayCredentialAsMuted(
   // be multiple credentials; nor username/password since the values changed).
   base::Erase(_credentials, *it);
   [self providePasswordsToConsumer];
+
+  // Update form managers so the list of password suggestions shown to the user
+  // is the correct one.
+  [_delegate updateFormManagers];
 }
 
 - (void)moveCredentialToAccountStore:(PasswordDetails*)password {
@@ -371,6 +375,10 @@ bool ShouldDisplayCredentialAsMuted(
 
       // Update the credential in the credentials vector.
       *it = std::move(updated_credential);
+
+      // Update form managers so the list of password suggestions shown to the
+      // user is the correct one.
+      [_delegate updateFormManagers];
       return;
     }
   }
