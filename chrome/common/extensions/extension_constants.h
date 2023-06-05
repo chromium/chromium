@@ -239,7 +239,20 @@ extern const char kEspeakSpeechSynthesisExtensionId[];
 extern const char kEspeakSpeechSynthesisOptionsPath[];
 // The extension id of official HelpApp extension.
 extern const char kHelpAppExtensionId[];
-#endif
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+// The extension id of the Lacros accessibility helper extension.
+extern const char kEmbeddedA11yHelperExtensionId[];
+// The path to the Lacros accessibility helper extension.
+extern const char kEmbeddedA11yHelperExtensionPath[];
+// The name of the manifest file for the Lacros accessibility helper extension.
+extern const char kEmbeddedA11yHelperManifestFilename[];
+// The extension id of the Lacros ChromeVox helper extension.
+extern const char kChromeVoxHelperExtensionId[];
+// The path to the Lacros ChromeVox helper extension.
+extern const char kChromeVoxHelperExtensionPath[];
+// The name of the manifest file for the Lacros ChromeVox helper extension.
+extern const char kChromeVoxHelperManifestFilename[];
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // What causes an extension to be installed? Used in histograms, so don't
 // change existing values.

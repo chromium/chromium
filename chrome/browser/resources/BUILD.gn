@@ -87,6 +87,10 @@ group("resources") {
     ]
   }
 
+  if (is_chromeos_lacros && enable_extensions) {
+    public_deps += [ "accessibility:extension_resources" ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos_ash) {
     public_deps += [ "connectors_internals:resources" ]
   }

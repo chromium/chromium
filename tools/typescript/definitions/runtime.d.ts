@@ -30,6 +30,8 @@ declare global {
           sender: MessageSender,
           sendResponse: (response?: any) => void) => void> { }
       export const onMessageExternal: ExtensionMessageEvent;
+
+      export function getURL(path: string): string;
     }
   }
 }

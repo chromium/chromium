@@ -45,7 +45,10 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
     extension_misc::kGuestModeTestExtensionId,
     extension_misc::kSelectToSpeakExtensionId,
     extension_misc::kSwitchAccessExtensionId,
-#endif
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    extension_misc::kEmbeddedA11yHelperExtensionId,
+    extension_misc::kChromeVoxHelperExtensionId,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_CHROMEOS)
     extension_misc::kContactCenterInsightsExtensionId,
     extension_misc::kDeskApiExtensionId,
