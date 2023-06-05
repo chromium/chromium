@@ -3207,7 +3207,7 @@
   {
     "name": "enable-shortcut-customization",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-shortcut-customization-app",
@@ -4516,7 +4516,7 @@
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "in-product-help-demo-mode-choice",
