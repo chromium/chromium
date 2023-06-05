@@ -119,7 +119,7 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
     // adding a new custom view to the panel on 10.5; 10.6 has
     // NSPrintPanelShowsPrintSelection).
     NSPrintPanel* panel = [NSPrintPanel printPanel];
-    panel.options |= NSPrintPanelShowsPaperSize & NSPrintPanelShowsOrientation &
+    panel.options |= NSPrintPanelShowsPaperSize | NSPrintPanelShowsOrientation |
                      NSPrintPanelShowsScaling;
 
     // Set the print job title text.
