@@ -5,7 +5,9 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -245,24 +247,32 @@ void SetPaymentsIntegrationEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillWalletImportEnabled, enabled);
 }
 
-bool IsAutofillPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
+bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsMandatoryReauth)) {
+    return false;
+  }
+
   return prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
 #else
   return false;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 
-void SetAutofillPaymentMethodsMandatoryReauth(PrefService* prefs,
-                                              bool enabled) {
+void SetPaymentMethodsMandatoryReauthEnabled(PrefService* prefs, bool enabled) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   prefs->SetBoolean(kAutofillPaymentMethodsMandatoryReauth, enabled);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 
-bool ShouldShowAutofillPaymentMethodsMandatoryReauthPromo(
-    const PrefService* prefs) {
+bool ShouldShowPaymentMethodsMandatoryReauthPromo(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsMandatoryReauth)) {
+    return false;
+  }
+
   // If the user has made a decision on this feature previously, then we should
   // not show the opt-in promo.
   if (prefs->GetUserPrefValue(kAutofillPaymentMethodsMandatoryReauth)) {
@@ -279,12 +289,20 @@ bool ShouldShowAutofillPaymentMethodsMandatoryReauthPromo(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 
-void SetAutofillPaymentMethodsMandatoryReauthPromoShownCounter(
-    PrefService* prefs,
-    int count) {
+void IncrementPaymentMethodsMandatoryReauthPromoShownCounter(
+    PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  prefs->SetInteger(kAutofillPaymentMethodsMandatoryReauthPromoShownCounter,
-                    count);
+  if (prefs->GetInteger(
+          kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) >=
+      kMaxValueForMandatoryReauthPromoShownCounter) {
+    return;
+  }
+
+  prefs->SetInteger(
+      kAutofillPaymentMethodsMandatoryReauthPromoShownCounter,
+      prefs->GetInteger(
+          kAutofillPaymentMethodsMandatoryReauthPromoShownCounter) +
+          1);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 

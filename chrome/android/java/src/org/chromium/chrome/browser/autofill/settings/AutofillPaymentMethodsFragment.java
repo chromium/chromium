@@ -156,7 +156,7 @@ public class AutofillPaymentMethodsFragment
                 mandatoryReauthSwitch.setSummary(
                         R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
                 mandatoryReauthSwitch.setChecked(
-                        PersonalDataManager.isAutofillPaymentMethodsMandatoryReauthEnabled());
+                        PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled());
                 mandatoryReauthSwitch.setKey(PREF_MANDATORY_REAUTH);
                 mandatoryReauthSwitch.setOnPreferenceChangeListener(
                         this::onMandatoryReauthSwitchToggled);
@@ -190,7 +190,7 @@ public class AutofillPaymentMethodsFragment
             if (card.getIsLocal()) {
                 if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
-                        && PersonalDataManager.isAutofillPaymentMethodsMandatoryReauthEnabled()) {
+                        && PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled()) {
                     // When mandatory reauth is enabled, we require additional authentication before
                     // user can view/edit local card.
                     card_pref.setOnPreferenceClickListener(

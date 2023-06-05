@@ -1423,7 +1423,7 @@ public class PersonalDataManager {
     /**
      * @return Whether the Autofill feature for payment methods mandatory reauth is enabled.
      */
-    public static boolean isAutofillPaymentMethodsMandatoryReauthEnabled() {
+    public static boolean isPaymentMethodsMandatoryReauthEnabled() {
         return getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH);
     }
 

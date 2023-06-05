@@ -229,8 +229,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
           base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   TestChromeAutofillClient* test_client = autofill_client();
 
-  test_personal_data_manager_->SetAutofillPaymentMethodsMandatoryReauthEnabled(
-      true);
+  test_personal_data_manager_->SetPaymentMethodsMandatoryReauthEnabled(true);
   test_client->SetPersonalDataManger(test_personal_data_manager_.get());
   test_client->SetDeviceAuthenticator(mock_device_authenticator);
 

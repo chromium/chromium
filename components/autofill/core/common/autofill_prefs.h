@@ -99,16 +99,14 @@ bool IsPaymentsIntegrationEnabled(const PrefService* prefs);
 
 void SetPaymentsIntegrationEnabled(PrefService* prefs, bool enabled);
 
-bool IsAutofillPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs);
+bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs);
 
-void SetAutofillPaymentMethodsMandatoryReauth(PrefService* prefs, bool enabled);
+void SetPaymentMethodsMandatoryReauthEnabled(PrefService* prefs, bool enabled);
 
-bool ShouldShowAutofillPaymentMethodsMandatoryReauthPromo(
-    const PrefService* prefs);
+bool ShouldShowPaymentMethodsMandatoryReauthPromo(const PrefService* prefs);
 
-void SetAutofillPaymentMethodsMandatoryReauthPromoShownCounter(
-    PrefService* prefs,
-    int count);
+void IncrementPaymentMethodsMandatoryReauthPromoShownCounter(
+    PrefService* prefs);
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
                                        const CoreAccountId& account_id,

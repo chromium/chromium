@@ -1928,13 +1928,22 @@ bool PersonalDataManager::IsSyncEnabledFor(
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(data_type);
 }
 
-bool PersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauth)) {
-    return false;
-  }
+void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
+    bool enabled) {
+  prefs::SetPaymentMethodsMandatoryReauthEnabled(pref_service_, enabled);
+}
 
-  return prefs::IsAutofillPaymentMethodsMandatoryReauthEnabled(pref_service_);
+bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
+  return prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_);
+}
+
+bool PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
+  return prefs::ShouldShowPaymentMethodsMandatoryReauthPromo(pref_service_);
+}
+
+void PersonalDataManager::
+    IncrementPaymentMethodsMandatoryReauthPromoShownCounter() {
+  prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
 }
 
 AutofillProfileMigrationStrikeDatabase*

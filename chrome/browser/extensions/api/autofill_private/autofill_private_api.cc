@@ -894,7 +894,7 @@ void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
   if (reauth_succeeded && browser_context()) {
     PrefService* prefs =
         Profile::FromBrowserContext(browser_context())->GetPrefs();
-    autofill::prefs::SetAutofillPaymentMethodsMandatoryReauth(
+    autofill::prefs::SetPaymentMethodsMandatoryReauthEnabled(
         prefs, !prefs->GetBoolean(
                    autofill::prefs::kAutofillPaymentMethodsMandatoryReauth));
     base::RecordAction(base::UserMetricsAction(
@@ -922,7 +922,7 @@ AutofillPrivateAuthenticateUserToEditLocalCardFunction::Run() {
   if (!personal_data_manager || !personal_data_manager->IsDataLoaded()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
-  if (personal_data_manager->IsAutofillPaymentMethodsMandatoryReauthEnabled()) {
+  if (personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled()) {
     // If `device_authenticator` is not available, then don't do anything.
     scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
         client->GetDeviceAuthenticator();

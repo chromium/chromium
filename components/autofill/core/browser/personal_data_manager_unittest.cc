@@ -943,6 +943,84 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
   ExpectSameElements(profiles, personal_data_->GetProfiles());
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+// Test that setting the `kAutofillEnablePaymentsMandatoryReauth` pref works
+// correctly.
+TEST_F(PersonalDataManagerTest, AutofillPaymentMethodsMandatoryReauthEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  EXPECT_FALSE(personal_data_->IsPaymentMethodsMandatoryReauthEnabled());
+
+  personal_data_->SetPaymentMethodsMandatoryReauthEnabled(true);
+
+  EXPECT_TRUE(personal_data_->IsPaymentMethodsMandatoryReauthEnabled());
+
+  personal_data_->SetPaymentMethodsMandatoryReauthEnabled(false);
+
+  EXPECT_FALSE(personal_data_->IsPaymentMethodsMandatoryReauthEnabled());
+}
+
+// Test that setting the `kAutofillEnablePaymentsMandatoryReauth` does not
+// enable the feature when the flag is off.
+TEST_F(PersonalDataManagerTest,
+       AutofillPaymentMethodsMandatoryReauthEnabled_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  EXPECT_FALSE(personal_data_->IsPaymentMethodsMandatoryReauthEnabled());
+
+  personal_data_->SetPaymentMethodsMandatoryReauthEnabled(true);
+
+  EXPECT_FALSE(personal_data_->IsPaymentMethodsMandatoryReauthEnabled());
+}
+
+// Test that
+// `PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
+// only returns that we should show the promo when we are below the max counter
+// limit for showing the promo.
+TEST_F(
+    PersonalDataManagerTest,
+    ShouldShowPaymentMethodsMandatoryReauthPromo_MaxValueForPromoShownCounterReached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  for (int i = 0; i < prefs::kMaxValueForMandatoryReauthPromoShownCounter;
+       i++) {
+    EXPECT_TRUE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
+    personal_data_->IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
+  }
+
+  EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
+}
+
+// Test that
+// `PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
+// returns that we should not show the promo if the user has already made a
+// decision.
+TEST_F(
+    PersonalDataManagerTest,
+    ShouldShowPaymentMethodsMandatoryReauthPromo_UserHasMadeADecisionAlready) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  personal_data_->SetPaymentMethodsMandatoryReauthEnabled(true);
+
+  EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
+}
+
+// Test that
+// `PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
+// returns that we should not show the promo if the flag is off.
+TEST_F(PersonalDataManagerTest,
+       ShouldShowPaymentMethodsMandatoryReauthPromo_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
 TEST_F(PersonalDataManagerTest, NoIBANsAddedIfDisabled) {
   prefs::SetAutofillIBANEnabled(prefs_.get(), false);
   personal_data_->AddIBAN(autofill::test::GetIBAN());

@@ -324,11 +324,11 @@ TestPersonalDataManager::GetProfileUpdateStrikeDatabase() const {
   return &inmemory_profile_update_strike_database_;
 }
 
-bool TestPersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled() {
-  if (autofill_payment_methods_mandatory_reauth_enabled_) {
-    return true;
+bool TestPersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
+  if (payment_methods_mandatory_reauth_enabled_.has_value()) {
+    return payment_methods_mandatory_reauth_enabled_.value();
   }
-  return PersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled();
+  return PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled();
 }
 
 void TestPersonalDataManager::ClearProfiles() {
