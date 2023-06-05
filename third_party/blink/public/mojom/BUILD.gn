@@ -1371,6 +1371,16 @@ mojom("mojom_core") {
       ]
       traits_private_headers = [ "//third_party/blink/public/common/page/browsing_context_group_info_mojom_traits.h" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.ServiceWorkerRouterRules"
+          cpp = "::blink::ServiceWorkerRouterRules"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule.h" ]
+      traits_private_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule_mojom_traits.h" ]
+    },
   ]
 
   cpp_typemaps = [
@@ -1414,16 +1424,6 @@ mojom("mojom_core") {
         "//third_party/blink/public/common/messaging/transferable_message.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/transferable_message_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.ServiceWorkerRouterRules"
-          cpp = "::blink::ServiceWorkerRouterRules"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule.h" ]
-      traits_private_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule_mojom_traits.h" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps
