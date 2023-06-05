@@ -17,6 +17,7 @@
 #
 # Apply all pre-commit hooks to all files:
 #   $ pre-commit run --all-files
+exclude: '^wpt'
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
