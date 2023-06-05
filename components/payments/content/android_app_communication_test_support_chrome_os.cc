@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/payment_app.mojom.h"
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
 #include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
+#include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "components/payments/core/method_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,8 +21,9 @@ namespace {
 class ScopedInitializationChromeOS
     : public AndroidAppCommunicationTestSupport::ScopedInitialization {
  public:
-  ScopedInitializationChromeOS(arc::ArcServiceManager* manager,
-                               arc::mojom::PaymentAppInstance* instance)
+  ScopedInitializationChromeOS(
+      arc::ArcServiceManager* manager,
+      chromeos::payments::mojom::PaymentAppInstance* instance)
       : scoped_set_instance_(manager, instance) {}
   ~ScopedInitializationChromeOS() override = default;
 

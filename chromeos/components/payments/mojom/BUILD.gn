@@ -5,7 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "payment_app_types.mojom" ]
+  sources = [
+    "payment_app.mojom",
+    "payment_app_types.mojom",
+  ]
 
   public_deps = [ "//components/payments/mojom" ]
 }

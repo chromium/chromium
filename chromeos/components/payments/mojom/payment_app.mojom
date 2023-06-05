@@ -4,23 +4,41 @@
 
 // Next MinVersion: 4
 
-module arc.mojom;
+module chromeos.payments.mojom;
 
 import "chromeos/components/payments/mojom/payment_app_types.mojom";
 
 // The service that runs in ARC and allows the browser to invoke the TWA payment
 // app that is installed in ARC, if it implements payment intents as described
-// in https://web.dev/android-payment-apps-overview/. At first, only
-// "https://play.google.com/billing" payment method is supported.
+// in https://web.dev/android-payment-apps-overview/.
 //
+// TODO(https://crbug.com/1343706): Add this mojom interface to crosapi and
+// implement it.
+// This mojom interface is used in crosapi as well to forward the payment
+// request from Lacros.
+//
+// At first, only "https://play.google.com/billing" payment method is supported.
+//
+// Ash Browser:
 // --------------------      --------------------------------------------------
-// |     Browser      |      |                      ARC                       |
+// |   Ash Browser    |      |                      ARC                       |
 // |                  |      |                                                |
 // | ---------------  |      |  --------------    -------    ---------------- |
 // | | Web Payment |<-|------|->| PaymentApp |<-->| TWA |<-->| Play Billing | |
 // | ---------------  |      |  --------------    -------    ---------------- |
 // |                  |      |                                                |
 // --------------------      --------------------------------------------------
+// Lacros Browser:
+// ---------------- ---------------- -----------------------------------------
+// |   Lacros     | |     Ash      | |                 ARC                   |
+// |   Browser    | |              | |                                       |
+// |------------- | | ------------ | | ------------   -----   -------------- |
+// ||Web Payment|<|-|>|PaymentApp|<|-|>|PaymentApp|<->|TWA|<->|Play Billing| |
+// |------------- | | |Forwarder | | | ------------   -----   -------------- |
+// |              | | ------------ | |                                       |
+// ---------------- ---------------- -----------------------------------------
+
+
 //
 // Next method ID: 3
 interface PaymentAppInstance {

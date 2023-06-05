@@ -189,7 +189,8 @@ void FakeArcBridgeHost::OnOemCryptoInstanceReady(
     mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) {}
 
 void FakeArcBridgeHost::OnPaymentAppInstanceReady(
-    mojo::PendingRemote<mojom::PaymentAppInstance> payment_app_remote) {}
+    mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>
+        payment_app_remote) {}
 
 void FakeArcBridgeHost::OnPipInstanceReady(
     mojo::PendingRemote<mojom::PipInstance> pip_remote) {}

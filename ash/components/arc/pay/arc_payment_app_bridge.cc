@@ -62,8 +62,9 @@ ArcPaymentAppBridge::~ArcPaymentAppBridge() = default;
 void ArcPaymentAppBridge::IsPaymentImplemented(
     const std::string& package_name,
     IsPaymentImplementedCallback callback) {
-  mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->payment_app(), IsPaymentImplemented);
+  chromeos::payments::mojom::PaymentAppInstance* payment_app =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->payment_app(),
+                                  IsPaymentImplemented);
   if (!payment_app) {
     std::move(callback).Run(
         chromeos::payments::mojom::IsPaymentImplementedResult::NewError(
@@ -77,8 +78,9 @@ void ArcPaymentAppBridge::IsPaymentImplemented(
 void ArcPaymentAppBridge::IsReadyToPay(
     chromeos::payments::mojom::PaymentParametersPtr parameters,
     IsReadyToPayCallback callback) {
-  mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->payment_app(), IsReadyToPay);
+  chromeos::payments::mojom::PaymentAppInstance* payment_app =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->payment_app(),
+                                  IsReadyToPay);
   if (!payment_app) {
     std::move(callback).Run(
         chromeos::payments::mojom::IsReadyToPayResult::NewError(
@@ -92,8 +94,9 @@ void ArcPaymentAppBridge::IsReadyToPay(
 void ArcPaymentAppBridge::InvokePaymentApp(
     chromeos::payments::mojom::PaymentParametersPtr parameters,
     InvokePaymentAppCallback callback) {
-  mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->payment_app(), InvokePaymentApp);
+  chromeos::payments::mojom::PaymentAppInstance* payment_app =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->payment_app(),
+                                  InvokePaymentApp);
   if (!payment_app) {
     std::move(callback).Run(
         chromeos::payments::mojom::InvokePaymentAppResult::NewError(
@@ -106,8 +109,9 @@ void ArcPaymentAppBridge::InvokePaymentApp(
 
 void ArcPaymentAppBridge::AbortPaymentApp(const std::string& request_token,
                                           AbortPaymentAppCallback callback) {
-  mojom::PaymentAppInstance* payment_app = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->payment_app(), AbortPaymentApp);
+  chromeos::payments::mojom::PaymentAppInstance* payment_app =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->payment_app(),
+                                  AbortPaymentApp);
   if (!payment_app) {
     std::move(callback).Run(false);
     return;

@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/payment_app.mojom.h"
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "base/functional/callback_helpers.h"
+#include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "components/payments/core/android_app_description.h"
 #include "components/payments/core/chrome_os_error_strings.h"

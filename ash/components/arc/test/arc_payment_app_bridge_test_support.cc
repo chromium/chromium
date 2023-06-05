@@ -16,7 +16,7 @@ ArcPaymentAppBridgeTestSupport::MockPaymentAppInstance::
 
 ArcPaymentAppBridgeTestSupport::ScopedSetInstance::ScopedSetInstance(
     ArcServiceManager* manager,
-    mojom::PaymentAppInstance* instance)
+    chromeos::payments::mojom::PaymentAppInstance* instance)
     : manager_(manager), instance_(instance) {
   manager_->arc_bridge_service()->payment_app()->SetInstance(instance_.get());
 }

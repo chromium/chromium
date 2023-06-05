@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/payment_app.mojom.h"
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,7 +27,8 @@ namespace arc {
 class ArcPaymentAppBridgeTestSupport {
  public:
   // The mock payment_app.mojom interface.
-  class MockPaymentAppInstance : public mojom::PaymentAppInstance {
+  class MockPaymentAppInstance
+      : public chromeos::payments::mojom::PaymentAppInstance {
    public:
     MockPaymentAppInstance();
     ~MockPaymentAppInstance() override;
@@ -56,7 +57,7 @@ class ArcPaymentAppBridgeTestSupport {
   class ScopedSetInstance {
    public:
     ScopedSetInstance(ArcServiceManager* manager,
-                      mojom::PaymentAppInstance* instance);
+                      chromeos::payments::mojom::PaymentAppInstance* instance);
     ~ScopedSetInstance();
 
     ScopedSetInstance(const ScopedSetInstance& other) = delete;
@@ -64,7 +65,8 @@ class ArcPaymentAppBridgeTestSupport {
 
    private:
     raw_ptr<ArcServiceManager, ExperimentalAsh> manager_;
-    raw_ptr<mojom::PaymentAppInstance, ExperimentalAsh> instance_;
+    raw_ptr<chromeos::payments::mojom::PaymentAppInstance, ExperimentalAsh>
+        instance_;
   };
 
   ArcPaymentAppBridgeTestSupport();

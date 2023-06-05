@@ -111,8 +111,9 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
                                      obb_mounter_remote) override;
   void OnOemCryptoInstanceReady(
       mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) override;
-  void OnPaymentAppInstanceReady(mojo::PendingRemote<mojom::PaymentAppInstance>
-                                     payment_app_remote) override;
+  void OnPaymentAppInstanceReady(
+      mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>
+          payment_app_remote) override;
   void OnPipInstanceReady(
       mojo::PendingRemote<mojom::PipInstance> pip_remote) override;
   void OnPolicyInstanceReady(

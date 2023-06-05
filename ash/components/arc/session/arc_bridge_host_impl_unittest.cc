@@ -108,18 +108,18 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     EXPECT_EQ(count_before + 1, count_after);                                 \
   }
 
-#define MAKE_INSTANCE_READY_WITH_NAMESPACE(name_space, name)          \
-  ScopedPendingReceiver<mojom::name_space::name##Instance>            \
-      pending_receiver_##name(impl);                                  \
-  {                                                                   \
-    SCOPED_TRACE("mojom::" #name_space "::" #name "Instance");        \
-    mojo::PendingRemote<mojom::name_space::name##Instance> remote =   \
-        pending_receiver_##name.get().InitWithNewPipeAndPassRemote(); \
-    const size_t count_before = impl->GetNumMojoChannelsForTesting(); \
-    proxy->On##name##InstanceReady(std::move(remote));                \
-    base::RunLoop().RunUntilIdle();                                   \
-    const size_t count_after = impl->GetNumMojoChannelsForTesting();  \
-    EXPECT_EQ(count_before + 1, count_after);                         \
+#define MAKE_INSTANCE_READY_WITH_NAMESPACE(name_space, name)                 \
+  ScopedPendingReceiver<name_space::name##Instance> pending_receiver_##name( \
+      impl);                                                                 \
+  {                                                                          \
+    SCOPED_TRACE(#name_space "::" #name "Instance");                         \
+    mojo::PendingRemote<name_space::name##Instance> remote =                 \
+        pending_receiver_##name.get().InitWithNewPipeAndPassRemote();        \
+    const size_t count_before = impl->GetNumMojoChannelsForTesting();        \
+    proxy->On##name##InstanceReady(std::move(remote));                       \
+    base::RunLoop().RunUntilIdle();                                          \
+    const size_t count_after = impl->GetNumMojoChannelsForTesting();         \
+    EXPECT_EQ(count_before + 1, count_after);                                \
   }
 
     MAKE_INSTANCE_READY(AccessibilityHelper);
@@ -145,7 +145,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(InputMethodManager);
     MAKE_INSTANCE_READY(IntentHelper);
     MAKE_INSTANCE_READY(Keymaster);
-    MAKE_INSTANCE_READY_WITH_NAMESPACE(keymint, KeyMint);
+    MAKE_INSTANCE_READY_WITH_NAMESPACE(mojom::keymint, KeyMint);
     MAKE_INSTANCE_READY(Kiosk);
     MAKE_INSTANCE_READY(LockScreen);
     MAKE_INSTANCE_READY(MediaSession);
@@ -158,7 +158,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     // instance is forwarded to ash, we need a completely different test.
     MAKE_INSTANCE_READY(ObbMounter);
     MAKE_INSTANCE_READY(OemCrypto);
-    MAKE_INSTANCE_READY(PaymentApp);
+    MAKE_INSTANCE_READY_WITH_NAMESPACE(chromeos::payments::mojom, PaymentApp);
     MAKE_INSTANCE_READY(Pip);
     MAKE_INSTANCE_READY(Policy);
     MAKE_INSTANCE_READY(Power);
