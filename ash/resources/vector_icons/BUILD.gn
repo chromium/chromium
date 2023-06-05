@@ -269,6 +269,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "quick_settings_a11y_sticky_keys.icon",
     "quick_settings_cast.icon",
     "quick_settings_cast_connected.icon",
+    "quick_settings_circle_pause.icon",
+    "quick_settings_circle_play.icon",
     "quick_settings_circle_stop.icon",
     "quick_settings_left_arrow.icon",
     "quick_settings_managed.icon",

@@ -22,6 +22,7 @@ class View;
 namespace ash {
 
 class HoverHighlightView;
+class PillButton;
 
 // This view displays a list of cast receivers that can be clicked on and casted
 // to. It is activated by clicking on the chevron inside of
@@ -61,11 +62,37 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   // Stops casting the route identified by `route_id`.
   void StopCasting(const std::string& route_id);
 
+  // Pauses or resumes the route given by `route_id`.
+  void FreezePressed(const std::string& route_id, bool is_frozen);
+
+  // Remove all child views from CastDetailedView.
+  void RemoveAllViews();
+
+  // Adds a button which allows for adding a device using an access code.
+  void AddAccessCodeCastButton(views::View* receiver_list_view);
+
+  // Adds buttons associated with a receiver so the user may perform route
+  // actions like stopping or pausing.
+  void AddReceiverActionButtons(const CastSink& sink,
+                                const CastRoute& route,
+                                HoverHighlightView* receiver_view,
+                                views::View* receiver_list_view);
+
+  // Creates a stop button which, when pressed, stops the associated `route`.
+  std::unique_ptr<PillButton> CreateStopButton(const CastRoute& route);
+
+  // Creates a freeze button which, when pressed, pauses / resumes the
+  // associated `route`.
+  std::unique_ptr<PillButton> CreateFreezeButton(const CastRoute& route);
+
   // A mapping from the sink id to the receiver/activity data.
   std::map<std::string, SinkAndRoute> sinks_and_routes_;
 
   // A mapping from the view pointer to the associated activity sink id.
   std::map<views::View*, std::string> view_to_sink_map_;
+
+  // A mapping of sink id to the associated extra views.
+  std::map<std::string, std::vector<views::View*>> sink_extra_views_map_;
 
   // Special list item that, if clicked, launches the access code casting dialog
   raw_ptr<HoverHighlightView, ExperimentalAsh> add_access_code_device_ =

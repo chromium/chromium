@@ -606,8 +606,14 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST_PAUSE" desc="Label for a button in the cast notification to pause the current cast mirroring session to a Chromecast device">
         Pause
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_PAUSE_CASTING" desc="Label for a button in the system tray to pause the current cast mirroring session to a Chromecast device">
+        Pause casting
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_RESUME" desc="Label for a button in the cast notification to resume a paused cast mirroring session to a Chromecast device">
         Resume
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_RESUME_CASTING" desc="Label for a button in the system tray to resume a paused cast mirroring session to a Chromecast device">
+        Resume casting
       </message>
       <message name="IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP" desc="The tooltip text for the status area icon to tell do-not-disturb mode is currently on.">
         Do Not Disturb is on

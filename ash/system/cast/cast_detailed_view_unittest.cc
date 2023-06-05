@@ -57,6 +57,10 @@ class CastDetailedViewTest : public AshTestBase {
     return views;
   }
 
+  std::vector<views::View*> GetExtraViewsForSink(const std::string& sink_id) {
+    return detailed_view_->sink_extra_views_map_[sink_id];
+  }
+
   views::View* GetZeroStateView() { return detailed_view_->zero_state_view_; }
 
   // Adds two simulated cast devices.
@@ -224,6 +228,35 @@ TEST_F(CastDetailedViewTest, NoStopCastingButtonForNonLocalSource) {
   // The row does not contains a right view because there is no stop casting
   // button because the cast source is not the local machine.
   EXPECT_FALSE(row->right_view());
+}
+
+TEST_F(CastDetailedViewTest, FreezeButton) {
+  // Set up a fake sink and route, as if this Chromebook is casting to the
+  // device. And, the route may be frozen.
+  std::vector<SinkAndRoute> devices;
+  SinkAndRoute device;
+  device.sink.id = "fake_sink_id_1";
+  device.sink.name = "Sink Name 1";
+  device.sink.sink_icon_type = SinkIconType::kCast;
+  device.route.id = "fake_route_id_1";
+  device.route.title = "Title 1";
+  // Simulate a local source (this Chromebook).
+  device.route.is_local_source = true;
+  device.route.freeze_info.can_freeze = true;
+  devices.push_back(device);
+  OnDevicesUpdated(devices);
+
+  std::vector<views::View*> views = GetExtraViewsForSink("fake_sink_id_1");
+  ASSERT_EQ(views.size(), 2u);
+  auto* freeze_button = views[0];
+  EXPECT_TRUE(views::IsViewClass<PillButton>(freeze_button));
+  EXPECT_EQ(freeze_button->GetTooltipText(gfx::Point()), u"Pause casting");
+
+  // Clicking on the button pauses casting.
+  LeftClickOn(freeze_button);
+  EXPECT_EQ(cast_config_.freeze_route_count(), 1u);
+  EXPECT_EQ(cast_config_.freeze_route_route_id(), "fake_route_id_1");
+  EXPECT_EQ(delegate_->close_bubble_call_count(), 1u);
 }
 
 }  // namespace ash
