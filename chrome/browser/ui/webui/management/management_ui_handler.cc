@@ -791,7 +791,7 @@ void ManagementUIHandler::AddUpdateRequiredEolInfo(
 }
 
 void ManagementUIHandler::AddMonitoredNetworkPrivacyDisclosure(
-    base::Value::Dict* response) const {
+    base::Value::Dict* response) {
   bool showMonitoredNetworkDisclosure = false;
 
   // Check for secure DNS templates with identifiers.
@@ -802,6 +802,19 @@ void ManagementUIHandler::AddMonitoredNetworkPrivacyDisclosure(
   if (showMonitoredNetworkDisclosure) {
     response->Set("showMonitoredNetworkPrivacyDisclosure",
                   showMonitoredNetworkDisclosure);
+    return;
+  }
+
+  // Check if DeviceReportXDREvents is enabled.
+  auto* xdr_policy_value = GetPolicyService()
+                               ->GetPolicies(policy::PolicyNamespace(
+                                   policy::POLICY_DOMAIN_CHROME, std::string()))
+                               .GetValue(policy::key::kDeviceReportXDREvents,
+                                         base::Value::Type::BOOLEAN);
+  bool xdr_policy_enabled = xdr_policy_value && xdr_policy_value->GetBool();
+
+  if (xdr_policy_enabled) {
+    response->Set("showMonitoredNetworkPrivacyDisclosure", xdr_policy_enabled);
     return;
   }
 

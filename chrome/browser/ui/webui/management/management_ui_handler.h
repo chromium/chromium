@@ -190,11 +190,11 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void AddUpdateRequiredEolInfo(base::Value::Dict* response) const;
 
   // Adds a boolean which indicates if the network traffic can be monitored by
-  // the admin via policy configurations, either via a proxy server or via
-  // secure DNS templates with identifiers. If true, a warning will be added to
-  // the transparency panel to inform the user that the admin may be able to see
-  // their network traffic.
-  void AddMonitoredNetworkPrivacyDisclosure(base::Value::Dict* response) const;
+  // the admin via policy configurations, either via a proxy server, via
+  // secure DNS templates with identifiers, or via XDR monitoring. If true, a
+  // warning will be added to the transparency panel to inform the user that the
+  // admin may be able to see their network traffic.
+  void AddMonitoredNetworkPrivacyDisclosure(base::Value::Dict* response);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
  private:
   void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;

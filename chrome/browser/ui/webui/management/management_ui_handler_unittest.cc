@@ -335,8 +335,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   std::u16string ExtractPathFromDict(const base::Value::Dict& data,
                                      const std::string path) {
     const std::string* buf = data.FindStringByDottedPath(path);
-    if (!buf)
+    if (!buf) {
       return std::u16string();
+    }
     return base::UTF8ToUTF16(*buf);
   }
 
@@ -1228,6 +1229,25 @@ TEST_F(ManagementUIHandlerTests,
   const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
   user_manager->AddUser(account_id);
   user_manager::ScopedUserManager scoper(std::move(user_manager));
+
+  base::RunLoop().RunUntilIdle();
+
+  GetTestConfig().managed_device = true;
+  SetUpProfileAndHandler();
+
+  EXPECT_TRUE(GetShowMonitoredNetworkPrivacyDisclosure());
+}
+
+TEST_F(ManagementUIHandlerTests,
+       ShowPrivacyDisclosureForDeviceReportXDREvents) {
+  ResetTestConfig();
+
+  policy::PolicyMap chrome_policies;
+  const policy::PolicyNamespace chrome_policies_namespace =
+      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string());
+  EXPECT_CALL(policy_service_, GetPolicies(chrome_policies_namespace))
+      .WillRepeatedly(ReturnRef(chrome_policies));
+  SetPolicyValue(policy::key::kDeviceReportXDREvents, true, chrome_policies);
 
   base::RunLoop().RunUntilIdle();
 
