@@ -1101,7 +1101,7 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
                                static_cast<uint32_t>(*to_row - from_row)};
     view.reset(avifImageCreateEmpty());
     const avifResult result = avifImageSetViewRect(view.get(), image, &rect);
-    DCHECK_EQ(result, AVIF_RESULT_OK);
+    CHECK_EQ(result, AVIF_RESULT_OK);
     image = view.get();
   }
 
