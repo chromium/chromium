@@ -124,6 +124,9 @@ class EnrollmentScreen
                           weak_ptr_factory_.GetWeakPtr());
   }
 
+  // Changes network state. Useful for simulating network issues in tests.
+  void SetNetworkStateForTesting(const NetworkState* state);
+
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;

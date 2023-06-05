@@ -59,6 +59,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void Hide() override;
   void ShowSigninScreen() override;
   void ReloadSigninScreen() override;
+  void ResetEnrollmentScreen() override;
   void ShowSkipConfirmationDialog() override;
   void ShowUserError(const std::string& email) override;
   void ShowEnrollmentDuringTrialNotAllowedError() override;
@@ -101,7 +102,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void HandleOnLearnMore();
 
   // Shows a given enrollment step.
-  void ShowStep(const char* step);
+  void ShowStep(const std::string& step);
 
   // Display the given i18n resource as error message.
   void ShowError(int message_id, bool retry);
