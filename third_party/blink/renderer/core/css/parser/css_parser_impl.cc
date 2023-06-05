@@ -55,6 +55,10 @@ namespace blink {
 
 namespace {
 
+// Max number of @try rules in a @position-fallback rule to prevent the amount
+// of excess layout work that may be required.
+const size_t kPositionFallbackRuleMaxLength = 5;
+
 // This may still consume tokens if it fails
 AtomicString ConsumeStringOrURI(CSSParserTokenStream& stream) {
   const CSSParserToken& token = stream.Peek();
@@ -1783,13 +1787,18 @@ StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
+  const bool has_max_length = context_->Mode() != kUASheetMode;
   auto* position_fallback_rule =
       MakeGarbageCollected<StyleRulePositionFallback>(AtomicString(name));
   ConsumeRuleList(
       stream, kPositionFallbackRuleList, CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr,
-      [position_fallback_rule](StyleRuleBase* try_rule) {
-        position_fallback_rule->ParserAppendTryRule(To<StyleRuleTry>(try_rule));
+      [position_fallback_rule, has_max_length](StyleRuleBase* try_rule) {
+        if (!has_max_length || position_fallback_rule->TryRules().size() <
+                                   kPositionFallbackRuleMaxLength) {
+          position_fallback_rule->ParserAppendTryRule(
+              To<StyleRuleTry>(try_rule));
+        }
       });
 
   if (observer_) {
