@@ -29,9 +29,6 @@
       protocol: [
         "fuchsia.element.GraphicalPresenter",
 
-        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
-        "fuchsia.ui.policy.Presenter",
-
         // TODO(crbug.com/1418433): Remove fuchsia.ui.scenic.Scenic.
         "fuchsia.ui.scenic.Scenic",
       ],

@@ -28,11 +28,6 @@
         // Required to display the View in Scene Manager unless running in
         // `--headless` mode.
         "fuchsia.element.GraphicalPresenter",
-
-        // Required to display the View in Root Presenter unless running in
-        // `--headless` mode.
-        // TODO(crbug.com/1402457): Remove after transition is complete.
-        "fuchsia.ui.policy.Presenter",
       ],
       availability: "optional",
     },
@@ -164,11 +159,6 @@
         // Required to display the View in Scene Manager unless running in
         // `--headless` mode.
         "fuchsia.element.GraphicalPresenter",
-
-        // Required to display the View in Root Presenter unless running in
-        // `--headless` mode.
-        // TODO(crbug.com/1402457): Remove after transition is complete.
-        "fuchsia.ui.policy.Presenter",
       ],
       from: "parent",
       to: "#realm_builder",

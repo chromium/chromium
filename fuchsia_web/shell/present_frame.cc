@@ -4,7 +4,6 @@
 
 #include "fuchsia_web/shell/present_frame.h"
 
-#include <fuchsia/ui/policy/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
@@ -89,15 +88,13 @@ absl::optional<fuchsia::element::GraphicalPresenterPtr> PresentFrame(
 
   // TODO(http://crbug.com/1418433): Remove GFX-specific logic below this
   // comment when Flatland lands.
-
-  // Sync connect to fuchsia.element.GraphicalPresenter so that we can fallback
-  // to fuchsia.ui.policy.Presenter if unavailable.
-  // TODO(http://crbug.com/1402457): Replace with async when removing fallback.
-  fuchsia::element::GraphicalPresenterSyncPtr presenter;
-  status = base::ComponentContextForProcess()->svc()->Connect(
-      presenter.NewRequest());
-  ZX_CHECK(status == ZX_OK, status)
-      << "Couldn't connect to GraphicalPresenter.";
+  ::fuchsia::element::GraphicalPresenterPtr presenter =
+      base::ComponentContextForProcess()
+          ->svc()
+          ->Connect<::fuchsia::element::GraphicalPresenter>();
+  presenter.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "GraphicalPresenter disconnected: ";
+  });
 
   // Generate GFX tokens and frame->CreateViewWithViewRef().
   auto view_tokens = scenic::ViewTokenPair::New();
@@ -108,42 +105,23 @@ absl::optional<fuchsia::element::GraphicalPresenterPtr> PresentFrame(
   view_spec.set_view_ref(CloneViewRef(view_ref_pair.view_ref));
   view_spec.set_annotations({});
 
-  fuchsia::element::ViewControllerSyncPtr view_controller;
-  fuchsia::element::GraphicalPresenter_PresentView_Result present_view_result;
-  status = presenter->PresentView(
+  fuchsia::element::ViewControllerPtr view_controller;
+  presenter->PresentView(
       std::move(view_spec), std::move(annotation_controller),
-      view_controller.NewRequest(), &present_view_result);
-
-  // Note: We do not consider `present_view_result.is_err()` in the fallback
-  // condition in case the FIDL call succeeds but the method reports an error.
-  // This is because the only error type reported by the PresentView method is
-  // INVALID_ARGS, which we have carefully avoided by:
-  // * Providing a view_spec.view_holder_token and view_spec.view_ref (GFX)
-  // * Not providing _both_ GFX Views and Flatland Views at once.
-  //
-  // Therefore, we expect that if the FIDL call succeeds, the presentation
-  // should also succeed.
-  if (status == ZX_OK) {
-    DCHECK(!present_view_result.is_err())
-        << "PresentView failed to display the view, reason: "
-        << static_cast<uint32_t>(present_view_result.err());
-  } else {
-    // Fallback to connect to Root Presenter.
-    // TODO(http://crbug.com/1402457): Remove fallback.
-    LOG(INFO) << "PresentView failed to connect, reason: " << status
-              << ". Falling back to fuchsia.ui.policy.Presenter.";
-    auto root_presenter = base::ComponentContextForProcess()
-                              ->svc()
-                              ->Connect<fuchsia::ui::policy::Presenter>();
-
-    // Replace the original ViewToken and ViewRefPair with new ones.
-    view_tokens = scenic::ViewTokenPair::New();
-    view_ref_pair = scenic::ViewRefPair::New();
-
-    root_presenter->PresentOrReplaceView2(
-        std::move(view_tokens.view_holder_token),
-        CloneViewRef(view_ref_pair.view_ref), nullptr);
-  }
+      view_controller.NewRequest(),
+      [](::fuchsia::element::GraphicalPresenter_PresentView_Result result) {
+        // The only error type reported by the PresentView method is
+        // INVALID_ARGS, which we have carefully avoided by:
+        // * Providing a view_spec.view_holder_token and view_spec.view_ref
+        // (GFX)
+        // * Not providing _both_ GFX Views and Flatland Views at once.
+        //
+        // Therefore, we expect that if the FIDL call succeeds, the presentation
+        // should also succeed.
+        DCHECK(!result.is_err())
+            << "PresentView failed to display the view, reason: "
+            << static_cast<uint32_t>(result.err());
+      });
 
   // Present a fullscreen view of |frame|.
   frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
