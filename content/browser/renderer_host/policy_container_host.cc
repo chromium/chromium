@@ -80,7 +80,11 @@ std::ostream& operator<<(std::ostream& out,
   }
 
   out << ", cross_origin_opener_policy: "
-      << "{ value: " << policies.cross_origin_opener_policy.value
+      << "{ origin: "
+      << (policies.cross_origin_opener_policy.origin.has_value()
+              ? policies.cross_origin_opener_policy.origin->GetDebugString()
+              : "<null>")
+      << ", value: " << policies.cross_origin_opener_policy.value
       << ", reporting_endpoint: "
       << policies.cross_origin_opener_policy.reporting_endpoint.value_or(
              "<null>")

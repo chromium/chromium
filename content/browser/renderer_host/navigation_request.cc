@@ -138,6 +138,7 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
@@ -2575,6 +2576,13 @@ void NavigationRequest::BeginNavigationImpl() {
       // MHTML iframe, before selecting the RenderFrameHost.
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
       const net::SchemefulSite site = net::SchemefulSite(origin);
+      absl::optional<url::Origin>& coop_origin =
+          policy_container_builder_->GetPolicyContainerHost()
+              ->cross_origin_opener_policy()
+              .origin;
+      if (!coop_origin.has_value()) {
+        coop_origin = origin;
+      }
       coop_status_.EnforceCOOP(
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
           origin, net::NetworkAnonymizationKey::CreateSameSite(site));
@@ -3141,9 +3149,10 @@ void NavigationRequest::OnRequestRedirected(
     return;
   }
   const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
-  coop_status_.EnforceCOOP(
-      response()->parsed_headers->cross_origin_opener_policy, origin,
-      network_anonymization_key);
+  network::CrossOriginOpenerPolicy& coop =
+      response()->parsed_headers->cross_origin_opener_policy;
+  coop.origin = origin;
+  coop_status_.EnforceCOOP(coop, origin, network_anonymization_key);
 
   const absl::optional<network::mojom::BlockedByResponseReason>
       coep_requires_blocking = EnforceCOEP();
@@ -3970,12 +3979,14 @@ void NavigationRequest::OnResponseStarted(
   // can be determined. This is needed for enforcing COOP below.
 
   {
-    const PolicyContainerPolicies& policies =
-        policy_container_builder_->FinalPolicies();
-    const url::Origin origin =
-        GetOriginForURLLoaderFactoryBeforeResponse(policies.sandbox_flags);
-    coop_status_.EnforceCOOP(policies.cross_origin_opener_policy, origin,
-                             network_anonymization_key);
+    const url::Origin origin = GetOriginForURLLoaderFactoryBeforeResponse(
+        policy_container_builder_->FinalPolicies().sandbox_flags);
+    policy_container_builder_->GetPolicyContainerHost()
+        ->cross_origin_opener_policy()
+        .origin = origin;
+    coop_status_.EnforceCOOP(
+        policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
+        origin, network_anonymization_key);
   }
 
   // The navigation may have encountered a header that requests isolation for
@@ -4546,9 +4557,13 @@ void NavigationRequest::OnRequestFailedInternal(
   // define our own flags, preferably the strictest ones instead.
   ComputePoliciesToCommitForError();
 
+  const auto origin = url::Origin();
+  policy_container_builder_->GetPolicyContainerHost()
+      ->cross_origin_opener_policy()
+      .origin = origin;
   coop_status_.EnforceCOOP(
       policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
-      url::Origin(), net::NetworkAnonymizationKey::CreateTransient());
+      origin, net::NetworkAnonymizationKey::CreateTransient());
 
   SelectFrameHostForOnRequestFailedInternal(status.exists_in_cache,
                                             skip_throttles, error_page_content);
@@ -9046,11 +9061,10 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
     return WebExposedIsolationInfo::CreateNonIsolated();
   }
 
-  // TODO(https://crbug.com/1385827): This is technically incorrect, because it
-  // does not take into account sandbox flags. Find how address this,
-  // potentially reusing COOP's origin once we have a COOP+origin bundle.
+  CHECK(coop_status().current_coop().origin.has_value());
+
   const GURL& url = common_params().url;
-  url::Origin origin = url::Origin::Create(url);
+  const url::Origin& origin = *coop_status().current_coop().origin;
 
   return SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
              GetNavigationController()->GetBrowserContext(), url)
@@ -9093,11 +9107,7 @@ absl::optional<url::Origin> NavigationRequest::ComputeCommonCoopOrigin() {
       return GetTentativeOriginAtRequestTime();
     }
 
-    // TODO(https://crbug.com/1385827): This is technically incorrect, because
-    // it does not take into account sandbox flags. See how this can be
-    // addressed, potentially reusing COOP's origin once we have a COOP+origin
-    // bundle.
-    return url::Origin::Create(common_params().url);
+    return coop_status().current_coop().origin;
   }
 
   return absl::nullopt;

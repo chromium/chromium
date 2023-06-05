@@ -497,6 +497,10 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   EXPECT_EQ(main_rfh->cross_origin_opener_policy(), CoopSameOrigin());
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopSameOrigin());
+  EXPECT_TRUE(main_rfh->cross_origin_opener_policy().origin->IsSameOriginWith(
+      starting_page));
+  EXPECT_TRUE(popup_rfh->cross_origin_opener_policy().origin->IsSameOriginWith(
+      starting_page));
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -528,6 +532,10 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
             CoopSameOriginAllowPopups());
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopSameOriginAllowPopups());
+  EXPECT_TRUE(main_rfh->cross_origin_opener_policy().origin->IsSameOriginWith(
+      starting_page));
+  EXPECT_TRUE(popup_rfh->cross_origin_opener_policy().origin->IsSameOriginWith(
+      starting_page));
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -559,6 +567,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   EXPECT_EQ(main_rfh->cross_origin_opener_policy(), CoopSameOrigin());
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopUnsafeNone());
+  EXPECT_TRUE(main_rfh->cross_origin_opener_policy().origin->IsSameOriginWith(
+      starting_page));
+  EXPECT_TRUE(!popup_rfh->cross_origin_opener_policy().origin.has_value());
 }
 
 IN_PROC_BROWSER_TEST_P(

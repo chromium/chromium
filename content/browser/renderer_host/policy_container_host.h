@@ -199,7 +199,7 @@ class CONTENT_EXPORT PolicyContainerHost
     return policies_.ip_address_space;
   }
 
-  network::CrossOriginOpenerPolicy cross_origin_opener_policy() const {
+  network::CrossOriginOpenerPolicy& cross_origin_opener_policy() {
     return policies_.cross_origin_opener_policy;
   }
 
