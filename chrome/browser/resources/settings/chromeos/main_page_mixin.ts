@@ -74,6 +74,11 @@ const VALID_TRANSITIONS = new Map([
   [RouteState.ROOT, ALL_STATES],
 ]);
 
+/**
+ * The route for the first page listed in the Settings menu.
+ */
+const FIRST_PAGE_ROUTE: Route = Router.getInstance().routes.INTERNET;
+
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   containsRoute(route: Route|undefined): boolean;
   querySection(section: string): HTMLElement|null;
@@ -97,6 +102,10 @@ export const MainPageMixin = dedupingMixin(
         private get scroller_(): HTMLElement {
           const hostEl = (this.getRootNode() as ShadowRoot).host;
           return castExists(hostEl ? hostEl.parentElement : document.body);
+        }
+
+        private get isMainPageContainer(): boolean {
+          return this.tagName === 'MAIN-PAGE-CONTAINER';
         }
 
         /**
@@ -130,8 +139,7 @@ export const MainPageMixin = dedupingMixin(
           const waitFn = beforeNextRender.bind(null, this);
 
           return new Promise(resolve => {
-            if (this.tagName === 'MAIN-PAGE-CONTAINER' &&
-                isAdvancedRoute(route)) {
+            if (this.isMainPageContainer && isAdvancedRoute(route)) {
               this.dispatchCustomEvent_('hide-container');
               waitFn(async () => {
                 await this.loadAdvancedPage();
@@ -280,7 +288,13 @@ export const MainPageMixin = dedupingMixin(
                 return;
 
               case RouteState.ROOT:
-                // TODO(b/282961146) Activate first top-level page (Network)
+                // Do not activate the Network page if the host element is
+                // the About page since it does not contain that page.
+                // TODO(b/282961146) Investigate removing MainPageMixin from
+                // the About page so this check can be removed.
+                if (isRevampWayfindingEnabled() && this.isMainPageContainer) {
+                  this.activatePage(FIRST_PAGE_ROUTE);
+                }
                 return;
 
               // Nothing to do here for the DIALOG case.

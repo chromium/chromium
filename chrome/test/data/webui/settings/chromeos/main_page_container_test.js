@@ -220,6 +220,12 @@ suite('<main-page-container>', function() {
           assertEquals(1, numActive);
         }
 
+        suite('From Initial', () => {
+          test('to Root should only show Network page', () => {
+            assertOnlyActivePageIsVisible('internet');
+          });
+        });
+
         suite('From Root', () => {
           test('to Page should result in only one active page', async () => {
             // Simulate navigating from root to Network page
