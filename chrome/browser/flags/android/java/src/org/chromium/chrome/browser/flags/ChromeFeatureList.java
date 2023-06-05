@@ -401,8 +401,6 @@ public abstract class ChromeFeatureList {
     public static final String SHARED_HIGHLIGHTING_AMP = "SharedHighlightingAmp";
     public static final String SHOPPING_LIST = "ShoppingList";
     public static final String SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID = "ShowScrollableMVTOnNTPAndroid";
-    public static final String SKIP_SERVICE_WORKER_FOR_INSTALL_PROMPT =
-            "SkipServiceWorkerForInstallPromot";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SPARE_TAB = "SpareTab";

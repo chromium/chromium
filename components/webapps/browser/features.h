@@ -43,14 +43,9 @@ BASE_DECLARE_FEATURE(kWebApkInstallFailureRetry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);
-BASE_DECLARE_FEATURE(kSkipServiceWorkerCheckInstallOnly);
 BASE_DECLARE_FEATURE(kDesktopPWAsDetailedInstallDialog);
-BASE_DECLARE_FEATURE(kSkipServiceWorkerForInstallPrompt);
 
 BASE_DECLARE_FEATURE(kInstallPromptSegmentation);
-
-bool SkipInstallServiceWorkerCheck();
-bool SkipServiceWorkerForInstallPromotion();
 
 BASE_DECLARE_FEATURE(kAppBannerTriggering);
 extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey;

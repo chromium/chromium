@@ -1210,29 +1210,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @Features.EnableFeatures({ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR,
-            ChromeFeatureList.SKIP_SERVICE_WORKER_FOR_INSTALL_PROMPT})
-    public void
-    testAmbientBadgeDoesNotAppearWhenNoServiceWorker() throws Exception {
-        String webBannerUrl = WebappTestPage.getNonServiceWorkerUrlWithAction(
-                mTestServer, "call_stashed_prompt_on_click");
-        resetEngagementForUrl(webBannerUrl, 10);
-        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
-
-        // As the page doesn't have service worker, we do not expect to
-        // see an ambient badge.
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        waitForBadgeStatus(tab, AmbientBadgeState.PENDING_WORKER);
-        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
-
-        // Tap to trigger beforeinstallprompt.prompt, we expect to see the modal banner.
-        tapAndWaitForModalBanner(tab);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AppBanners"})
-    @Features.EnableFeatures({ChromeFeatureList.SKIP_SERVICE_WORKER_FOR_INSTALL_PROMPT})
     public void testAmbientBadgeAppearWithServiceWorkerPage() throws Exception {
         String webBannerUrl = WebappTestPage.getServiceWorkerUrlWithAction(
                 mTestServer, "call_stashed_prompt_on_click");

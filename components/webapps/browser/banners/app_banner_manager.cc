@@ -358,7 +358,6 @@ bool AppBannerManager::DidRetryInstallableManagerRequest(
     case State::INACTIVE:
     case State::ACTIVE:
     case State::FETCHING_NATIVE_DATA:
-    case State::PENDING_WORKER:
     case State::PENDING_ENGAGEMENT:
     case State::SENDING_EVENT:
     case State::SENDING_EVENT_GOT_EARLY_PROMPT:
@@ -411,14 +410,6 @@ InstallableParams AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
   params.valid_primary_icon = true;
   params.valid_manifest = true;
   params.fetch_screenshots = true;
-
-  return params;
-}
-
-InstallableParams AppBannerManager::ParamsToPerformWorkerCheck() {
-  InstallableParams params;
-  params.has_worker = true;
-  params.wait_for_worker = true;
 
   return params;
 }
@@ -481,45 +472,9 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   has_maskable_primary_icon_ = data.has_maskable_primary_icon;
   screenshots_ = *(data.screenshots);
 
-  if (features::SkipInstallServiceWorkerCheck() ||
-      base::FeatureList::IsEnabled(features::kCreateShortcutIgnoresManifest)) {
-    SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kYes_ByUserRequest);
-  }
-
-  if (features::SkipServiceWorkerForInstallPromotion()) {
-    SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kYes_Promotable);
-    CheckSufficientEngagement();
-    return;
-  }
-
-  PerformServiceWorkerCheck();
-}
-
-void AppBannerManager::PerformServiceWorkerCheck() {
-  UpdateState(State::PENDING_WORKER);
-  manager_->GetData(
-      ParamsToPerformWorkerCheck(),
-      base::BindOnce(&AppBannerManager::OnDidPerformWorkerCheck, GetWeakPtr()));
-}
-
-void AppBannerManager::OnDidPerformWorkerCheck(const InstallableData& data) {
-  if (!data.NoBlockingErrors()) {
-    TrackDisplayEvent(DISPLAY_EVENT_LACKS_SERVICE_WORKER);
-    Stop(data.FirstNoBlockingError());
-    return;
-  }
-
-  passed_worker_check_ = true;
-
-  if (state_ == State::PENDING_WORKER) {
-    UpdateState(State::ACTIVE);
-
-    SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kYes_Promotable);
-    CheckSufficientEngagement();
-  }
+  SetInstallableWebAppCheckResult(
+      InstallableWebAppCheckResult::kYes_Promotable);
+  CheckSufficientEngagement();
 }
 
 void AppBannerManager::CheckSufficientEngagement() {
@@ -579,10 +534,6 @@ void AppBannerManager::Terminate() {
       TrackBeforeInstallEvent(
           BEFORE_INSTALL_EVENT_PROMPT_NOT_CALLED_NOT_CANCELLED);
       break;
-    case State::PENDING_WORKER:
-      if (!passed_worker_check_)
-        TrackDisplayEvent(DISPLAY_EVENT_LACKS_SERVICE_WORKER);
-      break;
     case State::PENDING_ENGAGEMENT:
       if (!has_sufficient_engagement_)
         TrackDisplayEvent(DISPLAY_EVENT_NOT_VISITED_ENOUGH);
@@ -599,9 +550,6 @@ InstallableStatusCode AppBannerManager::TerminationCode() const {
     case State::PENDING_PROMPT_CANCELED:
     case State::PENDING_PROMPT_NOT_CANCELED:
       return RENDERER_CANCELLED;
-    case State::PENDING_WORKER:
-      return passed_worker_check_ ? NO_ERROR_DETECTED
-                                  : NO_MATCHING_SERVICE_WORKER;
     case State::PENDING_ENGAGEMENT:
       return has_sufficient_engagement_ ? NO_ERROR_DETECTED
                                         : INSUFFICIENT_ENGAGEMENT;
@@ -787,7 +735,6 @@ void AppBannerManager::DidUpdateWebManifestURL(
       return;
     case State::ACTIVE:
     case State::FETCHING_NATIVE_DATA:
-    case State::PENDING_WORKER:
     case State::PENDING_ENGAGEMENT:
     case State::SENDING_EVENT:
     case State::SENDING_EVENT_GOT_EARLY_PROMPT:
@@ -866,7 +813,6 @@ bool AppBannerManager::IsRunning() const {
     case State::FETCHING_MANIFEST:
     case State::FETCHING_NATIVE_DATA:
     case State::PENDING_INSTALLABLE_CHECK:
-    case State::PENDING_WORKER:
     case State::SENDING_EVENT:
     case State::SENDING_EVENT_GOT_EARLY_PROMPT:
       return true;

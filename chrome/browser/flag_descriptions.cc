@@ -986,18 +986,6 @@ const char kDesktopPWAsDetailedInstallDialogDescription[] =
     "Enable PWAs with screenshots to show a detailed install dialog during "
     "installation";
 
-const char kSkipServiceWorkerCheckInstallOnlyName[] =
-    "Skip service worker check for PWA installs";
-const char kSkipServiceWorkerCheckInstallOnlyDescription[] =
-    "Allows PWAs to be installed without a service worker.";
-
-const char kSkipServiceWorkerForInstallPromptName[] =
-    "Promote PWA installation without a service worker";
-const char kSkipServiceWorkerForInstallPromptDescription[] =
-    "Allows PWAs that can be installed without a service worker to be "
-    "promoted. Requires #enable-skip-service-worker-check-install-only flag to "
-    "also be enabled.";
-
 const char kEnablePreinstalledWebAppDuplicationFixerName[] =
     "Enable the app deduplication fix for migrated preinstalled web apps";
 const char kEnablePreinstalledWebAppDuplicationFixerDescription[] =

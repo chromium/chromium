@@ -65,8 +65,8 @@ InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
   params.valid_manifest = true;
-  params.has_worker = !features::SkipInstallServiceWorkerCheck();
-  params.wait_for_worker = !features::SkipInstallServiceWorkerCheck();
+  params.has_worker = false;
+  params.wait_for_worker = false;
   return params;
 }
 

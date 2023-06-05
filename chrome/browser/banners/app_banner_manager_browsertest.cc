@@ -101,10 +101,6 @@ class AppBannerManagerTest : public AppBannerManager {
     on_banner_prompt_reply_ = std::move(on_banner_prompt_reply);
   }
 
-  void SetWaitForServiceWorker(bool wait_for_worker) {
-    wait_for_worker_ = wait_for_worker;
-  }
-
   bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override {
     return false;
   }
@@ -172,19 +168,6 @@ class AppBannerManagerTest : public AppBannerManager {
     }
   }
 
-  InstallableParams ParamsToPerformInstallableWebAppCheck() override {
-    InstallableParams params =
-        AppBannerManager::ParamsToPerformInstallableWebAppCheck();
-    params.wait_for_worker = wait_for_worker_;
-    return params;
-  }
-
-  InstallableParams ParamsToPerformWorkerCheck() override {
-    InstallableParams params = AppBannerManager::ParamsToPerformWorkerCheck();
-    params.wait_for_worker = wait_for_worker_;
-    return params;
-  }
-
   void OnBannerPromptReply(
       mojo::Remote<blink::mojom::AppBannerController> controller,
       blink::mojom::AppBannerPromptReply reply) override {
@@ -226,8 +209,6 @@ class AppBannerManagerTest : public AppBannerManager {
 
   std::unique_ptr<bool> banner_shown_;
   std::unique_ptr<WebappInstallSource> install_source_;
-
-  bool wait_for_worker_ = true;
 
   base::WeakPtrFactory<AppBannerManagerTest> weak_factory_{this};
 };
@@ -287,7 +268,6 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
     EXPECT_TRUE(manager->state() == State::COMPLETE ||
                 manager->state() == State::PENDING_PROMPT_CANCELED ||
                 manager->state() == State::PENDING_PROMPT_NOT_CANCELED ||
-                manager->state() == State::PENDING_WORKER ||
                 manager->state() == State::INACTIVE);
 
     // If in incognito, ensure that nothing is recorded.
@@ -1063,36 +1043,9 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
   EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
 }
 
-enum class ServiceWorkerCriteriaType {
-  kDisabled,
-  kSkipForInstalls,
-  kNoForBeforeInstalls
-};
-
-class AppBannerServiceWorkerCriteriaTest
-    : public AppBannerManagerBrowserTest,
-      public testing::WithParamInterface<ServiceWorkerCriteriaType> {
+class AppBannerServiceWorkerCriteriaTest : public AppBannerManagerBrowserTest {
  public:
-  AppBannerServiceWorkerCriteriaTest() {
-    switch (GetParam()) {
-      case ServiceWorkerCriteriaType::kDisabled:
-        scoped_feature_list_.InitWithFeatures(
-            {}, {features::kSkipServiceWorkerCheckInstallOnly,
-                 features::kSkipServiceWorkerForInstallPrompt});
-        break;
-      case ServiceWorkerCriteriaType::kSkipForInstalls:
-        scoped_feature_list_.InitWithFeatures(
-            {features::kSkipServiceWorkerCheckInstallOnly},
-            {features::kSkipServiceWorkerForInstallPrompt});
-        break;
-      case ServiceWorkerCriteriaType::kNoForBeforeInstalls:
-        scoped_feature_list_.InitWithFeatures(
-            {features::kSkipServiceWorkerCheckInstallOnly,
-             features::kSkipServiceWorkerForInstallPrompt},
-            {});
-        break;
-    }
-  }
+  AppBannerServiceWorkerCriteriaTest() = default;
   ~AppBannerServiceWorkerCriteriaTest() override = default;
 
   AppBannerServiceWorkerCriteriaTest(
@@ -1107,28 +1060,12 @@ class AppBannerServiceWorkerCriteriaTest
   void CheckInstallableResult(
       AppBannerManager::InstallableWebAppCheckResult result,
       AppBannerManager::InstallableWebAppCheckResult expected_control_result) {
-    switch (GetParam()) {
-      case ServiceWorkerCriteriaType::kDisabled:
-        EXPECT_EQ(result, expected_control_result);
-        break;
-      case ServiceWorkerCriteriaType::kSkipForInstalls:
-        EXPECT_EQ(
-            result,
-            AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest);
-        break;
-      case ServiceWorkerCriteriaType::kNoForBeforeInstalls:
-        EXPECT_EQ(
-            result,
-            AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
-        break;
-    }
+    EXPECT_EQ(result,
+              AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, ShowBanner) {
+IN_PROC_BROWSER_TEST_F(AppBannerServiceWorkerCriteriaTest, ShowBanner) {
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
   RunBannerTest(
@@ -1141,96 +1078,51 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, ShowBanner) {
             AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
 }
 
-IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, NoServiceWorker) {
+IN_PROC_BROWSER_TEST_F(AppBannerServiceWorkerCriteriaTest, NoServiceWorker) {
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
-  // Set not wait for service worker so it will not timeout.
-  manager->SetWaitForServiceWorker(false);
-
-  absl::optional<InstallableStatusCode> expected_code;
-  if (GetParam() != ServiceWorkerCriteriaType::kNoForBeforeInstalls)
-    expected_code = NO_MATCHING_SERVICE_WORKER;
 
   RunBannerTest(browser(), manager.get(),
                 embedded_test_server()->GetURL(
                     "/banners/manifest_no_service_worker.html"),
-                expected_code);
+                /*expected_code_for_histogram=*/absl::nullopt);
 
-  if (GetParam() == ServiceWorkerCriteriaType::kNoForBeforeInstalls) {
-    EXPECT_EQ(manager->state(),
-              AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
-  } else {
-    EXPECT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
-  }
-
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   CheckInstallableResult(manager->GetInstallableWebAppCheckResultForTesting(),
                          AppBannerManager::InstallableWebAppCheckResult::kNo);
 }
 
-IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, NoFetchHandler) {
+IN_PROC_BROWSER_TEST_F(AppBannerServiceWorkerCriteriaTest, NoFetchHandler) {
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
-
-  absl::optional<InstallableStatusCode> expected_code;
-  if (GetParam() != ServiceWorkerCriteriaType::kNoForBeforeInstalls)
-    expected_code = NOT_OFFLINE_CAPABLE;
 
   RunBannerTest(browser(), manager.get(),
                 embedded_test_server()->GetURL(
                     "/banners/no_sw_fetch_handler_test_page.html"),
-                expected_code);
+                /*expected_code_for_histogram=*/absl::nullopt);
 
-  if (GetParam() == ServiceWorkerCriteriaType::kNoForBeforeInstalls) {
-    EXPECT_EQ(manager->state(),
-              AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
-  } else {
-    EXPECT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
-  }
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 
   CheckInstallableResult(manager->GetInstallableWebAppCheckResultForTesting(),
                          AppBannerManager::InstallableWebAppCheckResult::kNo);
 }
 
-class PendingWorkerAppBannerManager : public AppBannerManagerTest {
- public:
-  explicit PendingWorkerAppBannerManager(content::WebContents* web_contents)
-      : AppBannerManagerTest(web_contents) {}
-
-  PendingWorkerAppBannerManager(const PendingWorkerAppBannerManager&) = delete;
-  PendingWorkerAppBannerManager& operator=(
-      const PendingWorkerAppBannerManager&) = delete;
-
-  ~PendingWorkerAppBannerManager() override = default;
-
- protected:
-  void UpdateState(AppBannerManager::State state) override {
-    AppBannerManagerTest::UpdateState(state);
-    if (state == AppBannerManager::State::PENDING_WORKER) {
-      if (on_done_)
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(on_done_));
-    }
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest,
+IN_PROC_BROWSER_TEST_F(AppBannerServiceWorkerCriteriaTest,
                        PendingServiceWorker) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::unique_ptr<PendingWorkerAppBannerManager> manager =
-      std::make_unique<PendingWorkerAppBannerManager>(web_contents);
+  std::unique_ptr<AppBannerManagerTest> manager =
+      std::make_unique<AppBannerManagerTest>(web_contents);
 
   RunBannerTest(browser(), manager.get(),
                 embedded_test_server()->GetURL(
                     "/banners/manifest_no_service_worker.html"),
                 absl::nullopt);
 
-  if (GetParam() == ServiceWorkerCriteriaType::kNoForBeforeInstalls) {
-    EXPECT_EQ(manager->state(),
-              AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
-  } else {
-    EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_WORKER);
-  }
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 
   CheckInstallableResult(
       manager->GetInstallableWebAppCheckResultForTesting(),
@@ -1238,13 +1130,6 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest,
 
   EXPECT_EQ(manager->GetAppName(), u"Manifest test app");
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AppBannerServiceWorkerCriteriaTest,
-    testing::Values(ServiceWorkerCriteriaType::kDisabled,
-                    ServiceWorkerCriteriaType::kSkipForInstalls,
-                    ServiceWorkerCriteriaType::kNoForBeforeInstalls));
 
 }  // namespace
 }  // namespace webapps

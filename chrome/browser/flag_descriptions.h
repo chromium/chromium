@@ -564,12 +564,6 @@ extern const char kDesktopPWAsBorderlessDescription[];
 extern const char kDesktopPWAsDetailedInstallDialogName[];
 extern const char kDesktopPWAsDetailedInstallDialogDescription[];
 
-extern const char kSkipServiceWorkerCheckInstallOnlyName[];
-extern const char kSkipServiceWorkerCheckInstallOnlyDescription[];
-
-extern const char kSkipServiceWorkerForInstallPromptName[];
-extern const char kSkipServiceWorkerForInstallPromptDescription[];
-
 extern const char kDeviceForceScheduledRebootName[];
 extern const char kDeviceForceScheduledRebootDescription[];
 

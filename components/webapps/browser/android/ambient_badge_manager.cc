@@ -155,7 +155,6 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
   // if it's showing for web app (not native app), only show if the worker check
   // already passed.
   if (a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK &&
-      features::SkipServiceWorkerForInstallPromotion() &&
       !passed_worker_check_) {
     InstallableParams params = ParamsToPerformWorkerCheck();
     params.wait_for_worker = true;

@@ -110,23 +110,6 @@ void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
   SetInstallable(result.NoBlockingErrors());
 }
 
-void TestAppBannerManagerDesktop::PerformServiceWorkerCheck() {
-  waiting_for_worker_ = true;
-  AppBannerManagerDesktop::PerformServiceWorkerCheck();
-}
-
-void TestAppBannerManagerDesktop::OnDidPerformWorkerCheck(
-    const InstallableData& result) {
-  debug_log_.Append("OnDidPerformWorkerCheck");
-  AppBannerManagerDesktop::OnDidPerformWorkerCheck(result);
-
-  DCHECK(waiting_for_worker_);
-  waiting_for_worker_ = false;
-  if (promotable_quit_closure_) {
-    std::move(promotable_quit_closure_).Run();
-  }
-}
-
 void TestAppBannerManagerDesktop::ResetCurrentPageData() {
   debug_log_.Append("ResetCurrentPageData");
   AppBannerManagerDesktop::ResetCurrentPageData();
