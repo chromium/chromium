@@ -83,6 +83,8 @@ function runTest(target, expectations) {
             else {
                 testPassed('caret is at ' + currentOffset);
                 j++;
+                if (j >= expectations.length)
+                    return;
             }
         }
     }
