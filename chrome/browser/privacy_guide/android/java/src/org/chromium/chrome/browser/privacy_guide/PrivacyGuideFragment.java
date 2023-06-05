@@ -71,6 +71,9 @@ public class PrivacyGuideFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate();
+        if (savedInstanceState != null) {
+            mPrivacyGuideMetricsDelegate.restoreState(savedInstanceState);
+        }
     }
 
     @Nullable
@@ -204,6 +207,12 @@ public class PrivacyGuideFragment extends Fragment {
         }
 
         return false;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        mPrivacyGuideMetricsDelegate.saveState(outState);
+        super.onSaveInstanceState(outState);
     }
 
     public void setBottomSheetController(BottomSheetController bottomSheetController) {
