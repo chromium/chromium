@@ -148,10 +148,11 @@ void CompanionSidePanelController::DidOpenRequestedURL(
 
   if (open_in_current_tab) {
     // Add metrics to record the open trigger for the companion page as a link
-    // click from side panel.
+    // click from side panel. Note, the user can click on links even before the
+    // metrics is consumed, e.g. a double click. Either way, just overwrite the
+    // metrics if it already exists.
     auto* tab_helper =
         companion::CompanionTabHelper::FromWebContents(tab_web_contents);
-    CHECK(!tab_helper->GetAndResetMostRecentSidePanelOpenTrigger().has_value());
     tab_helper->SetMostRecentSidePanelOpenTrigger(
         SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
   }
