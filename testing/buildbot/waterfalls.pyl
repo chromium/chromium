@@ -3264,7 +3264,7 @@
           'has_native_resultdb_integration',
           'finch-chromium-swarming-pool',
           'pie-x86-emulator',
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'os_type': 'android',
