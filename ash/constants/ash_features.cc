@@ -2453,7 +2453,7 @@ BASE_FEATURE(kDeviceActiveClientDailyCheckMembership,
 // on ChromeOS.
 BASE_FEATURE(kDeviceActiveClientChurnCohortCheckIn,
              "DeviceActiveClientChurnCohortCheckIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables PSM CheckMembership for the churn cohort device active
 // pings on ChromeOS.
@@ -2465,7 +2465,7 @@ BASE_FEATURE(kDeviceActiveClientChurnCohortCheckMembership,
 // pings on ChromeOS.
 BASE_FEATURE(kDeviceActiveClientChurnObservationCheckIn,
              "DeviceActiveClientChurnObservationCheckIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables PSM CheckMembership for the churn observation
 // device active pings on ChromeOS.
