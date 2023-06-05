@@ -154,8 +154,9 @@
     <slot name="slider-description"></slot>
   </div>
   <div id="sliderContainer">
-    <cr-button class="sign-button" on-click="onNegativeClicked_">
-      <iron-icon id="negative" class="sign-icon" icon="oobe-16:negative"
+    <cr-button id="negativeButton" class="sign-button"
+        on-click="onNegativeClicked_">
+      <iron-icon class="sign-icon" icon="oobe-16:negative"
           aria-label$="[[i18nDynamic(locale, 'displaySizeNegative')]]">
       </iron-icon>
     </cr-button>
@@ -164,8 +165,9 @@
         marker-count="[[markerCounts_]]" ticks="[[availableSizesTicks_]]"
         aria-labelledby="sliderTitleContainer" aria-live="polite">
     </cr-slider>
-    <cr-button class="sign-button" on-click="onPositiveClicked_">
-      <iron-icon id="positive" class="sign-icon" icon="oobe-16:positive"
+    <cr-button id="positiveButton" class="sign-button"
+        on-click="onPositiveClicked_">
+      <iron-icon class="sign-icon" icon="oobe-16:positive"
           aria-label$="[[i18nDynamic(locale, 'displaySizePositive')]]">
       </iron-icon>
     </cr-button>
