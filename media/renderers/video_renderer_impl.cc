@@ -1011,6 +1011,7 @@ void VideoRendererImpl::RemoveFramesForUnderflowOrBackgroundRendering() {
     algorithm_->Reset(
         VideoRendererAlgorithm::ResetFlag::kPreserveNextFrameEstimates);
     painted_first_frame_ = false;
+    paint_first_frame_cb_.Cancel();
 
     // It's possible in the background rendering case for us to expire enough
     // frames that we need to transition from HAVE_ENOUGH => HAVE_NOTHING. Just
@@ -1064,10 +1065,11 @@ void VideoRendererImpl::AttemptReadAndCheckForMetadataChanges(
 
 void VideoRendererImpl::PaintFirstFrame() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(algorithm_->frames_queued());
   if (painted_first_frame_ || sink_started_) {
     return;
   }
+
+  DCHECK(algorithm_->frames_queued());
 
   auto first_frame =
       algorithm_->Render(base::TimeTicks(), base::TimeTicks(), nullptr);
