@@ -62,11 +62,8 @@ inline bool KeyMatchesId(const AtomicString& key, const Element& element) {
 
 inline bool KeyMatchesMapName(const AtomicString& key, const Element& element) {
   auto* html_map_element = DynamicTo<HTMLMapElement>(element);
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled()) {
-    return html_map_element && (html_map_element->GetName() == key ||
-                                html_map_element->GetIdAttribute() == key);
-  }
-  return html_map_element && html_map_element->GetName() == key;
+  return html_map_element && (html_map_element->GetName() == key ||
+                              html_map_element->GetIdAttribute() == key);
 }
 
 inline bool KeyMatchesSlotName(const AtomicString& key,

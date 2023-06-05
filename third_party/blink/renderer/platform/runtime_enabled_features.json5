@@ -1951,11 +1951,6 @@
       base_feature: "none",
     },
     {
-      // A kill-switch for a fix of crbug.com/108489.
-      name: "HTMLMapToImgMatchingByNameAndId",
-      status: "stable",
-    },
-    {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.
       // This helps when debugging flaky tests caused by parser

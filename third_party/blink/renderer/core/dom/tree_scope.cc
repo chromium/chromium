@@ -180,20 +180,15 @@ Node* TreeScope::AncestorInThisScope(Node* node) const {
 void TreeScope::AddImageMap(HTMLMapElement& image_map) {
   const AtomicString& name = image_map.GetName();
   const AtomicString& id = image_map.GetIdAttribute();
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled()) {
-    if (!name && !id)
-      return;
-  } else {
-    if (!name)
-      return;
+  if (!name && !id) {
+    return;
   }
   if (!image_maps_by_name_)
     image_maps_by_name_ = MakeGarbageCollected<TreeOrderedMap>();
   if (name)
     image_maps_by_name_->Add(name, image_map);
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled()) {
-    if (id)
-      image_maps_by_name_->Add(id, image_map);
+  if (id) {
+    image_maps_by_name_->Add(id, image_map);
   }
 }
 
@@ -202,9 +197,8 @@ void TreeScope::RemoveImageMap(HTMLMapElement& image_map) {
     return;
   if (const AtomicString& name = image_map.GetName())
     image_maps_by_name_->Remove(name, image_map);
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled()) {
-    if (const AtomicString& id = image_map.GetIdAttribute())
-      image_maps_by_name_->Remove(id, image_map);
+  if (const AtomicString& id = image_map.GetIdAttribute()) {
+    image_maps_by_name_->Remove(id, image_map);
   }
 }
 
@@ -217,9 +211,9 @@ HTMLMapElement* TreeScope::GetImageMap(const String& url) const {
   if (hash_pos == kNotFound)
     return nullptr;
   String name = url.Substring(hash_pos + 1);
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled() &&
-      name.empty())
+  if (name.empty()) {
     return nullptr;
+  }
   return To<HTMLMapElement>(
       image_maps_by_name_->GetElementByMapName(AtomicString(name), *this));
 }
