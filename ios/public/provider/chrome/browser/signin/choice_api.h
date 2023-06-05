@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 
@@ -21,6 +23,9 @@ ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
 
 // Creates a new ChoiceDisplayHandler instance.
 id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();
+
+// Creates a new ChoiceSceneAgent instance.
+id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager);
 
 // Whether the feature is enabled
 bool IsChoiceEnabled();

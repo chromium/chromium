@@ -26,6 +26,10 @@ id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler() {
   NOTREACHED_NORETURN();
 }
 
+id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager) {
+  NOTREACHED_NORETURN();
+}
+
 bool IsChoiceEnabled() {
   // The feature is disabled on chromium
   return false;
