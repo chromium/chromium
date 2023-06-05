@@ -77,11 +77,15 @@ const int kWeekRowHorizontalPadding =
 const int kWeekRowHorizontalPaddingJelly =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPaddingJelly;
 constexpr int kExpandedCalendarPadding = 11;
+constexpr int kExpandedCalendarPaddingJelly = 10;
 constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
 constexpr int kMonthHeaderLabelTopPadding = 14;
 constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
 constexpr int kUpNextAnimationYOffset = 20;
+// Adds a gap between the bottom visible row in the scrollview and the top of
+// the event list view when open.
+constexpr int kCalendarEventListViewOpenMarginJelly = 8;
 
 // The offset for `month_label_` to make it align with `month_header`.
 constexpr int kMonthLabelPaddingOffset = -1;
@@ -189,6 +193,11 @@ std::unique_ptr<views::Label> HeaderView(const std::u16string& month) {
       .SetTextContext(CONTEXT_CALENDAR_LABEL)
       .SetAutoColorReadabilityEnabled(false)
       .Build();
+}
+
+int GetExpandedCalendarPadding() {
+  return features::IsCalendarJellyEnabled() ? kExpandedCalendarPaddingJelly
+                                            : kExpandedCalendarPadding;
 }
 
 // The overridden `Label` view used in `CalendarView`.
@@ -680,7 +689,7 @@ int CalendarView::PositionOfSelectedDate() const {
   DCHECK(calendar_view_controller_->selected_date().has_value());
   const int row_height = calendar_view_controller_->selected_date_row_index() *
                              calendar_view_controller_->row_height() +
-                         kExpandedCalendarPadding;
+                         GetExpandedCalendarPadding();
   // The selected date should be either in the current month or the next month.
   if (calendar_view_controller_->IsSelectedDateInCurrentMonth()) {
     return PositionOfCurrentMonth() + row_height;
@@ -907,7 +916,7 @@ void CalendarView::ScrollToToday() {
   if (event_list_view_ || up_next_view_) {
     scroll_view_->ScrollToPosition(
         scroll_view_->vertical_scroll_bar(),
-        PositionOfToday() + kExpandedCalendarPadding);
+        PositionOfToday() + GetExpandedCalendarPadding());
     return;
   }
 
@@ -1751,7 +1760,7 @@ void CalendarView::SetExpandedRowThenDisableScroll(int row_index) {
                          calendar_view_controller_->row_height();
   scroll_view_->ScrollToPosition(
       scroll_view_->vertical_scroll_bar(),
-      PositionOfCurrentMonth() + row_height + kExpandedCalendarPadding);
+      PositionOfCurrentMonth() + row_height + GetExpandedCalendarPadding());
 
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
@@ -1989,7 +1998,7 @@ int CalendarView::CalculateFirstFullyVisibleRow() {
   while (visible_window_y_in_content_view >
          (PositionOfCurrentMonth() +
           row_index * calendar_view_controller_->row_height() +
-          (event_list_view_ ? kExpandedCalendarPadding : 0))) {
+          (event_list_view_ ? GetExpandedCalendarPadding() : 0))) {
     ++row_index;
     if (row_index > kMaxRowsInOneMonth) {
       NOTREACHED() << "CalendarMonthView's cannot have more than "
@@ -2006,14 +2015,14 @@ void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
                     kEventListViewHorizontalOffset * 2;
   const int event_list_view_height = GetBoundsInScreen().bottom() -
                                      scroll_view_->GetBoundsInScreen().y() -
-                                     calendar_view_controller_->row_height();
+                                     GetSingleVisibleRowHeight();
 
   // If the event list view is showing, position the calendar sliding surface
   // where the opened event list view will be.
   if (event_list_view_open) {
     calendar_sliding_surface_->SetBounds(
-        x_position, scroll_view_->y() + calendar_view_controller_->row_height(),
-        width, event_list_view_height);
+        x_position, scroll_view_->y() + GetSingleVisibleRowHeight(), width,
+        event_list_view_height);
     return;
   }
 
@@ -2157,7 +2166,7 @@ void CalendarView::ClipScrollViewHeight(ScrollViewState state_to_change_to) {
                  calendar_utils::kUpNextOverlapInPx);
       break;
     case ScrollViewState::EVENT_LIST_SHOWING:
-      scroll_view_->ClipHeightTo(0, calendar_view_controller_->row_height());
+      scroll_view_->ClipHeightTo(0, GetSingleVisibleRowHeight());
       break;
   }
 }
@@ -2214,6 +2223,13 @@ void CalendarView::OnAnimateScrollByOffsetComplete(int offset) {
   RestoreMonthStatus();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  scroll_view_->GetVisibleRect().y() + offset);
+}
+
+int CalendarView::GetSingleVisibleRowHeight() {
+  return features::IsCalendarJellyEnabled()
+             ? calendar_view_controller_->row_height() +
+                   kCalendarEventListViewOpenMarginJelly
+             : calendar_view_controller_->row_height();
 }
 
 BEGIN_METADATA(CalendarView, views::View)
