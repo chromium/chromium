@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
     root_device_size_ = size;
   }
 
+  void set_connected(bool connected) { connected_ = connected; }
+
  private:
   absl::optional<int64_t> free_disk_space_;
   absl::optional<int64_t> total_disk_space_;
