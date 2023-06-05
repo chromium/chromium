@@ -2574,7 +2574,7 @@ TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(
       mojom::PermissionsPolicyFeature::kAttributionReporting));
-  EXPECT_FALSE(policy->IsFeatureEnabled(
+  EXPECT_TRUE(policy->IsFeatureEnabled(
       mojom::PermissionsPolicyFeature::kSharedStorage));
 }
 
