@@ -2,8 +2,200 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
+import("//build/config/android/config.gni")
+import("//build/config/python.gni")
 import("//build/partitioned_shared_library.gni")
+
+declare_args() {
+  # Enables JNI multiplexing to reduce JNI native methods overhead.
+  allow_jni_multiplexing = false
+
+  # Use hashed symbol names to reduce JNI symbol overhead.
+  use_hashed_jni_names = !is_java_debug
+}
+
+# Use a dedicated include dir so that files can #include headers from other
+# toolchains without affecting non-JNI #includes.
+if (target_os == "android") {
+  jni_headers_dir = "$root_build_dir/gen/jni_headers"
+} else {
+  # Chrome OS builds cannot share gen/ directories because is_android=false
+  # within default_toolchain.
+  jni_headers_dir = "$root_gen_dir/jni_headers"
+}
+
+template("jni_sources_list") {
+  generated_file(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+    outputs = [ invoker.output ]
+    data_keys = [ "jni_source_files" ]
+    rebase = root_build_dir
+    metadata = {
+      # This target is just collecting source files used - this is not a
+      # legitimate dependency.
+      shared_libraries_barrier = []
+    }
+  }
+}
+
+# Declare a jni registration target.
+#
+# This target generates a srcjar containing a copy of GEN_JNI.java, which has
+# the native methods of all dependent java files. It can also create a .h file
+# for use with manual JNI registration.
+#
+# The script does not scan any generated sources (those within .srcjars, or
+# within root_build_dir). This could be fixed by adding deps & logic to scan
+# .srcjars, but isn't currently needed.
+#
+# See base/android/jni_generator/jni_registration_generator.py for more info
+# about the format of the header file.
+#
+# Variables
+#   targets: List of .build_config.json supported targets to provide java sources.
+#   manual_jni_registration: Manually do JNI registration - required for feature
+#     splits which provide their own native library. (optional)
+#   file_exclusions: List of .java files that should be skipped. (optional)
+#   namespace: Registration functions will be wrapped into this. (optional)
+#   require_native_mocks: Enforce that any native calls using
+#     org.chromium.base.annotations.NativeMethods must have a mock set
+#     (optional).
+#   enable_native_mocks: Allow native calls using
+#     org.chromium.base.annotations.NativeMethods to be mocked in tests
+#     (optional).
+#
+# Example
+#   generate_jni_registration("chrome_jni_registration") {
+#     targets = [ ":chrome_public_apk" ]
+#     manual_jni_registration = false
+#     file_exclusions = [
+#       "//path/to/Exception.java",
+#     ]
+#   }
+template("generate_jni_registration") {
+  if (defined(invoker.native_deps)) {
+    _jni_sources_list = "$target_gen_dir/$target_name.jnisources"
+    _jni_sources_target = "${target_name}__jni_sources"
+    jni_sources_list(_jni_sources_target) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      deps = invoker.native_deps
+      output = _jni_sources_list
+    }
+  }
+
+  action_with_pydeps(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    script = "//base/android/jni_generator/jni_registration_generator.py"
+    inputs = []
+    deps = []
+    _srcjar_output = "$target_gen_dir/$target_name.srcjar"
+    outputs = [ _srcjar_output ]
+    depfile = "$target_gen_dir/$target_name.d"
+
+    args = [
+      "--srcjar-path",
+      rebase_path(_srcjar_output, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+    ]
+
+    if (defined(_jni_sources_target)) {
+      inputs += [ _jni_sources_list ]
+      deps += [ ":$_jni_sources_target" ]
+      args += [
+        "--native-sources-file",
+        rebase_path(_jni_sources_list, root_build_dir),
+      ]
+    }
+    foreach(_target, invoker.java_targets) {
+      # Due to robolectric, we can't import internal_rules.gni unconditionally,
+      # which means that build_config_target_suffix isn't always available, so
+      # we hardcode the value of it here.
+      deps += [ "${_target}__build_config_crbug_908819($default_toolchain)" ]
+      _build_config =
+          get_label_info("${_target}($default_toolchain)", "target_gen_dir") +
+          "/" + get_label_info("${_target}($default_toolchain)", "name") +
+          ".build_config.json"
+      _rebased_build_config = rebase_path(_build_config, root_build_dir)
+      inputs += [ _build_config ]
+
+      args += [
+        # This is a list of .sources files.
+        "--java-sources-files=@FileArg($_rebased_build_config:deps_info:jni_all_source)",
+      ]
+    }
+
+    if (defined(invoker.include_testonly)) {
+      _include_testonly = invoker.include_testonly
+    } else {
+      _include_testonly = defined(testonly) && testonly
+    }
+    if (_include_testonly) {
+      args += [ "--include-test-only" ]
+    }
+
+    if (use_hashed_jni_names) {
+      args += [ "--use-proxy-hash" ]
+    }
+
+    if (defined(invoker.enable_native_mocks) && invoker.enable_native_mocks) {
+      args += [ "--enable-proxy-mocks" ]
+
+      if (defined(invoker.require_native_mocks) &&
+          invoker.require_native_mocks) {
+        args += [ "--require-mocks" ]
+      }
+    }
+
+    if (defined(invoker.remove_uncalled_jni) && invoker.remove_uncalled_jni) {
+      args += [ "--remove-uncalled-methods" ]
+    }
+    if (defined(invoker.add_stubs_for_missing_jni) &&
+        invoker.add_stubs_for_missing_jni) {
+      args += [ "--add-stubs-for-missing-native" ]
+    }
+
+    _manual_jni_registration = defined(invoker.manual_jni_registration) &&
+                               invoker.manual_jni_registration
+    _enable_jni_multiplexing = defined(invoker.enable_jni_multiplexing) &&
+                               invoker.enable_jni_multiplexing
+    if (_manual_jni_registration) {
+      args += [ "--manual-jni-registration" ]
+    }
+    if (_enable_jni_multiplexing) {
+      args += [ "--enable-jni-multiplexing" ]
+    }
+
+    if (_manual_jni_registration || _enable_jni_multiplexing) {
+      _subdir = rebase_path(target_gen_dir, root_gen_dir)
+      _jni_header_output =
+          "$jni_headers_dir/$_subdir/${target_name}_generated.h"
+      outputs += [ _jni_header_output ]
+      args += [
+        "--header-path",
+        rebase_path(_jni_header_output, root_build_dir),
+      ]
+
+      # This gives targets depending on this registration access to our generated header.
+      public_configs = [ "//build/config/android:jni_include_dir" ]
+    }
+
+    if (defined(invoker.file_exclusions)) {
+      _rebase_file_exclusions =
+          rebase_path(invoker.file_exclusions, root_build_dir)
+      args += [ "--file-exclusions=$_rebase_file_exclusions" ]
+    }
+
+    if (defined(invoker.namespace)) {
+      args += [ "--namespace=${invoker.namespace}" ]
+    }
+
+    if (defined(invoker.module_name)) {
+      args += [ "--module-name=${invoker.module_name}" ]
+    }
+  }
+}
 
 # This is a wrapper around an underlying native target which inserts JNI
 # registration.

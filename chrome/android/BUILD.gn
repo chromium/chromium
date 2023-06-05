@@ -3519,9 +3519,6 @@ template("libchrome_impl") {
   chrome_common_shared_library(target_name) {
     sources = [ "../browser/android/chrome_entry_point.cc" ]
     deps = []
-    if (allow_jni_multiplexing) {
-      enable_jni_multiplexing = true
-    }
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
@@ -3621,9 +3618,6 @@ template("libmonochrome_apk_or_bundle_tmpl") {
       deps += [ "//weblayer:weblayer_lib" ]
     }
 
-    if (allow_jni_multiplexing) {
-      enable_jni_multiplexing = true
-    }
     if (android_64bit_target_cpu) {
       java_targets = [ "//chrome/android:monochrome_64_public_bundle" ]
     } else {

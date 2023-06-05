@@ -4263,20 +4263,6 @@ if (enable_java_templates) {
       }
     }
   }
-
-  template("jni_sources_list") {
-    generated_file(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
-      outputs = [ invoker.output ]
-      data_keys = [ "jni_source_files" ]
-      rebase = root_build_dir
-      metadata = {
-        # This target is just collecting source files used - this is not a
-        # legitimate dependency.
-        shared_libraries_barrier = []
-      }
-    }
-  }
 }
 
 # Create a zip archive corresponding to an application bundle module.

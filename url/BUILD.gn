@@ -10,6 +10,7 @@ import("features.gni")
 import("//build/config/cronet/config.gni")
 
 if (is_android || is_robolectric) {
+  import("//build/config/android/jni.gni")
   import("//build/config/android/rules.gni")
 }
 
@@ -393,7 +394,8 @@ if (is_android && !is_cronet_build) {
 if (is_robolectric) {
   # Use this in robolectric_binary() targets if you just need GURL and //base
   # functionality. Otherwise, define a custom shared_library().
-  shared_library("libgurl_robolectric") {
+  shared_library_with_jni("libgurl_robolectric") {
+    testonly = true
     sources = [ "android/robolectric_test_main.cc" ]
     deps = [
       "//base",
@@ -402,5 +404,7 @@ if (is_robolectric) {
 
     # Make jni.h available.
     configs += [ "//third_party/jdk" ]
+
+    java_targets = [ "//chrome/android:chrome_junit_tests" ]
   }
 }

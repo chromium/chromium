@@ -283,12 +283,6 @@ if (is_android || is_chromeos) {
     # Reduce build time by using d8 incremental build.
     enable_incremental_d8 = true
 
-    # Use hashed symbol names to reduce JNI symbol overhead.
-    use_hashed_jni_names = !is_java_debug
-
-    # Enables JNI multiplexing to reduce JNI native methods overhead.
-    allow_jni_multiplexing = false
-
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that
     # adds trace events to some methods in android.view.View subclasses.

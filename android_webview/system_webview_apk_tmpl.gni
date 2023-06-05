@@ -162,9 +162,6 @@ template("system_webview_apk_or_module_tmpl") {
     if (!_omit_dex) {
       product_config_java_packages =
           [ invoker.webview_product_config_java_package ]
-      if (allow_jni_multiplexing) {
-        enable_jni_multiplexing = true
-      }
     }
 
     if (webview_includes_weblayer) {

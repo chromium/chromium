@@ -302,10 +302,6 @@ template("chrome_common_apk_or_module_tmpl") {
       custom_assertion_handler = crash_reporting_assertion_handler
     }
 
-    if (allow_jni_multiplexing) {
-      enable_jni_multiplexing = true
-    }
-
     # Include resource strings files only for supported locales.
     aapt_locale_allowlist = platform_pak_locales
 

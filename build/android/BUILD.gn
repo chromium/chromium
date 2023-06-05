@@ -71,7 +71,6 @@ if (enable_java_templates) {
     }
     robolectric_binary("build_junit_tests") {
       # Test has no JNI, so skip JNI Generator step.
-      generate_final_jni = false
       resources_package = "org.chromium.build"
       sources = [
         "junit/src/org/chromium/build/AndroidAssetsTest.java",

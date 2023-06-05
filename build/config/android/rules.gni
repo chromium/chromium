@@ -6,6 +6,7 @@
 # Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
 import("//build/config/android/config.gni")
 import("//build/config/android/copy_ex.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
@@ -15,16 +16,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
 assert(is_android || is_robolectric)
-
-# Use a dedicated include dir so that files can #include headers from other
-# toolchains without affecting non-JNI #includes.
-if (target_os == "android") {
-  jni_headers_dir = "$root_build_dir/gen/jni_headers"
-} else {
-  # Chrome OS builds cannot share gen/ directories because is_android=false
-  # within default_toolchain.
-  jni_headers_dir = "$root_gen_dir/jni_headers"
-}
 
 if (target_cpu == "arm") {
   _sanitizer_arch = "arm"
@@ -217,11 +208,11 @@ if (enable_java_templates) {
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
         _input_names = invoker.sources
-        if (!is_robolectric && use_hashed_jni_names) {
+        if (use_hashed_jni_names) {
           args += [ "--use_proxy_hash" ]
         }
 
-        if (!is_robolectric && defined(invoker.enable_jni_multiplexing) &&
+        if (defined(invoker.enable_jni_multiplexing) &&
             invoker.enable_jni_multiplexing) {
           args += [ "--enable_jni_multiplexing" ]
         }
@@ -351,162 +342,6 @@ if (enable_java_templates) {
 
 # non-robolectric things
 if (enable_java_templates && is_android) {
-  # Declare a jni registration target.
-  #
-  # This target generates a srcjar containing a copy of GEN_JNI.java, which has
-  # the native methods of all dependent java files. It can also create a .h file
-  # for use with manual JNI registration.
-  #
-  # The script does not scan any generated sources (those within .srcjars, or
-  # within root_build_dir). This could be fixed by adding deps & logic to scan
-  # .srcjars, but isn't currently needed.
-  #
-  # See base/android/jni_generator/jni_registration_generator.py for more info
-  # about the format of the header file.
-  #
-  # Variables
-  #   targets: List of .build_config.json supported targets to provide java sources.
-  #   manual_jni_registration: Manually do JNI registration - required for feature
-  #     splits which provide their own native library. (optional)
-  #   file_exclusions: List of .java files that should be skipped. (optional)
-  #   namespace: Registration functions will be wrapped into this. (optional)
-  #   require_native_mocks: Enforce that any native calls using
-  #     org.chromium.base.annotations.NativeMethods must have a mock set
-  #     (optional).
-  #   enable_native_mocks: Allow native calls using
-  #     org.chromium.base.annotations.NativeMethods to be mocked in tests
-  #     (optional).
-  #
-  # Example
-  #   generate_jni_registration("chrome_jni_registration") {
-  #     targets = [ ":chrome_public_apk" ]
-  #     manual_jni_registration = false
-  #     file_exclusions = [
-  #       "//path/to/Exception.java",
-  #     ]
-  #   }
-  template("generate_jni_registration") {
-    if (defined(invoker.native_deps)) {
-      _jni_sources_list = "$target_gen_dir/$target_name.jnisources"
-      _jni_sources_target = "${target_name}__jni_sources"
-      jni_sources_list(_jni_sources_target) {
-        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-        deps = invoker.native_deps
-        output = _jni_sources_list
-      }
-    }
-
-    action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-      script = "//base/android/jni_generator/jni_registration_generator.py"
-      inputs = []
-      deps = []
-      _srcjar_output = "$target_gen_dir/$target_name.srcjar"
-      outputs = [ _srcjar_output ]
-      depfile = "$target_gen_dir/$target_name.d"
-
-      args = [
-        "--srcjar-path",
-        rebase_path(_srcjar_output, root_build_dir),
-        "--depfile",
-        rebase_path(depfile, root_build_dir),
-      ]
-
-      if (defined(_jni_sources_target)) {
-        inputs += [ _jni_sources_list ]
-        deps += [ ":$_jni_sources_target" ]
-        args += [
-          "--native-sources-file",
-          rebase_path(_jni_sources_list, root_build_dir),
-        ]
-      }
-      foreach(_target, invoker.java_targets) {
-        deps += [ "${_target}$build_config_target_suffix($default_toolchain)" ]
-        _build_config =
-            get_label_info("${_target}($default_toolchain)", "target_gen_dir") +
-            "/" + get_label_info("${_target}($default_toolchain)", "name") +
-            ".build_config.json"
-        _rebased_build_config = rebase_path(_build_config, root_build_dir)
-        inputs += [ _build_config ]
-
-        args += [
-          # This is a list of .sources files.
-          "--java-sources-files=@FileArg($_rebased_build_config:deps_info:jni_all_source)",
-        ]
-      }
-
-      if (defined(invoker.include_testonly)) {
-        _include_testonly = invoker.include_testonly
-      } else {
-        _include_testonly = defined(testonly) && testonly
-      }
-      if (_include_testonly) {
-        args += [ "--include-test-only" ]
-      }
-
-      if (use_hashed_jni_names) {
-        args += [ "--use-proxy-hash" ]
-      }
-
-      if (defined(invoker.enable_native_mocks) && invoker.enable_native_mocks) {
-        args += [ "--enable-proxy-mocks" ]
-
-        if (defined(invoker.require_native_mocks) &&
-            invoker.require_native_mocks) {
-          args += [ "--require-mocks" ]
-        }
-      }
-
-      if (defined(invoker.remove_uncalled_jni) && invoker.remove_uncalled_jni) {
-        args += [ "--remove-uncalled-methods" ]
-      }
-      if (defined(invoker.add_stubs_for_missing_jni) &&
-          invoker.add_stubs_for_missing_jni) {
-        args += [ "--add-stubs-for-missing-native" ]
-      }
-
-      _manual_jni_registration = defined(invoker.manual_jni_registration) &&
-                                 invoker.manual_jni_registration
-      _enable_jni_multiplexing = defined(invoker.enable_jni_multiplexing) &&
-                                 invoker.enable_jni_multiplexing
-      if (_manual_jni_registration) {
-        args += [ "--manual-jni-registration" ]
-      }
-      if (_enable_jni_multiplexing) {
-        args += [ "--enable-jni-multiplexing" ]
-      }
-
-      if (_manual_jni_registration || _enable_jni_multiplexing) {
-        _subdir = rebase_path(target_gen_dir, root_gen_dir)
-        _jni_header_output =
-            "$jni_headers_dir/$_subdir/${target_name}_generated.h"
-        outputs += [ _jni_header_output ]
-        args += [
-          "--header-path",
-          rebase_path(_jni_header_output, root_build_dir),
-        ]
-
-        # This gives targets depending on this registration access to our generated header.
-        public_configs = [ "//build/config/android:jni_include_dir" ]
-      }
-
-      if (defined(invoker.file_exclusions)) {
-        _rebase_file_exclusions =
-            rebase_path(invoker.file_exclusions, root_build_dir)
-        args += [ "--file-exclusions=$_rebase_file_exclusions" ]
-      }
-
-      if (defined(invoker.namespace)) {
-        args += [ "--namespace=${invoker.namespace}" ]
-      }
-
-      if (defined(invoker.module_name)) {
-        args += [ "--module-name=${invoker.module_name}" ]
-      }
-    }
-  }
-
   # Declare a target for c-preprocessor-generated java files
   #
   # NOTE: For generating Java conterparts to enums prefer using the java_cpp_enum
@@ -1577,21 +1412,17 @@ if (enable_java_templates && is_android) {
     _generate_final_jni =
         !defined(invoker.generate_final_jni) || invoker.generate_final_jni
     if (_generate_final_jni) {
-      _jni_srcjar_target_name = "${target_name}__final_jni"
-      _outer_target_name = target_name
-
-      generate_jni_registration(_jni_srcjar_target_name) {
-        enable_native_mocks = true
-        require_native_mocks = !defined(invoker.shared_libraries)
-        java_targets = [ ":$_outer_target_name" ]
-      }
-
+      _jni_srcjar_deps = []
       if (defined(invoker.shared_libraries)) {
         foreach(_dep, invoker.shared_libraries) {
+          _dep_no_toolchain = get_label_info(_dep, "label_no_toolchain")
+          _dep_toolchain = get_label_info(_dep, "toolchain")
           assert(
-              string_replace(_dep, robolectric_toolchain, "") != _dep,
+              _dep_toolchain == robolectric_toolchain,
               "$target_name has shared_libraries with incorrect toolchain. " +
                   "Should contain (\$robolectric_toolchain) suffix: $_dep")
+          _jni_srcjar_deps +=
+              [ "${_dep_no_toolchain}__jni_registration($_dep_toolchain)" ]
         }
 
         # Write shared library output files of all dependencies to a file. Those
@@ -1604,6 +1435,16 @@ if (enable_java_templates && is_android) {
           walk_keys = [ "shared_libraries_barrier" ]
           rebase = root_build_dir
         }
+      } else {
+        _outer_target_name = target_name
+        _jni_srcjar_target_name = "${target_name}__final_jni"
+        generate_jni_registration(_jni_srcjar_target_name) {
+          enable_native_mocks = true
+          require_native_mocks = true
+          java_targets = [ ":$_outer_target_name" ]
+          add_stubs_for_missing_jni = true
+        }
+        _jni_srcjar_deps = [ ":$_jni_srcjar_target_name" ]
       }
       _native_libraries_target_name = "${target_name}__native_libraries"
       write_native_libraries_java(_native_libraries_target_name) {
@@ -1648,10 +1489,7 @@ if (enable_java_templates && is_android) {
         "//build/android:build_config_for_testing_gen",
       ]
       if (_generate_final_jni) {
-        srcjar_deps += [
-          ":$_jni_srcjar_target_name",
-          ":$_native_libraries_target_name",
-        ]
+        srcjar_deps += [ ":$_native_libraries_target_name" ] + _jni_srcjar_deps
       }
     }
 
