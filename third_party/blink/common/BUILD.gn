@@ -382,9 +382,11 @@ test("blink_common_unittests") {
   if (is_ios) {
     bundle_deps = [ ":blink_common_unittests_pak_bundle_data" ]
   }
+
   if (is_fuchsia) {
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml" ]
+    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 
   data_deps = [ ":common_unittests_data" ]

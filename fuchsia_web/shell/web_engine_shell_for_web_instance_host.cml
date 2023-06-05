@@ -19,6 +19,9 @@
       // is running only as a launcher of this child.
       "--no-relaunch",
     ],
+
+    // Required to allow JIT in child processes such as renderers.
+    job_policy_ambient_mark_vmo_exec: "true",
   },
   use: [
     // Required if not run with --headless.
