@@ -1141,6 +1141,7 @@ void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
   if (results.empty()) {
     RespondToClient(std::move(check));
   } else {
+    check->full_hash_to_store_and_hash_prefixes = results;
     AddPendingCheck(check.get());
     PerformFullHashCheck(std::move(check));
   }
