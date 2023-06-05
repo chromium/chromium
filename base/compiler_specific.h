@@ -238,20 +238,15 @@
 #endif
 
 #if !defined(CPU_ARM_NEON)
-#if defined(ARCH_CPU_ARM_FAMILY)
-// __ARM_NEON is the official way according to "ARM C Language Extensions
-// Architecture specification", section 6.5.4. See
-// https://developer.arm.com/documentation/ihi0053/latest/
-#if defined(__ARM_NEON__) || defined(__ARM_NEON)
+#if defined(__arm__)
+#if !defined(__ARMEB__) && !defined(__ARM_EABI__) && !defined(__EABI__) && \
+    !defined(__VFP_FP__) && !defined(_WIN32_WCE) && !defined(ANDROID)
+#error Chromium does not support middle endian architecture
+#endif
+#if defined(__ARM_NEON__)
 #define CPU_ARM_NEON 1
 #endif
-#endif  // defined(ARCH_CPU_ARM_FAMILY)
-
-// Sanity check.
-#if defined(ARCH_CPU_ARM64) && !defined(CPU_ARM_NEON)
-#error "AArch64 mandates NEON, should be detected"
-#endif
-
+#endif  // defined(__arm__)
 #endif  // !defined(CPU_ARM_NEON)
 
 #if !defined(HAVE_MIPS_MSA_INTRINSICS)
