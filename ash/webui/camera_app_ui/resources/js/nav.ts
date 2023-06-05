@@ -52,7 +52,6 @@ export function setup(views: View[]): void {
  * Checks if the view is already shown.
  *
  * @param index Index of the view.
- * @return Whether the view is shown or not.
  */
 function isShown(index: number): boolean {
   return state.get(allViews[index].name);
@@ -63,7 +62,6 @@ function isShown(index: number): boolean {
  * it becomes the topmost shown view.
  *
  * @param index Index of the view.
- * @return View shown.
  */
 function show(index: number): View {
   const view = allViews[index];

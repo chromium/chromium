@@ -89,7 +89,6 @@ function isSafeUrl(s: string): boolean {
  * @param content The content to be copied.
  * @param snackbarLabel The label to be displayed on snackbar when the content
  *     is copied.
- * @return The copy button element.
  */
 function setupCopyButton(
     container: HTMLElement, content: string,

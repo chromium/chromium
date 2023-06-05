@@ -51,7 +51,6 @@ export class Resolution {
    * Compares width/height of resolutions, see if they are equal or not.
    *
    * @param resolution Resolution to be compared with.
-   * @return Whether width/height of resolutions are equal.
    */
   equals(resolution: Resolution|null): boolean {
     if (resolution === null) {
@@ -65,7 +64,6 @@ export class Resolution {
    * returns true if the resolution is rotated.
    *
    * @param resolution Resolution to be compared with.
-   * @return Whether width/height of resolutions are equal.
    */
   equalsWithRotation(resolution: Resolution): boolean {
     return (this.width === resolution.width &&
@@ -77,7 +75,6 @@ export class Resolution {
    * Compares aspect ratio of resolutions, see if they are equal or not.
    *
    * @param resolution Resolution to be compared with.
-   * @return Whether aspect ratio of resolutions are equal.
    */
   aspectRatioEquals(resolution: Resolution): boolean {
     return this.aspectRatio === resolution.aspectRatio;
