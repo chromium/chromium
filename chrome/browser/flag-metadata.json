@@ -7832,6 +7832,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "whats-new-ios-m116",
+    "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "wifi-connect-mac-address-randomization",
     "owners": [ "jsiuda", "chromeos-wifi-team" ],
     "expiry_milestone": 130

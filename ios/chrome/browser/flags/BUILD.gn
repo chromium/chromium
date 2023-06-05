@@ -85,6 +85,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/whats_new:feature_flags",
+    "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",

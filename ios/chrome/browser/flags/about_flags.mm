@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
@@ -1238,6 +1239,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kWhatsNewIOS,
                                     kWhatsNewLayoutVariations,
                                     "WhatsNewLayoutVariations")},
+    {"whats-new-ios-m116", flag_descriptions::kWhatsNewIOSM116Name,
+     flag_descriptions::kWhatsNewIOSM116Description, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kWhatsNewIOSM116)},
     {"ios-autofill-branding", flag_descriptions::kAutofillBrandingIOSName,
      flag_descriptions::kAutofillBrandingIOSDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillBrandingIOS,

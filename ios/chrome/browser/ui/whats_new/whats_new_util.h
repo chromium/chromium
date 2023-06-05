@@ -6,8 +6,12 @@
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_UTIL_H_
 
 #import <Foundation/Foundation.h>
+#include "base/feature_list.h"
 
 class PromosManager;
+
+// Feature flag that enables version 2 of What's New.
+BASE_DECLARE_FEATURE(kWhatsNewIOSM116);
 
 // Key to store whether the What's New promo has been register.
 extern NSString* const kWhatsNewPromoRegistrationKey;
@@ -39,5 +43,8 @@ void setWhatsNewPromoRegistration();
 // This is used to avoid registering the What's New promo in the promo manager
 // more than once.
 bool ShouldRegisterWhatsNewPromo();
+
+// Returns whether What's New M116 is enabled.
+bool IsWhatsNewM116Enabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_UTIL_H_

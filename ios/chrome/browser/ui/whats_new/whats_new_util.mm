@@ -66,6 +66,10 @@ bool IsWhatsNewPromoRegistered() {
 
 }  // namespace
 
+BASE_FEATURE(kWhatsNewIOSM116,
+             "WhatsNewIOSM116",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool WasWhatsNewUsed() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kWhatsNewUsageEntryKey];
@@ -96,4 +100,8 @@ void setWhatsNewPromoRegistration() {
 bool ShouldRegisterWhatsNewPromo() {
   return !IsWhatsNewPromoRegistered() &&
          (IsSixLaunchAfterFre() || IsSixDaysAfterFre());
+}
+
+bool IsWhatsNewM116Enabled() {
+  return base::FeatureList::IsEnabled(kWhatsNewIOSM116);
 }

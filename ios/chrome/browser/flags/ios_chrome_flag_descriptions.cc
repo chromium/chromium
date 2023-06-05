@@ -1091,6 +1091,10 @@ const char kWhatsNewIOSName[] = "Enable What's New.";
 const char kWhatsNewIOSDescription[] =
     "When enabled, What's New will display new features and chrome tips.";
 
+const char kWhatsNewIOSM116Name[] = "Enable What's New M116.";
+const char kWhatsNewIOSM116Description[] =
+    "When enabled, What's New will display new features and a chrome tip.";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions
