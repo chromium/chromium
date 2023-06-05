@@ -96,6 +96,7 @@
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
   "try": {
+    "android-11-x86-rel": "Ubuntu-22.04",
     "android-12-x64-rel": "Ubuntu-22.04",
     "android-12-x64-rel-compilator": "Ubuntu-22.04",
     "android-arm64-rel": "Ubuntu-22.04",
