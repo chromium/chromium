@@ -122,7 +122,7 @@ class NET_EXPORT HostResolverCache final {
 
   struct KeyRef {
     base::StringPiece domain_name;
-    const NetworkAnonymizationKey& network_anonymization_key;
+    const raw_ref<const NetworkAnonymizationKey> network_anonymization_key;
   };
 
   // Allow comparing Key to KeyRef to allow refs for entry lookup.
@@ -136,11 +136,11 @@ class NET_EXPORT HostResolverCache final {
 
     bool operator()(const Key& lhs, const KeyRef& rhs) const {
       return std::tie(lhs.domain_name, lhs.network_anonymization_key) <
-             std::tie(rhs.domain_name, rhs.network_anonymization_key);
+             std::tie(rhs.domain_name, *rhs.network_anonymization_key);
     }
 
     bool operator()(const KeyRef& lhs, const Key& rhs) const {
-      return std::tie(lhs.domain_name, lhs.network_anonymization_key) <
+      return std::tie(lhs.domain_name, *lhs.network_anonymization_key) <
              std::tie(rhs.domain_name, rhs.network_anonymization_key);
     }
   };

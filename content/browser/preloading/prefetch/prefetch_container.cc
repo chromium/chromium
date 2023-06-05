@@ -470,9 +470,9 @@ PrefetchNetworkContext*
 PrefetchContainer::Reader::GetCurrentNetworkContextToServe() const {
   const SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToServe();
 
-  const auto& network_context_itr = prefetch_container_.network_contexts_.find(
+  const auto& network_context_itr = prefetch_container_->network_contexts_.find(
       this_prefetch.is_isolated_network_context_required_);
-  if (network_context_itr == prefetch_container_.network_contexts_.end()) {
+  if (network_context_itr == prefetch_container_->network_contexts_.end()) {
     // Not set in unit tests.
     return nullptr;
   }
@@ -584,7 +584,7 @@ void PrefetchContainer::Reader::OnIsolatedCookieCopyStart() {
 
   // We don't want any of the cookie listeners for this prefetch to pick up
   // changes from the copy.
-  prefetch_container_.StopAllCookieListeners();
+  prefetch_container_->StopAllCookieListeners();
 
   GetCurrentSinglePrefetchToServe().cookie_copy_status_ =
       SinglePrefetch::CookieCopyStatus::kInProgress;
@@ -696,7 +696,7 @@ void PrefetchContainer::ResetAllStreamingURLLoaders() {
 
 void PrefetchContainer::Reader::OnPrefetchProbeResult(
     PrefetchProbeResult probe_result) {
-  prefetch_container_.probe_result_ = probe_result;
+  prefetch_container_->probe_result_ = probe_result;
 
   switch (probe_result) {
     case PrefetchProbeResult::kNoProbing:
@@ -705,14 +705,14 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
       // Wait to update the prefetch status until the probe for the final
       // redirect hop is a success.
       if (index_redirect_chain_to_serve_ ==
-          prefetch_container_.redirect_chain_.size() - 1) {
-        prefetch_container_.SetPrefetchStatus(
+          prefetch_container_->redirect_chain_.size() - 1) {
+        prefetch_container_->SetPrefetchStatus(
             PrefetchStatus::kPrefetchResponseUsed);
       }
       break;
     case PrefetchProbeResult::kDNSProbeFailure:
     case PrefetchProbeResult::kTLSProbeFailure:
-      prefetch_container_.SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
+      prefetch_container_->SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
           PrefetchStatus::kPrefetchNotUsedProbeFailed);
       break;
     default:
@@ -800,8 +800,8 @@ const PrefetchContainer::SinglePrefetch&
 PrefetchContainer::Reader::GetCurrentSinglePrefetchToServe() const {
   DCHECK(index_redirect_chain_to_serve_ >= 0 &&
          index_redirect_chain_to_serve_ <
-             prefetch_container_.redirect_chain_.size());
-  return *prefetch_container_.redirect_chain_[index_redirect_chain_to_serve_];
+             prefetch_container_->redirect_chain_.size());
+  return *prefetch_container_->redirect_chain_[index_redirect_chain_to_serve_];
 }
 
 const GURL& PrefetchContainer::Reader::GetCurrentURLToServe() const {

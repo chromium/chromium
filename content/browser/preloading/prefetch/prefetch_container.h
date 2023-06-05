@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
@@ -306,7 +307,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
     // Currently the lifetime of `Reader` and `PrefetchContainer` are the same
     // and thus this reference is always valid as long as `Reader` is valid.
-    PrefetchContainer& prefetch_container_;
+    const raw_ref<PrefetchContainer> prefetch_container_;
 
     // The index of the element in |prefetch_container_.redirect_chain_| that
     // can be served.

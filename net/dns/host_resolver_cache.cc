@@ -226,8 +226,8 @@ HostResolverCache::LookupInternal(
     lookup_name = canonicalized;
   }
 
-  auto range =
-      entries_.equal_range(KeyRef{lookup_name, network_anonymization_key});
+  auto range = entries_.equal_range(
+      KeyRef{lookup_name, raw_ref(network_anonymization_key)});
   if (range.first == entries_.cend() || range.second == entries_.cbegin()) {
     return matches;
   }
