@@ -238,6 +238,10 @@ component("printing") {
     deps += [ "//ui/linux:linux_ui" ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "print_settings_initializer_mac.cc",
