@@ -73,13 +73,13 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
       expectations.Append(std::move(d));
   }
 
-  // It compares the trace data of layout shift events with |expectations| and
-  // computes a score that's used to check the UKM and UMA values below.
-  double final_score = CheckTraceData(expectations, *StopTracingAndAnalyze());
-
   waiter->Wait();
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // It compares the trace data of layout shift events with |expectations| and
+  // computes a score that's used to check the UKM and UMA values below.
+  double final_score = CheckTraceData(expectations, *StopTracingAndAnalyze());
 
   // We can only verify the layout shift metrics here in UKM and UMA if layout
   // shift only happens in the main frame. For layout shift happens in the
@@ -280,24 +280,12 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
   CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
-// TODO(crbug.com/1407011): Flaky on linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Sources_Enclosure DISABLED_Sources_Enclosure
-#else
-#define MAYBE_Sources_Enclosure Sources_Enclosure
-#endif
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, MAYBE_Sources_Enclosure) {
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
   RunWPT("sources-enclosure.html", ShiftFrame::LayoutShiftOnlyInMainFrame,
          /*num_layout_shifts=*/2);
 }
 
-// TODO(crbug.com/1407011): Flaky on linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Sources_MaxImpact DISABLED_Sources_MaxImpact
-#else
-#define MAYBE_Sources_MaxImpact Sources_MaxImpact
-#endif
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, MAYBE_Sources_MaxImpact) {
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_MaxImpact) {
   RunWPT("sources-maximpact.html");
 }
 
