@@ -11,6 +11,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/dns_query_type.h"
@@ -21,6 +22,14 @@
 #include "url/url_canon_stdstring.h"
 
 namespace net {
+
+HostResolverCache::StaleLookupResult::StaleLookupResult(
+    const HostResolverInternalResult& result,
+    absl::optional<base::TimeDelta> expired_by,
+    bool stale_by_generation)
+    : result(result),
+      expired_by(expired_by),
+      stale_by_generation(stale_by_generation) {}
 
 HostResolverCache::HostResolverCache(const base::Clock& clock,
                                      const base::TickClock& tick_clock)
@@ -49,13 +58,7 @@ const HostResolverInternalResult* HostResolverCache::Lookup(
   for (const EntryMap::const_iterator& candidate : candidates) {
     DCHECK(candidate->second.result->timed_expiration().has_value());
 
-    if (candidate->second.staleness_generation != staleness_generation_) {
-      continue;
-    } else if (candidate->second.result->expiration().has_value()) {
-      if (candidate->second.result->expiration() <= now_ticks) {
-        continue;
-      }
-    } else if (candidate->second.result->timed_expiration() <= now) {
+    if (candidate->second.IsStale(now, now_ticks, staleness_generation_)) {
       continue;
     }
 
@@ -69,6 +72,67 @@ const HostResolverInternalResult* HostResolverCache::Lookup(
   }
 
   return most_secure_result;
+}
+
+absl::optional<HostResolverCache::StaleLookupResult>
+HostResolverCache::LookupStale(
+    base::StringPiece domain_name,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    DnsQueryType query_type,
+    HostResolverSource source,
+    absl::optional<bool> secure) const {
+  std::vector<EntryMap::const_iterator> candidates = LookupInternal(
+      domain_name, network_anonymization_key, query_type, source, secure);
+
+  // Get the least expired, most secure result.
+  base::TimeTicks now_ticks = tick_clock_->NowTicks();
+  base::Time now = clock_->Now();
+  const Entry* best_match = nullptr;
+  base::TimeDelta best_match_time_until_expiration;
+  for (const EntryMap::const_iterator& candidate : candidates) {
+    DCHECK(candidate->second.result->timed_expiration().has_value());
+
+    base::TimeDelta candidate_time_until_expiration =
+        candidate->second.TimeUntilExpiration(now, now_ticks);
+
+    if (!candidate->second.IsStale(now, now_ticks, staleness_generation_) &&
+        (candidate->second.secure || !secure.value_or(true))) {
+      // If a non-stale candidate is secure, or all results are insecure, no
+      // need to check any more.
+      best_match = &candidate->second;
+      best_match_time_until_expiration = candidate_time_until_expiration;
+      break;
+    } else if (best_match == nullptr ||
+               (!candidate->second.IsStale(now, now_ticks,
+                                           staleness_generation_) &&
+                best_match->IsStale(now, now_ticks, staleness_generation_)) ||
+               candidate->second.staleness_generation >
+                   best_match->staleness_generation ||
+               (candidate->second.staleness_generation ==
+                    best_match->staleness_generation &&
+                candidate_time_until_expiration >
+                    best_match_time_until_expiration) ||
+               (candidate->second.staleness_generation ==
+                    best_match->staleness_generation &&
+                candidate_time_until_expiration ==
+                    best_match_time_until_expiration &&
+                candidate->second.secure && !best_match->secure)) {
+      best_match = &candidate->second;
+      best_match_time_until_expiration = candidate_time_until_expiration;
+    }
+  }
+
+  if (best_match == nullptr) {
+    return absl::nullopt;
+  } else {
+    absl::optional<base::TimeDelta> expired_by;
+    if (best_match_time_until_expiration.is_negative()) {
+      expired_by = best_match_time_until_expiration.magnitude();
+    }
+    return StaleLookupResult(
+        *best_match->result, expired_by,
+        best_match->staleness_generation != staleness_generation_);
+  }
 }
 
 void HostResolverCache::Set(
@@ -113,6 +177,24 @@ HostResolverCache::Entry::Entry(Entry&&) = default;
 
 HostResolverCache::Entry& HostResolverCache::Entry::operator=(Entry&&) =
     default;
+
+bool HostResolverCache::Entry::IsStale(base::Time now,
+                                       base::TimeTicks now_ticks,
+                                       int current_staleness_generation) const {
+  return staleness_generation != current_staleness_generation ||
+         TimeUntilExpiration(now, now_ticks).is_negative();
+}
+
+base::TimeDelta HostResolverCache::Entry::TimeUntilExpiration(
+    base::Time now,
+    base::TimeTicks now_ticks) const {
+  if (result->expiration().has_value()) {
+    return result->expiration().value() - now_ticks;
+  } else {
+    DCHECK(result->timed_expiration().has_value());
+    return result->timed_expiration().value() - now;
+  }
+}
 
 std::vector<HostResolverCache::EntryMap::const_iterator>
 HostResolverCache::LookupInternal(
