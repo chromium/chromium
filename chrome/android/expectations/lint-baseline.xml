@@ -3704,17 +3704,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: DiscoverabilityAction.PERMISSION_ICON_SHOWN, DiscoverabilityAction.PAGE_INFO_OPENED, DiscoverabilityAction.PERMISSIONS_OPENED, DiscoverabilityAction.PERMISSION_CHANGED, DiscoverabilityAction.STORE_ICON_SHOWN, DiscoverabilityAction.PAGE_INFO_OPENED_FROM_STORE_ICON, DiscoverabilityAction.STORE_INFO_OPENED"
-        errorLine1="                DiscoverabilityAction.NUM_ENTRIES);"
-        errorLine2="                                      ~~~~~~~~~~~">
-        <location
-            file="../../components/page_info/android/java/src/org/chromium/components/page_info/PageInfoDiscoverabilityMetrics.java"
-            line="48"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: PasswordCheckUserAction.START_CHECK_AUTOMATICALLY, PasswordCheckUserAction.START_CHECK_MANUALLY, PasswordCheckUserAction.CANCEL_CHECK, PasswordCheckUserAction.CHANGE_PASSWORD, PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY, PasswordCheckUserAction.VIEW_PASSWORD_CLICK, PasswordCheckUserAction.VIEWED_PASSWORD, PasswordCheckUserAction.COPIED_PASSWORD, PasswordCheckUserAction.EDIT_PASSWORD_CLICK, PasswordCheckUserAction.EDITED_PASSWORD, PasswordCheckUserAction.DELETE_PASSWORD_CLICK, PasswordCheckUserAction.DELETED_PASSWORD"
         errorLine1="                userAction, PasswordCheckUserAction.COUNT);"
         errorLine2="                                                    ~~~~~">
