@@ -76,11 +76,9 @@ using blink::WebString;
 using blink::WebVector;
 using blink::mojom::GenericIssueErrorType;
 
-namespace autofill {
+namespace autofill::form_util {
 
-using mojom::ButtonTitleType;
-
-namespace form_util {
+using ::autofill::mojom::ButtonTitleType;
 
 struct ShadowFieldData {
   ShadowFieldData() = default;
@@ -141,30 +139,84 @@ enum FieldFilterMask {
                                      FILTER_NON_FOCUSABLE_ELEMENTS,
 };
 
+// Constants to be passed to GetWebString<kConstant>().
+constexpr base::StringPiece kAnchor = "a";
+constexpr base::StringPiece kAutocomplete = "autocomplete";
+constexpr base::StringPiece kAriaDescribedBy = "aria-describedby";
+constexpr base::StringPiece kAriaLabel = "aria-label";
+constexpr base::StringPiece kAriaLabelledBy = "aria-labelledby";
+constexpr base::StringPiece kBold = "b";
+constexpr base::StringPiece kBreak = "br";
+constexpr base::StringPiece kButton = "button";
+constexpr base::StringPiece kClass = "class";
+constexpr base::StringPiece kColspan = "colspan";
+constexpr base::StringPiece kDefinitionDescriptionTag = "dd";
+constexpr base::StringPiece kDefinitionTermTag = "dt";
+constexpr base::StringPiece kDiv = "div";
+constexpr base::StringPiece kFieldset = "fieldset";
+constexpr base::StringPiece kFont = "font";
+constexpr base::StringPiece kFor = "for";
+constexpr base::StringPiece kForm = "form";
+constexpr base::StringPiece kFormControlSelector = "input, select, textarea";
+constexpr base::StringPiece kHidden = "hidden";
+constexpr base::StringPiece kId = "id";
+constexpr base::StringPiece kIframe = "iframe";
+constexpr base::StringPiece kImage = "img";
+constexpr base::StringPiece kInput = "input";
+constexpr base::StringPiece kLabel = "label";
+constexpr base::StringPiece kListItem = "li";
+constexpr base::StringPiece kMeta = "meta";
+constexpr base::StringPiece kName = "name";
+constexpr base::StringPiece kNoScript = "noscript";
+constexpr base::StringPiece kOption = "option";
+constexpr base::StringPiece kParagraph = "p";
+constexpr base::StringPiece kPlaceholder = "placeholder";
+constexpr base::StringPiece kRole = "role";
+constexpr base::StringPiece kScript = "script";
+constexpr base::StringPiece kSpan = "span";
+constexpr base::StringPiece kStrong = "strong";
+constexpr base::StringPiece kSubmit = "submit";
+constexpr base::StringPiece kTable = "table";
+constexpr base::StringPiece kTableCell = "td";
+constexpr base::StringPiece kTableHeader = "th";
+constexpr base::StringPiece kTableRow = "tr";
+constexpr base::StringPiece kTitle = "title";
+constexpr base::StringPiece kType = "type";
+constexpr base::StringPiece kValue = "value";
+
+// Wrapper for frequently used WebString constants.
+template <const base::StringPiece& string>
+const WebString& GetWebString() {
+  static const base::NoDestructor<WebString> web_string(
+      WebString::FromUTF8(string.data(), string.length()));
+  return *web_string;
+}
+
+template <const base::StringPiece& tag_name>
+bool HasTagName(const WebElement& element) {
+  return element.HasHTMLTagName(GetWebString<tag_name>());
+}
+
+template <const base::StringPiece& tag_name>
+bool HasTagName(const WebNode& node) {
+  return node.IsElementNode() && HasTagName<tag_name>(node.To<WebElement>());
+}
+
+template <const base::StringPiece& attribute>
+bool HasAttribute(const WebElement& element) {
+  return element.HasAttribute(GetWebString<attribute>());
+}
+
+template <const base::StringPiece& attribute>
+WebString GetAttribute(const WebElement& element) {
+  return element.GetAttribute(GetWebString<attribute>());
+}
+
 std::u16string TruncateString(std::u16string str, size_t max_length) {
   if (str.length() > max_length) {
     str.resize(max_length);
   }
   return str;
-}
-
-bool IsOptionElement(const WebElement& element) {
-  static base::NoDestructor<WebString> kOption("option");
-  return element.HasHTMLTagName(*kOption);
-}
-
-bool IsScriptElement(const WebElement& element) {
-  static base::NoDestructor<WebString> kScript("script");
-  return element.HasHTMLTagName(*kScript);
-}
-
-bool IsNoScriptElement(const WebElement& element) {
-  static base::NoDestructor<WebString> kNoScript("noscript");
-  return element.HasHTMLTagName(*kNoScript);
-}
-
-bool HasTagName(const WebNode& node, const blink::WebString& tag) {
-  return node.IsElementNode() && node.To<WebElement>().HasHTMLTagName(tag);
 }
 
 bool IsElementInControlElementSet(
@@ -184,18 +236,19 @@ bool IsTraversableContainerElement(const WebNode& node) {
     return false;
 
   const WebElement element = node.To<WebElement>();
-  return element.HasHTMLTagName("dd") || element.HasHTMLTagName("div") ||
-         element.HasHTMLTagName("fieldset") || element.HasHTMLTagName("li") ||
-         element.HasHTMLTagName("td") || element.HasHTMLTagName("table");
+  return HasTagName<kDefinitionDescriptionTag>(element) ||
+         HasTagName<kDiv>(element) || HasTagName<kFieldset>(element) ||
+         HasTagName<kListItem>(element) || HasTagName<kTableCell>(element) ||
+         HasTagName<kTable>(element);
 }
 
 // Returns the colspan for a <td> / <th>. Defaults to 1.
 size_t CalculateTableCellColumnSpan(const WebElement& element) {
-  DCHECK(element.HasHTMLTagName("td") || element.HasHTMLTagName("th"));
+  DCHECK(HasTagName<kTableCell>(element) || HasTagName<kTableHeader>(element));
 
   size_t span = 1;
-  if (element.HasAttribute("colspan")) {
-    std::u16string colspan = element.GetAttribute("colspan").Utf16();
+  if (HasAttribute<kColspan>(element)) {
+    std::u16string colspan = GetAttribute<kColspan>(element).Utf16();
     // Do not check return value to accept imperfect conversions.
     base::StringToSizeT(colspan, &span);
     // Handle overflow.
@@ -260,13 +313,13 @@ std::u16string FindChildTextInner(const WebNode& node,
   bool skip_node = false;
   if (node.IsElementNode()) {
     const WebElement element = node.To<WebElement>();
-    if (IsOptionElement(element) ||
-        (element.HasHTMLTagName("div") && base::Contains(divs_to_skip, node)) ||
+    if (HasTagName<kOption>(element) ||
+        (HasTagName<kDiv>(element) && base::Contains(divs_to_skip, node)) ||
         (element.IsFormControlElement() &&
          IsAutofillableElement(element.To<WebFormControlElement>()))) {
       return std::u16string();
     }
-    skip_node = IsScriptElement(element) || IsNoScriptElement(element);
+    skip_node = HasTagName<kScript>(element) || HasTagName<kNoScript>(element);
   }
 
   std::u16string node_text;
@@ -347,13 +400,9 @@ bool InferLabelFromSibling(const WebFormControlElement& element,
     // Coalesce any text contained in multiple consecutive
     //  (a) plain text nodes or
     //  (b) inline HTML elements that are essentially equivalent to text nodes.
-    static base::NoDestructor<WebString> kBold("b");
-    static base::NoDestructor<WebString> kStrong("strong");
-    static base::NoDestructor<WebString> kSpan("span");
-    static base::NoDestructor<WebString> kFont("font");
-    if (sibling.IsTextNode() || HasTagName(sibling, *kBold) ||
-        HasTagName(sibling, *kStrong) || HasTagName(sibling, *kSpan) ||
-        HasTagName(sibling, *kFont)) {
+    if (sibling.IsTextNode() || HasTagName<kBold>(sibling) ||
+        HasTagName<kStrong>(sibling) || HasTagName<kSpan>(sibling) ||
+        HasTagName<kFont>(sibling)) {
       std::u16string value = FindChildText(sibling);
       // A text node's value will be empty if it is for a line break.
       bool add_space = sibling.IsTextNode() && value.empty();
@@ -379,16 +428,13 @@ bool InferLabelFromSibling(const WebFormControlElement& element,
 
     // <img> and <br> tags often appear between the input element and its
     // label text, so skip over them.
-    static base::NoDestructor<WebString> kImage("img");
-    static base::NoDestructor<WebString> kBreak("br");
-    if (HasTagName(sibling, *kImage) || HasTagName(sibling, *kBreak))
+    if (HasTagName<kImage>(sibling) || HasTagName<kBreak>(sibling)) {
       continue;
+    }
 
     // We only expect <p> and <label> tags to contain the full label text.
-    static base::NoDestructor<WebString> kPage("p");
-    static base::NoDestructor<WebString> kLabel("label");
-    bool has_label_tag = HasTagName(sibling, *kLabel);
-    if (HasTagName(sibling, *kPage) || has_label_tag) {
+    bool has_label_tag = HasTagName<kLabel>(sibling);
+    if (HasTagName<kParagraph>(sibling) || has_label_tag) {
       inferred_label = FindChildText(sibling);
       inferred_label_source = has_label_tag
                                   ? FormFieldData::LabelSource::kLabelTag
@@ -435,9 +481,9 @@ bool AttributeHasButtonFeature(const WebString& attribute) {
 
 // Returns true if |element|'s id, name or css class contain |kButtonFeatures|.
 bool ElementAttributesHasButtonFeature(const WebElement& element) {
-  return AttributeHasButtonFeature(element.GetAttribute("id")) ||
-         AttributeHasButtonFeature(element.GetAttribute("name")) ||
-         AttributeHasButtonFeature(element.GetAttribute("class"));
+  return AttributeHasButtonFeature(GetAttribute<kId>(element)) ||
+         AttributeHasButtonFeature(GetAttribute<kName>(element)) ||
+         AttributeHasButtonFeature(GetAttribute<kClass>(element));
 }
 
 // Finds elements from |elements| that contains |kButtonFeatures| and appends it
@@ -448,14 +494,13 @@ void FindElementsWithButtonFeatures(const WebElementCollection& elements,
                                     ButtonTitleType button_type,
                                     bool extract_value_attribute,
                                     ButtonTitleList* list) {
-  static base::NoDestructor<WebString> kValue("value");
   for (WebElement item = elements.FirstItem(); !item.IsNull();
        item = elements.NextItem()) {
     if (!ElementAttributesHasButtonFeature(item))
       continue;
     std::u16string title =
         extract_value_attribute
-            ? (item.HasAttribute(*kValue) ? item.GetAttribute(*kValue).Utf16()
+            ? (HasAttribute<kValue>(item) ? GetAttribute<kValue>(item).Utf16()
                                           : std::u16string())
             : item.TextContent().Utf16();
     if (extract_value_attribute && title.empty())
@@ -489,9 +534,9 @@ bool InferLabelFromNext(const WebFormControlElement& element,
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
 // the placeholder text. e.g. <input placeholder="foo">
 std::u16string InferLabelFromPlaceholder(const WebFormControlElement& element) {
-  static base::NoDestructor<WebString> kPlaceholder("placeholder");
-  if (element.HasAttribute(*kPlaceholder))
-    return element.GetAttribute(*kPlaceholder).Utf16();
+  if (HasAttribute<kPlaceholder>(element)) {
+    return GetAttribute<kPlaceholder>(element).Utf16();
+  }
 
   return std::u16string();
 }
@@ -520,10 +565,9 @@ std::u16string InferLabelFromOverlayingSuccessor(
 // the value attribute when it is present and user has not typed in (if
 // element's value attribute is same as the element's value).
 std::u16string InferLabelFromValueAttr(const WebFormControlElement& element) {
-  static base::NoDestructor<WebString> kValue("value");
-  if (element.HasAttribute(*kValue) &&
-      element.GetAttribute(*kValue) == element.Value()) {
-    return element.GetAttribute(*kValue).Utf16();
+  if (HasAttribute<kValue>(element) &&
+      GetAttribute<kValue>(element) == element.Value()) {
+    return GetAttribute<kValue>(element).Utf16();
   }
 
   return std::u16string();
@@ -537,17 +581,16 @@ std::u16string InferLabelFromValueAttr(const WebFormControlElement& element) {
 // or   <tr><th><b>Some Text</b></th><td><b><input ...></b></td></tr>
 // `cell` represents the <td> tag containing the input element.
 std::u16string InferLabelFromTableColumn(const WebNode& cell) {
-  static base::NoDestructor<WebString> kTableCell("td");
-  DCHECK(HasTagName(cell, *kTableCell));
+  DCHECK(HasTagName<kTableCell>(cell));
   // Check all previous siblings, skipping non-element nodes, until we find a
   // non-empty text block.
   std::u16string inferred_label;
   WebNode previous = cell.PreviousSibling();
-  static base::NoDestructor<WebString> kTableHeader("th");
   while (inferred_label.empty() && !previous.IsNull()) {
-    if (HasTagName(previous, *kTableCell) ||
-        HasTagName(previous, *kTableHeader))
+    if (HasTagName<kTableCell>(previous) ||
+        HasTagName<kTableHeader>(previous)) {
       inferred_label = FindChildText(previous);
+    }
 
     previous = previous.PreviousSibling();
   }
@@ -567,8 +610,7 @@ std::u16string InferLabelFromTableColumn(const WebNode& cell) {
 // e.g. <tr><td>Some Text</td></tr><tr><td><input ...></td></tr>
 // `cell` represents the <td> tag containing the input element.
 std::u16string InferLabelFromTableRow(const WebNode& cell) {
-  static base::NoDestructor<WebString> kTableCell("td");
-  DCHECK(HasTagName(cell, *kTableCell));
+  DCHECK(HasTagName<kTableCell>(cell));
   std::u16string inferred_label;
 
   // Count the cell holding the input element.
@@ -579,7 +621,7 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
   // Count cells to the left to figure out |element|'s cell's position.
   for (WebNode cell_it = cell.PreviousSibling(); !cell_it.IsNull();
        cell_it = cell_it.PreviousSibling()) {
-    if (HasTagName(cell_it, *kTableCell)) {
+    if (HasTagName<kTableCell>(cell_it)) {
       cell_position += CalculateTableCellColumnSpan(cell_it.To<WebElement>());
     }
   }
@@ -587,7 +629,7 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
   // Count cells to the right.
   for (WebNode cell_it = cell.NextSibling(); !cell_it.IsNull();
        cell_it = cell_it.NextSibling()) {
-    if (HasTagName(cell_it, *kTableCell)) {
+    if (HasTagName<kTableCell>(cell_it)) {
       cell_count += CalculateTableCellColumnSpan(cell_it.To<WebElement>());
     }
   }
@@ -597,9 +639,8 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
   cell_position_end += cell_position;
 
   // Find the current row.
-  static base::NoDestructor<WebString> kTableRow("tr");
   WebNode parent = cell.ParentNode();
-  while (!parent.IsNull() && !HasTagName(parent, *kTableRow)) {
+  while (!parent.IsNull() && !HasTagName<kTableRow>(parent)) {
     parent = parent.ParentNode();
   }
   if (parent.IsNull())
@@ -607,7 +648,7 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
 
   // Now find the previous row.
   WebNode row_it = parent.PreviousSibling();
-  while (!row_it.IsNull() && !HasTagName(row_it, *kTableRow)) {
+  while (!row_it.IsNull() && !HasTagName<kTableRow>(row_it)) {
     row_it = row_it.PreviousSibling();
   }
 
@@ -617,12 +658,11 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
     WebNode matching_cell;
     size_t prev_row_count = 0;
     WebNode prev_row_it = row_it.FirstChild();
-    static base::NoDestructor<WebString> kTableHeader("th");
     while (!prev_row_it.IsNull()) {
       if (prev_row_it.IsElementNode()) {
         WebElement prev_row_element = prev_row_it.To<WebElement>();
-        if (prev_row_element.HasHTMLTagName(*kTableCell) ||
-            prev_row_element.HasHTMLTagName(*kTableHeader)) {
+        if (prev_row_element.HasHTMLTagName(GetWebString<kTableCell>()) ||
+            prev_row_element.HasHTMLTagName(GetWebString<kTableHeader>())) {
           size_t span = CalculateTableCellColumnSpan(prev_row_element);
           size_t prev_row_count_end = prev_row_count + span - 1;
           if (prev_row_count == cell_position &&
@@ -646,8 +686,9 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
   // find a non-empty text block.
   WebNode previous = parent.PreviousSibling();
   while (inferred_label.empty() && !previous.IsNull()) {
-    if (HasTagName(previous, *kTableRow))
+    if (HasTagName<kTableRow>(previous)) {
       inferred_label = FindChildText(previous);
+    }
     previous = previous.PreviousSibling();
   }
 
@@ -674,10 +715,8 @@ std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
 
   // Search the sibling and parent <div>s until we find a candidate label.
   std::u16string inferred_label;
-  static base::NoDestructor<WebString> kDiv("div");
-  static base::NoDestructor<WebString> kLabel("label");
   while (inferred_label.empty() && !node.IsNull()) {
-    if (HasTagName(node, *kDiv)) {
+    if (HasTagName<kDiv>(node)) {
       if (looking_for_parent)
         inferred_label = FindChildTextWithIgnoreList(node, divs_to_skip);
       else
@@ -685,9 +724,8 @@ std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
 
       // Avoid sibling DIVs that contain autofillable fields.
       if (!looking_for_parent && !inferred_label.empty()) {
-        static base::NoDestructor<WebString> kSelector(
-            "input, select, textarea");
-        WebElement result_element = node.QuerySelector(*kSelector);
+        WebElement result_element =
+            node.QuerySelector(GetWebString<kFormControlSelector>());
         if (!result_element.IsNull()) {
           inferred_label.clear();
           divs_to_skip.insert(node);
@@ -697,7 +735,7 @@ std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
       looking_for_parent = false;
     } else if (!looking_for_parent) {
       // Infer a label from text nodes and unassigned <label> siblings.
-      if (HasTagName(node, *kLabel) &&
+      if (HasTagName<kLabel>(node) &&
           node.To<WebLabelElement>().CorrespondingControl().IsNull()) {
         inferred_label = FindChildText(node);
       } else if (node.IsTextNode()) {
@@ -730,17 +768,16 @@ std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
 // e.g. <dl><dt>Some Text</dt><dd><input ...></dd></dl>
 // e.g. <dl><dt><b>Some Text</b></dt><dd><b><input ...></b></dd></dl>
 std::u16string InferLabelFromDefinitionList(const WebNode& dd) {
-  static base::NoDestructor<WebString> kDefinitionDescriptionTag("dd");
-  static base::NoDestructor<WebString> kDefinitionTermTag("dt");
-  DCHECK(HasTagName(dd, *kDefinitionDescriptionTag));
+  DCHECK(HasTagName<kDefinitionDescriptionTag>(dd));
 
   // Skip by any intervening text nodes.
   WebNode previous = dd.PreviousSibling();
   while (!previous.IsNull() && previous.IsTextNode())
     previous = previous.PreviousSibling();
 
-  if (previous.IsNull() || !HasTagName(previous, *kDefinitionTermTag))
+  if (previous.IsNull() || !HasTagName<kDefinitionTermTag>(previous)) {
     return std::u16string();
+  }
   return FindChildText(previous);
 }
 
@@ -878,14 +915,6 @@ void RemoveDuplicatesAndLimitTotalLength(ButtonTitleList* result) {
 // Return button titles with highest priority based on credibility of their HTML
 // tags and attributes.
 ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
-  static base::NoDestructor<WebString> kA("a");
-  static base::NoDestructor<WebString> kButton("button");
-  static base::NoDestructor<WebString> kDiv("div");
-  static base::NoDestructor<WebString> kForm("form");
-  static base::NoDestructor<WebString> kInput("input");
-  static base::NoDestructor<WebString> kSpan("span");
-  static base::NoDestructor<WebString> kSubmit("submit");
-
   // Different button types have different credibility of being the main button.
   // Highest - <input type='submit'>, <button type='submit'>, <button>.
   // Moderate - <input type='button'> <button type='button'>.
@@ -894,15 +923,15 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
   ButtonTitleList moderate_priority_buttons;
 
   WebElementCollection input_elements =
-      web_form.GetElementsByHTMLTagName(*kInput);
+      web_form.GetElementsByHTMLTagName(GetWebString<kInput>());
   for (WebElement item = input_elements.FirstItem(); !item.IsNull();
        item = input_elements.NextItem()) {
     DCHECK(item.IsFormControlElement());
     WebFormControlElement control_element = item.To<WebFormControlElement>();
     bool is_submit_type =
-        control_element.FormControlTypeForAutofill() == *kSubmit;
+        control_element.FormControlTypeForAutofill() == GetWebString<kSubmit>();
     bool is_button_type =
-        control_element.FormControlTypeForAutofill() == *kButton;
+        control_element.FormControlTypeForAutofill() == GetWebString<kButton>();
     if (!is_submit_type && !is_button_type) {
       continue;
     }
@@ -916,17 +945,18 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
   }
 
   WebElementCollection button_elements =
-      web_form.GetElementsByHTMLTagName(*kButton);
+      web_form.GetElementsByHTMLTagName(GetWebString<kButton>());
   for (WebElement item = button_elements.FirstItem(); !item.IsNull();
        item = button_elements.NextItem()) {
-    WebString type_attribute = item.GetAttribute("type");
-    if (!type_attribute.IsNull() && type_attribute != *kButton &&
-        type_attribute != *kSubmit) {
+    const WebString& type_attribute = GetAttribute<kType>(item);
+    if (!type_attribute.IsNull() && type_attribute != GetWebString<kButton>() &&
+        type_attribute != GetWebString<kSubmit>()) {
       // Neither type='submit' nor type='button'. Skip this button.
       continue;
     }
 
-    bool is_submit_type = type_attribute.IsNull() || type_attribute == *kSubmit;
+    bool is_submit_type =
+        type_attribute.IsNull() || type_attribute == GetWebString<kSubmit>();
     std::u16string title = item.TextContent().Utf16();
     AddButtonTitleToList(std::move(title),
                          is_submit_type
@@ -947,13 +977,16 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
 
   ButtonTitleList least_priority_buttons;
   FindElementsWithButtonFeatures(
-      web_form.GetElementsByHTMLTagName(*kA), ButtonTitleType::HYPERLINK,
+      web_form.GetElementsByHTMLTagName(GetWebString<kAnchor>()),
+      ButtonTitleType::HYPERLINK,
       /*extract_value_attribute=*/true, &least_priority_buttons);
   FindElementsWithButtonFeatures(
-      web_form.GetElementsByHTMLTagName(*kDiv), ButtonTitleType::DIV,
+      web_form.GetElementsByHTMLTagName(GetWebString<kDiv>()),
+      ButtonTitleType::DIV,
       /*extract_value_attribute=*/false, &least_priority_buttons);
   FindElementsWithButtonFeatures(
-      web_form.GetElementsByHTMLTagName(*kSpan), ButtonTitleType::SPAN,
+      web_form.GetElementsByHTMLTagName(GetWebString<kSpan>()),
+      ButtonTitleType::SPAN,
       /*extract_value_attribute=*/false, &least_priority_buttons);
   RemoveDuplicatesAndLimitTotalLength(&least_priority_buttons);
   return least_priority_buttons;
@@ -985,7 +1018,7 @@ void FilterOptionElementsAndGetOptionStrings(
 
   options->reserve(option_elements.size());
   for (const auto& option_element : option_elements) {
-    if (IsOptionElement(option_element)) {
+    if (HasTagName<kOption>(option_element)) {
       const WebOptionElement option = option_element.To<WebOptionElement>();
       options->push_back(
           {.value = TruncateString(option.Value().Utf16(), kMaxStringLength),
@@ -1096,8 +1129,6 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // attribute) and the field that initiated the filling, i.e. the field the
     // user is currently editing and interacting with.
     const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-    static base::NoDestructor<WebString> kValue("value");
-    static base::NoDestructor<WebString> kPlaceholder("placeholder");
 
     if (((filters & FILTER_DISABLED_ELEMENTS) && !element.IsEnabled()) ||
         ((filters & FILTER_READONLY_ELEMENTS) && element.IsReadOnly()) ||
@@ -1157,8 +1188,9 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
         element.UserHasEditedTheField() &&
         !SanitizedFieldIsEmpty(current_element_value) &&
         !data.fields[i].force_override &&
-        !HasAttributeWithValue(*kValue, current_element_value) &&
-        !HasAttributeWithValue(*kPlaceholder, current_element_value)) {
+        !HasAttributeWithValue(GetWebString<kValue>(), current_element_value) &&
+        !HasAttributeWithValue(GetWebString<kPlaceholder>(),
+                               current_element_value)) {
       continue;
     }
 
@@ -1373,8 +1405,7 @@ FormFieldData* SearchForFormControlByName(
 void EmitDevtoolsIssueForLabelWithoutControl(
     WebLabelElement label,
     bool label_for_matches_names_attribute) {
-  static base::NoDestructor<WebString> kFor("for");
-  if (!label.HasAttribute(*kFor)) {
+  if (!HasAttribute<kFor>(label)) {
     // Label has neither for attribute nor a control element was found.
     label.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
@@ -1388,7 +1419,7 @@ void EmitDevtoolsIssueForLabelWithoutControl(
     // should be linked to element ids.
     label.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
-        label.GetDevToolsNodeId(), WebString("for"));
+        label.GetDevToolsNodeId(), GetWebString<kFor>());
   } else {
     // Add a DevTools issue informing the developer that the `label`'s for-
     // attribute is pointing to the name of a field, even though the ID should
@@ -1396,7 +1427,7 @@ void EmitDevtoolsIssueForLabelWithoutControl(
     // TODO(crbug.com/1339277): Use `root` once the feature is launched.
     label.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormLabelForNameError,
-        label.GetDevToolsNodeId(), WebString("for"));
+        label.GetDevToolsNodeId(), GetWebString<kFor>());
   }
 }
 
@@ -1411,11 +1442,8 @@ void MatchLabelsAndFields(
     const WebDocument& root,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                          CompareByRendererId>& field_set) {
-  static base::NoDestructor<WebString> kLabel("label");
-  static base::NoDestructor<WebString> kFor("for");
-  static base::NoDestructor<WebString> kHidden("hidden");
-
-  WebElementCollection labels = root.GetElementsByHTMLTagName(*kLabel);
+  WebElementCollection labels =
+      root.GetElementsByHTMLTagName(GetWebString<kLabel>());
   DCHECK(!labels.IsNull());
 
   for (WebElement item = labels.FirstItem(); !item.IsNull();
@@ -1428,7 +1456,7 @@ void MatchLabelsAndFields(
     if (control.IsNull()) {
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
-      field_data = SearchForFormControlByName(label.GetAttribute(*kFor).Utf16(),
+      field_data = SearchForFormControlByName(GetAttribute<kFor>(label).Utf16(),
                                               field_set, label_source);
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableDevtoolsIssues)) {
@@ -1437,8 +1465,10 @@ void MatchLabelsAndFields(
       }
     } else if (control.IsFormControlElement()) {
       WebFormControlElement form_control = control.To<WebFormControlElement>();
-      if (form_control.FormControlTypeForAutofill() == *kHidden)
+      if (form_control.FormControlTypeForAutofill() ==
+          GetWebString<kHidden>()) {
         continue;
+      }
       // Typical case: look up |field_data| in |field_set|.
       auto iter = field_set.find(GetFieldRendererId(form_control));
       if (iter == field_set.end())
@@ -1452,7 +1482,7 @@ void MatchLabelsAndFields(
 
     std::u16string label_text = FindChildText(label);
     if (label_text.empty()) {
-      if (label.HasAttribute(*kFor)) {
+      if (HasAttribute<kFor>(label)) {
         continue;
       }
       DCHECK(!control.IsNull() && control.IsFormControlElement());
@@ -1501,16 +1531,14 @@ void MaybeEmitDuplicateIdForInputIssue(
         id_count[element.GetIdAttribute()] > 1) {
       element.GetDocument().GetFrame()->AddGenericIssue(
           GenericIssueErrorType::kFormDuplicateIdForInputError,
-          element.GetDevToolsNodeId(), WebString("id"));
+          element.GetDevToolsNodeId(), GetWebString<kId>());
     }
   }
 }
 
 void MaybeEmitInputWithEmptyIdAndNameIssue(
     const WebFormControlElement& element) {
-  static base::NoDestructor<WebString> kName("name");
-
-  if (element.GetAttribute(*kName).IsEmpty() &&
+  if (GetAttribute<kName>(element).IsEmpty() &&
       element.GetIdAttribute().IsEmpty()) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormEmptyIdAndNameAttributesForInputError,
@@ -1519,8 +1547,7 @@ void MaybeEmitInputWithEmptyIdAndNameIssue(
 }
 
 bool HasAutocompleteAttribute(const WebElement& element) {
-  static base::NoDestructor<WebString> kAutocomplete("autocomplete");
-  return element.HasAttribute(*kAutocomplete);
+  return HasAttribute<kAutocomplete>(element);
 }
 
 void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
@@ -1544,21 +1571,23 @@ void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
                    HtmlFieldType::kUnrecognized;
       };
 
-  static base::NoDestructor<WebString> kName("name");
   bool name_attr_matches_autocomplete =
       ParsedHtmlAttributeValueToAutocompleteHasFieldType(
-          element.GetAttribute(*kName).Utf8());
+          GetAttribute<kName>(element).Utf8());
   bool id_attr_matches_autocomplete =
       ParsedHtmlAttributeValueToAutocompleteHasFieldType(
           element.GetIdAttribute().Utf8());
 
   if (name_attr_matches_autocomplete || id_attr_matches_autocomplete) {
-    WebString violatingAttr =
-        id_attr_matches_autocomplete ? WebString("id") : WebString("name");
+    WebString violatingAttr = id_attr_matches_autocomplete
+                                  ? GetWebString<kId>()
+                                  : GetWebString<kName>();
     element.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::
             kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-        element.GetDevToolsNodeId(), violatingAttr);
+        element.GetDevToolsNodeId(),
+        id_attr_matches_autocomplete ? GetWebString<kId>()
+                                     : GetWebString<kName>());
     return;
   }
 }
@@ -1794,9 +1823,8 @@ base::flat_map<FieldRendererId, size_t> BuildRendererIdToIndex(
 }
 
 std::string GetAutocompleteAttribute(const WebElement& element) {
-  static base::NoDestructor<WebString> kAutocomplete("autocomplete");
   std::string autocomplete_attribute =
-      element.GetAttribute(*kAutocomplete).Utf8();
+      GetAttribute<kAutocomplete>(element).Utf8();
   if (autocomplete_attribute.size() > kMaxStringLength) {
     // Discard overly long attribute values to avoid DOS-ing the browser
     // process.  However, send over a default string to indicate that the
@@ -1812,7 +1840,7 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
             kFormAutocompleteAttributeEmptyError,
-        element.GetDevToolsNodeId(), WebString("autocomplete"));
+        element.GetDevToolsNodeId(), GetWebString<kAutocomplete>());
   }
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
@@ -1821,7 +1849,7 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
             kFormInputHasWrongButWellIntendedAutocompleteValueError,
-        element.GetDevToolsNodeId(), WebString("autocomplete"));
+        element.GetDevToolsNodeId(), GetWebString<kAutocomplete>());
   }
 }
 
@@ -1832,7 +1860,7 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
 // scroll size). We can probably merge them but should do a Finch experiment
 // about it.
 bool IsVisibleIframe(const WebElement& element) {
-  DCHECK(element.HasHTMLTagName("iframe"));
+  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
   // It is common for not-humanly-visible elements to have very small yet
   // positive bounds. The threshold of 10 pixels is chosen rather arbitrarily.
   constexpr int kMinPixelSize = 10;
@@ -1842,7 +1870,7 @@ bool IsVisibleIframe(const WebElement& element) {
 }
 
 bool IsAdIframe(const WebElement& element) {
-  DCHECK(element.HasHTMLTagName("iframe"));
+  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
   WebFrame* iframe = WebFrame::FromFrameOwnerElement(element);
   return iframe && iframe->IsAdFrame();
 }
@@ -1864,14 +1892,15 @@ bool IsAdIframe(const WebElement& element) {
 //
 // For further details, see crbug.com/1117028#c8 and crbug.com/1245631.
 bool IsRelevantChildFrame(const WebElement& element) {
-  DCHECK(element.HasHTMLTagName("iframe"));
+  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
   return IsVisibleIframe(element) || !IsAdIframe(element);
 }
 
 WebFormElement GetClosestAncestorFormElement(WebNode n) {
   while (!n.IsNull()) {
-    if (n.IsElementNode() && n.To<WebElement>().HasHTMLTagName("form"))
+    if (HasTagName<kForm>(n)) {
       return n.To<WebFormElement>();
+    }
     n = n.ParentNode();
   }
   return WebFormElement();
@@ -2142,17 +2171,13 @@ void WebFormControlElementToFormField(
   DCHECK(field);
   DCHECK(!element.IsNull());
   DCHECK(element.GetDocument().GetFrame());
-  static base::NoDestructor<WebString> kName("name");
-  static base::NoDestructor<WebString> kRole("role");
-  static base::NoDestructor<WebString> kPlaceholder("placeholder");
-  static base::NoDestructor<WebString> kClass("class");
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   // Save both id and name attributes, if present. If there is only one of them,
   // it will be saved to |name|. See HTMLFormControlElement::nameForAutofill.
   field->name = element.NameForAutofill().Utf16();
   field->id_attribute = element.GetIdAttribute().Utf16();
-  field->name_attribute = element.GetAttribute(*kName).Utf16();
+  field->name_attribute = GetAttribute<kName>(element).Utf16();
   field->unique_renderer_id = GetFieldRendererId(element);
   field->host_form_id = GetFormRendererId(form_element);
   field->form_control_ax_id = element.GetAxId();
@@ -2167,14 +2192,15 @@ void WebFormControlElementToFormField(
     ValidateAutocompleteAttributeForElement(element);
   }
 
-  if (base::EqualsCaseInsensitiveASCII(element.GetAttribute(*kRole).Utf16(),
+  if (base::EqualsCaseInsensitiveASCII(GetAttribute<kRole>(element).Utf16(),
                                        "presentation")) {
     field->role = FormFieldData::RoleAttribute::kPresentation;
   }
 
-  field->placeholder = element.GetAttribute(*kPlaceholder).Utf16();
-  if (element.HasAttribute(*kClass))
-    field->css_classes = element.GetAttribute(*kClass).Utf16();
+  field->placeholder = GetAttribute<kPlaceholder>(element).Utf16();
+  if (HasAttribute<kClass>(element)) {
+    field->css_classes = GetAttribute<kClass>(element).Utf16();
+  }
 
   const FieldRendererId renderer_id(element.UniqueRendererFormControlId());
   if (field_data_manager && field_data_manager->HasFieldData(renderer_id)) {
@@ -2195,14 +2221,14 @@ void WebFormControlElementToFormField(
     std::u16string shadow_host_id = host.GetIdAttribute().Utf16();
     if (shadow_data && !shadow_host_id.empty())
       shadow_data->shadow_host_id_attributes.push_back(shadow_host_id);
-    std::u16string shadow_host_name = host.GetAttribute(*kName).Utf16();
+    std::u16string shadow_host_name = GetAttribute<kName>(host).Utf16();
     if (shadow_data && !shadow_host_name.empty())
       shadow_data->shadow_host_name_attributes.push_back(shadow_host_name);
 
     if (field->id_attribute.empty())
       field->id_attribute = host.GetIdAttribute().Utf16();
     if (field->name_attribute.empty())
-      field->name_attribute = host.GetAttribute(*kName).Utf16();
+      field->name_attribute = GetAttribute<kName>(host).Utf16();
     if (field->name.empty()) {
       field->name = field->name_attribute.empty() ? field->id_attribute
                                                   : field->name_attribute;
@@ -2215,8 +2241,9 @@ void WebFormControlElementToFormField(
       field->parsed_autocomplete =
           ParseAutocompleteAttribute(field->autocomplete_attribute);
     }
-    if (field->css_classes.empty() && host.HasAttribute(*kClass))
-      field->css_classes = host.GetAttribute(*kClass).Utf16();
+    if (field->css_classes.empty() && HasAttribute<kClass>(host)) {
+      field->css_classes = GetAttribute<kClass>(host).Utf16();
+    }
     if (field->aria_label.empty())
       field->aria_label = GetAriaLabel(host.GetDocument(), host);
     if (field->aria_description.empty())
@@ -2282,7 +2309,7 @@ void WebFormControlElementToFormField(
     WebVector<WebElement> list_items =
         GetListItemsForSelectOrSelectMenu(element);
     for (const auto& list_item : list_items) {
-      if (IsOptionElement(list_item)) {
+      if (HasTagName<kOption>(list_item)) {
         const WebOptionElement option_element =
             list_item.To<WebOptionElement>();
         if (option_element.Value().Utf16() == value) {
@@ -2343,7 +2370,7 @@ bool WebFormElementToFormData(
 
   std::vector<WebElement> owned_iframes;
   WebElementCollection iframes =
-      form_element.GetElementsByHTMLTagName("iframe");
+      form_element.GetElementsByHTMLTagName(GetWebString<kIframe>());
   for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
        iframe = iframes.NextItem()) {
     if (GetClosestAncestorFormElement(iframe) == form_element &&
@@ -2374,7 +2401,7 @@ WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
          parent = parent.ParentNode()) {
       if (parent.IsElementNode()) {
         WebElement parentElement = parent.To<WebElement>();
-        if (parentElement.HasHTMLTagName("form")) {
+        if (HasTagName<kForm>(parentElement)) {
           return parentElement.To<WebFormElement>();
         }
       }
@@ -2396,7 +2423,8 @@ std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
 
 std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
   std::vector<WebElement> unowned_iframes;
-  WebElementCollection iframes = document.GetElementsByHTMLTagName("iframe");
+  WebElementCollection iframes =
+      document.GetElementsByHTMLTagName(GetWebString<kIframe>());
   for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
        iframe = iframes.NextItem()) {
     if (GetClosestAncestorFormElement(iframe).IsNull() &&
@@ -2562,10 +2590,6 @@ bool IsWebpageEmpty(const blink::WebLocalFrame* frame) {
 }
 
 bool IsWebElementEmpty(const blink::WebElement& root) {
-  static base::NoDestructor<WebString> kScript("script");
-  static base::NoDestructor<WebString> kMeta("meta");
-  static base::NoDestructor<WebString> kTitle("title");
-
   if (root.IsNull())
     return true;
 
@@ -2579,9 +2603,11 @@ bool IsWebElementEmpty(const blink::WebElement& root) {
       continue;
 
     WebElement element = child.To<WebElement>();
-    if (!element.HasHTMLTagName(*kScript) && !element.HasHTMLTagName(*kMeta) &&
-        !element.HasHTMLTagName(*kTitle))
+    if (!element.HasHTMLTagName(GetWebString<kScript>()) &&
+        !element.HasHTMLTagName(GetWebString<kMeta>()) &&
+        !element.HasHTMLTagName(GetWebString<kTitle>())) {
       return false;
+    }
   }
   return true;
 }
@@ -2779,7 +2805,7 @@ void MaybeEmitAriaLabelledByDevtoolsIssue(const WebElement& element,
           [](const WebElement& node) { return node.IsNull(); })) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
-        element.GetDevToolsNodeId(), WebString("aria-labelledby"));
+        element.GetDevToolsNodeId(), GetWebString<kAriaLabelledBy>());
   }
 }
 
@@ -2787,10 +2813,9 @@ void MaybeEmitAriaLabelledByDevtoolsIssue(const WebElement& element,
 
 std::u16string GetAriaLabel(const blink::WebDocument& document,
                             const WebElement& element) {
-  static const base::NoDestructor<WebString> kAriaLabelledBy("aria-labelledby");
-  if (element.HasAttribute(*kAriaLabelledBy)) {
+  if (HasAttribute<kAriaLabelledBy>(element)) {
     blink::WebString arial_label_attribute =
-        element.GetAttribute(*kAriaLabelledBy);
+        GetAttribute<kAriaLabelledBy>(element);
     if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
       MaybeEmitAriaLabelledByDevtoolsIssue(element, arial_label_attribute);
     }
@@ -2799,19 +2824,17 @@ std::u16string GetAriaLabel(const blink::WebDocument& document,
       return text;
   }
 
-  static const base::NoDestructor<WebString> kAriaLabel("aria-label");
-  if (element.HasAttribute(*kAriaLabel))
-    return element.GetAttribute(*kAriaLabel).Utf16();
+  if (HasAttribute<kAriaLabel>(element)) {
+    return GetAttribute<kAriaLabel>(element).Utf16();
+  }
 
   return std::u16string();
 }
 
 std::u16string GetAriaDescription(const blink::WebDocument& document,
                                   const WebElement& element) {
-  static const base::NoDestructor<WebString> kAriaDescribedBy(
-      "aria-describedby");
   return CoalesceTextByIdList(document,
-                              element.GetAttribute(*kAriaDescribedBy));
+                              GetAttribute<kAriaDescribedBy>(element));
 }
 
 WebNode NextWebNode(const WebNode& current_node, bool forward) {
@@ -2938,5 +2961,4 @@ void TraverseDomForFourDigitCombinations(
       .Run(std::vector<std::string>(matches.begin(), matches.end()));
 }
 
-}  // namespace form_util
-}  // namespace autofill
+}  // namespace autofill::form_util
