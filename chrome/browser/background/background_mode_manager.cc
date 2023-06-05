@@ -20,7 +20,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,9 +296,6 @@ BackgroundModeManager::BackgroundModeManager(
   // This observer is never unregistered because the BackgroundModeManager
   // outlives the profile storage.
   profile_storage_->AddObserver(this);
-
-  UMA_HISTOGRAM_BOOLEAN("BackgroundMode.OnStartup.IsBackgroundModePrefEnabled",
-                        IsBackgroundModePrefEnabled());
 
   // Listen for the background mode preference changing.
   if (g_browser_process->local_state()) {  // Skip for unit tests
