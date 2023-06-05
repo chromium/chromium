@@ -20,6 +20,7 @@
     ] static AbortSignal timeout([EnforceRange] unsigned long long milliseconds);
     [
         CallWith=ScriptState,
+        MeasureAs=AbortSignalAny,
         NewObject,
         RuntimeEnabled=AbortSignalAny
     ] static AbortSignal _any(sequence<AbortSignal> signals);

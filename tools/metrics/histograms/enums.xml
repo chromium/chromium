@@ -42688,6 +42688,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4579" label="FedCmLoginHint"/>
   <int value="4580" label="FedCmRpContext"/>
   <int value="4581" label="EventTimingArtificialPointerupOrClick"/>
+  <int value="4582" label="AbortSignalAny"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
