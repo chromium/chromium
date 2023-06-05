@@ -72,13 +72,15 @@ constexpr int kContentHorizontalPadding = 20;
 constexpr int kMonthVerticalPadding = 10;
 constexpr int kLabelVerticalPadding = 10;
 constexpr int kLabelTextInBetweenPadding = 10;
-const int kWeekRowHorizontalPadding =
+constexpr int kLabelTextInBetweenPaddingJelly = 4;
+constexpr int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
 const int kWeekRowHorizontalPaddingJelly =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPaddingJelly;
 constexpr int kExpandedCalendarPadding = 11;
 constexpr int kExpandedCalendarPaddingJelly = 10;
 constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
+constexpr int kChevronPaddingJelly = 16;
 constexpr int kMonthHeaderLabelTopPadding = 14;
 constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
@@ -185,13 +187,28 @@ constexpr char kSmoothScrollLabelViewWhenShowingTodaysDateCell[] =
     "Ash.CalendarView.SmoothScrollToTodaysDateCell.LabelView."
     "AnimationSmoothness";
 
-std::unique_ptr<views::Label> HeaderView(const std::u16string& month) {
+std::unique_ptr<views::Label> CreateHeaderView(const std::u16string& month) {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(TypographyToken::kCrosDisplay7, month,
                                        cros_tokens::kCrosSysOnSurface))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD)
       .SetTextContext(CONTEXT_CALENDAR_LABEL)
       .SetAutoColorReadabilityEnabled(false)
+      .Build();
+}
+
+std::unique_ptr<views::Label> CreateHeaderYearView(const std::u16string& year) {
+  const int label_padding = features::IsCalendarJellyEnabled()
+                                ? kLabelTextInBetweenPaddingJelly
+                                : kLabelTextInBetweenPadding;
+
+  return views::Builder<views::Label>(
+             bubble_utils::CreateLabel(TypographyToken::kCrosDisplay7, year,
+                                       cros_tokens::kCrosSysOnSurface))
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD)
+      .SetTextContext(CONTEXT_CALENDAR_LABEL)
+      .SetAutoColorReadabilityEnabled(false)
+      .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, label_padding)))
       .Build();
 }
 
@@ -268,7 +285,7 @@ class CalendarView::MonthHeaderLabelView : public views::View {
  public:
   MonthHeaderLabelView(LabelType type,
                        CalendarViewController* calendar_view_controller)
-      : month_label_(AddChildView(HeaderView(std::u16string()))) {
+      : month_label_(AddChildView(CreateHeaderView(std::u16string()))) {
     // The layer is required in animation.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -381,21 +398,8 @@ void CalendarView::ScrollContentsView::StylusEventHandler::OnTouchEvent(
 
 CalendarHeaderView::CalendarHeaderView(const std::u16string& month,
                                        const std::u16string& year)
-    : header_(AddChildView(HeaderView(month))),
-      header_year_(AddChildView(
-          views::Builder<views::Label>(
-              bubble_utils::CreateLabel(TypographyToken::kCrosDisplay7,
-                                        year,
-                                        cros_tokens::kCrosSysOnSurface))
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD)
-              .SetTextContext(CONTEXT_CALENDAR_LABEL)
-              .SetAutoColorReadabilityEnabled(false)
-              .SetBorder(views::CreateEmptyBorder(
-                  gfx::Insets::TLBR(0,
-                                    kLabelTextInBetweenPadding,
-                                    0,
-                                    kLabelTextInBetweenPadding)))
-              .Build())) {
+    : header_(AddChildView(CreateHeaderView(month))),
+      header_year_(AddChildView(CreateHeaderYearView(year))) {
   // The layer is required in animation.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -507,8 +511,10 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   button_container_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
   // Aligns button with the calendar dates in the `TableLayout`.
-  button_container_layout->set_between_child_spacing(horizontal_padding +
-                                                     kChevronPadding);
+  button_container_layout->set_between_child_spacing(
+      features::IsCalendarJellyEnabled()
+          ? kChevronPaddingJelly
+          : horizontal_padding + kChevronPadding);
 
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
