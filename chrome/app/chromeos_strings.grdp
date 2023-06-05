@@ -6172,8 +6172,11 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
       Data associated with this app may be removed from this device
   </message>
+  <message name="IDS_BOREALIS_SPLASHSCREEN_TITLE" desc="Title on splashscreen when starting Steam on Chrome OS. 'Steam for Chromebook' is the name of the product.">
+    Steam for Chromebook
+  </message>
   <message name="IDS_BOREALIS_SPLASHSCREEN_MESSAGE" desc="Message on splashscreen when starting Steam on Chrome OS.">
-    starting up...
+    Loading...
   </message>
   <message name="IDS_BOREALIS_HATS_TITLE" desc="Title for HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
     Help us improve Steam for Chromebook

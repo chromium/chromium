@@ -150,7 +150,6 @@
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_STEAM_192" file="borealis/logo_borealis_steam_192.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_STEAM_PENDING_192" file="borealis/logo_borealis_steam_pending_192.png" type="BINDATA" />
-        <include name="IDR_LOGO_BOREALIS_SPLASH" file="borealis/logo_borealis_splash.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_FLAIR" file="borealis/logo_borealis_flair_64.png" type="BINDATA" />
         <!-- TODO(b/248938308): Replace the below large .png files with svg/lottie when we update to WebUI. -->
         <include name="IDR_BOREALIS_INSTALLER_COMPLETE_LIGHT" file="borealis/borealis_installer_complete_light.png" type="BINDATA" />
