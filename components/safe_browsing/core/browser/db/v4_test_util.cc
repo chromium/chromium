@@ -111,6 +111,14 @@ TestV4DatabaseFactory::Create(
   return std::move(v4_db);
 }
 
+bool TestV4DatabaseFactory::IsReady() {
+  // v4_db_ is created on a base threadpool thread.
+  // It might not be ready by the time it is used.
+  // Ideally, this should be handled better, but this is a quick way
+  // of checking if it has been constructed.
+  return v4_db_ != nullptr;
+}
+
 void TestV4DatabaseFactory::MarkPrefixAsBad(ListIdentifier list_id,
                                             HashPrefixStr prefix) {
   CHECK(v4_db_);

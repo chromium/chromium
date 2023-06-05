@@ -83,6 +83,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "crypto/sha2.h"
 #include "net/cookies/cookie_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -482,12 +483,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void PreRunTestOnMainThread() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    base::RunLoop().RunUntilIdle();
-    InProcessBrowserTest::PreRunTestOnMainThread();
-  }
-
   void TearDown() override {
     InProcessBrowserTest::TearDown();
 
@@ -506,6 +501,9 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     metadata.threat_pattern_type = threat_pattern_type;
     FullHashInfo full_hash_info =
         GetFullHashInfoWithMetadata(bad_url, list_id, metadata);
+    while (!v4_db_factory_->IsReady()) {
+      content::RunAllTasksUntilIdle();
+    }
     v4_db_factory_->MarkPrefixAsBad(list_id, full_hash_info.full_hash);
     v4_get_hash_factory_->AddToFullHashCache(full_hash_info);
   }

@@ -77,6 +77,8 @@ class TestV4DatabaseFactory : public V4DatabaseFactory {
 
   void MarkPrefixAsBad(ListIdentifier list_id, HashPrefixStr prefix);
 
+  bool IsReady();
+
  private:
   // Owned by V4LocalDatabaseManager. The following usage is expected: each
   // test in the test fixture instantiates a new SafebrowsingService instance,
