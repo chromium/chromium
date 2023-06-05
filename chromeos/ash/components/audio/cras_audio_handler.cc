@@ -108,6 +108,8 @@ void CrasAudioHandler::AudioObserver::OnOutputChannelRemixingChanged(
 
 void CrasAudioHandler::AudioObserver::OnNoiseCancellationStateChanged() {}
 
+void CrasAudioHandler::AudioObserver::OnForceRespectUiGainsStateChanged() {}
+
 void CrasAudioHandler::AudioObserver::OnHotwordTriggered(
     uint64_t /* tv_sec */,
     uint64_t /* tv_nsec */) {}
@@ -594,6 +596,23 @@ void CrasAudioHandler::HandleGetNoiseCancellationSupported(
 
 void CrasAudioHandler::SetNoiseCancellationSupportedForTesting(bool supported) {
   noise_cancellation_supported_ = supported;
+}
+
+bool CrasAudioHandler::GetForceRespectUiGainsState() const {
+  return audio_pref_handler_->GetForceRespectUiGainsState();
+}
+
+void CrasAudioHandler::RefreshForceRespectUiGainsState() {
+  SetForceRespectUiGainsState(GetForceRespectUiGainsState());
+}
+
+void CrasAudioHandler::SetForceRespectUiGainsState(bool state) {
+  CrasAudioClient::Get()->SetForceRespectUiGains(state);
+  audio_pref_handler_->SetForceRespectUiGainsState(state);
+
+  for (auto& observer : observers_) {
+    observer.OnForceRespectUiGainsStateChanged();
+  }
 }
 
 void CrasAudioHandler::SetKeyboardMicActive(bool active) {

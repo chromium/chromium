@@ -151,4 +151,13 @@ void AudioDevicesPrefHandlerStub::RemoveAudioPrefObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool AudioDevicesPrefHandlerStub::GetForceRespectUiGainsState() {
+  return force_respect_ui_gains_;
+}
+
+void AudioDevicesPrefHandlerStub::SetForceRespectUiGainsState(
+    bool force_respect_ui_gains) {
+  force_respect_ui_gains_ = force_respect_ui_gains;
+}
+
 }  // namespace ash

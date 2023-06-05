@@ -287,6 +287,8 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     ++nonchrome_output_stopped_change_count_;
   }
 
+  void OnForceRespectUiGainsStateChanged() override {}
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;

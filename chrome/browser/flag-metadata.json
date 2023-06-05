@@ -6899,6 +6899,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "show-force-respect-ui-gains-toggle",
+    "owners": ["eddyhsu"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "show-inactive-tabs-count",
     "owners": [ "lpromero@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 120

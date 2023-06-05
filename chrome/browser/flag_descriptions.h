@@ -3916,6 +3916,9 @@ extern const char kTouchTextEditingRedesignDescription[];
 
 extern const char kIgnoreUiGainsName[];
 extern const char kIgnoreUiGainsDescription[];
+
+extern const char kShowForceRespectUiGainsToggleName[];
+extern const char kShowForceRespectUiGainsToggleDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)

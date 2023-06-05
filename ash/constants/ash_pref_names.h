@@ -68,6 +68,8 @@ extern const char kMultitaskMenuNudgeClamshellLastShown[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kMultitaskMenuNudgeTabletLastShown[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kInputForceRespectUiGainsEnabled[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordModifiedTime[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordExpirationTime[];

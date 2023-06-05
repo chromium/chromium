@@ -6729,6 +6729,11 @@ const char kIgnoreUiGainsName[] = "Ignore UI Gains in system mic gain setting";
 const char kIgnoreUiGainsDescription[] =
     "Ignore UI Gains in system mic gain setting";
 
+const char kShowForceRespectUiGainsToggleName[] =
+    "Enable a setting toggle to force respect UI gains";
+const char kShowForceRespectUiGainsToggleDescription[] =
+    "Enable a setting toggle to force respect UI gains.";
+
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 

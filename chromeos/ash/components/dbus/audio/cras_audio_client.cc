@@ -595,6 +595,18 @@ class CrasAudioClientImpl : public CrasAudioClient {
     cras_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
+  void SetForceRespectUiGains(bool force_respect_ui_gains) override {
+    VLOG(1) << "cras_audio_client: Setting force_respect_ui_gains state: "
+            << force_respect_ui_gains;
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetForceRespectUiGains);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(force_respect_ui_gains);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
  private:
   // Called when the cras signal is initially connected.
   void SignalConnected(const std::string& interface_name,

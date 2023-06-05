@@ -1646,4 +1646,20 @@ TEST_F(CrasAudioClientTest, SetSpeakOnMuteDetection) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(CrasAudioClientTest, SetForceRespectUiGainsEnabled) {
+  const bool kForceRespectUiGainsOn = true;
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(
+      cras::kSetForceRespectUiGains,
+      base::BindRepeating(&ExpectBoolArgument, kForceRespectUiGainsOn),
+      response.get());
+  // Call method.
+  client()->SetForceRespectUiGains(kForceRespectUiGainsOn);
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace ash

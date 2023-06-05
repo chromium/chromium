@@ -530,6 +530,9 @@ BASE_FEATURE(kCrOSDspBasedAgcAllowed,
 BASE_FEATURE(kIgnoreUiGains,
              "IgnoreUiGains",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShowForceRespectUiGainsToggle,
+             "ShowForceRespectUiGainsToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under

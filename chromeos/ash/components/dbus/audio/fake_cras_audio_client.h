@@ -94,6 +94,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void ResendBluetoothBattery() override;
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
+  void SetForceRespectUiGains(bool force_respect_ui_gains) override;
 
   // Sets the number of non chrome audio streams in output mode.
   void SetNumberOfNonChromeOutputStreams(int32_t streams);

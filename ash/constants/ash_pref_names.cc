@@ -1549,6 +1549,10 @@ const char kAshLoginSessionStartedTime[] = "ash.Login.SessionStarted.Time";
 const char kAshLoginSessionStartedIsFirstSession[] =
     "ash.Login.SessionStarted.IsFirstSession";
 
+// A boolean pref that controls whether input force respect ui gains is enabled.
+const char kInputForceRespectUiGainsEnabled[] =
+    "ash.input_force_respect_ui_gains_enabled";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

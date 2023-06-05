@@ -7028,6 +7028,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"ignore-ui-gains", flag_descriptions::kIgnoreUiGainsName,
      flag_descriptions::kIgnoreUiGainsDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kIgnoreUiGains)},
+    {"show-force-respect-ui-gains-toggle",
+     flag_descriptions::kShowForceRespectUiGainsToggleName,
+     flag_descriptions::kShowForceRespectUiGainsToggleDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kShowForceRespectUiGainsToggle)},
 #endif
 
     {"enable-css-selector-fragment-anchor",

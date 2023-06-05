@@ -59199,6 +59199,7 @@ from previous Chrome versions.
   <int value="-1958315092" label="EnableGamepadButtonAxisEvents:disabled"/>
   <int value="-1957328398" label="MacSystemShareMenu:disabled"/>
   <int value="-1956747298" label="LayeredAPI:enabled"/>
+  <int value="-1956656203" label="ShowForceRespectUiGainsToggle:disabled"/>
   <int value="-1956349722" label="disable-smooth-scrolling"/>
   <int value="-1956231275" label="ForceSpectreVariant2Mitigation:enabled"/>
   <int value="-1955923385" label="EnableGamepadButtonAxisEvents:enabled"/>
@@ -63475,6 +63476,7 @@ from previous Chrome versions.
   <int value="292731264" label="PasswordChangeInSettings:disabled"/>
   <int value="292842744"
       label="AvoidUnnecessaryNavigationCancellations:disabled"/>
+  <int value="292936174" label="ShowForceRespectUiGainsToggle:enabled"/>
   <int value="293025775" label="UseDnsHttpsSvcb:enabled"/>
   <int value="293134455" label="AutofillSendBillingCustomerNumber:disabled"/>
   <int value="293996306" label="ArrayPrototypeValues:disabled"/>

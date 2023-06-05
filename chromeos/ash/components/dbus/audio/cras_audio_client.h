@@ -272,6 +272,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
+  // Sets input force respect ui gains state to |force_repsect_ui_gains| value.
+  virtual void SetForceRespectUiGains(bool force_respect_ui_gains) = 0;
+
  protected:
   friend class CrasAudioClientTest;
 
