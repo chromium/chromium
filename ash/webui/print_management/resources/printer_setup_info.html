@@ -1,5 +1,15 @@
 <style include="print-management-shared print-management-fonts
     cros-color-overrides">
+  /* Remap illustration variables to jelly variables used in SVG. */
+  :host-context(body:not(.jelly-enabled)) {
+    --cros-sys-illo-base: var(--cros-illustration-color-base-color);
+    --cros-sys-illo-color1-2: var(--cros-illustration-color-1-shade-2);
+    --cros-sys-illo-color3: var(--cros-illustration-color-3);
+    --cros-sys-illo-color4: var(--cros-illustration-color-4);
+    --cros-sys-illo-color5: var(--cros-illustration-color-5);
+    --cros-sys-illo-secondary: var(--cros-illustration-secondary-color);
+  }
+
   .container {
     display: flex;
     flex-direction: column;
@@ -7,9 +17,15 @@
     text-align: center;
     width: 100%;
   }
+
+  iron-icon {
+    --iron-icon-height: 237px;
+    --iron-icon-width: 322px;
+    margin-inline: auto;
+  }
 </style>
 <div class="container">
-  <iron-icon icon="print-management:file-generic"></iron-icon>
+  <iron-icon icon="print-management:empty-state"></iron-icon>
   <h2 class="message-heading">[[i18n('emptyStateNoJobsMessage')]]</h2>
   <p class="message-detail">[[i18n('emptyStatePrinterSettingsMessage')]]</p>
   <cr-button class="action-button">

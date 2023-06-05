@@ -1250,4 +1250,14 @@ suite('PrinterSetupInfoTest', () => {
         getElementTextContent('.message-detail'));
     assertEquals(expectedButtonLabel, getElementTextContent('cr-button'));
   });
+
+  // Verify expected illustration used in empty state UI.
+  test('ensureEmptyStateSvg', async () => {
+    const expectedIcon = 'print-management:empty-state';
+    await initPrinterSetupInfoElement();
+
+    const iconEl =
+        querySelector<IronIconElement>(printerSetupInfoElement!, 'iron-icon');
+    assertEquals(expectedIcon, iconEl?.icon);
+  });
 });
