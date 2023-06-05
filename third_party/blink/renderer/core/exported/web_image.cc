@@ -78,8 +78,9 @@ SkBitmap WebImage::FromData(const WebData& data,
   }
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(index);
-  if (!frame || decoder->Failed())
+  if (!frame || decoder->Failed() || frame->Bitmap().drawsNothing()) {
     return {};
+  }
 
   if (decoder->Orientation().Orientation() == ImageOrientationEnum::kDefault)
     return frame->Bitmap();
