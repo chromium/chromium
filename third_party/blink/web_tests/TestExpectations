@@ -2881,7 +2881,6 @@ crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/box-shadow-bo
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
-crbug.com/626703 [ Win ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]
@@ -2889,7 +2888,6 @@ crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scro
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Pass Timeout ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-negative-resolution-rendering-3.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac12 Release ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
@@ -6631,7 +6629,7 @@ crbug.com/1446742 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-svg.
 crbug.com/1447239 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
 crbug.com/1447244 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
 
-crbug.com/1377004 [ Mac ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Failure Pass Timeout ]
+crbug.com/1377004 external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Failure Pass Timeout Crash ]
 
 # Sheriff 2023-05-23
 crbug.com/1376679 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Pass Timeout ]
