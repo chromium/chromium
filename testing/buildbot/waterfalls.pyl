@@ -1035,7 +1035,7 @@
           'has_native_resultdb_integration',
           'pie-x86-emulator',
           'emulator-4-cores',
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'os_type': 'android',
