@@ -6,5 +6,6 @@ include_rules = [
   "+ui/accessibility",
   "+ui/base",
   "+ui/color",
+  "+ui/events",
   "+ui/gfx",
 ]

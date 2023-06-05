@@ -526,6 +526,27 @@ void MaybeRegisterChromeTutorials(
   if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId))
     return;
 
+  {  // Menu item bubble test.
+    TutorialDescription test_description;
+    test_description.steps.emplace_back(
+        TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+            .SetBubbleBodyText(IDS_OK)
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight));
+    test_description.steps.emplace_back(
+        TutorialDescription::BubbleStep(AppMenuModel::kDownloadsMenuItem)
+            .SetBubbleBodyText(IDS_OK)
+            .SetBubbleArrow(HelpBubbleArrow::kRightCenter));
+    test_description.steps.emplace_back(
+        TutorialDescription::HiddenStep::WaitForHidden(
+            AppMenuModel::kDownloadsMenuItem));
+    test_description.steps.emplace_back(
+        TutorialDescription::BubbleStep(kTopContainerElementId)
+            .SetBubbleBodyText(IDS_OK)
+            .SetBubbleArrow(HelpBubbleArrow::kNone));
+    tutorial_registry.AddTutorial("Menu item bubble test tutorial",
+                                  std::move(test_description));
+  }
+
   {  // Tab Group Tutorials
 
     // The Description for kTabGroupTutorialId.

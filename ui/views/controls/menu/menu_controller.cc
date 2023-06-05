@@ -916,6 +916,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
                  SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
   }
   SendMouseCaptureLostToActiveView();
+  MaybeForwardToAnnotation(source, event);
 }
 
 void MenuController::OnMouseMoved(SubmenuView* source,
@@ -957,6 +958,8 @@ void MenuController::OnMouseMoved(SubmenuView* source,
   // which may reset the current hot tracked button.
   if (new_hot_tracked_button)
     SetHotTrackedButton(new_hot_tracked_button);
+
+  MaybeForwardToAnnotation(source, event);
 }
 
 void MenuController::OnMouseEntered(SubmenuView* source,
@@ -1062,9 +1065,16 @@ void MenuController::OnTouchEvent(SubmenuView* source, ui::TouchEvent* event) {
   if (event->type() == ui::ET_TOUCH_PRESSED) {
     MenuPart part = GetMenuPart(source, event->location());
     if (part.type == MenuPartType::kNone) {
+      if (MaybeForwardToAnnotation(source, *event)) {
+        event->SetHandled();
+        return;
+      }
+
       RepostEventAndCancel(source, event);
       event->SetHandled();
     }
+  } else {
+    MaybeForwardToAnnotation(source, *event);
   }
 }
 
@@ -1542,6 +1552,11 @@ void MenuController::SetSelectionOnPointerDown(SubmenuView* source,
   if (part.type == MenuPartType::kNone ||
       (part.type == MenuPartType::kMenuItem && part.menu &&
        part.menu->GetRootMenuItem() != state_.item->GetRootMenuItem())) {
+    // See if this event was located within a menu annotation.
+    if (MaybeForwardToAnnotation(source, *event)) {
+      return;
+    }
+
     // Remember the time stamp of the current (press down) event. The owner can
     // then use this to figure out if this menu was finished with the same click
     // which is sent to it thereafter.
@@ -3490,6 +3505,30 @@ void MenuController::SetAnchorParametersForItem(MenuItemView* item,
       }
     }
   }
+}
+
+MenuController::AnnotationCallbackHandle MenuController::SetAnnotationCallback(
+    AnnotationCallback callback) {
+  // TODO(dfried): change this so multiple annotations can be supported.
+  // This check avoids a potential race/UAF situation.
+  CHECK(!annotation_callback_)
+      << "Only one annotation callback allowed at a time.";
+  return AnnotationCallbackHandle(
+      AsWeakPtr(), &MenuController::annotation_callback_, callback);
+}
+
+bool MenuController::MaybeForwardToAnnotation(SubmenuView* source,
+                                              const ui::LocatedEvent& event) {
+  if (!annotation_callback_) {
+    return false;
+  }
+
+  const std::unique_ptr<ui::Event> cloned = event.Clone();
+  auto* located = static_cast<ui::LocatedEvent*>(cloned.get());
+  const gfx::Point screen_loc = View::ConvertPointToScreen(
+      source->GetScrollViewContainer(), event.location());
+  located->set_root_location(screen_loc);
+  return annotation_callback_.Run(*located);
 }
 
 bool MenuController::CanProcessInputEvents() const {

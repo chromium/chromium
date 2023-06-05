@@ -14,7 +14,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -98,6 +100,25 @@ class VIEWS_EXPORT MenuController
     kEditable,
     kReadonly,
   };
+
+  // Callback that is used to pass events to an "annotation" bubble or widget,
+  // such as a help bubble, that floats alongside the menu and acts as part of
+  // the menu for event-handling purposes. These require special handling
+  // because menus never actually become active, and activating any other widget
+  // causes the menu to close, so this handler should in most cases not activate
+  // the annotation widget or otherwise close the menu.
+  //
+  // Not all events will be forwarded, but mouse clicks, taps, and hover/mouse
+  // move events will be. `event.root_location()` will be the screen coordinates
+  // of the event; `event.location()` is relative to the menu and can safely be
+  // ignored.
+  //
+  // Returns true if `event` is handled by the annotation and should not be
+  // processed by the menu (except for purposes of e.g. hot-tracking).
+  using AnnotationCallback =
+      base::RepeatingCallback<bool(const ui::LocatedEvent& event)>;
+  using AnnotationCallbackHandle =
+      base::WeakAutoReset<MenuController, AnnotationCallback>;
 
   // If a menu is currently active, this returns the controller for it.
   static MenuController* GetActiveInstance();
@@ -261,6 +282,11 @@ class VIEWS_EXPORT MenuController
 
   // Sets the customized rounded corners of the context menu.
   void SetMenuRoundedCorners(absl::optional<gfx::RoundedCornersF> corners);
+
+  // Sets the annotation event handler. The handle should be discarded when the
+  // calling code no longer wants to intercept events for the annotation. It is
+  // safe to discard the handle after the menu controller has been destroyed.
+  AnnotationCallbackHandle SetAnnotationCallback(AnnotationCallback callback);
 
  private:
   friend class internal::MenuRunnerImpl;
@@ -604,6 +630,11 @@ class VIEWS_EXPORT MenuController
                                   const gfx::Point& item_loc,
                                   ui::OwnedWindowAnchor* anchor);
 
+  // Possibly forwards the specified `event` to an annotation callback, if one
+  // is present, and returns the result (default false if no callback is set).
+  bool MaybeForwardToAnnotation(SubmenuView* source,
+                                const ui::LocatedEvent& event);
+
   // The active instance.
   static MenuController* active_instance_;
 
@@ -767,6 +798,10 @@ class VIEWS_EXPORT MenuController
 
   // The rounded corners of the context menu.
   absl::optional<gfx::RoundedCornersF> rounded_corners_ = absl::nullopt;
+
+  // The current annotation callback. Set if there is a menu annotation; see
+  // `AnnotationCallback` for more information.
+  AnnotationCallback annotation_callback_;
 };
 
 }  // namespace views

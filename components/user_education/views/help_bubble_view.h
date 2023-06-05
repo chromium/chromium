@@ -34,6 +34,8 @@ class HelpBubbleDelegate;
 
 namespace internal {
 
+class MenuEventMonitor;
+
 // Describes how a help bubble should be anchored to a Views element, beyond
 // what is specified by the HelpBubbleParams. Should only be instantiated by
 // classes derived from HelpBubbleFactory (or in tests).
@@ -93,6 +95,7 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewTimeoutTest,
                            RespectsProvidedTimeoutAfterActivate);
   friend class HelpBubbleViewsTest;
+  friend class internal::MenuEventMonitor;
 
   void MaybeStartAutoCloseTimer();
 
@@ -124,6 +127,10 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Prevents the widget we're anchored to from disappearing when it loses
   // focus, even if it's marked as close_on_deactivate.
   std::unique_ptr<CloseOnDeactivatePin> anchor_pin_;
+
+  // Sniffs events intended for a menu to ensure that for bubbles anchored to
+  // menus, hover, click, and tap events are still registered.
+  std::unique_ptr<internal::MenuEventMonitor> menu_event_monitor_;
 
   // Auto close timeout. If the value is 0 (default), the bubble never times
   // out.
