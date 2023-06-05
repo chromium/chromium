@@ -209,8 +209,11 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
   }
 
   if (set_accelerator_decoder_wrapper_cb_) {
-    set_accelerator_decoder_wrapper_cb_.Run(
-        CreateD3D11VideoDecoderWrapper(video_decoder));
+    auto wrapper = CreateD3D11VideoDecoderWrapper(video_decoder);
+    if (!wrapper) {
+      return E_FAIL;
+    }
+    set_accelerator_decoder_wrapper_cb_.Run(std::move(wrapper));
   }
 
   // Provide the initial video decoder object.
@@ -693,9 +696,12 @@ void D3D11VideoDecoder::DoDecode() {
         return NotifyError(std::move(video_decoder_or_error).error());
       }
       auto video_decoder = std::move(video_decoder_or_error).value();
+      auto wrapper = CreateD3D11VideoDecoderWrapper(video_decoder);
+      if (!wrapper) {
+        return NotifyError(D3D11StatusCode::kDecoderCreationFailed);
+      }
       if (set_accelerator_decoder_wrapper_cb_) {
-        set_accelerator_decoder_wrapper_cb_.Run(
-            CreateD3D11VideoDecoderWrapper(video_decoder));
+        set_accelerator_decoder_wrapper_cb_.Run(std::move(wrapper));
       }
       DCHECK(set_accelerator_decoder_cb_);
       set_accelerator_decoder_cb_.Run(video_decoder);
