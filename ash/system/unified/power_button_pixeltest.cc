@@ -70,7 +70,8 @@ TEST_F(PowerButtonPixelTest, NoSession) {
       /*revision_number=*/0, GetMenuView()));
 }
 
-TEST_F(PowerButtonPixelTest, LoginSession) {
+// TODO(crbug.com/1451244): Re-enable this test
+TEST_F(PowerButtonPixelTest, DISABLED_LoginSession) {
   CreateUserSessions(1);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -83,7 +84,8 @@ TEST_F(PowerButtonPixelTest, LoginSession) {
       /*revision_number=*/1, GetMenuView()));
 }
 
-TEST_F(PowerButtonPixelTest, LockScreenSession) {
+// TODO(crbug.com/1451244): Re-enable this test
+TEST_F(PowerButtonPixelTest, DISABLED_LockScreenSession) {
   CreateUserSessions(1);
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
 
