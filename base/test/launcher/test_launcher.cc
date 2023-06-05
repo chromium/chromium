@@ -2239,7 +2239,13 @@ size_t NumParallelJobs(unsigned int cores_per_job) {
       ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
 #else
   size_t cores = base::checked_cast<size_t>(SysInfo::NumberOfProcessors());
-#endif
+#if BUILDFLAG(IS_MAC)
+  // This is necessary to allow tests to call SetCpuSecurityMitigationsEnabled()
+  // despite NumberOfProcessors() having already been called in the process.
+  SysInfo::ResetCpuSecurityMitigationsEnabledForTesting();
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR
   // If we are targeting the simulator increase the number of jobs we use by 2x
   // the number of cores. This is necessary because the startup of each

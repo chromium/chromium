@@ -75,9 +75,11 @@ int PpapiPluginMain(MainFunctionParams parameters) {
   const base::CommandLine& command_line = *parameters.command_line;
 
 #if BUILDFLAG(IS_MAC)
-  // Specified when launching the process in
-  // PpapiPluginSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations.
-  base::SysInfo::SetIsCpuSecurityMitigationsEnabled(true);
+  // Declare that this process has CPU security mitigations enabled (see
+  // PpapiPluginSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations).
+  // This must be done before the first call to
+  // base::SysInfo::NumberOfProcessors().
+  base::SysInfo::SetCpuSecurityMitigationsEnabled();
 #endif
 
 #if BUILDFLAG(IS_WIN)

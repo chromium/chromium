@@ -135,6 +135,14 @@ int RendererMain(MainFunctionParams parameters) {
   // expect synchronous events around the main loop of a thread.
   TRACE_EVENT_INSTANT0("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD);
 
+#if BUILDFLAG(IS_MAC)
+  // Declare that this process has CPU security mitigations enabled (see
+  // RendererSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations).
+  // This must be done before the first call to
+  // base::SysInfo::NumberOfProcessors().
+  base::SysInfo::SetCpuSecurityMitigationsEnabled();
+#endif
+
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_RENDERER);
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(

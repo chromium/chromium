@@ -13,14 +13,17 @@
 #include <sys/types.h>
 
 #include "base/check_op.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_port.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/system/sys_info_internal.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,7 +31,12 @@ namespace base {
 
 namespace {
 
+// Whether this process has CPU security mitigations enabled.
 bool g_is_cpu_security_mitigation_enabled = false;
+
+// Whether NumberOfProcessors() was called. Used to detect when the CPU security
+// mitigations state changes after a call to NumberOfProcessors().
+bool g_is_cpu_security_mitigation_enabled_read = false;
 
 // Queries sysctlbyname() for the given key and returns the value from the
 // system or the empty string on failure.
@@ -52,6 +60,8 @@ absl::optional<int> NumberOfPhysicalProcessors() {
 }
 
 absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
+  g_is_cpu_security_mitigation_enabled_read = true;
+
   if (!g_is_cpu_security_mitigation_enabled ||
       !FeatureList::IsEnabled(kNumberOfCoresWithCpuSecurityMitigation)) {
     return absl::nullopt;
@@ -145,8 +155,19 @@ SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
 }
 
 // static
-void SysInfo::SetIsCpuSecurityMitigationsEnabled(bool is_enabled) {
-  g_is_cpu_security_mitigation_enabled = is_enabled;
+void SysInfo::SetCpuSecurityMitigationsEnabled() {
+  // Setting `g_is_cpu_security_mitigation_enabled_read` after it has been read
+  // is disallowed because it could indicate that some code got a number of
+  // processor computed without all the required state.
+  CHECK(!g_is_cpu_security_mitigation_enabled_read);
+
+  g_is_cpu_security_mitigation_enabled = true;
+}
+
+// static
+void SysInfo::ResetCpuSecurityMitigationsEnabledForTesting() {
+  g_is_cpu_security_mitigation_enabled_read = false;
+  g_is_cpu_security_mitigation_enabled = false;
 }
 
 }  // namespace base

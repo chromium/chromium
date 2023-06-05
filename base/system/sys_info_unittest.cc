@@ -67,17 +67,21 @@ TEST_F(SysInfoTest, NumProcs) {
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(SysInfoTest, NumProcsWithSecurityMitigationEnabled) {
+  // Reset state so that the call to SetCpuSecurityMitigationsEnabled() below
+  // succeeds even if SysInfo::NumberOfProcessors() was previously called.
+  SysInfo::ResetCpuSecurityMitigationsEnabledForTesting();
+
   // Verify that the number of number of available processors available when CPU
   // security mitigation is enabled is the number of available "physical"
   // processors.
   test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(kNumberOfCoresWithCpuSecurityMitigation);
-  SysInfo::SetIsCpuSecurityMitigationsEnabled(true);
-  EXPECT_EQ(internal::NumberOfProcessors(),
+  SysInfo::SetCpuSecurityMitigationsEnabled();
+  EXPECT_EQ(SysInfo::NumberOfProcessors(),
             internal::NumberOfPhysicalProcessors());
 
-  // Reset to default value
-  SysInfo::SetIsCpuSecurityMitigationsEnabled(false);
+  // Reset state set by this test.
+  SysInfo::ResetCpuSecurityMitigationsEnabledForTesting();
 }
 #endif  // BUILDFLAG(IS_MAC)
 
