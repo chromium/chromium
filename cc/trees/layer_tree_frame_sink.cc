@@ -7,11 +7,13 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -139,6 +141,13 @@ void LayerTreeFrameSink::OnContextLost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("cc", "LayerTreeFrameSink::OnContextLost");
   client_->DidLoseLayerTreeFrameSink();
+}
+
+gpu::ClientSharedImageInterface* LayerTreeFrameSink::shared_image_interface()
+    const {
+  return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage)
+             ? shared_image_interface_.get()
+             : nullptr;
 }
 
 }  // namespace cc
