@@ -55,6 +55,32 @@ void SetMetricsForPossibleNoVarySearchHintMatches(
     }
   }
 }
+
+std::tuple<GURL,
+           PrefetchType,
+           blink::mojom::Referrer,
+           network::mojom::NoVarySearchPtr,
+           blink::mojom::SpeculationInjectionWorld>
+SpeculationCandidateToPrefetchUrlParams(
+    const blink::mojom::SpeculationCandidatePtr& candidate) {
+  PrefetchType prefetch_type = PrefetchType(
+      /*use_prefetch_proxy=*/
+      candidate->requires_anonymous_client_ip_when_cross_origin,
+      candidate->eagerness);
+  const GURL& prefetch_url = candidate->url;
+
+  if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
+    if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
+        prefetch_url.host() == *host_to_bypass) {
+      prefetch_type.SetProxyBypassedForTest();  // IN-TEST
+    }
+  }
+
+  return std::make_tuple(prefetch_url, prefetch_type, *candidate->referrer,
+                         candidate->no_vary_search_hint.Clone(),
+                         candidate->injection_world);
+}
+
 }  // namespace
 
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
@@ -163,9 +189,6 @@ void PrefetchDocumentManager::ProcessCandidates(
   // to handle all prefetches and the prefetch proxy code in chrome/browser/ is
   // removed, then we can move the logic of which speculation candidates this
   // code can handle up a layer to |SpeculationHostImpl|.
-  net::SchemefulSite referring_site(
-      render_frame_host().GetLastCommittedOrigin());
-
   std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer,
                          network::mojom::NoVarySearchPtr,
                          blink::mojom::SpeculationInjectionWorld>>
@@ -180,36 +203,32 @@ void PrefetchDocumentManager::ProcessCandidates(
           return false;
         }
 
-        net::SchemefulSite prefetch_site(candidate->url);
-
-        prefetches.emplace_back(
-            candidate->url,
-            PrefetchType(
-                /*use_prefetch_proxy=*/
-                candidate->requires_anonymous_client_ip_when_cross_origin,
-                candidate->eagerness),
-            *candidate->referrer, candidate->no_vary_search_hint.Clone(),
-            candidate->injection_world);
+        prefetches.push_back(
+            SpeculationCandidateToPrefetchUrlParams(candidate));
         return true;
       };
 
   base::EraseIf(candidates, should_process_entry);
-
-  if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
-    for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected,
-                world] : prefetches) {
-      if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
-          prefetch_url.host() == *host_to_bypass) {
-        prefetch_type.SetProxyBypassedForTest();
-      }
-    }
-  }
 
   for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected,
               world] : prefetches) {
     PrefetchUrl(prefetch_url, prefetch_type, referrer, no_vary_search_expected,
                 world, devtools_observer);
   }
+}
+
+bool PrefetchDocumentManager::MaybePrefetch(
+    blink::mojom::SpeculationCandidatePtr candidate,
+    base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
+  if (candidate->action != blink::mojom::SpeculationAction::kPrefetch) {
+    return false;
+  }
+
+  auto [prefetch_url, prefetch_type, referrer, no_vary_search_expected, world] =
+      SpeculationCandidateToPrefetchUrlParams(candidate);
+  PrefetchUrl(prefetch_url, prefetch_type, referrer, no_vary_search_expected,
+              world, devtools_observer);
+  return true;
 }
 
 void PrefetchDocumentManager::PrefetchUrl(

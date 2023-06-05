@@ -322,7 +322,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
 bool PreloadingDecider::MaybePrefetch(const GURL& url,
                                       const PreloadingPredictor& predictor) {
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrefetch};
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  blink::mojom::SpeculationCandidatePtr candidate;
 
   auto it = on_standby_candidates_.find(key);
   if (it != on_standby_candidates_.end()) {
@@ -331,13 +331,11 @@ bool PreloadingDecider::MaybePrefetch(const GURL& url,
           return IsSuitableCandidate(candidate, predictor);
         });
     if (inner_it != it->second.end()) {
-      // TODO(isaboori): prefetcher should provide MaybePrefetch interface to
-      // directly send the candidate to it instead of passing it as a vector.
-      candidates.push_back(inner_it->Clone());
+      candidate = inner_it->Clone();
     }
   }
 
-  if (candidates.empty()) {
+  if (!candidate) {
     // Check all URLs that might match via NVS hint.
     // If there are multiple candidates that match prefetch the first one.
     GURL::Replacements replacements;
@@ -358,28 +356,27 @@ bool PreloadingDecider::MaybePrefetch(const GURL& url,
       // has a No-Vary-Search hint that is matching.
       auto standby_it = on_standby_candidates_.find(standby_key);
       CHECK(standby_it != on_standby_candidates_.end());
-      auto inner_it =
-          base::ranges::find_if(standby_it->second, [&](const auto& candidate) {
-            return candidate->no_vary_search_hint &&
+      auto inner_it = base::ranges::find_if(
+          standby_it->second, [&](const auto& on_standby_candidate) {
+            return on_standby_candidate->no_vary_search_hint &&
                    NoVarySearchHelper::ParseHttpNoVarySearchDataFromMojom(
-                       candidate->no_vary_search_hint)
+                       on_standby_candidate->no_vary_search_hint)
                        .AreEquivalent(url, prefetch_url) &&
-                   IsSuitableCandidate(candidate, predictor);
+                   IsSuitableCandidate(on_standby_candidate, predictor);
           });
       if (inner_it != standby_it->second.end()) {
-        candidates.push_back(inner_it->Clone());
+        candidate = inner_it->Clone();
         key = standby_key;
         break;
       }
     }
   }
 
-  if (candidates.empty()) {
+  if (!candidate) {
     return false;
   }
 
-  prefetcher_.ProcessCandidatesForPrefetch(candidates);
-  bool result = candidates.empty();
+  bool result = prefetcher_.MaybePrefetch(std::move(candidate));
 
   // |key| might have changed since we first computed |it|.
   it = on_standby_candidates_.find(key);

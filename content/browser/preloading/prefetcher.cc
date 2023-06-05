@@ -87,4 +87,27 @@ void Prefetcher::ProcessCandidatesForPrefetch(
     delegate_->ProcessCandidates(candidates);
 }
 
+bool Prefetcher::MaybePrefetch(
+    blink::mojom::SpeculationCandidatePtr candidate) {
+  if (base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
+    PrefetchDocumentManager* prefetch_document_manager =
+        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+            &render_frame_host());
+
+    return prefetch_document_manager->MaybePrefetch(
+        std::move(candidate), weak_ptr_factory_.GetWeakPtr());
+  }
+
+  // Let `delegate_` try processing the candidate if PrefetchDocumentManager
+  // cannot.
+  if (delegate_) {
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+    candidates.push_back(std::move(candidate));
+    delegate_->ProcessCandidates(candidates);
+    return candidates.empty();
+  }
+
+  return false;
+}
+
 }  // namespace content

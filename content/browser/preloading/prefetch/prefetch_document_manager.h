@@ -53,6 +53,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
       std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
+  // Attempts to prefetch the given candidate. Returns true if a new prefetch
+  // for the candidate's URL is started.
+  bool MaybePrefetch(
+      blink::mojom::SpeculationCandidatePtr candidate,
+      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
+
   // Starts the process to prefetch |url| with the given |prefetch_type|.
   void PrefetchUrl(
       const GURL& url,
