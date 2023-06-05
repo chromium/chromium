@@ -1021,11 +1021,9 @@ bool SkiaOutputSurfaceImplOnGpu::FlushInternal(
   gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
-  GrSemaphoresSubmitted flush_result = GrSemaphoresSubmitted::kNo;
-  if (GrDirectContext* direct_context = gr_context()) {
-    flush_result = surface ? direct_context->flush(surface, flush_info)
-                           : direct_context->flush(flush_info);
-  }
+  GrSemaphoresSubmitted flush_result =
+      surface ? gr_context()->flush(surface, flush_info)
+              : gr_context()->flush(flush_info);
   if (scoped_write_access) {
     scoped_write_access->ApplyBackendSurfaceEndState();
   }
