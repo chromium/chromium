@@ -50,8 +50,6 @@ export function addTextItemToMenu(
 
 /**
  * Clear all the items in the menu except the header.
- *
- * @param menu The menu to clean.
  */
 export function clearMenu(menu: ParentNode): void {
   const toBeRemoved = [];

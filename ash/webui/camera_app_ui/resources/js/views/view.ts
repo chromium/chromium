@@ -313,7 +313,6 @@ export class View {
   /**
    * Hook of the subclass for leaving the view.
    *
-   * @param _condition Optional condition for leaving the view.
    * @return Whether able to leaving the view or not.
    */
   protected leaving(_condition: LeaveCondition): boolean {

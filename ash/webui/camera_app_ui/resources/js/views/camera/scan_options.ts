@@ -54,9 +54,6 @@ export class ScanOptions implements CameraUI {
 
   private readonly onChangeListeners = new Set<ScanOptionsChangeListener>();
 
-  /**
-   * @param cameraManager Camera manager instance.
-   */
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
 
