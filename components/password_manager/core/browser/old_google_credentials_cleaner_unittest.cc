@@ -82,6 +82,7 @@ TEST_F(OldGoogleCredentialCleanerTest, TestOldGooglePasswordsAreDeleted) {
       CreateForm("https://www.google.com/"),
   };
 
+  MockCredentialsCleanerObserver observer;
   OldGoogleCredentialCleaner cleaner{store(), &prefs()};
   ASSERT_TRUE(cleaner.NeedsCleaning());
 
@@ -90,7 +91,6 @@ TEST_F(OldGoogleCredentialCleanerTest, TestOldGooglePasswordsAreDeleted) {
     EXPECT_CALL(*store(), RemoveLogin(form));
   }
 
-  MockCredentialsCleanerObserver observer;
   EXPECT_CALL(observer, CleaningCompleted);
   cleaner.StartCleaning(&observer);
 
@@ -108,10 +108,10 @@ TEST_F(OldGoogleCredentialCleanerTest, TestNewerGooglePasswordsAreNotDeleted) {
                                      0,    0, 0, 1};  // 00:01 Jan 1 2012
   ASSERT_TRUE(base::Time::FromUTCExploded(time, &new_form.date_created));
 
+  MockCredentialsCleanerObserver observer;
   OldGoogleCredentialCleaner cleaner{store(), &prefs()};
   ASSERT_TRUE(cleaner.NeedsCleaning());
 
-  MockCredentialsCleanerObserver observer;
   ExpectPasswords({old_form, new_form, CreateForm("http://test.com/")});
   EXPECT_CALL(*store(), RemoveLogin(old_form));
   EXPECT_CALL(observer, CleaningCompleted);
