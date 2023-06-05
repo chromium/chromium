@@ -478,6 +478,65 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param soundRecorder A soundRecorder intent to supply as extra Intent data.
      */
     private void showExternalPicker(Intent camera, Intent camcorder, Intent soundRecorder) {
+        if (UiAndroidFeatureMap.getInstance().isEnabled(
+                    UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION)) {
+            showExternalPickerDeprecated(camera, camcorder, soundRecorder);
+            return;
+        }
+
+        Intent getContentIntent = new Intent(Intent.ACTION_GET_CONTENT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
+            getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+
+        // Set to all types, and restrict further by MIME-type below.
+        getContentIntent.setType(ALL_TYPES);
+
+        List<String> types = new ArrayList<>(mFileTypes);
+        if (types.size() > 0) {
+            // Calls to ACTION_GET_CONTENT can result in the MediaPicker hijacking the call and
+            // showing itself instead of the Files app, when only images or videos are provided.
+            // This flow is not only confusing for the user (a MediaPicker on top of a MediaPicker?)
+            // but also breaks our cloud media integration, which is currently provided via the
+            // Files app. We therefore add a non-existent MIME-type to the mix, which the Files app
+            // will ignore, but ensures the MediaPicker wont hijack the call.
+            if (shouldShowImageTypes() || shouldShowVideoTypes()) {
+                types.add("type/nonexistent");
+            }
+            getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
+        }
+
+        ArrayList<Intent> extraIntents = new ArrayList<Intent>();
+        if (shouldShowImageTypes() && camera != null) extraIntents.add(camera);
+        if (shouldShowVideoTypes() && camcorder != null) extraIntents.add(camcorder);
+        if (shouldShowAudioTypes() && soundRecorder != null) extraIntents.add(soundRecorder);
+
+        // Only accept openable files, as coercing virtual files may yield to a MIME type different
+        // than expected.
+        getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+        if (!extraIntents.isEmpty()) {
+            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents.toArray(new Intent[] {}));
+        }
+        chooser.putExtra(Intent.EXTRA_INTENT, getContentIntent);
+
+        if (!mWindowAndroid.showIntent(chooser, this, R.string.low_memory_error)) {
+            onFileNotSelected();
+        }
+    }
+
+    /**
+     * The deprecated way of launching a chooser intent to get files from an external source (use
+     * showExternalPicker instead). If launching the Intent is not successful, the onFileNotSelected
+     * is called to end file upload.
+     * @param camera A camera capture intent to supply as extra Intent data.
+     * @param camcorder A camcorder intent to supply as extra Intent data.
+     * @param soundRecorder A soundRecorder intent to supply as extra Intent data.
+     */
+    private void showExternalPickerDeprecated(
+            Intent camera, Intent camcorder, Intent soundRecorder) {
         Intent getContentIntent = new Intent(Intent.ACTION_GET_CONTENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {

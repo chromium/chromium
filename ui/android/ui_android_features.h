@@ -16,6 +16,10 @@ namespace ui {
 // order for them to be interpreted similar to a desktop
 // experience (i.e. double-click to select word.)
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kConvertTrackpadEventsToMouse);
+
+// Use the old-style opening of an External Picker when uploading files.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
+
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_

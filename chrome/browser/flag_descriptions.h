@@ -2159,6 +2159,9 @@ extern const char kCormorantDescription[];
 extern const char kDefaultViewportIsDeviceWidthName[];
 extern const char kDefaultViewportIsDeviceWidthDescription[];
 
+extern const char kDeprecatedExternalPickerFunctionName[];
+extern const char kDeprecatedExternalPickerFunctionDescription[];
+
 extern const char kDrawEdgeToEdgeName[];
 extern const char kDrawEdgeToEdgeDescription[];
 

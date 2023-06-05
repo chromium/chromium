@@ -584,6 +584,7 @@ robolectric_binary("ui_junit_tests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_android_features_java",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
     "//url:gurl_junit_shadows",

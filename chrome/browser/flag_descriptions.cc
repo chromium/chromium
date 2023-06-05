@@ -3746,6 +3746,11 @@ const char kDefaultViewportIsDeviceWidthDescription[] =
     "Sets the default viewport layout width to be equivalent to "
     "width=device-width";
 
+const char kDeprecatedExternalPickerFunctionName[] =
+    "Use deprecated External Picker method";
+const char kDeprecatedExternalPickerFunctionDescription[] =
+    "Use the old-style opening of an External Picker when uploading files";
+
 const char kDrawEdgeToEdgeName[] = "DrawEdgeToEdge";
 const char kDrawEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge to draw below the Nav Bar.";

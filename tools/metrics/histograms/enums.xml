@@ -61931,6 +61931,7 @@ from previous Chrome versions.
   <int value="-533552313"
       label="AutofillUpstreamEditableCardholderName:enabled"/>
   <int value="-532827723" label="AVFoundationCaptureV2:enabled"/>
+  <int value="-531869865" label="DeprecatedExternalPickerFunction:disabled"/>
   <int value="-531810064" label="saveas-menu-label"/>
   <int value="-531792555" label="UseModernMediaControls:disabled"/>
   <int value="-531651776" label="NewRemotePlaybackPipeline:enabled"/>
@@ -62970,6 +62971,7 @@ from previous Chrome versions.
   <int value="18571458" label="VmPerBootShaderCache:disabled"/>
   <int value="19629326" label="OmniboxExperimentalKeywordMode:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>
+  <int value="20238651" label="DeprecatedExternalPickerFunction:enabled"/>
   <int value="20946908" label="CanvasOopRasterization:disabled"/>
   <int value="21055794" label="OpenXR:enabled"/>
   <int value="21641175" label="OptimizeEarlyNavigation:disabled"/>

@@ -1426,6 +1426,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "deprecated-external-picker-function",
+    "owners": [ "finnur", "tedchoc"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "desktop-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 115

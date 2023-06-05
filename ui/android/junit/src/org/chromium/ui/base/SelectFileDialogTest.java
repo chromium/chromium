@@ -4,6 +4,7 @@
 
 package org.chromium.ui.base;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +36,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.FileUtils;
 import org.chromium.base.FileUtilsJni;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,6 +49,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tests logic in the SelectFileDialog class.
@@ -63,6 +67,10 @@ public class SelectFileDialogTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        Map<String, Boolean> featureMap = new HashMap<>();
+        featureMap.put(UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION, false);
+        FeatureList.setTestFeatures(featureMap);
     }
 
     /**
@@ -122,6 +130,114 @@ public class SelectFileDialogTest {
             mFileSelectionAborted = 0;
             mFileSelectionSuccess = 0;
         }
+    }
+
+    @Test
+    public void testMimeTypesWithExternalPicker() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Select a simple (non-media) MIME type without setting up successful intent handling, to
+        // simulate the pipeline aborting because showIntent fails.
+        int callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(new String[] {"application/pdf"}, /*capture=*/false,
+                /*multiple=*/false, windowAndroid);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Now setup WindowAndroid#showIntent to succeed for our next run.
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+        Mockito.doAnswer((invocation) -> {
+                   // When showIntent is called, we use the opportunity to check on the values we
+                   // expect to see within the Intent data.
+                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                   assertEquals("*/*", getContentIntent.getType());
+                   String[] mimeTypes =
+                           (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                   assertArrayEquals(new String[] {"application/pdf"}, mimeTypes);
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                   assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                   return true;
+               })
+                .when(windowAndroid)
+                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(), anyInt());
+
+        // Simulate showing the dialog, allowing a PDF to be uploaded and watch the pipeline
+        // remain open.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(new String[] {"application/pdf"}, /*capture=*/false,
+                /*multiple=*/false, windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Setup showIntent to check for slightly different values for our next run.
+        Mockito.doAnswer((invocation) -> {
+                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                   assertEquals(true, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                   assertEquals("*/*", getContentIntent.getType());
+                   String[] mimeTypes =
+                           (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                   // Adding a media related MIME-type adds an extra MIME type to avoid
+                   // ACTION_GET_CONTENT hijacking.
+                   assertArrayEquals(
+                           new String[] {"application/pdf", "image/gif", "type/nonexistent"},
+                           mimeTypes);
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                   assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                   return true;
+               })
+                .when(windowAndroid)
+                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(), anyInt());
+
+        // Add a media file to the mix and allow multiple files.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(new String[] {"application/pdf", "image/gif"},
+                /*capture=*/false, /*multiple=*/true, windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+    }
+
+    @Test
+    public void testMimeTypesWithExternalPickerNoAcceptList() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Setup WindowAndroid#showIntent to succeed (and validate the call).
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+        Mockito.doAnswer((invocation) -> {
+                   // When showIntent is called, we use the opportunity to check on the values we
+                   // expect to see within the Intent data.
+                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                   assertEquals("*/*", getContentIntent.getType());
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES));
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                   assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                   return true;
+               })
+                .when(windowAndroid)
+                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(), anyInt());
+
+        // Select an empty MIME type.
+        int callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(new String[] {}, /*capture=*/false,
+                /*multiple=*/false, windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
     }
 
     @Test
@@ -225,7 +341,9 @@ public class SelectFileDialogTest {
                    Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
                    assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
                    assertEquals("*/*", getContentIntent.getType());
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES));
+                   String[] mimeTypes =
+                           (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                   assertArrayEquals(new String[] {"image/jpeg", "type/nonexistent"}, mimeTypes);
                    assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
                    return true;
                })

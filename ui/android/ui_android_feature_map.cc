@@ -15,6 +15,7 @@ namespace {
 // Array of features exposed through the Java UiAndroidFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kConvertTrackpadEventsToMouse,
+    &ui::kDeprecatedExternalPickerFunction,
 };
 
 // static
