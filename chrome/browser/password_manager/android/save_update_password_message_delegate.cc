@@ -93,6 +93,18 @@ bool UPMExploratoryStringsEnabledWithSupportedParam() {
   return string_version == 2 || string_version == 3;
 }
 
+void TryToShowPasswordMigrationWarning(
+    base::RepeatingCallback<void(gfx::NativeWindow)> callback,
+    raw_ptr<content::WebContents> web_contents) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
+    // TODO(crbug.com/1439853): Check if the bottom sheet was shown a month ago
+    // or more.
+    callback.Run(web_contents->GetTopLevelNativeWindow());
+  }
+}
+
 }  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
@@ -415,15 +427,6 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
 
 void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
   passwords_state_.form_manager()->Save();
-
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    // TODO(crbug.com/439853): Check if the bottom sheet was shown a month ago
-    // or more.
-    create_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow());
-  }
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
@@ -482,6 +485,9 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
     RecordSaveUpdateUIDismissalReason(
         GetSaveUpdatePasswordMessageDismissReason(dismiss_reason));
   }
+
+  TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                    web_contents_);
   ClearState();
 }
 
@@ -520,6 +526,9 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
     RecordSaveUpdateUIDismissalReason(
         GetPasswordEditDialogDismissReason(dialog_accepted));
   }
+
+  TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                    web_contents_);
 
   password_edit_dialog_.reset();
   ClearState();
