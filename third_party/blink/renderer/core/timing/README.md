@@ -63,3 +63,8 @@ responsiveness on user interactions.
 visualizes the state machine logic of how the pointer related events
 (`pointerdown`, `pointerup`, `pointercancel`, `click`) get grouped up as a
 single interaction and get dispatched from the event timing pipeline.
+
+[KeyInteractionStateMachine](Key_interaction_state_machine.md)
+visualizes the state machine logic of how the keyboard related events
+(`keydown`, `input`, `keyup`) get grouped up as a
+single interaction and get dispatched from the event timing pipeline.

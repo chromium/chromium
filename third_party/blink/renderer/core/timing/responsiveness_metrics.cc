@@ -326,6 +326,12 @@ void ResponsivenessMetrics::RecordKeyboardUKM(
                            event_timestamps);
 }
 
+// Event timing keyboard events processing
+//
+// See also ./Key_interaction_state_machine.md
+// (https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/Key_interaction_state_machine.md)
+// to help understand the logic below that how event timing group up keyboard
+// events as interactions.
 bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     PerformanceEventTiming* entry,
     absl::optional<int> key_code,
