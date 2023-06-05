@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -96,6 +97,9 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
 
   void DeleteDictionary(const url::SchemeHostPort& host,
                         const std::string& match);
+  void ClearData(base::Time start_time,
+                 base::Time end_time,
+                 base::RepeatingCallback<bool(const GURL&)> url_matcher);
 
  private:
   friend class SharedDictionaryManagerTest;

@@ -51,6 +51,7 @@ const net::SchemefulSite kSite1(kUrl1);
 const net::SchemefulSite kSite2(kUrl2);
 
 const std::string kTestData1 = "Hello world";
+const std::string kTestData2 = "Bonjour le monde";
 
 void CheckDiskCacheEntryDataEquals(
     SharedDictionaryDiskCache& disk_cache,
@@ -615,6 +616,192 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
   EXPECT_FALSE(storage1->GetDictionary(GURL("https://origin1.test/p2?")));
   EXPECT_FALSE(storage2->GetDictionary(GURL("https://origin2.test/p1?")));
   EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin2.test/p2?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, ClearDataMatchFrameOrigin) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(GURL("https://target.test/")),
+      net::SchemefulSite(GURL("https://top-frame.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  WriteDictionary(storage.get(), GURL("https://origin.test/1"), "p1*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/2"), "p2*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/3"), "p3*",
+                  {kTestData1});
+  // Move the clock forward by 12 hours.
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  base::RunLoop run_loop;
+  manager->ClearData(base::Time::Now() - base::Days(2),
+                     base::Time::Now() - base::Days(1),
+                     base::BindRepeating([](const GURL& url) {
+                       return url == GURL("https://target.test/");
+                     }),
+                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, ClearDataMatchTopFrameSite) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(GURL("https://frame.test/")),
+      net::SchemefulSite(GURL("https://target.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  WriteDictionary(storage.get(), GURL("https://origin.test/1"), "p1*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/2"), "p2*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/3"), "p3*",
+                  {kTestData1});
+  // Move the clock forward by 12 hours.
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  base::RunLoop run_loop;
+  manager->ClearData(base::Time::Now() - base::Days(2),
+                     base::Time::Now() - base::Days(1),
+                     base::BindRepeating([](const GURL& url) {
+                       return url == GURL("https://target.test/");
+                     }),
+                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, ClearDataMatchDictionaryUrl) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(GURL("https://frame.test/")),
+      net::SchemefulSite(GURL("https://top-frame.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  WriteDictionary(storage.get(), GURL("https://target.test/1"), "p1*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://target.test/2"), "p2*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://target.test/3"), "p3*",
+                  {kTestData1});
+  // Move the clock forward by 12 hours.
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  base::RunLoop run_loop;
+  manager->ClearData(base::Time::Now() - base::Days(2),
+                     base::Time::Now() - base::Days(1),
+                     base::BindRepeating([](const GURL& url) {
+                       return url == GURL("https://target.test/");
+                     }),
+                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://target.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://target.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://target.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, ClearDataNullUrlMatcher) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(GURL("https://frame.test/")),
+      net::SchemefulSite(GURL("https://top-frame.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  WriteDictionary(storage.get(), GURL("https://origin.test/1"), "p1*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/2"), "p2*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/3"), "p3*",
+                  {kTestData1});
+  // Move the clock forward by 12 hours.
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  base::RunLoop run_loop;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, ClearDataDoNotInvalidateActiveDictionary) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(GURL("https://frame.test/")),
+      net::SchemefulSite(GURL("https://top-frame.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  WriteDictionary(storage.get(), GURL("https://origin.test/1"), "p1*",
+                  {kTestData1});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/2"), "p2*",
+                  {kTestData2});
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  WriteDictionary(storage.get(), GURL("https://origin.test/3"), "p3*",
+                  {kTestData1});
+  // Move the clock forward by 12 hours.
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  // Get a dictionary before calling ClearData().
+  std::unique_ptr<SharedDictionary> dict =
+      storage->GetDictionary(GURL("https://origin.test/p2?"));
+  ASSERT_TRUE(dict);
+
+  base::RunLoop run_loop;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin.test/p3?")));
+
+  // We can still read the deleted dictionary from `dict`.
+  net::TestCompletionCallback read_callback;
+  EXPECT_EQ(net::OK,
+            read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+  EXPECT_EQ(kTestData2,
+            std::string(reinterpret_cast<const char*>(dict->data()->data()),
+                        dict->size()));
 }
 
 }  // namespace network

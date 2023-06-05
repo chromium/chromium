@@ -97,8 +97,16 @@ void SharedDictionaryManagerInMemory::ClearData(
     base::Time end_time,
     base::RepeatingCallback<bool(const GURL&)> url_matcher,
     base::OnceClosure callback) {
-  // TODO(crbug.com/1413922): Implement this.
-  NOTIMPLEMENTED();
+  for (const auto& it : storages()) {
+    SharedDictionaryStorageInMemory* storage =
+        reinterpret_cast<SharedDictionaryStorageInMemory*>(it.second.get());
+    base::RepeatingCallback<bool(const GURL&)> matcher = url_matcher;
+    if (matcher && (matcher.Run(it.first.frame_origin().GetURL()) ||
+                    matcher.Run(it.first.top_frame_site().GetURL()))) {
+      matcher.Reset();
+    }
+    storage->ClearData(start_time, end_time, std::move(matcher));
+  }
   std::move(callback).Run();
 }
 
