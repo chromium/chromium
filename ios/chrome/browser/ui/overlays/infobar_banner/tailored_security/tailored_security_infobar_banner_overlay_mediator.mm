@@ -6,22 +6,21 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/tailored_security_service_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_infobar_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-
-// The size of the symbol image.
-CGFloat kSymbolImagePointSize = 18.;
 
 // Returns the branded version of the Google shield symbol.
 NSString* GetBrandedGoogleShieldSymbol() {
@@ -34,30 +33,40 @@ NSString* GetBrandedGoogleShieldSymbol() {
 
 }  // namespace
 
-using tailored_security_service_infobar_overlays::
-    TailoredSecurityServiceBannerRequestConfig;
-
 @interface TailoredSecurityInfobarBannerOverlayMediator ()
 // The tailored security banner config from the request.
-@property(nonatomic, readonly)
-    TailoredSecurityServiceBannerRequestConfig* config;
+@property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
 @end
 
 @implementation TailoredSecurityInfobarBannerOverlayMediator
 
 #pragma mark - Accessors
 
-- (TailoredSecurityServiceBannerRequestConfig*)config {
+- (DefaultInfobarOverlayRequestConfig*)config {
   return self.request
-             ? self.request
-                   ->GetConfig<TailoredSecurityServiceBannerRequestConfig>()
+             ? self.request->GetConfig<DefaultInfobarOverlayRequestConfig>()
              : nullptr;
+}
+
+// Returns the delegate attached to the config.
+- (safe_browsing::TailoredSecurityServiceInfobarDelegate*)tailoredDelegate {
+  return static_cast<safe_browsing::TailoredSecurityServiceInfobarDelegate*>(
+      self.config->delegate());
 }
 
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
-  return TailoredSecurityServiceBannerRequestConfig::RequestSupport();
+  return DefaultInfobarOverlayRequestConfig::RequestSupport();
+}
+
+#pragma mark - InfobarOverlayRequestMediator
+
+- (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
+  InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
+  infobar->set_accepted(self.tailoredDelegate->Accept());
+
+  [self dismissOverlay];
 }
 
 @end
@@ -65,33 +74,40 @@ using tailored_security_service_infobar_overlays::
 @implementation TailoredSecurityInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  TailoredSecurityServiceBannerRequestConfig* config = self.config;
-  if (!self.consumer || !config)
+  DefaultInfobarOverlayRequestConfig* config = self.config;
+  if (!self.consumer || !config) {
     return;
+  }
 
-  NSString* title = base::SysUTF16ToNSString(config->message_text());
-  NSString* subtitle = base::SysUTF16ToNSString(config->description());
-  NSString* buttonText = base::SysUTF16ToNSString(config->button_label_text());
+  safe_browsing::TailoredSecurityServiceInfobarDelegate* delegate =
+      self.tailoredDelegate;
+  if (!delegate) {
+    return;
+  }
+
+  NSString* title = base::SysUTF16ToNSString(delegate->GetMessageText());
+  NSString* subtitle = base::SysUTF16ToNSString(delegate->GetDescription());
+  NSString* buttonText =
+      base::SysUTF16ToNSString(delegate->GetMessageActionText());
   NSString* bannerAccessibilityLabel =
       [NSString stringWithFormat:@"%@,%@", title, subtitle];
-  NSString* icon_image_name = [self chooseIconImageName:config];
+  NSString* iconImageName =
+      [self iconImageNameForState:delegate->message_state()];
+
   [self.consumer setBannerAccessibilityLabel:bannerAccessibilityLabel];
   [self.consumer setButtonText:buttonText];
-  [self.consumer setIconImage:CustomSymbolWithPointSize(icon_image_name,
-                                                        kSymbolImagePointSize)];
-  [self.consumer setPresentsModal:config->has_badge()];
+  [self.consumer setIconImage:CustomSymbolWithPointSize(
+                                  iconImageName, kInfobarSymbolPointSize)];
   [self.consumer setTitleText:title];
   [self.consumer setSubtitleText:subtitle];
 }
 
 #pragma mark - Private methods
 
-// Conversion function to choose NSString needed for UIImage.
-- (NSString*)chooseIconImageName:
-    (TailoredSecurityServiceBannerRequestConfig*)config {
-  safe_browsing::TailoredSecurityServiceMessageState message_state =
-      config->message_state();
-  switch (message_state) {
+// Returns the icon image name corresponding to the given `state`.
+- (NSString*)iconImageNameForState:
+    (safe_browsing::TailoredSecurityServiceMessageState)state {
+  switch (state) {
     case safe_browsing::TailoredSecurityServiceMessageState::
         kConsentedAndFlowEnabled:
     case safe_browsing::TailoredSecurityServiceMessageState::

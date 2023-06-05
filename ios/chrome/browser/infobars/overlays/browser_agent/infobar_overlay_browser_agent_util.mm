@@ -13,10 +13,8 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/sync_error/sync_error_infobar_banner_interaction_handler.h"
-#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/tailored_security/tailored_security_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_modal_interaction_handler.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/tailored_security_service_infobar_banner_overlay_request_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,6 +24,12 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   InfobarOverlayBrowserAgent::CreateForBrowser(browser);
   InfobarOverlayBrowserAgent* browser_agent =
       InfobarOverlayBrowserAgent::FromBrowser(browser);
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityIntegration)) {
+    browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+        InfobarType::kInfobarTypeTailoredSecurityService);
+  }
 
   browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
       InfobarType::kInfobarTypePasswordSave);
@@ -59,17 +63,4 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
           InfobarType::kInfobarTypeSyncError,
           std::make_unique<SyncErrorInfobarBannerInteractionHandler>(),
           /*modal_handler=*/nullptr));
-
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityIntegration)) {
-    const OverlayRequestSupport* support =
-        tailored_security_service_infobar_overlays::
-            TailoredSecurityServiceBannerRequestConfig::RequestSupport();
-    browser_agent->AddInfobarInteractionHandler(
-        std::make_unique<InfobarInteractionHandler>(
-            InfobarType::kInfobarTypeTailoredSecurityService,
-            std::make_unique<TailoredSecurityInfobarBannerInteractionHandler>(
-                support),
-            nil));
-  }
 }

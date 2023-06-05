@@ -18,8 +18,6 @@ source_set("infobar_banner") {
     "save_card_infobar_banner_overlay_request_config.mm",
     "sync_error_infobar_banner_overlay_request_config.h",
     "sync_error_infobar_banner_overlay_request_config.mm",
-    "tailored_security_service_infobar_banner_overlay_request_config.h",
-    "tailored_security_service_infobar_banner_overlay_request_config.mm",
     "translate_infobar_banner_overlay_request_config.h",
     "translate_infobar_banner_overlay_request_config.mm",
   ]

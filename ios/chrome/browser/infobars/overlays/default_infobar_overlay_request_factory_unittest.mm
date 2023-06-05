@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/tailored_security_service_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
@@ -47,8 +46,6 @@ using infobars::InfoBarDelegate;
 using safe_browsing::TailoredSecurityServiceMessageState;
 using save_card_infobar_overlays::SaveCardBannerRequestConfig;
 using save_card_infobar_overlays::SaveCardModalRequestConfig;
-using tailored_security_service_infobar_overlays::
-    TailoredSecurityServiceBannerRequestConfig;
 using translate_infobar_overlays::TranslateBannerRequestConfig;
 using translate_infobar_overlays::TranslateModalRequestConfig;
 
@@ -194,6 +191,5 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, TailoredSecurityService) {
   std::unique_ptr<OverlayRequest> banner_request =
       DefaultInfobarOverlayRequestFactory(&infobar,
                                           InfobarOverlayType::kBanner);
-  EXPECT_TRUE(
-      banner_request->GetConfig<TailoredSecurityServiceBannerRequestConfig>());
+  EXPECT_TRUE(banner_request->GetConfig<DefaultInfobarOverlayRequestConfig>());
 }
