@@ -594,12 +594,17 @@ TEST_P(InstallIsolatedWebAppCommandInvalidVersionTest, InstallationFails) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     InstallIsolatedWebAppCommandInvalidVersionTest,
-    ::testing::Values(InvalidVersionParam{.version = absl::nullopt,
-                                          .error = "`version` is not present",
-                                          .test_name = "NoVersion"},
-                      InvalidVersionParam{.version = u"10",
-                                          .error = "Failed to parse `version`",
-                                          .test_name = "InvalidVersionFormat"}),
+    ::testing::Values(
+        InvalidVersionParam{.version = absl::nullopt,
+                            .error = "`version` is not present",
+                            .test_name = "NoVersion"},
+        InvalidVersionParam{
+            .version = u"\xD801",
+            .error = "Failed to convert manifest `version` from UTF16 to UTF8",
+            .test_name = "InvalidUtf8"},
+        InvalidVersionParam{.version = u"10",
+                            .error = "Failed to parse `version`",
+                            .test_name = "InvalidVersionFormat"}),
     [](const ::testing::TestParamInfo<
         InstallIsolatedWebAppCommandInvalidVersionTest::ParamType>& info) {
       return info.param.test_name;

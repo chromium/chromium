@@ -287,7 +287,12 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
         "Manifest `version` is not present. manifest_url: " +
         manifest_url.possibly_invalid_spec());
   }
-  std::string version_string = base::UTF16ToUTF8(*manifest.version);
+  std::string version_string;
+  if (!base::UTF16ToUTF8(manifest.version->data(), manifest.version->length(),
+                         &version_string)) {
+    return base::unexpected(
+        "Failed to convert manifest `version` from UTF16 to UTF8.");
+  }
 
   base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
       version_components = ParseIwaVersionIntoComponents(version_string);
