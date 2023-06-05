@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
@@ -27,10 +29,13 @@
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/tutorial_identifier.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interaction_sequence.h"
 
 namespace {
 
@@ -173,9 +178,9 @@ void MaybeAddFailure(T& failures,
 }
 
 template <typename T>
-std::string FailuresToString(const T& failures) {
+std::string FailuresToString(const T& failures, const char* type) {
   std::ostringstream oss;
-  oss << "Errors found during IPH configuration validation.";
+  oss << "Errors found during " << type << " configuration validation.";
   for (auto& failure : failures) {
     oss << "\n" << failure;
   }
@@ -371,5 +376,98 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
     }
   }
 
-  EXPECT_TRUE(failures.empty()) << FailuresToString(failures);
+  EXPECT_TRUE(failures.empty()) << FailuresToString(failures, "IPH");
+}
+
+namespace {
+
+enum class TutorialFailureReason {
+  kNone,
+  kLikelySkippedStep,
+  kWaitForAlwaysVisibleElement,
+};
+
+struct TutorialFailure {
+  user_education::TutorialIdentifier tutorial_id;
+  int step_number = -1;
+  ui::ElementIdentifier identifier;
+  TutorialFailureReason reason = TutorialFailureReason::kNone;
+};
+
+std::ostream& operator<<(std::ostream& os, const TutorialFailure& failure) {
+  os << failure.tutorial_id;
+  switch (failure.reason) {
+    case TutorialFailureReason::kNone:
+      NOTREACHED();
+      break;
+    case TutorialFailureReason::kLikelySkippedStep:
+      os << " shows a bubble anchored to an always-visible UI element "
+         << failure.identifier << " (step " << failure.step_number
+         << ") immediately after another bubble. This is likely to cause the "
+            " previous step to be skipped, as the transition will be "
+            "instantaneous. Please insert a hidden step between these steps "
+            "that detects the action you expect the user to take to advance "
+            "the tutorial (e.g. an activation step for a button press, or an "
+            "event step for the result of some process).";
+      break;
+    case TutorialFailureReason::kWaitForAlwaysVisibleElement:
+      os << " is waiting for element " << failure.identifier
+         << " to become visible in the current context (step "
+         << failure.step_number
+         << "), and is set to only show on state change (i.e. not visible -> "
+            "visible). However, this element is already always visible, so the "
+            "bubble will likely never show. If you did not intend to wait for "
+            "a state transition, make sure `transition_only_on_event` is "
+            "false. If you were waiting for another window to appear, make "
+            "sure that `context_mode` is ContextMode::kAny.";
+      break;
+  }
+  return os;
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
+                       TutorialConsistencyCheck) {
+  const auto kAlwaysPresentElementIds =
+      base::MakeFixedFlatSet<ui::ElementIdentifier>(
+          {kAppMenuButtonElementId, kAvatarButtonElementId,
+           kBackButtonElementId, kBrowserViewElementId, kForwardButtonElementId,
+           kNewTabButtonElementId, kOmniboxElementId, kSidePanelButtonElementId,
+           kTabSearchButtonElementId, kTabStripElementId,
+           kTabStripRegionElementId, kTopContainerElementId});
+
+  std::vector<TutorialFailure> failures;
+
+  auto* const service =
+      UserEducationServiceFactory::GetForProfile(browser()->profile());
+  const auto& registry = service->tutorial_registry();
+  for (auto identifier : registry.GetTutorialIdentifiers()) {
+    const auto* const description = registry.GetTutorialDescription(identifier);
+    bool was_show_bubble = false;
+    int step_count = 0;
+    for (const auto& step : description->steps) {
+      ++step_count;
+      const bool is_show_bubble =
+          (step.step_type == ui::InteractionSequence::StepType::kShown &&
+           step.body_text_id);
+      const bool is_always_visible =
+          base::Contains(kAlwaysPresentElementIds, step.element_id);
+      if (is_show_bubble && was_show_bubble && is_always_visible &&
+          !step.transition_only_on_event) {
+        failures.push_back(
+            TutorialFailure{identifier, step_count, step.element_id,
+                            TutorialFailureReason::kLikelySkippedStep});
+      } else if (is_always_visible && step.transition_only_on_event &&
+                 step.context_mode !=
+                     ui::InteractionSequence::ContextMode::kAny) {
+        failures.push_back(TutorialFailure{
+            identifier, step_count, step.element_id,
+            TutorialFailureReason::kWaitForAlwaysVisibleElement});
+      }
+      was_show_bubble = is_show_bubble;
+    }
+  }
+
+  EXPECT_TRUE(failures.empty()) << FailuresToString(failures, "Tutorial");
 }

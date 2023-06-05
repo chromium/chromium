@@ -32,7 +32,7 @@ constexpr base::TimeDelta kTutorialNotStartedTimeout = base::Seconds(60);
 }  // namespace
 
 TutorialService::TutorialCreationParams::TutorialCreationParams(
-    TutorialDescription* description,
+    const TutorialDescription* description,
     ui::ElementContext context)
     : description_(description), context_(context) {}
 
@@ -61,7 +61,7 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
   is_final_bubble_ = false;
 
   // Get the description from the tutorial registry.
-  TutorialDescription* description =
+  const TutorialDescription* const description =
       tutorial_registry_->GetTutorialDescription(id);
   CHECK(description);
 
@@ -90,7 +90,7 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
 
 void TutorialService::LogIPHLinkClicked(TutorialIdentifier id,
                                         bool iph_link_was_clicked) {
-  TutorialDescription* description =
+  const TutorialDescription* const description =
       tutorial_registry_->GetTutorialDescription(id);
   CHECK(description);
 
@@ -100,7 +100,7 @@ void TutorialService::LogIPHLinkClicked(TutorialIdentifier id,
 
 void TutorialService::LogStartedFromWhatsNewPage(TutorialIdentifier id,
                                                  bool success) {
-  TutorialDescription* description =
+  const TutorialDescription* const description =
       tutorial_registry_->GetTutorialDescription(id);
   CHECK(description);
 

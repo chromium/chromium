@@ -88,10 +88,10 @@ class TutorialService {
   // Struct used to reconstruct a tutorial from the params initially used to
   // create it.
   struct TutorialCreationParams {
-    TutorialCreationParams(TutorialDescription* description,
+    TutorialCreationParams(const TutorialDescription* description,
                            ui::ElementContext context);
 
-    raw_ptr<TutorialDescription, DanglingUntriaged> description_;
+    raw_ptr<const TutorialDescription, DanglingUntriaged> description_;
     ui::ElementContext context_;
   };
 
