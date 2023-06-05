@@ -6,8 +6,7 @@
 function passed()
 {
   testPassed("Error event fired.");
-  shouldComputedColorOfElementBeEqualToRGBString(document.getElementById("test"), "rgb(255, 255, 0)" /* yellow */);
-  testFinished();
+  shouldComputedColorOfElementByIdBeEqualToRGBStringAndTestFinished("test", "rgb(255, 255, 0)" /* yellow */);
 }
 </script>
 <style onload="testFailedAndNotifyDone('Load event fired. Should have fired Error event.')" onerror="passed()">

@@ -21,20 +21,31 @@ function flushBuffer() {
     log(line);
   }
   bufferedOutput = [];
-  if (buferredFinished) {
+  if (bufferredFinished) {
     testFinished();
     bufferedFinished = false;
   }
 }
 
-function shouldComputedColorOfElementBeEqualToRGBString(element, expectedColor)
+function shouldComputedColorOfElementByIdBeEqualToRGBStringAndTestFinished(element_id, expectedColor)
 {
-  var elementName = "#" + element.id || element.tagName;
+  let element = document.getElementById(element_id);
+  if (!element) {
+    if (document.readyState == "complete") {
+      log(`FAIL unable to find element with ID "${element_id}".`);
+      testFinished();
+      return;
+    }
+    window.addEventListener("load", () => shouldComputedColorOfElementByIdBeEqualToRGBStringAndTestFinished(element_id, expectedColor));
+    return;
+  }
+  var elementName = "#" + element_id;
   var actualColor = window.getComputedStyle(element, null).color;
   if (actualColor === expectedColor)
     log("PASS " + elementName + " color was " + expectedColor + ".");
   else
     log("FAIL " + elementName + " color should be " + expectedColor + ". Was " + actualColor + ".");
+  testFinished();
 }
 
 function createLinkElementWithStylesheet(stylesheetURL)
