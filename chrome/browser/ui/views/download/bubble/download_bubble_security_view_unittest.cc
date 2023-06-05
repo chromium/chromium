@@ -47,6 +47,7 @@ class MockDownloadBubbleNavigationHandler
   void OpenSecurityDialog(DownloadBubbleRowView*) override {}
   void CloseDialog(views::Widget::ClosedReason) override {}
   void ResizeDialog() override {}
+  void OnDialogInteracted() override {}
   base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }

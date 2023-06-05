@@ -109,12 +109,16 @@ class ShowAllDownloadsButton : public RichHoverButton {
 }  // namespace
 
 void DownloadDialogView::CloseBubble() {
-  navigation_handler_->CloseDialog(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+  if (navigation_handler_) {
+    navigation_handler_->CloseDialog(
+        views::Widget::ClosedReason::kCloseButtonClicked);
+  }
 }
 
 void DownloadDialogView::ShowAllDownloads() {
-  chrome::ShowDownloads(browser_);
+  if (browser_) {
+    chrome::ShowDownloads(browser_.get());
+  }
 }
 
 void DownloadDialogView::AddHeader() {
@@ -154,16 +158,19 @@ void DownloadDialogView::AddFooter() {
 }
 
 DownloadDialogView::DownloadDialogView(
-    Browser* browser,
+    base::WeakPtr<Browser> browser,
     std::unique_ptr<views::View> row_list_scroll_view,
-    DownloadBubbleNavigationHandler* navigation_handler)
-    : navigation_handler_(navigation_handler), browser_(browser) {
+    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler)
+    : navigation_handler_(std::move(navigation_handler)),
+      browser_(std::move(browser)) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   AddHeader();
   AddChildView(std::move(row_list_scroll_view));
   AddFooter();
 }
+
+DownloadDialogView::~DownloadDialogView() = default;
 
 BEGIN_METADATA(DownloadDialogView, views::View)
 END_METADATA

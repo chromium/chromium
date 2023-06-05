@@ -24,9 +24,9 @@ class RenderText;
 class Browser;
 class BrowserView;
 class DownloadDisplayController;
+class DownloadBubbleContentsView;
 class DownloadBubbleUIController;
 class DownloadBubbleRowView;
-class DownloadBubbleSecurityView;
 
 class DownloadBubbleNavigationHandler {
  public:
@@ -35,6 +35,9 @@ class DownloadBubbleNavigationHandler {
   virtual void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) = 0;
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
   virtual void ResizeDialog() = 0;
+  // Callback invoked when the dialog has been interacted with by hovering over
+  // or by focusing (on the partial view).
+  virtual void OnDialogInteracted() = 0;
   virtual base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() = 0;
 };
 
@@ -79,6 +82,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
+  void OnDialogInteracted() override;
   base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override;
 
   // BrowserListObserver
@@ -118,7 +122,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
                                 SkColor badge_text_color);
 
   void ButtonPressed();
-  void CreateBubbleDialogDelegate(std::unique_ptr<View> bubble_contents_view);
+  void CreateBubbleDialogDelegate();
   void OnBubbleClosing();
 
   // Callback invoked when the partial view is closed.
@@ -131,8 +135,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // been deactivated.
   void AutoClosePartialView();
 
-  // Get the primary view, which may be the full or the partial view.
-  std::unique_ptr<View> GetPrimaryView();
+  // Get the models for the primary view, which may be the full or the partial
+  // view.
+  std::vector<DownloadUIModel::DownloadUIModelPtr> GetPrimaryViewModels();
 
   // If |has_pending_download_started_animation_| is true, shows an animation of
   // a download icon moving upwards towards the toolbar icon.
@@ -147,8 +152,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Controller for keeping track of items for both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
-  raw_ptr<View> primary_view_ = nullptr;
-  raw_ptr<DownloadBubbleSecurityView> security_view_ = nullptr;
+  raw_ptr<DownloadBubbleContentsView> bubble_contents_ = nullptr;
 
   // Marks whether there is a pending download started animation. This is needed
   // because the animation should only be triggered after the view has been

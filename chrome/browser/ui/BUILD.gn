@@ -4749,6 +4749,8 @@ static_library("ui") {
       "views/device_chooser_content_view.h",
       "views/devtools_process_observer.cc",
       "views/devtools_process_observer.h",
+      "views/download/bubble/download_bubble_contents_view.cc",
+      "views/download/bubble/download_bubble_contents_view.h",
       "views/download/bubble/download_bubble_partial_view.cc",
       "views/download/bubble/download_bubble_partial_view.h",
       "views/download/bubble/download_bubble_row_list_view.cc",
