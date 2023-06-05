@@ -179,16 +179,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_MoveToAnotherScreen DISABLED_MoveToAnotherScreen
-#else
-#define MAYBE_MoveToAnotherScreen MoveToAnotherScreen
-#endif
-
 // Tests opening a popup on the same screen, then moving it to another screen.
-// TODO(crbug.com/1444721): Re-enable this test
-IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MAYBE_MoveToAnotherScreen) {
+IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MoveToAnotherScreen) {
   content::WebContents* opener_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Copy the display vector so references are not invalidated while looping.
