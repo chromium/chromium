@@ -113,8 +113,7 @@ struct AttributionRequestHelper::VerificationOperation {
   // Returns `kVerificationTokensPerTrigger` messages associated to this
   // verification operation. Each message is represented by concatenating the
   // trigger`s `destination_origin` and a generated aggregatable report ID.
-  std::vector<const std::string> Messages(
-      const url::Origin& destination_origin);
+  std::vector<std::string> Messages(const url::Origin& destination_origin);
 
   // A verification operation requests multiple tokens. Each token is signed
   // over a message that includes a different id as we need one id per report
@@ -126,12 +125,12 @@ struct AttributionRequestHelper::VerificationOperation {
   AttributionVerificationMediator mediator;
 };
 
-std::vector<const std::string>
+std::vector<std::string>
 AttributionRequestHelper::VerificationOperation::Messages(
     const url::Origin& destination_origin) {
   std::string destination_site =
       net::SchemefulSite(destination_origin).Serialize();
-  std::vector<const std::string> messages;
+  std::vector<std::string> messages;
   messages.reserve(aggregatable_report_ids.size());
 
   for (const base::Uuid& id : aggregatable_report_ids) {
@@ -298,7 +297,7 @@ void AttributionRequestHelper::Finalize(mojom::URLResponseHead& response,
 void AttributionRequestHelper::OnDoneProcessingVerificationResponse(
     mojom::URLResponseHead& response,
     base::OnceClosure done,
-    std::vector<const std::string> redemption_tokens) {
+    std::vector<std::string> redemption_tokens) {
   CHECK(verification_operation_);
   std::unique_ptr<VerificationOperation> verification_operation(
       std::move(verification_operation_));

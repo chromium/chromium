@@ -135,7 +135,7 @@ class AttributionRequestHelper {
   void OnDoneProcessingVerificationResponse(
       mojom::URLResponseHead& response,
       base::OnceClosure done,
-      std::vector<const std::string> redemption_tokens);
+      std::vector<std::string> redemption_tokens);
 
   // A mediator can perform a single verification operation. Each redirect does
   // a verification. We use this callback to generate a new mediator instance

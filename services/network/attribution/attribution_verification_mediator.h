@@ -29,10 +29,10 @@ class TrustTokenKeyCommitmentGetter;
 //  token which is returned.
 class AttributionVerificationMediator {
  public:
-  using Message = const std::string;
-  using BlindedMessage = const std::string;
-  using BlindedToken = const std::string;
-  using Token = const std::string;
+  using Message = std::string;
+  using BlindedMessage = std::string;
+  using BlindedToken = std::string;
+  using Token = std::string;
 
   // Represents the status/outcome of the execution of
   // `GetHeadersForVerification`. These values are persisted to logs.
