@@ -538,14 +538,22 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   element_bounds.Inset(
       gfx::Insets::VH(/*vertical=*/-kElementBorderPadding, /*horizontal=*/0));
 
-  // At least one row of the popup should be shown in the bounds of the content
-  // area so that the user notices the presence of the popup.
-  int item_height =
-      body_container_ && body_container_->children().size() > 0
-          ? body_container_->children()[0]->GetPreferredSize().height()
-          : 0;
+  // At least first and last rows of the popup -- a suggestion and, if present,
+  // the footer -- should be shown in the bounds of the content area so that the
+  // user notices the presence of the popup and, in particular, the first
+  // suggestion.
+  int min_height = std::numeric_limits<int>::max();
+  if (body_container_) {
+    const View::Views& children = body_container_->children();
+    if (!children.empty()) {
+      min_height = children.front()->GetPreferredSize().height();
+      if (children.size() > 1) {
+        min_height += children.back()->GetPreferredSize().height();
+      }
+    }
+  }
 
-  if (!CanShowDropdownHere(item_height, max_bounds_for_popup, element_bounds)) {
+  if (!CanShowDropdownHere(min_height, max_bounds_for_popup, element_bounds)) {
     controller_->Hide(PopupHidingReason::kInsufficientSpace);
     return false;
   }
