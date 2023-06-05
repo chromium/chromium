@@ -361,6 +361,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.ResourceRequestsAllowed"
     enum="VariationsResourceRequestsAllowedState" expires_after="2023-06-04">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
