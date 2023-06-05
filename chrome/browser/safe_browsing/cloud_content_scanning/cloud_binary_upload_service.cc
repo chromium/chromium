@@ -96,12 +96,16 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             "Connector for scanning."
           trigger:
             "If the OnFileAttachedEnterpriseConnector, "
-            "OnFileDownloadedEnterpriseConnector or "
-            "OnBulkDataEntryEnterpriseConnector policy is set, a request is made to "
-            "scan a file attached to Chrome, a file downloaded by Chrome or "
-            "data pasted in Chrome respectively."
+            "OnFileDownloadedEnterpriseConnector, "
+            "OnFileTransferEnterpriseConnector, "
+            "OnBulkDataEntryEnterpriseConnector or OnPrintEnterpriseConnector "
+            "policy is set, a request is made to scan a file attached to "
+            "Chrome, a file downloaded by Chrome, a file transfered from a "
+            "ChromeOS file system, data pasted in "
+            "Chrome or data printed from Chrome respectively."
           data:
-            "The uploaded or downloaded file, or pasted data."
+            "The uploaded/downloaded/transfered file, pasted data or printed "
+            "data."
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {
@@ -118,6 +122,12 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             }
             OnBulkDataEntryEnterpriseConnector {
               OnBulkDataEntryEnterpriseConnector: "[]"
+            }
+            OnFileTransferEnterpriseConnector {
+              OnFileTransferEnterpriseConnector: "[]"
+            }
+            OnPrintEnterpriseConnector {
+              OnPrintEnterpriseConnector: "[]"
             }
           }
         }
