@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,8 +23,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  */
 class TouchToFillPasswordGenerationView implements BottomSheetContent {
     private final View mContent;
+    private final Context mContext;
 
     TouchToFillPasswordGenerationView(Context context) {
+        mContext = context;
         mContent = LayoutInflater.from(context).inflate(
                 R.layout.touch_to_fill_password_generation, null);
         ImageView sheetHeaderImage = mContent.findViewById(R.id.touch_to_fill_sheet_header_image);
@@ -34,6 +37,22 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         sheetSubtitle.setText(
                 String.format(context.getString(R.string.password_generation_bottom_sheet_subtitle),
                         "elisa.becket@gmail.com"));
+    }
+
+    void setSheetSubtitle(String accountEmail) {
+        TextView sheetSubtitleView = mContent.findViewById(R.id.touch_to_fill_sheet_subtitle);
+        String sheetSubtitle = accountEmail.isEmpty()
+                ? mContext.getString(R.string.password_generation_bottom_sheet_subtitle_no_account)
+                : String.format(
+                        mContext.getString(R.string.password_generation_bottom_sheet_subtitle),
+                        accountEmail);
+        sheetSubtitleView.setText(sheetSubtitle);
+    }
+
+    void setGeneratedPassword(String generatedPassword) {
+        TextView passwordView = mContent.findViewById(R.id.password);
+        passwordView.setTypeface(Typeface.MONOSPACE);
+        passwordView.setText(generatedPassword);
     }
 
     @Override

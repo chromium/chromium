@@ -19,7 +19,9 @@ class MockTouchToFillPasswordGenerationBridge
   MOCK_METHOD(bool,
               Show,
               (content::WebContents*,
-               base::WeakPtr<TouchToFillPasswordGenerationDelegate>),
+               base::WeakPtr<TouchToFillPasswordGenerationDelegate>,
+               std::u16string,
+               std::string),
               (override));
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(void, OnDismissed, (JNIEnv * env), (override));

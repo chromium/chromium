@@ -38,8 +38,8 @@ class TouchToFillPasswordGenerationBridge
     }
 
     @CalledByNative
-    public boolean show() {
-        return mCoordinator.show();
+    public boolean show(String generatedPassword, String account) {
+        return mCoordinator.show(generatedPassword, account);
     }
 
     @CalledByNative

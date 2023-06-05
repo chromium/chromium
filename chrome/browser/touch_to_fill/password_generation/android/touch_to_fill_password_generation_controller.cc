@@ -6,10 +6,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -44,8 +46,12 @@ TouchToFillPasswordGenerationController::
   });
 }
 
-bool TouchToFillPasswordGenerationController::ShowTouchToFill() {
-  if (!bridge_->Show(web_contents_, base::AsWeakPtr(this))) {
+bool TouchToFillPasswordGenerationController::ShowTouchToFill(
+    std::u16string generated_password,
+    std::string account_display_name) {
+  if (!bridge_->Show(web_contents_, base::AsWeakPtr(this),
+                     std::move(generated_password),
+                     std::move(account_display_name))) {
     return false;
   }
 

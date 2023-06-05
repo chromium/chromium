@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_CONTROLLER_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_CONTROLLER_H_
 
+#include <string>
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
@@ -38,7 +39,8 @@ class TouchToFillPasswordGenerationController
   ~TouchToFillPasswordGenerationController() override;
 
   // Shows the password generation bottom sheet.
-  bool ShowTouchToFill();
+  bool ShowTouchToFill(std::u16string generated_password,
+                       std::string account_display_name);
 
   void OnDismissed() override;
 

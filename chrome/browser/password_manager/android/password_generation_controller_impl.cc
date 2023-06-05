@@ -16,6 +16,7 @@
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
+#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge_impl.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
@@ -305,7 +306,16 @@ bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill() {
 
   touch_to_fill_generation_controller_ =
       create_touch_to_fill_generation_controller_.Run();
-  if (!touch_to_fill_generation_controller_->ShowTouchToFill()) {
+  std::u16string generated_password =
+      active_frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
+          GetWebContents().GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+          generation_element_data_->form_signature,
+          generation_element_data_->field_signature,
+          generation_element_data_->max_password_length);
+  std::string account =
+      password_manager::GetDisplayableAccountName(&GetWebContents());
+  if (!touch_to_fill_generation_controller_->ShowTouchToFill(
+          std::move(generated_password), std::move(account))) {
     return false;
   }
 

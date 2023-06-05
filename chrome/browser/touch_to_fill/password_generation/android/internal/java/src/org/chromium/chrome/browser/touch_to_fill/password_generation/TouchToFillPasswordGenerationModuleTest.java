@@ -50,6 +50,8 @@ public class TouchToFillPasswordGenerationModuleTest {
     private TouchToFillPasswordGenerationBridge.Natives mBridgeJniMock;
 
     private static final long sDummyNativePointer = 1;
+    private static final String sTestEmailAddress = "test@email.com";
+    private static final String sGeneratedPassword = "Strong generated password";
 
     @Before
     public void setUp() {
@@ -67,7 +69,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void showsAndHidesBottomSheet() {
-        mBridge.show();
+        mBridge.show(sGeneratedPassword, sTestEmailAddress);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
 
@@ -78,7 +80,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testBottomSheetForceHide() {
-        mBridge.show();
+        mBridge.show(sGeneratedPassword, sTestEmailAddress);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
 
         mBridge.hide();

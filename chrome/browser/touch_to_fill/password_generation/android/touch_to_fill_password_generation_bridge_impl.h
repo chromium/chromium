@@ -21,9 +21,10 @@ class TouchToFillPasswordGenerationBridgeImpl
       const TouchToFillPasswordGenerationBridgeImpl&) = delete;
   ~TouchToFillPasswordGenerationBridgeImpl() override;
 
-  bool Show(
-      content::WebContents* web_contents,
-      base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate) override;
+  bool Show(content::WebContents* web_contents,
+            base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate,
+            std::u16string password,
+            std::string account) override;
 
   void Hide() override;
 

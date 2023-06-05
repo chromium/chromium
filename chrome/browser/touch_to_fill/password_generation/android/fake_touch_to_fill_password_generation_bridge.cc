@@ -13,7 +13,9 @@ FakeTouchToFillPasswordGenerationBridge::
 
 bool FakeTouchToFillPasswordGenerationBridge::Show(
     content::WebContents* web_contents,
-    base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate) {
+    base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate,
+    std::u16string password,
+    std::string account) {
   delegate_ = delegate;
   return true;
 }

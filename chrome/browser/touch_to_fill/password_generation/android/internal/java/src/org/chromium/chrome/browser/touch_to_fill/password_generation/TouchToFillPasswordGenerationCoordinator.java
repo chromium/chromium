@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
-import android.content.Context;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.ACCOUNT_EMAIL;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.GENERATED_PASSWORD;
 
-import androidx.annotation.VisibleForTesting;
+import android.content.Context;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Coordinates the password generation bottom sheet functionality. It shows the bottom sheet, fills
@@ -44,7 +47,14 @@ class TouchToFillPasswordGenerationCoordinator {
     /**
      *  Displays the bottom sheet.
      */
-    public boolean show() {
+    public boolean show(String generatedPassword, String account) {
+        PropertyModel model =
+                new PropertyModel.Builder(TouchToFillPasswordGenerationProperties.ALL_KEYS)
+                        .with(ACCOUNT_EMAIL, account)
+                        .with(GENERATED_PASSWORD, generatedPassword)
+                        .build();
+        setUpModelChangeProcessors(model, mTouchToFillPasswordGenerationView);
+
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (mBottomSheetController.requestShowContent(mTouchToFillPasswordGenerationView, true)) {
             return true;
@@ -63,8 +73,15 @@ class TouchToFillPasswordGenerationCoordinator {
         mTouchToFillPasswordGenerationDelegate.onDismissed();
     }
 
-    @VisibleForTesting
-    TouchToFillPasswordGenerationView getViewForTesting() {
-        return mTouchToFillPasswordGenerationView;
+    /**
+     * Connects the given model with the given view using Model Change Processors.
+     * @param model A {@link PropertyModel} built with {@link
+     *         TouchToFillPasswordGenerationProperties}.
+     * @param view A {@link TouchToFillPasswordGenerationView}.
+     */
+    private static void setUpModelChangeProcessors(
+            PropertyModel model, TouchToFillPasswordGenerationView view) {
+        PropertyModelChangeProcessor.create(
+                model, view, TouchToFillPasswordGenerationViewBinder::bindView);
     }
 }
