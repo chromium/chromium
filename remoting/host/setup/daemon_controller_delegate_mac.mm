@@ -4,10 +4,15 @@
 
 #include "remoting/host/setup/daemon_controller_delegate_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 #include <launch.h>
 #include <sys/types.h>
 #include <utility>
 
+#include "base/apple/bridging.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -51,7 +56,7 @@ class ScopedWaitpid {
   // case. Note that -1 is the value returned from
   // base::mac::ExecuteWithPrivilegesAndGetPID() when the child PID could not be
   // determined.
-  ScopedWaitpid(pid_t pid) : pid_(pid) {}
+  explicit ScopedWaitpid(pid_t pid) : pid_(pid) {}
   ~ScopedWaitpid() { MaybeWait(); }
 
   // Executes the waitpid() and resets the scoper. After this, the caller may
@@ -91,7 +96,8 @@ bool RunHelperAsRoot(const std::string& command,
       IDS_HOST_AUTHENTICATION_PROMPT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
   base::mac::ScopedAuthorizationRef authorization =
-      base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt));
+      base::mac::AuthorizationCreateToRunAsRoot(
+          base::apple::NSToCFPtrCast(prompt));
   if (!authorization.get()) {
     LOG(ERROR) << "Failed to obtain authorizationRef";
     return false;

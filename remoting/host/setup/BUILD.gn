@@ -61,6 +61,7 @@ source_set("common") {
   }
 
   if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//remoting/host/mac:constants" ]
   }
 
