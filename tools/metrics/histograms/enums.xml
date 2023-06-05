@@ -60699,6 +60699,7 @@ from previous Chrome versions.
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
   <int value="-1111094917" label="Cormorant:enabled"/>
+  <int value="-1110928012" label="force-companion-pinned-state"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
   <int value="-1109489088" label="LauncherFuzzyMatchForOmnibox:disabled"/>
   <int value="-1109309340" label="ContextualPageActionReaderMode:enabled"/>
@@ -61522,6 +61523,7 @@ from previous Chrome versions.
   <int value="-680589442" label="MacRTL:disabled"/>
   <int value="-679585025" label="CaptureModeSelfieCamera:disabled"/>
   <int value="-679500267" label="UseXpsForPrinting:disabled"/>
+  <int value="-678281465" label="force-companion-pinned-state:enabled"/>
   <int value="-678184617" label="TranslateSubFrames:disabled"/>
   <int value="-677978627" label="ZeroCopyTabCapture:enabled"/>
   <int value="-677938988" label="AssistantConsentSimplifiedText:disabled"/>
@@ -65003,6 +65005,7 @@ from previous Chrome versions.
   <int value="1196670943" label="WebAuthFlowInBrowserTab:enabled"/>
   <int value="1196834473" label="disable-smart-virtual-keyboard"/>
   <int value="1197336536" label="printing-ppd-channel"/>
+  <int value="1197363734" label="force-companion-pinned-state:disabled"/>
   <int value="1198604672" label="DiscardExceptionsImprovements:disabled"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
   <int value="1199276782" label="HighEfficiencyMultistateMode:enabled"/>

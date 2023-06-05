@@ -1986,6 +1986,12 @@ const char kEnableLensPingDescription[] =
 const char kCscName[] = "CSC";
 const char kCscDescription[] = "";
 
+const char kCscPinnedName[] = "CSC Pin State";
+const char kCscPinnedDescription[] = "";
+
+const char kCscVssName[] = "CSC-VSS";
+const char kCscVssDescription[] = "";
+
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =

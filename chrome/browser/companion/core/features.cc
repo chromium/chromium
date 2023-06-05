@@ -39,9 +39,31 @@ namespace switches {
 const char kDisableCheckUserPermissionsForCompanion[] =
     "disable-checking-companion-user-permissions";
 
+const char kForceCompanionPinnedState[] = "force-companion-pinned-state";
+
 bool ShouldOverrideCheckingUserPermissionsForCompanion() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kDisableCheckUserPermissionsForCompanion);
+}
+
+absl::optional<bool> ShouldForceOverrideCompanionPinState() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kForceCompanionPinnedState)) {
+    return absl::nullopt;
+  }
+
+  std::string pinned_state =
+      command_line->GetSwitchValueASCII(kForceCompanionPinnedState);
+  if (pinned_state == "pinned") {
+    return true;
+  }
+  if (pinned_state == "unpinned") {
+    return false;
+  }
+
+  NOTREACHED() << "Invalid Companion pin state command line switch value: "
+               << pinned_state;
+  return absl::nullopt;
 }
 
 }  // namespace switches
