@@ -5913,7 +5913,7 @@
   {
     "name": "os-feedback-jelly",
     "owners": [
-      "//ash/webui/os_feedback_ui/OWNERS"
+      "ashleydp", "cros-peripherals@google.com"
     ],
     "expiry_milestone": 122
   },
