@@ -167,8 +167,19 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
                         preferences:(WKWebpagePreferences*)preferences
                     decisionHandler:(void (^)(WKNavigationActionPolicy,
                                               WKWebpagePreferences*))handler {
-  GURL requestURL = net::GURLWithNSURL(action.request.URL);
+  // Check if OS lockdown mode is enabled and update the preference value.
+  if (!self.beingDestroyed) {
+    static dispatch_once_t onceToken;
+    web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
+    dispatch_once(&onceToken, ^{
+      if (@available(iOS 16.0, *)) {
+        web::GetWebClient()->SetOSLockdownModeEnabled(
+            browser_state, preferences.lockdownModeEnabled);
+      }
+    });
+  }
 
+  GURL requestURL = net::GURLWithNSURL(action.request.URL);
   const web::UserAgentType userAgentType =
       [self userAgentForNavigationAction:action webView:webView];
 
@@ -223,10 +234,11 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
                               preferences.lockdownModeEnabled);
       }
 
-      if (self.webStateImpl) {
+      if (!self.beingDestroyed) {
         web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
-        if (web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state))
+        if (web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state)) {
           preferences.lockdownModeEnabled = true;
+        }
       }
     }
 #endif  // defined (__IPHONE_16_0)

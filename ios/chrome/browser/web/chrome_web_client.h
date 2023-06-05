@@ -67,6 +67,8 @@ class ChromeWebClient : public web::WebClient {
   bool IsMixedContentAutoupgradeEnabled(
       web::BrowserState* browser_state) const override;
   bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) override;
+  void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
+                                bool enabled) override;
 
  private:
   // Reference to a view that is attached to a window.

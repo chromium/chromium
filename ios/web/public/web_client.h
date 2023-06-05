@@ -212,6 +212,11 @@ class WebClient {
   // Returns true if browser lockdown mode is enabled. Default return value is
   // false.
   virtual bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state);
+
+  // Sets OS lockdown mode preference value. By default, no preference value is
+  // set.
+  virtual void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
+                                        bool enabled);
 };
 
 }  // namespace web

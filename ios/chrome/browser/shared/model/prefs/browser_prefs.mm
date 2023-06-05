@@ -404,6 +404,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to determine if Browser Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
 
+  // Register pref used to determine if OS Lockdown Mode is enabled.
+  registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
+
   ntp_snippets::prefs::RegisterProfilePrefsForMigrationApril2023(registry);
 
   registry->RegisterBooleanPref(kDeprecatedReadingListHasUnseenEntries, false);

@@ -241,6 +241,10 @@ const char kNTPFollowingFeedSortType[] = "ios.ntp.following_feed.sort_type";
 const char kDefaultFollowingFeedSortTypeChanged[] =
     "ios.ntp.following_feed_default_sort_type_changed";
 
+// Boolean that is true when OS Lockdown Mode is enabled for their entire device
+// through native iOS settings.
+const char kOSLockdownModeEnabled[] = "ios.os_lockdown_mode_enabled";
+
 // Dictionary preference which tracks day(s) a given destination is clicked from
 // the new overflow menu carousel.
 const char kOverflowMenuDestinationUsageHistory[] =

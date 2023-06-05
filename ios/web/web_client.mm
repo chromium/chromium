@@ -150,4 +150,7 @@ bool WebClient::IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) {
   return false;
 }
 
+void WebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
+                                         bool enabled) {}
+
 }  // namespace web

@@ -531,3 +531,13 @@ bool ChromeWebClient::IsBrowserLockdownModeEnabled(
   }
   return false;
 }
+
+void ChromeWebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
+                                               bool enabled) {
+  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
+    ChromeBrowserState* chrome_browser_state =
+        ChromeBrowserState::FromBrowserState(browser_state);
+    PrefService* prefs = chrome_browser_state->GetPrefs();
+    prefs->SetBoolean(prefs::kOSLockdownModeEnabled, enabled);
+  }
+}
