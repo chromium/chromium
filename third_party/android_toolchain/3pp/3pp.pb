@@ -5,8 +5,8 @@
 create {
   source {
     url {
-      download_url: "https://dl.google.com/android/repository/android-ndk-r25c-linux.zip"
-      version: "r25c"
+      download_url: "https://dl.google.com/android/repository/android-ndk-r23c-linux.zip"
+      version: "r23c"
       extension: ".zip"
     }
     unpack_archive: true
@@ -25,6 +25,6 @@ upload {
   # Together with the "3pp"'s parent dirname, this defines the CIPD path to
   # store the generated CIPD package. The value should be:
   #   "chromium/third_party/android_toolchain/<ndk_version>"
-  pkg_prefix: "chromium/third_party/android_toolchain/r25c"
+  pkg_prefix: "chromium/third_party/android_toolchain/r23c"
   universal: true
 }
