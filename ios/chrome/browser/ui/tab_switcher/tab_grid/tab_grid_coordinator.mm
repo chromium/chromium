@@ -522,7 +522,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   bool thumbStripEnabled = self.isThumbStripEnabled;
   DCHECK(viewController || (thumbStripEnabled && self.bvcContainer));
 
-  if (shouldCloseTabGrid) {
+  if (shouldCloseTabGrid && !self.tabGridEnterTime.is_null()) {
     // Record when the tab switcher is dismissed.
     base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
 
