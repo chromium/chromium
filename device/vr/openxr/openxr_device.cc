@@ -134,7 +134,14 @@ void OpenXrDevice::EnsureRenderLoop() {
 void OpenXrDevice::RequestSession(
     mojom::XRRuntimeSessionOptionsPtr options,
     mojom::XRRuntime::RequestSessionCallback callback) {
-  DCHECK(!request_session_callback_);
+  // TODO(https://crbug.com/1450707): Strengthen the guarantees from the browser
+  // process that we will not get a session request while one is pending.
+  if (request_session_callback_) {
+    LOG(ERROR) << __func__
+               << " New session request while processing previous request.";
+    std::move(callback).Run(nullptr);
+    return;
+  }
 
   if (!AreAllRequiredFeaturesSupported(options->required_features,
                                        extension_helper_)) {
