@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
@@ -233,7 +234,7 @@ DriveOfflineSizeCalculator::DriveOfflineSizeCalculator(Profile* profile)
 DriveOfflineSizeCalculator::~DriveOfflineSizeCalculator() = default;
 
 void DriveOfflineSizeCalculator::PerformCalculation() {
-  if (!base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning)) {
+  if (!drive::util::IsDriveFsBulkPinningEnabled(profile_)) {
     NotifySizeCalculated(0);
     return;
   }
