@@ -57,7 +57,8 @@
       <cr-icon-button id="resetSite" class="icon-delete-gray"
           hidden="[[!shouldShowResetButton_(model, readOnlyList)]]"
           on-click="onResetButtonClick_"
-          aria-label="$i18n{siteSettingsActionReset}" focus-row-control
+          aria-label="$i18n{siteSettingsActionReset}
+              [[computeDisplayName_(model)]]" focus-row-control
           focus-type="reset"></cr-icon-button>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           hidden="[[!shouldShowActionMenu_(model, readOnlyList)]]"
