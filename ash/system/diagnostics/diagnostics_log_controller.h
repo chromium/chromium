@@ -64,10 +64,16 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
   // description of LoginStatus types.
   void OnLoginStatusChanged(LoginStatus login_status) override;
 
-  KeyboardInputLog* GetKeyboardInputLog();
-  NetworkingLog* GetNetworkingLog();
-  RoutineLog* GetRoutineLog();
-  TelemetryLog* GetTelemetryLog();
+  KeyboardInputLog& GetKeyboardInputLog();
+  NetworkingLog& GetNetworkingLog();
+  RoutineLog& GetRoutineLog();
+  TelemetryLog& GetTelemetryLog();
+
+  void SetKeyboardInputLogForTesting(
+      std::unique_ptr<KeyboardInputLog> keyboard_input_log);
+  void SetNetworkingLogForTesting(std::unique_ptr<NetworkingLog> network_log);
+  void SetRoutineLogForTesting(std::unique_ptr<RoutineLog> routine_log);
+  void SetTelemetryLogForTesting(std::unique_ptr<TelemetryLog> telemetry_log);
 
  private:
   friend class DiagnosticsLogControllerTest;

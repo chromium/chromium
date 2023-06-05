@@ -48,10 +48,15 @@ class DiagnosticsDialog : public SystemWebDialogDelegate {
   DiagnosticsDialog& operator=(const DiagnosticsDialog&) = delete;
 
   // SystemWebDialogDelegate
+  const std::string& Id() override;
   bool ShouldCloseDialogOnEscape() const override;
 
   // ui::WebDialogDelegate
   void GetDialogSize(gfx::Size* size) const override;
+
+ private:
+  const std::string dialog_id_ = kDiagnosticsDialogId;
+  friend class DiagnosticsDialogTest;
 };
 }  // namespace ash
 

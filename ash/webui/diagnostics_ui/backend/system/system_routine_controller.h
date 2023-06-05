@@ -30,14 +30,11 @@ namespace ash::diagnostics {
 using RunRoutineCallback =
     base::OnceCallback<void(cros_healthd::mojom::RunRoutineResponsePtr)>;
 
-class RoutineLog;
-
 constexpr int32_t kInvalidRoutineId = 0;
 
 class SystemRoutineController : public mojom::SystemRoutineController {
  public:
   SystemRoutineController();
-  explicit SystemRoutineController(RoutineLog* routine_log_ptr);
   ~SystemRoutineController() override;
 
   SystemRoutineController(const SystemRoutineController&) = delete;
@@ -126,14 +123,9 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   void OnRoutineCancelAttempted(
       cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
-  bool IsLoggingEnabled() const;
-
   void AcquireWakeLock();
 
   void ReleaseWakeLock();
-
-  raw_ptr<RoutineLog, ExperimentalAsh> routine_log_ptr_ =
-      nullptr;  // Not Owned.
 
   // Keeps track of the id created by CrosHealthd for the currently running
   // routine.

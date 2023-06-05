@@ -4031,6 +4031,8 @@ static_library("test_support") {
     "public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h",
     "rounded_display/rounded_display_provider_test_api.cc",
     "rounded_display/rounded_display_provider_test_api.h",
+    "system/diagnostics/fake_diagnostics_browser_delegate.cc",
+    "system/diagnostics/fake_diagnostics_browser_delegate.h",
     "system/diagnostics/log_test_helpers.cc",
     "system/diagnostics/log_test_helpers.h",
     "system/geolocation/test_geolocation_url_loader_factory.cc",
