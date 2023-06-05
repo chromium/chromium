@@ -50,7 +50,7 @@ void TextFragmentLookupStateTracker::LookupTextFragment(
       ExtractAllowedTextDirectives(text_directives);
   // Increment lookup counter.
   lookup_count_ += allowed_text_directives.size();
-  DCHECK_LE(lookup_count_, kMaxNumLookupPerPage);
+  DCHECK_LE(lookup_count_, max_lookups_per_page());
 
   // Create and attach a `TextFinderManager` to the primary page.
   content::Page& page = web_contents()->GetPrimaryPage();
@@ -69,17 +69,17 @@ std::vector<std::string>
 TextFragmentLookupStateTracker::ExtractAllowedTextDirectives(
     const std::vector<std::string>& text_directives) const {
   // Check if the lookup counter exceeds the max number.
-  if (lookup_count_ >= kMaxNumLookupPerPage) {
+  if (lookup_count_ >= max_lookups_per_page()) {
     return {};
   }
 
   // Extract the first allowed number of text directives.
   size_t cur_num = text_directives.size();
-  if (lookup_count_ + cur_num <= kMaxNumLookupPerPage) {
+  if (lookup_count_ + cur_num <= max_lookups_per_page()) {
     return text_directives;
   } else {
     // Throttled.
-    size_t allowed_num = kMaxNumLookupPerPage - lookup_count_;
+    size_t allowed_num = max_lookups_per_page() - lookup_count_;
     return std::vector<std::string>(text_directives.begin(),
                                     text_directives.begin() + allowed_num);
   }
@@ -103,6 +103,12 @@ void TextFragmentLookupStateTracker::FindScrollAndHighlight(
 void TextFragmentLookupStateTracker::PrimaryPageChanged(content::Page& page) {
   // Reset lookup counter.
   lookup_count_ = 0;
+}
+
+size_t TextFragmentLookupStateTracker::max_lookups_per_page() const {
+  return GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kCCTTextFragmentLookupApiEnabled, "max_lookups_per_page",
+      15);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TextFragmentLookupStateTracker);
