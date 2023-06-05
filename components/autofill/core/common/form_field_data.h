@@ -217,6 +217,8 @@ struct FormFieldData {
   bool IsPasswordInputElement() const;
 
   // Returns true for `form_control_type` select-one or selectmenu.
+  //
+  // <select> and <selectmenu>s should be treated identically by autofill.
   bool IsSelectOrSelectMenuElement() const;
 
   // Returns true if the field is focusable to the user.
