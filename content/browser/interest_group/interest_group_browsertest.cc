@@ -14082,7 +14082,8 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
         let data = await navigator.getInterestGroupAdAuctionData({
           seller: $1
         });
-        return btoa(String.fromCharCode.apply(null, data));
+        return btoa(String.fromCharCode.apply(null, data.request)) + '|' +
+          data.requestId;
       } catch (e) {
         return e.toString();
       }
@@ -14102,7 +14103,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  EXPECT_EQ("", GetInterestGroupAdAuctionData(test_origin));
+  EXPECT_EQ("|", GetInterestGroupAdAuctionData(test_origin));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -14161,7 +14162,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
     WebContentsConsoleObserver console_observer(shell()->web_contents());
     console_observer.SetPattern(WarningPermissionsPolicy("*", "*"));
 
-    EXPECT_EQ("", GetInterestGroupAdAuctionData(test_origin, execution_target));
+    EXPECT_EQ("|",
+              GetInterestGroupAdAuctionData(test_origin, execution_target));
 #if BUILDFLAG(IS_ANDROID)
     RenderFrameHost* execution_targets_with_message[] = {cross_origin_iframe};
 #else
@@ -14242,7 +14244,7 @@ IN_PROC_BROWSER_TEST_F(
           "Feature run-ad-auction is not enabled by Permissions Policy",
           GetInterestGroupAdAuctionData(test_origin, execution_target));
     } else {
-      EXPECT_EQ("",
+      EXPECT_EQ("|",
                 GetInterestGroupAdAuctionData(test_origin, execution_target));
     }
   }

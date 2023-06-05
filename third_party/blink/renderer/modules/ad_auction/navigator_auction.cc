@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_data_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.h"
@@ -3442,18 +3443,14 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
 
 void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
     ScriptPromiseResolver* resolver,
-    mojo_base::BigBuffer data) {
-  ScriptState* script_state = resolver->GetScriptState();
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::ArrayBuffer> array_buffer =
-      v8::ArrayBuffer::New(isolate, data.size());
-  if (data.size() > 0) {
-    CHECK(array_buffer->Data());
-    memcpy(array_buffer->Data(), data.data(), data.size());
-  }
-  v8::Local<v8::Uint8Array> uint8_array =
-      v8::Uint8Array::New(array_buffer, 0, data.size());
-  resolver->Resolve(uint8_array);
+    mojo_base::BigBuffer data,
+    const WTF::String& request_id) {
+  AdAuctionData* result = AdAuctionData::Create();
+  auto not_shared =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(data.data(), data.size()));
+  result->setRequest(std::move(not_shared));
+  result->setRequestId(request_id);
+  resolver->Resolve(result);
 }
 
 /* static */

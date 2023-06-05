@@ -213,7 +213,8 @@ class MODULES_EXPORT NavigatorAuction final
   void ReplaceInURNComplete(ScriptPromiseResolver* resolver);
 
   void GetInterestGroupAdAuctionDataComplete(ScriptPromiseResolver* resolver,
-                                             mojo_base::BigBuffer data);
+                                             mojo_base::BigBuffer request,
+                                             const WTF::String& request_id);
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.

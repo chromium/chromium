@@ -362,7 +362,7 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
     GetInterestGroupAdAuctionDataCallback callback) {
   // TODO(behamilton): Implement this functionality.
-  std::move(callback).Run({});
+  std::move(callback).Run({}, "");
 }
 
 void AdAuctionServiceImpl::CreateAdRequest(

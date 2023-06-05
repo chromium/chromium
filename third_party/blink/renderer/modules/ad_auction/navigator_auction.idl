@@ -38,7 +38,7 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   Promise<void> deprecatedReplaceInURN(UrnOrConfig urn_or_config, record<USVString, USVString> replacements);
 
   [RuntimeEnabled=FledgeBiddingAndAuctionServer, CallWith=ScriptState, Measure, RaisesException]
-  Promise<Uint8Array> getInterestGroupAdAuctionData(AdAuctionDataConfig config);
+  Promise<AdAuctionData> getInterestGroupAdAuctionData(AdAuctionDataConfig config);
 
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
   Promise<Ads> createAdRequest(AdRequestConfig config);
