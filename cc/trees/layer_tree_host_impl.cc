@@ -2853,6 +2853,22 @@ int LayerTreeHostImpl::RequestedMSAASampleCount() const {
     float device_scale_factor = pending_tree_
                                     ? pending_tree_->device_scale_factor()
                                     : active_tree_->device_scale_factor();
+
+    // Note: this feature ensures that we correctly report the device scale
+    // factor. As of June 2023, without this feature, the vast majority (or
+    // possibly all?) high-dpi screens are incorrectly considered normal DPI
+    // ones here. See the UMA histogram
+    // "Gpu.Rasterization.Raster.MSAASampleCountLog2", which almost always
+    // report "3", i.e. 8xMSAA on macOS, where High-DPI screens are prevalent.
+    if (base::FeatureList::IsEnabled(features::kDetectHiDpiForMsaa)) {
+      float painted_device_scale_factor =
+          pending_tree_ ? pending_tree_->painted_device_scale_factor()
+                        : active_tree_->painted_device_scale_factor();
+      DCHECK(painted_device_scale_factor == 1 || device_scale_factor == 1);
+
+      device_scale_factor *= painted_device_scale_factor;
+    }
+
     return device_scale_factor >= 2.0f ? 4 : 8;
   }
 

@@ -114,6 +114,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMoreAggressiveSolidColorDetection);
 // if the condition meets the requirement.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReducedFrameRateEstimation);
 
+// Use 4x MSAA (vs 8) on High DPI screens.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDetectHiDpiForMsaa);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
