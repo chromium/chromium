@@ -45,7 +45,7 @@ class EditorDropdownField implements EditorFieldView {
     private final View mUnderline;
     private final TextView mErrorLabel;
     private int mSelectedIndex;
-    private ArrayAdapter<CharSequence> mAdapter;
+    private ArrayAdapter<String> mAdapter;
 
     /**
      * Builds a dropdown view.
@@ -77,11 +77,10 @@ class EditorDropdownField implements EditorFieldView {
         mErrorLabel = mLayout.findViewById(R.id.spinner_error);
 
         final List<DropdownKeyValue> dropdownKeyValues = mFieldModel.getDropdownKeyValues();
-        final List<CharSequence> dropdownValues = getDropdownValues(dropdownKeyValues);
+        final List<String> dropdownValues = getDropdownValues(dropdownKeyValues);
         if (mFieldModel.getHint() != null) {
-            mAdapter = new HintedDropDownAdapter<CharSequence>(context,
-                    R.layout.multiline_spinner_item, R.id.spinner_item, dropdownValues,
-                    mFieldModel.getHint().toString());
+            mAdapter = new HintedDropDownAdapter<String>(context, R.layout.multiline_spinner_item,
+                    R.id.spinner_item, dropdownValues, mFieldModel.getHint().toString());
             // Wrap the TextView in the dropdown popup around with a FrameLayout to display the text
             // in multiple lines.
             // Note that the TextView in the dropdown popup is displayed in a DropDownListView for
@@ -89,7 +88,7 @@ class EditorDropdownField implements EditorFieldView {
             // in a single line.
             mAdapter.setDropDownViewResource(R.layout.payment_request_dropdown_item);
         } else {
-            mAdapter = new DropdownFieldAdapter<CharSequence>(
+            mAdapter = new DropdownFieldAdapter<String>(
                     context, R.layout.multiline_spinner_item, dropdownValues);
             mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         }
@@ -222,8 +221,8 @@ class EditorDropdownField implements EditorFieldView {
         mDropdown.setSelection(mSelectedIndex);
     }
 
-    private static List<CharSequence> getDropdownValues(List<DropdownKeyValue> dropdownKeyValues) {
-        List<CharSequence> dropdownValues = new ArrayList<CharSequence>();
+    private static List<String> getDropdownValues(List<DropdownKeyValue> dropdownKeyValues) {
+        List<String> dropdownValues = new ArrayList<String>();
         for (int i = 0; i < dropdownKeyValues.size(); i++) {
             dropdownValues.add(dropdownKeyValues.get(i).getValue());
         }

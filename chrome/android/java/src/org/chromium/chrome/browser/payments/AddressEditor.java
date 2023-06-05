@@ -55,7 +55,7 @@ public class AddressEditor
         extends EditorBase<AutofillAddress> implements GetSubKeysRequestDelegate {
     private final Handler mHandler = new Handler();
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
-    private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
+    private final Set<String> mPhoneNumbers = new HashSet<>();
     private final boolean mSaveToDisk;
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
     private final CountryAwarePhoneNumberValidator mPhoneValidator;
@@ -94,8 +94,8 @@ public class AddressEditor
      *
      * @param phoneNumber The phone number to possibly add.
      */
-    public void addPhoneNumberIfValid(@Nullable CharSequence phoneNumber) {
-        if (!TextUtils.isEmpty(phoneNumber)) mPhoneNumbers.add(phoneNumber.toString());
+    public void addPhoneNumberIfValid(@Nullable String phoneNumber) {
+        if (!TextUtils.isEmpty(phoneNumber)) mPhoneNumbers.add(phoneNumber);
     }
 
     /**
@@ -216,8 +216,8 @@ public class AddressEditor
         // Phone number validator and formatter are cached, so their contry code needs to be updated
         // for the new profile that's being edited.
         assert mCountryField.getValue() != null;
-        mPhoneValidator.setCountryCode(mCountryField.getValue().toString());
-        mPhoneFormatter.setCountryCode(mCountryField.getValue().toString());
+        mPhoneValidator.setCountryCode(mCountryField.getValue());
+        mPhoneFormatter.setCountryCode(mCountryField.getValue());
 
         // There's a finite number of fields for address editing. Changing the country will re-order
         // and relabel the fields. The meaning of each field remains the same.
@@ -286,7 +286,7 @@ public class AddressEditor
                                .with(CANCEL_RUNNABLE, onCancel)
                                .build();
 
-        loadAdminAreasForCountry(mCountryField.getValue().toString());
+        loadAdminAreasForCountry(mCountryField.getValue());
         if (mAddressErrors != null) mEditorDialog.validateForm();
     }
 
@@ -307,8 +307,8 @@ public class AddressEditor
     private void commitChanges(AutofillProfile profile) {
         // Country code and phone number are always required and are always collected from the
         // editor model.
-        profile.setCountryCode(mCountryField.getValue().toString());
-        profile.setPhoneNumber(mPhoneField.getValue().toString());
+        profile.setCountryCode(mCountryField.getValue());
+        profile.setPhoneNumber(mPhoneField.getValue());
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
         profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
@@ -349,7 +349,7 @@ public class AddressEditor
 
     /** Writes the given value into the specified autofill profile field. */
     private static void setProfileField(
-            AutofillProfile profile, int field, @Nullable CharSequence value) {
+            AutofillProfile profile, int field, @Nullable String value) {
         assert profile != null;
         switch (field) {
             case AddressField.COUNTRY:
@@ -384,8 +384,8 @@ public class AddressEditor
         assert false;
     }
 
-    private static String ensureNotNull(@Nullable CharSequence value) {
-        return value == null ? "" : value.toString();
+    private static String ensureNotNull(@Nullable String value) {
+        return value == null ? "" : value;
     }
 
     private void setAddressFieldValuesFromCache() {
@@ -435,8 +435,7 @@ public class AddressEditor
         } else {
             // This should be called when all required fields are put in mAddressField.
             setAddressFieldValuesFromCache();
-            addAddressFieldsToEditor(
-                    mCountryField.getValue().toString(), mProfile.getLanguageCode());
+            addAddressFieldsToEditor(mCountryField.getValue(), mProfile.getLanguageCode());
             mEditorDialog.show(mEditorModel);
         }
     }
@@ -528,17 +527,17 @@ public class AddressEditor
         }
 
         @Override
-        public boolean isValid(@Nullable CharSequence value) {
+        public boolean isValid(@Nullable String value) {
             // TODO(gogerald): Warn users when the phone number is a possible number but may be
             // invalid, crbug.com/736387.
             // Note that isPossibleNumber is used since the metadata in libphonenumber has to be
             // updated frequently (daily) to do more strict validation.
             return !TextUtils.isEmpty(value)
-                    && PhoneNumberUtil.isPossibleNumber(value.toString(), mCountryCode);
+                    && PhoneNumberUtil.isPossibleNumber(value, mCountryCode);
         }
 
         @Override
-        public boolean isLengthMaximum(@Nullable CharSequence value) {
+        public boolean isLengthMaximum(@Nullable String value) {
             return false;
         }
     }

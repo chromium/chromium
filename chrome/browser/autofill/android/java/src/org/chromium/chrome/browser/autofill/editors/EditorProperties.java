@@ -97,7 +97,7 @@ public class EditorProperties {
          * @param value The value of the field to check.
          * @return True if the value is valid.
          */
-        boolean isValid(@Nullable CharSequence value);
+        boolean isValid(@Nullable String value);
 
         /**
          * Called to check whether the length of the field value is maximum.
@@ -106,14 +106,14 @@ public class EditorProperties {
          * @return True if the field value length is maximum among all the possible valid values in
          *         this field.
          */
-        boolean isLengthMaximum(@Nullable CharSequence value);
+        boolean isLengthMaximum(@Nullable String value);
     }
 
     /**
      * A convenience class for displaying keyed values in a dropdown.
      */
-    public static class DropdownKeyValue extends Pair<String, CharSequence> {
-        public DropdownKeyValue(String key, CharSequence value) {
+    public static class DropdownKeyValue extends Pair<String, String> {
+        public DropdownKeyValue(String key, String value) {
             super(key, value);
         }
 
@@ -123,7 +123,7 @@ public class EditorProperties {
         }
 
         /** @return The human-readable localized display value. */
-        public CharSequence getValue() {
+        public String getValue() {
             return super.second;
         }
 

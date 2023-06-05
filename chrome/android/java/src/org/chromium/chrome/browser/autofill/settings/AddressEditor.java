@@ -61,7 +61,7 @@ import java.util.UUID;
 public class AddressEditor {
     private final Handler mHandler = new Handler();
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
-    private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
+    private final Set<String> mPhoneNumbers = new HashSet<>();
     private final EditorDialog mEditorDialog;
     private final Delegate mDelegate;
     private final Profile mProfile;
@@ -263,8 +263,8 @@ public class AddressEditor {
         setAddressFieldValues();
 
         assert mCountryField.getValue() != null;
-        mPhoneValidator.setCountryCode(mCountryField.getValue().toString());
-        mPhoneFormatter.setCountryCode(mCountryField.getValue().toString());
+        mPhoneValidator.setCountryCode(mCountryField.getValue());
+        mPhoneFormatter.setCountryCode(mCountryField.getValue());
     }
 
     private void setAddressFieldValues() {
@@ -351,7 +351,7 @@ public class AddressEditor {
 
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
-        String country = mCountryField.getValue().toString();
+        String country = mCountryField.getValue();
         if (willBeSavedInAccount() && mIsProfileNew
                 && PersonalDataManager.getInstance().isCountryEligibleForAccountStorage(country)) {
             profile.setSource(Source.ACCOUNT);
@@ -359,10 +359,10 @@ public class AddressEditor {
         // Country code and phone number are always required and are always collected from the
         // editor model.
         profile.setCountryCode(country);
-        if (mPhoneField != null) profile.setPhoneNumber(mPhoneField.getValue().toString());
-        if (mEmailField != null) profile.setEmailAddress(mEmailField.getValue().toString());
+        if (mPhoneField != null) profile.setPhoneNumber(mPhoneField.getValue());
+        if (mEmailField != null) profile.setEmailAddress(mEmailField.getValue());
         if (mHonorificField != null) {
-            profile.setHonorificPrefix(mHonorificField.getValue().toString());
+            profile.setHonorificPrefix(mHonorificField.getValue());
         }
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
@@ -404,7 +404,7 @@ public class AddressEditor {
 
     /** Writes the given value into the specified autofill profile field. */
     private static void setProfileField(
-            AutofillProfile profile, int field, @Nullable CharSequence value) {
+            AutofillProfile profile, int field, @Nullable String value) {
         assert profile != null;
         switch (field) {
             case AddressField.COUNTRY:
@@ -439,8 +439,8 @@ public class AddressEditor {
         assert false;
     }
 
-    private static String ensureNotNull(@Nullable CharSequence value) {
-        return value == null ? "" : value.toString();
+    private static String ensureNotNull(@Nullable String value) {
+        return value == null ? "" : value;
     }
 
     private String getEditorTitle() {
@@ -636,16 +636,15 @@ public class AddressEditor {
         }
 
         @Override
-        public boolean isValid(@Nullable CharSequence value) {
+        public boolean isValid(@Nullable String value) {
             // Note that isPossibleNumber is used since the metadata in libphonenumber has to be
             // updated frequently (daily) to do more strict validation.
-            return TextUtils.isEmpty(value)
-                    ? mAllowEmptyValue
-                    : PhoneNumberUtil.isPossibleNumber(value.toString(), mCountryCode);
+            return TextUtils.isEmpty(value) ? mAllowEmptyValue
+                                            : PhoneNumberUtil.isPossibleNumber(value, mCountryCode);
         }
 
         @Override
-        public boolean isLengthMaximum(@Nullable CharSequence value) {
+        public boolean isLengthMaximum(@Nullable String value) {
             return false;
         }
     }

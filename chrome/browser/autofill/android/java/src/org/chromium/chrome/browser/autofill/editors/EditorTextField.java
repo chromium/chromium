@@ -72,7 +72,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
         mInputLayout = (TextInputLayout) findViewById(R.id.text_input_layout);
 
         // Build up the label.  Required fields are indicated by appending a '*'.
-        CharSequence label = fieldModel.getLabel();
+        String label = fieldModel.getLabel();
         if (fieldModel.isRequired() && hasRequiredIndicator) {
             label = label + REQUIRED_FIELD_INDICATOR;
         }
@@ -163,7 +163,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
 
         // Display any autofill suggestions.
         if (fieldModel.getSuggestions() != null && !fieldModel.getSuggestions().isEmpty()) {
-            mInput.setAdapter(new ArrayAdapter<CharSequence>(getContext(),
+            mInput.setAdapter(new ArrayAdapter<String>(getContext(),
                     android.R.layout.simple_spinner_dropdown_item, fieldModel.getSuggestions()));
             mInput.setThreshold(0);
         }

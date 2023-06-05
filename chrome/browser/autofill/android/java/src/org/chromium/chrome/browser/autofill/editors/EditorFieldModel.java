@@ -36,31 +36,31 @@ public class EditorFieldModel {
     @Nullable
     private List<DropdownKeyValue> mDropdownKeyValues;
     @Nullable
-    private HashMap<String, CharSequence> mDropdownKeyToValueMap;
+    private HashMap<String, String> mDropdownKeyToValueMap;
     @Nullable
     private HashMap<String, String> mDropdownValueToKeyMap;
     @Nullable
     private Set<String> mDropdownKeys;
     @Nullable
-    private List<CharSequence> mSuggestions;
+    private List<String> mSuggestions;
     @Nullable
     private TextWatcher mFormatter;
     @Nullable
     private EditorFieldValidator mValidator;
     @Nullable
-    private CharSequence mRequiredErrorMessage;
+    private String mRequiredErrorMessage;
     @Nullable
-    private CharSequence mInvalidErrorMessage;
+    private String mInvalidErrorMessage;
     @Nullable
-    private CharSequence mCustomErrorMessage;
+    private String mCustomErrorMessage;
     @Nullable
-    private CharSequence mErrorMessage;
+    private String mErrorMessage;
     @Nullable
-    private CharSequence mLabel;
+    private String mLabel;
     @Nullable
-    private CharSequence mValue;
+    private String mValue;
     @Nullable
-    private CharSequence mHint;
+    private String mHint;
     @Nullable
     private Callback<Pair<String, Runnable>> mDropdownCallback;
     private boolean mIsFullLine = true;
@@ -74,8 +74,8 @@ public class EditorFieldModel {
      * @param dropdownKeyValues The keyed values to display in the dropdown.
      * @param hint              The optional hint to be displayed when no value is selected.
      */
-    public static EditorFieldModel createDropdown(@Nullable CharSequence label,
-            List<DropdownKeyValue> dropdownKeyValues, @Nullable CharSequence hint) {
+    public static EditorFieldModel createDropdown(@Nullable String label,
+            List<DropdownKeyValue> dropdownKeyValues, @Nullable String hint) {
         assert dropdownKeyValues != null;
         EditorFieldModel result = new EditorFieldModel(ItemType.DROPDOWN);
         result.mLabel = label;
@@ -94,9 +94,9 @@ public class EditorFieldModel {
      * @param requiredErrorMessage The error message that indicates to the user that they
      *                             cannot leave this field empty.
      */
-    public static EditorFieldModel createDropdown(@Nullable CharSequence label,
+    public static EditorFieldModel createDropdown(@Nullable String label,
             List<DropdownKeyValue> dropdownKeyValues, EditorFieldValidator validator,
-            CharSequence invalidErrorMessage) {
+            String invalidErrorMessage) {
         assert dropdownKeyValues != null;
         assert validator != null;
         assert invalidErrorMessage != null;
@@ -141,15 +141,14 @@ public class EditorFieldModel {
      *                             {@link LENGTH_COUNTER_LIMIT_NONE} to disable the counter.
      * @param value                Optional initial value of this field.
      */
-    public static EditorFieldModel createTextInput(@TextInputType int textInputType,
-            CharSequence label, @Nullable Set<CharSequence> suggestions,
-            @Nullable TextWatcher formatter, @Nullable EditorFieldValidator validator,
-            @Nullable CharSequence requiredErrorMessage, @Nullable CharSequence invalidErrorMessage,
-            int lengthCounterLimit, @Nullable CharSequence value) {
+    public static EditorFieldModel createTextInput(@TextInputType int textInputType, String label,
+            @Nullable Set<String> suggestions, @Nullable TextWatcher formatter,
+            @Nullable EditorFieldValidator validator, @Nullable String requiredErrorMessage,
+            @Nullable String invalidErrorMessage, int lengthCounterLimit, @Nullable String value) {
         assert label != null;
         EditorFieldModel result = new EditorFieldModel(ItemType.TEXT_INPUT, textInputType);
         assert result.isTextField();
-        result.mSuggestions = suggestions == null ? null : new ArrayList<CharSequence>(suggestions);
+        result.mSuggestions = suggestions == null ? null : new ArrayList<String>(suggestions);
         result.mFormatter = formatter;
         result.mValidator = validator;
         result.mInvalidErrorMessage = invalidErrorMessage;
@@ -222,12 +221,12 @@ public class EditorFieldModel {
      * @return The key that corresponds to the value.
      */
     @Nullable
-    public String getDropdownKeyByValue(@Nullable CharSequence value) {
+    public String getDropdownKeyByValue(@Nullable String value) {
         assert isDropdownField();
         if (value == null) {
             return null;
         }
-        return mDropdownValueToKeyMap.get(value.toString());
+        return mDropdownValueToKeyMap.get(value);
     }
 
     /**
@@ -239,7 +238,7 @@ public class EditorFieldModel {
      * @return The value that corresponds to the key.
      */
     @Nullable
-    public CharSequence getDropdownValueByKey(@Nullable String key) {
+    public String getDropdownValueByKey(@Nullable String key) {
         assert isDropdownField();
         return mDropdownKeyToValueMap.get(key);
     }
@@ -253,8 +252,8 @@ public class EditorFieldModel {
         mDropdownValueToKeyMap = new HashMap<>();
         for (int i = 0; i < mDropdownKeyValues.size(); i++) {
             mDropdownKeys.add(mDropdownKeyValues.get(i).getKey());
-            mDropdownValueToKeyMap.put(mDropdownKeyValues.get(i).getValue().toString(),
-                    mDropdownKeyValues.get(i).getKey());
+            mDropdownValueToKeyMap.put(
+                    mDropdownKeyValues.get(i).getValue(), mDropdownKeyValues.get(i).getKey());
             mDropdownKeyToValueMap.put(
                     mDropdownKeyValues.get(i).getKey(), mDropdownKeyValues.get(i).getValue());
         }
@@ -262,12 +261,12 @@ public class EditorFieldModel {
     }
 
     /** @return The human-readable label for this field. */
-    public CharSequence getLabel() {
+    public String getLabel() {
         return mLabel;
     }
 
     /** @return The human-readable hint for this dropdown field. */
-    public CharSequence getHint() {
+    public String getHint() {
         assert isDropdownField();
         return mHint;
     }
@@ -277,24 +276,24 @@ public class EditorFieldModel {
      *
      * @param label The new label to use.
      */
-    public void setLabel(CharSequence label) {
+    public void setLabel(String label) {
         mLabel = label;
     }
 
     /** @return Suggested values for this field. Can be null. */
     @Nullable
-    public List<CharSequence> getSuggestions() {
+    public List<String> getSuggestions() {
         return mSuggestions;
     }
 
     /** @return The error message for the last validation. Can be null if no error was reported. */
     @Nullable
-    public CharSequence getErrorMessage() {
+    public String getErrorMessage() {
         return mErrorMessage;
     }
 
     /** Updates the custom error message */
-    public void setCustomErrorMessage(@Nullable CharSequence errorMessage) {
+    public void setCustomErrorMessage(@Nullable String errorMessage) {
         mCustomErrorMessage = errorMessage;
     }
 
@@ -303,7 +302,7 @@ public class EditorFieldModel {
      *          user has selected in the dropdown. Can be null.
      */
     @Nullable
-    public CharSequence getValue() {
+    public String getValue() {
         return mValue;
     }
 
@@ -314,7 +313,7 @@ public class EditorFieldModel {
      *
      * @param value The new value that the user has typed in or the initial key for the dropdown.
      */
-    public void setValue(@Nullable CharSequence userTypedValueOrInitialDropdownKey) {
+    public void setValue(@Nullable String userTypedValueOrInitialDropdownKey) {
         mValue = userTypedValueOrInitialDropdownKey;
     }
 
@@ -347,7 +346,7 @@ public class EditorFieldModel {
      * @param message The error message to use if this field is required, but empty. If null, then
      *                this field is optional.
      */
-    public void setRequiredErrorMessage(@Nullable CharSequence message) {
+    public void setRequiredErrorMessage(@Nullable String message) {
         mRequiredErrorMessage = message;
     }
 
