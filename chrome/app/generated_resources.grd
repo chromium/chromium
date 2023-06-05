@@ -7830,6 +7830,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_OPEN_BOOKMARK_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for a bookmarks side panel folder list item">
         Open <ph name="BOOKMARK_TITLE">$1<ex>New York Times</ex></ph>
       </message>
+      <message name="IDS_BOOKMARKS_SELECT_FOLDER_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for a bookmarks side panel folder list item in edit mode">
+        Select folder <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph>
+      </message>
+      <message name="IDS_BOOKMARKS_SELECT_BOOKMARK_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for a bookmarks side panel folder list item in edit mode">
+        Select <ph name="BOOKMARK_TITLE">$1<ex>New York Times</ex></ph>
+      </message>
       <message name="IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_TRACKING" is_accessibility_with_no_ui="true" desc="Accessible description for price tracking data on a bookmarks side panel list item">
         Price tracking is enabled. Price is <ph name="CURRENT_PRICE">$1<ex>400</ex></ph>.
       </message>

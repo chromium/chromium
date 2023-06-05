@@ -257,7 +257,8 @@
               on-trailing-icon-clicked="onShowContextMenuClicked_"
               on-checkbox-change="onRowSelectedChange_"
               on-input-change="onRename_"
-              row-aria-label="[[getBookmarkA11yLabel_(item.url, item.title)]]"
+              row-aria-label="[[getBookmarkA11yLabel_(
+                                item.url, item.title, editing_)]]"
               row-aria-description="[[getBookmarkA11yDescription_(item)]]"
               tabindex$="[[tabIndex]]"
               image-urls="[[getBookmarkImageUrls_(

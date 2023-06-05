@@ -545,11 +545,16 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private getBookmarkA11yLabel_(url: string, title: string): string {
+    if (this.editing_) {
+      if (url) {
+        return loadTimeData.getStringF('selectBookmarkLabel', title);
+      }
+      return loadTimeData.getStringF('selectFolderLabel', title);
+    }
     if (url) {
       return loadTimeData.getStringF('openBookmarkLabel', title);
-    } else {
-      return loadTimeData.getStringF('openFolderLabel', title);
     }
+    return loadTimeData.getStringF('openFolderLabel', title);
   }
 
   private getBookmarkA11yDescription_(

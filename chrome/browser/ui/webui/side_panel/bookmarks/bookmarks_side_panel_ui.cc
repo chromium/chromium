@@ -145,6 +145,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"folderMenuLabel", IDS_FOLDER_OPTIONS_LABEL},
       {"openFolderLabel", IDS_BOOKMARKS_OPEN_FOLDER_LABEL},
       {"openBookmarkLabel", IDS_BOOKMARKS_OPEN_BOOKMARK_LABEL},
+      {"selectFolderLabel", IDS_BOOKMARKS_SELECT_FOLDER_LABEL},
+      {"selectBookmarkLabel", IDS_BOOKMARKS_SELECT_BOOKMARK_LABEL},
       {"a11yDescriptionPriceTracking",
        IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_TRACKING},
       {"a11yDescriptionPriceChange",
