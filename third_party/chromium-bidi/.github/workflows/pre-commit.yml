@@ -12,7 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+      - uses: google/wireit@setup-github-actions-caching/v1
       - run: npm ci
       - uses: actions/setup-python@v4
         with:
