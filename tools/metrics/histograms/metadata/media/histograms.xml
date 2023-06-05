@@ -4429,7 +4429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartFailedReason"
-    enum="RemotingStartFailReason" expires_after="2023-09-12">
+    enum="RemotingStartFailReason" expires_after="2023-12-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the reason that a session failed to start.</summary>
@@ -6667,7 +6667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SessionLoadTime" units="ms"
-    expires_after="2023-11-19">
+    expires_after="2023-12-01">
   <owner>muyaoxu@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6680,7 +6680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SessionStartsBeforeTimeout"
-    enum="Boolean" expires_after="2023-11-19">
+    enum="Boolean" expires_after="2023-12-01">
   <owner>muyaoxu@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6690,7 +6690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SinkCapability.SupportedAudioCodec"
-    enum="AudioCodec" expires_after="2023-10-22">
+    enum="AudioCodec" expires_after="2023-12-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6702,7 +6702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SinkCapability.SupportedVideoCodec"
-    enum="VideoCodec" expires_after="2023-10-22">
+    enum="VideoCodec" expires_after="2023-12-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6715,7 +6715,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaRouter.RemotePlayback.SinkCapability.UnsupportedAudioCodec"
-    enum="AudioCodec" expires_after="2023-06-15">
+    enum="AudioCodec" expires_after="2023-12-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6728,7 +6728,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaRouter.RemotePlayback.SinkCapability.UnsupportedVideoCodec"
-    enum="VideoCodec" expires_after="2023-06-15">
+    enum="VideoCodec" expires_after="2023-12-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6740,7 +6740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SinkModelCompatibility"
-    enum="Boolean" expires_after="2023-10-22">
+    enum="Boolean" expires_after="2023-12-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
