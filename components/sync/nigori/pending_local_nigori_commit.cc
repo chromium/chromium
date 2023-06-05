@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/nigori/public_key.h"
@@ -24,6 +25,16 @@ namespace syncer {
 namespace {
 
 using sync_pb::NigoriSpecifics;
+
+void InitKeyPair(NigoriState* state) {
+  if (state->public_key.has_value()) {
+    return;
+  }
+  PublicPrivateKeyPair key_pair = PublicPrivateKeyPair::GenerateNewKeyPair();
+  state->public_key = PublicKey::CreateByImport(key_pair.GetRawPublicKey());
+  state->key_pair_version = 0;
+  state->cryptographer->EmplaceKeyPair(std::move(key_pair), 0);
+}
 
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  public:
@@ -122,8 +133,9 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
     state->passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
     state->keystore_migration_time = base::Time::Now();
 
-    // TODO(crbug.com/1445056): handle creation of Public-private key pair for
-    // new sync users.
+    if (base::FeatureList::IsEnabled(kSharingOfferKeyPairBootstrap)) {
+      InitKeyPair(state);
+    }
     return true;
   }
 
@@ -184,10 +196,7 @@ class PublicPrivateKeyInitializer : public PendingLocalNigoriCommit {
     if (state->pending_keys.has_value() || state->public_key.has_value()) {
       return false;
     }
-
-    PublicPrivateKeyPair key_pair = PublicPrivateKeyPair::GenerateNewKeyPair();
-    state->public_key = PublicKey::CreateByImport(key_pair.GetRawPublicKey());
-    state->cryptographer->EmplaceKeyPair(std::move(key_pair), 0);
+    InitKeyPair(state);
     return true;
   }
 
