@@ -76,10 +76,11 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     @CalledByNative
     private void showCredentials(GURL url, boolean isOriginSecure,
             WebAuthnCredential[] webAuthnCredentials, Credential[] credentials,
-            boolean submitCredential, boolean managePasskeysHidesPasswords) {
+            boolean submitCredential, boolean managePasskeysHidesPasswords,
+            boolean showHybridPasskeyOption) {
         mTouchToFillComponent.showCredentials(url, isOriginSecure,
                 Arrays.asList(webAuthnCredentials), Arrays.asList(credentials), submitCredential,
-                managePasskeysHidesPasswords);
+                managePasskeysHidesPasswords, showHybridPasskeyOption);
     }
 
     @Override
@@ -91,6 +92,13 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     public void onManagePasswordsSelected(boolean passkeysShown) {
         if (mNativeView != 0) {
             TouchToFillBridgeJni.get().onManagePasswordsSelected(mNativeView, passkeysShown);
+        }
+    }
+
+    @Override
+    public void onHybridSignInSelected() {
+        if (mNativeView != 0) {
+            TouchToFillBridgeJni.get().onHybridSignInSelected(mNativeView);
         }
     }
 
@@ -114,6 +122,7 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
         void onWebAuthnCredentialSelected(
                 long nativeTouchToFillViewImpl, WebAuthnCredential credential);
         void onManagePasswordsSelected(long nativeTouchToFillViewImpl, boolean passkeysShown);
+        void onHybridSignInSelected(long nativeTouchToFillViewImpl);
         void onDismiss(long nativeTouchToFillViewImpl);
     }
 }

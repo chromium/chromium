@@ -98,3 +98,21 @@ void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
     std::move(retrieve_passkeys_callback_).Run();
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeWebAuthnCredentialsDelegate::ShowAndroidHybridSignIn() {
+  if (WebAuthnRequestDelegateAndroid* delegate =
+          WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_)) {
+    delegate->ShowHybridSignIn();
+  }
+}
+
+bool ChromeWebAuthnCredentialsDelegate::IsAndroidHybridAvailable() const {
+  return android_hybrid_available_.value();
+}
+
+void ChromeWebAuthnCredentialsDelegate::SetAndroidHybridAvailable(
+    AndroidHybridAvailable available) {
+  android_hybrid_available_ = available;
+}
+#endif

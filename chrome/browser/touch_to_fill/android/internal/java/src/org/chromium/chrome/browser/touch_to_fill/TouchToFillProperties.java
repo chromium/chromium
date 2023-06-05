@@ -134,8 +134,13 @@ class TouchToFillProperties {
                 new PropertyModel.WritableObjectPropertyKey<>("on_click_manage");
         static final PropertyModel.WritableObjectPropertyKey<String> MANAGE_BUTTON_TEXT =
                 new PropertyModel.WritableObjectPropertyKey<>("manage_button_text");
+        static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_CLICK_HYBRID =
+                new PropertyModel.WritableObjectPropertyKey<>("on_click_hybrid");
+        static final PropertyModel.WritableBooleanPropertyKey SHOW_HYBRID =
+                new PropertyModel.WritableBooleanPropertyKey("show_hybrid");
 
-        static final PropertyKey[] ALL_KEYS = {ON_CLICK_MANAGE, MANAGE_BUTTON_TEXT};
+        static final PropertyKey[] ALL_KEYS = {
+                ON_CLICK_MANAGE, MANAGE_BUTTON_TEXT, ON_CLICK_HYBRID, SHOW_HYBRID};
 
         private FooterProperties() {}
     }

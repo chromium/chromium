@@ -8,6 +8,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +22,9 @@ class WebContents;
 class ChromeWebAuthnCredentialsDelegate
     : public password_manager::WebAuthnCredentialsDelegate {
  public:
+  using AndroidHybridAvailable =
+      base::StrongAlias<struct AndroidHybridAvailableTag, bool>;
+
   explicit ChromeWebAuthnCredentialsDelegate(
       content::WebContents* web_contents);
   ~ChromeWebAuthnCredentialsDelegate() override;
@@ -45,6 +50,16 @@ class ChromeWebAuthnCredentialsDelegate
   // WebAuthn options should no longer show up on the autofill popup.
   void NotifyWebAuthnRequestAborted();
 
+#if BUILDFLAG(IS_ANDROID)
+  // password_manager::WebAuthnCredentialsDelegate:
+  void ShowAndroidHybridSignIn() override;
+  bool IsAndroidHybridAvailable() const override;
+
+  // Sets the hybrid availability flag, which can be queried through
+  // `IsAndroidHybridAvailable()`.
+  void SetAndroidHybridAvailable(AndroidHybridAvailable available);
+#endif
+
  protected:
   const raw_ptr<content::WebContents> web_contents_;
 
@@ -56,6 +71,11 @@ class ChromeWebAuthnCredentialsDelegate
   absl::optional<std::vector<password_manager::PasskeyCredential>> passkeys_;
 
   base::OnceClosure retrieve_passkeys_callback_;
+
+#if BUILDFLAG(IS_ANDROID)
+  AndroidHybridAvailable android_hybrid_available_ =
+      AndroidHybridAvailable(false);
+#endif
 
   base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
       this};

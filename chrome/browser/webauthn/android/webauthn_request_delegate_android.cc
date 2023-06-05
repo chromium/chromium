@@ -78,10 +78,14 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
   if (is_conditional_request) {
     conditional_request_in_progress_ = true;
     ReportConditionalUiPasskeyCount(credentials.size());
-    ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
-        content::WebContents::FromRenderFrameHost(frame_host))
-        ->GetDelegateForFrame(frame_host)
-        ->OnCredentialsReceived(std::move(display_credentials));
+    ChromeWebAuthnCredentialsDelegate* credentials_delegate =
+        ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
+            content::WebContents::FromRenderFrameHost(frame_host))
+            ->GetDelegateForFrame(frame_host);
+    credentials_delegate->SetAndroidHybridAvailable(
+        ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(
+            !hybrid_callback_.is_null()));
+    credentials_delegate->OnCredentialsReceived(std::move(display_credentials));
     return;
   }
 
@@ -90,17 +94,21 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
   }
   touch_to_fill_controller_->Show(
       std::vector<password_manager::UiCredential>(), display_credentials,
-      std::make_unique<TouchToFillControllerWebAuthnDelegate>(this));
+      std::make_unique<TouchToFillControllerWebAuthnDelegate>(
+          this, !hybrid_callback_.is_null()));
 }
 
 void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(
     content::RenderFrameHost* frame_host) {
   if (conditional_request_in_progress_) {
     // Prevent autofill from offering WebAuthn credentials in the popup.
-    ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
-        content::WebContents::FromRenderFrameHost(frame_host))
-        ->GetDelegateForFrame(frame_host)
-        ->NotifyWebAuthnRequestAborted();
+    ChromeWebAuthnCredentialsDelegate* credentials_delegate =
+        ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
+            content::WebContents::FromRenderFrameHost(frame_host))
+            ->GetDelegateForFrame(frame_host);
+    credentials_delegate->NotifyWebAuthnRequestAborted();
+    credentials_delegate->SetAndroidHybridAvailable(
+        ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(false));
   } else {
     touch_to_fill_controller_->Close();
   }
@@ -113,6 +121,12 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnAccountSelected(
     const std::vector<uint8_t>& user_id) {
   if (get_assertion_callback_) {
     get_assertion_callback_.Run(user_id);
+  }
+}
+
+void WebAuthnRequestDelegateAndroid::ShowHybridSignIn() {
+  if (hybrid_callback_) {
+    hybrid_callback_.Run();
   }
 }
 

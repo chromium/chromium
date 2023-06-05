@@ -32,14 +32,15 @@ public interface TouchToFillComponent {
      * TODO(crbug.com/1013134): Deduplicate the Java and C++ enum.
      */
     @IntDef({UserAction.SELECT_CREDENTIAL, UserAction.DISMISS, UserAction.SELECT_MANAGE_PASSWORDS,
-            UserAction.SELECT_WEBAUTHN_CREDENTIAL, UserAction.MAX_VALUE})
+            UserAction.SELECT_WEBAUTHN_CREDENTIAL, UserAction.SELECT_HYBRID, UserAction.MAX_VALUE})
     @Retention(RetentionPolicy.SOURCE)
     @interface UserAction {
         int SELECT_CREDENTIAL = 0;
         int DISMISS = 1;
         int SELECT_MANAGE_PASSWORDS = 2;
         int SELECT_WEBAUTHN_CREDENTIAL = 3;
-        int MAX_VALUE = SELECT_WEBAUTHN_CREDENTIAL;
+        int SELECT_HYBRID = 4;
+        int MAX_VALUE = SELECT_HYBRID;
     }
 
     /**
@@ -71,6 +72,11 @@ public interface TouchToFillComponent {
          * @param passkeysShown True when the sheet contained passkey credentials.
          */
         void onManagePasswordsSelected(boolean passkeysShown);
+
+        /**
+         * Called when the user selects 'Use a Passkey on a Different Device'.
+         */
+        void onHybridSignInSelected();
     }
 
     /**
@@ -94,8 +100,11 @@ public interface TouchToFillComponent {
      *         after filling.
      * @param managePasskeysHidesPasswords A {@link boolean} that indicates whether managing
      *         passkeys will show a screen that does not provide password management.
+     * @param showHybridPasskeyOption A {@link boolean} that indicates whether the footer should
+     *         display an option to initiate hybrid sign-in.
      */
     void showCredentials(GURL url, boolean isOriginSecure,
             List<WebAuthnCredential> webauthnCredentials, List<Credential> credentials,
-            boolean triggerSubmission, boolean managePasskeysHidesPasswords);
+            boolean triggerSubmission, boolean managePasskeysHidesPasswords,
+            boolean showHybridPasskeyOption);
 }

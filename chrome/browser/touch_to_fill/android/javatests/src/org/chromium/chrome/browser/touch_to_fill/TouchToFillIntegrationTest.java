@@ -111,7 +111,7 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
                     Collections.singletonList(sAna), /*submitCredential=*/false,
-                    /*managePasskeysHidesPasswords=*/false);
+                    /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -128,7 +128,7 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sCam),
                     Collections.singletonList(sAna), /*submitCredential=*/false,
-                    /*managePasskeysHidesPasswords=*/false);
+                    /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -145,7 +145,7 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
                     Collections.singletonList(sAna), /*submitCredential=*/false,
-                    /*managePasskeysHidesPasswords=*/false);
+                    /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -162,7 +162,7 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
                     Arrays.asList(sAna, sBob), /*submitCredential=*/false,
-                    /*managePasskeysHidesPasswords=*/false);
+                    /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -178,18 +178,41 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
                     Collections.singletonList(sAna), /*submitCredential=*/false,
-                    /*managePasskeysHidesPasswords=*/false);
+                    /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
 
-        // Swipe the sheet up to it's full state in order to see the 'Manage Passwords' button.
+        // Swipe the sheet up to its full state in order to see the 'Manage Passwords' button.
         runOnUiThreadBlocking(() -> { sheetSupport.setSheetState(SheetState.FULL, false); });
 
         pollUiThread(() -> getManagePasswordsButton() != null);
         TouchCommon.singleClickView(getManagePasswordsButton());
         waitForEvent(mMockBridge).onManagePasswordsSelected(/*passkeysShown=*/false);
+        verify(mMockBridge, never()).onDismissed();
+        verify(mMockBridge, never()).onCredentialSelected(any());
+    }
+
+    @Test
+    @MediumTest
+    public void testClickingHybridButtonTriggersCallback() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
+                    Collections.singletonList(sAna), /*submitCredential=*/false,
+                    /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+
+        // Swipe the sheet up to its full state in order to see the 'Use a Passkey on a Different
+        // Device' button.
+        runOnUiThreadBlocking(() -> { sheetSupport.setSheetState(SheetState.FULL, false); });
+
+        pollUiThread(() -> getHybridSignInButton() != null);
+        TouchCommon.singleClickView(getHybridSignInButton());
+        waitForEvent(mMockBridge).onHybridSignInSelected();
         verify(mMockBridge, never()).onDismissed();
         verify(mMockBridge, never()).onCredentialSelected(any());
     }
@@ -261,7 +284,7 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
                     Arrays.asList(sAna, sBob), /*submitCredential=*/false,
-                    /*managePasskeysHidesPasswords=*/false);
+                    /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/false);
         });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onCredentialSelected(any());
@@ -280,6 +303,11 @@ public class TouchToFillIntegrationTest {
     private TextView getManagePasswordsButton() {
         return mActivityTestRule.getActivity().findViewById(
                 R.id.touch_to_fill_sheet_manage_passwords);
+    }
+
+    private TextView getHybridSignInButton() {
+        return mActivityTestRule.getActivity().findViewById(
+                R.id.touch_to_fill_sheet_use_passkeys_other_device);
     }
 
     public static <T> T waitForEvent(T mock) {

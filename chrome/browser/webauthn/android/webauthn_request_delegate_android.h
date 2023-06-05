@@ -61,7 +61,7 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
 
   // Tells the WebAuthn Java implementation the the user has selected the
   // option for hybrid sign-in, which should be handled by the platform.
-  void ShowHybridSignIn();
+  virtual void ShowHybridSignIn();
 
   // Returns the WebContents that owns this object.
   content::WebContents* web_contents();

@@ -239,3 +239,12 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequestPendingCallback) {
   EXPECT_TRUE(callback.was_called());
   EXPECT_FALSE(credentials_delegate_->GetPasskeys());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeWebAuthnCredentialsDelegateTest, AndroidHybridAvailability) {
+  EXPECT_FALSE(credentials_delegate_->IsAndroidHybridAvailable());
+  credentials_delegate_->SetAndroidHybridAvailable(
+      ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(true));
+  EXPECT_TRUE(credentials_delegate_->IsAndroidHybridAvailable());
+}
+#endif  // BUILDFLAG(IS_ANDROID)

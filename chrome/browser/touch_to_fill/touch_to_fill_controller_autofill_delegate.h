@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_delegate.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -32,6 +33,8 @@ class TouchToFillController;
 class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
+  using ShowHybridOption = base::StrongAlias<struct ShowHybridOptionTag, bool>;
+
   // The action a user took when interacting with the Touch To Fill sheet.
   //
   // These values are persisted to logs. Entries should not be renumbered and
@@ -45,6 +48,7 @@ class TouchToFillControllerAutofillDelegate
     kDismissed = 1,
     kSelectedManagePasswords = 2,
     kSelectedPasskeyCredential = 3,
+    kSelectedHybrid = 4,
   };
 
   // The final outcome that closes the Touch To Fill sheet.
@@ -58,7 +62,8 @@ class TouchToFillControllerAutofillDelegate
     kReauthenticationFailed = 2,
     kManagePasswordsSelected = 3,
     kPasskeyCredentialSelected = 4,
-    kMaxValue = kPasskeyCredentialSelected,
+    kHybridSignInSelected = 5,
+    kMaxValue = kHybridSignInSelected,
   };
 
   // No-op constructor for tests.
@@ -67,13 +72,15 @@ class TouchToFillControllerAutofillDelegate
       password_manager::PasswordManagerClient* password_client,
       scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness);
+      autofill::mojom::SubmissionReadinessState submission_readiness,
+      ShowHybridOption should_show_hybrid_option);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
       scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness);
+      autofill::mojom::SubmissionReadinessState submission_readiness,
+      ShowHybridOption should_show_hybrid_option);
   TouchToFillControllerAutofillDelegate(
       const TouchToFillControllerAutofillDelegate&) = delete;
   TouchToFillControllerAutofillDelegate& operator=(
@@ -91,9 +98,11 @@ class TouchToFillControllerAutofillDelegate
       base::OnceClosure action_completed) override;
   void OnManagePasswordsSelected(bool passkeys_shown,
                                  base::OnceClosure action_completed) override;
+  void OnHybridSignInSelected(base::OnceClosure action_completed) override;
   void OnDismiss(base::OnceClosure action_completed) override;
   const GURL& GetFrameUrl() override;
   bool ShouldTriggerSubmission() override;
+  bool ShouldShowHybridOption() override;
   gfx::NativeView GetNativeView() override;
 
  private:
@@ -131,6 +140,9 @@ class TouchToFillControllerAutofillDelegate
   // Whether the controller should trigger submission when a credential is
   // filled in.
   bool trigger_submission_ = false;
+
+  // Whether the controller should show an option for passkey hybrid sign-in.
+  ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };

@@ -69,14 +69,23 @@ void TouchToFillController::Show(
   if (!view_)
     view_ = TouchToFillViewFactory::Create(this);
 
+  int flags = TouchToFillView::kNone;
+  if (delegate_->ShouldTriggerSubmission()) {
+    flags |= TouchToFillView::kTriggerSubmission;
+  }
+  if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent()) {
+    flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
+  }
+  if (delegate_->ShouldShowHybridOption()) {
+    flags |= TouchToFillView::kShouldShowHybridOption;
+  }
+
   GURL url = delegate_->GetFrameUrl();
   view_->Show(
       url,
       TouchToFillView::IsOriginSecure(
           network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
-      SortCredentials(credentials), passkey_credentials,
-      delegate_->ShouldTriggerSubmission(),
-      password_manager_launcher::CanManagePasswordsWhenPasskeysPresent());
+      SortCredentials(credentials), passkey_credentials, flags);
   touch_to_fill_state_ = TouchToFillState::kIsShowing;
 }
 
@@ -104,6 +113,12 @@ void TouchToFillController::OnManagePasswordsSelected(bool passkeys_shown) {
   delegate_->OnManagePasswordsSelected(
       passkeys_shown, base::BindOnce(&TouchToFillController::ActionCompleted,
                                      base::Unretained(this)));
+}
+
+void TouchToFillController::OnHybridSignInSelected() {
+  view_.reset();
+  delegate_->OnHybridSignInSelected(base::BindOnce(
+      &TouchToFillController::ActionCompleted, base::Unretained(this)));
 }
 
 void TouchToFillController::OnDismiss() {

@@ -50,6 +50,10 @@ class TouchToFillController {
   // password management screen is displayed.
   void OnManagePasswordsSelected(bool passkeys_shown);
 
+  // Informs the controller that the user has tapped the "Use Passkey on a
+  // Different Device" option, which initiates hybrid passkey sign-in.
+  void OnHybridSignInSelected();
+
   // Informs the controller that the user has dismissed the sheet. No-op if
   // invoked repeatedly.
   void OnDismiss();
