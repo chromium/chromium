@@ -88,7 +88,7 @@ class TestResultsFetcher:
     def gather_results(self,
                        build: Build,
                        step_name: str,
-                       exclude_exonerated: bool = True,
+                       exclude_exonerated: bool = False,
                        only_unexpected: bool = True) -> WebTestResults:
         """Gather all web test results on a given build step from ResultDB."""
         assert build.build_id, '%s must set a build ID' % build
