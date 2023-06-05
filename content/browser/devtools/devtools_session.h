@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
@@ -64,6 +65,12 @@ class DevToolsSession : public protocol::FrontendChannel,
     kSupportsTabTarget,
     kDoesNotSupportTabTarget,
   };
+
+  class ChildObserver : public base::CheckedObserver {
+   public:
+    virtual void SessionAttached(DevToolsSession& session) = 0;
+  };
+
   // For root sessions (see also private constructor for children).
   DevToolsSession(DevToolsAgentHostClient* client, Mode mode);
   ~DevToolsSession() override;
@@ -116,6 +123,9 @@ class DevToolsSession : public protocol::FrontendChannel,
   void DetachChildSession(const std::string& session_id);
   bool HasChildSession(const std::string& session_id);
   Mode session_mode() const { return mode_; }
+
+  void AddObserver(ChildObserver* obs);
+  void RemoveObserver(ChildObserver* obs);
 
  private:
   struct PendingMessage {
@@ -229,6 +239,7 @@ class DevToolsSession : public protocol::FrontendChannel,
   base::flat_map<std::string, DevToolsSession*> child_sessions_;
   base::OnceClosure runtime_resume_;
   DevToolsExternalAgentProxyDelegate* proxy_delegate_ = nullptr;
+  base::ObserverList<ChildObserver, true, false> child_observers_;
 
   base::WeakPtrFactory<DevToolsSession> weak_factory_{this};
 };

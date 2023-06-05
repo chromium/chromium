@@ -864,6 +864,8 @@ source_set("browser") {
     "devtools/shared_worker_devtools_agent_host.h",
     "devtools/shared_worker_devtools_manager.cc",
     "devtools/shared_worker_devtools_manager.h",
+    "devtools/tracing_process_set_monitor.cc",
+    "devtools/tracing_process_set_monitor.h",
     "devtools/web_contents_devtools_agent_host.cc",
     "devtools/web_contents_devtools_agent_host.h",
     "devtools/worker_devtools_agent_host.cc",

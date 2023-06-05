@@ -4,6 +4,7 @@
   const {page, session, dp} = await testRunner.startBlank(
       'Tracing of FLEDGE worklets.', {url: base + 'fledge_join.html?40'});
 
+  await dp.Target.setAutoAttach({autoAttach: true, flatten: true, waitForDebuggerOnStart: false});
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
   const tracingHelper = new TracingHelper(testRunner, session);

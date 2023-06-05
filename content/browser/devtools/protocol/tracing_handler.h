@@ -11,7 +11,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -41,17 +40,17 @@ class FrameTreeNode;
 class DevToolsAgentHostImpl;
 class DevToolsVideoConsumer;
 class DevToolsIOContext;
+class DevToolsSession;
 class NavigationRequest;
-class RenderFrameHost;
-class RenderProcessHost;
+class TracingProcessSetMonitor;
 
 namespace protocol {
 
 class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
  public:
-  enum TargetType { kBrowser, kTab, kFrame };
-  CONTENT_EXPORT TracingHandler(TargetType target_type,
-                                DevToolsIOContext* io_context);
+  CONTENT_EXPORT TracingHandler(DevToolsAgentHostImpl* host,
+                                DevToolsIOContext* io_context,
+                                DevToolsSession* root_session);
 
   TracingHandler(const TracingHandler&) = delete;
   TracingHandler& operator=(const TracingHandler&) = delete;
@@ -60,14 +59,9 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
-  // Adds an additional process to tracing configuration, if tracing is active.
-  void AddProcess(base::ProcessId pid);
-
   // DevToolsDomainHandler implementation.
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
-  void ConnectWebContents(WebContents* web_contents);
-  void DisconnectWebContents();
   void WillInitiatePrerender(FrameTreeNode* ftn);
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -145,24 +139,22 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
       const base::trace_event::TraceConfig& browser_config,
       bool return_as_stream,
       bool proto_format);
-  void SetupProcessFilter(base::ProcessId gpu_pid, RenderFrameHost*);
-  void AppendProcessId(RenderFrameHost*,
-                       std::unordered_set<base::ProcessId>* process_set);
-  void OnProcessReady(RenderProcessHost*);
   void AttemptAdoptStartupSession(bool return_as_stream,
                                   bool gzip_compression,
                                   bool proto_format,
                                   perfetto::BackendType tracing_backend);
 
-  TargetType target_type_;
-  WebContents* web_contents_;
+  // Adds an additional process to tracing configuration, if tracing is active.
+  void AddProcessToFilter(base::ProcessId pid);
+
   std::unique_ptr<base::RepeatingTimer> buffer_usage_poll_timer_;
 
   std::unique_ptr<Tracing::Frontend> frontend_;
-  DevToolsIOContext* io_context_;
-  // This will be null in agents not attached to a frame host,
-  // or while WebContents is detached.
-  RenderFrameHostImpl* frame_host_ = nullptr;
+  const base::raw_ptr<DevToolsIOContext> io_context_;
+  const base::raw_ptr<DevToolsAgentHostImpl> host_;  // Only null in unit tests.
+
+  // Session is for use in process filter and is null in browser.
+  const base::raw_ptr<DevToolsSession> session_for_process_filter_;
   bool did_initiate_recording_;
   bool return_as_stream_;
   bool gzip_compression_;
@@ -172,8 +164,8 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   std::unique_ptr<DevToolsVideoConsumer> video_consumer_;
   int number_of_screenshots_from_video_consumer_ = 0;
   perfetto::TraceConfig trace_config_;
-  std::unordered_set<base::ProcessId> pids_being_traced_;
   std::unique_ptr<PerfettoTracingSession> session_;
+  std::unique_ptr<TracingProcessSetMonitor> process_set_monitor_;
   base::WeakPtrFactory<TracingHandler> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest,

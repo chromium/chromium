@@ -3,14 +3,20 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  var {session} = await testRunner.startBlank('Tests that tracing does not record unrelated processes.');
+  const {dp, session} = await testRunner.startBlank('Tests that tracing does not record unrelated processes.');
 
-  var TracingHelper = await testRunner.loadScript('../resources/tracing-test.js');
-  var tracingHelper = new TracingHelper(testRunner, session);
+  const TracingHelper = await testRunner.loadScript('../resources/tracing-test.js');
+  const tracingHelper = new TracingHelper(testRunner, session);
+
+  // Create another page, then disconnect to make sure it's not the part
+  // of the trace via session tracking.
+  const {session: otherSession} = await testRunner.startURL('data:text/html;charset=utf-8;base64,PGh0bWw+PC9odG1sPg==', 'Another page');
+  await otherSession.disconnect();
 
   await tracingHelper.startTracing();
-  await session.evaluateAsync(`return Promise.resolve(42)`);
-  await testRunner.startURL('data:text/html;charset=utf-8;base64,PGh0bWw+PC9odG1sPg==', 'Another page');
+  await session.evaluateAsync(`new Promise(resolve => requestAnimationFrame(resolve))`);
+  // Make sure GPU process pops up in trace as well.
+  await dp.Page.captureScreenshot({format: 'png'});
   const events = await tracingHelper.stopTracing();
 
   const pids = new Set();

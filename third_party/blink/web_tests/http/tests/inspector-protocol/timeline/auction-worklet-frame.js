@@ -49,6 +49,10 @@
   await session.evaluateAsync(makeFrameJS);
   const frameTarget = await frameTargetPromise;
   const frameSession = session.createChild(frameTarget.params.sessionId);
+  // Enable auto-attach for the frame, so we attach to auction worklet.
+  frameSession.protocol.Target.setAutoAttach(
+      {autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
+
   const winner = await frameSession.evaluateAsync(auctionJs);
   testRunner.log('Auction winner:' + handleUrn(winner));
 

@@ -136,6 +136,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void UpdateRendererChannel(bool force) override;
   protocol::TargetAutoAttacher* auto_attacher() override;
   std::string GetSubtype() override;
+  RenderProcessHost* GetProcessHost() override;
 
   // WebContentsObserver overrides.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

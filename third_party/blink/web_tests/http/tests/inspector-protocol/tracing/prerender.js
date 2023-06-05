@@ -26,9 +26,15 @@
 
   page.navigate('../prerender/resources/simple-prerender.html');
   await dp.Preload.oncePrerenderStatusUpdated(e => e.params.status == 'Ready');
-
+  tp.Target.setAutoAttach({autoAttach: true, flatten: true, waitForDebuggerOnStart: false});
+  const prerenderSessionId = (await tp.Target.onceAttachedToTarget(
+      e => e.params.targetInfo.subtype === 'prerender')).params.sessionId;
+  const pp = session.createChild(prerenderSessionId).protocol;
+  await pp.Preload.enable();
   session.evaluate(`document.getElementById('link').click()`);
-  await dp.Preload.oncePrerenderAttemptCompleted();
+
+  await pp.Preload.oncePrerenderAttemptCompleted();
+
   const devtoolsEvents = await tracingHelper.stopTracing();
   const prerenderFrameCommitted =
       tracingHelper

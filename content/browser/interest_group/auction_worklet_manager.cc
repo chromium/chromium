@@ -344,7 +344,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           worklet_receiver = bidder_worklet_.BindNewPipeAndPassReceiver();
       worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate->GetFrame(), &process_handle_, worklet_info_.script_url,
+          delegate->GetFrame(), process_handle_, worklet_info_.script_url,
           bidder_worklet_.get()));
       process_handle_.GetService()->LoadBidderWorklet(
           std::move(worklet_receiver),
@@ -368,7 +368,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
       worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate->GetFrame(), &process_handle_, worklet_info_.script_url,
+          delegate->GetFrame(), process_handle_, worklet_info_.script_url,
           seller_worklet_.get()));
       process_handle_.GetService()->LoadSellerWorklet(
           std::move(worklet_receiver),

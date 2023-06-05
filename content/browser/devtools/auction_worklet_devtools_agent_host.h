@@ -28,6 +28,9 @@ class AuctionWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
  private:
   friend class AuctionWorkletDevToolsAgentHostManager;
 
+  static scoped_refptr<AuctionWorkletDevToolsAgentHost> Create(
+      DebuggableAuctionWorklet* worklet);
+
   explicit AuctionWorkletDevToolsAgentHost(DebuggableAuctionWorklet* worklet);
   ~AuctionWorkletDevToolsAgentHost() override;
 

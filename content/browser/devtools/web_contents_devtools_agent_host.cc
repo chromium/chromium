@@ -171,9 +171,6 @@ void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
   const bool inserted =
       g_agent_host_instances.Get().insert(std::make_pair(wc, this)).second;
   CHECK(inserted);
-  for (auto* tracing : protocol::TracingHandler::ForAgentHost(this)) {
-    tracing->ConnectWebContents(wc);
-  }
   auto_attacher_->SetWebContents(wc);
   Observe(wc);
   // Once created, persist till underlying WC is detached, so that
@@ -183,9 +180,6 @@ void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
 
 void WebContentsDevToolsAgentHost::InnerDetach() {
   DCHECK_EQ(this, FindAgentHost(web_contents()));
-  for (auto* tracing : protocol::TracingHandler::ForAgentHost(this)) {
-    tracing->DisconnectWebContents();
-  }
   auto_attacher_->SetWebContents(nullptr);
   g_agent_host_instances.Get().erase(web_contents());
   Observe(nullptr);
@@ -407,8 +401,10 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
           ? protocol::TargetHandler::AccessMode::kRegular
           : protocol::TargetHandler::AccessMode::kAutoAttachOnly,
       GetId(), auto_attacher_.get(), session);
-  session->CreateAndAddHandler<protocol::TracingHandler>(
-      protocol::TracingHandler::kTab, GetIOContext());
+  DevToolsSession* root_session = session->GetRootSession();
+  CHECK(root_session);
+  session->CreateAndAddHandler<protocol::TracingHandler>(this, GetIOContext(),
+                                                         root_session);
   return true;
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/process/process_handle.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/common/content_export.h"
@@ -61,6 +62,8 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // Returns true if the worklet should start in the paused state.
   bool should_pause_on_start() const { return should_pause_on_start_; }
 
+  absl::optional<base::ProcessId> GetPid(PidCallback callback);
+
  private:
   friend class AuctionRunner;
   friend class AuctionWorkletManager;
@@ -73,12 +76,12 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // `process_handle`.
   DebuggableAuctionWorklet(
       RenderFrameHostImpl* owning_frame,
-      AuctionProcessManager::ProcessHandle* process_handle,
+      AuctionProcessManager::ProcessHandle& process_handle,
       const GURL& url,
       auction_worklet::mojom::BidderWorklet* bidder_worklet);
   DebuggableAuctionWorklet(
       RenderFrameHostImpl* owning_frame,
-      AuctionProcessManager::ProcessHandle* process_handle,
+      AuctionProcessManager::ProcessHandle& process_handle,
       const GURL& url,
       auction_worklet::mojom::SellerWorklet* seller_worklet);
 
@@ -93,7 +96,7 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   void TraceProcessData(perfetto::TracedValue trace_context);
 
   const raw_ptr<RenderFrameHostImpl> owning_frame_ = nullptr;
-  const raw_ptr<AuctionProcessManager::ProcessHandle> process_handle_ = nullptr;
+  const raw_ref<AuctionProcessManager::ProcessHandle> process_handle_;
   const GURL url_;
   const std::string unique_id_;
 

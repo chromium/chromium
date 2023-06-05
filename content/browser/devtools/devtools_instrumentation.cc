@@ -1284,18 +1284,6 @@ void FencedFrameCreated(
   agent_host->DidCreateFencedFrame(fenced_frame);
 }
 
-void DidCreateProcessForAuctionWorklet(RenderFrameHostImpl* owner,
-                                       base::ProcessId pid) {
-  // TracingHandler lives on the very root, not local root.
-  // TODO(morlovich): This may not be right for fenced frames, though
-  // that should not currently matter.
-  WebContents* web_contents = WebContents::FromRenderFrameHost(owner);
-  if (!web_contents) {
-    return;
-  }
-  DispatchToAgents(web_contents, &protocol::TracingHandler::AddProcess, pid);
-}
-
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,

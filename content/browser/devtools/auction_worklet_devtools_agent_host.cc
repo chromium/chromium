@@ -78,6 +78,20 @@ bool AuctionWorkletDevToolsAgentHost::AttachSession(DevToolsSession* session,
   return true;
 }
 
+// static
+scoped_refptr<AuctionWorkletDevToolsAgentHost>
+AuctionWorkletDevToolsAgentHost::Create(DebuggableAuctionWorklet* worklet) {
+  auto self =
+      base::WrapRefCounted(new AuctionWorkletDevToolsAgentHost(worklet));
+  // This needs to be outside of constructor due to bind until we make the base
+  // class a `StartRefCountFromOne` (i.e. REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE).
+  if (auto pid_opt = worklet->GetPid(base::BindOnce(
+          &AuctionWorkletDevToolsAgentHost::SetProcessId, self))) {
+    self->SetProcessId(*pid_opt);
+  }
+  return self;
+}
+
 AuctionWorkletDevToolsAgentHost::AuctionWorkletDevToolsAgentHost(
     DebuggableAuctionWorklet* worklet)
     : DevToolsAgentHostImpl(worklet->UniqueId()), worklet_(worklet) {
@@ -143,8 +157,7 @@ AuctionWorkletDevToolsAgentHostManager::GetOrCreateFor(
   if (it != hosts_.end())
     return it->second;
 
-  auto host =
-      base::WrapRefCounted(new AuctionWorkletDevToolsAgentHost(worklet));
+  auto host = AuctionWorkletDevToolsAgentHost::Create(worklet);
   hosts_.insert(std::make_pair(worklet, host));
   return host;
 }

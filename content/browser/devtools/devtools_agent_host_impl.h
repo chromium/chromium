@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/process/kill.h"
+#include "base/process/process_handle.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/devtools_session.h"
@@ -111,6 +112,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   virtual protocol::TargetAutoAttacher* auto_attacher();
   virtual std::string GetSubtype();
 
+  base::ProcessId GetProcessId() const { return process_id_; }
+
  protected:
   explicit DevToolsAgentHostImpl(const std::string& id);
   ~DevToolsAgentHostImpl() override;
@@ -125,6 +128,10 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   void NotifyCreated();
   void NotifyNavigated();
   void NotifyCrashed(base::TerminationStatus status);
+
+  void SetProcessId(base::ProcessId process_id);
+  void ProcessHostChanged();
+
   void ForceDetachRestrictedSessions(
       const std::vector<DevToolsSession*>& restricted_sessions);
   DevToolsIOContext* GetIOContext() { return &io_context_; }
@@ -162,6 +169,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
       session_by_client_;
   DevToolsIOContext io_context_;
   DevToolsRendererChannel renderer_channel_;
+  base::ProcessId process_id_ = base::kNullProcessId;
+
   static int s_force_creation_count_;
 };
 

@@ -20,6 +20,9 @@ void DevToolsAgentHostObserver::DevToolsAgentHostCreated(
 void DevToolsAgentHostObserver::DevToolsAgentHostNavigated(
     DevToolsAgentHost* agent_host) {}
 
+void DevToolsAgentHostObserver::DevToolsAgentHostProcessChanged(
+    DevToolsAgentHost* agent_host) {}
+
 void DevToolsAgentHostObserver::DevToolsAgentHostAttached(
     DevToolsAgentHost* agent_host) {
 }
