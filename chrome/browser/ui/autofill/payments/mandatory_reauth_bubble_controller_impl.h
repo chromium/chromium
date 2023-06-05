@@ -12,6 +12,10 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/mandatory_reauth/android/mandatory_reauth_opt_in_view_android.h"
+#endif
+
 namespace autofill {
 
 class MandatoryReauthBubbleControllerImpl
@@ -59,6 +63,12 @@ class MandatoryReauthBubbleControllerImpl
   // The type of bubble currently displayed to the user.
   MandatoryReauthBubbleType current_bubble_type_ =
       MandatoryReauthBubbleType::kInactive;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Handles Android view's lifecycle. The Desktop view is handled by the base
+  // class `AutofillBubbleControllerBase`.
+  std::unique_ptr<MandatoryReauthOptInViewAndroid> view_android_;
+#endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

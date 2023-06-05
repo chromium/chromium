@@ -3015,6 +3015,8 @@ static_library("browser") {
       "lookalikes/safety_tip_infobar_delegate_android.h",
       "lookalikes/safety_tip_message_delegate_android.cc",
       "lookalikes/safety_tip_message_delegate_android.h",
+      "mandatory_reauth/android/mandatory_reauth_opt_in_view_android.cc",
+      "mandatory_reauth/android/mandatory_reauth_opt_in_view_android.h",
       "media/android/cdm/media_drm_origin_id_manager.cc",
       "media/android/cdm/media_drm_origin_id_manager.h",
       "media/android/cdm/media_drm_origin_id_manager_factory.cc",

@@ -108,6 +108,12 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
+// After resetting the raw pointer to the view in the base class, the Android
+// view has to be deleted.
+#if BUILDFLAG(IS_ANDROID)
+  view_android_.reset();
+#endif
+
   if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
     if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
       std::move(accept_mandatory_reauth_callback_).Run();
@@ -144,13 +150,19 @@ MandatoryReauthBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // The Android view's lifecycle is managed by this controller. We also
+  // register it as a raw pointer in the base class to use its closing logic
+  // when this controller wants to close it.
+  view_android_ = MandatoryReauthOptInViewAndroid::CreateAndShow();
+  set_bubble_view(view_android_.get());
+#else
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->window()->GetAutofillBubbleHandler();
   set_bubble_view(autofill_bubble_handler->ShowMandatoryReauthBubble(
       web_contents(), this, /*is_user_gesture=*/false, current_bubble_type_));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MandatoryReauthBubbleControllerImpl);
