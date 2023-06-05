@@ -77,13 +77,11 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked) {
+    AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
   AutofillManager::OnAskForValuesToFill(form, field, bounding_box,
-                                        autoselect_first_suggestion,
-                                        form_element_was_clicked);
+                                        trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }
 
@@ -235,13 +233,11 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked) {
+    AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
   BrowserAutofillManager::OnAskForValuesToFill(form, field, bounding_box,
-                                               autoselect_first_suggestion,
-                                               form_element_was_clicked);
+                                               trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }
 

@@ -24,9 +24,9 @@ class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
   }
 
   void SimulateOnAskForValuesToFillImpl() {
-    OnAskForValuesToFillImpl(FormData(), FormFieldData(), gfx::RectF(),
-                             AutoselectFirstSuggestion(false),
-                             FormElementWasClicked(false));
+    OnAskForValuesToFillImpl(
+        FormData(), FormFieldData(), gfx::RectF(),
+        AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 };
 
@@ -44,8 +44,7 @@ class AutofillProviderTestHelper : public TestAutofillProvider {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) override {
+      AutofillSuggestionTriggerSource trigger_source) override {
     manager_ = manager;
   }
   void OnServerQueryRequestError(AndroidAutofillManager* manager,

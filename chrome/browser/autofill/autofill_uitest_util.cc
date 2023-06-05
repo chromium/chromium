@@ -142,9 +142,9 @@ void GenerateTestAutofillPopup(
   mojom::AutofillDriver* mojo_driver = driver;
   TestAutofillManagerWaiter waiter(*manager,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds,
-                                  AutoselectFirstSuggestion(false),
-                                  FormElementWasClicked(false));
+  mojo_driver->AskForValuesToFill(
+      form, form.fields.front(), bounds,
+      AutofillSuggestionTriggerSource::kTextFieldDidChange);
   ASSERT_TRUE(waiter.Wait());
   ASSERT_EQ(1u, manager->form_structures().size());
   // `form.host_frame` and `form.url` have only been set by

@@ -476,13 +476,28 @@ enum RendererFormDataAction {
   kPreview,  // The renderer should preview the form data.
 };
 
-// autofill::AutoselectFirstSuggestion
-// (components/autofill/core/common/aliases.h)
-struct AutoselectFirstSuggestion {
-  bool autoselect_first_suggestion;
-};
-
-// autofill::FormElementWasClicked (components/autofill/core/common/aliases.h)
-struct FormElementWasClicked {
-  bool form_element_was_clicked;
+// Describes which action triggered Autofill suggestions. This has implications
+// how the suggestions behave, as described below.
+// Some details of the suggestions are further controlled by the
+// AutofillAgent::ShowSuggestionsOptions. See comments there.
+enum AutofillSuggestionTriggerSource {
+  // Used as a default value and cannot be used to trigger suggestions.
+  kUnspecified,
+  // Suggestions triggered by either:
+  // - Clicking or tapping a text input (TAB key doesn't count).
+  // - Focusing a text input using a screen reader.
+  // Suggestion of this type can trigger FastCheckout or TouchToFill.
+  kFormControlElementClicked,
+  // Suggestions triggered by modifying the content of a text input.
+  kTextFieldDidChange,
+  // Suggestions triggered by pressing the down key on a text input. This auto
+  // selects the first suggestion.
+  kTextFieldDidReceiveKeyDown,
+  // Suggestions triggered by the clicking onto the "triangle" on an
+  // <input list=...> to show <datalist> suggestions. While this also counts
+  // as a kFormControlElementClicked event, it is triggered slightly later.
+  // As of crrev.com/c/107353005, prefix matching for such suggestions is
+  // skipped, to make them behave more like a <select>.
+  // TODO(crbug.com/1007974): It's unclear if this is still necessary.
+  kOpenTextDataListChooser,
 };

@@ -101,8 +101,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (const FormData& form,
                const FormFieldData& field,
                const gfx::RectF& bounding_box,
-               AutoselectFirstSuggestion autoselect_first_suggestion,
-               FormElementWasClicked form_element_was_clicked),
+               AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void, HidePopup, (), (override));
   MOCK_METHOD(void,

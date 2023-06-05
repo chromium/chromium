@@ -175,6 +175,10 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Flags passed to ShowSuggestions.
   struct ShowSuggestionsOptions {
+    // Indicates what triggered the suggestions.
+    AutofillSuggestionTriggerSource trigger_source{
+        AutofillSuggestionTriggerSource::kUnspecified};
+
     // Specifies that suggestions should be shown when |element| contains no
     // text.
     bool autofill_on_empty_values{false};
@@ -187,15 +191,6 @@ class AutofillAgent : public content::RenderFrameObserver,
     // be elided because of the current value of |element| (relevant for inline
     // autocomplete).
     bool show_full_suggestion_list{false};
-
-    // Specifies that the first suggestion must be auto-selected when the
-    // dropdown is shown. Enabled when the user presses ARROW_DOWN on a field.
-    AutoselectFirstSuggestion autoselect_first_suggestion{false};
-
-    // Signals that suggestions are triggered due to a click on an input
-    // element. The signal is used to understand whether other surfaces (e.g.
-    // TouchToFill, FastCheckout) can be triggered.
-    FormElementWasClicked form_element_was_clicked{false};
   };
 
   // This class ensures that the driver will only receive notifications only
@@ -309,10 +304,8 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Queries the browser for Autocomplete and Autofill suggestions for the given
   // |element|.
-  void QueryAutofillSuggestions(
-      const blink::WebFormControlElement& element,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked);
+  void QueryAutofillSuggestions(const blink::WebFormControlElement& element,
+                                AutofillSuggestionTriggerSource trigger_source);
 
   // Sets the selected value of the the field identified by |field_id| to
   // |suggested_value|.

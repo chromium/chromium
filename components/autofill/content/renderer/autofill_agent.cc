@@ -188,11 +188,9 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) override {
+      AutofillSuggestionTriggerSource trigger_source) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field,
-             bounding_box, autoselect_first_suggestion,
-             form_element_was_clicked);
+             bounding_box, trigger_source);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void FocusNoLongerOnForm(bool had_interacted_form) override {
@@ -542,7 +540,10 @@ void AutofillAgent::OnTextFieldDidChange(const WebInputElement& element) {
     return;
   }
 
-  ShowSuggestions(element, {.requires_caret_at_end = true});
+  ShowSuggestions(
+      element,
+      {.trigger_source = AutofillSuggestionTriggerSource::kTextFieldDidChange,
+       .requires_caret_at_end = true});
 
   FormData form;
   FormFieldData field;
@@ -565,18 +566,22 @@ void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
 
   if (event.windows_key_code == ui::VKEY_DOWN ||
       event.windows_key_code == ui::VKEY_UP) {
-    ShowSuggestions(element,
-                    {.autofill_on_empty_values = true,
-                     .requires_caret_at_end = true,
-                     .autoselect_first_suggestion = AutoselectFirstSuggestion(
-                         ShouldAutoselectFirstSuggestionOnArrowDown())});
+    ShowSuggestions(
+        element,
+        {.trigger_source =
+             AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
+         .autofill_on_empty_values = true,
+         .requires_caret_at_end = true});
   }
 }
 
 void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
   DCHECK(!unsafe_render_frame() ||
          IsOwnedByFrame(element, unsafe_render_frame()));
-  ShowSuggestions(element, {.autofill_on_empty_values = true});
+  ShowSuggestions(
+      element, {.trigger_source =
+                    AutofillSuggestionTriggerSource::kOpenTextDataListChooser,
+                .autofill_on_empty_values = true});
 }
 
 // Notifies the AutofillDriver about changes in the <datalist> options in
@@ -889,8 +894,10 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
 
 void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
                                     const ShowSuggestionsOptions& options) {
-  DCHECK(!unsafe_render_frame() ||
-         IsOwnedByFrame(element, unsafe_render_frame()));
+  CHECK(!unsafe_render_frame() ||
+        IsOwnedByFrame(element, unsafe_render_frame()));
+  CHECK_NE(options.trigger_source,
+           AutofillSuggestionTriggerSource::kUnspecified);
 
   if (!element.IsEnabled() || element.IsReadOnly())
     return;
@@ -950,8 +957,7 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
     return;
   }
 
-  QueryAutofillSuggestions(element, options.autoselect_first_suggestion,
-                           options.form_element_was_clicked);
+  QueryAutofillSuggestions(element, options.trigger_source);
 }
 
 void AutofillAgent::SetQueryPasswordSuggestion(bool query) {
@@ -992,8 +998,7 @@ void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
 
 void AutofillAgent::QueryAutofillSuggestions(
     const WebFormControlElement& element,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked) {
+    AutofillSuggestionTriggerSource trigger_source) {
   DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
          form_util::IsTextAreaElement(element));
 
@@ -1033,8 +1038,7 @@ void AutofillAgent::QueryAutofillSuggestions(
   is_popup_possibly_visible_ = true;
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     autofill_driver->AskForValuesToFill(form, field, field.bounds,
-                                        autoselect_first_suggestion,
-                                        form_element_was_clicked);
+                                        trigger_source);
   }
 }
 
@@ -1271,14 +1275,15 @@ void AutofillAgent::FormControlElementClicked(
 #endif
 
   ShowSuggestions(
-      element, {.autofill_on_empty_values = true,
+      element, {.trigger_source =
+                    AutofillSuggestionTriggerSource::kFormControlElementClicked,
+                .autofill_on_empty_values = true,
                 // Even if the user has not edited an input element, it may
                 // still contain a value: A default value filled by the website.
                 // In that case, we don't want to elide suggestions that don't
                 // have a common prefix with the default value.
-                .show_full_suggestion_list =
-                    element.IsAutofilled() || !element.UserHasEditedTheField(),
-                .form_element_was_clicked = FormElementWasClicked(true)});
+                .show_full_suggestion_list = element.IsAutofilled() ||
+                                             !element.UserHasEditedTheField()});
 
   SendPotentiallySubmittedFormToBrowser();
 }

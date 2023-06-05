@@ -418,21 +418,4 @@ bool StructTraits<
          data.ReadConfirmPasswordRendererId(&out->confirm_password_renderer_id);
 }
 
-bool StructTraits<autofill::mojom::AutoselectFirstSuggestionDataView,
-                  autofill::AutoselectFirstSuggestion>::
-    Read(autofill::mojom::AutoselectFirstSuggestionDataView data,
-         autofill::AutoselectFirstSuggestion* out) {
-  *out =
-      autofill::AutoselectFirstSuggestion(data.autoselect_first_suggestion());
-  return true;
-}
-
-bool StructTraits<autofill::mojom::FormElementWasClickedDataView,
-                  autofill::FormElementWasClicked>::
-    Read(autofill::mojom::FormElementWasClickedDataView data,
-         autofill::FormElementWasClicked* out) {
-  *out = autofill::FormElementWasClicked(data.form_element_was_clicked());
-  return true;
-}
-
 }  // namespace mojo

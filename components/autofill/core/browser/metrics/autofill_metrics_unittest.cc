@@ -8443,8 +8443,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
   {
     // Show autofill suggestions.
     autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields[0], gfx::RectF(), AutoselectFirstSuggestion(false),
-        FormElementWasClicked(true));
+        form, form.fields[0], gfx::RectF(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     base::TimeTicks parse_time = autofill_manager()
                                      .form_structures()
@@ -8521,8 +8521,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     // Simulating submission with filled local data. The third field cannot be
     // autofilled because its type cannot be predicted.
     autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields[0], gfx::RectF(), AutoselectFirstSuggestion(false),
-        FormElementWasClicked(true));
+        form, form.fields[0], gfx::RectF(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
     FillTestProfile(form);
 
     base::TimeTicks parse_time = autofill_manager()

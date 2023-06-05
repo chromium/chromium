@@ -736,16 +736,18 @@ class BrowserAutofillManagerTest : public testing::Test {
   void GetAutofillSuggestions(const FormData& form,
                               const FormFieldData& field) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, gfx::RectF(), AutoselectFirstSuggestion(false),
-        FormElementWasClicked(false));
+        form, field, gfx::RectF(),
+        AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 
   void TryToShowTouchToFill(const FormData& form,
                             const FormFieldData& field,
-                            FormElementWasClicked form_element_was_clicked) {
+                            bool form_element_was_clicked) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, gfx::RectF(), AutoselectFirstSuggestion(false),
-        form_element_was_clicked);
+        form, field, gfx::RectF(),
+        form_element_was_clicked
+            ? AutofillSuggestionTriggerSource::kFormControlElementClicked
+            : AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 
   void AutocompleteSuggestionsReturned(
@@ -774,8 +776,8 @@ class BrowserAutofillManagerTest : public testing::Test {
                             const FormFieldData& field,
                             std::string guid) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, {}, AutoselectFirstSuggestion(true),
-        FormElementWasClicked(false));
+        form, field, {},
+        AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, form, field,
         Suggestion::BackendId(guid), AutofillTriggerSource::kPopup);
@@ -6059,7 +6061,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Touch the field of "Name on Card" and autofill suggestion is shown.
   EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
       .WillOnce(Return(false));
-  TryToShowTouchToFill(form, field, FormElementWasClicked(true));
+  TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // Fill the form by triggering the suggestion from "Name on Card" field.
@@ -10246,19 +10248,19 @@ TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
 
   // Not a form element click, Autofill suggestions shown.
   EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _)).Times(0);
-  TryToShowTouchToFill(form, field, FormElementWasClicked(false));
+  TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/false);
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // TTF not available, Autofill suggestions shown.
   EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
       .WillOnce(Return(false));
-  TryToShowTouchToFill(form, field, FormElementWasClicked(true));
+  TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // A form element click and TTF available, Autofill suggestions not shown.
   EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
       .WillOnce(Return(true));
-  TryToShowTouchToFill(form, field, FormElementWasClicked(true));
+  TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
@@ -10274,7 +10276,7 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
   EXPECT_CALL(touch_to_fill_delegate(), IsShowingTouchToFill)
       .WillOnce(Return(true));
   EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _)).Times(0);
-  TryToShowTouchToFill(form, field, FormElementWasClicked(true));
+  TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 

@@ -232,14 +232,12 @@ class ContentAutofillRouter {
       FormData form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked,
+      AutofillSuggestionTriggerSource trigger_source,
       void (*callback)(ContentAutofillDriver* target,
                        const FormData& form,
                        const FormFieldData& field,
                        const gfx::RectF& bounding_box,
-                       AutoselectFirstSuggestion autoselect_first_suggestion,
-                       FormElementWasClicked form_element_was_clicked));
+                       AutofillSuggestionTriggerSource trigger_source));
   void HidePopup(ContentAutofillDriver* source,
                  void (*callback)(ContentAutofillDriver* target));
   void FocusNoLongerOnForm(ContentAutofillDriver* source,

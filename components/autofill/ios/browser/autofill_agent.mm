@@ -348,9 +348,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:popupDelegate:.
   _lastQueriedFieldID = field.global_id();
+  // TODO(crbug.com/1448447): Distinguish between different trigger sources.
   autofillManager->OnAskForValuesToFill(
-      form, field, gfx::RectF(), autofill::AutoselectFirstSuggestion(false),
-      autofill::FormElementWasClicked(false));
+      form, field, gfx::RectF(),
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
 - (void)checkIfSuggestionsAvailableForForm:

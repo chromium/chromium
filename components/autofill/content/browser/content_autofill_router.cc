@@ -382,14 +382,12 @@ void ContentAutofillRouter::AskForValuesToFill(
     FormData form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked,
+    AutofillSuggestionTriggerSource trigger_source,
     void (*callback)(ContentAutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box,
-                     AutoselectFirstSuggestion autoselect_first_suggestion,
-                     FormElementWasClicked form_element_was_clicked)) {
+                     AutofillSuggestionTriggerSource trigger_source)) {
   some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
 
   FormGlobalId form_id = form.global_id();
@@ -403,8 +401,7 @@ void ContentAutofillRouter::AskForValuesToFill(
   AFCHECK(target, return );
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  callback(target, *browser_form, field, bounding_box,
-           autoselect_first_suggestion, form_element_was_clicked);
+  callback(target, *browser_form, field, bounding_box, trigger_source);
 }
 
 void ContentAutofillRouter::HidePopup(

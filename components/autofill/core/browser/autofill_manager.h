@@ -191,17 +191,12 @@ class AutofillManager
   // Invoked when the |form| needs to be autofilled, the |bounding_box| is
   // a window relative value of |field|.
   // |bounding_box| are viewport coordinates.
-  // |form_element_was_clicked| indicates if any of the form fields were
-  // clicked/tapped. Used to understand if the Touch To Fill or the Fast
-  // Checkout surface could be used for showing suggestions. Note that it
-  // doesn't guarantee the given form input field is eligible for autofilling.
   // Virtual for testing.
   virtual void OnAskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked);
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Invoked when |form|'s |field| has focus.
   // |bounding_box| are viewport coordinates.
@@ -404,8 +399,7 @@ class AutofillManager
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) = 0;
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FormFieldData& field,

@@ -662,29 +662,6 @@ struct StructTraits<autofill::mojom::ParsingResultDataView,
                    autofill::ParsingResult* out);
 };
 
-template <>
-struct StructTraits<autofill::mojom::AutoselectFirstSuggestionDataView,
-                    autofill::AutoselectFirstSuggestion> {
-  static bool autoselect_first_suggestion(
-      autofill::AutoselectFirstSuggestion r) {
-    return r.value();
-  }
-
-  static bool Read(autofill::mojom::AutoselectFirstSuggestionDataView data,
-                   autofill::AutoselectFirstSuggestion* out);
-};
-
-template <>
-struct StructTraits<autofill::mojom::FormElementWasClickedDataView,
-                    autofill::FormElementWasClicked> {
-  static bool form_element_was_clicked(autofill::FormElementWasClicked r) {
-    return r.value();
-  }
-
-  static bool Read(autofill::mojom::FormElementWasClickedDataView data,
-                   autofill::FormElementWasClicked* out);
-};
-
 }  // namespace mojo
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_MOJOM_AUTOFILL_TYPES_MOJOM_TRAITS_H_

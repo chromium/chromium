@@ -480,8 +480,7 @@ void ContentAutofillDriver::AskForValuesToFill(
     const FormData& raw_form,
     const FormFieldData& raw_field,
     const gfx::RectF& bounding_box,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked) {
+    AutofillSuggestionTriggerSource trigger_source) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
@@ -490,15 +489,12 @@ void ContentAutofillDriver::AskForValuesToFill(
   SetFrameAndFormMetaData(form, &field);
   autofill_router().AskForValuesToFill(
       this, std::move(form), field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box),
-      autoselect_first_suggestion, form_element_was_clicked,
+      TransformBoundingBoxToViewportCoordinates(bounding_box), trigger_source,
       [](ContentAutofillDriver* target, const FormData& form,
          const FormFieldData& field, const gfx::RectF& bounding_box,
-         AutoselectFirstSuggestion autoselect_first_suggestion,
-         FormElementWasClicked form_element_was_clicked) {
+         AutofillSuggestionTriggerSource trigger_source) {
         target->autofill_manager_->OnAskForValuesToFill(
-            WithNewVersion(form), field, bounding_box,
-            autoselect_first_suggestion, form_element_was_clicked);
+            WithNewVersion(form), field, bounding_box, trigger_source);
       });
 }
 

@@ -52,8 +52,7 @@ class AutofillProviderAndroid : public AutofillProvider {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion /*unused_autoselect_first_suggestion*/,
-      FormElementWasClicked /*unused_form_element_was_clicked*/) override;
+      AutofillSuggestionTriggerSource /*unused_trigger_source*/) override;
   void OnTextFieldDidChange(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field,

@@ -277,8 +277,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) override;
+      AutofillSuggestionTriggerSource trigger_source) override;
   void HidePopup() override;
   void FocusNoLongerOnForm(bool had_interacted_form) override;
   void FocusOnFormField(const FormData& form,

@@ -1092,8 +1092,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& transformed_box,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked) {
+    AutofillSuggestionTriggerSource trigger_source) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
   }
@@ -1104,6 +1103,13 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   std::vector<Suggestion> suggestions;
   SuggestionsContext context;
   GetAvailableSuggestions(form, field, &suggestions, &context);
+
+  const AutoselectFirstSuggestion autoselect_first_suggestion(
+      trigger_source ==
+      AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
+  const bool form_element_was_clicked =
+      trigger_source ==
+      AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
   if (context.is_autofill_available) {
     switch (context.suppress_reason) {
