@@ -633,4 +633,30 @@ TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
   EXPECT_FALSE(decoder->CanDecodeToYUV());
 }
 
+TEST(JPEGImageDecoderTest, Gainmap) {
+  const char* jpeg_file = "/images/resources/gainmap-trattore0.jpg";
+  scoped_refptr<SharedBuffer> full_data = ReadFile(jpeg_file);
+  ASSERT_TRUE(full_data);
+
+  auto base_decoder = CreateJPEGDecoder();
+  base_decoder->SetData(full_data.get(), true);
+  ASSERT_TRUE(base_decoder->IsSizeAvailable());
+  EXPECT_EQ(gfx::Size(134, 100), base_decoder->DecodedSize());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  ASSERT_TRUE(base_decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  // Ensure that the gainmap information was extracted.
+  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, 2.718f, 1.0e-3f);
+
+  // Ensure that the extracted gainmap image contains an appropriately-sized
+  // image.
+  auto gainmap_decoder = CreateJPEGDecoder();
+  gainmap_decoder->SetData(gainmap_data.get(), true);
+  ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
+  EXPECT_FALSE(gainmap_decoder->Failed());
+  EXPECT_EQ(gfx::Size(33, 25), gainmap_decoder->DecodedSize());
+}
+
 }  // namespace blink

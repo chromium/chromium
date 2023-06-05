@@ -51,10 +51,9 @@
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
 extern "C" {
+#include <setjmp.h>
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
 #include "jpeglib.h"
-#include "iccjpeg.h"
-#include <setjmp.h>
 }
 
 #if defined(ARCH_CPU_BIG_ENDIAN)
@@ -82,9 +81,6 @@ inline J_COLOR_SPACE rgbOutputColorSpace() {
 #endif
 
 namespace {
-
-constexpr int kExifMarker = JPEG_APP0 + 1;
-constexpr unsigned kExifAPP1SignatureSize = 6;
 
 // JPEG only supports a denominator of 8.
 const unsigned g_scale_denominator = 8;
@@ -220,33 +216,6 @@ void term_source(j_decompress_ptr jd);
 void error_exit(j_common_ptr cinfo);
 void emit_message(j_common_ptr cinfo, int msg_level);
 
-static bool IsExifData(jpeg_saved_marker_ptr marker) {
-  // For EXIF data, the APP1 block is followed by 'E', 'x', 'i', 'f', '\0',
-  // then a fill byte, and then a TIFF file that contains the metadata.
-  if (marker->marker != kExifMarker)
-    return false;
-  if (marker->data_length < kExifAPP1SignatureSize)
-    return false;
-  const uint8_t kExifAPP1Signature[5] = {'E', 'x', 'i', 'f', '\0'};
-  if (memcmp(marker->data, kExifAPP1Signature, sizeof(kExifAPP1Signature)) != 0)
-    return false;
-  return true;
-}
-
-static void ReadImageMetaData(jpeg_decompress_struct* info, DecodedImageMetaData& metadata) {
-  // The JPEG decoder looks at EXIF metadata.
-  // FIXME: Possibly implement XMP and IPTC support.
-  for (jpeg_saved_marker_ptr marker = info->marker_list; marker;
-       marker = marker->next) {
-    if (!IsExifData(marker))
-      continue;
-    base::span<const uint8_t> exif_data(
-        marker->data + kExifAPP1SignatureSize,
-        marker->data_length - kExifAPP1SignatureSize);
-    ReadExif(exif_data, metadata);
-  }
-}
-
 static gfx::Size ComputeYUVSize(const jpeg_decompress_struct* info,
                                 int component) {
   return gfx::Size(info->comp_info[component].downsampled_width,
@@ -306,9 +275,6 @@ class JPEGImageReader final {
     info_.progress = &progress_mgr_;
     progress_mgr_.progress_monitor = ProgressMonitor;
 
-    // Retain ICC color profile markers for color management.
-    setup_read_icc_profile(&info_);
-
     // Keep APP1 blocks, for obtaining exif and XMP data.
     jpeg_save_markers(&info_, JPEG_APP0 + 1, 0xFFFF);
 
@@ -319,7 +285,12 @@ class JPEGImageReader final {
   JPEGImageReader(const JPEGImageReader&) = delete;
   JPEGImageReader& operator=(const JPEGImageReader&) = delete;
 
-  ~JPEGImageReader() { jpeg_destroy_decompress(&info_); }
+  ~JPEGImageReader() {
+    // Reset `metadata_decoder_` before `info_` because `metadata_decoder_`
+    // points to memory owned by `info_`.
+    metadata_decoder_ = nullptr;
+    jpeg_destroy_decompress(&info_);
+  }
 
   void SkipBytes(long num_bytes) {
     if (num_bytes <= 0)
@@ -464,6 +435,19 @@ class JPEGImageReader final {
 
         state_ = kJpegStartDecompress;
 
+        // Build the SkJpegMetadataDecoder to extract metadata from the
+        // now-complete header.
+        {
+          std::vector<SkJpegMetadataDecoder::Segment> segments;
+          for (auto* marker = info_.marker_list; marker;
+               marker = marker->next) {
+            segments.emplace_back(
+                marker->marker,
+                SkData::MakeWithoutCopy(marker->data, marker->data_length));
+          }
+          metadata_decoder_ = SkJpegMetadataDecoder::Make(std::move(segments));
+        }
+
         // We can fill in the size now that the header is available.
         if (!decoder_->SetSize(info_.image_width, info_.image_height))
           return false;
@@ -510,17 +494,24 @@ class JPEGImageReader final {
         decoder_->SetDecodedSize(info_.output_width, info_.output_height);
 
         DecodedImageMetaData metadata;
-        ReadImageMetaData(Info(), metadata);
+        if (sk_sp<SkData> exif_data =
+                metadata_decoder_->getExifMetadata(/*copyData=*/false)) {
+          base::span<const uint8_t> exif_span(exif_data->bytes(),
+                                              exif_data->size());
+          ReadExif(exif_span, metadata);
+        }
         decoder_->ApplyMetadata(
             metadata, gfx::Size(info_.output_width, info_.output_height));
 
         // Allow color management of the decoded RGBA pixels if possible.
         if (!decoder_->IgnoresColorSpace()) {
-          JOCTET* profile_buf = nullptr;
-          unsigned profile_length = 0;
-          if (read_icc_profile(Info(), &profile_buf, &profile_length)) {
-            std::unique_ptr<ColorProfile> profile =
-                ColorProfile::Create(profile_buf, profile_length);
+          // Extract the ICC profile data without copying it (the function
+          // ColorProfile::Create will make its own copy).
+          sk_sp<SkData> profile_data =
+              metadata_decoder_->getICCProfileData(/*copyData=*/false);
+          if (profile_data) {
+            std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
+                profile_data->bytes(), profile_data->size());
             if (profile) {
               uint32_t data_color_space =
                   profile->GetProfile()->data_color_space;
@@ -545,7 +536,6 @@ class JPEGImageReader final {
             } else {
               DLOG(ERROR) << "Failed to parse image ICC profile";
             }
-            free(profile_buf);
           }
         }
 
@@ -721,6 +711,9 @@ class JPEGImageReader final {
   JPEGImageDecoder* Decoder() { return decoder_; }
   gfx::Size UvSize() const { return uv_size_; }
   bool HasStartedDecompression() const { return state_ > kJpegStartDecompress; }
+  SkJpegMetadataDecoder* GetMetadataDecoder() {
+    return metadata_decoder_.get();
+  }
 
  private:
 #if defined(USE_SYSTEM_LIBJPEG)
@@ -787,6 +780,10 @@ class JPEGImageReader final {
   decoder_source_mgr src_;
   jpeg_progress_mgr progress_mgr_;
   jstate state_;
+
+  // The metadata decoder is populated once the full header (all segments up to
+  // the first StartOfScan) has been received.
+  std::unique_ptr<SkJpegMetadataDecoder> metadata_decoder_;
 
   JSAMPARRAY samples_;
   gfx::Size uv_size_;
@@ -974,40 +971,27 @@ Vector<SkISize> JPEGImageDecoder::GetSupportedDecodeSizes() const {
 bool JPEGImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_reader) const {
-  if (!reader_) {
+  auto* metadata_decoder = reader_ ? reader_->GetMetadataDecoder() : nullptr;
+  if (!metadata_decoder) {
     return false;
   }
 
-  // Extract the segments (including parameters) and create an
-  // SkJpegMetadataDecoder to use to examine gainmap capabilities.
-  std::vector<SkJpegMetadataDecoder::Segment> segments;
-  if (jpeg_decompress_struct* info = reader_->Info()) {
-    for (auto* marker = info->marker_list; marker; marker = marker->next) {
-      segments.emplace_back(
-          marker->marker,
-          SkData::MakeWithoutCopy(marker->data, marker->data_length));
-    }
-  } else {
+  if (!metadata_decoder->mightHaveGainmapImage()) {
     return false;
   }
-  auto metadata = SkJpegMetadataDecoder::Make(std::move(segments));
-  if (!metadata) {
-    return false;
-  }
-
-  // TODO(https://crbug.com/1404000): Add an early-out that uses only
-  // `segments` to determine if a gainmap is guaranteed to not be present.
-  auto base_image_data = data_->GetAsSkData();
-  DCHECK(base_image_data);
 
   // Extract the SkGainmapInfo and the encoded gainmap image and return them.
+  // TODO(https://crbug.com/1404000): Express `data_` as an SkStream, to avoid
+  // making extra copies.
+  sk_sp<SkData> base_image_data = data_->GetAsSkData();
+  DCHECK(base_image_data);
   // TODO(https://crbug.com/1404000): Rather than extract an SkData, extract
   // the offsets and sizes of the subsets of `base_image_data`, and reference
   // these directly.
   sk_sp<SkData> gainmap_image_data;
   SkGainmapInfo gainmap_info;
-  if (!metadata->findGainmapImage(base_image_data, gainmap_image_data,
-                                  gainmap_info)) {
+  if (!metadata_decoder->findGainmapImage(base_image_data, gainmap_image_data,
+                                          gainmap_info)) {
     return false;
   }
   out_gainmap_info = gainmap_info;

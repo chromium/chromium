@@ -199,7 +199,6 @@ group("blink_platform_public_deps") {
     "//third_party/blink/renderer/platform/network:make_generated",
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/boringssl",
-    "//third_party/iccjpeg",
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/ots",
