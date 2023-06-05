@@ -1824,6 +1824,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.MergedDistillationTime.{Result}"
+    units="ms" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the time taken to distill a web page using the merged algorithm that
+    combines results from the rules based algorithm and the ML model. Refer to
+    AXTreeDistiller::Distill for details.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="has failed"/>
+    <variant name="Success" summary="has succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.RulesDistillationTime.{Result}"
+    units="ms" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the time taken to distill a web page using the rules based
+    algorithm. Refer to AXTreeDistiller::DistillViaAlgorithm for details.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="has failed"/>
+    <variant name="Success" summary="has succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ScrollEvent"
     enum="ReadAnythingScrollEvent" expires_after="2023-11-30">
   <owner>abigailbklein@google.com</owner>

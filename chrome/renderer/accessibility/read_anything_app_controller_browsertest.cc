@@ -23,7 +23,7 @@ class MockAXTreeDistiller : public AXTreeDistiller {
               Distill,
               (const ui::AXTree& tree,
                const ui::AXTreeUpdate& snapshot,
-               const ukm::SourceId& ukm_source_id),
+               const ukm::SourceId ukm_source_id),
               (override));
 };
 

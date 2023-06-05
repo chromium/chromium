@@ -176,6 +176,65 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ReadAnything">
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the time taken to distill a web page.
+  </summary>
+  <metric name="MergedDistillationTime.Failure">
+    <summary>
+      The amount of time (ms) required to distill a web page with the merged
+      algorithm if distillation failed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MergedDistillationTime.Success">
+    <summary>
+      The amount of time (ms) required to distill a web page with the merged
+      algorithm if distillation succeeded.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RulesDistillationTime.Failure">
+    <summary>
+      The amount of time (ms) required to distill a web page with the rules
+      based algorithm if distillation failed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RulesDistillationTime.Success">
+    <summary>
+      The amount of time (ms) required to distill a web page with the rules
+      based algorithm if distillation succeeded.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Accessibility.Renderer">
   <owner>aleventhal@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
