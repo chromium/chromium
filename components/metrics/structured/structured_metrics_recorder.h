@@ -68,6 +68,10 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
 
   void ProvideUmaEventMetrics(ChromeUserMetricsExtension& uma_proto);
 
+  // Provides event metrics stored in the recorder into |uma_proto|.
+  //
+  // This calls OnIndependentMetrics() to populate |uma_proto| with metadata
+  // fields.
   void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto);
 
   bool can_provide_metrics() const {

@@ -1080,4 +1080,29 @@ TEST_F(StructuredMetricsRecorderTest, DisallowedProjectAreDropped) {
   ASSERT_EQ(data.events(0).project_name_hash(), kProjectTwoHash);
 }
 
+class TestProcessor : public EventsProcessorInterface {
+  bool ShouldProcessOnEventRecord(const Event& event) override { return true; }
+
+  // no-op
+  void OnEventsRecord(Event* event) override {}
+
+  void OnProvideIndependentMetrics(
+      ChromeUserMetricsExtension* uma_proto) override {
+    uma_proto->mutable_structured_data()->set_is_device_enrolled(true);
+  }
+};
+
+TEST_F(StructuredMetricsRecorderTest, AppliesProcessorCorrectly) {
+  Init();
+
+  // Processor that sets |is_device_enrolled| to true.
+  Recorder::GetInstance()->AddEventsProcessor(
+      std::make_unique<TestProcessor>());
+
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  const auto data = GetEventMetrics();
+
+  EXPECT_TRUE(data.is_device_enrolled());
+}
+
 }  // namespace metrics::structured

@@ -127,6 +127,9 @@ void StructuredMetricsRecorder::ProvideEventMetrics(
   LogUploadSizeBytes(structured_data->ByteSizeLong());
   LogExternalMetricsScanInUpload(external_metrics_scans_);
   external_metrics_scans_ = 0;
+
+  // Applies custom metadata providers.
+  Recorder::GetInstance()->OnProvideIndependentMetrics(&uma_proto);
 }
 
 void StructuredMetricsRecorder::OnKeyDataInitialized() {
