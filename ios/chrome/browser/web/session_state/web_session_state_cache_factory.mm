@@ -28,8 +28,7 @@ namespace {
 class WebSessionStateCacheWrapper : public KeyedService {
  public:
   explicit WebSessionStateCacheWrapper(
-      // TODO(crbug.com/1450912): Pass a BrowserList directly instead.
-      ChromeBrowserState* browser_state,
+      BrowserList* browser_list,
       WebSessionStateCache* web_session_state_cache);
 
   WebSessionStateCacheWrapper(const WebSessionStateCacheWrapper&) = delete;
@@ -51,14 +50,13 @@ class WebSessionStateCacheWrapper : public KeyedService {
 };
 
 WebSessionStateCacheWrapper::WebSessionStateCacheWrapper(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     WebSessionStateCache* web_session_state_cache)
     : web_session_state_cache_(web_session_state_cache) {
   DCHECK(web_session_state_cache);
   registrar_ = std::make_unique<AllWebStateListObservationRegistrar>(
-      BrowserListFactory::GetForBrowserState(browser_state),
-      std::make_unique<WebSessionStateCacheWebStateListObserver>(
-          web_session_state_cache));
+      browser_list, std::make_unique<WebSessionStateCacheWebStateListObserver>(
+                        web_session_state_cache));
 }
 
 WebSessionStateCacheWrapper::~WebSessionStateCacheWrapper() {
@@ -76,7 +74,7 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<WebSessionStateCacheWrapper>(
-      chrome_browser_state,
+      BrowserListFactory::GetForBrowserState(chrome_browser_state),
       [[WebSessionStateCache alloc] initWithBrowserState:chrome_browser_state]);
 }
 }  // namespace
