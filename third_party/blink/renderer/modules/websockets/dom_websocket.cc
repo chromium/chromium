@@ -403,8 +403,9 @@ void DOMWebSocket::send(Blob* binary_data, ExceptionState& exception_state) {
   // needs to fix the size of the File at this point. For this reason,
   // construct a new BlobDataHandle here with the size that this method
   // observed.
-  channel_->Send(
-      BlobDataHandle::Create(binary_data->Uuid(), binary_data->type(), size));
+  channel_->Send(BlobDataHandle::Create(binary_data->Uuid(),
+                                        binary_data->type(), size,
+                                        binary_data->AsMojoBlob()));
 }
 
 void DOMWebSocket::close(uint16_t code,
