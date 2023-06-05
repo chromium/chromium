@@ -155,8 +155,6 @@ export function close(name: ViewName, condition?: unknown): void {
 
 /**
  * Handles key pressed event.
- *
- * @param event Key press event.
  */
 export function onKeyPressed(event: KeyboardEvent): void {
   const key = util.getKeyboardShortcut(event);
@@ -211,8 +209,6 @@ export function layoutShownViews(): void {
 
 /**
  * Returns whether the view is the top view above all shown view.
- *
- * @param name Name of the view.
  */
 export function isTopMostView(name: ViewName): boolean {
   return topmostIndex === findIndex(name);

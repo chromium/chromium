@@ -18,8 +18,6 @@ export function speak(label: I18nString, ...substitutions: string[]): void {
 
 /**
  * Speaks a message.
- *
- * @param message The message to speak.
  */
 export function speakMessage(message: string): void {
   // TTS speaks changes of on-screen aria-live elements. Force content changes

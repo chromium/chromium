@@ -114,7 +114,6 @@ export type KeyboardShortcut =
 /**
  * Returns a shortcut string, such as Ctrl-Alt-A.
  *
- * @param event Keyboard event.
  * @return Shortcut identifier.
  */
 export function getKeyboardShortcut(event: KeyboardEvent): KeyboardShortcut {
