@@ -44,6 +44,7 @@ const kChromeToTranslateCode: Map<string, string> = new Map([
 // Reverse of the map above. Just the languages code that translate uses but
 // Chrome has a different code for.
 const kTranslateToChromeCode: Map<string, string> = new Map([
+  ['no', 'nb'],
   ['tl', 'fil'],
   ['iw', 'he'],
   ['jw', 'jv'],

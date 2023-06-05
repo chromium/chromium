@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -41,9 +42,13 @@ const char* const kDefaultSupportedLanguages[] = {
     "ak",     // Twi
     "am",     // Amharic
     "ar",     // Arabic
+    "as",     // Assamese
+    "ay",     // Aymara
     "az",     // Azerbaijani
     "be",     // Belarusian
     "bg",     // Bulgarian
+    "bho",    // Bhojpuri
+    "bm",     // Bambara
     "bn",     // Bengali
     "bs",     // Bosnian
     "ca",     // Catalan
@@ -54,6 +59,8 @@ const char* const kDefaultSupportedLanguages[] = {
     "cy",     // Welsh
     "da",     // Danish
     "de",     // German
+    "doi",    // Dogri
+    "dv",     // Dhivehi
     "ee",     // Ewe
     "el",     // Greek
     "en",     // English
@@ -80,6 +87,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "hy",     // Armenian
     "id",     // Indonesian
     "ig",     // Igbo
+    "ilo",    // Ilocano
     "is",     // Icelandic
     "it",     // Italian
     "iw",     // Hebrew - Chrome uses "he"
@@ -99,7 +107,9 @@ const char* const kDefaultSupportedLanguages[] = {
     "ln",     // Lingala
     "lo",     // Lao
     "lt",     // Lithuanian
+    "lus",    // Mizo
     "lv",     // Latvian
+    "mai",    // Maithili
     "mg",     // Malagasy
     "mi",     // Maori
     "mk",     // Macedonian
@@ -124,6 +134,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "ro",     // Romanian
     "ru",     // Russian
     "rw",     // Kinyarwanda
+    "sa",     // Sanskrit
     "sd",     // Sindhi
     "si",     // Sinhala
     "sk",     // Slovak
@@ -145,6 +156,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "tk",     // Turkmen
     "tl",     // Tagalog - Chrome uses "fil"
     "tr",     // Turkish
+    "ts",     // Tsonga
     "tt",     // Tatar
     "ug",     // Uyghur
     "uk",     // Ukrainian
@@ -341,16 +353,13 @@ bool TranslateLanguageList::SetSupportedLanguages(
     return false;
   }
 
-  const std::string& locale =
-      TranslateDownloadManager::GetInstance()->application_locale();
-
   // Now we can clear language list.
   supported_languages_.clear();
   // ... and replace it with the values we just fetched from the server.
   for (auto kv_pair : *target_languages) {
     const std::string& lang = kv_pair.first;
-    if (!l10n_util::IsLocaleNameTranslated(lang.c_str(), locale)) {
-      // Don't include languages not displayable in current UI language.
+    if (!language::AcceptLanguagesService::CanBeAcceptLanguage(lang.c_str())) {
+      // Don't include languages that can not be Accept-Languages
       continue;
     }
     supported_languages_.push_back(lang);

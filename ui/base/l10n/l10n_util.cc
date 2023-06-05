@@ -67,9 +67,12 @@ static const char* const kAcceptLanguageList[] = {
 #endif                 // defined(ENABLE_PSEUDOLOCALES)
     "as",              // Assamese
     "ast",             // Asturian
+    "ay",              // Aymara
     "az",              // Azerbaijani
     "be",              // Belarusian
     "bg",              // Bulgarian
+    "bho",             // Bhojpuri
+    "bm",              // Bambara
     "bn",              // Bengali
     "br",              // Breton
     "bs",              // Bosnian
@@ -86,6 +89,8 @@ static const char* const kAcceptLanguageList[] = {
     "de-CH",           // German (Switzerland)
     "de-DE",           // German (Germany)
     "de-LI",           // German (Liechtenstein)
+    "doi",             // Dogri
+    "dv",              // Dhivehi
     "ee",              // Ewe
     "el",              // Greek
     "en",              // English
@@ -143,6 +148,7 @@ static const char* const kAcceptLanguageList[] = {
     "ia",      // Interlingua
     "id",      // Indonesian
     "ig",      // Igbo
+    "ilo",     // Ilocano
     "is",      // Icelandic
     "it",      // Italian
     "it-CH",   // Italian (Switzerland)
@@ -164,7 +170,9 @@ static const char* const kAcceptLanguageList[] = {
     "ln",      // Lingala
     "lo",      // Laothian
     "lt",      // Lithuanian
+    "lus",     // Mizo
     "lv",      // Latvian
+    "mai",     // Maithili
     "mg",      // Malagasy
     "mi",      // Maori
     "mk",      // Macedonian
@@ -196,6 +204,7 @@ static const char* const kAcceptLanguageList[] = {
     "ro",      // Romanian
     "ru",      // Russian
     "rw",      // Kinyarwanda
+    "sa",      // Sanskrit
     "sd",      // Sindhi
     "sh",      // Serbo-Croatian
     "si",      // Sinhalese
@@ -219,6 +228,7 @@ static const char* const kAcceptLanguageList[] = {
     "tn",      // Tswana
     "to",      // Tonga
     "tr",      // Turkish
+    "ts",      // Tsonga
     "tt",      // Tatar
     "tw",      // Twi
     "ug",      // Uyghur
@@ -1025,11 +1035,9 @@ void GetAcceptLanguages(std::vector<std::string>* locale_codes) {
 
 bool IsLanguageAccepted(const std::string& display_locale,
                         const std::string& locale) {
-  for (const char* accept_language : kAcceptLanguageList) {
-    if (accept_language == locale &&
-        l10n_util::IsLocaleNameTranslated(locale.c_str(), display_locale)) {
-      return true;
-    }
+  if (std::binary_search(std::begin(kAcceptLanguageList),
+                         std::end(kAcceptLanguageList), locale)) {
+    return l10n_util::IsLocaleNameTranslated(locale.c_str(), display_locale);
   }
   return false;
 }

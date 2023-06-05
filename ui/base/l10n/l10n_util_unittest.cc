@@ -670,6 +670,36 @@ TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
   }
 }
 
+TEST_F(L10nUtilTest, AcceptLocalesIsSorted) {
+  // Accept-Language List should be sorted and have no duplicates.
+  const char* const* locales = l10n_util::GetAcceptLanguageListForTesting();
+  const size_t locales_size = l10n_util::GetAcceptLanguageListSizeForTesting();
+
+  // All 0-length and 1-length lists are sorted.
+  if (locales_size <= 1) {
+    return;
+  }
+
+  const char* last_locale = locales[0];
+  for (size_t i = 1; i < locales_size; i++) {
+    const char* cur_locale = locales[i];
+    EXPECT_LT(strcmp(last_locale, cur_locale), 0)
+        << "Incorrect ordering in kPlatformLocales: " << last_locale
+        << " >= " << cur_locale;
+    last_locale = cur_locale;
+  }
+}
+
+TEST_F(L10nUtilTest, IsLanguageAccepted) {
+  EXPECT_TRUE(l10n_util::IsLanguageAccepted("en", "es-419"));
+  EXPECT_TRUE(l10n_util::IsLanguageAccepted("en", "en-GB"));
+  EXPECT_TRUE(l10n_util::IsLanguageAccepted("es", "fil"));
+  EXPECT_TRUE(l10n_util::IsLanguageAccepted("de", "zu"));
+
+  // The old code for "he" is not supported.
+  EXPECT_FALSE(l10n_util::IsLanguageAccepted("es", "iw"));
+}
+
 TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_EQ(true, base::i18n::IsRTL());
