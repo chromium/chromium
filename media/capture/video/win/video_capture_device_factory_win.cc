@@ -38,6 +38,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/capture/capture_switches.h"
+#include "media/capture/video/video_capture_metrics.h"
 #include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #include "media/capture/video/win/video_capture_device_win.h"
@@ -418,6 +419,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           DVLOG(1) << " MediaFoundation Device: "
                    << device_descriptor.display_name();
           if (device->Init()) {
+            LogCaptureDeviceHashedModelId(device_descriptor);
             return VideoCaptureErrorOrDevice(std::move(device));
           }
           return VideoCaptureErrorOrDevice(
@@ -443,8 +445,10 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
       auto device = std::make_unique<VideoCaptureDeviceWin>(
           device_descriptor, std::move(capture_filter));
       DVLOG(1) << " DirectShow Device: " << device_descriptor.display_name();
-      if (device->Init())
+      if (device->Init()) {
+        LogCaptureDeviceHashedModelId(device_descriptor);
         return VideoCaptureErrorOrDevice(std::move(device));
+      }
       return VideoCaptureErrorOrDevice(
           VideoCaptureError::kWinDirectShowDeviceInitializationFailed);
     }
