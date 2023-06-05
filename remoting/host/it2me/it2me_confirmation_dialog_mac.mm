@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -23,9 +22,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface It2MeConfirmationDialogMacController : NSObject {
  @private
-  base::scoped_nsobject<NSAlert> _confirmation_alert;
+  NSAlert* __strong _confirmation_alert;
   std::u16string _username;
   remoting::It2MeConfirmationDialog::ResultCallback _dialog_action_callback;
 }
@@ -64,14 +67,14 @@ class It2MeConfirmationDialogMac : public It2MeConfirmationDialog {
  private:
   void OnDialogAction(Result result);
 
-  base::scoped_nsobject<It2MeConfirmationDialogMacController> controller_;
+  It2MeConfirmationDialogMacController* __strong controller_;
 
   ResultCallback result_callback_;
 
   base::OneShotTimer dialog_timer_;
 };
 
-It2MeConfirmationDialogMac::It2MeConfirmationDialogMac() {}
+It2MeConfirmationDialogMac::It2MeConfirmationDialogMac() = default;
 
 It2MeConfirmationDialogMac::~It2MeConfirmationDialogMac() {
   dialog_timer_.Stop();
@@ -96,9 +99,9 @@ void It2MeConfirmationDialogMac::Show(const std::string& remote_user_email,
       &It2MeConfirmationDialogMac::OnDialogAction, base::Unretained(this));
 
   @autoreleasepool {
-    controller_.reset([[It2MeConfirmationDialogMacController alloc]
+    controller_ = [[It2MeConfirmationDialogMacController alloc]
         initWithCallback:std::move(dialog_action_callback)
-                username:remote_user_email]);
+                username:remote_user_email];
     [controller_ show];
   }
 }
@@ -109,7 +112,7 @@ void It2MeConfirmationDialogMac::OnDialogAction(Result result) {
   if (controller_) {
     @autoreleasepool {
       [controller_ hide];
-      controller_.reset();
+      controller_ = nil;
     }
   }
 
@@ -138,47 +141,46 @@ It2MeConfirmationDialogFactory::Create() {
 }
 
 - (void)show {
-  _confirmation_alert.reset([[NSAlert alloc] init]);
+  _confirmation_alert = [[NSAlert alloc] init];
 
   std::u16string dialog_text =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME),
           _username);
-  [_confirmation_alert setMessageText:base::SysUTF16ToNSString(dialog_text)];
+  _confirmation_alert.messageText = base::SysUTF16ToNSString(dialog_text);
 
   NSButton* cancel_button = [_confirmation_alert
       addButtonWithTitle:l10n_util::GetNSString(
                              IDS_SHARE_CONFIRM_DIALOG_DECLINE)];
-  [cancel_button setAction:@selector(onCancel:)];
-  [cancel_button setTarget:self];
+  cancel_button.action = @selector(onCancel:);
+  cancel_button.target = self;
 
   NSButton* confirm_button = [_confirmation_alert
       addButtonWithTitle:l10n_util::GetNSString(
                              IDS_SHARE_CONFIRM_DIALOG_CONFIRM)];
-  [confirm_button setAction:@selector(onAccept:)];
-  [confirm_button setTarget:self];
+  confirm_button.action = @selector(onAccept:);
+  confirm_button.target = self;
 
   NSBundle* bundle = [NSBundle bundleForClass:[self class]];
   NSString* imagePath = [bundle pathForResource:@"chromoting128" ofType:@"png"];
-  base::scoped_nsobject<NSImage> image(
-      [[NSImage alloc] initByReferencingFile:imagePath]);
-  [_confirmation_alert setIcon:image];
+  NSImage* image = [[NSImage alloc] initByReferencingFile:imagePath];
+  _confirmation_alert.icon = image;
   [_confirmation_alert layout];
 
   // Force alert to be at the proper level and location.
-  NSWindow* confirmation_window = [_confirmation_alert window];
+  NSWindow* confirmation_window = _confirmation_alert.window;
   [confirmation_window center];
-  [confirmation_window setTitle:l10n_util::GetNSString(IDS_PRODUCT_NAME)];
-  [confirmation_window setLevel:NSNormalWindowLevel];
+  confirmation_window.title = l10n_util::GetNSString(IDS_PRODUCT_NAME);
+  confirmation_window.level = NSNormalWindowLevel;
   [confirmation_window orderFrontRegardless];
   [confirmation_window makeKeyWindow];
 }
 
 - (void)hide {
   if (_confirmation_alert) {
-    [[_confirmation_alert window] close];
-    _confirmation_alert.reset();
+    [_confirmation_alert.window close];
+    _confirmation_alert = nil;
   }
 }
 
