@@ -358,13 +358,6 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
 
 void LayoutBlock::UpdateLayout() {
   NOT_DESTROYED();
-  DCHECK(!GetScrollableArea() || GetScrollableArea()->GetScrollAnchor());
-
-  bool needs_scroll_anchoring =
-      IsScrollContainer() &&
-      GetScrollableArea()->ShouldPerformScrollAnchoring();
-  if (needs_scroll_anchoring)
-    GetScrollableArea()->GetScrollAnchor()->NotifyBeforeLayout();
 
   UpdateBlockLayout();
 
