@@ -24,7 +24,7 @@ const elementsStatus = new Map<HTMLAudioElement, Status>();
  * @param el Audio element to play.
  * @return Promise which will be resolved once the sound is stopped. The
  *     resolved value will be true if it is ended. Otherwise, it is just paused
- *     due to cancenlation.
+ *     due to cancellation.
  */
 export async function play(el: HTMLAudioElement): Promise<boolean> {
   await cancel(el);

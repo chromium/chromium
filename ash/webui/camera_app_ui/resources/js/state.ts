@@ -143,10 +143,10 @@ export function removeObserver(
 }
 
 /**
- * Checks if the specified state exists.
+ * Gets if the specified state is on or off.
  *
  * @param state State to be checked.
- * @return Whether the state exists.
+ * @return Whether the state is on or off.
  */
 export function get(state: StateUnion): boolean {
   return document.body.classList.contains(state);
