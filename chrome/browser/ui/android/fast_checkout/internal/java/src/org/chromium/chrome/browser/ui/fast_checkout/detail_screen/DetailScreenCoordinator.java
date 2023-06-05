@@ -41,6 +41,7 @@ public class DetailScreenCoordinator {
         public void onSheetStateChanged(int state, int reason) {
             if (state == HIDDEN) {
                 mBottomSheetController.removeObserver(mBottomSheetObserver);
+                return;
             } else if (state == FULL) {
                 mRecyclerView.suppressLayout(/*suppress=*/false);
             } else if (state == HALF && mScrollListener.isScrolledToTop()) {
