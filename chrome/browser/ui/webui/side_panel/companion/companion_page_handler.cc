@@ -14,6 +14,7 @@
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
@@ -53,16 +54,29 @@ CompanionPageHandler::CompanionPageHandler(
       consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
                           NewAnonymizedDataCollectionConsentHelper(
                               GetProfile()->GetPrefs())) {
-  consent_helper_->AddObserver(this);
+  identity_manager_observation_.Observe(
+      IdentityManagerFactory::GetForProfile(GetProfile()));
+  consent_helper_observation_.Observe(consent_helper_.get());
 }
 
 CompanionPageHandler::~CompanionPageHandler() {
-  consent_helper_->RemoveObserver(this);
   if (web_contents() && !web_contents()->IsBeingDestroyed()) {
     auto* tab_helper =
         companion::CompanionTabHelper::FromWebContents(web_contents());
     tab_helper->OnCompanionSidePanelClosed();
   }
+}
+
+void CompanionPageHandler::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  // We only care about the sign-in state changes. Sync state change is already
+  // captured through consent helper observer.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    return;
+  }
+
+  NotifyURLChanged(/*is_full_reload=*/true);
 }
 
 void CompanionPageHandler::OnUrlKeyedDataCollectionConsentStateChanged(
@@ -108,16 +122,6 @@ void CompanionPageHandler::DidFinishNavigation(
     return;
   }
   NotifyURLChanged(/*is_full_reload=*/false);
-}
-
-void CompanionPageHandler::OnVisibilityChanged(content::Visibility visibility) {
-  // Refresh companion whenever the tab is back to foreground state.
-  // Do this only when the user didn't have all the access permissions to begin
-  // with.
-  if (visibility == content::Visibility::VISIBLE &&
-      !MeetsAllAccessRequirements()) {
-    NotifyURLChanged(/*is_full_reload=*/true);
-  }
 }
 
 void CompanionPageHandler::ShowUI() {
@@ -179,14 +183,6 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
         web_contents()->GetVisibleURL());
     page_->UpdateCompanionPage(companion_update_proto);
   }
-}
-
-bool CompanionPageHandler::MeetsAllAccessRequirements() {
-  auto* pref_service = GetProfile()->GetPrefs();
-  bool is_exps_opted_in = pref_service->GetBoolean(kExpsOptInStatusGrantedPref);
-  bool is_msbb_enabled =
-      IsUserPermittedToSharePageInfoWithCompanion(pref_service);
-  return signin_delegate_->IsSignedIn() && is_msbb_enabled && is_exps_opted_in;
 }
 
 void CompanionPageHandler::OnImageQuery(
