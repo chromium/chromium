@@ -6879,9 +6879,7 @@
   },
   {
     "name": "shortcut-customization-jelly",
-    "owners": [
-      "//ash/webui/shortcut_customization_ui/OWNERS"
-    ],
+    "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com" ],
     "expiry_milestone": 122
   },
   {
