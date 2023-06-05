@@ -179,6 +179,7 @@ source_set("breakpad") {
 
   if (is_mac) {
     sources += [ "breakpad_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {

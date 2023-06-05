@@ -6,6 +6,10 @@
 
 #import <MaterialComponents/MaterialAnimationTiming.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 static const CGFloat kIconRotationRadians = 0.375f * 2 * M_PI;
 static const CGFloat kIconTransitionAnimationDuration = 0.3f;
 static const CGFloat kIconShrinkScale = 0.4f;
