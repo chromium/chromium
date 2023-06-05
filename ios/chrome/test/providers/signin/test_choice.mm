@@ -21,6 +21,10 @@ ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
   NOTREACHED_NORETURN();
 }
 
+id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler() {
+  NOTREACHED_NORETURN();
+}
+
 bool IsChoiceEnabled() {
   return false;
 }

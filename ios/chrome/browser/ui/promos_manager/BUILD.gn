@@ -61,6 +61,7 @@ source_set("promos_manager") {
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [

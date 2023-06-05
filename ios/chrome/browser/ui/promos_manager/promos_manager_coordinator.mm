@@ -46,6 +46,7 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -562,6 +563,12 @@
   if (IsDefaultBrowserInPromoManagerEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =
         [[DefaultBrowserPromoDisplayHandler alloc] init];
+  }
+
+  // Choice Promo handler
+  if (ios::provider::IsChoiceEnabled()) {
+    _displayHandlerPromos[promos_manager::Promo::Choice] =
+        ios::provider::CreateChoiceDisplayHandler();
   }
 }
 
