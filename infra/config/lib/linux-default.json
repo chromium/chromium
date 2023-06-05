@@ -134,6 +134,7 @@
     "android-webview-nougat-arm64-dbg": "Ubuntu-22.04",
     "android-webview-oreo-arm64-dbg": "Ubuntu-22.04",
     "android-webview-pie-arm64-dbg": "Ubuntu-22.04",
+    "android-webview-pie-x86-wpt-fyi-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
     "android_cronet": "Ubuntu-22.04",
