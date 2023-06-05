@@ -277,7 +277,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     protected boolean nameUpdateDialogEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_NAME);
+        // TODO(finnur): Remove this function when future of the icon flag is clear.
+        return true;
     }
 
     private boolean allowIconUpdateForShellVersion(int shellVersion) {

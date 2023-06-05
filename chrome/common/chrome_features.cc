@@ -982,11 +982,6 @@ BASE_FEATURE(kPwaUpdateDialogForIcon,
              "PwaUpdateDialogForIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Shows a confirmation dialog when updates to a PWAs name has been detected.
-BASE_FEATURE(kPwaUpdateDialogForName,
-             "PwaUpdateDialogForName",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using quiet prompts for notification permission requests.
 BASE_FEATURE(kQuietNotificationPrompts,
              "QuietNotificationPrompts",

@@ -6355,12 +6355,7 @@
   {
     "name": "pwa-update-dialog-for-icon",
     "owners": [ "finnur", "beverloo" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "pwa-update-dialog-for-name",
-    "owners": [ "finnur", "beverloo" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 140
   },
   {
     "name": "qs-revamp",

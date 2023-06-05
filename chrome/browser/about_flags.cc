@@ -8265,11 +8265,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPwaUpdateDialogForAppIconDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForIcon)},
 
-    {"pwa-update-dialog-for-name",
-     flag_descriptions::kPwaUpdateDialogForAppTitleName,
-     flag_descriptions::kPwaUpdateDialogForAppTitleDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForName)},
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,

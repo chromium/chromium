@@ -2770,11 +2770,6 @@ const char kPwaUpdateDialogForAppIconName[] =
 const char kPwaUpdateDialogForAppIconDescription[] =
     "Enable a confirmation dialog that shows up when a PWA changes its icon";
 
-const char kPwaUpdateDialogForAppTitleName[] =
-    "Enable PWA install update dialog for name changes";
-const char kPwaUpdateDialogForAppTitleDescription[] =
-    "Enable a confirmation dialog that shows up when a PWA changes its name";
-
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";
 

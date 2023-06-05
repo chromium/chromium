@@ -368,8 +368,7 @@ ManifestUpdateCheckCommand::MakeAppNameIdentityUpdateDecision() const {
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 
-  if (CanShowIdentityUpdateConfirmationDialog(lock_->registrar(), web_app) &&
-      base::FeatureList::IsEnabled(features::kPwaUpdateDialogForName)) {
+  if (CanShowIdentityUpdateConfirmationDialog(lock_->registrar(), web_app)) {
     return IdentityUpdateDecision::kGetUserConfirmation;
   }
 
