@@ -1231,6 +1231,16 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [Length: 26em] [iOS only]">
         Sync
       </message>
+      <!-- TODO(crbug.com/1449220): Introduce final strings. -->
+      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE" desc="Title for the view in the Settings for account features management UI. [Length: 26em] [iOS only]">
+        **Account**
+      </message>
+      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_HEADER" desc="Title for the types list in the account features management UI. [Length: 26em] [iOS only]">
+        **In Your Google Account**
+      </message>
+      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION" desc="Description of what happens when switching a type in the types list in the account features management UI. [Length: 26em] [iOS only]">
+        **When on, data is saved in your Google Account. When off, data is saved only to this device.**
+      </message>
       <message name="IDS_IOS_SYNC_SETTINGS_TITLE" desc="Title for the navigation item in Advanced Settings. [Length: 26em] [iOS only]">
         Sync
       </message>

@@ -605,7 +605,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   DCHECK(!self.manageSyncSettingsCoordinator);
   self.manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self
-                               browser:self.browser];
+                               browser:self.browser
+          isInAdvancedInitialSyncSetup:NO];
   self.manageSyncSettingsCoordinator.delegate = self;
   [self.manageSyncSettingsCoordinator start];
 }

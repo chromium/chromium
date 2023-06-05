@@ -39,6 +39,8 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                    isInAdvancedInitialSyncSetup:
+                        (BOOL)isInAdvancedInitialSyncSetup
     NS_DESIGNATED_INITIALIZER;
 
 // Delegate.

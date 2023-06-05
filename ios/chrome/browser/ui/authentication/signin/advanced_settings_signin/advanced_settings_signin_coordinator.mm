@@ -138,7 +138,8 @@ using l10n_util::GetNSString;
       [[ManageSyncSettingsCoordinator alloc]
           initWithBaseNavigationController:
               self.advancedSettingsSigninNavigationController
-                                   browser:self.browser];
+                                   browser:self.browser
+              isInAdvancedInitialSyncSetup:YES];
   manageSyncSettingsCoordinator.delegate = self;
   self.syncSettingsCoordinator = manageSyncSettingsCoordinator;
   [self.syncSettingsCoordinator start];

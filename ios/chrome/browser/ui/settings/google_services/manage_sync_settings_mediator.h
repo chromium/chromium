@@ -32,6 +32,8 @@ class SyncService;
 @property(nonatomic, assign) SyncSetupService* syncSetupService;
 // Command handler.
 @property(nonatomic, weak) id<ManageSyncSettingsCommandHandler> commandHandler;
+// YES if the parent coordinator is advanced settings coordinator, NO otherwise.
+@property(nonatomic, assign) BOOL syncSettingsInAdvancedInitialSyncSetup;
 // Error command handler.
 @property(nonatomic, weak) id<SyncErrorSettingsCommandHandler> syncErrorHandler;
 // Returns YES if the encryption item should be enabled.
@@ -39,11 +41,14 @@ class SyncService;
 // YES if the forced sign-in policy is enabled which requires contextual
 // information.
 @property(nonatomic, assign) BOOL forcedSigninEnabled;
+// Returns the default title for the Sync Settings based on the account state.
+@property(nonatomic, strong, readonly) NSString* overrideViewControllerTitle;
 
 // Designated initializer.
 // `syncService`: Sync service. Should not be null.
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
+     isFromAdvancedInitialSyncSetup:(BOOL)isFromAdvancedInitialSyncSetup
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

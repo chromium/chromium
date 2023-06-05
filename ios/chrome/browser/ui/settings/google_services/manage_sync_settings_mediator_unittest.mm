@@ -10,6 +10,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -96,27 +97,32 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
 
     mediator_ = [[ManageSyncSettingsMediator alloc]
-        initWithSyncService:sync_service_mock_
-            userPrefService:pref_service_];
+                   initWithSyncService:sync_service_mock_
+                       userPrefService:pref_service_
+        isFromAdvancedInitialSyncSetup:NO];
     mediator_.syncSetupService = sync_setup_service_mock_;
     mediator_.consumer = consumer_;
   }
 
   void FirstSetupSyncOnWithConsentEnabled() {
+    mediator_.syncSettingsInAdvancedInitialSyncSetup = NO;
     ON_CALL(*sync_service_mock_->GetMockUserSettings(),
             IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
-        .WillByDefault(Return(true));
+    ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
+    CoreAccountInfo account_info;
+    account_info.email = "foo1@gmail.com";
+    ON_CALL(*sync_service_mock_, GetAccountInfo())
+        .WillByDefault(Return(account_info));
   }
 
   void FirstSetupSyncOff() {
-    ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
-        .WillByDefault(Return(false));
+    mediator_.syncSettingsInAdvancedInitialSyncSetup = YES;
+    ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())

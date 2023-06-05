@@ -1597,7 +1597,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   DCHECK(!_manageSyncSettingsCoordinator);
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
-                               browser:_browser];
+                               browser:_browser
+          isInAdvancedInitialSyncSetup:NO];
   _manageSyncSettingsCoordinator.delegate = self;
   [_manageSyncSettingsCoordinator start];
 }

@@ -75,16 +75,22 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 @implementation ManageSyncSettingsCoordinator {
   // Dismiss callback for Web and app setting details view.
   DismissViewCallback _dismissWebAndAppSettingDetailsController;
+  // YES if the parent coordinator is advanced settings coordinator, NO
+  // otherwise.
+  BOOL _isInAdvancedInitialSyncSetup;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                    isInAdvancedInitialSyncSetup:
+                        (BOOL)isInAdvancedInitialSyncSetup {
   if (self = [super initWithBaseViewController:navigationController
                                        browser:browser]) {
     _baseNavigationController = navigationController;
+    _isInAdvancedInitialSyncSetup = isInAdvancedInitialSyncSetup;
   }
   return self;
 }
@@ -99,8 +105,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   syncSetupService->PrepareForFirstSyncSetup();
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
-      initWithSyncService:self.syncService
-          userPrefService:self.browser->GetBrowserState()->GetPrefs()];
+                 initWithSyncService:self.syncService
+                     userPrefService:self.browser->GetBrowserState()->GetPrefs()
+      isFromAdvancedInitialSyncSetup:_isInAdvancedInitialSyncSetup];
   self.mediator.syncSetupService = SyncSetupServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   self.mediator.commandHandler = self;
@@ -110,7 +117,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = [[ManageSyncSettingsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  self.viewController.title = self.delegate.manageSyncSettingsCoordinatorTitle;
+
+  NSString* title = self.mediator.overrideViewControllerTitle;
+  if (!title) {
+    title = self.delegate.manageSyncSettingsCoordinatorTitle;
+  }
+  self.viewController.title = title;
   self.viewController.serviceDelegate = self.mediator;
   self.viewController.presentationDelegate = self;
   self.viewController.modelDelegate = self.mediator;
