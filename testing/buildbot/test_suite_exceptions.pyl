@@ -4726,17 +4726,10 @@
       'Dawn Linux x64 Release (Intel UHD 630)': {
         'ci_only': True,
       },
-      'Dawn Mac x64 DEPS Release (AMD)': {
-        'ci_only': True,
-      },
       # crbug.com/1450207 corrupt Metal shader cache
       'Dawn Mac x64 DEPS Release (Intel)': {
         'ci_only': True,
       },
-      'Dawn Mac x64 Release (AMD)': {
-        'ci_only': True,
-      },
-      # crbug.com/1450207 corrupt Metal shader cache
       'Dawn Mac x64 Release (Intel)': {
         'ci_only': True,
       },
@@ -4756,12 +4749,6 @@
         'ci_only': True,
       },
       'Dawn Linux x64 Release (Intel UHD 630)': {
-        'ci_only': True,
-      },
-      'Dawn Mac x64 DEPS Release (AMD)': {
-        'ci_only': True,
-      },
-      'Dawn Mac x64 Release (AMD)': {
         'ci_only': True,
       },
     },
