@@ -29808,6 +29808,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"
+    not_user_triggered="true">
+  <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <description>
+    Restricted Notice closed with no interaction (e.g. browser shutdown).
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked">
+  <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <description>
+    User clicked on the More button in the Privacy Sandbox Restricted Notice.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.RestrictedNotice.OpenedSettings">
   <owner>djmitche@chromium.org</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -29815,6 +29834,14 @@ should be able to be added at any place in this file.
   <description>
     User opened settings from the Restricted Privacy Sandbox notice.
   </description>
+</action>
+
+<action name="Settings.PrivacySandbox.RestrictedNotice.Shown"
+    not_user_triggered="true">
+  <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <description>Restricted Privacy Sandbox notice is shown.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.SpamFraud.Opened">

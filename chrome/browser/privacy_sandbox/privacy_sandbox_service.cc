@@ -1745,6 +1745,21 @@ void PrivacySandboxService::RecordPromptActionMetrics(
           "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
       break;
     }
+    case (PromptAction::kRestrictedNoticeShown): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.RestrictedNotice.Shown"));
+      break;
+    }
+    case (PromptAction::kRestrictedNoticeClosedNoInteraction): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"));
+      break;
+    }
+    case (PromptAction::kRestrictedNoticeMoreButtonClicked): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"));
+      break;
+    }
   }
 }
 

@@ -380,10 +380,9 @@ TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleOpenSettings) {
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
           PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(PrivacySandboxService::PromptAction::
+                                       kRestrictedNoticeClosedNoInteraction))
       .Times(0);
 
   base::Value::List args;
@@ -401,10 +400,9 @@ TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleAcknowledge) {
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
           PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(PrivacySandboxService::PromptAction::
+                                       kRestrictedNoticeClosedNoInteraction))
       .Times(0);
 
   base::Value::List args;

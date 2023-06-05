@@ -1199,11 +1199,6 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
                    "Settings.PrivacySandbox.Notice.OpenedSettings"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeAcknowledge);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Acknowledged"));
@@ -1272,6 +1267,34 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
       PrivacySandboxService::PromptAction::kNoticeMoreButtonClicked);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeShown);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.RestrictedNotice.Shown"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::
+          kRestrictedNoticeClosedNoInteraction);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount(
+             "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeMoreButtonClicked);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

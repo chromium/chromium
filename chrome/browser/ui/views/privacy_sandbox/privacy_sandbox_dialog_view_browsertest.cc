@@ -44,6 +44,9 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     if (name == "Notice") {
       prompt_type = PrivacySandboxService::PromptType::kNotice;
     }
+    if (name == "RestrictedNotice") {
+      prompt_type = PrivacySandboxService::PromptType::kM1NoticeRestricted;
+    }
     ASSERT_NE(prompt_type, PrivacySandboxService::PromptType::kNone);
 
     // Resize the browser window to guarantee enough space for the dialog.

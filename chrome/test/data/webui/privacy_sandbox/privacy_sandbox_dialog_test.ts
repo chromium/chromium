@@ -767,13 +767,13 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
 
   test('validDialog', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     assertTrue(!!page.shadowRoot!.querySelector('div'));
   });
 
   test('settingsClicked', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     testClickButton('#settingsButton', page);
     await verifyActionOccured(
         browserProxy,
@@ -782,7 +782,7 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
 
   test('acknowledgeClicked', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     testClickButton('#ackButton', page);
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
@@ -794,7 +794,7 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   // resolved.
   test.skip('moreButton', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     await flushTasks();
 
     const scrollable: HTMLElement =
@@ -839,7 +839,8 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
     }
 
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
+        browserProxy,
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED);
     await page.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
