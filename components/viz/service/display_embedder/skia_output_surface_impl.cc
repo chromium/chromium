@@ -1627,4 +1627,11 @@ void SkiaOutputSurfaceImpl::DestroySharedImage(const gpu::Mailbox& mailbox) {
                  /*need_framebuffer=*/false);
 }
 
+bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
+  return gr_context_thread_safe_
+      ->defaultBackendFormat(SkColorType::kBGRA_8888_SkColorType,
+                             GrRenderable::kYes)
+      .isValid();
+}
+
 }  // namespace viz

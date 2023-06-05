@@ -589,6 +589,11 @@ const absl::optional<gfx::RRectF> DirectRenderer::BackdropFilterBoundsForPass(
              : it->second;
 }
 
+bool DirectRenderer::SupportsBGRA() const {
+  // TODO(penghuang): check supported format correctly.
+  return true;
+}
+
 void DirectRenderer::FlushPolygons(
     base::circular_deque<std::unique_ptr<DrawPolygon>>* poly_list,
     const gfx::Rect& render_pass_scissor,
@@ -1158,9 +1163,8 @@ gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
 
 SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
-  // TODO(penghuang): check supported format correctly.
   gpu::Capabilities caps;
-  caps.texture_format_bgra8888 = true;
+  caps.texture_format_bgra8888 = SupportsBGRA();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.

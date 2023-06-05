@@ -416,4 +416,8 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
   return gpu::Mailbox::GenerateForSharedImage();
 }
 
+bool FakeSkiaOutputSurface::SupportsBGRA() const {
+  return true;
+}
+
 }  // namespace viz
