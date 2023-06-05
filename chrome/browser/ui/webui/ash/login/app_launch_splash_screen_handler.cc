@@ -138,8 +138,6 @@ void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
 
   state_ = state;
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
-
-  UpdateState(NetworkError::ERROR_REASON_UPDATE);
 }
 
 void AppLaunchSplashScreenHandler::SetDelegate(Delegate* delegate) {
