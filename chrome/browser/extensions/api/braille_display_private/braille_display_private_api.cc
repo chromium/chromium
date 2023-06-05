@@ -167,22 +167,27 @@ BrailleDisplayPrivateWriteDotsFunction::
 ~BrailleDisplayPrivateWriteDotsFunction() {
 }
 
-bool BrailleDisplayPrivateWriteDotsFunction::Prepare() {
+ExtensionFunction::ResponseAction
+BrailleDisplayPrivateWriteDotsFunction::Run() {
   params_ = WriteDots::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
   EXTENSION_FUNCTION_VALIDATE(
       params_->cells.size() >=
       static_cast<size_t>(params_->columns * params_->rows));
-  return true;
+
+  bool rv = content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&BrailleDisplayPrivateWriteDotsFunction::WriteDotsOnIO,
+                     this),
+      base::BindOnce(&BrailleDisplayPrivateWriteDotsFunction::Respond, this,
+                     NoArguments()));
+  DCHECK(rv);
+  return RespondLater();
 }
 
-void BrailleDisplayPrivateWriteDotsFunction::Work() {
+void BrailleDisplayPrivateWriteDotsFunction::WriteDotsOnIO() {
   BrailleController::GetInstance()->WriteDots(params_->cells, params_->columns,
                                               params_->rows);
-}
-
-bool BrailleDisplayPrivateWriteDotsFunction::Respond() {
-  return true;
 }
 
 ExtensionFunction::ResponseAction

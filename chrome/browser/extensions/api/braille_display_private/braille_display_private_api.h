@@ -92,7 +92,7 @@ class BrailleDisplayPrivateGetDisplayStateFunction : public ExtensionFunction {
   void ReplyWithState(base::Value::Dict state);
 };
 
-class BrailleDisplayPrivateWriteDotsFunction : public AsyncApiFunction {
+class BrailleDisplayPrivateWriteDotsFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("brailleDisplayPrivate.writeDots",
                              BRAILLEDISPLAYPRIVATE_WRITEDOTS)
  public:
@@ -100,9 +100,9 @@ class BrailleDisplayPrivateWriteDotsFunction : public AsyncApiFunction {
 
  protected:
   ~BrailleDisplayPrivateWriteDotsFunction() override;
-  bool Prepare() override;
-  void Work() override;
-  bool Respond() override;
+  ResponseAction Run() override;
+
+  void WriteDotsOnIO();
 
  private:
   absl::optional<braille_display_private::WriteDots::Params> params_;
