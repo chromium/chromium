@@ -6736,3 +6736,5 @@ crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-iframe-i
 # Sheriff 2023-05-30
 crbug.com/1450020 [ Mac ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/4580489
+crbug.com/1422552 http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js [ Failure Pass ]
