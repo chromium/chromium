@@ -13,7 +13,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {createCredentialGroup, createPasswordEntry} from './test_util.js';
+import {createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 suite('PasswordManagerAppTest', function() {
   let app: PasswordManagerAppElement;
@@ -188,6 +188,8 @@ suite('PasswordManagerAppTest', function() {
 
     const passwordsSection = app.shadowRoot!.querySelector('passwords-section');
     assertTrue(!!passwordsSection);
+    passwordsSection.prefs = makePasswordManagerPrefs();
+    await flushTasks();
     const importLink = passwordsSection.$.importPasswords.querySelector('a');
     assertTrue(!!importLink);
 
@@ -198,6 +200,8 @@ suite('PasswordManagerAppTest', function() {
     assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
     const settingsSection = app.shadowRoot!.querySelector('settings-section');
     assertTrue(!!settingsSection);
+    settingsSection.prefs = makePasswordManagerPrefs();
+    await flushTasks();
 
     const importer =
         settingsSection.shadowRoot!.querySelector('passwords-importer');
