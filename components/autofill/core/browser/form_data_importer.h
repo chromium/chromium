@@ -142,8 +142,8 @@ class FormDataImporter : public PersonalDataManagerObserver {
   void SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
       absl::optional<std::string>
           guid_of_card_if_no_interactive_authentication_flow_completed);
-  absl::optional<std::string>&
-  GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted();
+  const absl::optional<std::string>&
+  GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted() const;
 
  protected:
   void set_credit_card_save_manager_for_testing(
@@ -394,7 +394,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // is empty upon form submission, it implies that the most recent autofill had
   // an interactive authentication. Set when
   // `SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()` is called, and
-  // cleared on pag navigation.
+  // cleared on page navigation.
   absl::optional<std::string>
       guid_of_card_if_no_interactive_authentication_flow_completed_;
 

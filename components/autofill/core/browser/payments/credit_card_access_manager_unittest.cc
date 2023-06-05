@@ -2542,8 +2542,7 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   const absl::optional<std::string>& guid =
       autofill_client_.GetFormDataImporter()
           ->GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted();
-  EXPECT_TRUE(guid.has_value());
-  EXPECT_EQ(guid.value(), kTestGUID);
+  EXPECT_EQ(guid, kTestGUID);
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(

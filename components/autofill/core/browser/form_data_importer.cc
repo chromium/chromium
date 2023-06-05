@@ -1062,8 +1062,9 @@ void FormDataImporter::SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
       std::move(guid_of_card_if_no_interactive_authentication_flow_completed);
 }
 
-absl::optional<std::string>&
-FormDataImporter::GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted() {
+const absl::optional<std::string>&
+FormDataImporter::GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()
+    const {
   return guid_of_card_if_no_interactive_authentication_flow_completed_;
 }
 
