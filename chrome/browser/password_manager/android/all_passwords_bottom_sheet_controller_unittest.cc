@@ -96,13 +96,6 @@ class MockPasswordReuseDetectionManagerClient
 
 }  // namespace
 
-UiCredential MakeUiCredential(const std::u16string& username,
-                              const std::u16string& password) {
-  return UiCredential(
-      username, password, url::Origin::Create(GURL(kExampleCom)),
-      password_manager_util::GetLoginMatchType::kExact, base::Time());
-}
-
 PasswordForm MakeSavedPassword(const std::string& signon_realm,
                                const std::u16string& username) {
   PasswordForm form;
@@ -219,8 +212,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsUsernameWithoutAuth) {
   createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
 
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator).Times(0);
   EXPECT_CALL(driver(),
               FillIntoFocusedField(false, std::u16string(kUsername1)));
@@ -232,8 +223,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsUsernameWithoutAuth) {
 
 TEST_F(AllPasswordsBottomSheetControllerTest,
        FillsOnlyUsernameIfNotPasswordFillRequested) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator).Times(0);
 
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kUsername1)));
@@ -243,8 +232,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
 
@@ -253,8 +240,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
@@ -267,8 +252,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
@@ -286,8 +269,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
@@ -306,8 +287,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
