@@ -245,6 +245,7 @@ public abstract class ChromeFeatureList {
     public static final String FEATURE_NOTIFICATION_GUIDE = "FeatureNotificationGuide";
     public static final String FEED_BACK_TO_TOP = "FeedBackToTop";
     public static final String FEED_DYNAMIC_COLORS = "FeedDynamicColors";
+    public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
     public static final String FEED_HEADER_STICK_TO_TOP = "FeedHeaderStickToTop";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
             "FeedImageMemoryCacheSizePercentage";

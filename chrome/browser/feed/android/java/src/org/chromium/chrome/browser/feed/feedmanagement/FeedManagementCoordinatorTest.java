@@ -12,6 +12,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -21,12 +22,15 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.StreamKind;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.TestActivity;
 
 /**
  * Tests {@link FeedManagementCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
 public class FeedManagementCoordinatorTest {
     private TestActivity mActivity;
     private FeedManagementCoordinator mFeedManagementCoordinator;
@@ -36,6 +40,9 @@ public class FeedManagementCoordinatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;

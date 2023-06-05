@@ -3342,6 +3342,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION" desc="Content description to manage settings from the feed header overflow menu.">
         Manage the topics you're interested in
       </message>
+      <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION_UI_UPDATE" desc="Content description to manage settings from the feed header overflow menu.">
+        Manage the topics and searches you're interested in
+      </message>
       <message name="IDS_FEED_MANAGE_HIDDEN" desc="Menu item to manage hiding and unhiding topics.">
         Hidden
       </message>

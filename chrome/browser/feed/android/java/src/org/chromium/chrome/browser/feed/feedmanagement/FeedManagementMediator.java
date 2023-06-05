@@ -78,8 +78,11 @@ public class FeedManagementMediator {
                 R.string.feed_manage_activity_description, this::handleActivityClick);
         mModelList.add(new ModelListAdapter.ListItem(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE, activityModel));
-        PropertyModel interestsModel = generateListItem(R.string.feed_manage_interests,
-                R.string.feed_manage_interests_description, this::handleInterestsClick);
+        int descResource = ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
+                ? R.string.feed_manage_interests_description_ui_update
+                : R.string.feed_manage_interests_description;
+        PropertyModel interestsModel = generateListItem(
+                R.string.feed_manage_interests, descResource, this::handleInterestsClick);
         mModelList.add(new ModelListAdapter.ListItem(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE, interestsModel));
         PropertyModel hiddenModel = generateListItem(R.string.feed_manage_hidden,
