@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -74,12 +76,38 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * This is a utility class for managing features related to returning to Chrome after haven't used
  * Chrome for a while.
  */
 public final class ReturnToChromeUtil {
     private static final String TAG = "TabSwitcherOnReturn";
+
+    /**
+     * The reasons of failing to show the home surface UI on a NTP.
+     *
+     * These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. See tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({FailToShowHomeSurfaceReason.FAIL_TO_CREATE_NTP_TAB,
+            FailToShowHomeSurfaceReason.FAIL_TO_FIND_NTP_TAB,
+            FailToShowHomeSurfaceReason.NOT_A_NATIVE_PAGE,
+            FailToShowHomeSurfaceReason.NOT_A_NTP_NATIVE_PAGE,
+            FailToShowHomeSurfaceReason.NATIVE_PAGE_IS_FROZEN,
+            FailToShowHomeSurfaceReason.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface FailToShowHomeSurfaceReason {
+        int FAIL_TO_CREATE_NTP_TAB = 0;
+        int FAIL_TO_FIND_NTP_TAB = 1;
+        int NOT_A_NATIVE_PAGE = 2;
+
+        int NOT_A_NTP_NATIVE_PAGE = 3;
+        int NATIVE_PAGE_IS_FROZEN = 4;
+        int NUM_ENTRIES = 5;
+    }
 
     @VisibleForTesting
     public static final String LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA =
@@ -93,6 +121,8 @@ public final class ReturnToChromeUtil {
     public static final String HOME_SURFACE_SHOWN_AT_STARTUP_UMA =
             "NewTabPage.AsHomeSurface.ShownAtStartup";
     public static final String HOME_SURFACE_SHOWN_UMA = "NewTabPage.AsHomeSurface";
+    public static final String FAIL_TO_SHOW_HOME_SURFACE_UI_UMA =
+            "NewTabPage.FailToShowHomeSurfaceUI";
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
@@ -577,6 +607,13 @@ public final class ReturnToChromeUtil {
         // Creates a new Tab if doesn't find an existing to reuse.
         Tab ntpTab = tabCreator.createNewTab(
                 new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
+        boolean isNtpUrl = UrlUtilities.isNTPUrl(ntpTab.getUrl());
+        assert isNtpUrl : "The URL of the newly created NTP doesn't match NTP URL!";
+        if (!isNtpUrl) {
+            recordFailToShowHomeSurfaceReasonUma(
+                    FailToShowHomeSurfaceReason.FAIL_TO_CREATE_NTP_TAB);
+            return null;
+        }
 
         // In cold startup, we only have the URL of the last active Tab.
         if (lastActiveTab == null) {
@@ -648,6 +685,14 @@ public final class ReturnToChromeUtil {
             if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
                 Tab ntpTab = currentTabModel.getTabAt(indexOfFirstNtp);
                 assert indexOfFirstNtp != index;
+                boolean isNtpUrl = UrlUtilities.isNTPUrl(ntpTab.getUrl());
+                assert isNtpUrl
+                    : "The URL of the first NTP found onResume doesn't match a NTP URL!";
+                if (!isNtpUrl) {
+                    recordFailToShowHomeSurfaceReasonUma(
+                            FailToShowHomeSurfaceReason.FAIL_TO_FIND_NTP_TAB);
+                    return;
+                }
 
                 // Sets the found NTP as home surface.
                 TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
@@ -812,10 +857,36 @@ public final class ReturnToChromeUtil {
     /**
      * Shows the home surface UI on the given Ntp on tablets.
      */
-    private static void showHomeSurfaceUiOnNtp(
+    static void showHomeSurfaceUiOnNtp(
             Tab ntpTab, Tab lastActiveTab, HomeSurfaceTracker homeSurfaceTracker) {
-        assert ntpTab.isNativePage();
+        NativePage nativePage = ntpTab.getNativePage();
+        if (nativePage == null) {
+            recordFailToShowHomeSurfaceReasonUma(FailToShowHomeSurfaceReason.NOT_A_NATIVE_PAGE);
+            return;
+        }
+
+        // It is possible to get null after casting ntpTab.getNativePage() to NewTabPage, early
+        // exit here. See https://crbug.com/1449900.
+        if (!(nativePage instanceof NewTabPage)) {
+            recordFailToShowHomeSurfaceReasonUma(FailToShowHomeSurfaceReason.NOT_A_NTP_NATIVE_PAGE);
+            if (nativePage.isFrozen()) {
+                recordFailToShowHomeSurfaceReasonUma(
+                        FailToShowHomeSurfaceReason.NATIVE_PAGE_IS_FROZEN);
+            }
+            return;
+        }
+
+        // This cast is now guaranteed to succeed to a non-null value.
+        NewTabPage newTabPage = (NewTabPage) nativePage;
         homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(ntpTab, lastActiveTab);
-        ((NewTabPage) ntpTab.getNativePage()).showHomeSurfaceUi(lastActiveTab);
+        newTabPage.showHomeSurfaceUi(lastActiveTab);
+    }
+
+    // TODO(https://crbug.com/1450578): Removes this histogram once we understand the root cause of
+    // the crash.
+    private static void recordFailToShowHomeSurfaceReasonUma(
+            @FailToShowHomeSurfaceReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                FAIL_TO_SHOW_HOME_SURFACE_UI_UMA, reason, FailToShowHomeSurfaceReason.NUM_ENTRIES);
     }
 }

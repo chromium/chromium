@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FAIL_TO_SHOW_HOME_SURFACE_UI_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.RESUME_HOME_SURFACE_ON_MODE_CHANGE;
@@ -65,10 +66,12 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfaceReason;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepageManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
+import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
@@ -163,6 +166,7 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL))
                 .when(mUrlFormatterJniMock)
                 .fixupUrl(UrlConstants.NTP_NON_NATIVE_URL);
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_NATIVE_URL)).when(mNtpTab).getUrl();
 
         ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
 
@@ -636,7 +640,6 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
 
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_NATIVE_URL)).when(mNtpTab).getUrl();
         doReturn(true).when(mNtpTab).isNativePage();
         doReturn(mNewTabPage).when(mNtpTab).getNativePage();
         doReturn(mNtpTab).when(mCurrentTabModel).getTabAt(1);
@@ -866,6 +869,30 @@ public class ReturnToChromeUtilUnitTest {
                 .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
         Assert.assertTrue(ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(
                 mSaveInstanceState));
+    }
+
+    @Test
+    @SmallTest
+    public void testLogFailToShowHomeSurfaceUI() {
+        HistogramWatcher histogram = HistogramWatcher.newBuilder()
+                                             .expectIntRecords(FAIL_TO_SHOW_HOME_SURFACE_UI_UMA,
+                                                     FailToShowHomeSurfaceReason.NOT_A_NATIVE_PAGE)
+                                             .build();
+        doReturn(null).when(mNtpTab).getNativePage();
+        ReturnToChromeUtil.showHomeSurfaceUiOnNtp(mNtpTab, mTab1, mHomeSurfaceTracker);
+        histogram.assertExpected();
+
+        FrozenNativePage frozenNativePage = Mockito.mock(FrozenNativePage.class);
+        doReturn(true).when(frozenNativePage).isFrozen();
+        doReturn(frozenNativePage).when(mNtpTab).getNativePage();
+        histogram = HistogramWatcher.newBuilder()
+                            .expectIntRecords(FAIL_TO_SHOW_HOME_SURFACE_UI_UMA,
+                                    FailToShowHomeSurfaceReason.NOT_A_NTP_NATIVE_PAGE)
+                            .expectIntRecords(FAIL_TO_SHOW_HOME_SURFACE_UI_UMA,
+                                    FailToShowHomeSurfaceReason.NATIVE_PAGE_IS_FROZEN)
+                            .build();
+        ReturnToChromeUtil.showHomeSurfaceUiOnNtp(mNtpTab, mTab1, mHomeSurfaceTracker);
+        histogram.assertExpected();
     }
 
     private Intent createMainIntentFromLauncher() {
