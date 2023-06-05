@@ -397,16 +397,7 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, FragmentBackForward) {
 // back/forward list (such as trigger our start/stop loading events).  This
 // means the test will hang if it attempts to navigate too far forward or back,
 // since we'll be waiting forever for a load stop event.
-//
-// TODO(brettw) bug 50648: fix flakyness. This test seems like it was failing
-// about 1/4 of the time on Vista by failing to execute JavascriptGo (see bug).
-// TODO(crbug.com/1280512): Flaky on Linux and Lacros.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_JavascriptHistory DISABLED_JavascriptHistory
-#else
-#define MAYBE_JavascriptHistory JavascriptHistory
-#endif
-IN_PROC_BROWSER_TEST_F(SessionHistoryTest, MAYBE_JavascriptHistory) {
+IN_PROC_BROWSER_TEST_F(SessionHistoryTest, JavascriptHistory) {
   ASSERT_FALSE(CanGoBack());
 
   ASSERT_NO_FATAL_FAILURE(NavigateAndCheckTitle("bot1.html", "bot1"));
