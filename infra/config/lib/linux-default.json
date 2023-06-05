@@ -108,6 +108,7 @@
     "android-bfcache-rel": "Ubuntu-22.04",
     "android-binary-size": "Ubuntu-22.04",
     "android-chrome-pie-x86-wpt-fyi-rel": "Ubuntu-22.04",
+    "android-code-coverage": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
