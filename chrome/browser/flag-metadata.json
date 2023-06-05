@@ -7464,6 +7464,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-gpu-scheduler-dfs",
+    "owners": [ "vikassoni", "sunnyps" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "use-hdr-transfer-function",
     "owners": [ "mcasas", "chromeos-gfx@google.com" ],
     "expiry_milestone": 125

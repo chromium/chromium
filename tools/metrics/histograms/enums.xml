@@ -62486,6 +62486,7 @@ from previous Chrome versions.
   <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
   <int value="-236310717" label="AccessibilityDeprecateChromeVoxTabs:disabled"/>
   <int value="-236071174" label="NearbyShareVisibilityReminder:disabled"/>
+  <int value="-236058937" label="UseGpuSchedulerDfs:disabled"/>
   <int value="-235949168" label="DrawPredictedInkPoint:enabled"/>
   <int value="-235843754" label="OmniboxGroupingFrameworkForNonZPS:disabled"/>
   <int value="-234966279" label="PointerEvent:disabled"/>
@@ -66198,6 +66199,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentBoldUserTextOnSearchSuggestions:enabled"/>
   <int value="1743151811" label="CommerceLocalPDPDetection:disabled"/>
   <int value="1743603853" label="CameraAppDocScanDlc:disabled"/>
+  <int value="1744034696" label="UseGpuSchedulerDfs:enabled"/>
   <int value="1745053254" label="ClickToCallOpenDialerDirectly:enabled"/>
   <int value="1747279677" label="disable-delegated-renderer"/>
   <int value="1748481830" label="AppManagement:enabled"/>
