@@ -649,7 +649,6 @@ const NGLayoutResult* NGBlockNode::SimplifiedLayout(
   if (result->Status() != NGLayoutResult::kSuccess) {
     // TODO(crbug.com/1297864): The optimistic BFC block-offsets aren't being
     // set correctly for block-in-inline causing these layouts to fail.
-    NOTREACHED();
     return nullptr;
   }
 
