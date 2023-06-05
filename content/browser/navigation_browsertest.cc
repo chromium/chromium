@@ -5503,8 +5503,12 @@ class UndoCommitNavigationBrowserTest : public NavigationBrowserTest {
     std::map<std::string, std::string> parameters = {
         {"queueing_level", "none"},
     };
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kQueueNavigationsWhileWaitingForCommit, parameters);
+    // Note that RenderDocument needs to be disabled so that it won't enable
+    // navigation queueing automatically.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kQueueNavigationsWhileWaitingForCommit,
+                               parameters}},
+        /*disabled_features=*/{features::kRenderDocument});
   }
 
   void SetUpOnMainThread() override {
