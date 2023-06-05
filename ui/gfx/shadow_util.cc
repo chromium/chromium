@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
@@ -94,6 +95,11 @@ const ShadowDetails& ShadowDetails::Get(int elevation,
   if (iter != g_shadow_cache.Get().end())
     return iter->second;
 
+  // Evict the details whose ninebox image does not have any shadow owners.
+  base::EraseIf(g_shadow_cache.Get(), [](auto& pair) {
+    return pair.second.ninebox_image.IsUniquelyOwned();
+  });
+
   auto insertion = g_shadow_cache.Get().emplace(
       std::make_pair(elevation, corner_radius), ShadowDetails());
   DCHECK(insertion.second);
@@ -116,6 +122,10 @@ const ShadowDetails& ShadowDetails::Get(int elevation,
   auto* source = new ShadowNineboxSource(shadow->values, corner_radius);
   shadow->ninebox_image = ImageSkia(base::WrapUnique(source), source->size());
   return *shadow;
+}
+
+size_t ShadowDetails::GetDetailsCacheSizeForTest() {
+  return g_shadow_cache.Get().size();
 }
 
 }  // namespace gfx

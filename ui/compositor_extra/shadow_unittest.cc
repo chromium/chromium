@@ -18,6 +18,9 @@ namespace {
 constexpr int kElevationLarge = 24;
 constexpr int kElevationSmall = 6;
 
+// A specific elevation used for testing EvictUniquelyOwnedDetail.
+constexpr int kElevationUnique = 66;
+
 gfx::Insets InsetsForElevation(int elevation) {
   return -gfx::Insets(2 * elevation) +
          gfx::Insets::TLBR(elevation, 0, -elevation, 0);
@@ -30,6 +33,14 @@ gfx::Size NineboxImageSizeForElevationAndCornerRadius(int elevation,
   bounds.Inset(-gfx::ShadowValue::GetBlurRegion(values));
   bounds.Inset(-gfx::Insets(corner_radius));
   return bounds.size();
+}
+
+// Calculates the minimum shadow content size for given elevation and corner
+// radius.
+gfx::Size MinContentSizeForElevationAndCornerRadius(int elevation,
+                                                    int corner_radius) {
+  const int dimension = 4 * elevation + 2 * corner_radius;
+  return gfx::Size(dimension, dimension);
 }
 
 class ShadowTest : public testing::Test {
@@ -126,6 +137,69 @@ TEST_F(ShadowTest, AdjustRoundedCornerRadius) {
   EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
   EXPECT_EQ(NineboxImageSizeForElevationAndCornerRadius(6, 0),
             shadow.details_for_testing()->ninebox_image.size());
+}
+
+// Test that the uniquely owned shadow image is evicted from the cache when new
+// shadow details are created.
+TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
+  // Insert a new shadow with unique details which will evict existing details
+  // from the cache.
+  {
+    Shadow shadow_new;
+    shadow_new.Init(kElevationUnique);
+    shadow_new.SetRoundedCornerRadius(2);
+
+    const gfx::Size min_content_size =
+        MinContentSizeForElevationAndCornerRadius(kElevationUnique, 2);
+    shadow_new.SetContentBounds(gfx::Rect(min_content_size));
+    // The cache size should be 1.
+    EXPECT_EQ(1u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+
+    // Creating a shadow with the same detail won't increase the cache size.
+    Shadow shadow_same;
+    shadow_same.Init(kElevationUnique);
+    shadow_same.SetRoundedCornerRadius(2);
+    shadow_same.SetContentBounds(
+        gfx::Rect(gfx::Point(10, 10), min_content_size + gfx::Size(50, 50)));
+    // The cache size is unchanged.
+    EXPECT_EQ(1u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+
+    // Creating a new uniquely owned detail will increase the cache size.
+    gfx::ShadowDetails::Get(kElevationUnique, 3);
+    EXPECT_EQ(2u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+
+    // Creating a shadow with different details will replace the uniquely owned
+    // detail.
+    Shadow shadow_small;
+    shadow_small.Init(kElevationSmall);
+    shadow_small.SetRoundedCornerRadius(2);
+    shadow_small.SetContentBounds(gfx::Rect(
+        MinContentSizeForElevationAndCornerRadius(kElevationSmall, 2)));
+    EXPECT_EQ(2u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+
+    // Changing the shadow appearance will insert a new detail in the cache and
+    // make the old detail uniquely owned.
+    shadow_small.SetRoundedCornerRadius(3);
+    EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+
+    // Changing the shadow with another appearance will replace the uniquely
+    // owned detail.
+    shadow_small.SetRoundedCornerRadius(4);
+    EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+  }
+
+  // After destroying the all the shadows, the cache has 3 uniquely owned
+  // details.
+  EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+
+  // After inserting a new detail, the uniquely owned details will be evicted.
+  Shadow shadow_large;
+  shadow_large.Init(kElevationLarge);
+  shadow_large.SetRoundedCornerRadius(2);
+  shadow_large.SetContentBounds(
+      gfx::Rect(MinContentSizeForElevationAndCornerRadius(kElevationLarge, 2)));
+  // The cache size is unchanged.
+  EXPECT_EQ(1u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
 }
 
 }  // namespace

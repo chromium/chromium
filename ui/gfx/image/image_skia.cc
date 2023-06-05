@@ -483,6 +483,10 @@ void ImageSkia::RemoveUnsupportedRepresentationsForScale(float scale) {
   }
 }
 
+bool ImageSkia::IsUniquelyOwned() const {
+  return storage_->HasOneRef();
+}
+
 void ImageSkia::Init(const ImageSkiaRep& image_rep) {
   DCHECK(!image_rep.is_null());
   storage_ = new internal::ImageSkiaStorage(

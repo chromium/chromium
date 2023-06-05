@@ -127,6 +127,7 @@ void Shadow::RecreateShadowLayer() {
   shadow_layer()->SetFillsBoundsOpaquely(false);
   layer()->Add(shadow_layer());
 
+  details_ = nullptr;
   UpdateLayerBounds();
 }
 

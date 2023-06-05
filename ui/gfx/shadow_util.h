@@ -36,6 +36,8 @@ struct GFX_EXPORT ShadowDetails {
       int radius,
       ShadowStyle style = ShadowStyle::kMaterialDesign);
 
+  static size_t GetDetailsCacheSizeForTest();
+
   // Description of the shadows.
   gfx::ShadowValues values;
   // Cached ninebox image based on |values|.
