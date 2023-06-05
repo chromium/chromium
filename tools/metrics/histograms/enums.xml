@@ -65258,6 +65258,7 @@ from previous Chrome versions.
   <int value="1245889469" label="enable-surface-worker"/>
   <int value="1246022849"
       label="MessagesForAndroidAutoDarkWebContents:disabled"/>
+  <int value="1246049397" label="CrOSLateBootAudioHFPSwb:enabled"/>
   <int value="1246486472"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1247293682" label="topchrome-md"/>
@@ -66823,6 +66824,7 @@ from previous Chrome versions.
   <int value="2066015302" label="QueryTiles:disabled"/>
   <int value="2066304836" label="OmniboxSteadyStateTextStyle:enabled"/>
   <int value="2066508701" label="WebViewOriginTrials:disabled"/>
+  <int value="2066848656" label="CrOSLateBootAudioHFPSwb:disabled"/>
   <int value="2067136444" label="AudioPeripheralVolumeGranularity:disabled"/>
   <int value="2067634730" label="LsdPermissionPrompt:disabled"/>
   <int value="2067735898" label="WebVrAutopresentFromIntent:enabled"/>

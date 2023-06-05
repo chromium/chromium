@@ -409,6 +409,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "audio-hfp-swb",
+    "owners": [ "jrwu", "chromeos-audio@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "audio-peripheral-volume-granularity",
     "owners": ["whalechang@google.com"],
     "expiry_milestone": 117

@@ -2974,6 +2974,9 @@ extern const char kAudioHFPMicSRDescription[];
 extern const char kAudioHFPNbsWarningName[];
 extern const char kAudioHFPNbsWarningDescription[];
 
+extern const char kAudioHFPSwbName[];
+extern const char kAudioHFPSwbDescription[];
+
 extern const char kAudioHFPOffloadName[];
 extern const char kAudioHFPOffloadDescription[];
 

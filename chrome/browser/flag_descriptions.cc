@@ -5185,6 +5185,10 @@ const char kAudioHFPOffloadDescription[] =
     "While enabled, HFP Audio data is transmitted via the offloaded path "
     "in DSP if supported by device.";
 
+const char kAudioHFPSwbName[] = "Audio Bluetooth HFP Super-wide-band support";
+const char kAudioHFPSwbDescription[] =
+    "Enable Bluetooth HFP Super-wide-band codec if supported.";
+
 const char kAudioSettingsPageName[] = "Audio Settings Page";
 const char kAudioSettingsPageDescription[] =
     "Enables the dedicated Audio Settings Page in system settings, which "
