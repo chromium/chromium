@@ -41,8 +41,8 @@ enum class StrategyType {
 };
 
 struct RowStrategyTestdata {
-  // The frontend ids of the suggestions to be shown.
-  std::vector<Suggestion::FrontendId> frontend_ids;
+  // The popup item ids of the suggestions to be shown.
+  std::vector<PopupItemId> popup_item_ids;
   // The index of the suggestion to be tested.
   int line_number;
   // The type of strategy to be tested.
@@ -55,39 +55,37 @@ struct RowStrategyTestdata {
 
 const RowStrategyTestdata kTestcases[] = {
     RowStrategyTestdata{
-        .frontend_ids = {Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                         Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                         PopupItemId::kSeparator,
-                         PopupItemId::kAutofillOptions},
+        .popup_item_ids = {PopupItemId::kAddressEntry,
+                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                           PopupItemId::kAutofillOptions},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
         .set_size = 3,
         .set_index = 2,
     },
     RowStrategyTestdata{
-        .frontend_ids = {PopupItemId::kPasswordEntry,
-                         PopupItemId::kAccountStoragePasswordEntry,
-                         PopupItemId::kSeparator,
-                         PopupItemId::kAllSavedPasswordsEntry},
+        .popup_item_ids = {PopupItemId::kPasswordEntry,
+                           PopupItemId::kAccountStoragePasswordEntry,
+                           PopupItemId::kSeparator,
+                           PopupItemId::kAllSavedPasswordsEntry},
         .line_number = 0,
         .strategy_type = StrategyType::kPasswordSuggestion,
         .set_size = 3,
         .set_index = 1,
     },
     RowStrategyTestdata{
-        .frontend_ids = {Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                         Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                         PopupItemId::kSeparator,
-                         PopupItemId::kAutofillOptions},
+        .popup_item_ids = {PopupItemId::kAddressEntry,
+                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                           PopupItemId::kAutofillOptions},
         .line_number = 3,
         .strategy_type = StrategyType::kFooter,
         .set_size = 3,
         .set_index = 3,
     },
     RowStrategyTestdata{
-        .frontend_ids = {PopupItemId::kAutocompleteEntry,
-                         PopupItemId::kAutocompleteEntry,
-                         PopupItemId::kAutocompleteEntry},
+        .popup_item_ids = {PopupItemId::kAutocompleteEntry,
+                           PopupItemId::kAutocompleteEntry,
+                           PopupItemId::kAutocompleteEntry},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
         .set_size = 3,
@@ -101,12 +99,12 @@ const RowStrategyTestdata kTestcases[] = {
 class PopupRowStrategyTest : public ChromeViewsTestBase {
  public:
   // Sets suggestions in the mocked popup controller.
-  void SetSuggestions(const std::vector<Suggestion::FrontendId>& frontend_ids) {
+  void SetSuggestions(const std::vector<PopupItemId>& popup_item_ids) {
     std::vector<Suggestion> suggestions;
-    suggestions.reserve(frontend_ids.size());
-    for (Suggestion::FrontendId frontend_id : frontend_ids) {
+    suggestions.reserve(popup_item_ids.size());
+    for (PopupItemId popup_item_id : popup_item_ids) {
       // Create a suggestion with empty labels.
-      suggestions.emplace_back("Main text", "", "", frontend_id);
+      suggestions.emplace_back("Main text", "", "", popup_item_id);
     }
     controller().set_suggestions(std::move(suggestions));
   }
@@ -285,7 +283,7 @@ class PopupRowStrategyParametrizedTest
 TEST_P(PopupRowStrategyParametrizedTest, HasContentArea) {
   const RowStrategyTestdata kTestdata = GetParam();
 
-  SetSuggestions(kTestdata.frontend_ids);
+  SetSuggestions(kTestdata.popup_item_ids);
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
 
@@ -296,7 +294,7 @@ TEST_P(PopupRowStrategyParametrizedTest, HasContentArea) {
 TEST_P(PopupRowStrategyParametrizedTest, ContentAreaCallbacksWork) {
   const RowStrategyTestdata kTestdata = GetParam();
 
-  SetSuggestions(kTestdata.frontend_ids);
+  SetSuggestions(kTestdata.popup_item_ids);
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
 
@@ -308,7 +306,7 @@ TEST_P(PopupRowStrategyParametrizedTest, ContentAreaCallbacksWork) {
 TEST_P(PopupRowStrategyParametrizedTest, DeletedControllerIsHandledGracefully) {
   const RowStrategyTestdata kTestdata = GetParam();
 
-  SetSuggestions(kTestdata.frontend_ids);
+  SetSuggestions(kTestdata.popup_item_ids);
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
 
@@ -327,7 +325,7 @@ TEST_P(PopupRowStrategyParametrizedTest,
        SetsAccessibilityAttributesForContentArea) {
   const RowStrategyTestdata kTestdata = GetParam();
 
-  SetSuggestions(kTestdata.frontend_ids);
+  SetSuggestions(kTestdata.popup_item_ids);
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
 
@@ -349,7 +347,7 @@ TEST_P(PopupRowStrategyParametrizedTest,
 TEST_P(PopupRowStrategyParametrizedTest, HasControlArea) {
   const RowStrategyTestdata kTestdata = GetParam();
 
-  SetSuggestions(kTestdata.frontend_ids);
+  SetSuggestions(kTestdata.popup_item_ids);
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
 

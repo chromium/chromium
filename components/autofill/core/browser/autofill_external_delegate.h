@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
@@ -51,12 +52,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void DidSelectSuggestion(const Suggestion& suggestion) override;
   void DidAcceptSuggestion(const Suggestion& suggestion, int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   Suggestion::FrontendId frontend_id,
+                                   PopupItemId popup_item_id,
                                    Suggestion::BackendId backend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
   bool RemoveSuggestion(const std::u16string& value,
-                        Suggestion::FrontendId frontend_id,
+                        PopupItemId popup_item_id,
                         Suggestion::BackendId backend_id) override;
   void ClearPreviewedForm() override;
 
@@ -129,7 +130,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // If `is_preview` is true then this is just a preview to show the user what
   // would be selected and if `is_preview` is false then the user has selected
   // this data.
-  void FillAutofillFormData(Suggestion::FrontendId frontend_id,
+  void FillAutofillFormData(PopupItemId popup_item_id,
                             Suggestion::BackendId backend_id,
                             bool is_preview,
                             const AutofillTriggerSource trigger_source);

@@ -99,8 +99,8 @@ std::string SuggestionLabelsToString(
 
 // Matcher returning true if suggestions have equal members.
 MATCHER_P(equalsSuggestion, other, "") {
-  if (arg.frontend_id != other.frontend_id) {
-    *result_listener << "has frontend_id " << arg.frontend_id;
+  if (arg.popup_item_id != other.popup_item_id) {
+    *result_listener << "has popup_item_id " << arg.popup_item_id;
     return false;
   }
   if (arg.main_text != other.main_text) {

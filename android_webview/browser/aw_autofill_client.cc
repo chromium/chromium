@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -358,7 +359,7 @@ bool AwAutofillClient::IsContextSecure() const {
            content::SSLStatus::RAN_INSECURE_CONTENT);
 }
 
-void AwAutofillClient::ExecuteCommand(autofill::Suggestion::FrontendId id) {
+void AwAutofillClient::ExecuteCommand(autofill::PopupItemId popup_item_id) {
   NOTIMPLEMENTED();
 }
 
@@ -445,7 +446,7 @@ void AwAutofillClient::ShowAutofillPopupImpl(
 
     Java_AwAutofillClient_addToAutofillSuggestionArray(
         env, data_array, i, name, label,
-        base::to_underlying(suggestions[i].frontend_id.as_popup_item_id()));
+        base::to_underlying(suggestions[i].popup_item_id));
   }
   ui::ViewAndroid* view_android = GetWebContents().GetNativeView();
   if (!view_android)

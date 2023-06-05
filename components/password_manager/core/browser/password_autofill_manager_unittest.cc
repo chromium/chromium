@@ -228,10 +228,7 @@ class MockAutofillClient : public autofill::TestAutofillClient {
               HideAutofillPopup,
               (autofill::PopupHidingReason),
               (override));
-  MOCK_METHOD(void,
-              ExecuteCommand,
-              (autofill::Suggestion::FrontendId),
-              (override));
+  MOCK_METHOD(void, ExecuteCommand, (autofill::PopupItemId), (override));
 };
 
 base::CancelableTaskTracker::TaskId
@@ -249,26 +246,26 @@ std::vector<autofill::Suggestion> CreateTestSuggestions(
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(
       /*value=*/"User1", /*label=*/"PW1", /*icon=*/"",
-      /*frontend_id=*/autofill::PopupItemId::kPasswordEntry);
+      /*popup_item_id=*/autofill::PopupItemId::kPasswordEntry);
   suggestions.emplace_back(
       /*value=*/"Show all pwds", /*label=*/"", /*icon=*/"",
-      /*frontend_id=*/autofill::PopupItemId::kAllSavedPasswordsEntry);
+      /*popup_item_id=*/autofill::PopupItemId::kAllSavedPasswordsEntry);
   if (has_opt_in_and_fill) {
     suggestions.emplace_back(
         /*value=*/"Unlock passwords and fill", /*label=*/"", /*icon=*/"",
-        /*frontend_id=*/
+        /*popup_item_id=*/
         autofill::PopupItemId::kPasswordAccountStorageOptIn);
   }
   if (has_opt_in_and_generate) {
     suggestions.emplace_back(
         /*value=*/"Unlock passwords and generate", /*label=*/"", /*icon=*/"",
-        /*frontend_id=*/
+        /*popup_item_id=*/
         autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate);
   }
   if (has_re_signin) {
     suggestions.emplace_back(
         /*value=*/"Sign in to access passwords", /*label=*/"", /*icon=*/"",
-        /*frontend_id=*/
+        /*popup_item_id=*/
         autofill::PopupItemId::kPasswordAccountStorageReSignin);
   }
   return suggestions;
@@ -924,7 +921,7 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInMayShowEmptyState) {
   // loading state which the DeleteFillData() call will end.
   Suggestion unlock_suggestion(
       /*main_text=*/"Unlock passwords and fill", /*label=*/"", /*icon=*/"",
-      /*frontend_id=*/
+      /*popup_item_id=*/
       autofill::PopupItemId::kPasswordAccountStorageOptIn);
   unlock_suggestion.is_loading = Suggestion::IsLoading(true);
   EXPECT_CALL(autofill_client, GetPopupSuggestions)
@@ -1600,10 +1597,10 @@ TEST_F(PasswordAutofillManagerTest,
       gfx::RectF(), base::i18n::RIGHT_TO_LEFT,
       /*show_password_suggestions=*/true);
   EXPECT_THAT(open_args.suggestions,
-              Not(Contains(Field(&autofill::Suggestion::frontend_id,
+              Not(Contains(Field(&autofill::Suggestion::popup_item_id,
                                  Eq(regular_generate_id)))));
   EXPECT_THAT(open_args.suggestions,
-              Contains(Field(&autofill::Suggestion::frontend_id,
+              Contains(Field(&autofill::Suggestion::popup_item_id,
                              Eq(opt_in_and_generate_id))));
 }
 
@@ -2112,7 +2109,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
                   autofill::PopupItemId::kAllSavedPasswordsEntry));
   EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(kIdBase64));
-  EXPECT_EQ(open_args.suggestions[0].frontend_id,
+  EXPECT_EQ(open_args.suggestions[0].popup_item_id,
             autofill::PopupItemId::kWebauthnCredential);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
   EXPECT_TRUE(
@@ -2280,7 +2277,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
   Suggestion suggestion;
   suggestion.main_text.value =
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY);
-  suggestion.frontend_id =
+  suggestion.popup_item_id =
       autofill::PopupItemId::kWebauthnSignInWithAnotherDevice;
   suggestion.payload = autofill::Suggestion::BackendId();
   password_autofill_manager_->DidAcceptSuggestion(suggestion, /*position=*/1);

@@ -58,12 +58,12 @@ void MerchantPromoCodeManager::CancelPendingQueries(
 void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {}
+    PopupItemId popup_item_id) {}
 
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {
-  uma_recorder_.OnOfferSuggestionSelected(frontend_id);
+    PopupItemId popup_item_id) {
+  uma_recorder_.OnOfferSuggestionSelected(popup_item_id);
 }
 
 void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,
@@ -106,8 +106,8 @@ void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
 }
 
 void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
-    Suggestion::FrontendId frontend_id) {
-  if (frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
+    PopupItemId popup_item_id) {
+  if (popup_item_id == PopupItemId::kMerchantPromoCodeEntry) {
     // We log every time an individual offer suggestion is selected, regardless
     // if the user is repeatedly autofilling the same field.
     autofill_metrics::LogIndividualOfferSuggestionEvent(
@@ -123,7 +123,7 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
               kOfferSuggestionSelectedOnce,
           AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER);
     }
-  } else if (frontend_id == PopupItemId::kSeePromoCodeDetails) {
+  } else if (popup_item_id == PopupItemId::kSeePromoCodeDetails) {
     // We log every time the see offer details suggestion in the footer is
     // selected, regardless if the user is repeatedly autofilling the same
     // field.

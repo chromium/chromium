@@ -35,14 +35,14 @@ using CellType = PopupRowView::CellType;
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back("123 Apple St.", "Charles", "accountIcon",
-                           Suggestion::FrontendId(PopupItemId::kAddressEntry));
+                           PopupItemId::kAddressEntry);
   suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis", "accountIcon",
-                           Suggestion::FrontendId(PopupItemId::kAddressEntry));
+                           PopupItemId::kAddressEntry);
 
   suggestions.emplace_back(PopupItemId::kSeparator);
 
   Suggestion settings(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES));
-  settings.frontend_id = PopupItemId::kAutofillOptions;
+  settings.popup_item_id = PopupItemId::kAutofillOptions;
   settings.icon = "settingsIcon";
   suggestions.push_back(std::move(settings));
 
@@ -51,9 +51,9 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
 
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
   return {Suggestion("Autocomplete entry 1", "", "",
-                     Suggestion::FrontendId(PopupItemId::kAutocompleteEntry)),
+                     PopupItemId::kAutocompleteEntry),
           Suggestion("Autocomplete entry 2", "", "",
-                     Suggestion::FrontendId(PopupItemId::kAutocompleteEntry))};
+                     PopupItemId::kAutocompleteEntry)};
 }
 
 }  // namespace
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   entry1.main_text.is_primary = Suggestion::Text::IsPrimary(true);
   entry1.additional_label =
       std::u16string(10, gfx::RenderText::kPasswordReplacementChar);
-  entry1.frontend_id = PopupItemId::kAccountStoragePasswordEntry;
+  entry1.popup_item_id = PopupItemId::kAccountStoragePasswordEntry;
   entry1.icon = "globeIcon";
   entry1.trailing_icon = "google";
   suggestions.push_back(std::move(entry1));
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   entry2.main_text.is_primary = Suggestion::Text::IsPrimary(true);
   entry2.additional_label =
       std::u16string(6, gfx::RenderText::kPasswordReplacementChar);
-  entry2.frontend_id = PopupItemId::kPasswordEntry;
+  entry2.popup_item_id = PopupItemId::kPasswordEntry;
   entry2.icon = "globeIcon";
   entry2.trailing_icon = "";
   suggestions.push_back(std::move(entry2));
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   // The entry to open settings.
   Suggestion settings(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS));
-  settings.frontend_id = PopupItemId::kAllSavedPasswordsEntry;
+  settings.popup_item_id = PopupItemId::kAllSavedPasswordsEntry;
   settings.icon = "settingsIcon";
   settings.trailing_icon = "googlePasswordManager";
   suggestions.push_back(std::move(settings));
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_InsecureContext_PaymentDisabled) {
   Suggestion warning(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
-  warning.frontend_id = PopupItemId::kInsecureContextPaymentDisabledMessage;
+  warning.popup_item_id = PopupItemId::kInsecureContextPaymentDisabledMessage;
   PrepareSuggestions({std::move(warning)});
   ShowAndVerifyUi();
 }

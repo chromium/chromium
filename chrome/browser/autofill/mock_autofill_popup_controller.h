@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,7 +86,7 @@ class MockAutofillPopupController
   MOCK_METHOD(void, SelectSuggestion, (absl::optional<size_t>), (override));
   MOCK_METHOD(PopupType, GetPopupType, (), (const override));
 
-  void set_suggestions(const std::vector<Suggestion::FrontendId>& ids) {
+  void set_suggestions(const std::vector<PopupItemId>& ids) {
     for (const auto& id : ids) {
       // Accessibility requires all focusable AutofillPopupItemView to have
       // ui::AXNodeData with non-empty names. We specify dummy values and labels

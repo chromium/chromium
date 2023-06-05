@@ -45,9 +45,9 @@ namespace {
 
 // Returns true if the suggestion entry is an Autofill warning message.
 // Warning messages should display on top of suggestion list.
-bool IsAutofillWarningEntry(Suggestion::FrontendId frontend_id) {
-  return frontend_id == PopupItemId::kInsecureContextPaymentDisabledMessage ||
-         frontend_id == PopupItemId::kMixedFormMessage;
+bool IsAutofillWarningEntry(PopupItemId popup_item_id) {
+  return popup_item_id == PopupItemId::kInsecureContextPaymentDisabledMessage ||
+         popup_item_id == PopupItemId::kMixedFormMessage;
 }
 
 }  // namespace
@@ -97,7 +97,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (should_show_scan_credit_card_) {
     Suggestion scan_credit_card(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD));
-    scan_credit_card.frontend_id = PopupItemId::kScanCreditCard;
+    scan_credit_card.popup_item_id = PopupItemId::kScanCreditCard;
     scan_credit_card.icon = "scanCreditCardIcon";
     suggestions.push_back(scan_credit_card);
   }
@@ -106,7 +106,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // suggestions.
   has_autofill_suggestions_ = false;
   for (auto& suggestion : suggestions) {
-    if (suggestion.frontend_id.is_an_address_or_card_popup_item_id()) {
+    if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
+        suggestion.popup_item_id == PopupItemId::kCreditCardEntry) {
       has_autofill_suggestions_ = true;
       break;
     }
@@ -115,7 +116,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (should_show_cards_from_account_option_) {
     suggestions.emplace_back(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS));
-    suggestions.back().frontend_id = PopupItemId::kShowAccountCards;
+    suggestions.back().popup_item_id = PopupItemId::kShowAccountCards;
     suggestions.back().icon = "google";
   }
 
@@ -196,20 +197,20 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion) {
   ClearPreviewedForm();
 
-  const Suggestion::FrontendId frontend_id = suggestion.frontend_id;
   const Suggestion::BackendId backend_id =
       suggestion.GetPayload<Suggestion::BackendId>();
 
   // Only preview the data if it is a profile or a virtual card.
-  if (frontend_id.is_an_address_or_card_popup_item_id()) {
-    FillAutofillFormData(frontend_id, backend_id, true,
+  if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
+      suggestion.popup_item_id == PopupItemId::kCreditCardEntry) {
+    FillAutofillFormData(suggestion.popup_item_id, backend_id, true,
                          AutofillTriggerSource::kKeyboardAccessory);
-  } else if (frontend_id == PopupItemId::kAutocompleteEntry ||
-             frontend_id == PopupItemId::kIbanEntry ||
-             frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
+  } else if (suggestion.popup_item_id == PopupItemId::kAutocompleteEntry ||
+             suggestion.popup_item_id == PopupItemId::kIbanEntry ||
+             suggestion.popup_item_id == PopupItemId::kMerchantPromoCodeEntry) {
     driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
                                                  suggestion.main_text.value);
-  } else if (frontend_id == PopupItemId::kVirtualCreditCardEntry) {
+  } else if (suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
     manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kPreview, backend_id.value(),
         query_form_, query_field_, AutofillTriggerSource::kKeyboardAccessory);
@@ -218,7 +219,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
 void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
                                                    int position) {
-  switch (suggestion.frontend_id.as_popup_item_id()) {
+  switch (suggestion.popup_item_id) {
     case PopupItemId::kAutofillOptions:
       // User selected 'Autofill Options'.
       autofill_metrics::LogAutofillSelectedManageEntry(popup_type_);
@@ -246,7 +247,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
           query_field_.global_id(),
           suggestion.GetPayload<Suggestion::ValueToFill>().value());
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.frontend_id,
+                                                suggestion.popup_item_id,
                                                 query_form_, query_field_);
       break;
     case PopupItemId::kAutocompleteEntry:
@@ -258,7 +259,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
       driver_->RendererShouldFillFieldWithValue(query_field_.global_id(),
                                                 suggestion.main_text.value);
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.frontend_id,
+                                                suggestion.popup_item_id,
                                                 query_form_, query_field_);
       break;
     case PopupItemId::kScanCreditCard:
@@ -267,7 +268,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
                          GetWeakPtr(), AutofillTriggerSource::kPopup));
       break;
     case PopupItemId::kCreditCardSigninPromo:
-      manager_->client()->ExecuteCommand(suggestion.frontend_id);
+      manager_->client()->ExecuteCommand(suggestion.popup_item_id);
       break;
     case PopupItemId::kShowAccountCards:
       manager_->OnUserAcceptedCardsFromAccountOption();
@@ -281,9 +282,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
       break;
     case PopupItemId::kVirtualCreditCardEntry:
       // There can be multiple virtual credit cards that all rely on
-      // PopupItemId::kVirtualCreditCardEntry as a frontend_id. In this case,
-      // the payload contains the backend id, which is a GUID that identifies
-      // the actually chosen credit card.
+      // PopupItemId::kVirtualCreditCardEntry as a `popup_item_id`. In this
+      // case, the payload contains the backend id, which is a GUID that
+      // identifies the actually chosen credit card.
       manager_->FillOrPreviewVirtualCardInformation(
           mojom::RendererFormDataAction::kFill,
           suggestion.GetPayload<Suggestion::BackendId>().value(), query_form_,
@@ -292,14 +293,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
     case PopupItemId::kSeePromoCodeDetails:
       manager_->OnSeePromoCodeOfferDetailsSelected(
           suggestion.GetPayload<GURL>(), suggestion.main_text.value,
-          suggestion.frontend_id, query_form_, query_field_);
+          suggestion.popup_item_id, query_form_, query_field_);
       break;
     default:
-      if (suggestion.frontend_id.is_an_address_or_card_popup_item_id()) {
+      if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
+          suggestion.popup_item_id == PopupItemId::kCreditCardEntry) {
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client()->IsOffTheRecord());
       }
-      FillAutofillFormData(suggestion.frontend_id,
+      FillAutofillFormData(suggestion.popup_item_id,
                            suggestion.GetPayload<Suggestion::BackendId>(),
                            false, AutofillTriggerSource::kPopup);
       break;
@@ -307,12 +309,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
 
   if (should_show_scan_credit_card_) {
     AutofillMetrics::LogScanCreditCardPromptMetric(
-        suggestion.frontend_id == PopupItemId::kScanCreditCard
+        suggestion.popup_item_id == PopupItemId::kScanCreditCard
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED
             : AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED);
   }
 
-  if (suggestion.frontend_id == PopupItemId::kShowAccountCards) {
+  if (suggestion.popup_item_id == PopupItemId::kShowAccountCards) {
     should_show_cards_from_account_option_ = false;
     manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_);
   } else {
@@ -322,25 +324,26 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
 
 bool AutofillExternalDelegate::GetDeletionConfirmationText(
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id,
+    PopupItemId popup_item_id,
     Suggestion::BackendId backend_id,
     std::u16string* title,
     std::u16string* body) {
-  return manager_->GetDeletionConfirmationText(value, frontend_id, backend_id,
+  return manager_->GetDeletionConfirmationText(value, popup_item_id, backend_id,
                                                title, body);
 }
 
 bool AutofillExternalDelegate::RemoveSuggestion(
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id,
+    PopupItemId popup_item_id,
     Suggestion::BackendId backend_id) {
-  if (frontend_id.is_an_address_or_card_popup_item_id()) {
+  if (popup_item_id == PopupItemId::kAddressEntry ||
+      popup_item_id == PopupItemId::kCreditCardEntry) {
     return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
   }
 
-  if (frontend_id == PopupItemId::kAutocompleteEntry) {
+  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
     manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,
-                                                 frontend_id);
+                                                 popup_item_id);
     return true;
   }
 
@@ -391,12 +394,12 @@ void AutofillExternalDelegate::OnCreditCardScanned(
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(
-    Suggestion::FrontendId frontend_id,
+    PopupItemId popup_item_id,
     Suggestion::BackendId backend_id,
     bool is_preview,
     const AutofillTriggerSource trigger_source) {
   // If the selected element is a warning we don't want to do anything.
-  if (IsAutofillWarningEntry(frontend_id)) {
+  if (IsAutofillWarningEntry(popup_item_id)) {
     return;
   }
 
@@ -413,8 +416,8 @@ void AutofillExternalDelegate::FillAutofillFormData(
 void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(
     std::vector<Suggestion>* suggestions) {
   while (suggestions->size() > 1 &&
-         IsAutofillWarningEntry(suggestions->front().frontend_id) &&
-         !IsAutofillWarningEntry(suggestions->back().frontend_id)) {
+         IsAutofillWarningEntry(suggestions->front().popup_item_id) &&
+         !IsAutofillWarningEntry(suggestions->back().popup_item_id)) {
     // If we received warnings instead of suggestions from Autofill but regular
     // suggestions from autocomplete, don't show the Autofill warnings.
     suggestions->erase(suggestions->begin());
@@ -443,8 +446,8 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
       value = base::i18n::ToUpper(value);
 #endif
 
-    suggestions->push_back(Suggestion(value));
-    suggestions->back().frontend_id = PopupItemId::kClearForm;
+    suggestions->emplace_back(value);
+    suggestions->back().popup_item_id = PopupItemId::kClearForm;
     suggestions->back().icon = "clearIcon";
     suggestions->back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
@@ -452,8 +455,8 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
 
   // Append the 'Autofill settings' menu item, or the menu item specified in the
   // popup layout experiment.
-  suggestions->push_back(Suggestion(GetSettingsSuggestionValue()));
-  suggestions->back().frontend_id = PopupItemId::kAutofillOptions;
+  suggestions->emplace_back(GetSettingsSuggestionValue());
+  suggestions->back().popup_item_id = PopupItemId::kAutofillOptions;
   suggestions->back().icon = "settingsIcon";
 
   // On Android and Desktop, Google Pay branding is shown along with Settings.
@@ -480,7 +483,7 @@ void AutofillExternalDelegate::InsertDataListValues(
   std::set<std::u16string> data_list_set(data_list_values_.begin(),
                                          data_list_values_.end());
   base::EraseIf(*suggestions, [&data_list_set](const Suggestion& suggestion) {
-    return suggestion.frontend_id == PopupItemId::kAutocompleteEntry &&
+    return suggestion.popup_item_id == PopupItemId::kAutocompleteEntry &&
            base::Contains(data_list_set, suggestion.main_text.value);
   });
 
@@ -500,7 +503,7 @@ void AutofillExternalDelegate::InsertDataListValues(
     (*suggestions)[i].main_text = Suggestion::Text(
         data_list_values_[i], Suggestion::Text::IsPrimary(true));
     (*suggestions)[i].labels = {{Suggestion::Text(data_list_labels_[i])}};
-    (*suggestions)[i].frontend_id = PopupItemId::kDatalistEntry;
+    (*suggestions)[i].popup_item_id = PopupItemId::kDatalistEntry;
   }
 }
 

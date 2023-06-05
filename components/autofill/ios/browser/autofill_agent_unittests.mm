@@ -277,8 +277,7 @@ TEST_F(AutofillAgentTests,
   // Initialize suggestion.
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", "visaCC",
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry)),
+                           autofill::PopupItemId::kCreditCardEntry),
       // This suggestion has a valid credit card icon, but the Suggestion type
       // (kShowAccountCards) is wrong.
       autofill::Suggestion("", "", "visaCC",
@@ -329,10 +328,8 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
       .WillRepeatedly(testing::Return(PopupType::kCreditCards));
 
   const std::string emptyIcon = "";
-  std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", emptyIcon,
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry))};
+  std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
+      "", "", emptyIcon, autofill::PopupItemId::kCreditCardEntry)};
 
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -375,8 +372,7 @@ TEST_F(AutofillAgentTests,
   // Initialize suggestion, initially without a custom icon.
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", suggestion_network_icon,
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry))};
+                           autofill::PopupItemId::kCreditCardEntry)};
   ASSERT_TRUE(autofillSuggestions[0].custom_icon.IsEmpty());
 
   // When the custom icon is not present, the default icon should be used.
@@ -408,12 +404,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", "",
-      autofill::Suggestion::FrontendId(autofill::PopupItemId::kAddressEntry)));
-  autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", "",
-      autofill::Suggestion::FrontendId(autofill::PopupItemId::kAddressEntry)));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::PopupItemId::kAddressEntry));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::PopupItemId::kAddressEntry));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_
@@ -464,14 +458,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "",
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry)));
-  autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "",
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry)));
+  autofillSuggestions.push_back(autofill::Suggestion(
+      "", "", "", autofill::PopupItemId::kCreditCardEntry));
+  autofillSuggestions.push_back(autofill::Suggestion(
+      "", "", "", autofill::PopupItemId::kCreditCardEntry));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_

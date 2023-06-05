@@ -124,7 +124,7 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
           _, autoselect_first_suggestion,
           UnorderedElementsAre(
               Field(&Suggestion::main_text, promo_code_suggestion.main_text),
-              Field(&Suggestion::frontend_id, PopupItemId::kSeparator),
+              Field(&Suggestion::popup_item_id, PopupItemId::kSeparator),
               Field(&Suggestion::main_text, footer_suggestion.main_text))))
       .Times(3);
 
@@ -540,7 +540,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   SetUpPromoCodeOffer(last_committed_origin_url,
                       GURL("https://offer-details-url.com/"));
 
-  // Check that non promo code frontend id's do not log as offer suggestion
+  // Check that non promo code popup item id's do not log as offer suggestion
   // selected.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
       test_promo_code, PopupItemId::kAutocompleteEntry);
@@ -605,7 +605,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   SetUpPromoCodeOffer(last_committed_origin_url,
                       GURL("https://offer-details-url.com/"));
 
-  // Check that non promo code footer frontend id's do not log as offer
+  // Check that non promo code footer popup item id's do not log as offer
   // suggestions footer selected.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
       test_promo_code, PopupItemId::kAutocompleteEntry);

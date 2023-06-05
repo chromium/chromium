@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -446,7 +447,7 @@ class TestAutofillClientTemplate : public T {
     return form_origin_.SchemeIs("https");
   }
 
-  void ExecuteCommand(Suggestion::FrontendId id) override {}
+  void ExecuteCommand(PopupItemId popup_item_id) override {}
 
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override {}
 

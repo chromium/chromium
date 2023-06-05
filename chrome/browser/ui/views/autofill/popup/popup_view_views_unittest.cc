@@ -109,7 +109,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     view().SchedulePaint();
   }
 
-  void CreateAndShowView(const std::vector<Suggestion::FrontendId>& ids) {
+  void CreateAndShowView(const std::vector<PopupItemId>& ids) {
     controller().set_suggestions(ids);
     CreateAndShowView();
   }
@@ -208,7 +208,7 @@ class PopupViewViewsTestWithClickablePopupItemId
 };
 
 TEST_F(PopupViewViewsTest, ShowHideTest) {
-  CreateAndShowView({Suggestion::FrontendId(kAutocompleteEntry)});
+  CreateAndShowView({kAutocompleteEntry});
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   view().Hide();
@@ -217,8 +217,7 @@ TEST_F(PopupViewViewsTest, ShowHideTest) {
 // This is a regression test for crbug.com/1113255.
 TEST_F(PopupViewViewsTest, ShowViewWithOnlyFooterItemsShouldNotCrash) {
   // Set suggestions to have only a footer item.
-  std::vector<Suggestion::FrontendId> suggestion_ids = {
-      PopupItemId::kClearForm};
+  std::vector<PopupItemId> suggestion_ids = {PopupItemId::kClearForm};
   controller().set_suggestions(suggestion_ids);
   CreateAndShowView();
 }
@@ -420,8 +419,8 @@ TEST_F(PopupViewViewsTest, PageUpDownForSelectableCells) {
 }
 
 TEST_F(PopupViewViewsTest, MovingSelectionSkipsSeparator) {
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kSeparator, PopupItemId::kAutofillOptions});
+  CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                     PopupItemId::kAutofillOptions});
   view().SetSelectedCell(CellIndex{0u, CellType::kContent});
 
   // Going one down skips the separator.
@@ -436,8 +435,7 @@ TEST_F(PopupViewViewsTest, MovingSelectionSkipsSeparator) {
 }
 
 TEST_F(PopupViewViewsTest, MovingSelectionSkipsInsecureFormWarning) {
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kSeparator,
+  CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kSeparator,
                      PopupItemId::kInsecureContextPaymentDisabledMessage});
   view().SetSelectedCell(CellIndex{0u, CellType::kContent});
 
@@ -460,8 +458,8 @@ TEST_F(PopupViewViewsTest, FillContentOnEnter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept);
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kAutofillOptions});
+  CreateAndShowView(
+      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
 
   // Select the first item.
   view().SetSelectedCell(CellIndex{0u, CellType::kContent});
@@ -477,8 +475,8 @@ TEST_F(PopupViewViewsTest, FillContentOnEnter) {
 TEST_F(PopupViewViewsTest, FillContentOnEnterUsesThresholdIfFeatureEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept};
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kAutofillOptions});
+  CreateAndShowView(
+      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
 
   // Select the first item.
   view().SetSelectedCell(CellIndex{0u, CellType::kContent});
@@ -498,8 +496,8 @@ TEST_F(PopupViewViewsTest, FillOnTabPressed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept);
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kAutofillOptions});
+  CreateAndShowView(
+      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
 
   // Select the first item.
   view().SetSelectedCell(CellIndex{0u, CellType::kContent});
@@ -515,8 +513,8 @@ TEST_F(PopupViewViewsTest, FillOnTabPressed) {
 TEST_F(PopupViewViewsTest, FillOnTabPressedUsesThresholdIfFeatureEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept};
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kAutofillOptions});
+  CreateAndShowView(
+      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
 
   // Select the first item.
   view().SetSelectedCell(CellIndex{0u, CellType::kContent});
@@ -530,8 +528,8 @@ TEST_F(PopupViewViewsTest, FillOnTabPressedUsesThresholdIfFeatureEnabled) {
 }
 
 TEST_F(PopupViewViewsTest, NoFillOnTabPressedWithModifiers) {
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kAutofillOptions});
+  CreateAndShowView(
+      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
 
   // Select the first item.
   view().SetSelectedCell(CellIndex{0u, CellType::kContent});
@@ -551,8 +549,8 @@ TEST_F(PopupViewViewsTest, NoFillOnTabPressedWithModifiers) {
 // a tab with the autofill settings).
 TEST_F(PopupViewViewsTest, NoAutofillOptionsTriggeredOnTabPressed) {
   // Set up the popup and select the options cell.
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kSeparator, PopupItemId::kAutofillOptions});
+  CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                     PopupItemId::kAutofillOptions});
   view().SetSelectedCell(CellIndex{2u, CellType::kContent});
   EXPECT_EQ(view().GetSelectedCell(),
             absl::make_optional<CellIndex>(2u, CellType::kContent));
@@ -567,8 +565,8 @@ TEST_F(PopupViewViewsTest, NoAutofillOptionsTriggeredOnTabPressed) {
 // This is a regression test for crbug.com/1309431 to ensure that we don't crash
 // when we press tab before a line is selected.
 TEST_F(PopupViewViewsTest, TabBeforeSelectingALine) {
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     PopupItemId::kSeparator, PopupItemId::kAutofillOptions});
+  CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                     PopupItemId::kAutofillOptions});
   EXPECT_FALSE(view().GetSelectedCell().has_value());
 
   // The following should not crash:
@@ -576,8 +574,7 @@ TEST_F(PopupViewViewsTest, TabBeforeSelectingALine) {
 }
 
 TEST_F(PopupViewViewsTest, RemoveLine) {
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     Suggestion::FrontendId(PopupItemId::kAddressEntry),
+  CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
                      PopupItemId::kAutofillOptions});
 
   // If no cell is selected, pressing delete has no effect.
@@ -601,8 +598,7 @@ TEST_F(PopupViewViewsTest, RemoveLine) {
 
 TEST_F(PopupViewViewsTest, RemoveAutofillRecordsNoAutocompleteDeletionMetrics) {
   base::HistogramTester histogram_tester;
-  CreateAndShowView({Suggestion::FrontendId(PopupItemId::kAddressEntry),
-                     Suggestion::FrontendId(PopupItemId::kAddressEntry),
+  CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
                      PopupItemId::kAutofillOptions});
 
   view().SetSelectedCell(CellIndex{1u, CellType::kContent});
@@ -650,7 +646,7 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
   suggestion.labels = {{Suggestion::Text(u"example.com")}};
   suggestion.voice_over = voice_over_value;
   suggestion.additional_label = u"\u2022\u2022\u2022\u2022";
-  suggestion.frontend_id = PopupItemId::kUsernameEntry;
+  suggestion.popup_item_id = PopupItemId::kUsernameEntry;
 
   // Create autofill menu.
   controller().set_suggestions({suggestion});

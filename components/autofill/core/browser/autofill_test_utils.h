@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
 class PrefService;
@@ -553,7 +554,7 @@ void AddFieldPredictionsToForm(
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
 
 Suggestion CreateAutofillSuggestion(
-    Suggestion::FrontendId frontend_id,
+    PopupItemId popup_item_id,
     const std::u16string& main_text_value = std::u16string(),
     const Suggestion::Payload& payload = Suggestion::Payload());
 

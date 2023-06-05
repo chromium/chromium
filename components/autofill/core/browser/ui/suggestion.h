@@ -27,31 +27,6 @@ struct Suggestion {
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload = absl::variant<BackendId, GURL, ValueToFill>;
 
-  // A frontend ID is just a PopupItemId.
-  // Frontend IDs are deprecated and will be eliminated: crbug.com/1394920.
-  //
-  // TODO(crbug.com/1394920): Convert frontend id into a PopupItemId.
-  class FrontendId {
-   public:
-    constexpr FrontendId() : value_(kAutocompleteEntry) {}
-    constexpr FrontendId(  // NOLINT(google-explicit-constructor)
-        PopupItemId popup_item_id)
-        : value_(popup_item_id) {}
-
-    // Returns the content of the variant as `PopupItemId`, even if it holds a
-    // raw integer.
-    PopupItemId as_popup_item_id() const {
-      return static_cast<PopupItemId>(value_);
-    }
-
-    bool is_an_address_or_card_popup_item_id() const {
-      return value_ == kAddressEntry || value_ == kCreditCardEntry;
-    }
-
-   private:
-    PopupItemId value_;
-  };
-
   enum MatchMode {
     PREFIX_MATCH,    // for prefix matched suggestions;
     SUBSTRING_MATCH  // for substring matched suggestions;
@@ -86,18 +61,18 @@ struct Suggestion {
 
   Suggestion();
   explicit Suggestion(std::u16string main_text);
-  explicit Suggestion(Suggestion::FrontendId frontend_id);
+  explicit Suggestion(PopupItemId popup_item_id);
   // Constructor for unit tests. It will convert the strings from UTF-8 to
   // UTF-16.
   Suggestion(base::StringPiece main_text,
              base::StringPiece label,
              std::string icon,
-             Suggestion::FrontendId frontend_id);
+             PopupItemId popup_item_id);
   Suggestion(base::StringPiece main_text,
              base::StringPiece minor_text,
              base::StringPiece label,
              std::string icon,
-             Suggestion::FrontendId frontend_id);
+             PopupItemId popup_item_id);
   Suggestion(const Suggestion& other);
   Suggestion(Suggestion&& other);
   Suggestion& operator=(const Suggestion& other);
@@ -114,7 +89,7 @@ struct Suggestion {
 
 #if DCHECK_IS_ON()
   bool Invariant() const {
-    switch (frontend_id.as_popup_item_id()) {
+    switch (popup_item_id) {
       case PopupItemId::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);
       case PopupItemId::kIbanEntry:
@@ -133,12 +108,8 @@ struct Suggestion {
   // shown other than main_text.
   Payload payload;
 
-  // TODO(crbug.com/1325509): Convert |frontend_id| from an int to a
-  // PopupItemId.
-  // ID for the frontend to use in identifying the particular result. Positive
-  // values are sent over IPC to identify the item selected. Negative values
-  // (see popup_item_ids.h) have special built-in meanings.
-  Suggestion::FrontendId frontend_id{};
+  // Determines popup identifier for the suggestion.
+  PopupItemId popup_item_id = PopupItemId::kAutocompleteEntry;
 
   // The texts that will be displayed on the first line in a suggestion. The
   // order of showing the two texts on the first line depends on whether it is
@@ -201,19 +172,10 @@ struct Suggestion {
   absl::optional<std::u16string> acceptance_a11y_announcement;
 };
 
-bool operator==(Suggestion::FrontendId lhs, Suggestion::FrontendId rhs);
-bool operator==(Suggestion::FrontendId lhs, PopupItemId rhs);
-bool operator==(PopupItemId lhs, Suggestion::FrontendId rhs);
-bool operator!=(Suggestion::FrontendId lhs, Suggestion::FrontendId rhs);
-bool operator!=(Suggestion::FrontendId lhs, PopupItemId rhs);
-bool operator!=(PopupItemId lhs, Suggestion::FrontendId rhs);
-
-std::ostream& operator<<(std::ostream& os, Suggestion::FrontendId id);
-
 #if defined(UNIT_TEST)
 inline void PrintTo(const Suggestion& suggestion, std::ostream* os) {
   *os << std::endl
-      << "Suggestion (frontend_id:" << suggestion.frontend_id
+      << "Suggestion (popup_item_id:" << suggestion.popup_item_id
       << ", main_text:\"" << suggestion.main_text.value << "\""
       << (suggestion.main_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", minor_text:\"" << suggestion.minor_text.value << "\""

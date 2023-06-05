@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -1228,11 +1229,11 @@ void AddFieldPredictionsToForm(
   }
 }
 
-Suggestion CreateAutofillSuggestion(Suggestion::FrontendId frontend_id,
+Suggestion CreateAutofillSuggestion(PopupItemId popup_item_id,
                                     const std::u16string& main_text_value,
                                     const Suggestion::Payload& payload) {
   Suggestion suggestion;
-  suggestion.frontend_id = frontend_id;
+  suggestion.popup_item_id = popup_item_id;
   suggestion.main_text.value = main_text_value;
   suggestion.payload = payload;
   return suggestion;

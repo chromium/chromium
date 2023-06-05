@@ -373,7 +373,7 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     PopupCellView& content_view) {
   bool has_control_element =
-      suggestion.frontend_id == PopupItemId::kAutocompleteEntry &&
+      suggestion.popup_item_id == PopupItemId::kAutocompleteEntry &&
       base::FeatureList::IsEnabled(
           features::kAutofillShowAutocompleteDeleteButton);
   views::BoxLayout& layout =
@@ -544,7 +544,8 @@ ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
   set_size_ = 0;
   set_index_ = line_number + 1;
   for (int i = 0; i < controller->GetLineCount(); ++i) {
-    if (controller->GetSuggestionAt(i).frontend_id == PopupItemId::kSeparator) {
+    if (controller->GetSuggestionAt(i).popup_item_id ==
+        PopupItemId::kSeparator) {
       if (i < line_number) {
         --set_index_;
       }
@@ -719,7 +720,7 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
   }
 
   // If the feature is enabled, autocomplete entries have a delete button.
-  if (GetController()->GetSuggestionAt(GetLineNumber()).frontend_id ==
+  if (GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id ==
           PopupItemId::kAutocompleteEntry &&
       base::FeatureList::IsEnabled(
           features::kAutofillShowAutocompleteDeleteButton)) {
@@ -869,7 +870,7 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   std::unique_ptr<views::ImageView> icon = GetIconImageView(kSuggestion);
 
   const bool kUseLeadingIcon =
-      base::Contains(kItemTypesUsingLeadingIcons, kSuggestion.frontend_id);
+      base::Contains(kItemTypesUsingLeadingIcons, kSuggestion.popup_item_id);
 
   if (kSuggestion.is_loading) {
     view->AddChildView(std::make_unique<views::Throbber>())->Start();

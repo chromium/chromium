@@ -1567,12 +1567,9 @@ TEST_F(BrowserAutofillManagerTest,
   // Check that suggestions are made for the field that has the autocomplete
   // attribute.
   GetAutofillSuggestions(form, form.fields[0]);
-  CheckSuggestions(
-      form.fields[0].global_id(),
-      Suggestion("Charles", "", "",
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Elvis", "", "",
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Charles", "", "", PopupItemId::kAddressEntry),
+                   Suggestion("Elvis", "", "", PopupItemId::kAddressEntry));
 
   // Check that there are no suggestions for the field without the autocomplete
   // attribute.
@@ -1601,20 +1598,18 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[0]);
-  CheckSuggestions(
-      form.fields[0].global_id(),
-      Suggestion("Charles", "Charles Hardin Holley", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Charles", "Charles Hardin Holley",
+                              kAddressEntryIcon, PopupItemId::kAddressEntry),
+                   Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 
   GetAutofillSuggestions(form, form.fields[1]);
-  CheckSuggestions(
-      form.fields[1].global_id(),
-      Suggestion("Holley", "Charles Hardin Holley", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Presley", "Elvis Aaron Presley", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[1].global_id(),
+                   Suggestion("Holley", "Charles Hardin Holley",
+                              kAddressEntryIcon, PopupItemId::kAddressEntry),
+                   Suggestion("Presley", "Elvis Aaron Presley",
+                              kAddressEntryIcon, PopupItemId::kAddressEntry));
 }
 
 // Test that the call is properly forwarded to its SingleFieldFormFillRouter.
@@ -1624,27 +1619,25 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   test::CreateTestAddressFormData(&form);
   FormFieldData field = form.fields[0];
 
-  EXPECT_CALL(
-      *single_field_form_fill_router_,
-      OnSingleFieldSuggestionSelected(
-          test_value, Suggestion::FrontendId(PopupItemId::kAutocompleteEntry)))
-      .Times(1);
-
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, PopupItemId::kAutocompleteEntry, form, field);
-
-  EXPECT_CALL(
-      *single_field_form_fill_router_,
-      OnSingleFieldSuggestionSelected(
-          test_value, Suggestion::FrontendId(PopupItemId::kAutocompleteEntry)))
+  EXPECT_CALL(*single_field_form_fill_router_,
+              OnSingleFieldSuggestionSelected(test_value,
+                                              PopupItemId::kAutocompleteEntry))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
       test_value, PopupItemId::kAutocompleteEntry, form, field);
 
   EXPECT_CALL(*single_field_form_fill_router_,
-              OnSingleFieldSuggestionSelected(
-                  test_value, Suggestion::FrontendId(PopupItemId::kIbanEntry)))
+              OnSingleFieldSuggestionSelected(test_value,
+                                              PopupItemId::kAutocompleteEntry))
+      .Times(1);
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      test_value, PopupItemId::kAutocompleteEntry, form, field);
+
+  EXPECT_CALL(
+      *single_field_form_fill_router_,
+      OnSingleFieldSuggestionSelected(test_value, PopupItemId::kIbanEntry))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
@@ -1652,8 +1645,7 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
 
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(
-                  test_value,
-                  Suggestion::FrontendId(PopupItemId::kMerchantPromoCodeEntry)))
+                  test_value, PopupItemId::kMerchantPromoCodeEntry))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
@@ -1697,12 +1689,11 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      form.fields[0].global_id(),
-      Suggestion("Charles", label1, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Elvis", label2, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Charles", label1, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry),
+                   Suggestion("Elvis", label2, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Test that we return only matching address profile suggestions when the
@@ -1729,10 +1720,9 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion("Elvis", label, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion("Elvis", label, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Tests that we return address profile suggestions values when the section
@@ -1782,9 +1772,9 @@ TEST_P(SuggestionMatchingTest,
       CheckSuggestions(
           field.global_id(),
           Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
-                     Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+                     PopupItemId::kAddressEntry),
           Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
-                     Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+                     PopupItemId::kAddressEntry));
       break;
     case EnabledFeature::kNone:
       // Test that we sent the right values to the external delegate. No labels
@@ -1792,13 +1782,11 @@ TEST_P(SuggestionMatchingTest,
       CheckSuggestions(
           field.global_id(),
           Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
-                     Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+                     PopupItemId::kAddressEntry),
           Suggestion("Grimes", "1234 Smith Blvd., Carl Grimes",
-                     kAddressEntryIcon,
-                     Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+                     kAddressEntryIcon, PopupItemId::kAddressEntry),
           Suggestion("Grimes", "1234 Smith Blvd., Robin Grimes",
-                     kAddressEntryIcon,
-                     Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+                     kAddressEntryIcon, PopupItemId::kAddressEntry));
   }
 }
 
@@ -1831,10 +1819,9 @@ TEST_P(SuggestionMatchingTest,
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion("Elvis", label, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion("Elvis", label, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -1902,12 +1889,11 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      form.fields[0].global_id(),
-      Suggestion("Charles", label1, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Elvis", label2, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Charles", label1, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry),
+                   Suggestion("Elvis", label2, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Test that we return no suggestions when autofill is disabled.
@@ -1931,10 +1917,9 @@ TEST_F(BrowserAutofillManagerTest,
        OnSuggestionsReturned_CallsExternalDelegate) {
   FieldGlobalId field_id = test::MakeFieldGlobalId();
   std::vector<Suggestion> suggestions = {
-      Suggestion("Charles", "123 Apple St.", "",
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Charles", "123 Apple St.", "", PopupItemId::kAddressEntry),
       Suggestion("Elvis", "3734 Elvis Presley Blvd.", "",
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry))};
+                 PopupItemId::kAddressEntry)};
 
   {
     browser_autofill_manager_->OnSuggestionsReturned(
@@ -2246,7 +2231,7 @@ TEST_F(BrowserAutofillManagerTest,
   CheckSuggestions(
       form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", Suggestion::FrontendId(kMixedFormMessage)));
+                 "", kMixedFormMessage));
 
   // Clear the test credit cards and try again -- we should still show the
   // mixed form warning.
@@ -2255,7 +2240,7 @@ TEST_F(BrowserAutofillManagerTest,
   CheckSuggestions(
       form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", Suggestion::FrontendId(kMixedFormMessage)));
+                 "", kMixedFormMessage));
 }
 
 // Test that we return credit card suggestions for secure pages that have an
@@ -2719,12 +2704,11 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
   }
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      form.fields[0].global_id(),
-      Suggestion("Charles", label1, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Elvis", label2, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Charles", label1, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry),
+                   Suggestion("Elvis", label2, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 
   FormFieldData field;
   test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
@@ -2768,12 +2752,10 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion(
-          l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
-          "", "",
-          Suggestion::FrontendId(kInsecureContextPaymentDisabledMessage)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion(l10n_util::GetStringUTF8(
+                                  IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
+                              "", "", kInsecureContextPaymentDisabledMessage));
 
   // Clear the test credit cards and try again -- we shouldn't return a warning.
   personal_data().ClearCreditCards();
@@ -3347,12 +3329,11 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      form.fields[0].global_id(),
-      Suggestion("Charles", label1, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Elvis", label2, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Charles", label1, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry),
+                   Suggestion("Elvis", label2, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Test that nothing breaks when there are single field form fill (Autocomplete)
@@ -3377,10 +3358,9 @@ TEST_F(BrowserAutofillManagerTest,
   AutocompleteSuggestionsReturned(field.global_id(), suggestions);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion("one", "", "", Suggestion::FrontendId(kAutocompleteEntry)),
-      Suggestion("two", "", "", Suggestion::FrontendId(kAutocompleteEntry)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion("one", "", "", kAutocompleteEntry),
+                   Suggestion("two", "", "", kAutocompleteEntry));
 }
 
 // Test that we do not return duplicate values drawn from multiple profiles when
@@ -3424,10 +3404,9 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion("Elvis", label, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion("Elvis", label, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
@@ -3493,12 +3472,10 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[9].global_id(),
-      Suggestion(value1, label1, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion(value2, label2, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion(value1, label1, kAddressEntryIcon, PopupItemId::kAddressEntry),
+      Suggestion(value2, label2, kAddressEntryIcon, PopupItemId::kAddressEntry),
       Suggestion(value3, label3, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+                 PopupItemId::kAddressEntry));
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -3539,19 +3516,17 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, phone_prefix);
 
   // Test that we sent the right prefix values to the external delegate.
-  CheckSuggestions(
-      form.fields[2].global_id(),
-      Suggestion("356", "1800FLOWERS", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[2].global_id(),
+                   Suggestion("356", "1800FLOWERS", kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 
   const FormFieldData& phone_suffix = form.fields[3];
   GetAutofillSuggestions(form, phone_suffix);
 
   // Test that we sent the right suffix values to the external delegate.
-  CheckSuggestions(
-      form.fields[3].global_id(),
-      Suggestion("9377", "1800FLOWERS", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[3].global_id(),
+                   Suggestion("9377", "1800FLOWERS", kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Tests that the suggestion consists of phone number without the country code
@@ -3572,10 +3547,9 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_ForPhoneField) {
 
   GetAutofillSuggestions(form, form.fields[9]);
 
-  CheckSuggestions(
-      form.fields[9].global_id(),
-      Suggestion("123456789", "Natty Bumppo", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[9].global_id(),
+                   Suggestion("123456789", "Natty Bumppo", kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Tests that we return email profile suggestions values
@@ -3618,10 +3592,9 @@ TEST_F(BrowserAutofillManagerTest,
   personal_data().AddProfile(profile);
 
   GetAutofillSuggestions(form, form.fields[2]);
-  CheckSuggestions(
-      form.fields[2].global_id(),
-      Suggestion("test@example.com", "Natty Bumppo", kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(form.fields[2].global_id(),
+                   Suggestion("test@example.com", "Natty Bumppo",
+                              kAddressEntryIcon, PopupItemId::kAddressEntry));
 }
 
 // Test that we correctly fill an address form.
@@ -8411,12 +8384,11 @@ TEST_P(SuggestionMatchingTest, DisplaySuggestionsWithMatchingTokens) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion("buddy@gmail.com", label1, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("theking@gmail.com", label2, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion("buddy@gmail.com", label1, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry),
+                   Suggestion("theking@gmail.com", label2, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Verify that typing "apple" will match "123 Apple St." when substring matching
@@ -8451,10 +8423,9 @@ TEST_P(SuggestionMatchingTest,
       label = "123 Apple St.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion("123 Apple St., unit 6", label, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion("123 Apple St., unit 6", label, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Verify that typing "mail" will not match any of the "@gmail.com" email
@@ -8627,12 +8598,11 @@ TEST_P(SuggestionMatchingTest,
       label1 = "1234 Smith Blvd., Carl Shawn Smith Grimes";
       label2 = "1234 Smith Blvd., Robin Adam Smith Grimes";
   }
-  CheckSuggestions(
-      field.global_id(),
-      Suggestion("Shawn Smith", label1, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
-      Suggestion("Adam Smith", label2, kAddressEntryIcon,
-                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
+  CheckSuggestions(field.global_id(),
+                   Suggestion("Shawn Smith", label1, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry),
+                   Suggestion("Adam Smith", label2, kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {

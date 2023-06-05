@@ -102,33 +102,33 @@ void SingleFieldFormFillRouter::CancelPendingQueries(
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {
+    PopupItemId popup_item_id) {
   if (merchant_promo_code_manager_ &&
-      frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
+      popup_item_id == PopupItemId::kMerchantPromoCodeEntry) {
     merchant_promo_code_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, frontend_id);
-  } else if (iban_manager_ && frontend_id == PopupItemId::kIbanEntry) {
+        field_name, value, popup_item_id);
+  } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
     iban_manager_->OnRemoveCurrentSingleFieldSuggestion(field_name, value,
-                                                        frontend_id);
+                                                        popup_item_id);
   } else {
     autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, frontend_id);
+        field_name, value, popup_item_id);
   }
 }
 
 void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {
+    PopupItemId popup_item_id) {
   if (merchant_promo_code_manager_ &&
-      (frontend_id == PopupItemId::kMerchantPromoCodeEntry ||
-       frontend_id == PopupItemId::kSeePromoCodeDetails)) {
-    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(value,
-                                                                  frontend_id);
-  } else if (iban_manager_ && frontend_id == PopupItemId::kIbanEntry) {
-    iban_manager_->OnSingleFieldSuggestionSelected(value, frontend_id);
+      (popup_item_id == PopupItemId::kMerchantPromoCodeEntry ||
+       popup_item_id == PopupItemId::kSeePromoCodeDetails)) {
+    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
+        value, popup_item_id);
+  } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
+    iban_manager_->OnSingleFieldSuggestionSelected(value, popup_item_id);
   } else {
-    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(value,
-                                                                   frontend_id);
+    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(
+        value, popup_item_id);
   }
 }
 

@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/fast_checkout_delegate.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -189,7 +190,7 @@ class BrowserAutofillManager : public AutofillManager,
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   Suggestion::FrontendId identifier,
+                                   PopupItemId popup_item_id,
                                    Suggestion::BackendId backend_id,
                                    std::u16string* title,
                                    std::u16string* body);
@@ -198,16 +199,16 @@ class BrowserAutofillManager : public AutofillManager,
   // from the database. Returns true if deletion is allowed.
   bool RemoveAutofillProfileOrCreditCard(Suggestion::BackendId backend_id);
 
-  // Remove the specified suggestion from single field filling. |frontend_id| is
-  // the PopupItemId of the suggestion.
+  // Remove the specified suggestion from single field filling. `popup_item_id`
+  // is the PopupItemId of the suggestion.
   void RemoveCurrentSingleFieldSuggestion(const std::u16string& name,
                                           const std::u16string& value,
-                                          Suggestion::FrontendId frontend_id);
+                                          PopupItemId popup_item_id);
 
   // Invoked when the user selected |value| in a suggestions list from single
-  // field filling. |frontend_id| is the PopupItemId of the suggestion.
+  // field filling. `popup_item_id` is the PopupItemId of the suggestion.
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       Suggestion::FrontendId frontend_id,
+                                       PopupItemId popup_item_id,
                                        const FormData& form,
                                        const FormFieldData& field);
 
@@ -310,7 +311,7 @@ class BrowserAutofillManager : public AutofillManager,
   // then logs that the promo code suggestions footer was selected.
   void OnSeePromoCodeOfferDetailsSelected(const GURL& offer_details_url,
                                           const std::u16string& value,
-                                          Suggestion::FrontendId frontend_id,
+                                          PopupItemId popup_item_id,
                                           const FormData& form,
                                           const FormFieldData& field);
 

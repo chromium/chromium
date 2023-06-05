@@ -115,20 +115,20 @@ class IBANManagerTest : public testing::Test {
                                     base::StringPiece nickname) {
     IBAN iban = SetUpIBAN(value, nickname);
     Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
-    iban_suggestion.frontend_id = PopupItemId::kIbanEntry;
+    iban_suggestion.popup_item_id = PopupItemId::kIbanEntry;
     return iban_suggestion;
   }
 
   Suggestion SetUpSeparator() {
     Suggestion separator;
-    separator.frontend_id = PopupItemId::kSeparator;
+    separator.popup_item_id = PopupItemId::kSeparator;
     return separator;
   }
 
   Suggestion SetUpFooterManagePaymentMethods() {
     Suggestion footer_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-    footer_suggestion.frontend_id = PopupItemId::kAutofillOptions;
+    footer_suggestion.popup_item_id = PopupItemId::kAutofillOptions;
     footer_suggestion.icon = "settingsIcon";
     return footer_suggestion;
   }
@@ -144,9 +144,9 @@ class IBANManagerTest : public testing::Test {
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
 
-MATCHER_P(MatchesTextAndFrontendId, suggestion, "") {
+MATCHER_P(MatchesTextAndPopupItemId, suggestion, "") {
   return arg.main_text == suggestion.main_text &&
-         arg.frontend_id == suggestion.frontend_id;
+         arg.popup_item_id == suggestion.popup_item_id;
 }
 
 TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
@@ -160,12 +160,12 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
 
   // Setting up mock to verify that the handler is returned a list of
   // IBAN-based suggestions.
-  EXPECT_CALL(
-      suggestions_handler_,
-      OnSuggestionsReturned(
-          test_field.global_id(), AutoselectFirstSuggestion(false),
-          testing::IsSupersetOf({MatchesTextAndFrontendId(iban_suggestion_0),
-                                 MatchesTextAndFrontendId(iban_suggestion_1)})))
+  EXPECT_CALL(suggestions_handler_,
+              OnSuggestionsReturned(
+                  test_field.global_id(), AutoselectFirstSuggestion(false),
+                  testing::IsSupersetOf(
+                      {MatchesTextAndPopupItemId(iban_suggestion_0),
+                       MatchesTextAndPopupItemId(iban_suggestion_1)})))
       .Times(1);
 
   // Simulate request for suggestions.
@@ -211,9 +211,9 @@ TEST_F(IBANManagerTest, IBANSuggestions_SeparatorAndFooter) {
               OnSuggestionsReturned(
                   test_field.global_id(), AutoselectFirstSuggestion(false),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndFrontendId(iban_suggestion_0),
-                      MatchesTextAndFrontendId(iban_suggestion_1),
-                      MatchesTextAndFrontendId(iban_suggestion_2))))
+                      MatchesTextAndPopupItemId(iban_suggestion_0),
+                      MatchesTextAndPopupItemId(iban_suggestion_1),
+                      MatchesTextAndPopupItemId(iban_suggestion_2))))
       .Times(1);
 
   // Simulate request for suggestions.
@@ -268,10 +268,10 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
               OnSuggestionsReturned(
                   test_field.global_id(), AutoselectFirstSuggestion(false),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndFrontendId(iban_suggestion_0),
-                      MatchesTextAndFrontendId(iban_suggestion_1),
-                      MatchesTextAndFrontendId(iban_suggestion_2),
-                      MatchesTextAndFrontendId(iban_suggestion_3))))
+                      MatchesTextAndPopupItemId(iban_suggestion_0),
+                      MatchesTextAndPopupItemId(iban_suggestion_1),
+                      MatchesTextAndPopupItemId(iban_suggestion_2),
+                      MatchesTextAndPopupItemId(iban_suggestion_3))))
       .Times(1);
 
   // Simulate request for suggestions.
@@ -292,9 +292,9 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
               OnSuggestionsReturned(
                   test_field.global_id(), AutoselectFirstSuggestion(false),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndFrontendId(iban_suggestion_0),
-                      MatchesTextAndFrontendId(iban_suggestion_2),
-                      MatchesTextAndFrontendId(iban_suggestion_3))))
+                      MatchesTextAndPopupItemId(iban_suggestion_0),
+                      MatchesTextAndPopupItemId(iban_suggestion_2),
+                      MatchesTextAndPopupItemId(iban_suggestion_3))))
       .Times(1);
 
   // Simulate request for suggestions.
@@ -354,11 +354,11 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OptimizationGuideNotPresent) {
 
   // Setting up mock to verify that the handler is returned a list of
   // IBAN-based suggestions.
-  EXPECT_CALL(
-      suggestions_handler_,
-      OnSuggestionsReturned(
-          test_field.global_id(), AutoselectFirstSuggestion(false),
-          testing::IsSupersetOf({MatchesTextAndFrontendId(iban_suggestion_0)})))
+  EXPECT_CALL(suggestions_handler_,
+              OnSuggestionsReturned(
+                  test_field.global_id(), AutoselectFirstSuggestion(false),
+                  testing::IsSupersetOf(
+                      {MatchesTextAndPopupItemId(iban_suggestion_0)})))
       .Times(1);
 
   // Simulate request for suggestions.

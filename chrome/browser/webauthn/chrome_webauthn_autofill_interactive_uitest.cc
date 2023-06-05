@@ -159,7 +159,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     size_t webauthn_entry_count = 0;
     autofill::Suggestion webauthn_entry;
     for (size_t i = 0; i < suggestions.size(); ++i) {
-      if (suggestions[i].frontend_id ==
+      if (suggestions[i].popup_item_id ==
           autofill::PopupItemId::kWebauthnCredential) {
         webauthn_entry = suggestions[i];
         suggestion_index = i;
@@ -207,7 +207,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     autofill::Suggestion webauthn_entry;
     for (suggestion_index = 0; suggestion_index < suggestions.size();
          ++suggestion_index) {
-      if (suggestions[suggestion_index].frontend_id ==
+      if (suggestions[suggestion_index].popup_item_id ==
           autofill::PopupItemId::kWebauthnCredential) {
         webauthn_entry = suggestions[suggestion_index];
         break;
@@ -238,9 +238,9 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
       popup_controller = autofill_client->popup_controller_for_testing();
     }
     for (const auto& suggestion : popup_controller->GetSuggestions()) {
-      EXPECT_NE(suggestion.frontend_id,
+      EXPECT_NE(suggestion.popup_item_id,
                 autofill::PopupItemId::kWebauthnCredential);
-      EXPECT_NE(suggestion.frontend_id,
+      EXPECT_NE(suggestion.popup_item_id,
                 autofill::PopupItemId::kWebauthnSignInWithAnotherDevice);
     }
   }

@@ -97,9 +97,9 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
   for (int i = 0; i < _controller->GetLineCount() && i < maxTouchBarItems;
        i++) {
     const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(i);
-    if (suggestion.frontend_id.as_popup_item_id() !=
-            autofill::PopupItemId::kAutocompleteEntry &&
-        !suggestion.frontend_id.is_an_address_or_card_popup_item_id()) {
+    if (suggestion.popup_item_id != autofill::PopupItemId::kAutocompleteEntry &&
+        suggestion.popup_item_id != autofill::PopupItemId::kAddressEntry &&
+        suggestion.popup_item_id != autofill::PopupItemId::kCreditCardEntry) {
       continue;
     }
 

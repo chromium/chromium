@@ -24,6 +24,7 @@
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_client.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -490,7 +491,7 @@ bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-void ChromeAutofillClientIOS::ExecuteCommand(Suggestion::FrontendId id) {
+void ChromeAutofillClientIOS::ExecuteCommand(PopupItemId popup_item_id) {
   NOTIMPLEMENTED();
 }
 

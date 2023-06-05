@@ -323,11 +323,13 @@ using UserDecision =
                     delegate {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
-  base::ranges::copy_if(
-      suggestions, std::back_inserter(filtered_suggestions),
-      [](const autofill::Suggestion& suggestion) {
-        return suggestion.frontend_id.is_an_address_or_card_popup_item_id();
-      });
+  base::ranges::copy_if(suggestions, std::back_inserter(filtered_suggestions),
+                        [](const autofill::Suggestion& suggestion) {
+                          return suggestion.popup_item_id ==
+                                     autofill::PopupItemId::kAddressEntry ||
+                                 suggestion.popup_item_id ==
+                                     autofill::PopupItemId::kCreditCardEntry;
+                        });
   [_autofillAgent showAutofillPopup:filtered_suggestions
                       popupDelegate:delegate];
 }

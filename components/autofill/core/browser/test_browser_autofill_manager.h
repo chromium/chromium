@@ -127,13 +127,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   void SetExpectedObservedSubmission(bool expected);
 
-  struct MakeFrontendIdParams {
-    std::string credit_card_id;
-    std::string profile_id;
-  };
-
-  Suggestion::FrontendId MakeFrontendId(const MakeFrontendIdParams& params);
-
  private:
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;

@@ -90,11 +90,10 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
 
   // Separators are a special case: They belong into the footer iff the next
   // item exists and is a footer item.
-  PopupItemId frontend_id =
-      suggestions[line_number].frontend_id.as_popup_item_id();
-  return frontend_id == PopupItemId::kSeparator
+  PopupItemId popup_item_id = suggestions[line_number].popup_item_id;
+  return popup_item_id == PopupItemId::kSeparator
              ? IsFooterItem(suggestions, line_number + 1)
-             : IsFooterFrontendId(frontend_id);
+             : IsFooterFrontendId(popup_item_id);
 }
 
 }  // namespace
@@ -278,10 +277,10 @@ bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
     if (index->second != PopupRowView::CellType::kContent) {
       return false;
     }
-    Suggestion::FrontendId frontend_id =
-        controller_->GetSuggestionAt(index->first).frontend_id;
-    if (!base::Contains(kItemsTriggeringFieldFilling, frontend_id) &&
-        frontend_id != PopupItemId::kScanCreditCard) {
+    PopupItemId popup_item_id =
+        controller_->GetSuggestionAt(index->first).popup_item_id;
+    if (!base::Contains(kItemsTriggeringFieldFilling, popup_item_id) &&
+        popup_item_id != PopupItemId::kScanCreditCard) {
       return false;
     }
   }
@@ -305,7 +304,7 @@ bool PopupViewViews::RemoveSelectedCell() {
   }
 
   bool was_autocomplete =
-      controller_->GetSuggestionAt(index->first).frontend_id ==
+      controller_->GetSuggestionAt(index->first).popup_item_id ==
       PopupItemId::kAutocompleteEntry;
   if (!controller_->RemoveSuggestion(index->first)) {
     return false;
@@ -404,9 +403,7 @@ void PopupViewViews::CreateChildViews() {
     for (; current_line_number < kSuggestions.size() &&
            !IsFooterItem(kSuggestions, current_line_number);
          ++current_line_number) {
-      Suggestion::FrontendId frontend_id =
-          kSuggestions[current_line_number].frontend_id;
-      switch (frontend_id.as_popup_item_id()) {
+      switch (kSuggestions[current_line_number].popup_item_id) {
         case PopupItemId::kSeparator:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>()));
@@ -477,7 +474,7 @@ void PopupViewViews::CreateChildViews() {
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
     DCHECK(IsFooterItem(kSuggestions, current_line_number));
     // The footer can contain either footer views or separator lines.
-    if (kSuggestions[current_line_number].frontend_id ==
+    if (kSuggestions[current_line_number].popup_item_id ==
         PopupItemId::kSeparator) {
       rows_.push_back(footer_container->AddChildView(
           std::make_unique<PopupSeparatorView>()));

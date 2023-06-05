@@ -473,7 +473,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
-      autofill_suggestion.frontend_id = suggestion.popupItemId;
+      autofill_suggestion.popup_item_id = suggestion.popupItemId;
       if (!suggestion.backendIdentifier.length) {
         autofill_suggestion.payload = autofill::Suggestion::BackendId();
       } else {
@@ -634,11 +634,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     NSString* value = nil;
     NSString* displayDescription = nil;
     UIImage* icon = nil;
-    if (popup_suggestion.frontend_id ==
+    if (popup_suggestion.popup_item_id ==
             autofill::PopupItemId::kAutocompleteEntry ||
-        popup_suggestion.frontend_id.is_an_address_or_card_popup_item_id()) {
+        popup_suggestion.popup_item_id ==
+            autofill::PopupItemId::kAddressEntry ||
+        popup_suggestion.popup_item_id ==
+            autofill::PopupItemId::kCreditCardEntry) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
-      if (popup_suggestion.frontend_id ==
+      if (popup_suggestion.popup_item_id ==
               autofill::PopupItemId::kAutocompleteEntry &&
           [_typedValue length] == 0) {
         continue;
@@ -670,11 +673,11 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                      .ToUIImage();
         }
       }
-    } else if (popup_suggestion.frontend_id ==
+    } else if (popup_suggestion.popup_item_id ==
                autofill::PopupItemId::kClearForm) {
       // Show the "clear form" button.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-    } else if (popup_suggestion.frontend_id ==
+    } else if (popup_suggestion.popup_item_id ==
                autofill::PopupItemId::kShowAccountCards) {
       // Show opt-in for showing cards from account.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
@@ -692,8 +695,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                suggestionWithValue:value
                 displayDescription:displayDescription
                               icon:icon
-                       popupItemId:popup_suggestion.frontend_id
-                                       .as_popup_item_id()
+                       popupItemId:popup_suggestion.popup_item_id
                  backendIdentifier:
                      SysUTF8ToNSString(
                          popup_suggestion
@@ -708,7 +710,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     }
 
     // Put "clear form" entry at the front of the suggestions.
-    if (popup_suggestion.frontend_id == autofill::PopupItemId::kClearForm) {
+    if (popup_suggestion.popup_item_id == autofill::PopupItemId::kClearForm) {
       [suggestions insertObject:suggestion atIndex:0];
     } else {
       [suggestions addObject:suggestion];

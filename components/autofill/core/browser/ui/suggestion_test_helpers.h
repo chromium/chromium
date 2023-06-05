@@ -13,8 +13,8 @@ namespace autofill {
 
 template <class... Matchers>
 inline auto SuggestionVectorIdsAre(const Matchers&... matchers) {
-  return ::testing::ElementsAre(
-      ::testing::Field("frontend_id", &Suggestion::frontend_id, matchers)...);
+  return ::testing::ElementsAre(::testing::Field(
+      "popup_item_id", &Suggestion::popup_item_id, matchers)...);
 }
 
 template <class... Matchers>

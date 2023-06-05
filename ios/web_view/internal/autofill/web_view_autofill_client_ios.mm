@@ -7,31 +7,32 @@
 #import <utility>
 #import <vector>
 
-#include "base/check.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/logging/log_router.h"
+#import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
+#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
-#include "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/core/browser/payments/payments_client.h"
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
-#include "components/autofill/ios/browser/autofill_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/security_state/ios/security_state_utils.h"
-#include "ios/web/public/browser_state.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/security_state/ios/security_state_utils.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
+#import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
-#include "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
-#include "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
-#include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
+#import "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
+#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -360,7 +361,7 @@ bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-void WebViewAutofillClientIOS::ExecuteCommand(Suggestion::FrontendId id) {
+void WebViewAutofillClientIOS::ExecuteCommand(PopupItemId popup_item_id) {
   NOTIMPLEMENTED();
 }
 
