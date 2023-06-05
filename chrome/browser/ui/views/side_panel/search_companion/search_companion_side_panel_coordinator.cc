@@ -183,7 +183,7 @@ void SearchCompanionSidePanelCoordinator::
   }
   SidePanelToolbarContainer* container =
       browser_view->toolbar()->side_panel_container();
-  if (container->IsPinned(SidePanelEntry::Id::kSearchCompanion)) {
+  if (container && container->IsPinned(SidePanelEntry::Id::kSearchCompanion)) {
     bool enabled = companion::IsCompanionAvailableForCurrentActiveTab(browser_);
     container->GetPinnedButtonForId(SidePanelEntry::Id::kSearchCompanion)
         .SetEnabled(enabled);
