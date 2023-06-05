@@ -179,12 +179,20 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 
 #pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  if (newWebState == webStateList->GetActiveWebState())
-    self.webState = newWebState;
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* insertedWebState = replaceChange.inserted_web_state();
+      if (insertedWebState == webStateList->GetActiveWebState()) {
+        self.webState = insertedWebState;
+      }
+      break;
+    }
+  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList

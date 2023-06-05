@@ -125,6 +125,36 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 #pragma mark - WebStateListObserving
 
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  DCHECK_EQ(_webStateList, webStateList);
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      if (webStateList->IsBatchInProgress()) {
+        return;
+      }
+
+      if (!webStateList->IsWebStatePinnedAt(selection.index)) {
+        return;
+      }
+
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* replacedWebState = replaceChange.replaced_web_state();
+      web::WebState* insertedWebState = replaceChange.inserted_web_state();
+      TabSwitcherItem* newItem = [[PinnedWebStateTabSwitcherItem alloc]
+          initWithWebState:insertedWebState];
+      [self.consumer replaceItemID:replacedWebState->GetStableIdentifier()
+                          withItem:newItem];
+
+      _scopedWebStateObservation->RemoveObservation(replacedWebState);
+      _scopedWebStateObservation->AddObservation(insertedWebState);
+      break;
+    }
+  }
+}
+
 - (void)webStateList:(WebStateList*)webStateList
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
@@ -174,29 +204,6 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
   [self.consumer moveItemWithID:webState->GetStableIdentifier()
                         toIndex:toIndex];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (!webStateList->IsWebStatePinnedAt(index)) {
-    return;
-  }
-
-  TabSwitcherItem* newItem =
-      [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:newWebState];
-  [self.consumer replaceItemID:oldWebState->GetStableIdentifier()
-                      withItem:newItem];
-
-  _scopedWebStateObservation->RemoveObservation(oldWebState);
-  _scopedWebStateObservation->AddObservation(newWebState);
 }
 
 - (void)webStateList:(WebStateList*)webStateList

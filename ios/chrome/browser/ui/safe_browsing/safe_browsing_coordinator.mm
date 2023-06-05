@@ -65,19 +65,25 @@
 
 #pragma mark - WebStateListObserving
 
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      SafeBrowsingTabHelper::FromWebState(replaceChange.inserted_web_state())
+          ->SetDelegate(self);
+      break;
+    }
+  }
+}
+
 - (void)webStateList:(WebStateList*)webStateList
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
   SafeBrowsingTabHelper::FromWebState(webState)->SetDelegate(self);
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  DCHECK(newWebState);
-  SafeBrowsingTabHelper::FromWebState(newWebState)->SetDelegate(self);
 }
 
 - (void)webStateList:(WebStateList*)webStateList

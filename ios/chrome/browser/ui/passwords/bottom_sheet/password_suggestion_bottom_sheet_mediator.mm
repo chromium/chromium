@@ -297,14 +297,18 @@ using ReauthenticationEvent::kSuccess;
 
 #pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
   DCHECK_EQ(_webStateList, webStateList);
-  if (atIndex == webStateList->active_index()) {
-    [self disableRefocus];
-    [self.consumer dismiss];
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      if (selection.index == webStateList->active_index()) {
+        [self disableRefocus];
+        [self.consumer dismiss];
+      }
+      break;
+    }
   }
 }
 

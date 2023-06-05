@@ -390,13 +390,20 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 #pragma mark - WebStateListObserver
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  DCHECK_EQ(self.webStateList, webStateList);
-  if (atIndex == webStateList->active_index())
-    self.webState = newWebState;
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      DCHECK_EQ(self.webStateList, webStateList);
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      if (selection.index == webStateList->active_index()) {
+        self.webState = replaceChange.inserted_web_state();
+      }
+      break;
+    }
+  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList

@@ -15,6 +15,11 @@
 
 @optional
 
+// Invoked after the WebStateList is updated.
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection;
+
 // Invoked after a new WebState has been added to the WebStateList at the
 // specified index. `activating` will be YES if the WebState will become
 // the new active WebState after the insertion.
@@ -28,13 +33,6 @@
      didMoveWebState:(web::WebState*)webState
            fromIndex:(int)fromIndex
              toIndex:(int)toIndex;
-
-// Invoked after the WebState at the specified index is replaced by another
-// WebState.
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex;
 
 // Invoked before the specified WebState is detached from the WebStateList.
 // The WebState is still valid and still in the WebStateList.

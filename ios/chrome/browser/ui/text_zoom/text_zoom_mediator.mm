@@ -85,14 +85,19 @@
 
 #pragma mark - WebStateListObserver
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
   DCHECK_EQ(_webStateList, webStateList);
-  if (atIndex == webStateList->active_index()) {
-    [self setActiveWebState:newWebState];
-    [_commandHandler closeTextZoom];
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace:
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      if (selection.index == webStateList->active_index()) {
+        [self setActiveWebState:replaceChange.inserted_web_state()];
+        [_commandHandler closeTextZoom];
+      }
+      break;
   }
 }
 

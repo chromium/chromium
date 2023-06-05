@@ -124,6 +124,33 @@
 
 #pragma mark - WebStateListObserving methods
 
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      NewTabPageTabHelper* NTPTabHelper =
+          NewTabPageTabHelper::FromWebState(replaceChange.replaced_web_state());
+      if (NTPTabHelper->IsActive()) {
+        [self stopNTPIfNeeded];
+      }
+
+      web::WebState* currentWebState = _webStateList->GetActiveWebState();
+      web::WebState* newWebState = replaceChange.inserted_web_state();
+      // Add `newTab`'s view to the hierarchy if it's the current Tab.
+      if (currentWebState == newWebState) {
+        // Set this before triggering any of the possible page loads in
+        // displayTabViewIfActive.
+        newWebState->SetKeepRenderProcessAlive(true);
+        [self.consumer displayTabViewIfActive];
+      }
+      break;
+    }
+  }
+}
+
 - (void)webStateList:(WebStateList*)webStateList
     willDetachWebState:(web::WebState*)webState
                atIndex:(int)atIndex {
@@ -200,27 +227,6 @@
     }
 
     [self.consumer webStateSelected];
-  }
-}
-
-// Observer method, WebState replaced in `webStateList`.
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(oldWebState);
-  if (NTPTabHelper->IsActive()) {
-    [self stopNTPIfNeeded];
-  }
-
-  web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  // Add `newTab`'s view to the hierarchy if it's the current Tab.
-  if (currentWebState == newWebState) {
-    // Set this before triggering any of the possible page loads in
-    // displayTabViewIfActive.
-    newWebState->SetKeepRenderProcessAlive(true);
-    [self.consumer displayTabViewIfActive];
   }
 }
 

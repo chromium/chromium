@@ -73,12 +73,15 @@
 
 #pragma mark - WebStateListObserver
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
   DCHECK_EQ(self.webStateList, webStateList);
-  [self updateConsumer];
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace:
+      [self updateConsumer];
+      break;
+  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList

@@ -160,17 +160,24 @@ const NSString* kDocumentMimeType = @"application/pdf";
 
 #pragma mark - WebStateListObserving protocol
 
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      [self removeTabId:replaceChange.replaced_web_state()
+                            ->GetStableIdentifier()];
+      break;
+    }
+  }
+}
+
 - (void)webStateList:(WebStateList*)webStateList
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
   [self removeTabId:webState->GetStableIdentifier()];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  [self removeTabId:oldWebState->GetStableIdentifier()];
 }
 
 #pragma mark - CRWWebStateObserver protocol

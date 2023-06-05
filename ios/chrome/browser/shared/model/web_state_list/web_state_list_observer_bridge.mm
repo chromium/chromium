@@ -18,26 +18,14 @@ void WebStateListObserverBridge::WebStateListChanged(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replace_change =
-          change.As<WebStateListChangeReplace>();
-      const SEL selector = @selector(webStateList:
-                               didReplaceWebState:withWebState:atIndex:);
-      if (![observer_ respondsToSelector:selector]) {
-        return;
-      }
-
-      // TODO(crbug.com/1442546): Introduce -webStateList:didWebStateListChanged
-      // to WebStateListObserverBridge and replace
-      // -webStateList:didReplaceWebState with it.
-      [observer_ webStateList:web_state_list
-           didReplaceWebState:replace_change.replaced_web_state()
-                 withWebState:replace_change.inserted_web_state()
-                      atIndex:selection.index];
-      break;
-    }
+  const SEL selector = @selector(didChangeWebStateList:change:selection:);
+  if (![observer_ respondsToSelector:selector]) {
+    return;
   }
+
+  [observer_ didChangeWebStateList:web_state_list
+                            change:change
+                         selection:selection];
 }
 
 void WebStateListObserverBridge::WebStateInsertedAt(

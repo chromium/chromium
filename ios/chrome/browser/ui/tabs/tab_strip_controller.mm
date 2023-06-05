@@ -1166,6 +1166,21 @@ const CGFloat kSymbolSize = 18;
 
 #pragma mark - WebStateListObserving methods
 
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* insertedWebState = replaceChange.inserted_web_state();
+      TabView* view = [self tabViewForWebState:insertedWebState];
+      [self updateTabView:view withWebState:insertedWebState];
+      break;
+    }
+  }
+}
+
 // Observer method, active WebState changed.
 - (void)webStateList:(WebStateList*)webStateList
     didChangeActiveWebState:(web::WebState*)newWebState
@@ -1259,15 +1274,6 @@ const CGFloat kSymbolSize = 18;
   [self updateContentSizeAndRepositionViews];
   [self setNeedsLayoutWithAnimation];
   [self updateContentOffsetForWebStateIndex:index isNewWebState:YES];
-}
-
-// Observer method, WebState replaced in `webStateList`.
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  TabView* view = [self tabViewForWebState:newWebState];
-  [self updateTabView:view withWebState:newWebState];
 }
 
 #pragma mark - WebStateFaviconDriverObserver
