@@ -137,6 +137,7 @@
     "android-webview-pie-x86-wpt-fyi-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
     "android_archive_rel_ng": "Ubuntu-22.04",
+    "android_arm64_dbg_recipe": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
     "android_cronet": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel": "Ubuntu-22.04",
