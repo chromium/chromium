@@ -79,34 +79,14 @@ inline void CopyLCharsFromUCharSource(LChar* destination,
     DCHECK(!(source[i] & 0xff00));
     destination[i] = static_cast<LChar>(source[i]);
   }
-#elif defined(COMPILER_GCC) && defined(CPU_ARM_NEON) && \
-    !defined(ARCH_CPU_BIG_ENDIAN) && defined(NDEBUG)
-  const LChar* const end = destination + length;
-  const uintptr_t kMemoryAccessSize = 8;
-
-  if (length >= (2 * kMemoryAccessSize) - 1) {
-    // Prefix: align dst on 64 bits.
-    const uintptr_t kMemoryAccessMask = kMemoryAccessSize - 1;
-    while (reinterpret_cast<uintptr_t>(destination) & kMemoryAccessMask)
-      *destination++ = static_cast<LChar>(*source++);
-
-    // Vector interleaved unpack, we only store the lower 8 bits.
-    const uintptr_t length_left = end - destination;
-    const LChar* const simd_end = end - (length_left % kMemoryAccessSize);
-    do {
-      asm("vld2.8   { d0-d1 }, [%[SOURCE]] !\n\t"
-          "vst1.8   { d0 }, [%[DESTINATION],:64] !\n\t"
-          : [SOURCE] "+r"(source), [DESTINATION] "+r"(destination)
-          :
-          : "memory", "d0", "d1");
-    } while (destination != simd_end);
-  }
-
-  while (destination != end)
-    *destination++ = static_cast<LChar>(*source++);
 #else
+  // In practice, the compiler does vectorize this loop at "-O2".
   for (size_t i = 0; i < length; ++i) {
+    // Moving the DCHECK() path out of the way in case it disables
+    // auto-vectorization.
+#if DCHECK_IS_ON()
     DCHECK(!(source[i] & 0xff00));
+#endif
     destination[i] = static_cast<LChar>(source[i]);
   }
 #endif
