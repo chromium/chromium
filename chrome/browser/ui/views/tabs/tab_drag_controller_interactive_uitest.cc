@@ -46,6 +46,9 @@
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -58,6 +61,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -94,7 +98,6 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
-#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/cursor_shape_client.h"
@@ -2740,6 +2743,180 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(browser2_groups[0], group);
 }
 
+// Detachable tabs are not supported for PWAs on Mac so these tests don't apply.
+#if !BUILDFLAG(IS_MAC)
+class DetachToBrowserTabDragControllerTestWithTabbedWebApp
+    : public DetachToBrowserTabDragControllerTest {
+ public:
+  DetachToBrowserTabDragControllerTestWithTabbedWebApp() {
+    scoped_feature_list_.InitWithFeatures({features::kDesktopPWAsTabStrip}, {});
+  }
+
+  web_app::AppId InstallMockApp(bool add_home_tab) {
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url = GURL("https://www.example.com");
+    web_app_info->title = u"A tabbed web app";
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+    web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+    if (add_home_tab) {
+      blink::Manifest::TabStrip manifest_tab_strip;
+      manifest_tab_strip.home_tab = blink::Manifest::HomeTabParams();
+      web_app_info->tab_strip = std::move(manifest_tab_strip);
+    }
+
+    return web_app::test::InstallWebApp(browser()->profile(),
+                                        std::move(web_app_info));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tabbed web apps with the home tab cannot have detachable tabs.
+// TODO(crbug.com/1381358): Enable this test for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HomeTabAddedToEveryWindow DISABLED_HomeTabAddedToEveryWindow
+#else
+#define MAYBE_HomeTabAddedToEveryWindow HomeTabAddedToEveryWindow
+#endif
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
+                       MAYBE_HomeTabAddedToEveryWindow) {
+  // Install tabbed web app.
+  web_app::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  ASSERT_EQ(2u, browser_list->size());
+
+  // Close normal browser since other code expects only 1 browser to start.
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(1u, browser_list->size());
+
+  SelectFirstBrowser();
+  ASSERT_EQ(app_browser, browser());
+
+  AddTabsAndResetBrowser(browser(), 1, GURL("https://www.example.com/newpage"));
+
+  TabStrip* tab_strip = GetTabStripForBrowser(app_browser);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Move to the second tab and drag it enough that it detaches.
+  int tab_1_width = tab_strip->tab_at(1)->width();
+  DragTabAndNotify(tab_strip,
+                   base::BindOnce(&DetachToBrowserTabDragControllerTest::
+                                      ReleaseInputAfterWindowDetached,
+                                  base::Unretained(this), tab_1_width),
+                   1);
+
+  EXPECT_EQ(2u, browser_list->size());
+
+  // Expect first window is left with just the home tab.
+  TabStripModel* source_tab_strip_model =
+      browser_list->get(0)->tab_strip_model();
+  EXPECT_EQ(source_tab_strip_model->count(), 1);
+  EXPECT_TRUE(source_tab_strip_model->IsTabPinned(0));
+  EXPECT_EQ(source_tab_strip_model->GetWebContentsAt(0)->GetVisibleURL(),
+            web_app::WebAppProvider::GetForTest(browser()->profile())
+                ->registrar_unsafe()
+                .GetAppStartUrl(app_id));
+
+  // Expect the newly created window has the dragged tab and a home tab.
+  TabStripModel* dest_tab_strip_model = browser_list->get(1)->tab_strip_model();
+  EXPECT_EQ(dest_tab_strip_model->count(), 2);
+  EXPECT_TRUE(dest_tab_strip_model->IsTabPinned(0));
+  EXPECT_EQ(dest_tab_strip_model->GetWebContentsAt(0)->GetVisibleURL(),
+            source_tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
+  EXPECT_EQ(dest_tab_strip_model->GetWebContentsAt(1)->GetVisibleURL(),
+            GURL("https://www.example.com/newpage"));
+  EXPECT_EQ(dest_tab_strip_model->active_index(), 1);
+}
+
+// Home tab can't be detached.
+// TODO(crbug.com/1381358): Enable this test for Linux and Lacros.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#define MAYBE_CantDragHomeTab DISABLED_CantDragHomeTab
+#else
+#define MAYBE_CantDragHomeTab CantDragHomeTab
+#endif
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
+                       MAYBE_CantDragHomeTab) {
+  // Install tabbed web app.
+  web_app::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  ASSERT_EQ(2u, browser_list->size());
+
+  // Close normal browser since other code expects only 1 browser to start.
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(1u, browser_list->size());
+
+  SelectFirstBrowser();
+  ASSERT_EQ(app_browser, browser());
+
+  AddTabsAndResetBrowser(browser(), 1, GURL("https://www.example.com/newpage"));
+
+  TabStrip* tab_strip = GetTabStripForBrowser(app_browser);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Try dragging the home tab enough that it would usually detach.
+  const gfx::Point tab_0_center =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(0));
+  ASSERT_TRUE(PressInput(tab_0_center));
+  ASSERT_TRUE(DragInputToNotifyWhenDone(
+      tab_0_center + gfx::Vector2d(0, GetDetachY(tab_strip)),
+      base::BindLambdaForTesting([&]() {
+        ASSERT_TRUE(TabDragController::IsActive());
+
+        ASSERT_TRUE(ReleaseInput());
+
+        // There should only be one browser window containing two tabs.
+        EXPECT_EQ(1u, browser_list->size());
+        EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+      })));
+}
+
+// Tabbed web apps without a home tab do not have home tab added.
+// TODO(crbug.com/1381358): Enable this test for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_NoHomeTab DISABLED_NoHomeTab
+#else
+#define MAYBE_NoHomeTab NoHomeTab
+#endif
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
+                       MAYBE_NoHomeTab) {
+  // Install tabbed web app.
+  web_app::AppId app_id = InstallMockApp(/*add_home_tab=*/false);
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  ASSERT_EQ(2u, browser_list->size());
+
+  // Close normal browser since other code expects only 1 browser to start.
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(1u, browser_list->size());
+
+  SelectFirstBrowser();
+  ASSERT_EQ(app_browser, browser());
+
+  AddTabsAndResetBrowser(browser(), 1, GURL("https://www.example.com/newpage"));
+
+  TabStrip* tab_strip = GetTabStripForBrowser(app_browser);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Move to the second tab and drag it enough that it detaches.
+  int tab_1_width = tab_strip->tab_at(1)->width();
+  DragTabAndNotify(tab_strip,
+                   base::BindOnce(&DetachToBrowserTabDragControllerTest::
+                                      ReleaseInputAfterWindowDetached,
+                                  base::Unretained(this), tab_1_width),
+                   1);
+
+  // Expect 2 app windows with 1 tab each.
+  ASSERT_EQ(2u, browser_list->size());
+  EXPECT_EQ(browser_list->get(0)->tab_strip_model()->count(), 1);
+  EXPECT_EQ(browser_list->get(1)->tab_strip_model()->count(), 1);
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 class DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled
     : public DetachToBrowserTabDragControllerTest {
  public:
@@ -4469,4 +4646,16 @@ INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
     ::testing::Combine(::testing::Bool(), ::testing::Values("mouse", "touch")));
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+INSTANTIATE_TEST_SUITE_P(
+    TabDragging,
+    DetachToBrowserTabDragControllerTestWithTabbedWebApp,
+    ::testing::Combine(::testing::Bool(), ::testing::Values("mouse", "touch")));
+#elif !BUILDFLAG(IS_MAC)
+INSTANTIATE_TEST_SUITE_P(TabDragging,
+                         DetachToBrowserTabDragControllerTestWithTabbedWebApp,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Values("mouse")));
 #endif

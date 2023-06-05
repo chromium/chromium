@@ -48,6 +48,9 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -381,6 +384,22 @@ void TabDragController::Init(TabDragContext* source_context,
       remote_cocoa::IsWindowRemote(
           source_context_->GetWidget()->GetNativeWindow())) {
     detach_behavior_ = NOT_DETACHABLE;
+  }
+#else
+  // If the dragged tabstrip exists in a PWA, and any of the dragged views
+  // are the Pinned Home tab, then the tabs should not be detachable from
+  // the window.
+  Browser* source_browser = BrowserView::GetBrowserViewForNativeWindow(
+                                source_context->GetWidget()->GetNativeWindow())
+                                ->browser();
+  if (source_browser->app_controller() &&
+      source_browser->app_controller()->has_tab_strip() &&
+      web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
+    for (auto* dragging_view : dragging_views) {
+      if (source_context->GetIndexOf(dragging_view) == 0) {
+        detach_behavior_ = NOT_DETACHABLE;
+      }
+    }
   }
 #endif
 
@@ -1998,6 +2017,22 @@ void TabDragController::CompleteDrag() {
     }
     attached_context_->StoppedDragging(
         GetViewsMatchingDraggedContents(attached_context_));
+
+    // Tabbed PWAs with a home tab should have a home tab in every window.
+    // This means when dragging tabs out to create a new window, a home tab
+    // needs to be added.
+    if (is_dragging_new_browser_) {
+      Browser* new_browser =
+          BrowserView::GetBrowserViewForNativeWindow(
+              attached_context_->GetWidget()->GetNativeWindow())
+              ->browser();
+
+      if (new_browser->app_controller() &&
+          new_browser->app_controller()->has_tab_strip()) {
+        web_app::MaybeAddPinnedHomeTab(new_browser,
+                                       new_browser->app_controller()->app_id());
+      }
+    }
   } else {
     // Compel the model to construct a new window for the detached
     // WebContentses.
