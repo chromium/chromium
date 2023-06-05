@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol ContentProviding;
+@class LayoutGuideCenter;
 @class OmniboxPopupPresenter;
 
 @protocol OmniboxPopupPresenterDelegate
@@ -43,12 +44,13 @@
 /// Tells the presenter to update, following a trait collection change.
 - (void)updatePopupAfterTraitCollectionChange;
 
-- (instancetype)initWithPopupPresenterDelegate:
-                    (id<OmniboxPopupPresenterDelegate>)presenterDelegate
-                           popupViewController:
-                               (UIViewController<ContentProviding>*)
-                                   viewController
-                                     incognito:(BOOL)incognito;
+- (instancetype)
+    initWithPopupPresenterDelegate:
+        (id<OmniboxPopupPresenterDelegate>)presenterDelegate
+               popupViewController:
+                   (UIViewController<ContentProviding>*)viewController
+                 layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+                         incognito:(BOOL)incognito;
 
 @end
 

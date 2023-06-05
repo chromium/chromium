@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
@@ -130,9 +130,16 @@ BOOL ShouldDismissKeyboardOnScroll() {
 /// content inset.
 @property(nonatomic, assign) CGFloat cachedContentHeight;
 
+/// Layout guide that tracks the position of the omnibox.
+/// This is useful to add constraints to, or to derive manual layout values off
+/// of.
+@property(nonatomic, readonly) UILayoutGuide* omniboxGuide;
+
 @end
 
 @implementation OmniboxPopupViewController
+
+@synthesize omniboxGuide = _omniboxGuide;
 
 - (instancetype)init {
   if (self = [super initWithNibName:nil bundle:nil]) {
@@ -316,15 +323,11 @@ BOOL ShouldDismissKeyboardOnScroll() {
 }
 
 - (void)adjustMarginsToMatchOmniboxWidth {
-  NamedGuide* layoutGuide = [NamedGuide guideWithName:kOmniboxGuide
-                                                 view:self.view];
-  if (!layoutGuide) {
+  if (!self.omniboxGuide) {
     return;
   }
 
-  CGRect omniboxFrame = [layoutGuide.constrainedView
-      convertRect:layoutGuide.constrainedView.bounds
-           toView:self.view];
+  CGRect omniboxFrame = self.omniboxGuide.layoutFrame;
   CGFloat leftMargin =
       IsRegularXRegularSizeClass(self) ? omniboxFrame.origin.x : 0;
   CGFloat rightMargin = IsRegularXRegularSizeClass(self)
@@ -767,13 +770,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
   // Inset the header to match the omnibox width, similar to
   // `adjustMarginsToMatchOmniboxWidth` method.
   if (IsRegularXRegularSizeClass(self)) {
-    NamedGuide* layoutGuide = [NamedGuide guideWithName:kOmniboxGuide
-                                                   view:self.view];
-    if (layoutGuide) {
-      CGRect omniboxFrame = [layoutGuide.constrainedView
-          convertRect:layoutGuide.constrainedView.bounds
-               toView:self.view];
-      CGFloat leftMargin = omniboxFrame.origin.x;
+    if (self.omniboxGuide) {
+      CGFloat leftMargin = CGRectGetMinX(self.omniboxGuide.layoutFrame);
 
       contentConfiguration.directionalLayoutMargins =
           NSDirectionalEdgeInsetsMake(kHeaderTopPadding,
@@ -1097,6 +1095,14 @@ BOOL ShouldDismissKeyboardOnScroll() {
   [self presentViewController:self.debugInfoViewController
                      animated:YES
                    completion:nil];
+}
+
+- (UILayoutGuide*)omniboxGuide {
+  if (!_omniboxGuide) {
+    _omniboxGuide = [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxGuide];
+    [self.view addLayoutGuide:_omniboxGuide];
+  }
+  return _omniboxGuide;
 }
 
 @end

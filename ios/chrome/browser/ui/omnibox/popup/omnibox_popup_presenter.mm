@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
@@ -39,6 +40,9 @@ const CGFloat kPopupBottomPaddingTablet = 80;
 /// Separator for the bottom edge of the popup on iPad.
 @property(nonatomic, strong) UIView* bottomSeparator;
 
+// The layout guide center to use to refer to the omnibox.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
 @end
 
 @implementation OmniboxPopupPresenter
@@ -47,11 +51,13 @@ const CGFloat kPopupBottomPaddingTablet = 80;
     initWithPopupPresenterDelegate:(id<OmniboxPopupPresenterDelegate>)delegate
                popupViewController:
                    (UIViewController<ContentProviding>*)viewController
+                 layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                          incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
     _delegate = delegate;
     _viewController = viewController;
+    _layoutGuideCenter = layoutGuideCenter;
 
     // Popup uses same colors as the toolbar, so the ToolbarConfiguration is
     // used to get the style.
@@ -199,13 +205,14 @@ const CGFloat kPopupBottomPaddingTablet = 80;
       constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
                                   constant:kPopupBottomPaddingTablet];
 
-  // Position the top anchor of the popup relatively to the layout guide
-  // positioned on the omnibox.
-  UILayoutGuide* omniboxGuide = [NamedGuide guideWithName:kOmniboxGuide
-                                                     view:popup];
+  // Install in the superview the guide tracking the omnibox.
+  UILayoutGuide* omniboxGuide =
+      [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxGuide];
+  [[popup superview] addLayoutGuide:omniboxGuide];
+  // Position the top anchor of the popup relatively to that layout guide.
   NSLayoutConstraint* topConstraint =
-      [popup.topAnchor constraintEqualToAnchor:omniboxGuide.bottomAnchor];
-  topConstraint.constant = kVerticalOffset;
+      [popup.topAnchor constraintEqualToAnchor:omniboxGuide.bottomAnchor
+                                      constant:kVerticalOffset];
 
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
       [NSMutableArray arrayWithObject:topConstraint];

@@ -166,12 +166,16 @@
   // set to topLayoutGuide after the view creation on iOS 10.
   [self.view setUp];
 
+  [self.layoutGuideCenter referenceView:self.view.locationBarContainer
+                              underName:kOmniboxGuide];
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
+  // TODO(crbug.com/1450530): Remove once all usage of kOmniboxGuide has moved
+  // to LayoutGuideCenter.
   UIView* omniboxView = self.view.locationBarContainer;
   [NamedGuide guideWithName:kOmniboxGuide view:omniboxView].constrainedView =
       omniboxView;
