@@ -5,7 +5,7 @@
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {WaffleBrowserProxy} from './browser_proxy.js';
@@ -19,8 +19,12 @@ export class WaffleAppElement extends PolymerElement {
     return getTemplate();
   }
 
-  private onCloseClick_() {
-    WaffleBrowserProxy.getInstance().handler.closeClicked();
+  override connectedCallback() {
+    super.connectedCallback();
+
+    afterNextRender(this, () => {
+      WaffleBrowserProxy.getInstance().handler.displayDialog();
+    });
   }
 }
 

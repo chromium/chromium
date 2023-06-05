@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/waffle/waffle_ui.h"
 
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/waffle/waffle_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -12,20 +13,18 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/waffle_resources.h"
 #include "chrome/grit/waffle_resources_map.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 WaffleUI::WaffleUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
-  DCHECK(base::FeatureList::IsEnabled(kWaffle));
+  CHECK(base::FeatureList::IsEnabled(kWaffle));
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIWaffleHost);
 
   source->AddLocalizedString("title", IDS_WAFFLE_PAGE_TITLE);
-  source->AddLocalizedString("closeButtonTitle", IDS_CLOSE);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kWaffleResources, kWaffleResourcesSize),
@@ -42,7 +41,13 @@ void WaffleUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void WaffleUI::Initialize(base::OnceClosure display_dialog_callback) {
+  CHECK(display_dialog_callback);
+  display_dialog_callback_ = std::move(display_dialog_callback);
+}
+
 void WaffleUI::CreatePageHandler(
     mojo::PendingReceiver<waffle::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<WaffleHandler>(std::move(receiver));
+  page_handler_ = std::make_unique<WaffleHandler>(
+      std::move(receiver), std::move(display_dialog_callback_));
 }

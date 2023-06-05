@@ -825,6 +825,10 @@ static_library("ui") {
   if (enable_waffle_desktop) {
     deps += [ "//chrome/browser/ui/webui/waffle:mojo_bindings" ]
     sources += [
+      "views/waffle/waffle_dialog_view.cc",
+      "views/waffle/waffle_dialog_view.h",
+      "waffle/waffle_tab_helper.cc",
+      "waffle/waffle_tab_helper.h",
       "webui/waffle/waffle_handler.cc",
       "webui/waffle/waffle_handler.h",
       "webui/waffle/waffle_ui.cc",

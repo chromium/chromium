@@ -73,6 +73,7 @@
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
@@ -97,6 +98,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/browser/ui/waffle/waffle_tab_helper.h"
 #include "chrome/browser/user_notes/user_notes_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -498,6 +500,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ManagePasswordsUIController::CreateForWebContents(web_contents);
   if (PrivacySandboxPromptHelper::ProfileRequiresPrompt(profile))
     PrivacySandboxPromptHelper::CreateForWebContents(web_contents);
+
+#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
+  if (base::FeatureList::IsEnabled(kWaffle)) {
+    WaffleTabHelper::CreateForWebContents(web_contents);
+  }
+#endif
+
   SadTabHelper::CreateForWebContents(web_contents);
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);

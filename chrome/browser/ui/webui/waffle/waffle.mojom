@@ -13,6 +13,7 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Closes the Waffle dialog. Triggered by the closeClicked() call in TS.
-  CloseClicked();
+  // Displays the Waffle dialog. Triggered by the displayDialog() call in
+  // chrome/browser/resources/waffle/app.ts
+  DisplayDialog();
 };

@@ -661,6 +661,7 @@ const char kChromeUICastFeedbackHost[] = "cast-feedback";
 
 #if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
 const char kChromeUIWaffleHost[] = "waffle";
+const char kChromeUIWaffleURL[] = "chrome://waffle";
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
