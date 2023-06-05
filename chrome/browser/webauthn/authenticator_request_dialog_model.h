@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
+#include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -329,6 +331,13 @@ class AuthenticatorRequestDialogModel {
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
 
+  // Called when some caBLE event (e.g. receiving a BLE message, connecting to
+  // the tunnel server, etc) happens.
+  void OnCableEvent(device::cablev2::Event event);
+
+  // Called when `cable_connecting_sheet_timer_` completes.
+  void OnCableConnectingTimerComplete();
+
   // StartPhonePairing triggers the display of a QR code for pairing a new
   // phone.
   void StartPhonePairing();
@@ -454,6 +463,10 @@ class AuthenticatorRequestDialogModel {
   // To be called when the user clicks "Cancel" in the native Windows UI.
   // Returns true if the event was handled.
   bool OnWinUserCancelled();
+
+  // To be called when a hybrid connection fails. Returns true if the event
+  // was handled.
+  bool OnHybridTransportError();
 
   // To be called when the Bluetooth adapter powered state changes.
   void OnBluetoothPoweredStateChanged(bool powered);
@@ -793,6 +806,21 @@ class AuthenticatorRequestDialogModel {
   // contact_phone_callback can be run with a |PairedPhone::contact_id| in order
   // to contact the indicated phone.
   base::RepeatingCallback<void(size_t)> contact_phone_callback_;
+
+  // cable_device_ready_ is true if a CTAP-level request has been sent to a
+  // caBLE device. At this point we assume that any transport errors are
+  // cancellations on the device, not networking errors.
+  bool cable_device_ready_ = false;
+
+  // cable_connecting_sheet_timer_ is started when we start displaying
+  // the "connecting..." sheet for a caBLE connection. To avoid flashing the UI,
+  // the sheet won't be automatically replaced until it completes.
+  base::OneShotTimer cable_connecting_sheet_timer_;
+
+  // cable_connecting_ready_to_advance_ is set to true if we are ready to
+  // advance the "connecting" sheet but are waiting for
+  // `cable_connecting_sheet_timer_` to complete.
+  bool cable_connecting_ready_to_advance_ = false;
 
   absl::optional<std::string> cable_qr_string_;
 

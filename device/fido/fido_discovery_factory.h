@@ -84,6 +84,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   virtual void set_cable_invalidated_pairing_callback(
       base::RepeatingCallback<void(size_t)>);
 
+  // set_cable_event_callback installs a callback which will be called with
+  // when a variety of events occur. See the definition of `cablev2::Event`.
+  virtual void set_cable_event_callback(
+      base::RepeatingCallback<void(cablev2::Event)> callback);
+
   // get_cable_contact_callback returns a callback that can be called with
   // indexes into the vector of pairings passed to |set_cable_data| in order
   // to contact the indexed device. Only a single callback is supported.
@@ -161,6 +166,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       cable_pairing_callback_;
   absl::optional<base::RepeatingCallback<void(size_t)>>
       cable_invalidated_pairing_callback_;
+  absl::optional<base::RepeatingCallback<void(cablev2::Event)>>
+      cable_event_callback_;
 #if BUILDFLAG(IS_WIN)
   raw_ptr<WinWebAuthnApi> win_webauthn_api_ = nullptr;
 #endif  // BUILDFLAG(IS_WIN)

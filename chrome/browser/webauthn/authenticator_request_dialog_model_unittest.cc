@@ -172,7 +172,9 @@ class AuthenticatorRequestDialogModelTest
  public:
   using Step = AuthenticatorRequestDialogModel::Step;
 
-  AuthenticatorRequestDialogModelTest() = default;
+  AuthenticatorRequestDialogModelTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   AuthenticatorRequestDialogModelTest(
       const AuthenticatorRequestDialogModelTest&) = delete;
@@ -1243,3 +1245,54 @@ TEST_F(AuthenticatorRequestDialogModelTest, BluetoothPermissionPrompt) {
   }
 }
 #endif
+
+TEST_F(AuthenticatorRequestDialogModelTest, AdvanceThroughCableV2States) {
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
+  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt, {},
+                                 base::DoNothing(), absl::nullopt);
+  TransportAvailabilityInfo transports_info;
+  transports_info.is_ble_powered = true;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = {AuthenticatorTransport::kHybrid};
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false);
+
+  model.OnCableEvent(device::cablev2::Event::kPhoneConnected);
+  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+  model.OnCableEvent(device::cablev2::Event::kBLEAdvertReceived);
+  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+  model.OnCableEvent(device::cablev2::Event::kReady);
+  // kCableV2Connecting won't flash by too quickly, so it'll still be showing.
+  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(model.current_step(), Step::kCableV2Connected);
+}
+
+TEST_F(AuthenticatorRequestDialogModelTest,
+       AdvanceThroughCableV2StatesStopTimer) {
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
+  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt, {},
+                                 base::DoNothing(), absl::nullopt);
+  TransportAvailabilityInfo transports_info;
+  transports_info.is_ble_powered = true;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = {AuthenticatorTransport::kHybrid};
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false);
+
+  model.OnCableEvent(device::cablev2::Event::kPhoneConnected);
+  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+  model.OnCableEvent(device::cablev2::Event::kBLEAdvertReceived);
+  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+  model.OnCableEvent(device::cablev2::Event::kReady);
+  // kCableV2Connecting won't flash by too quickly, so it'll still be showing.
+  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+
+  // Moving to a different step should stop the timer so that kCableV2Connected
+  // never shows.
+  model.SetCurrentStepForTesting(Step::kCableActivate);
+
+  task_environment()->FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(model.current_step(), Step::kCableActivate);
+}

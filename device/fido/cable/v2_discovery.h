@@ -53,7 +53,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       // invalidated_pairing_callback will be called when a pairing is reported
       // to be invalid by the tunnel server.
       absl::optional<base::RepeatingCallback<void(size_t)>>
-          invalidated_pairing_callback);
+          invalidated_pairing_callback,
+      // event_callback receives updates on cablev2 events.
+      absl::optional<base::RepeatingCallback<void(Event)>> event_callback);
   ~Discovery() override;
   Discovery(const Discovery&) = delete;
   Discovery& operator=(const Discovery&) = delete;
@@ -89,9 +91,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       pairing_callback_;
   const absl::optional<base::RepeatingCallback<void(size_t)>>
       invalidated_pairing_callback_;
+  const absl::optional<base::RepeatingCallback<void(Event)>> event_callback_;
   std::vector<std::unique_ptr<FidoTunnelDevice>> tunnels_pending_advert_;
   base::flat_set<std::array<uint8_t, kAdvertSize>> observed_adverts_;
   bool started_ = false;
+  bool device_committed_ = false;
   std::vector<std::array<uint8_t, kAdvertSize>> pending_adverts_;
   base::WeakPtrFactory<Discovery> weak_factory_{this};
 };

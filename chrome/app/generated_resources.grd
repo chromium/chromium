@@ -13969,6 +13969,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_DEVICE_NAME_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key.">
         A notification was sent to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 6 Pro</ex></ph>
       </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_CONNECTING_TITLE" desc="The title of a dialog that is shown when the computer is connecting to a phone or tablet.">
+        Connecting to your device
+      </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_CONNECTED_DESCRIPTION" desc="The second line of a dialog that shows once the computer has successfully connected to the user's phone or tablet. That phone/tablet will be showing instructions for what to do next and the user should follow those instuctions.">
+        Follow the steps on your device
+      </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_ERROR_DESCRIPTION" desc="The second line of a dialog that shows once the computer fails to connect to the user's phone or tablet.">
+        On both devices, check your internet connection and turn on Bluetooth. Then, try again.
+      </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_ERROR_CLOSE" desc="The text of a button on a dialog. The button is the user's only option at this point since the process has failed. The dialog contains instructions about how to try again and the button simply closes the dialog.">
+        Close
+      </message>
 
       <message name="IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE" desc="This message is shown as a link below IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION. The 'it' referenced here is the notification mentioned in that message.">
         Didn't get it?

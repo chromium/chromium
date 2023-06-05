@@ -580,6 +580,7 @@ class AuthenticatorCableErrorSheetModel : public AuthenticatorSheetModelBase {
   bool IsOtherMechanismButtonVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+  std::u16string GetCancelButtonLabel() const override;
 };
 
 class AuthenticatorCreatePasskeySheetModel

@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
@@ -19,6 +20,7 @@
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/device_public_key_extension.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -848,6 +850,14 @@ void MakeCredentialRequestHandler::HandleResponse(
       std::move(completion_callback_)
           .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
                absl::nullopt, authenticator);
+    } else if (authenticator->GetType() == AuthenticatorType::kPhone &&
+               base::FeatureList::IsEnabled(kWebAuthnNewHybridUI)) {
+      FIDO_LOG(ERROR) << "Status " << static_cast<int>(status) << " from "
+                      << authenticator->GetDisplayName()
+                      << " is fatal to the request";
+      std::move(completion_callback_)
+          .Run(MakeCredentialStatus::kHybridTransportError, absl::nullopt,
+               authenticator);
     } else {
       FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
                       << " from " << authenticator->GetDisplayName();

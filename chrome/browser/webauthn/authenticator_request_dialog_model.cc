@@ -280,6 +280,37 @@ void AuthenticatorRequestDialogModel::OnPhoneContactFailed(
   ContactNextPhoneByName(name);
 }
 
+void AuthenticatorRequestDialogModel::OnCableEvent(
+    device::cablev2::Event event) {
+  switch (event) {
+    case device::cablev2::Event::kPhoneConnected:
+    case device::cablev2::Event::kBLEAdvertReceived:
+      if (current_step_ != Step::kCableV2Connecting) {
+        SetCurrentStep(Step::kCableV2Connecting);
+        cable_connecting_sheet_timer_.Start(
+            FROM_HERE, base::Milliseconds(1250),
+            base::BindOnce(&AuthenticatorRequestDialogModel::
+                               OnCableConnectingTimerComplete,
+                           weak_factory_.GetWeakPtr()));
+      }
+      break;
+    case device::cablev2::Event::kReady:
+      if (cable_connecting_sheet_timer_.IsRunning()) {
+        cable_connecting_ready_to_advance_ = true;
+      } else {
+        SetCurrentStep(Step::kCableV2Connected);
+      }
+      break;
+  }
+}
+
+void AuthenticatorRequestDialogModel::OnCableConnectingTimerComplete() {
+  if (cable_connecting_ready_to_advance_ &&
+      current_step_ == Step::kCableV2Connecting) {
+    SetCurrentStep(Step::kCableV2Connected);
+  }
+}
+
 void AuthenticatorRequestDialogModel::StartPhonePairing() {
   DCHECK(cable_qr_string_);
   SetCurrentStep(Step::kCableV2QRCode);
@@ -589,6 +620,11 @@ bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
   return false;
 }
 
+bool AuthenticatorRequestDialogModel::OnHybridTransportError() {
+  SetCurrentStep(Step::kCableV2Error);
+  return true;
+}
+
 void AuthenticatorRequestDialogModel::OnBluetoothPoweredStateChanged(
     bool powered) {
   transport_availability_.is_ble_powered = powered;
@@ -896,6 +932,11 @@ void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
   }
 
   current_step_ = step;
+
+  // Reset state related to automatically advancing the state.
+  cable_connecting_sheet_timer_.Stop();
+  cable_connecting_ready_to_advance_ = false;
+
   if (should_dialog_be_closed()) {
     // The dialog will close itself.
     showing_dialog_ = false;

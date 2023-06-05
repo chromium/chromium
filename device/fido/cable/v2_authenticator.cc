@@ -407,7 +407,8 @@ class TunnelTransport : public Transport {
   void OnTunnelReady(
       WebSocketAdapter::Result result,
       absl::optional<std::array<uint8_t, device::cablev2::kRoutingIdSize>>
-          routing_id) {
+          routing_id,
+      WebSocketAdapter::ConnectSignalSupport) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(state_ == State::kConnecting || state_ == State::kConnectingPaired);
     bool ok = (result == WebSocketAdapter::Result::OK);

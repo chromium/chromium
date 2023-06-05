@@ -66,6 +66,10 @@ BASE_DECLARE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychain);
 
+// Enable new hybrid UI
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

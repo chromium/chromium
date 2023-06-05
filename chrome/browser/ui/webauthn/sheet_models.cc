@@ -1308,11 +1308,11 @@ AuthenticatorConnectingSheetModel::~AuthenticatorConnectingSheetModel() =
     default;
 
 std::u16string AuthenticatorConnectingSheetModel::GetStepTitle() const {
-  return u"Connecting with your device (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_CONNECTING_TITLE);
 }
 
 std::u16string AuthenticatorConnectingSheetModel::GetStepDescription() const {
-  return u"This will just take a moment (UNTRANSLATED)";
+  return u"";
 }
 
 // AuthenticatorConnectedSheetModel ------------------------------------------
@@ -1331,11 +1331,11 @@ bool AuthenticatorConnectedSheetModel::IsActivityIndicatorVisible() const {
 }
 
 std::u16string AuthenticatorConnectedSheetModel::GetStepTitle() const {
-  return u"Check your device (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE);
 }
 
 std::u16string AuthenticatorConnectedSheetModel::GetStepDescription() const {
-  return u"Follow the steps described on your device (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_CONNECTED_DESCRIPTION);
 }
 
 // AuthenticatorCableErrorSheetModel ------------------------------------------
@@ -1359,7 +1359,11 @@ std::u16string AuthenticatorCableErrorSheetModel::GetStepTitle() const {
 }
 
 std::u16string AuthenticatorCableErrorSheetModel::GetStepDescription() const {
-  return u"Something went wrong (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ERROR_DESCRIPTION);
+}
+
+std::u16string AuthenticatorCableErrorSheetModel::GetCancelButtonLabel() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ERROR_CLOSE);
 }
 
 // AuthenticatorCreatePasskeySheetModel

@@ -235,6 +235,7 @@ class ChromeAuthenticatorRequestDelegate
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
   void OnInvalidatedCablePairing(size_t failed_contact_index);
+  void OnCableEvent(device::cablev2::Event event);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
@@ -264,6 +265,11 @@ class ChromeAuthenticatorRequestDelegate
 
   // See `SetPassEmptyUsbDeviceManagerForTesting`.
   bool pass_empty_usb_device_manager_ = false;
+
+  // cable_device_ready_ is true if a caBLE handshake has completed. At this
+  // point we assume that any errors were communicated on the caBLE device and
+  // don't show errors on the desktop too.
+  bool cable_device_ready_ = false;
 
  private:
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{

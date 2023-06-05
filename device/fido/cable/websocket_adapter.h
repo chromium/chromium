@@ -38,8 +38,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
     GONE,
   };
 
-  using TunnelReadyCallback = base::OnceCallback<
-      void(Result, absl::optional<std::array<uint8_t, kRoutingIdSize>>)>;
+  // ConnectSignalSupport indicates whether the connection will send a connect
+  // signal. This is a single zero byte, sent by the tunnel server when the peer
+  // connects. This only occurs for "contact" connections.
+  enum class ConnectSignalSupport {
+    NO,
+    YES,
+  };
+
+  using TunnelReadyCallback = base::OnceCallback<void(
+      Result,
+      absl::optional<std::array<uint8_t, kRoutingIdSize>>,
+      ConnectSignalSupport)>;
   using TunnelDataCallback =
       base::RepeatingCallback<void(absl::optional<base::span<const uint8_t>>)>;
   WebSocketAdapter(

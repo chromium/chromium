@@ -49,6 +49,7 @@ enum class GetAssertionStatus {
   // be clearer.
   kAuthenticatorMissingUserVerification,
   kWinNotAllowedError,
+  kHybridTransportError,
 };
 
 class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler

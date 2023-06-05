@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
       network::mojom::NetworkContext* network_context,
       absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
           pairing_callback,
+      absl::optional<base::RepeatingCallback<void(Event)>> event_callback,
       base::span<const uint8_t> secret,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
       const CableEidArray& decrypted_eid);
@@ -47,10 +48,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   // |Pairing| is reported by the tunnel server to be invalid (which can happen
   // if the user opts to unlink all devices) then |pairing_is_invalid| is
   // run.
-  FidoTunnelDevice(FidoRequestType request_type,
-                   network::mojom::NetworkContext* network_context,
-                   std::unique_ptr<Pairing> pairing,
-                   base::OnceClosure pairing_is_invalid);
+  FidoTunnelDevice(
+      FidoRequestType request_type,
+      network::mojom::NetworkContext* network_context,
+      std::unique_ptr<Pairing> pairing,
+      base::OnceClosure pairing_is_invalid,
+      absl::optional<base::RepeatingCallback<void(Event)>> event_callback);
 
   FidoTunnelDevice(const FidoTunnelDevice&) = delete;
   FidoTunnelDevice& operator=(const FidoTunnelDevice&) = delete;
@@ -105,12 +108,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     //   (Tunnel server connection completes)           |
     //      |                              (BLE advert is received _then_
     //      V                               tunnel connection completes.)
-    //  kWaitingForEID                                  |
+    //  kWaitingForEID / kWaitingForEIDOrConnectSignal  |
     //      |                                           |
     //   (BLE advert is received and handshake is sent) |
     //      |                                           |
     //      V                                           |
-    //   kHandshakeSent   <------------------------------
+    //   kHandshakeSent / <------------------------------
+    //   kWaitingForConnectSignal (if the tunnel server supports this)
     //      |
     //   (Handshake reply is received)
     //      |
@@ -123,7 +127,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     //  kReady
     kConnecting,
     kHandshakeSent,
+    kWaitingForConnectSignal,
     kWaitingForEID,
+    kWaitingForEIDOrConnectSignal,
     kWaitingForPostHandshakeMessage,
     kReady,
     kError,
@@ -211,15 +217,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
 
   void OnTunnelReady(
       WebSocketAdapter::Result result,
-      absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id);
+      absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id,
+      WebSocketAdapter::ConnectSignalSupport connect_signal_support);
   void OnTunnelData(absl::optional<base::span<const uint8_t>> data);
   void OnError();
   void DeviceTransactReady(std::vector<uint8_t> command,
                            DeviceCallback callback);
+  bool ProcessConnectSignal(base::span<const uint8_t> data);
 
   State state_ = State::kConnecting;
   absl::variant<QRInfo, PairedInfo> info_;
   const std::array<uint8_t, 8> id_;
+  const absl::optional<base::RepeatingCallback<void(Event)>> event_callback_;
   std::vector<uint8_t> pending_message_;
   DeviceCallback pending_callback_;
   absl::optional<HandshakeInitiator> handshake_;

@@ -1261,6 +1261,12 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
           nullptr, Focus::kDoCheck);
       return;
+    case device::MakeCredentialStatus::kHybridTransportError:
+      SignalFailureToRequestDelegate(
+          AuthenticatorRequestClientDelegate::InterestingFailureReason::
+              kHybridTransportError,
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
     case device::MakeCredentialStatus::kUserConsentDenied:
       SignalFailureToRequestDelegate(
           AuthenticatorRequestClientDelegate::InterestingFailureReason::
@@ -1529,6 +1535,12 @@ void AuthenticatorCommonImpl::OnSignResponse(
       SignalFailureToRequestDelegate(
           AuthenticatorRequestClientDelegate::InterestingFailureReason::
               kWinUserCancelled,
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    case device::GetAssertionStatus::kHybridTransportError:
+      SignalFailureToRequestDelegate(
+          AuthenticatorRequestClientDelegate::InterestingFailureReason::
+              kHybridTransportError,
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
     case device::GetAssertionStatus::kSuccess:

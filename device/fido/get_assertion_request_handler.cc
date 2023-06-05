@@ -744,6 +744,13 @@ void GetAssertionRequestHandler::HandleResponse(
       std::move(completion_callback_)
           .Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
                absl::nullopt);
+    } else if (authenticator->GetType() == AuthenticatorType::kPhone &&
+               base::FeatureList::IsEnabled(kWebAuthnNewHybridUI)) {
+      FIDO_LOG(ERROR) << "Status " << static_cast<int>(status) << " from "
+                      << authenticator->GetDisplayName()
+                      << " is fatal to the request";
+      std::move(completion_callback_)
+          .Run(GetAssertionStatus::kHybridTransportError, absl::nullopt);
     } else {
       FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
                       << " from " << authenticator->GetDisplayName();

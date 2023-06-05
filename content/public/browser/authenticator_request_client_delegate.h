@@ -202,6 +202,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     // kWinUserCancelled means that the user clicked "Cancel" in the native
     // Windows UI.
     kWinUserCancelled,
+    kHybridTransportError,
   };
 
   AuthenticatorRequestClientDelegate();

@@ -92,7 +92,8 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
               std::move(contact_device_stream_),
               cable_data_.value_or(std::vector<CableDiscoveryData>()),
               std::move(cable_pairing_callback_),
-              std::move(cable_invalidated_pairing_callback_)));
+              std::move(cable_invalidated_pairing_callback_),
+              std::move(cable_event_callback_)));
         }
 
         ret.emplace_back(std::move(v1_discovery));
@@ -153,12 +154,17 @@ void FidoDiscoveryFactory::set_network_context(
 
 void FidoDiscoveryFactory::set_cable_pairing_callback(
     base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> callback) {
-  cable_pairing_callback_.emplace(std::move(callback));
+  cable_pairing_callback_ = std::move(callback);
 }
 
 void FidoDiscoveryFactory::set_cable_invalidated_pairing_callback(
     base::RepeatingCallback<void(size_t)> callback) {
-  cable_invalidated_pairing_callback_.emplace(std::move(callback));
+  cable_invalidated_pairing_callback_ = std::move(callback);
+}
+
+void FidoDiscoveryFactory::set_cable_event_callback(
+    base::RepeatingCallback<void(cablev2::Event)> callback) {
+  cable_event_callback_ = std::move(callback);
 }
 
 base::RepeatingCallback<void(size_t)>

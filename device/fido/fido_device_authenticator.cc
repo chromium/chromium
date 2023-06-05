@@ -1421,6 +1421,13 @@ void FidoDeviceAuthenticator::Cancel() {
   }
 }
 
+AuthenticatorType FidoDeviceAuthenticator::GetType() const {
+  if (device_->DeviceTransport() == FidoTransportProtocol::kHybrid) {
+    return AuthenticatorType::kPhone;
+  }
+  return AuthenticatorType::kOther;
+}
+
 std::string FidoDeviceAuthenticator::GetId() const {
   return device_->GetId();
 }

@@ -435,6 +435,14 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
     return false;
   }
 
+  // If the UI was already in the state where we asked the user to complete the
+  // transaction on the other device then any errors are immediately resolved.
+  // Very likely the user canceled on the phone and doesn't want to see another
+  // error UI on the desktop.
+  if (cable_device_ready_) {
+    return false;
+  }
+
   switch (reason) {
     case InterestingFailureReason::kTimeout:
       dialog_model_->OnRequestTimeout();
@@ -474,6 +482,8 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
       break;
     case InterestingFailureReason::kWinUserCancelled:
       return dialog_model_->OnWinUserCancelled();
+    case InterestingFailureReason::kHybridTransportError:
+      return dialog_model_->OnHybridTransportError();
   }
   return true;
 }
@@ -649,6 +659,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
         base::BindRepeating(
             &ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing,
             weak_ptr_factory_.GetWeakPtr()));
+    discovery_factory->set_cable_event_callback(
+        base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnCableEvent,
+                            weak_ptr_factory_.GetWeakPtr()));
     if (SystemNetworkContextManager::GetInstance()) {
       discovery_factory->set_network_context(
           SystemNetworkContextManager::GetInstance()->GetContext());
@@ -939,4 +952,17 @@ void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(
   // Contact the next phone with the same name, if any, given that no
   // notification has been sent.
   dialog_model_->OnPhoneContactFailed(phone_names_.at(failed_contact_index));
+}
+
+void ChromeAuthenticatorRequestDelegate::OnCableEvent(
+    device::cablev2::Event event) {
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnNewHybridUI)) {
+    return;
+  }
+
+  if (event == device::cablev2::Event::kReady) {
+    cable_device_ready_ = true;
+  }
+
+  dialog_model_->OnCableEvent(event);
 }
