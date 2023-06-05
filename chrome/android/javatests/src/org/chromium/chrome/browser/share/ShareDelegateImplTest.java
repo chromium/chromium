@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.share;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.SadTabRule;
@@ -26,10 +28,11 @@ import java.util.concurrent.ExecutionException;
 /**
  * Tests (requiring native) of the ShareDelegateImpl.
  */
+@Batch(Batch.PER_CLASS)
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ShareDelegateImplTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @ClassRule
+    public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
     public final SadTabRule mSadTabRule = new SadTabRule();
