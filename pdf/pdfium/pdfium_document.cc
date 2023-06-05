@@ -31,7 +31,7 @@ class FileAvail : public FX_FILEAVAIL {
     return file_avail->doc_loader_->IsDataAvailable(offset, size);
   }
 
-  raw_ptr<DocumentLoader> doc_loader_;
+  raw_ptr<DocumentLoader, LeakedDanglingUntriaged> doc_loader_;
 };
 
 class DownloadHints : public FX_DOWNLOADHINTS {
@@ -51,7 +51,7 @@ class DownloadHints : public FX_DOWNLOADHINTS {
     return download_hints->doc_loader_->RequestData(offset, size);
   }
 
-  raw_ptr<DocumentLoader> doc_loader_;
+  raw_ptr<DocumentLoader, LeakedDanglingUntriaged> doc_loader_;
 };
 
 class FileAccess : public FPDF_FILEACCESS {
@@ -73,7 +73,7 @@ class FileAccess : public FPDF_FILEACCESS {
     return file_access->doc_loader_->GetBlock(position, size, buffer);
   }
 
-  raw_ptr<DocumentLoader> doc_loader_;
+  raw_ptr<DocumentLoader, LeakedDanglingUntriaged> doc_loader_;
 };
 
 }  // namespace

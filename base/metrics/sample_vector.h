@@ -113,7 +113,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   mutable std::atomic<HistogramBase::AtomicCount*> counts_{nullptr};
 
   // Shares the same BucketRanges with Histogram object.
-  const raw_ptr<const BucketRanges> bucket_ranges_;
+  const raw_ptr<const BucketRanges, LeakedDanglingUntriaged> bucket_ranges_;
 };
 
 // A sample vector that uses local memory for the counts array.

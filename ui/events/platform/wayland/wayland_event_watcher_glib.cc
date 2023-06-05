@@ -20,8 +20,8 @@ constexpr int kPriorityFdWatch = G_PRIORITY_DEFAULT_IDLE - 10;
 struct GLibWaylandSource : public GSource {
   // Note: The GLibWaylandSource is created and destroyed by GLib. So its
   // constructor/destructor may or may not get called.
-  raw_ptr<WaylandEventWatcherGlib> event_watcher;
-  raw_ptr<GPollFD> poll_fd;
+  raw_ptr<WaylandEventWatcherGlib, LeakedDanglingUntriaged> event_watcher;
+  raw_ptr<GPollFD, LeakedDanglingUntriaged> poll_fd;
 };
 
 gboolean WatchSourcePrepare(GSource* source, gint* timeout_ms) {

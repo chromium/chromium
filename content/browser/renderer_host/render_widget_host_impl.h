@@ -1170,7 +1170,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
 
-  raw_ptr<FrameTree> frame_tree_;
+  raw_ptr<FrameTree, LeakedDanglingUntriaged> frame_tree_;
 
   // RenderWidgetHost are either:
   // - Owned by RenderViewHostImpl.
@@ -1212,7 +1212,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // dynamically fetching it from `site_instance_group_` since its
   // value gets cleared early in `SiteInstanceGroup` via
   // RenderProcessHostDestroyed before this object is destroyed.
-  const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
+  const raw_ref<AgentSchedulingGroupHost, LeakedDanglingUntriaged>
+      agent_scheduling_group_;
 
   // The SiteInstanceGroup this RenderWidgetHost belongs to.
   // TODO(https://crbug.com/1420333) Turn this into base::SafeRef

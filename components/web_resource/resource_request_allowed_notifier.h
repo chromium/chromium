@@ -139,8 +139,8 @@ class ResourceRequestAllowedNotifier
   raw_ptr<Observer> observer_;
 
   NetworkConnectionTrackerGetter network_connection_tracker_getter_;
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
-      nullptr;
+  raw_ptr<network::NetworkConnectionTracker, LeakedDanglingUntriaged>
+      network_connection_tracker_ = nullptr;
   network::mojom::ConnectionType connection_type_ =
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   bool connection_initialized_ = false;

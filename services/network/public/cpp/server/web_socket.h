@@ -56,7 +56,7 @@ class WebSocket final {
       const std::string& message,
       const net::NetworkTrafficAnnotationTag traffic_annotation);
 
-  const raw_ptr<HttpServer> server_;
+  const raw_ptr<HttpServer, LeakedDanglingUntriaged> server_;
   const raw_ptr<HttpConnection> connection_;
   std::unique_ptr<WebSocketEncoder> encoder_;
   bool closed_;

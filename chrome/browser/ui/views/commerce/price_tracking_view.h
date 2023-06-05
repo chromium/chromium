@@ -34,7 +34,7 @@ class PriceTrackingView : public views::FlexLayoutView {
   raw_ptr<views::Label> body_label_;
   raw_ptr<views::ToggleButton> toggle_button_;
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
   bool is_price_track_enabled_;
 
   base::WeakPtrFactory<PriceTrackingView> weak_ptr_factory_{this};
