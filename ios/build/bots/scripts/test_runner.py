@@ -32,6 +32,7 @@ LOGGER = logging.getLogger(__name__)
 DERIVED_DATA = os.path.expanduser('~/Library/Developer/Xcode/DerivedData')
 DEFAULT_TEST_REPO = 'https://chromium.googlesource.com/chromium/src'
 HOST_IS_DOWN_ERROR = 'Domain=NSPOSIXErrorDomain Code=64 "Host is down"'
+MIG_SERVER_DIED_ERROR = '(ipc/mig) server died'
 
 
 # TODO(crbug.com/1077277): Move commonly used error classes to
@@ -143,9 +144,16 @@ class ShardingDisabledError(TestRunnerError):
 
 class HostIsDownError(TestRunnerError):
   """Simulator host is down, usually due to a corrupted runtime."""
-
   def __init__(self):
     super(HostIsDownError, self).__init__('Simulator host is down!')
+
+
+class MIGServerDiedError(TestRunnerError):
+  """(ipc/mig) server died error, causing simulator unable to start"""
+
+  def __init__(self):
+    super(MIGServerDiedError,
+          self).__init__('iOS runtime embedded in Xcode might be corrupted.')
 
 
 def get_device_ios_version(udid):
@@ -280,6 +288,11 @@ def print_process_output(proc,
     # is resolved.
     if HOST_IS_DOWN_ERROR in line:
       raise HostIsDownError()
+
+    # crbug/1449927: Mitigation to exit earlier to clear Xcode cache
+    # in order to self-recover on the next run.
+    if MIG_SERVER_DIED_ERROR in line:
+      raise MIGServerDiedError()
 
   if parser:
     parser.Finalize()

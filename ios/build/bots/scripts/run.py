@@ -21,6 +21,7 @@ import argparse
 import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import traceback
@@ -58,6 +59,9 @@ class Runner():
     self.args = argparse.Namespace()
     self.test_args = []
     self.should_move_xcode_runtime_to_cache = True
+    # Xcode might be corruped, so this the flag to decide
+    # whether we should clear it from cache
+    self.should_delete_xcode_cache = False
 
     if args:
       self.parse_args(args)
@@ -331,6 +335,9 @@ class Runner():
       summary['step_text'] = '%s%s' % (e.__class__.__name__,
                                        ': %s' % e.args[0] if e.args else '')
       return 2
+    except test_runner.MIGServerDiedError as e:
+      self.should_delete_xcode_cache = True
+      return 2
     except test_runner.TestRunnerError as e:
       sys.stderr.write(traceback.format_exc())
       summary['step_text'] = '%s%s' % (e.__class__.__name__,
@@ -387,6 +394,9 @@ class Runner():
               'Deleting iOS simulator runtime %s after tests are finished...' %
               self.args.version)
           iossim_util.delete_simulator_runtime_and_wait(self.args.version)
+
+      if self.should_delete_xcode_cache:
+        shutil.rmtree(self.args.xcode_path)
 
       test_runner.defaults_delete('com.apple.CoreSimulator',
                                   'FramebufferServerRendererPolicy')
