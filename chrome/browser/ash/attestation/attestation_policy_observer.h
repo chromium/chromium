@@ -15,6 +15,8 @@ namespace attestation {
 
 class MachineCertificateUploader;
 
+// TODO(b/285556135): Replace this observer with another trigger which starts
+// the certificate upload as soon as device policies are available.
 // A class which observes policy changes and uploads a certificate if necessary.
 class AttestationPolicyObserver {
  public:

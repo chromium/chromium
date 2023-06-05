@@ -180,6 +180,7 @@ void AttestationCAClient::OnURLLoadComplete(
 void AttestationCAClient::FetchURL(const std::string& url,
                                    const std::string& request,
                                    DataCallback on_response) {
+  // TODO(b/285556135): Remove mention of DeviceAttestationEnabled
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("attestation_ca_client", R"(
         semantics {

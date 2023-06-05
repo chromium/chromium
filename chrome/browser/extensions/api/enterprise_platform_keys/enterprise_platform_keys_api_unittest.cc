@@ -277,12 +277,7 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
     func_->set_extension(extension_.get());
   }
 
-  void SetUp() override {
-    EPKChallengeKeyTestBase::SetUp();
-
-    // Set the user preferences.
-    prefs_->SetBoolean(prefs::kAttestationEnabled, true);
-  }
+  void SetUp() override { EPKChallengeKeyTestBase::SetUp(); }
 
   base::Value::List CreateArgs() { return CreateArgsInternal(true); }
 

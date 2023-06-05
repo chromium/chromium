@@ -572,6 +572,7 @@ const char kLastSessionLength[] = "session.last_session_length";
 // honored for public accounts.
 const char kTermsOfServiceURL[] = "terms_of_service.url";
 
+// TODO(b/285556135): Remove this pref together with AttestationEnabledForUser
 // Indicates whether the remote attestation is enabled for the user.
 const char kAttestationEnabled[] = "attestation.enabled";
 

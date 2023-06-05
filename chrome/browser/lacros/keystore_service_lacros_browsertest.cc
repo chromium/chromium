@@ -170,11 +170,11 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
 
   ASSERT_TRUE(result->is_error_message());
 
-  // TODO(https://crbug.com/1134349): Currently this errors out because remote
-  // attestation is disabled. We want this to error out because of a poorly
-  // formatted attestation message.
+  // TODO(https://crbug.com/1134349): Currently this errors out because the
+  // device is not enterprise enrolled. We want this to error out because of a
+  // poorly formatted attestation message.
   const char expected_error_message[] =
-      "Remote attestation is not enabled for your account.";
+      "Failed to get Enterprise certificate. Error code = 2";
   EXPECT_EQ(expected_error_message, result->get_error_message());
 }
 

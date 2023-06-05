@@ -173,8 +173,6 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // If this is a device-wide instance without a user-associated |profile_|,
   // returns false.
   bool IsUserAffiliated() const;
-  // Returns true if remote attestation is allowed and the setting is managed.
-  bool IsRemoteAttestationEnabledForUser() const;
 
   // Returns the user email (for user key) or an empty string (for machine key).
   std::string GetEmail() const;
@@ -204,12 +202,6 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   void RegisterKeyCallback(
       const ::attestation::RegisterKeyWithChapsTokenReply& reply);
   void MarkCorporateKeyCallback(chromeos::platform_keys::Status status);
-
-  // Returns a trusted value from CrosSettings indicating if the device
-  // attestation is enabled.
-  void GetDeviceAttestationEnabled(
-      const base::RepeatingCallback<void(bool)>& callback);
-  void GetDeviceAttestationEnabledCallback(bool enabled);
 
   void GetEnrollmentPreparationsCallback(
       const ::attestation::GetEnrollmentPreparationsReply& reply);

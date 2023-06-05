@@ -7,3 +7,6 @@
 # as "idle" when connecting a new service.
 -NetworkingPrivateChromeOSApiTest.OnNetworksChangedEventConnect
 
+# ash-chrome < 116 checks the policy AttestationEnabledForUser when building a
+# response for a Verified Access challenge which leads to a different error.
+-KeystoreServiceLacrosBrowserTest.WrongFormattingUser

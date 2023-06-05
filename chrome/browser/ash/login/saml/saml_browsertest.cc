@@ -2013,26 +2013,9 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest,
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
 
-// Verify that device attestation is not available when device attestation is
-// not enabled.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
-                       DeviceAttestationNotEnabledError) {
-  SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
-
-  StartSamlAndWaitForIdpPageLoad(
-      saml_test_users::kFourthUserCorpExampleTestEmail);
-
-  if (Test::HasFailure()) {
-    return;
-  }
-
-  ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-}
-
 // Verify that device attestation works when all policies configured correctly.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, Success) {
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2052,7 +2035,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, Success) {
 // allowed URLs list.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpDomain()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2070,7 +2052,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
 // from allowed URLs list.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
   SetAllowedUrlsPolicy({"[*.]" + fake_saml_idp()->GetIdpDomain()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2091,7 +2072,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
                        PolicyTwoEntriesSuccess) {
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2115,7 +2095,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
   SetDeviceContextAwareAccessSignalsAllowlistPolicy(
       {fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2139,7 +2118,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
 
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   AttestationClient::Get()
       ->GetTestInterface()
@@ -2174,12 +2152,6 @@ class SAMLDeviceTrustTest : public SAMLDeviceAttestationTest,
   SAMLDeviceTrustTest() {
     device_state_.SetState(
         DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture();
-    // Enable device trust feature.
-    settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
   }
 
   void ExpectDeviceTrustSuccessful(bool expected) {
@@ -2247,24 +2219,6 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, EmptyPolicy) {
       saml_test_users::kSixthUserCorpExampleTestEmail);
 
   ASSERT_FALSE(fake_saml_idp()->DeviceTrustHeaderRecieved());
-}
-
-// Verify that device trust is not available when device trust is
-// not enabled.
-IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest,
-                       DeviceTrustNotEnabledError) {
-  SetDeviceContextAwareAccessSignalsAllowlistPolicy(
-      {fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, false);
-
-  StartSamlAndWaitForIdpPageLoad(
-      saml_test_users::kSixthUserCorpExampleTestEmail);
-
-  if (Test::HasFailure()) {
-    return;
-  }
-
-  ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
 
 // Verify that device trust is available for URLs that match a pattern

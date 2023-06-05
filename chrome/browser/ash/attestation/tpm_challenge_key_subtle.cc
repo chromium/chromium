@@ -101,9 +101,12 @@ bool IsEnterpriseDevice() {
   return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
-// For personal devices, we don't need to check if remote attestation is
-// enabled in the device, but we need to ask for user consent if the key
-// does not exist.
+// For unmanaged devices we need to ask for user consent if the key does not
+// exist because data will be sent to the PCA.
+// Historical note: For managed device there used to be policies to control this
+// (AttestationEnabledForUser,AttestationEnabledForDevice) but they were removed
+// from the client after having been set to true unconditionally for all clients
+// for a long time.
 bool IsUserConsentRequired() {
   return !IsEnterpriseDevice();
 }
@@ -254,10 +257,13 @@ void TpmChallengeKeySubtleImpl::PrepareMachineKey() {
     return;
   }
 
-  // Check if remote attestation is enabled in the device policy.
-  GetDeviceAttestationEnabled(base::BindRepeating(
-      &TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback,
-      weak_factory_.GetWeakPtr()));
+  // Wait for the machine certificate to be uploaded.
+  if (machine_certificate_uploader_) {
+    machine_certificate_uploader_->WaitForUploadComplete(base::BindOnce(
+        &TpmChallengeKeySubtleImpl::PrepareKey, weak_factory_.GetWeakPtr()));
+  } else {
+    PrepareKey(true);
+  }
 }
 
 void TpmChallengeKeySubtleImpl::PrepareUserKey() {
@@ -270,26 +276,15 @@ void TpmChallengeKeySubtleImpl::PrepareUserKey() {
     return;
   }
 
-  if (!IsRemoteAttestationEnabledForUser()) {
-    std::move(callback_).Run(
-        Result::MakeError(ResultCode::kUserPolicyDisabledError));
-    return;
-  }
-
   if (IsEnterpriseDevice()) {
     if (!IsUserAffiliated()) {
       std::move(callback_).Run(
           Result::MakeError(ResultCode::kUserNotManagedError));
       return;
     }
-
-    // Check if remote attestation is enabled in the device policy.
-    GetDeviceAttestationEnabled(base::BindRepeating(
-        &TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback,
-        weak_factory_.GetWeakPtr()));
-  } else {
-    GetDeviceAttestationEnabledCallback(true);
   }
+
+  PrepareKey(true);
 }
 
 bool TpmChallengeKeySubtleImpl::IsUserAffiliated() const {
@@ -298,17 +293,6 @@ bool TpmChallengeKeySubtleImpl::IsUserAffiliated() const {
   const user_manager::User* const user = GetUser();
   if (user) {
     return user->IsAffiliated();
-  }
-  return false;
-}
-
-bool TpmChallengeKeySubtleImpl::IsRemoteAttestationEnabledForUser() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
-
-  PrefService* prefs = profile_->GetPrefs();
-  if (prefs && prefs->IsManagedPreference(prefs::kAttestationEnabled)) {
-    return prefs->GetBoolean(prefs::kAttestationEnabled);
   }
   return false;
 }
@@ -376,55 +360,6 @@ std::string TpmChallengeKeySubtleImpl::GetUsernameForAttestationClient() const {
   }
   LOG(DFATAL) << "Unrecognized key type value: " << key_type_;
   return std::string();
-}
-
-void TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabled(
-    const base::RepeatingCallback<void(bool)>& callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CrosSettings* settings = CrosSettings::Get();
-  CrosSettingsProvider::TrustedStatus status = settings->PrepareTrustedValues(
-      base::BindOnce(&TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabled,
-                     weak_factory_.GetWeakPtr(), callback));
-
-  bool value = false;
-  switch (status) {
-    case CrosSettingsProvider::TRUSTED:
-      if (!settings->GetBoolean(kDeviceAttestationEnabled, &value)) {
-        value = false;
-      }
-      break;
-    case CrosSettingsProvider::TEMPORARILY_UNTRUSTED:
-      // Do nothing. This function will be called again when the values are
-      // ready.
-      return;
-    case CrosSettingsProvider::PERMANENTLY_UNTRUSTED:
-      // If the value cannot be trusted, we assume that the device attestation
-      // is false to be on the safe side.
-      break;
-  }
-
-  callback.Run(value);
-}
-
-void TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback(
-    bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!enabled) {
-    std::move(callback_).Run(
-        Result::MakeError(ResultCode::kDevicePolicyDisabledError));
-    return;
-  }
-
-  // Only the device challenge depends on the certificate to be uploaded.
-  if ((key_type_ == AttestationKeyType::KEY_DEVICE) &&
-      machine_certificate_uploader_) {
-    machine_certificate_uploader_->WaitForUploadComplete(base::BindOnce(
-        &TpmChallengeKeySubtleImpl::PrepareKey, weak_factory_.GetWeakPtr()));
-  } else {
-    PrepareKey(true);
-  }
 }
 
 void TpmChallengeKeySubtleImpl::PrepareKey(bool can_continue) {

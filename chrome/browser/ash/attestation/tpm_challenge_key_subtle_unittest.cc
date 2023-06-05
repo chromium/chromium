@@ -272,15 +272,10 @@ void TpmChallengeKeySubtleTestBase::SetUp() {
       break;
     case TestProfileChoice::kAffiliatedProfile:
       testing_profile_ = CreateUserProfile(/*is_affiliated=*/true);
-      testing_profile_->GetTestingPrefService()->SetManagedPref(
-          prefs::kAttestationEnabled, std::make_unique<base::Value>(true));
       break;
   }
 
   GetInstallAttributes()->SetCloudManaged("google.com", "device_id");
-
-  GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
-  GetCrosSettingsHelper()->SetBoolean(kDeviceAttestationEnabled, true);
 
   system_token_key_permissions_manager_ =
       std::make_unique<platform_keys::MockKeyPermissionsManager>();
@@ -457,16 +452,6 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
           TpmChallengeKeyResultCode::kNonEnterpriseDeviceError));
 }
 
-TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
-       DeviceKeyDeviceAttestationDisabled) {
-  GetCrosSettingsHelper()->SetBoolean(kDeviceAttestationEnabled, false);
-
-  RunOneStepAndExpect(
-      KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
-      TpmChallengeKeyResult::MakeError(
-          TpmChallengeKeyResultCode::kDevicePolicyDisabledError));
-}
-
 TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, DeviceKeyUserNotManaged) {
   RunOneStepAndExpect(KEY_DEVICE,
                       /*will_register_key=*/false, kEmptyKeyName,
@@ -481,35 +466,12 @@ TEST_F(SigninProfileTpmChallengeKeySubtleTest, UserKeyUserKeyNotAvailable) {
           TpmChallengeKeyResultCode::kUserKeyNotAvailableError));
 }
 
-TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyUserPolicyDisabled) {
-  GetProfile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kAttestationEnabled, std::make_unique<base::Value>(false));
-
-  RunOneStepAndExpect(KEY_USER,
-                      /*will_register_key=*/false, kEmptyKeyName,
-                      TpmChallengeKeyResult::MakeError(
-                          TpmChallengeKeyResultCode::kUserPolicyDisabledError));
-}
-
 // Checks that a user should be affiliated with a device
 TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, UserKeyUserNotAffiliated) {
-  GetProfile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kAttestationEnabled, std::make_unique<base::Value>(true));
-
   RunOneStepAndExpect(KEY_USER,
                       /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kUserNotManagedError));
-}
-
-TEST_F(AffiliatedUserTpmChallengeKeySubtleTest,
-       UserKeyDeviceAttestationDisabled) {
-  GetCrosSettingsHelper()->SetBoolean(kDeviceAttestationEnabled, false);
-
-  RunOneStepAndExpect(
-      KEY_USER, /*will_register_key=*/false, kEmptyKeyName,
-      TpmChallengeKeyResult::MakeError(
-          TpmChallengeKeyResultCode::kDevicePolicyDisabledError));
 }
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DoesKeyExistDbusFailed) {
