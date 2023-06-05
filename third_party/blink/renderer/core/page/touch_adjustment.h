@@ -33,21 +33,21 @@ namespace blink {
 class Node;
 class LocalFrame;
 
-bool FindBestClickableCandidate(Node*& target_node,
-                                gfx::Point& target_point,
-                                const gfx::Point& touch_hotspot,
-                                const gfx::Rect& touch_area,
-                                const HeapVector<Member<Node>>&);
-bool FindBestContextMenuCandidate(Node*& target_node,
-                                  gfx::Point& target_point,
-                                  const gfx::Point& touch_hotspot,
-                                  const gfx::Rect& touch_area,
-                                  const HeapVector<Member<Node>>&);
-bool FindBestStylusWritableCandidate(Node*& target_node,
-                                     gfx::Point& target_point,
-                                     const gfx::Point& touch_hotspot,
-                                     const gfx::Rect& touch_area,
-                                     const HeapVector<Member<Node>>&);
+enum class TouchAdjustmentCandidateType {
+  kClickable,
+  kContextMenu,
+  kStylusWritable
+};
+
+// Finds the best `candidate_node` and location `candidate_point` for touch
+// adjustment for the given `candidate_type`.
+bool FindBestTouchAdjustmentCandidate(
+    TouchAdjustmentCandidateType candidate_type,
+    Node*& candidate_node,
+    gfx::Point& candidate_point,
+    const gfx::Point& touch_hotspot,
+    const gfx::Rect& touch_area,
+    const HeapVector<Member<Node>>&);
 
 // Applies an upper bound to the touch area as the adjustment rect. The
 // touch_area is in root frame coordinates, which is in physical pixel when

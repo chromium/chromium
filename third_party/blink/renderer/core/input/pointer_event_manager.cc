@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
@@ -439,8 +440,9 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event,
   gfx::Point adjusted_point;
 
   if (pointer_event.pointer_type == WebPointerProperties::PointerType::kTouch) {
-    bool adjusted = frame_->GetEventHandler().BestClickableNodeForHitTestResult(
-        location, hit_test_result, adjusted_point, adjusted_node);
+    bool adjusted = frame_->GetEventHandler().BestNodeForHitTestResult(
+        TouchAdjustmentCandidateType::kClickable, location, hit_test_result,
+        adjusted_point, adjusted_node);
 
     if (adjusted)
       pointer_event.SetPositionInWidget(adjusted_point.x(), adjusted_point.y());
@@ -453,9 +455,9 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event,
                  WebPointerProperties::PointerType::kEraser) {
     // We don't cache the adjusted point for Stylus in EventHandler to avoid
     // taps being adjusted; this is intended only for stylus handwriting.
-    bool adjusted =
-        frame_->GetEventHandler().BestStylusWritableNodeForHitTestResult(
-            location, hit_test_result, adjusted_point, adjusted_node);
+    bool adjusted = frame_->GetEventHandler().BestNodeForHitTestResult(
+        TouchAdjustmentCandidateType::kStylusWritable, location,
+        hit_test_result, adjusted_point, adjusted_node);
 
     if (adjusted)
       pointer_event.SetPositionInWidget(adjusted_point.x(), adjusted_point.y());

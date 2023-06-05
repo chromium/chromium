@@ -1631,85 +1631,39 @@ bool EventHandler::GestureCorrespondsToAdjustedTouch(
   return should_use_touch_event_adjusted_point_;
 }
 
-bool EventHandler::BestClickableNodeForHitTestResult(
+bool EventHandler::BestNodeForHitTestResult(
+    TouchAdjustmentCandidateType candidate_type,
     const HitTestLocation& location,
     const HitTestResult& result,
-    gfx::Point& target_point,
-    Node*& target_node) {
-  // FIXME: Unify this with the other best* functions which are very similar.
-
-  TRACE_EVENT0("input", "EventHandler::bestClickableNodeForHitTestResult");
+    gfx::Point& adjusted_point,
+    Node*& adjusted_node) {
+  TRACE_EVENT0("input", "EventHandler::BestNodeForHitTestResult");
   DCHECK(location.IsRectBasedTest());
 
-  // If the touch is over a scrollbar, don't adjust the touch point since touch
-  // adjustment only takes into account DOM nodes so a touch over a scrollbar
-  // will be adjusted towards nearby nodes. This leads to things like textarea
-  // scrollbars being untouchable.
-  if (result.GetScrollbar() || result.IsOverResizer()) {
-    target_node = nullptr;
+  // If the touch is over a scrollbar or a resizer, we don't adjust the touch
+  // point.  This is because touch adjustment only takes into account DOM nodes
+  // so a touch over a scrollbar or a resizer would be adjusted towards a nearby
+  // DOM node, making the scrollbar/resizer unusable.
+  //
+  // Context-menu hittests are excluded from this consideration because a
+  // right-click/long-press doesn't drag the scrollbar therefore prefers DOM
+  // nodes with relevant contextmenu properties.
+  if (candidate_type != TouchAdjustmentCandidateType::kContextMenu &&
+      (result.GetScrollbar() || result.IsOverResizer())) {
+    adjusted_node = nullptr;
     return false;
   }
 
-  gfx::Point touch_center =
+  gfx::Point touch_hotspot =
       frame_->View()->ConvertToRootFrame(ToRoundedPoint(location.Point()));
   gfx::Rect touch_rect =
       frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
 
   HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
 
-  // FIXME: the explicit Vector conversion copies into a temporary and is
-  // wasteful.
-  return FindBestClickableCandidate(target_node, target_point, touch_center,
-                                    touch_rect,
-                                    HeapVector<Member<Node>>(nodes));
-}
-
-bool EventHandler::BestContextMenuNodeForHitTestResult(
-    const HitTestLocation& location,
-    const HitTestResult& result,
-    gfx::Point& target_point,
-    Node*& target_node) {
-  DCHECK(location.IsRectBasedTest());
-  gfx::Point touch_center =
-      frame_->View()->ConvertToRootFrame(ToRoundedPoint(location.Point()));
-  gfx::Rect touch_rect =
-      frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
-  HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
-
-  // FIXME: the explicit Vector conversion copies into a temporary and is
-  // wasteful.
-  return FindBestContextMenuCandidate(target_node, target_point, touch_center,
-                                      touch_rect,
-                                      HeapVector<Member<Node>>(nodes));
-}
-
-bool EventHandler::BestStylusWritableNodeForHitTestResult(
-    const HitTestLocation& location,
-    const HitTestResult& result,
-    gfx::Point& target_point,
-    Node*& target_node) {
-  DCHECK(location.IsRectBasedTest());
-
-  // If the touch is over a scrollbar, don't adjust the touch point since touch
-  // adjustment only takes into account DOM nodes so a touch over a scrollbar
-  // will be adjusted towards nearby nodes. This leads to things like textarea
-  // scrollbars being untouchable.
-  if (result.GetScrollbar() || result.IsOverResizer()) {
-    target_node = nullptr;
-    return false;
-  }
-
-  gfx::Point touch_center =
-      frame_->View()->ConvertToRootFrame(ToRoundedPoint(location.Point()));
-  gfx::Rect touch_rect =
-      frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
-  HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
-
-  // FIXME: the explicit Vector conversion copies into a temporary and is
-  // wasteful.
-  return FindBestStylusWritableCandidate(target_node, target_point,
-                                         touch_center, touch_rect,
-                                         HeapVector<Member<Node>>(nodes));
+  return FindBestTouchAdjustmentCandidate(candidate_type, adjusted_node,
+                                          adjusted_point, touch_hotspot,
+                                          touch_rect, nodes);
 }
 
 // Update the hover and active state across all frames.  This logic is
@@ -1962,7 +1916,7 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
   if (location.IsRectBasedTest()) {
     // Adjust the location of the gesture to the most likely nearby node, as
     // appropriate for the type of event.
-    ApplyTouchAdjustment(&adjusted_event, location, &hit_test_result);
+    ApplyTouchAdjustment(&adjusted_event, location, hit_test_result);
     // Do a new hit-test at the (adjusted) gesture coordinates. This is
     // necessary because rect-based hit testing and touch adjustment sometimes
     // return a different node than what a point-based hit test would return for
@@ -1988,39 +1942,40 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
 
 void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
                                         HitTestLocation& location,
-                                        HitTestResult* hit_test_result) {
-  Node* adjusted_node = nullptr;
-  gfx::Point adjusted_point =
-      gfx::ToFlooredPoint(gesture_event->PositionInRootFrame());
-  bool adjusted = false;
+                                        HitTestResult& hit_test_result) {
+  TouchAdjustmentCandidateType touch_adjustment_candiate_type =
+      TouchAdjustmentCandidateType::kClickable;
   switch (gesture_event->GetType()) {
     case WebInputEvent::Type::kGestureTap:
     case WebInputEvent::Type::kGestureTapUnconfirmed:
     case WebInputEvent::Type::kGestureTapDown:
     case WebInputEvent::Type::kGestureShowPress:
-      adjusted = BestClickableNodeForHitTestResult(
-          location, *hit_test_result, adjusted_point, adjusted_node);
       break;
     case WebInputEvent::Type::kGestureShortPress:
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureLongTap:
     case WebInputEvent::Type::kGestureTwoFingerTap:
-      adjusted = BestContextMenuNodeForHitTestResult(
-          location, *hit_test_result, adjusted_point, adjusted_node);
+      touch_adjustment_candiate_type =
+          TouchAdjustmentCandidateType::kContextMenu;
       break;
     default:
       NOTREACHED();
   }
 
+  Node* adjusted_node = nullptr;
+  gfx::Point adjusted_point =
+      gfx::ToFlooredPoint(gesture_event->PositionInRootFrame());
+  bool adjusted =
+      BestNodeForHitTestResult(touch_adjustment_candiate_type, location,
+                               hit_test_result, adjusted_point, adjusted_node);
+
   // Update the hit-test result to be a point-based result instead of a
   // rect-based result.
-  // FIXME: We should do this even when no candidate matches the node filter.
-  // crbug.com/398914
   if (adjusted) {
     PhysicalOffset point(frame_->View()->ConvertFromRootFrame(adjusted_point));
     DCHECK(location.ContainsPoint(gfx::PointF(point)));
     DCHECK(location.IsRectBasedTest());
-    location = hit_test_result->ResolveRectBasedTest(adjusted_node, point);
+    location = hit_test_result.ResolveRectBasedTest(adjusted_node, point);
     gesture_event->ApplyTouchAdjustment(
         gfx::PointF(adjusted_point.x(), adjusted_point.y()));
   }

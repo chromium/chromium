@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
+#include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -1919,9 +1920,6 @@ String Internals::rangeAsText(const Range* range) {
   return range->GetText();
 }
 
-// FIXME: The next four functions are very similar - combine them once
-// bestClickableNode/bestContextMenuNode have been combined..
-
 void Internals::HitTestRect(HitTestLocation& location,
                             HitTestResult& result,
                             int x,
@@ -1939,6 +1937,8 @@ void Internals::HitTestRect(HitTestLocation& location,
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive |
                     HitTestRequest::kListBased);
 }
+
+// TODO(mustaq): The next 5 functions are very similar, can we combine them?
 
 DOMPoint* Internals::touchPositionAdjustedToBestClickableNode(
     int x,
@@ -1961,8 +1961,9 @@ DOMPoint* Internals::touchPositionAdjustedToBestClickableNode(
   gfx::Point adjusted_point;
 
   EventHandler& event_handler = document->GetFrame()->GetEventHandler();
-  bool found_node = event_handler.BestClickableNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  bool found_node = event_handler.BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kClickable, location, result,
+      adjusted_point, target_node);
   if (found_node)
     return DOMPoint::Create(adjusted_point.x(), adjusted_point.y());
 
@@ -1988,8 +1989,9 @@ Node* Internals::touchNodeAdjustedToBestClickableNode(
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
   gfx::Point adjusted_point;
-  document->GetFrame()->GetEventHandler().BestClickableNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  document->GetFrame()->GetEventHandler().BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kClickable, location, result,
+      adjusted_point, target_node);
   return target_node;
 }
 
@@ -2014,8 +2016,9 @@ DOMPoint* Internals::touchPositionAdjustedToBestContextMenuNode(
   gfx::Point adjusted_point;
 
   EventHandler& event_handler = document->GetFrame()->GetEventHandler();
-  bool found_node = event_handler.BestContextMenuNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  bool found_node = event_handler.BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kContextMenu, location, result,
+      adjusted_point, target_node);
   if (found_node)
     return DOMPoint::Create(adjusted_point.x(), adjusted_point.y());
 
@@ -2041,8 +2044,9 @@ Node* Internals::touchNodeAdjustedToBestContextMenuNode(
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
   gfx::Point adjusted_point;
-  document->GetFrame()->GetEventHandler().BestContextMenuNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  document->GetFrame()->GetEventHandler().BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kContextMenu, location, result,
+      adjusted_point, target_node);
   return target_node;
 }
 
@@ -2065,10 +2069,9 @@ Node* Internals::touchNodeAdjustedToBestStylusWritableNode(
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
   gfx::Point adjusted_point;
-  document->GetFrame()
-      ->GetEventHandler()
-      .BestStylusWritableNodeForHitTestResult(location, result, adjusted_point,
-                                              target_node);
+  document->GetFrame()->GetEventHandler().BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kStylusWritable, location, result,
+      adjusted_point, target_node);
   return target_node;
 }
 

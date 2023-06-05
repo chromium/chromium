@@ -186,18 +186,11 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   WebInputEventResult HandleGestureScrollEvent(const WebGestureEvent&);
   bool IsScrollbarHandlingGestures() const;
 
-  bool BestClickableNodeForHitTestResult(const HitTestLocation& location,
-                                         const HitTestResult&,
-                                         gfx::Point& target_point,
-                                         Node*& target_node);
-  bool BestContextMenuNodeForHitTestResult(const HitTestLocation& location,
-                                           const HitTestResult&,
-                                           gfx::Point& target_point,
-                                           Node*& target_node);
-  bool BestStylusWritableNodeForHitTestResult(const HitTestLocation& location,
-                                              const HitTestResult&,
-                                              gfx::Point& target_point,
-                                              Node*& target_node);
+  bool BestNodeForHitTestResult(TouchAdjustmentCandidateType candidate_type,
+                                const HitTestLocation& location,
+                                const HitTestResult&,
+                                gfx::Point& adjusted_point,
+                                Node*& adjusted_node);
   void CacheTouchAdjustmentResult(uint32_t, gfx::PointF);
 
   // Dispatch a context menu event. If |override_target_element| is provided,
@@ -294,7 +287,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       HitTestLocation* hit_test_location = nullptr);
 
   // Updates the event, location and result to the adjusted target.
-  void ApplyTouchAdjustment(WebGestureEvent*, HitTestLocation&, HitTestResult*);
+  void ApplyTouchAdjustment(WebGestureEvent*, HitTestLocation&, HitTestResult&);
 
   void PerformHitTest(const HitTestLocation& location,
                       HitTestResult&,
