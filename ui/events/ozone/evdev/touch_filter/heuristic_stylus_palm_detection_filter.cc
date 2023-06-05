@@ -26,10 +26,6 @@ void HeuristicStylusPalmDetectionFilter::Filter(
   for (size_t i = 0; i < events_size; ++i) {
     const auto& touch = touches[i];
     if (touch.tool_code == BTN_TOOL_PEN) {
-      // We detect BTN_TOOL_PEN whenever a pen is even hovering. This is
-      // mutually exclusive with finger touches, which is what we're interested
-      // in. So we update latest_time.
-      shared_palm_state_->latest_stylus_touch_time = time;
       return;
     }
     if (!touch.touching) {

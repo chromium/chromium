@@ -101,7 +101,9 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   static const char kPalmFilterTimerEventName[];
   static const char kPalmTouchCountEventName[];
   static const char kRepeatedTouchCountEventName[];
+  static const char kTouchGapAfterStylusEventName[];
   static const char kTouchGapBeforeStylusEventName[];
+  static const char kTouchTypeAfterStylusEventName[];
   static const char kTouchTypeBeforeStylusEventName[];
   static const char kTouchSessionCountEventName[];
   static const char kTouchSessionLengthEventName[];

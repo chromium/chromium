@@ -46,7 +46,8 @@
 namespace {
 
 const int kMaxTrackingId = 0xffff;  // TRKID_MAX in kernel.
-const int kMaxTouchGapInSeconds = 5;
+const int kMaxTouchSessionGapInSeconds = 5;
+const int kMaxTouchStylusGapInSeconds = 10;
 const int kMaxRepeatedTouchGapInSeconds = 2;
 const float kRepeatedTouchThresholdInSquareMillimeter = 7.0 * 7.0;
 const int kMaxTouchStylusGapInMs = 500;
@@ -685,7 +686,11 @@ void TouchEventConverterEvdev::UpdateSharedPalmState(
     return;
   }
   if (has_pen_) {
-    shared_palm_state_->latest_stylus_touch_time = timestamp;
+    if (events_[0].touching) {
+      shared_palm_state_->latest_stylus_touch_time = timestamp;
+    } else if (events_[0].was_touching) {
+      shared_palm_state_->need_to_record_after_stylus_metrics = true;
+    }
     return;
   }
 
@@ -755,12 +760,23 @@ void TouchEventConverterEvdev::RecordMetrics(base::TimeTicks timestamp) {
     return;
   }
 
+  bool touching = false;
+  for (const auto& event : events_) {
+    if (event.touching) {
+      touching = true;
+      break;
+    }
+  }
+  if (!touching) {
+    return;
+  }
+
   if (!session_start_time_) {
     session_start_time_ = timestamp;
     last_touch_is_palm_ = false;
   }
   record_session_timer_.Start(
-      FROM_HERE, base::Seconds(kMaxTouchGapInSeconds),
+      FROM_HERE, base::Seconds(kMaxTouchSessionGapInSeconds),
       base::BindOnce(&TouchEventConverterEvdev::RecordSession,
                      weak_factory_.GetWeakPtr(),
                      timestamp - session_start_time_.value()));
@@ -776,12 +792,30 @@ void TouchEventConverterEvdev::RecordMetrics(base::TimeTicks timestamp) {
               ? TouchType::kNone
               : (shared_palm_state_->has_palm ? TouchType::kPalm
                                               : TouchType::kFinger));
+
+      if (shared_palm_state_->need_to_record_after_stylus_metrics) {
+        shared_palm_state_->need_to_record_after_stylus_metrics = false;
+        UMA_HISTOGRAM_TIMES(kTouchGapAfterStylusEventName,
+                            base::Seconds(kMaxTouchStylusGapInSeconds));
+        UMA_HISTOGRAM_ENUMERATION(kTouchTypeAfterStylusEventName,
+                                  TouchType::kNone);
+      }
     }
   } else {
     if (shared_palm_state_->has_palm && !last_touch_is_palm_) {
       UMA_HISTOGRAM_BOOLEAN(kPalmTouchCountEventName, true);
     }
     last_touch_is_palm_ = shared_palm_state_->has_palm;
+
+    if (shared_palm_state_->need_to_record_after_stylus_metrics) {
+      shared_palm_state_->need_to_record_after_stylus_metrics = false;
+      base::TimeDelta gap =
+          timestamp - shared_palm_state_->latest_stylus_touch_time;
+      UMA_HISTOGRAM_TIMES(kTouchGapAfterStylusEventName, gap);
+      UMA_HISTOGRAM_ENUMERATION(
+          kTouchTypeAfterStylusEventName,
+          shared_palm_state_->has_palm ? TouchType::kPalm : TouchType::kFinger);
+    }
   }
 }
 
@@ -919,8 +953,12 @@ const char TouchEventConverterEvdev::kPalmTouchCountEventName[] =
     "Ozone.TouchEventConverterEvdev.PalmTouchCount";
 const char TouchEventConverterEvdev::kRepeatedTouchCountEventName[] =
     "Ozone.TouchEventConverterEvdev.RepeatedTouchCount";
+const char TouchEventConverterEvdev::kTouchGapAfterStylusEventName[] =
+    "Ozone.TouchEventConverterEvdev.TouchGapAfterStylus";
 const char TouchEventConverterEvdev::kTouchGapBeforeStylusEventName[] =
     "Ozone.TouchEventConverterEvdev.TouchGapBeforeStylus";
+const char TouchEventConverterEvdev::kTouchTypeAfterStylusEventName[] =
+    "Ozone.TouchEventConverterEvdev.TouchTypeAfterStylus";
 const char TouchEventConverterEvdev::kTouchTypeBeforeStylusEventName[] =
     "Ozone.TouchEventConverterEvdev.TouchTypeBeforeStylus";
 const char TouchEventConverterEvdev::kTouchSessionCountEventName[] =

@@ -8930,6 +8930,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ozone.TouchEventConverterEvdev.TouchGapAfterStylus"
+    units="duration" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The time between a stylus touch and the first finger touch after it. The
+    finger touch may or may not be detected as a palm. If the first touch after
+    a stylus touch is another stylus touch (i.e. no finger touch between them),
+    record a maximum time (10 seconds) instead. Reported when first new touch is
+    reported after a stylus touch finishes.
+  </summary>
+</histogram>
+
 <histogram name="Ozone.TouchEventConverterEvdev.TouchGapBeforeStylus"
     units="duration" expires_after="2024-06-01">
   <owner>jiwan@chromium.org</owner>
@@ -8964,14 +8977,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ozone.TouchEventConverterEvdev.TouchTypeAfterStylus"
+    enum="TouchType" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The type of the first finger touch within 500ms before a stylus touch. It
+    could be finger, palm or none (no touch within 500ms). Reported when a
+    stylus touch is started on the touchscreen.
+  </summary>
+</histogram>
+
 <histogram name="Ozone.TouchEventConverterEvdev.TouchTypeBeforeStylus"
     enum="TouchType" expires_after="2024-06-01">
   <owner>jiwan@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
     The type of the last finger touch within 500ms before a stylus touch. It
-    could be finger, palm or none (no touch within 500ms). Reported when a
-    stylus touch is started on the touchscreen.
+    could be finger, palm or none (no touch within 500ms). Reported when first
+    new touch is reported after a stylus touch finishes.
   </summary>
 </histogram>
 

@@ -19,6 +19,10 @@ struct SharedPalmDetectionFilterState {
 
   // If there is a palm in the latest touch frame.
   bool has_palm = false;
+
+  // If we need to record the after stylus metrics when we handle the next touch
+  // event.
+  bool need_to_record_after_stylus_metrics = false;
 };
 
 }  // namespace ui
