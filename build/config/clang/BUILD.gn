@@ -56,6 +56,15 @@ config("find_bad_constructs") {
         "raw-ptr-exclude-path=base/containers/span.h",
       ]
     }
+
+    if (enable_check_raw_ref_fields) {
+      cflags += [
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "check-raw-ref-fields",
+      ]
+    }
   }
 }
 
