@@ -261,7 +261,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         GetCompanionWebContents(browser());
     EXPECT_TRUE(companion_web_contents);
 
-    // Wait for the navigations in both the frames to complete.
+    // Wait for the navigations in the inner iframe to complete.
     content::TestNavigationObserver nav_observer(companion_web_contents, 1);
     nav_observer.Wait();
   }
@@ -288,8 +288,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     const GURL& url = request.GetURL();
 
     std::string query_proto;
-    EXPECT_TRUE(
-        net::GetValueForKeyInQuery(url, "companion_query", &query_proto));
+    net::GetValueForKeyInQuery(url, "companion_query", &query_proto);
     last_proto_from_url_load_ = DeserializeCompanionRequest(query_proto);
 
     if (request.method == net::test_server::HttpMethod::METHOD_POST) {
@@ -361,9 +360,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         companion_server_.GetURL("/companion_iframe.html").spec();
     params["companion-image-upload-url"] =
         companion_server_.GetURL("/upload").spec();
+    params["open-links-in-current-tab"] = ShouldOpenLinkInCurrentTab();
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::kSidePanelCompanion, params);
   }
+
+  virtual std::string ShouldOpenLinkInCurrentTab() { return "false"; }
 
   void WaitForTabCount(int expected) {
     while (browser()->tab_strip_model()->count() != expected) {
@@ -388,13 +390,30 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  void ExpectUkmCount(ukm::TestUkmRecorder* ukm_recorder,
+                      size_t expected_count) {
+    EXPECT_EQ(
+        expected_count,
+        ukm_recorder
+            ->GetEntriesByName(ukm::builders::Companion_PageView::kEntryName)
+            .size());
+  }
+
   void ExpectUkmEntry(ukm::TestUkmRecorder* ukm_recorder,
                       const char* metric_name,
                       int expected_value) {
-    // There should be only one UKM entry of Companion_PageView type.
+    ExpectUkmCount(ukm_recorder, 1u);
+    ExpectUkmEntryAt(ukm_recorder, 0, metric_name, expected_value);
+  }
+
+  void ExpectUkmEntryAt(ukm::TestUkmRecorder* ukm_recorder,
+                        int index,
+                        const char* metric_name,
+                        int expected_value) {
     const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
-    EXPECT_EQ(ukm_recorder->GetEntriesByName(entry_name).size(), 1ul);
-    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[0];
+    EXPECT_LE(index, static_cast<int>(
+                         ukm_recorder->GetEntriesByName(entry_name).size()));
+    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[index];
 
     // Verify the metric.
     ukm_recorder->EntryHasMetric(entry, metric_name);
@@ -462,6 +481,71 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl3));
+}
+
+class CompanionPageSameTabBrowserTest : public CompanionPageBrowserTest {
+ public:
+  std::string ShouldOpenLinkInCurrentTab() override { return "true"; }
+};
+
+IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
+                       LinkClickOnCompanionPage) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Click a link on the companion page. It should open in the same tab and
+  // refresh the companion.
+  std::string script =
+      "document.getElementById('some_link').click(); waitForMessage();";
+  EvalJs(script);
+
+  // Close side panel and verify UKM of the second companion entry.
+  side_panel_coordinator()->Close();
+  ExpectUkmCount(&ukm_recorder, 2u);
+  ExpectUkmEntryAt(
+      &ukm_recorder, 1, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 SidePanelOpenTrigger::kComboboxSelected);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  base::StatisticsRecorder::ForgetHistogramForTesting(
+      "Companion.SidePanel.OpenTrigger");
+
+  // Click a link. It should open in a new tab and open the companion side
+  // panel. Wait for that event.
+  EXPECT_TRUE(ExecJs("document.getElementById('some_link').click();"));
+  WaitForHistogram("Companion.SidePanel.OpenTrigger");
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Close side panel and verify UKM. There should be only one entry since the
+  // side panel in the previous tab wasn't closed.
+  side_panel_coordinator()->Close();
+  ExpectUkmCount(&ukm_recorder, 1u);
+  ExpectUkmEntryAt(
+      &ukm_recorder, 0, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
@@ -758,6 +842,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ExpsPromoURLLoadsInNewTab) {
 
   // Verify that a new tab opens up to load the exps URL.
   WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
   EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
       kExpectedExpsPromoUrl));
 }
@@ -788,6 +874,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SigninLoadsInNewTab) {
 
   // Verify that a new tab opens up to load the sign-in URL.
   WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
       "https://accounts.google.com/signin/chrome/sync"));
 }
@@ -852,6 +939,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {
 
   // Verify that a new tab opens up to load the exps URL.
   WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   EXPECT_TRUE(
       web_contents()->GetVisibleURL().spec().starts_with(kPhReportingUrl));
 }
