@@ -8,6 +8,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -76,10 +77,14 @@ class NewTabPageMediatorTest : public PlatformTest {
             chrome_browser_state_.get()));
     identity_manager_ =
         IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
-    ChromeAccountManagerService* accountManagerService =
+    ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    imageUpdater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
+    image_updater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
+    bool is_incognito = chrome_browser_state_.get()->IsOffTheRecord();
+    DiscoverFeedService* discover_feed_service =
+        DiscoverFeedServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
     mediator_ = [[NewTabPageMediator alloc]
                 initWithWebState:initial_web_state_.get()
               templateURLService:ios::TemplateURLServiceFactory::
@@ -88,12 +93,13 @@ class NewTabPageMediatorTest : public PlatformTest {
                        URLLoader:url_loader_
                      authService:auth_service_
                  identityManager:identity_manager_
-           accountManagerService:accountManagerService
+           accountManagerService:account_manager_service
                       logoVendor:logo_vendor_
-        identityDiscImageUpdater:imageUpdater_];
-    mediator_.browser = browser_.get();
-    headerConsumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
-    mediator_.headerConsumer = headerConsumer_;
+        identityDiscImageUpdater:image_updater_
+                     isIncognito:is_incognito
+             discoverFeedService:discover_feed_service];
+    header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
+    mediator_.headerConsumer = header_consumer_;
     histogram_tester_.reset(new base::HistogramTester());
   }
 
@@ -129,8 +135,8 @@ class NewTabPageMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::WebState> initial_web_state_;
-  id headerConsumer_;
-  id imageUpdater_;
+  id header_consumer_;
+  id image_updater_;
   id logo_vendor_;
   NewTabPageMediator* mediator_;
   ToolbarTestNavigationManager* navigation_manager_;
@@ -143,14 +149,14 @@ class NewTabPageMediatorTest : public PlatformTest {
 // Tests that the consumer has the right value set up.
 TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
   // Setup.
-  OCMExpect([headerConsumer_ setLogoVendor:logo_vendor_]);
-  OCMExpect([headerConsumer_ setLogoIsShowing:YES]);
+  OCMExpect([header_consumer_ setLogoVendor:logo_vendor_]);
+  OCMExpect([header_consumer_ setLogoIsShowing:YES]);
 
   // Action.
   [mediator_ setUp];
 
   // Tests.
-  EXPECT_OCMOCK_VERIFY(headerConsumer_);
+  EXPECT_OCMOCK_VERIFY(header_consumer_);
 }
 
 // Tests that the the mediator calls the consumer to set the content offset,

@@ -291,6 +291,7 @@ source_set("unit_tests") {
     "//components/ntp_tiles",
     "//components/signin/public/identity_manager",
     "//components/variations",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/search_engines:template_url_service_factory",

@@ -9,16 +9,16 @@
 
 namespace signin {
 class IdentityManager;
-}
+}  // namespace signin
 
 namespace web {
 class WebState;
-}
+}  // namespace web
 
 class AuthenticationService;
-class Browser;
 class ChromeAccountManagerService;
 @class ContentSuggestionsMediator;
+class DiscoverFeedService;
 @protocol FeedControlDelegate;
 @class FeedMetricsRecorder;
 class GURL;
@@ -42,6 +42,8 @@ class UrlLoadingBrowserAgent;
        accountManagerService:(ChromeAccountManagerService*)accountManagerService
                   logoVendor:(id<LogoVendor>)logoVendor
     identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
+                 isIncognito:(BOOL)isIncognito
+         discoverFeedService:(DiscoverFeedService*)discoverFeedService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -57,8 +59,6 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, weak) id<NewTabPageHeaderConsumer> headerConsumer;
 // Delegate for controlling the current feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
-// The browser.
-@property(nonatomic, assign) Browser* browser;
 // The web state associated with this NTP.
 @property(nonatomic, assign) web::WebState* webState;
 

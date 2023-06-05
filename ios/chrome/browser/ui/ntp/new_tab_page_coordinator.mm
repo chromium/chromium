@@ -699,7 +699,6 @@
 - (void)configureNTPMediator {
   NewTabPageMediator* NTPMediator = self.NTPMediator;
   DCHECK(NTPMediator);
-  NTPMediator.browser = self.browser;
   NTPMediator.feedControlDelegate = self;
   NTPMediator.headerConsumer = self.headerViewController;
   NTPMediator.consumer = self.NTPViewController;

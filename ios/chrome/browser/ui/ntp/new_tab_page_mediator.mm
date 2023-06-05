@@ -97,6 +97,10 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @property(nonatomic, strong) id<LogoVendor> logoVendor;
 // This is the object that knows how to update the Identity Disc UI.
 @property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
+// Yes if the browser is currently in incognito mode.
+@property(nonatomic, assign) BOOL isIncognito;
+// DiscoverFeed Service to display the Feed.
+@property(nonatomic, assign) DiscoverFeedService* discoverFeedService;
 
 @end
 
@@ -110,7 +114,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
              identityManager:(signin::IdentityManager*)identityManager
        accountManagerService:(ChromeAccountManagerService*)accountManagerService
                   logoVendor:(id<LogoVendor>)logoVendor
-    identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
+    identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
+                 isIncognito:(BOOL)isIncognito
+         discoverFeedService:(DiscoverFeedService*)discoverFeedService {
   self = [super init];
   if (self) {
     _webState = webState;
@@ -128,6 +134,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
         self, self.templateURLService);
     _logoVendor = logoVendor;
     _imageUpdater = imageUpdater;
+    _isIncognito = isIncognito;
+    _discoverFeedService = discoverFeedService;
   }
   return self;
 }
@@ -137,6 +145,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
     _webState = nullptr;
+    _discoverFeedService = nullptr;
   }
 }
 
@@ -335,11 +344,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     [self.suggestionsMediator refreshMostVisitedTiles];
 
     // Refresh DiscoverFeed unless in off-the-record NTP.
-    if (!self.browser->GetBrowserState()->IsOffTheRecord() &&
-        refreshFeedIfNeeded) {
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->RefreshFeed(FeedRefreshTrigger::kForegroundFeedVisibleOther);
+    if (!self.isIncognito && refreshFeedIfNeeded) {
+      self.discoverFeedService->RefreshFeed(
+          FeedRefreshTrigger::kForegroundFeedVisibleOther);
     }
   }
 }

@@ -61,6 +61,8 @@
       ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+  DiscoverFeedService* discoverFeedService =
+      DiscoverFeedServiceFactory::GetForBrowserState(browserState);
   return [[NewTabPageMediator alloc]
               initWithWebState:webState
             templateURLService:templateURLService
@@ -72,7 +74,9 @@
                                    GetForBrowserState(browserState)
                     logoVendor:ios::provider::CreateLogoVendor(browser,
                                                                webState)
-      identityDiscImageUpdater:imageUpdater];
+      identityDiscImageUpdater:imageUpdater
+                   isIncognito:browserState->IsOffTheRecord()
+           discoverFeedService:discoverFeedService];
 }
 
 - (NewTabPageViewController*)NTPViewController {
