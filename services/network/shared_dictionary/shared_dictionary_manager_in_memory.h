@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_IN_MEMORY_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_IN_MEMORY_H_
 
+#include "base/memory/weak_ptr.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
 namespace network {
@@ -15,6 +16,7 @@ class SharedDictionaryStorage;
 class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
  public:
   explicit SharedDictionaryManagerInMemory(uint64_t cache_max_size);
+  ~SharedDictionaryManagerInMemory() override;
 
   SharedDictionaryManagerInMemory(const SharedDictionaryManagerInMemory&) =
       delete;
@@ -30,8 +32,11 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
                  base::OnceClosure callback) override;
 
+  void MaybeRunCacheEviction();
+
  private:
   uint64_t cache_max_size_;
+  base::WeakPtrFactory<SharedDictionaryManagerInMemory> weak_factory_{this};
 };
 
 }  // namespace network

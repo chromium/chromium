@@ -50,6 +50,8 @@ const GURL kUrl2("https://origin2.test/");
 const net::SchemefulSite kSite1(kUrl1);
 const net::SchemefulSite kSite2(kUrl2);
 
+const std::string kTestData1 = "Hello world";
+
 void CheckDiskCacheEntryDataEquals(
     SharedDictionaryDiskCache& disk_cache,
     const base::UnguessableToken& disk_cache_key_token,
@@ -143,7 +145,7 @@ class SharedDictionaryManagerTest
       std::map<std::string, SharedDictionaryStorageInMemory::DictionaryInfo>>&
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
-        ->GetDictionaryMapForTesting();
+        ->GetDictionaryMap();
   }
   const std::map<url::SchemeHostPort,
                  std::map<std::string, net::SharedDictionaryInfo>>&
@@ -156,8 +158,10 @@ class SharedDictionaryManagerTest
     task_environment_.RunUntilIdle();
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir tmp_directory_;
   base::FilePath database_path_;
   base::FilePath cache_directory_path_;
@@ -449,6 +453,168 @@ TEST_P(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
   std::unique_ptr<SharedDictionary> dict =
       storage->GetDictionary(GURL("https://origin1.test/testfile?hello"));
   EXPECT_FALSE(dict);
+}
+
+TEST_P(SharedDictionaryManagerTest, CacheEvictionOnSetCacheMaxSize) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl1), kSite1);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin1.test/d1"), "p1*",
+                  {kTestData1});
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage.get(), GURL("https://origin2.test/d2"), "p2*",
+                  {kTestData1});
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage.get(), GURL("https://origin3.test/d1"), "p3*",
+                  {kTestData1});
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 2);
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin2.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin3.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, CacheEvictionOnNewDictionary) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl1), kSite1);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 2);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin1.test/d1"), "p1*",
+                  {kTestData1});
+  WriteDictionary(storage.get(), GURL("https://origin2.test/d2"), "p2*",
+                  {kTestData1});
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin1.test/p1?")));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin2.test/p2?")));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage.get(), GURL("https://origin3.test/d1"), "p3*",
+                  {kTestData1});
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionary(GURL("https://origin2.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionary(GURL("https://origin3.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       CacheEvictionOnNewDictionaryMultiIsolation) {
+  net::SharedDictionaryStorageIsolationKey isolation_key1(
+      url::Origin::Create(kUrl1), kSite1);
+  net::SharedDictionaryStorageIsolationKey isolation_key2(
+      url::Origin::Create(kUrl2), kSite2);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 2);
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  ASSERT_TRUE(storage1);
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  ASSERT_TRUE(storage2);
+
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/d1"), "p1*",
+                  {kTestData1});
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/d2"), "p2*",
+                  {kTestData1});
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  EXPECT_TRUE(storage1->GetDictionary(GURL("https://origin1.test/p1?")));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin2.test/p2?")));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage2.get(), GURL("https://origin3.test/d1"), "p3*",
+                  {kTestData1});
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  EXPECT_FALSE(storage1->GetDictionary(GURL("https://origin1.test/p1?")));
+  EXPECT_FALSE(storage2->GetDictionary(GURL("https://origin2.test/p2?")));
+  EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin3.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
+  net::SharedDictionaryStorageIsolationKey isolation_key1(
+      url::Origin::Create(kUrl1), kSite1);
+  net::SharedDictionaryStorageIsolationKey isolation_key2(
+      url::Origin::Create(kUrl2), kSite2);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  ASSERT_TRUE(storage1);
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  ASSERT_TRUE(storage2);
+
+  // Dictionary 1-1.
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/d1"), "p1*",
+                  {kTestData1});
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Dictionary 1-2.
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/d2"), "p2*",
+                  {kTestData1});
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Dictionary 2-1.
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/d1"), "p1*",
+                  {kTestData1});
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Dictionary 2-2.
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/d2"), "p2*",
+                  {kTestData1});
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Call GetDictionary to update the last used time of the dictionary 1-1.
+  std::unique_ptr<SharedDictionary> dict1 =
+      storage1->GetDictionary(GURL("https://origin1.test/p1?"));
+  ASSERT_TRUE(dict1);
+
+  // Set the max size to kTestData1.size() * 3. The low water mark will be
+  // kTestData1.size() * 2.7 (3 * 0.9).
+  manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 3);
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage1->GetDictionary(GURL("https://origin1.test/p1?")));
+  EXPECT_FALSE(storage1->GetDictionary(GURL("https://origin1.test/p2?")));
+  EXPECT_FALSE(storage2->GetDictionary(GURL("https://origin2.test/p1?")));
+  EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin2.test/p2?")));
 }
 
 }  // namespace network

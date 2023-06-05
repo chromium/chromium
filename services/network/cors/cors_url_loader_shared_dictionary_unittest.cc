@@ -134,7 +134,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
       std::map<std::string, SharedDictionaryStorageInMemory::DictionaryInfo>>&
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
-        ->GetDictionaryMapForTesting();
+        ->GetDictionaryMap();
   }
 
   net::IsolationInfo isolation_info_;

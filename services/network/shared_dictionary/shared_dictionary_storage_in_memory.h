@@ -27,25 +27,12 @@ namespace cors {
 class CorsURLLoaderSharedDictionaryTest;
 }  // namespace cors
 
+class SharedDictionaryManagerInMemory;
+
 // A SharedDictionaryStorage which is managed by
 // SharedDictionaryManagerInMemory.
 class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
  public:
-  explicit SharedDictionaryStorageInMemory(
-      base::ScopedClosureRunner on_deleted_closure_runner);
-
-  SharedDictionaryStorageInMemory(const SharedDictionaryStorageInMemory&) =
-      delete;
-  SharedDictionaryStorageInMemory& operator=(
-      const SharedDictionaryStorageInMemory&) = delete;
-
-  // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) override;
-
- private:
-  friend class SharedDictionaryManagerTest;
-  friend class network::cors::CorsURLLoaderSharedDictionaryTest;
-
   // This class is used to keep the dictionary information in memory.
   class DictionaryInfo {
    public:
@@ -53,6 +40,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                    base::Time response_time,
                    base::TimeDelta expiration,
                    const std::string& match,
+                   base::Time last_used_time,
                    scoped_refptr<net::IOBuffer> data,
                    size_t size,
                    const net::SHA256HashValue& hash);
@@ -69,20 +57,49 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const base::Time& response_time() const { return response_time_; }
     base::TimeDelta expiration() const { return expiration_; }
     const std::string& match() const { return match_; }
+    const base::Time& last_used_time() const { return last_used_time_; }
     const scoped_refptr<net::IOBuffer>& data() const { return data_; }
     size_t size() const { return size_; }
     const net::SHA256HashValue& hash() const { return hash_; }
+
+    void set_last_used_time(base::Time last_used_time) {
+      last_used_time_ = last_used_time;
+    }
 
    private:
     GURL url_;
     base::Time response_time_;
     base::TimeDelta expiration_;
     std::string match_;
+    base::Time last_used_time_;
     scoped_refptr<net::IOBuffer> data_;
     size_t size_;
     net::SHA256HashValue hash_;
   };
 
+  SharedDictionaryStorageInMemory(
+      base::WeakPtr<SharedDictionaryManagerInMemory> manager,
+      base::ScopedClosureRunner on_deleted_closure_runner);
+
+  SharedDictionaryStorageInMemory(const SharedDictionaryStorageInMemory&) =
+      delete;
+  SharedDictionaryStorageInMemory& operator=(
+      const SharedDictionaryStorageInMemory&) = delete;
+
+  // SharedDictionaryStorage
+  std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) override;
+
+  const std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>&
+  GetDictionaryMap() {
+    return dictionary_info_map_;
+  }
+
+  void DeleteDictionary(const url::SchemeHostPort& host,
+                        const std::string& match);
+
+ private:
+  friend class SharedDictionaryManagerTest;
+  friend class network::cors::CorsURLLoaderSharedDictionaryTest;
   ~SharedDictionaryStorageInMemory() override;
 
   // SharedDictionaryStorage
@@ -102,11 +119,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                            size_t size,
                            const net::SHA256HashValue& hash);
 
-  const std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>&
-  GetDictionaryMapForTesting() {
-    return dictionary_info_map_;
-  }
-
+  base::WeakPtr<SharedDictionaryManagerInMemory> manager_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
 
   std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>

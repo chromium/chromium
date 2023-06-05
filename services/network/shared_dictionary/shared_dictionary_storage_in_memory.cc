@@ -9,27 +9,43 @@
 #include "base/strings/string_util.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
+#include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 #include "url/scheme_host_port.h"
 
 namespace network {
 
 SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
+    base::WeakPtr<SharedDictionaryManagerInMemory> manager,
     base::ScopedClosureRunner on_deleted_closure_runner)
-    : on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {}
+    : manager_(manager),
+      on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {}
 
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
 std::unique_ptr<SharedDictionary>
 SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
-  const DictionaryInfo* info =
+  DictionaryInfo* info =
       GetMatchingDictionaryFromDictionaryInfoMap(dictionary_info_map_, url);
 
   if (!info) {
     return nullptr;
   }
+  info->set_last_used_time(base::Time::Now());
   return std::make_unique<SharedDictionaryInMemory>(info->data(), info->size(),
                                                     info->hash());
+}
+
+void SharedDictionaryStorageInMemory::DeleteDictionary(
+    const url::SchemeHostPort& host,
+    const std::string& match) {
+  auto it = dictionary_info_map_.find(host);
+  if (it != dictionary_info_map_.end()) {
+    it->second.erase(match);
+    if (it->second.empty()) {
+      dictionary_info_map_.erase(it);
+    }
+  }
 }
 
 scoped_refptr<SharedDictionaryWriter>
@@ -56,7 +72,11 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
   }
   dictionary_info_map_[url::SchemeHostPort(url)].insert(std::make_pair(
       match,
-      DictionaryInfo(url, response_time, expiration, match, data, size, hash)));
+      DictionaryInfo(url, response_time, expiration, match,
+                     /*last_used_time=*/base::Time::Now(), data, size, hash)));
+  if (manager_) {
+    manager_->MaybeRunCacheEviction();
+  }
 }
 
 SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
@@ -64,6 +84,7 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
+    base::Time last_used_time,
     scoped_refptr<net::IOBuffer> data,
     size_t size,
     const net::SHA256HashValue& hash)
@@ -71,6 +92,7 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
       response_time_(response_time),
       expiration_(expiration),
       match_(match),
+      last_used_time_(last_used_time),
       data_(std::move(data)),
       size_(size),
       hash_(hash) {}
