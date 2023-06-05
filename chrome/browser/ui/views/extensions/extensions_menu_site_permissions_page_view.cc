@@ -38,6 +38,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
@@ -142,16 +143,49 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                /*adjust_height_for_width =*/true)
           .WithWeight(1);
 
-  ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
-  const int icon_size =
-      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
-  const int icon_label_spacing =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  const gfx::Insets dialog_insets =
+      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
+
+  ChromeLayoutProvider* const chrome_layout_provider =
+      ChromeLayoutProvider::Get();
+  const int icon_size = chrome_layout_provider->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
+  const int icon_label_spacing = chrome_layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  const int vertical_spacing = chrome_layout_provider->GetDistanceMetric(
+      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
+  // This value must be the same as the `HoverButton` vertical margin.
+  const int hover_button_vertical_spacing =
+      chrome_layout_provider->GetDistanceMetric(
+          DISTANCE_CONTROL_LIST_VERTICAL) /
+      2;
+
+  const auto create_separator_builder =
+      [dialog_insets, vertical_spacing, hover_button_vertical_spacing](
+          bool full_width, bool is_bottom_hover_button = false) {
+        const int horizontal_margin = full_width ? 0 : dialog_insets.left();
+        const int bottom_margin =
+            is_bottom_hover_button
+                ? vertical_spacing - hover_button_vertical_spacing
+                : vertical_spacing;
+
+        return views::Builder<views::Separator>().SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(vertical_spacing, horizontal_margin,
+                              bottom_margin, dialog_insets.right()));
+      };
 
   const auto create_radio_button_builder =
       [=](PermissionsManager::UserSiteAccess site_access) {
         return views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            // Add dialog horizontal margins, and top margin to separate the
+            // items.
+            .SetProperty(
+                views::kMarginsKey,
+                gfx::Insets::TLBR(vertical_spacing, dialog_insets.left(), 0,
+                                  dialog_insets.right()))
             .AddChildren(
                 views::Builder<views::RadioButton>()
                     .SetText(GetSiteAccessRadioButtonText(site_access))
@@ -173,12 +207,16 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
   views::Builder<ExtensionsMenuSitePermissionsPageView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
-      // TODO(crbug.com/1390952): Add margins after adding the menu
-      // items, to make sure all items are aligned.
       .AddChildren(
           // Subheader.
           views::Builder<views::FlexLayoutView>()
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+              // Add top dialog margins, since its the first element, and
+              // horizontal dialog margins. Vertical margins will be handled in
+              // between the contents.
+              .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
+                                                   dialog_insets.left(), 0,
+                                                   dialog_insets.right()))
               .SetProperty(views::kFlexBehaviorKey, stretch_specification)
               .AddChildren(
                   // Back button.
@@ -208,13 +246,18 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                               &extension_icon_),
                           views::Builder<views::Label>().CopyAddressTo(
                               &extension_name_))),
+          create_separator_builder(/*full_width=*/true,
+                                   /*is_bottom_hover_button=*/false),
           // Content.
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .AddChildren(
                   // Site access section.
-                  views::Builder<views::Separator>(),
                   views::Builder<views::Label>()
+                      // Add dialog horizontal margins. Vertical margins are
+                      // handled by surrounding views.
+                      .SetProperty(views::kMarginsKey,
+                                   gfx::Insets::VH(0, dialog_insets.left()))
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_LABEL))
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
@@ -225,9 +268,15 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                   create_radio_button_builder(
                       PermissionsManager::UserSiteAccess::kOnAllSites),
                   // Requests in toolbar toggle.
-                  views::Builder<views::Separator>(),
+                  create_separator_builder(/*full_width=*/false),
+                  // TODO(crbug.com/1390952): Format this view. Toggle button
+                  // should be on the right and centered.
                   views::Builder<views::FlexLayoutView>()
                       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+                      // Add dialog horizontal margins. Vertical margins are
+                      // handled by separators.
+                      .SetProperty(views::kMarginsKey,
+                                   gfx::Insets::VH(0, dialog_insets.left()))
                       .SetProperty(views::kFlexBehaviorKey,
                                    stretch_specification)
                       .AddChildren(
@@ -241,22 +290,36 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                       OnShowRequestsTogglePressed,
                                   base::Unretained(this)))),
                   // Settings button.
-                  views::Builder<views::Separator>(),
-                  views::Builder<HoverButton>(std::make_unique<HoverButton>(
-                      base::BindRepeating(
-                          [](Browser* browser,
-                             extensions::ExtensionId extension_id) {
-                            chrome::ShowExtensions(browser, extension_id);
-                          },
-                          browser, extension_id_),
-                      /*icon_view=*/nullptr,
-                      l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON),
-                      /*subtitle=*/std::u16string(),
-                      std::make_unique<views::ImageView>(
-                          ui::ImageModel::FromVectorIcon(
-                              vector_icons::kLaunchIcon,
-                              ui::kColorIconSecondary))))))
+                  create_separator_builder(/*full_width=*/false,
+                                           /*is_bottom_hover_button=*/true),
+                  views::Builder<HoverButton>(
+                      std::make_unique<HoverButton>(
+                          base::BindRepeating(
+                              [](Browser* browser,
+                                 extensions::ExtensionId extension_id) {
+                                chrome::ShowExtensions(browser, extension_id);
+                              },
+                              browser, extension_id_),
+                          /*icon_view=*/nullptr,
+                          l10n_util::GetStringUTF16(
+                              IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON),
+                          /*subtitle=*/std::u16string(),
+                          std::make_unique<views::ImageView>(
+                              ui::ImageModel::FromVectorIcon(
+                                  vector_icons::kLaunchIcon,
+                                  ui::kColorIconSecondary))))
+                      // Align the hover button text by adding the dialog
+                      // horizontal margins for the horizontal borders.
+                      .SetBorder(views::CreateEmptyBorder(
+                          gfx::Insets::VH(0, dialog_insets.left())))
+                      // Add bottom dialog margins since it's the last
+                      // element.
+                      .SetProperty(
+                          views::kMarginsKey,
+                          gfx::Insets::TLBR(0, 0,
+                                            dialog_insets.bottom() -
+                                                hover_button_vertical_spacing,
+                                            0))))
 
       .BuildChildren();
 }
