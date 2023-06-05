@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -44,6 +45,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -243,6 +245,19 @@ class ContentSettingPopupImageModel : public ContentSettingSimpleImageModel {
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
+class ContentSettingStorageAccessImageModel
+    : public ContentSettingSimpleImageModel {
+ public:
+  ContentSettingStorageAccessImageModel();
+
+  ContentSettingStorageAccessImageModel(
+      const ContentSettingStorageAccessImageModel&) = delete;
+  ContentSettingStorageAccessImageModel& operator=(
+      const ContentSettingStorageAccessImageModel&) = delete;
+
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+};
+
 namespace {
 
 struct ContentSettingsImageDetails {
@@ -339,6 +354,9 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
       return std::make_unique<ContentSettingSensorsImageModel>();
     case ImageType::NOTIFICATIONS_QUIET_PROMPT:
       return std::make_unique<ContentSettingNotificationsImageModel>();
+    case ImageType::STORAGE_ACCESS:
+      return std::make_unique<ContentSettingStorageAccessImageModel>();
+
     case ImageType::NUM_IMAGE_TYPES:
       break;
   }
@@ -1025,6 +1043,38 @@ bool ContentSettingPopupImageModel::UpdateAndGetVisibility(
   return true;
 }
 
+// Storage Access
+// ---------------------------------------------------------------------
+
+ContentSettingStorageAccessImageModel::ContentSettingStorageAccessImageModel()
+    : ContentSettingSimpleImageModel(ImageType::STORAGE_ACCESS,
+                                     ContentSettingsType::STORAGE_ACCESS) {}
+
+bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
+    WebContents* web_contents) {
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  if (!content_settings) {
+    return false;
+  }
+  std::map<net::SchemefulSite, bool> entries =
+      content_settings->GetTwoSiteRequests(content_type());
+  if (entries.empty()) {
+    return false;
+  }
+  bool has_blocked_requests =
+      base::ranges::any_of(entries, [](auto& entry) { return !entry.second; });
+
+  // TODO(crbug.com/1433644): Update icon and tooltips.
+  set_icon(vector_icons::kCookieIcon, has_blocked_requests
+                                          ? vector_icons::kBlockedBadgeIcon
+                                          : gfx::kNoneIcon);
+  // set_explanatory_string_id(IDS_BLOCKED_POPUPS_EXPLANATORY_TEXT);
+  // set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_POPUPS_TOOLTIP));
+  return true;
+}
+
 // Notifications --------------------------------------------------------------
 
 ContentSettingNotificationsImageModel::ContentSettingNotificationsImageModel()
@@ -1142,6 +1192,7 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
       ImageType::FRAMEBUST,
       ImageType::CLIPBOARD_READ_WRITE,
       ImageType::NOTIFICATIONS_QUIET_PROMPT,
+      ImageType::STORAGE_ACCESS,
   };
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> result;

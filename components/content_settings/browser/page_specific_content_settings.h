@@ -559,8 +559,7 @@ class PageSpecificContentSettings
 
   // Stores embedded sites that requested a permission. Only applies to
   // permissions that are scoped to two sites, e.g. StorageAccess.
-  std::map<ContentSettingsType,
-           std::map<net::SchemefulSite, ContentSettingsStatus>>
+  std::map<ContentSettingsType, std::map<net::SchemefulSite, bool>>
       content_settings_two_site_requests_;
 
   // Profile-bound, this will outlive this class (which is WebContents bound).

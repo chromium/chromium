@@ -38,6 +38,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -50,6 +51,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -721,6 +723,41 @@ TEST_F(ContentSettingImageModelTest, NotificationsContentAbusive) {
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_EQ(0, content_setting_image_model->explanatory_string_id());
   manager_->Accept();
+}
+
+TEST_F(ContentSettingImageModelTest, StorageAccess) {
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::STORAGE_ACCESS);
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  // Add an allowed permission.
+  content_settings->OnTwoSitePermissionRequested(
+      ContentSettingsType::STORAGE_ACCESS,
+      net::SchemefulSite(GURL("https://example.com")), true);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+
+  // Add a blocked permission.
+  content_settings->OnTwoSitePermissionRequested(
+      ContentSettingsType::STORAGE_ACCESS,
+      net::SchemefulSite(GURL("https://foo.com")), false);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_icon_badge(),
+            &vector_icons::kBlockedBadgeIcon);
+
+  // Change permission to be allowed.
+  content_settings->OnTwoSitePermissionRequested(
+      ContentSettingsType::STORAGE_ACCESS,
+      net::SchemefulSite(GURL("https://foo.com")), true);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

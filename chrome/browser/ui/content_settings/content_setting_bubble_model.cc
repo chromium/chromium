@@ -47,6 +47,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -695,6 +696,16 @@ void ContentSettingSingleRadioGroup::SetNarrowestContentSetting(
                                   bubble_content().radio_group.url,
                                   content_type(), setting);
 }
+
+// ContentSettingStorageAccessBubbleModel --------------------------------------
+
+ContentSettingStorageAccessBubbleModel::ContentSettingStorageAccessBubbleModel(
+    Delegate* delegate,
+    WebContents* web_contents)
+    : ContentSettingBubbleModel(delegate, web_contents) {}
+
+ContentSettingStorageAccessBubbleModel::
+    ~ContentSettingStorageAccessBubbleModel() = default;
 
 // ContentSettingCookiesBubbleModel --------------------------------------------
 
@@ -1843,6 +1854,9 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     case ContentSettingsType::SENSORS:
       return std::make_unique<ContentSettingSingleRadioGroup>(
           delegate, web_contents, content_type);
+    case ContentSettingsType::STORAGE_ACCESS:
+      return std::make_unique<ContentSettingStorageAccessBubbleModel>(
+          delegate, web_contents);
     default:
       NOTREACHED() << "No bubble for the content type "
                    << static_cast<int32_t>(content_type) << ".";

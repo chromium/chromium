@@ -27,6 +27,7 @@
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -706,11 +707,7 @@ bool PageSpecificContentSettings::IsContentAllowed(
 std::map<net::SchemefulSite, /*is_allowed*/ bool>
 PageSpecificContentSettings::GetTwoSiteRequests(
     ContentSettingsType content_type) {
-  std::map<net::SchemefulSite, /*is_allowed*/ bool> result;
-  for (const auto& entry : content_settings_two_site_requests_[content_type]) {
-    result[entry.first] = entry.second.allowed;
-  }
-  return result;
+  return content_settings_two_site_requests_[content_type];
 }
 
 void PageSpecificContentSettings::OnContentBlocked(ContentSettingsType type) {
@@ -794,13 +791,7 @@ void PageSpecificContentSettings::OnTwoSitePermissionRequested(
     ContentSettingsType type,
     net::SchemefulSite requesting_site,
     bool is_allowed) {
-  ContentSettingsStatus& status =
-      content_settings_two_site_requests_[type][requesting_site];
-  if (is_allowed) {
-    status.allowed = true;
-  } else {
-    status.blocked = true;
-  }
+  content_settings_two_site_requests_[type][requesting_site] = is_allowed;
 
   MaybeUpdateLocationBar();
 }

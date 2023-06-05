@@ -49,6 +49,7 @@ class ContentSettingImageModel {
     SENSORS = 16,
     NOTIFICATIONS_QUIET_PROMPT = 17,
     CLIPBOARD_READ_WRITE = 18,
+    STORAGE_ACCESS = 19,
 
     NUM_IMAGE_TYPES
   };

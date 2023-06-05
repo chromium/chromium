@@ -63,6 +63,7 @@ absl::optional<ViewID> GetViewID(
     case ImageType::CLIPBOARD_READ_WRITE:
     case ImageType::SENSORS:
     case ImageType::NOTIFICATIONS_QUIET_PROMPT:
+    case ImageType::STORAGE_ACCESS:
       return absl::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:

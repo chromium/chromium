@@ -27,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class ContentSettingBubbleModelDelegate;
 class Profile;
@@ -58,6 +59,7 @@ class Event;
 //   ContentSettingSubresourceFilterBubbleModel  - filtered subresources
 //   ContentSettingDownloadsBubbleModel          - automatic downloads
 //   ContentSettingQuietRequestBubbleModel       - quiet ui prompts
+//   ContentSettingStorageAccessBubbleModel      - saa prompts
 
 // Forward declaration necessary for downcasts.
 class ContentSettingSimpleBubbleModel;
@@ -541,6 +543,23 @@ class ContentSettingSingleRadioGroup : public ContentSettingSimpleBubbleModel {
   void SetNarrowestContentSetting(ContentSetting setting);
 
   ContentSetting block_setting_;
+};
+
+// The bubble that allows users to control StorageAccess permission.
+// It uses checkboxes instead of radio buttons to allow users to control
+// multiple embedded sites.
+class ContentSettingStorageAccessBubbleModel
+    : public ContentSettingBubbleModel {
+ public:
+  ContentSettingStorageAccessBubbleModel(Delegate* delegate,
+                                         content::WebContents* web_contents);
+
+  ContentSettingStorageAccessBubbleModel(
+      const ContentSettingStorageAccessBubbleModel&) = delete;
+  ContentSettingStorageAccessBubbleModel& operator=(
+      const ContentSettingStorageAccessBubbleModel&) = delete;
+
+  ~ContentSettingStorageAccessBubbleModel() override;
 };
 
 // The bubble that informs users that Chrome does not have access to Location
