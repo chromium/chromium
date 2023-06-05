@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/content/renderer/suggestion_properties.h"
+
+#include "base/notreached.h"
+
+using blink::WebFormControlElement;
+
+namespace autofill {
+
+// The following functions define properties of AutofillSuggestions based
+// on the trigger source.
+bool ShouldAutofillOnEmptyValues(
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+      return true;
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
+
+bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+      return true;
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
+
+bool ShouldShowFullSuggestionListForPasswordManager(
+    AutofillSuggestionTriggerSource trigger_source,
+    const WebFormControlElement& element) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+      // Even if the user has not edited an input element, it may still contain
+      // a default value filled by the website. In that case, don't elide
+      // suggestions that don't have a common prefix with the default value.
+      return element.IsAutofilled() || !element.UserHasEditedTheField();
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace autofill

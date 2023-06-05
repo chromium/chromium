@@ -478,8 +478,8 @@ enum RendererFormDataAction {
 
 // Describes which action triggered Autofill suggestions. This has implications
 // how the suggestions behave, as described below.
-// Some details of the suggestions are further controlled by the
-// AutofillAgent::ShowSuggestionsOptions. See comments there.
+// Some further properties of suggestions are implied by the source. See
+// components/autofill/content/renderer/suggestion_properties.h.
 enum AutofillSuggestionTriggerSource {
   // Used as a default value and cannot be used to trigger suggestions.
   kUnspecified,

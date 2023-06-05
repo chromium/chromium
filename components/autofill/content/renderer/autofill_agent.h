@@ -173,26 +173,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   friend class FormControlClickDetectionTest;
   friend class AutofillAgentTestApi;
 
-  // Flags passed to ShowSuggestions.
-  struct ShowSuggestionsOptions {
-    // Indicates what triggered the suggestions.
-    AutofillSuggestionTriggerSource trigger_source{
-        AutofillSuggestionTriggerSource::kUnspecified};
-
-    // Specifies that suggestions should be shown when |element| contains no
-    // text.
-    bool autofill_on_empty_values{false};
-
-    // Specifies that suggestions should be shown when the caret is not
-    // after the last character in the element.
-    bool requires_caret_at_end{false};
-
-    // Specifies that all autofill suggestions should be shown and none should
-    // be elided because of the current value of |element| (relevant for inline
-    // autocomplete).
-    bool show_full_suggestion_list{false};
-  };
-
   // This class ensures that the driver will only receive notifications only
   // when a focused field or its type (FocusedFieldType) change.
   class FocusStateNotifier {
@@ -300,7 +280,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // and may or may not lead to the showing of a suggestion popup (no popup is
   // shown if there are no available suggestions).
   void ShowSuggestions(const blink::WebFormControlElement& element,
-                       const ShowSuggestionsOptions& options);
+                       AutofillSuggestionTriggerSource trigger_source);
 
   // Queries the browser for Autocomplete and Autofill suggestions for the given
   // |element|.
