@@ -532,6 +532,7 @@ static_library("ui") {
     "//chrome/browser/resources/usb_internals:resources",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/share",
+    "//chrome/browser/storage_access_api",
     "//chrome/browser/ui/side_panel:side_panel_enums",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",

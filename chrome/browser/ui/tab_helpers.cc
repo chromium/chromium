@@ -78,6 +78,9 @@
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
+#include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
+#include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -447,6 +450,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
             profile));
   }
   SoundContentSettingObserver::CreateForWebContents(web_contents);
+  StorageAccessAPITabHelper::CreateForWebContents(
+      web_contents, StorageAccessAPIServiceFactory::GetForBrowserContext(
+                        web_contents->GetBrowserContext()));
   SyncEncryptionKeysTabHelper::CreateForWebContents(web_contents);
   sync_sessions::SyncSessionsRouterTabHelper::CreateForWebContents(
       web_contents,

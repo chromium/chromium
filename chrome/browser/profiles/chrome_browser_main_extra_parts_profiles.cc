@@ -158,6 +158,7 @@
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
+#include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -994,6 +995,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   SpellcheckServiceFactory::GetInstance();
 #endif
+  StorageAccessAPIServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   StorageNotificationServiceFactory::GetInstance();
 #endif
