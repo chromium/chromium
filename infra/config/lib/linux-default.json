@@ -97,6 +97,7 @@
   },
   "try": {
     "android-11-x86-rel": "Ubuntu-22.04",
+    "android-12-x64-dbg": "Ubuntu-22.04",
     "android-12-x64-rel": "Ubuntu-22.04",
     "android-12-x64-rel-compilator": "Ubuntu-22.04",
     "android-arm64-rel": "Ubuntu-22.04",
