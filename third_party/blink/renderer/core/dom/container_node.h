@@ -420,6 +420,13 @@ class CORE_EXPORT ContainerNode : public Node {
     return EnsureCachedCollection<HTMLCollection>(kPopoverInvokers);
   }
 
+  // DocumentOrElementEventHandlers:
+  // These event listeners are only actually web-exposed on interfaces that
+  // include the DocumentOrElementEventHandlers mixin in their idl.
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(copy, kCopy)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(cut, kCut)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(paste, kPaste)
+
   void Trace(Visitor*) const override;
 
  protected:

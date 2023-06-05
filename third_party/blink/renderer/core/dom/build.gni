@@ -77,7 +77,6 @@ blink_core_sources_dom = [
   "dataset_dom_string_map.h",
   "decoded_data_document_parser.cc",
   "decoded_data_document_parser.h",
-  "document_and_element_event_handlers.h",
   "document_data.h",
   "document_encoding_data.cc",
   "document_encoding_data.h",
