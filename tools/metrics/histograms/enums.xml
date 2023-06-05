@@ -27256,6 +27256,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Presentation section selected"/>
   <int value="3" label="Protocol Handlers section selected"/>
   <int value="4" label="Icons section selected"/>
+  <int value="5" label="Window Controls Overlay section selected"/>
 </enum>
 
 <enum name="DevToolsMediaType">
