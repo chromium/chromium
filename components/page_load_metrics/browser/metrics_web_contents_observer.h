@@ -168,6 +168,9 @@ class MetricsWebContentsObserver
   // Called when a `SharedStorageWorkletHost` is created for `rfh`.
   void OnSharedStorageWorkletHostCreated(content::RenderFrameHost* rfh);
 
+  // Returns the time this MetricsWebContentsObserver was created.
+  base::TimeTicks GetCreated();
+
  protected:
   // Protected rather than private so that derived test classes can call
   // constructor.
@@ -358,6 +361,8 @@ class MetricsWebContentsObserver
       page_load_metrics_receivers_;
 
   bool web_contents_will_soon_be_destroyed_ = false;
+
+  base::TimeTicks created_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

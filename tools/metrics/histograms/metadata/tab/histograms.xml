@@ -1160,6 +1160,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.Active.AbsolutePosition" units="index"
+    expires_after="2023-12-31">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    When a tab is activated, records the index of that tab in the tab strip,
+    starting at 1 (1-indexed).
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Active.RelativePosition" units="%"
+    expires_after="2023-12-31">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    When a tab is activated, records the index of that tab in the tab strip as a
+    percentage of the total number of tabs.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.ActiveCountAtStartup" units="tabs"
     expires_after="2023-10-01">
   <owner>alionadangla@chromium.org</owner>
@@ -1349,6 +1369,25 @@ chromium-metrics-reviews@google.com.
   <owner>chromeleon@google.com</owner>
   <summary>
     [iOS] Number of tabs older than 21 days. Recorded at cold launch.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PageLoad.TimeSinceActive" units="ms"
+    expires_after="2023-12-31">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    On page load, records the time since last active for each tab in the tab
+    strip.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PageLoad.TimeSinceCreated" units="ms"
+    expires_after="2023-12-31">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    On page load, records the time since creation for each tab in the tab strip.
   </summary>
 </histogram>
 

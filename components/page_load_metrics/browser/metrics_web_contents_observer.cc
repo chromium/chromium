@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
@@ -112,6 +113,7 @@ MetricsWebContentsObserver* MetricsWebContentsObserver::CreateForWebContents(
     metrics = new MetricsWebContentsObserver(web_contents,
                                              std::move(embedder_interface));
     web_contents->SetUserData(UserDataKey(), base::WrapUnique(metrics));
+    metrics->created_ = base::TimeTicks::Now();
   }
   return metrics;
 }
@@ -1258,6 +1260,10 @@ void MetricsWebContentsObserver::OnSharedStorageWorkletHostCreated(
 
   if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
     tracker->OnSharedStorageWorkletHostCreated();
+}
+
+base::TimeTicks MetricsWebContentsObserver::GetCreated() {
+  return created_;
 }
 
 // This contains some bugs. RenderFrameHost::IsActive is not relevant to

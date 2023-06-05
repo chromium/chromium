@@ -34,6 +34,7 @@
 #include "chrome/browser/page_load_metrics/observers/security_state_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/signed_exchange_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/tab_strip_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/translate_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
@@ -172,6 +173,8 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
       tracker->AddObserver(std::move(loading_predictor_observer));
     tracker->AddObserver(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());
+    tracker->AddObserver(
+        std::make_unique<TabStripPageLoadMetricsObserver>(web_contents()));
   }
   tracker->AddObserver(
       std::make_unique<OmniboxSuggestionUsedMetricsObserver>());

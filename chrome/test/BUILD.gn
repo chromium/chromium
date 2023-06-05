@@ -2133,6 +2133,7 @@ if (!is_android) {
       "../browser/page_load_metrics/observers/prerender_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/security_state_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/signed_exchange_page_load_metrics_browsertest.cc",
+      "../browser/page_load_metrics/observers/tab_strip_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/third_party_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/use_counter_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/page_load_metrics_browsertest.cc",
