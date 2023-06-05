@@ -260,5 +260,71 @@ INSTANTIATE_TEST_SUITE_P(
             .heuristic_type = NAME_FIRST,
             .expected_result = ADDRESS_HOME_STREET_NAME}));
 
+// Tests for type predictions of ac=unrecognized fields when
+// `kAutofillPredictionsForAutocompleteUnrecognized` is enabled:
+// By default, address Autofill suppresses type predictions for ac=unrecognized
+// fields. Consequently, no suggestions are shown for such fields and the fields
+// cannot be filled.
+// With `kAutofillPredictionsForAutocompleteUnrecognized`, predictions are no
+// longer suppressed. Suggestions for ac=unrecognized fields remain suppressed
+// and the fields are not filled.
+// `AutofillField::ShouldSuppressSuggestionsAndFillingByDefault()` indicates
+// that the field should receive special treatment in the suggestion and filling
+// logic.
+// Every test specifies the predicted type for a field and what the expected
+// return value of the aforementioned function is.
+struct AutocompleteUnrecognizedTypeTestCase {
+  // Either server or heuristic type - this doesn't matter for these tests.
+  ServerFieldType predicted_type;
+  // If the predicted type should be treated as a server overwrite. Server
+  // overwrites already take precedence over ac=unrecognized.
+  bool is_server_overwrite = false;
+  // Expected value of `ShouldSuppressSuggestionsAndFillingByDefault()`.
+  bool expect_should_suppress_suggestions_and_filling;
+};
+
+class AutocompleteUnrecognizedTypeTest
+    : public testing::TestWithParam<AutocompleteUnrecognizedTypeTestCase> {
+ public:
+  AutocompleteUnrecognizedTypeTest()
+      : feature_(features::kAutofillPredictionsForAutocompleteUnrecognized) {}
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+TEST_P(AutocompleteUnrecognizedTypeTest, TypePredictions) {
+  // Create a field with ac=unrecognized and the specified predicted type.
+  const AutocompleteUnrecognizedTypeTestCase& test = GetParam();
+  AutofillField field;
+  field.set_server_predictions({test::CreateFieldPrediction(
+      test.predicted_type, test.is_server_overwrite)});
+  field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
+
+  // Expect that the predicted type wins over ac=unrecognized.
+  EXPECT_EQ(field.Type().GetStorableType(), test.predicted_type);
+  EXPECT_EQ(field.ShouldSuppressSuggestionsAndFillingByDefault(),
+            test.expect_should_suppress_suggestions_and_filling);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillFieldTest,
+    AutocompleteUnrecognizedTypeTest,
+    testing::Values(
+        // Predicted address type: Expect no suggestions/filling.
+        AutocompleteUnrecognizedTypeTestCase{
+            .predicted_type = ADDRESS_HOME_CITY,
+            .expect_should_suppress_suggestions_and_filling = true},
+        // Server overwrite: Expect suggestions/filling.
+        AutocompleteUnrecognizedTypeTestCase{
+            .predicted_type = ADDRESS_HOME_CITY,
+            .is_server_overwrite = true,
+            .expect_should_suppress_suggestions_and_filling = false},
+        // Credit card prediction: They ignore ac=unrecognized independently of
+        // the feature. Thus, expect suggestions/filling.
+        AutocompleteUnrecognizedTypeTestCase{
+            .predicted_type = CREDIT_CARD_NUMBER,
+            .expect_should_suppress_suggestions_and_filling = false}));
+
 }  // namespace
 }  // namespace autofill
