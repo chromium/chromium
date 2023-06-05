@@ -78,7 +78,7 @@ async def main():
     bidi_element_references = list(
         map(lambda _id: {"sharedId": _id}, raw_element_ids))
 
-    # Pass BiDi shared references to BiDi sctipt.
+    # Pass BiDi shared references to BiDi script.
     command_result = await run_and_wait_command(
         {
             "id": next(ID),
