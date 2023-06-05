@@ -18,11 +18,6 @@ declare_args() {
       build_with_chromium && !is_official_build &&
       ((is_linux && !is_castos) || (is_android && !is_cast_android))
 
-  # TODO(crbug.com/1446146): Merge with enable_check_raw_ptr_fields once both
-  # checks are activated on the same set of platforms.
-  enable_check_raw_ref_fields =
-      build_with_chromium && !is_official_build && is_linux && !is_castos
-
   clang_base_path = default_clang_base_path
 
   # Specifies whether or not bitcode should be embedded during compilation.
