@@ -8,6 +8,7 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
@@ -131,6 +132,17 @@ bool CanFloatWindow(aura::Window* window) {
   }
 
   if (!window->GetProperty(kSupportsFloatedStateKey)) {
+    return false;
+  }
+
+  const auto state_type = window->GetProperty(chromeos::kWindowStateTypeKey);
+  const bool unresizable =
+      (window->GetProperty(aura::client::kResizeBehaviorKey) &
+       aura::client::kResizeBehaviorCanResize) == 0;
+  // Windows which occupy the entire display should not be the target of
+  // unresizable floating.
+  if (unresizable && (state_type == chromeos::WindowStateType::kFullscreen ||
+                      state_type == chromeos::WindowStateType::kMaximized)) {
     return false;
   }
 #endif

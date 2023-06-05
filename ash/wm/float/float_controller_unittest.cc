@@ -864,6 +864,39 @@ TEST_F(WindowFloatTest, AlwaysOnTopWindow) {
   EXPECT_FALSE(WindowState::Get(always_on_top_window.get())->IsFloated());
 }
 
+// Tests that for unresizable windows, floatability depends on its window state
+// type.
+TEST_F(WindowFloatTest, UnresizableFloatPerWindowState) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(600, 600));
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorNone);
+  auto* const window_state = WindowState::Get(window.get());
+
+  // Unresizable freeform window should enter floating mode.
+  WMEvent restore_event(WM_EVENT_NORMAL);
+  window_state->OnWMEvent(&restore_event);
+  ASSERT_TRUE(window_state->IsNormalStateType());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(window_state->IsFloated());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_FALSE(window_state->IsFloated());
+
+  // Unresizable maximized window should not enter floating mode.
+  WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize_event);
+  ASSERT_TRUE(window_state->IsMaximized());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(window_state->IsFloated());
+
+  // Unresizable fullscreen window should not enter floating mode.
+  WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  ASSERT_TRUE(window_state->IsFullscreen());
+  window_state->Maximize();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(window_state->IsFloated());
+}
+
 // A test class that uses a mock time test environment.
 class WindowFloatMetricsTest : public WindowFloatTest {
  public:
