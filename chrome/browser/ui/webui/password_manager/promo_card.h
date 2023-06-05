@@ -122,6 +122,7 @@ class PasswordManagerShortcutPromo : public PromoCardInterface {
   std::u16string GetActionButtonText() const override;
 
   bool is_shortcut_installed_ = false;
+  raw_ptr<Profile> profile_;
 };
 
 // Promo card to communicate how to use Password Manager on Android and iOS.
