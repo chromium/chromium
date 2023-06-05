@@ -1011,7 +1011,7 @@ void PopulateChromeWebUIFrameBinders(
       HistoryClustersServiceFactory::GetForBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext());
   if (history_clusters_service &&
-      history_clusters_service->IsJourneysEnabled()) {
+      history_clusters_service->is_journeys_feature_flag_enabled()) {
     if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {
       RegisterWebUIControllerInterfaceBinder<
           history_clusters::mojom::PageHandler, HistoryUI,
@@ -1023,7 +1023,7 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   if ((history_clusters_service &&
-       history_clusters_service->IsJourneysEnabled() &&
+       history_clusters_service->is_journeys_feature_flag_enabled() &&
        history_clusters_service->IsJourneysImagesEnabled()) ||
       base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) ||
       base::FeatureList::IsEnabled(

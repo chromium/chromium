@@ -19,7 +19,7 @@ TestHistoryClustersService::TestHistoryClustersService()
                              /*pref_service=*/nullptr) {}
 TestHistoryClustersService::~TestHistoryClustersService() = default;
 
-bool TestHistoryClustersService::IsJourneysEnabled() const {
+bool TestHistoryClustersService::IsJourneysEnabledAndVisible() const {
   return is_journeys_enabled_;
 }
 

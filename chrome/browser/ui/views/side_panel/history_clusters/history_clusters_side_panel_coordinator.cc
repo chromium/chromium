@@ -49,7 +49,7 @@ bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
       HistoryClustersServiceFactory::GetForBrowserContext(profile);
   return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
          history_clusters_service &&
-         history_clusters_service->IsJourneysEnabled() &&
+         history_clusters_service->IsJourneysEnabledAndVisible() &&
          !profile->IsIncognitoProfile() && !profile->IsGuestSession();
 }
 

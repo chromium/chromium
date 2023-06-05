@@ -194,7 +194,7 @@ void AttachHistoryClustersActions(
   return;
 #else
 
-  if (!service || !service->IsJourneysEnabled()) {
+  if (!service || !service->IsJourneysEnabledAndVisible()) {
     return;
   }
 

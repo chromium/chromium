@@ -29,9 +29,10 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
   source->AddBoolean("inSidePanel", in_side_panel);
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile);
-  source->AddBoolean("isHistoryClustersEnabled",
-                     history_clusters_service &&
-                         history_clusters_service->IsJourneysEnabled());
+  source->AddBoolean(
+      "isHistoryClustersEnabled",
+      history_clusters_service &&
+          history_clusters_service->is_journeys_feature_flag_enabled());
   source->AddBoolean(kIsHistoryClustersVisibleKey,
                      prefs->GetBoolean(history_clusters::prefs::kVisible));
   source->AddBoolean(
