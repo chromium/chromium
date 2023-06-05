@@ -87,10 +87,6 @@
       }
       return [InfobarBannerOverlayCoordinator class];
     case OverlayModality::kInfobarModal:
-      if ([SaveCardInfobarModalOverlayCoordinator requestSupport]
-              ->IsRequestSupported(request)) {
-        return [SaveCardInfobarModalOverlayCoordinator class];
-      }
       if ([SaveAddressProfileInfobarModalOverlayCoordinator requestSupport]
               ->IsRequestSupported(request)) {
         return [SaveAddressProfileInfobarModalOverlayCoordinator class];
@@ -125,6 +121,8 @@
           return [PasswordInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypePermissions:
           return [PermissionsInfobarModalOverlayCoordinator class];
+        case InfobarType::kInfobarTypeSaveCard:
+          return [SaveCardInfobarModalOverlayCoordinator class];
         default:
           break;
       }

@@ -214,6 +214,9 @@
     case InfobarType::kInfobarTypeTailoredSecurityService:
       mediatorClass = [TailoredSecurityInfobarBannerOverlayMediator class];
       break;
+    case InfobarType::kInfobarTypeSaveCard:
+      mediatorClass = [SaveCardInfobarBannerOverlayMediator class];
+      break;
     default:
       NOTREACHED_NORETURN() << "Received unsupported infobarType.";
   }

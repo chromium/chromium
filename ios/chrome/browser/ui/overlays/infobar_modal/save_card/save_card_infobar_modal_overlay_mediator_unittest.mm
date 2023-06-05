@@ -11,13 +11,13 @@
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/autofill/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_responses.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
@@ -29,9 +29,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using save_card_infobar_overlays::SaveCardModalRequestConfig;
-using save_card_infobar_overlays::SaveCardMainAction;
 
 @interface FakeSaveCardMediatorDelegate
     : NSObject <SaveCardInfobarModalOverlayMediatorDelegate>
@@ -74,44 +71,35 @@ using save_card_infobar_overlays::SaveCardMainAction;
 class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   SaveCardInfobarModalOverlayMediatorTest()
-      : callback_installer_(&callback_receiver_,
-                            {SaveCardMainAction::ResponseSupport()}),
-        mediator_delegate_(
+      : mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
-    autofill::LegalMessageLines legal_message_lines =
-        autofill::LegalMessageLines(
-            {autofill::TestLegalMessageLine("Test message")});
-    std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate =
-        autofill::AutofillSaveCardInfoBarDelegateMobile::CreateForUploadSave(
-            autofill::AutofillClient::SaveCreditCardOptions(),
-            autofill::CreditCard(
-                base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                "https://www.example.com/"),
-            base::DoNothing(), legal_message_lines, AccountInfo());
+    autofill::CreditCard credit_card(
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
+        "https://www.example.com/");
+    std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate =
+        MockAutofillSaveCardInfoBarDelegateMobileFactory::
+            CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(true,
+                                                                   credit_card);
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                             std::move(delegate));
 
-    request_ = OverlayRequest::CreateWithConfig<SaveCardModalRequestConfig>(
-        infobar_.get());
-    callback_installer_.InstallCallbacks(request_.get());
-
+    request_ =
+        OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+            infobar_.get(), InfobarOverlayType::kModal);
     mediator_ = [[SaveCardInfobarModalOverlayMediator alloc]
         initWithRequest:request_.get()];
     mediator_.delegate = mediator_delegate_;
   }
 
   ~SaveCardInfobarModalOverlayMediatorTest() override {
-    EXPECT_CALL(callback_receiver_, CompletionCallback(request_.get()));
     EXPECT_OCMOCK_VERIFY(mediator_delegate_);
   }
 
  protected:
-  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate_;
   std::unique_ptr<InfoBarIOS> infobar_;
-  MockOverlayRequestCallbackReceiver callback_receiver_;
-  FakeOverlayRequestCallbackInstaller callback_installer_;
   std::unique_ptr<OverlayRequest> request_;
+  MockAutofillSaveCardInfoBarDelegateMobile* delegate_ = nil;
   SaveCardInfobarModalOverlayMediator* mediator_ = nil;
   id<OverlayRequestMediatorDelegate> mediator_delegate_ = nil;
 };
@@ -141,15 +129,20 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, SetUpConsumer) {
 }
 
 // Tests that calling saveCardWithCardholderName:expirationMonth:expirationYear:
-// triggers a SaveCardMainAction response.
+// calls UpdateAndAccept().
 TEST_F(SaveCardInfobarModalOverlayMediatorTest, MainAction) {
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(), SaveCardMainAction::ResponseSupport()));
+  NSString* cardholderName = @"name";
+  NSString* month = @"3";
+  NSString* year = @"23";
+
+  EXPECT_CALL(*delegate_,
+              UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
+                              base::SysNSStringToUTF16(month),
+                              base::SysNSStringToUTF16(year)));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
-  [mediator_ saveCardWithCardholderName:@"name"
-                        expirationMonth:@"3"
-                         expirationYear:@"23"];
+  [mediator_ saveCardWithCardholderName:cardholderName
+                        expirationMonth:month
+                         expirationYear:year];
 }
 
 // Tests that calling dismissModalAndOpenURL: sends the passed URL to the

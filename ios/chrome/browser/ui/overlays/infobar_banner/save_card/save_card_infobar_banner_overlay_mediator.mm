@@ -5,63 +5,69 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using save_card_infobar_overlays::SaveCardBannerRequestConfig;
-using save_card_infobar_overlays::SaveCardMainAction;
-
 @interface SaveCardInfobarBannerOverlayMediator ()
+
 // The save card banner config from the request.
-@property(nonatomic, readonly) SaveCardBannerRequestConfig* config;
+@property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
+
 @end
 
 @implementation SaveCardInfobarBannerOverlayMediator
 
 #pragma mark - Accessors
 
-- (SaveCardBannerRequestConfig*)config {
-  return self.request ? self.request->GetConfig<SaveCardBannerRequestConfig>()
-                      : nullptr;
+- (DefaultInfobarOverlayRequestConfig*)config {
+  return self.request
+             ? self.request->GetConfig<DefaultInfobarOverlayRequestConfig>()
+             : nullptr;
+}
+
+// Returns the delegate attached to the config.
+- (autofill::AutofillSaveCardInfoBarDelegateMobile*)saveCardDelegate {
+  return static_cast<autofill::AutofillSaveCardInfoBarDelegateMobile*>(
+      self.config->delegate());
 }
 
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
-  return SaveCardBannerRequestConfig::RequestSupport();
+  return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
+  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
+      self.saveCardDelegate;
+
   // Display the modal (thus the ToS) if the card will be uploaded, this is a
   // legal requirement and shouldn't be changed.
-  if (self.config->should_upload_credentials()) {
-    [self dispatchResponse:OverlayResponse::CreateWithInfo<
-                               InfobarBannerShowModalResponse>()];
+  if (delegate->is_for_upload()) {
+    [self presentInfobarModalFromBanner];
     return;
   }
-  // Notify the model layer to perform the infobar's main action before
-  // dismissing the banner.
-  [self dispatchResponse:OverlayResponse::CreateWithInfo<SaveCardMainAction>(
-                             base::SysUTF16ToNSString(
-                                 self.config->cardholder_name()),
-                             base::SysUTF16ToNSString(
-                                 self.config->expiration_date_month()),
-                             base::SysUTF16ToNSString(
-                                 self.config->expiration_date_year()))];
+
+  InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
+  infobar->set_accepted(delegate->UpdateAndAccept(
+      delegate->cardholder_name(), delegate->expiration_date_month(),
+      delegate->expiration_date_year()));
+
   [self dismissOverlay];
 }
 
@@ -70,19 +76,30 @@ using save_card_infobar_overlays::SaveCardMainAction;
 @implementation SaveCardInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  SaveCardBannerRequestConfig* config = self.config;
+  DefaultInfobarOverlayRequestConfig* config = self.config;
   if (!self.consumer || !config)
     return;
 
-  [self.consumer
-      setButtonText:base::SysUTF16ToNSString(self.config->button_label_text())];
+  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
+      self.saveCardDelegate;
+  if (!delegate) {
+    return;
+  }
+
+  std::u16string buttonLabelText =
+      delegate->is_for_upload()
+          ? l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_SAVE_ELLIPSIS)
+          : delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);
+  [self.consumer setButtonText:base::SysUTF16ToNSString(buttonLabelText)];
+
   UIImage* iconImage = DefaultSymbolTemplateWithPointSize(
       kCreditCardSymbol, kInfobarSymbolPointSize);
   [self.consumer setIconImage:iconImage];
+
   [self.consumer
-      setTitleText:base::SysUTF16ToNSString(self.config->message_text())];
+      setTitleText:base::SysUTF16ToNSString(delegate->GetMessageText())];
   [self.consumer
-      setSubtitleText:base::SysUTF16ToNSString(self.config->card_label())];
+      setSubtitleText:base::SysUTF16ToNSString(delegate->card_label())];
 }
 
 @end
