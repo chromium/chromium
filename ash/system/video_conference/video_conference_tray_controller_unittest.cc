@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -387,6 +388,42 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudgeClick) {
   EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 0);
   LeftClickOn(GetShownNudge(nudge_id));
   EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 1);
+}
+
+TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudgeTimeFrame) {
+  auto* nudge_id = kVideoConferenceTraySpeakOnMuteDetectedNudgeId;
+
+  SetTrayAndButtonsVisible();
+
+  // Nudge should be displayed. Showing that client is speaking while on mute,
+  // and the 60 seconds cool down counter starts at the same time.
+  controller()->OnSpeakOnMuteDetected();
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+
+  // Wait for 20 seconds to simulate that the nudge has disappeared.
+  task_environment()->AdvanceClock(base::Seconds(20));
+  Shell::Get()->anchored_nudge_manager()->Cancel(nudge_id);
+
+  // Nudge should not be displayed at 20 seconds as there is a cool down period
+  // for the nudge.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Wait for another 20 seconds and the cool down has not passed yet.
+  task_environment()->AdvanceClock(base::Seconds(20));
+
+  // Nudge should not be displayed at 40 seconds as there is a cool down period
+  // for the nudge.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Wait for another 20 seconds to so that the 60 seconds cool down periods has
+  // passed.
+  task_environment()->AdvanceClock(base::Seconds(60));
+
+  // Nudge should be displayed as the cool down period has passed.
+  controller()->OnSpeakOnMuteDetected();
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest, RecordRepeatedShows) {
