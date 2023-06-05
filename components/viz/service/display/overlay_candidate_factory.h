@@ -47,6 +47,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
  public:
   using CandidateStatus = OverlayCandidate::CandidateStatus;
 
+  struct VIZ_SERVICE_EXPORT OverlayContext {
+    bool is_delegated_context = false;
+    bool supports_clip_rect = false;
+    bool supports_arbitrary_transform = false;
+    bool supports_rounded_display_masks = false;
+  };
+
   // The coordinate space of |render_pass| is the target space for candidates
   // produced by this factory.
   OverlayCandidateFactory(
@@ -56,10 +63,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
       const SkM44* output_color_matrix,
       const gfx::RectF primary_rect,
       const OverlayProcessorInterface::FilterOperationsMap* render_pass_filters,
-      bool is_delegated_context = false,
-      bool supports_clip_rect = false,
-      bool supports_arbitrary_transform = false,
-      bool supports_rounded_display_masks = false);
+      const OverlayContext& context);
 
   OverlayCandidateFactory(const OverlayCandidateFactory&) = delete;
   OverlayCandidateFactory& operator=(const OverlayCandidateFactory&) = delete;
@@ -148,10 +152,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   const gfx::RectF primary_rect_;
   raw_ptr<const OverlayProcessorInterface::FilterOperationsMap>
       render_pass_filters_;
-  const bool is_delegated_context_;
-  const bool supports_clip_rect_;
-  const bool supports_arbitrary_transform_;
-  const bool supports_rounded_display_masks_;
+  const OverlayContext context_;
 
   // The union of all surface damages that are not specifically assigned to a
   // draw quad.

@@ -135,7 +135,6 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   DCHECK(candidates->empty());
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
-  constexpr bool is_delegated_context = true;
   delegated_status_ = DelegationStatus::kCompositedOther;
 
   if (!features::IsDelegatedCompositingEnabled()) {
@@ -164,10 +163,13 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     return false;
   }
 
+  const OverlayCandidateFactory::OverlayContext context = {
+      .is_delegated_context = true, .supports_clip_rect = supports_clip_rect_};
+
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters, is_delegated_context, supports_clip_rect_);
+      &render_pass_filters, context);
 
   unassigned_damage_ = gfx::RectF(candidate_factory.GetUnassignedDamage());
 

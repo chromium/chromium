@@ -91,6 +91,7 @@ const gfx::Rect kOverlayClipRect(0, 0, 128, 128);
 const gfx::PointF kUVTopLeft(0.1f, 0.2f);
 const gfx::PointF kUVBottomRight(1.0f, 1.0f);
 const gfx::BufferFormat kDefaultBufferFormat = gfx::BufferFormat::RGBA_8888;
+constexpr OverlayCandidateFactory::OverlayContext kTestOverlayContext = {};
 
 class TimeTicksOverride {
  public:
@@ -1676,7 +1677,8 @@ TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
   auto color_mat = GetIdentityColorMatrix();
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
+      kTestOverlayContext);
   auto ret_a = candidate_factory.FromDrawQuad(quad_a, candidate_a);
   OverlayCandidate candidate_b;
   auto ret_b = candidate_factory.FromDrawQuad(quad_b, candidate_b);
@@ -1722,7 +1724,8 @@ TEST_F(SingleOverlayOnTopTest, CandidateTrackIdUniqueSurface) {
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
+      kTestOverlayContext);
   auto ret_a = candidate_factory.FromDrawQuad(quad_a, candidate_a);
   OverlayCandidate candidate_b;
   auto ret_b = candidate_factory.FromDrawQuad(quad_b, candidate_b);
@@ -4673,7 +4676,8 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredBasic) {
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
+      kTestOverlayContext);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Verify that a default candidate is not a required overlay.
@@ -4697,7 +4701,8 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredHwProtectedVideo) {
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
+      kTestOverlayContext);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Verify that a HW protected video candidate requires overlay.
@@ -4722,7 +4727,8 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters);
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
+      kTestOverlayContext);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
@@ -4759,7 +4765,7 @@ TEST_F(SingleOverlayOnTopTest,
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, primary_rect, &render_pass_filters);
+      &color_mat, primary_rect, &render_pass_filters, kTestOverlayContext);
   candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
@@ -4872,7 +4878,8 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     auto candidate_factory = OverlayCandidateFactory(
         pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-        &color_mat, gfx::RectF(), &render_pass_filters);
+        &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
+        kTestOverlayContext);
     candidate_factory.FromDrawQuad(quad_candidate, candidate);
 
     // Before the 'EstimateOccludedDamage' function is called the damage area
@@ -5470,10 +5477,11 @@ TEST_F(DelegatedTest, NonAxisAlignedCandidateStatus) {
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
       &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
-      true /* is_delegated_context */);
+      OverlayCandidateFactory::OverlayContext{.is_delegated_context = true});
 
   pass->shared_quad_state_list.back()->quad_to_target_transform =
       MakePerspectiveTransform();

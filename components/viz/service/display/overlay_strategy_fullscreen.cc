@@ -52,10 +52,11 @@ void OverlayStrategyFullscreen::Propose(
     return;
 
   OverlayCandidate candidate;
+
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters);
+      &render_pass_filters, /*context=*/{});
   if (candidate_factory.FromDrawQuad(quad, candidate) !=
       OverlayCandidate::CandidateStatus::kSuccess) {
     return;
