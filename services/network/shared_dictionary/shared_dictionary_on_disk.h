@@ -8,6 +8,7 @@
 #include "services/network/shared_dictionary/shared_dictionary.h"
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "net/base/hash_value.h"
 #include "net/disk_cache/disk_cache.h"
@@ -30,7 +31,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
   SharedDictionaryOnDisk(size_t size,
                          const net::SHA256HashValue& hash,
                          const base::UnguessableToken& disk_cache_key_token,
-                         SharedDictionaryDiskCache* disk_cahe);
+                         SharedDictionaryDiskCache* disk_cahe,
+                         base::OnceClosure disk_cache_error_callback);
 
   ~SharedDictionaryOnDisk() override;
 
@@ -52,6 +54,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
 
   const size_t size_;
   const net::SHA256HashValue hash_;
+  base::OnceClosure disk_cache_error_callback_;
 
   std::vector<base::OnceCallback<void(int)>> readall_callbacks_;
   disk_cache::ScopedEntryPtr entry_;

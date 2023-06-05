@@ -144,7 +144,8 @@ class SharedDictionaryManagerOnDisk::MismatchingEntryDeletionTask
   void OnDiskCacheIterator(
       std::unique_ptr<disk_cache::Backend::Iterator> disk_cache_iterator) {
     if (!disk_cache_iterator) {
-      manager_->OnFinishSerializedTask();
+      // Disk cache is corrupted. So delete all entry from the metadata.
+      CleanupDatabase();
       return;
     }
     disk_cache_iterator_ = std::move(disk_cache_iterator);
@@ -441,6 +442,11 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
     const net::SHA256HashValue& hash) {
   if (result != SharedDictionaryWriterOnDisk::Result::kSuccess) {
     CHECK(writing_disk_cache_key_tokens_.erase(disk_cache_key_token) == 1);
+
+    if (result ==
+        SharedDictionaryWriterOnDisk::Result::kErrorCreateEntryFailed) {
+      MaybePostMismatchingEntryDeletionTask();
+    }
     return;
   }
   base::Time last_used_time = base::Time::Now();
@@ -548,7 +554,8 @@ void SharedDictionaryManagerOnDisk::OnDictionaryDeleted(
 void SharedDictionaryManagerOnDisk::MaybePostMismatchingEntryDeletionTask() {
   // MismatchingEntryDeletionTask is intended to resolve the mismatch between
   // the disk cache and metadata database. We run MismatchingEntryDeletionTask
-  // when ClearData() is called for the first time.
+  // only once in the lifetime of the manager when ClearData() is called or
+  // disk cache error is detected.
   if (mismatching_entry_deletion_task_posted_) {
     return;
   }

@@ -78,6 +78,10 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
 
   void UpdateDictionaryLastUsedTime(net::SharedDictionaryInfo& info);
 
+  // Posts a MismatchingEntryDeletionTask if this method is called for the first
+  // time.
+  void MaybePostMismatchingEntryDeletionTask();
+
  private:
   class SerializedTask {
    public:
@@ -123,7 +127,6 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void OnFinishSerializedTask();
   void MaybeStartSerializedTask();
 
-  void MaybePostMismatchingEntryDeletionTask();
   void MaybePostCacheEvictionTask();
   void MaybePostExpiredDictionaryDeletionTask();
 

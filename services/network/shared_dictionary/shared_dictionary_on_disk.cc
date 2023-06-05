@@ -14,8 +14,11 @@ SharedDictionaryOnDisk::SharedDictionaryOnDisk(
     size_t size,
     const net::SHA256HashValue& hash,
     const base::UnguessableToken& disk_cache_key_token,
-    SharedDictionaryDiskCache* disk_cahe)
-    : size_(size), hash_(hash) {
+    SharedDictionaryDiskCache* disk_cahe,
+    base::OnceClosure disk_cache_error_callback)
+    : size_(size),
+      hash_(hash),
+      disk_cache_error_callback_(std::move(disk_cache_error_callback)) {
   auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &SharedDictionaryOnDisk::OnEntry, weak_factory_.GetWeakPtr()));
   disk_cache::EntryResult result = disk_cahe->OpenOrCreateEntry(
@@ -91,6 +94,10 @@ void SharedDictionaryOnDisk::SetState(State state) {
   CHECK_NE(State::kLoading, state);
   CHECK_EQ(State::kLoading, state_);
   state_ = state;
+
+  if (state_ == State::kFailed && disk_cache_error_callback_) {
+    std::move(disk_cache_error_callback_).Run();
+  }
   auto readall_callbacks = std::move(readall_callbacks_);
   for (auto& readall_callback : readall_callbacks) {
     if (state_ == State::kDone) {

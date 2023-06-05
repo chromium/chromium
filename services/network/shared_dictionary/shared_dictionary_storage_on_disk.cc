@@ -31,8 +31,13 @@ class SharedDictionaryStorageOnDisk::RefCountedSharedDictionary
       const net::SHA256HashValue& hash,
       const base::UnguessableToken& disk_cache_key_token,
       SharedDictionaryDiskCache& disk_cahe,
+      base::OnceClosure disk_cache_error_callback,
       base::ScopedClosureRunner on_deleted_closure_runner)
-      : SharedDictionaryOnDisk(size, hash, disk_cache_key_token, &disk_cahe),
+      : SharedDictionaryOnDisk(size,
+                               hash,
+                               disk_cache_key_token,
+                               &disk_cahe,
+                               std::move(disk_cache_error_callback)),
         on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {}
 
  private:
@@ -112,6 +117,9 @@ std::unique_ptr<SharedDictionary> SharedDictionaryStorageOnDisk::GetDictionary(
       RefCountedSharedDictionary>(
       info->size(), info->hash(), info->disk_cache_key_token(),
       manager_->disk_cache(),
+      base::BindOnce(
+          &SharedDictionaryManagerOnDisk::MaybePostMismatchingEntryDeletionTask,
+          manager_),
       base::ScopedClosureRunner(base::BindOnce(
           &SharedDictionaryStorageOnDisk::OnRefCountedSharedDictionaryDeleted,
           weak_factory_.GetWeakPtr(), info->disk_cache_key_token())));

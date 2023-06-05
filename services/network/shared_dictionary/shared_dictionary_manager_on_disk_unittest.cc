@@ -479,7 +479,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
 // Test that corruptted disk cache doesn't cause crash.
 // CorruptDiskCache() doesn't work on Fuchsia. So disabling the following tests
 // on Fuchsia.
-TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCache) {
+TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndWriteData) {
   net::SharedDictionaryStorageIsolationKey isolation_key(
       url::Origin::Create(kUrl), kSite);
 
@@ -510,15 +510,57 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCache) {
     WriteDictionary(storage.get(), GURL("https://origin.test/dict2"),
                     "testfile2*", kTestData2);
     FlushCacheTasks();
-    // Currently, if the disk cache is corrupted, it just prevents adding new
-    // dictionaries.
-    // TODO(crbug.com/1413922): Implement a garbage collection logic to remove
-    // the entry in the database when its disk cache entry is unavailable.
+
+    // Writing dictionary fails, so MismatchingEntryDeletionTask cleans all
+    // dictionary in the metadata store.
+    EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+  }
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndGetData) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl), kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    // Write the test data to the dictionary.
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict1"),
+                    "testfile1*", kTestData1);
+    FlushCacheTasks();
+  }
+  CorruptDiskCache();
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    FlushCacheTasks();
     {
       const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
       ASSERT_EQ(1u, dictionary_map.size());
       ASSERT_EQ(1u, dictionary_map.begin()->second.size());
     }
+
+    std::unique_ptr<SharedDictionary> dict =
+        storage->GetDictionary(GURL("https://origin.test/testfile1"));
+    ASSERT_TRUE(dict);
+
+    // Reading the dictionary should fail because the disk cache is broken.
+    net::TestCompletionCallback read_callback;
+    EXPECT_EQ(net::ERR_FAILED,
+              read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+
+    FlushCacheTasks();
+
+    // After failing to read the disk cache entry, MismatchingEntryDeletionTask
+    // cleans all dictionary in the metadata store.
+    EXPECT_FALSE(storage->GetDictionary(GURL("https://origin.test/testfile1")));
+    EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
   }
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
@@ -527,6 +569,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
   net::SharedDictionaryStorageIsolationKey isolation_key(
       url::Origin::Create(kUrl), kSite);
 
+  base::UnguessableToken token1, token2;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
         CreateSharedDictionaryManager();
@@ -541,6 +584,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
       const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
       ASSERT_EQ(1u, dictionary_map.size());
       ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+      token1 =
+          dictionary_map.begin()->second.begin()->second.disk_cache_key_token();
     }
   }
   CorruptDatabase();
@@ -583,10 +628,27 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
     EXPECT_EQ(kTestData1,
               std::string(reinterpret_cast<const char*>(dict->data()->data()),
                           dict->size()));
-    // Currently the disk cache entries that were added before the database
-    // corruption will not be removed.
-    // TODO(crbug.com/1413922): Implement a garbage collection logic to remove
-    // the entry in the disk cache when its database entry is unavailable.
+
+    {
+      const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+      ASSERT_EQ(1u, dictionary_map.size());
+      ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+      token2 =
+          dictionary_map.begin()->second.begin()->second.disk_cache_key_token();
+    }
+
+    EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token1));
+    EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
+
+    base::RunLoop run_loop;
+    manager->ClearData(
+        base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+        base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+    run_loop.Run();
+    FlushCacheTasks();
+
+    EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token1));
+    EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
   }
 }
 
