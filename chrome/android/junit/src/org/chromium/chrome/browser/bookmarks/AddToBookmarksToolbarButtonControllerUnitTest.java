@@ -8,6 +8,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
 
@@ -21,8 +24,10 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
@@ -32,6 +37,8 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.ButtonData;
@@ -59,6 +66,11 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
     private TabBookmarker mTabBookmarker;
     @Mock
     private BookmarkModel mBookmarkModel;
+    @Mock
+    private ActivityLifecycleDispatcherImpl mActivityLifecycleDispatcher;
+    @Captor
+    private ArgumentCaptor<ConfigurationChangedObserver> mConfigurationChangedObserver;
+
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier;
 
@@ -82,18 +94,73 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
         mActionTester.tearDown();
     }
 
+    /** Sets device qualifiers and notifies the activity about configuration change. */
+    private void applyQualifiers(Activity activity, String qualifiers) {
+        RuntimeEnvironment.setQualifiers(qualifiers);
+        Configuration configuration = Resources.getSystem().getConfiguration();
+        // ChromeTabbedActivity takes care of calling onConfigurationChanged on
+        // ActivityLifecycleDispatcher, but this is a TestActivity so we do it manually.
+        activity.onConfigurationChanged(configuration);
+        mConfigurationChangedObserver.getValue().onConfigurationChanged(configuration);
+    }
+
+    private AddToBookmarksToolbarButtonController createController(Activity activity) {
+        AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
+                new AddToBookmarksToolbarButtonController(mTabSupplier, activity,
+                        mActivityLifecycleDispatcher,
+                        () -> mTabBookmarker, () -> mTracker, mBookmarkModelSupplier);
+        verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
+        return addToBookmarksToolbarButtonController;
+    }
+
     @Test
-    public void testButtonData() {
+    @Config(qualifiers = "w390dp-h820dp-land")
+    public void testButtonData_shownOnPhone() {
         mActivityScenarioRule.getScenario().onActivity(activity -> {
             when(mTab.getContext()).thenReturn(activity);
             AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
-                    new AddToBookmarksToolbarButtonController(mTabSupplier, activity,
-                            () -> mTabBookmarker, () -> mTracker, mBookmarkModelSupplier);
+                    createController(activity);
             ButtonData buttonData = addToBookmarksToolbarButtonController.get(mTab);
 
             Assert.assertTrue(buttonData.canShow());
             Assert.assertTrue(buttonData.isEnabled());
             Assert.assertNotNull(buttonData.getButtonSpec());
+
+            applyQualifiers(activity, "+port");
+
+            Assert.assertTrue(addToBookmarksToolbarButtonController.get(mTab).canShow());
+        });
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    public void testButtonData_notShownOnTablet() {
+        mActivityScenarioRule.getScenario().onActivity(activity -> {
+            when(mTab.getContext()).thenReturn(activity);
+            AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
+                    createController(activity);
+            ButtonData buttonData = addToBookmarksToolbarButtonController.get(mTab);
+
+            Assert.assertFalse(buttonData.canShow());
+            applyQualifiers(activity, "+land");
+
+            Assert.assertFalse(buttonData.canShow());
+        });
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    public void testButtonData_visibilityChangesOnScreenSizeUpdate() {
+        mActivityScenarioRule.getScenario().onActivity(activity -> {
+            when(mTab.getContext()).thenReturn(activity);
+            AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
+                    createController(activity);
+            ButtonData buttonData = addToBookmarksToolbarButtonController.get(mTab);
+
+            Assert.assertFalse(buttonData.canShow());
+            applyQualifiers(activity, "w390dp-h820dp");
+
+            Assert.assertTrue(buttonData.canShow());
         });
     }
 
@@ -102,8 +169,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> {
             when(mTab.getContext()).thenReturn(activity);
             AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
-                    new AddToBookmarksToolbarButtonController(mTabSupplier, activity,
-                            () -> mTabBookmarker, () -> mTracker, mBookmarkModelSupplier);
+                    createController(activity);
             addToBookmarksToolbarButtonController.onClick(null);
 
             Assert.assertEquals(
@@ -124,8 +190,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(false);
             when(mBookmarkModel.hasBookmarkIdForTab(anotherTab)).thenReturn(true);
             AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
-                    new AddToBookmarksToolbarButtonController(mTabSupplier, activity,
-                            () -> mTabBookmarker, () -> mTracker, mBookmarkModelSupplier);
+                    createController(activity);
 
             ButtonDataObserver mockButtonObserver = mock(ButtonDataObserver.class);
             addToBookmarksToolbarButtonController.addObserver(mockButtonObserver);
@@ -158,8 +223,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
             // Set the current tab as not bookmarked.
             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(false);
             AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
-                    new AddToBookmarksToolbarButtonController(mTabSupplier, activity,
-                            () -> mTabBookmarker, () -> mTracker, mBookmarkModelSupplier);
+                    createController(activity);
 
             // If an ObservableSupplier already has a value then its change callback will be called
             // immediately as a separate task, idle the main looper to ensure all Observable
@@ -201,8 +265,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
             // Set the current tab as not bookmarked.
             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(false);
             AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
-                    new AddToBookmarksToolbarButtonController(mTabSupplier, activity,
-                            () -> mTabBookmarker, () -> mTracker, mBookmarkModelSupplier);
+                    createController(activity);
 
             // If an ObservableSupplier already has a value then its change callback will be called
             // immediately as a separate task, idle the main looper to ensure all Observable

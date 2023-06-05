@@ -1156,7 +1156,8 @@ public class RootUiCoordinator
                             mActivityTabProvider, trackerSupplier);
             AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
                     new AddToBookmarksToolbarButtonController(mActivityTabProvider, mActivity,
-                            mTabBookmarkerSupplier, trackerSupplier, mBookmarkModelSupplier);
+                            mActivityLifecycleDispatcher, mTabBookmarkerSupplier, trackerSupplier,
+                            mBookmarkModelSupplier);
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                     new AdaptiveToolbarButtonController(mActivity, new SettingsLauncherImpl(),
                             mActivityLifecycleDispatcher, new AdaptiveButtonActionMenuCoordinator(),
