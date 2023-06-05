@@ -6,6 +6,8 @@ package org.chromium.base.test.util;
 
 import android.os.Build;
 
+import androidx.test.InstrumentationRegistry;
+
 import org.junit.runners.model.FrameworkMethod;
 
 import org.chromium.base.Log;
@@ -20,11 +22,20 @@ import java.util.List;
  * Currently, this only includes checks against a few {@link android.os.Build} values.
  */
 public class DisableIfSkipCheck extends SkipCheck {
+    private static final String EXTRA_RUN_DISABLED_TEST =
+            "org.chromium.base.test.util.DisableIfSkipCheck.RunDisabledTest";
+
     private static final String TAG = "base_test";
 
     @Override
     public boolean shouldSkip(FrameworkMethod method) {
         if (method == null) return true;
+
+        String runDisabledTest =
+                InstrumentationRegistry.getArguments().getString(EXTRA_RUN_DISABLED_TEST);
+        if ("true".equals(runDisabledTest)) {
+            return false;
+        }
 
         List<DisableIf.Build> buildAnnotationList = gatherBuildAnnotations(method);
 

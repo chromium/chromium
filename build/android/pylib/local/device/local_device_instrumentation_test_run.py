@@ -97,6 +97,9 @@ EXTRA_UI_CAPTURE_DIR = (
 
 EXTRA_TRACE_FILE = ('org.chromium.base.test.BaseJUnit4ClassRunner.TraceFile')
 
+_EXTRA_RUN_DISABLED_TEST = (
+    'org.chromium.base.test.util.DisableIfSkipCheck.RunDisabledTest')
+
 _EXTRA_TEST_LIST = (
     'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList')
 
@@ -720,6 +723,9 @@ class LocalDeviceInstrumentationTestRun(
   #override
   def _RunTest(self, device, test):
     extras = {}
+
+    if self._test_instance.GetRunDisabledFlag():
+      extras[_EXTRA_RUN_DISABLED_TEST] = 'true'
 
     if self._test_instance.is_unit_test:
       extras[_EXTRA_TEST_IS_UNIT] = 'true'

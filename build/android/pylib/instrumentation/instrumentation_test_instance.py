@@ -672,6 +672,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._is_unit_test = False
     self._initializeUnitTestFlag(args)
 
+    self._run_disabled = args.run_disabled
+
   def _initializeApkAttributes(self, args, error_func):
     if args.apk_under_test:
       apk_under_test_path = args.apk_under_test
@@ -1118,6 +1120,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   def GetDataDependencies(self):
     return self._data_deps
+
+  def GetRunDisabledFlag(self):
+    return self._run_disabled
 
   def GetTests(self):
     if self._test_apk_incremental_install_json:
