@@ -62,6 +62,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/views_features.h"
 
 using media_session::mojom::MediaSessionAction;
@@ -71,9 +72,6 @@ namespace {
 static constexpr int kHorizontalMarginDip = 16;
 static constexpr int kImageWidthDip = 20;
 static constexpr int kVerticalMarginDip = 10;
-
-// Delta between the font size of the Live Translate title and subtitle.
-static constexpr int kLiveTranslateSubtitleFontSizeDelta = -2;
 
 std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
   if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
@@ -286,9 +284,7 @@ void MediaDialogView::UpdateBubbleSize() {
     live_translate_container_->SetPreferredSize(
         gfx::Size(width, live_translate_height));
 
-    const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-    live_translate_subtitle_->SetFontList(base_font_list.DeriveWithSizeDelta(
-        kLiveTranslateSubtitleFontSizeDelta));
+    live_translate_subtitle_->SetTextStyle(views::style::STYLE_SECONDARY);
 
     live_translate_label_wrapper_->SetPreferredSize(gfx::Size(
         width, live_translate_label_wrapper_->GetPreferredSize().height()));
