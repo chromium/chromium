@@ -16,7 +16,6 @@ include_rules = [
     "+base/mac/mach_logging.h",
     "+base/memory/nonscannable_memory.h",
     "+base/synchronization/lock.h",
-    "+build/chromecast_buildflags.h",
 ]
 
 specific_include_rules = {

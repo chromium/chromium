@@ -12,6 +12,7 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
+#include "base/allocator/partition_allocator/chromecast_buildflags.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
@@ -27,7 +28,6 @@
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 #include "base/memory/nonscannable_memory.h"
 #include "build/build_config.h"
-#include "build/chromecast_buildflags.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
@@ -362,11 +362,11 @@ void* PartitionRealloc(const AllocatorDispatch*,
       partition_alloc::AllocFlags::kNoHooks | g_alloc_flags, address, size, "");
 }
 
-#if BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(PA_IS_CAST_ANDROID)
 extern "C" {
 void __real_free(void*);
 }  // extern "C"
-#endif  // BUILDFLAG(IS_CAST_ANDROID)
+#endif  // BUILDFLAG(PA_IS_CAST_ANDROID)
 
 void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
@@ -386,7 +386,7 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   // malloc() pointer can be passed to PartitionAlloc's free(). If we don't own
   // the pointer, pass it along. This should not have a runtime cost vs regular
   // Android, since on Android we have a PA_CHECK() rather than the branch here.
-#if BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(PA_IS_CAST_ANDROID)
   if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
                       reinterpret_cast<uintptr_t>(object)) &&
                   object)) {
@@ -395,7 +395,7 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
     // here.
     return __real_free(object);
   }
-#endif  // BUILDFLAG(IS_CAST_ANDROID)
+#endif  // BUILDFLAG(PA_IS_CAST_ANDROID)
 
   partition_alloc::ThreadSafePartitionRoot::FreeNoHooks(object);
 }
