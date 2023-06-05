@@ -48,6 +48,7 @@ source_set("input_monitor") {
       "local_keyboard_input_monitor_mac.mm",
       "local_mouse_input_monitor_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (remoting_use_x11) {
