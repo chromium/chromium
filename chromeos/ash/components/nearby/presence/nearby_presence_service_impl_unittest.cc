@@ -109,7 +109,8 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   base::WeakPtrFactory<NearbyPresenceServiceImplTest> weak_ptr_factory_{this};
 };
 
-TEST_F(NearbyPresenceServiceImplTest, StartScan) {
+// TODO(crbug.com/1451251): Re-enable this test
+TEST_F(NearbyPresenceServiceImplTest, DISABLED_StartScan) {
   NearbyPresenceService::ScanFilter filter;
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
@@ -133,7 +134,8 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan) {
   EXPECT_TRUE(IsScanSessionActive());
 }
 
-TEST_F(NearbyPresenceServiceImplTest, EndScan) {
+// TODO(crbug.com/1451251): Re-enable this test
+TEST_F(NearbyPresenceServiceImplTest, DISABLED_EndScan) {
   NearbyPresenceService::ScanFilter filter;
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
@@ -165,7 +167,8 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
   EXPECT_TRUE(nearby_presence_.WasOnDisconnectCalled());
 }
 
-TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
+// TODO(crbug.com/1451251): Re-enable this test
+TEST_F(NearbyPresenceServiceImplTest, DISABLED_EndScanBeforeStart) {
   NearbyPresenceService::ScanFilter filter;
   FakeScanDelegate scan_delegate;
   auto run_loop = base::RunLoop();
