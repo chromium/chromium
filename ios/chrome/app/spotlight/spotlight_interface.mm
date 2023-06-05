@@ -25,7 +25,6 @@
   static SpotlightInterface* const kDefaultSpotlightInterface =
       [[SpotlightInterface alloc]
           initWithSearchableIndex:[CSSearchableIndex defaultSearchableIndex]
-                           logger:[SpotlightLogger sharedLogger]
                       maxAttempts:spotlight::kMaxAttempts - 1];
   return kDefaultSpotlightInterface;
 }
@@ -51,12 +50,10 @@
 }
 
 - (instancetype)initWithSearchableIndex:(CSSearchableIndex*)searchableIndex
-                                 logger:(SpotlightLogger*)logger
                             maxAttempts:(NSUInteger)maxAttempts {
   self = [super init];
   if (self) {
     _searchableIndex = searchableIndex;
-    _logger = logger;
     _maxAttempts = maxAttempts;
   }
   return self;
@@ -84,10 +81,6 @@
   BlockWithError augmentedCallback = ^(NSError* error) {
     [SpotlightLogger logSpotlightError:error];
 
-    if (!error) {
-      [weakSelf.logger logDeletionOfItemsWithIdentifiers:identifiers];
-    }
-
     if (completionHandler) {
       completionHandler(error);
     }
@@ -111,10 +104,6 @@
 
   BlockWithError augmentedCallback = ^(NSError* error) {
     [SpotlightLogger logSpotlightError:error];
-
-    if (!error) {
-      [weakSelf.logger logDeletionOfItemsInDomains:domainIdentifiers];
-    }
 
     if (completionHandler) {
       completionHandler(error);
@@ -141,10 +130,6 @@
         removeObjectForKey:@(spotlight::kSpotlightLastIndexingDateKey)];
 
     [SpotlightLogger logSpotlightError:error];
-
-    if (!error) {
-      [weakSelf.logger logDeletionOfAllItems];
-    }
 
     if (completionHandler) {
       completionHandler(error);

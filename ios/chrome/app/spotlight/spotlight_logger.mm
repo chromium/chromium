@@ -20,12 +20,6 @@ NSString* kSpotlightDebuggerErrorLogKey = @"SpotlightDebuggerErrorLogKey";
 
 }  // namespace
 
-@interface SpotlightLogger ()
-
-@property(nonatomic, strong) NSMutableDictionary* knownItems;
-
-@end
-
 @implementation SpotlightLogger
 
 + (instancetype)sharedLogger {
@@ -39,64 +33,6 @@ NSString* kSpotlightDebuggerErrorLogKey = @"SpotlightDebuggerErrorLogKey";
 
   static SpotlightLogger* sharedLogger = [[SpotlightLogger alloc] init];
   return sharedLogger;
-}
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _knownItems = [[NSMutableDictionary alloc] init];
-  }
-  return self;
-}
-
-- (void)logIndexedItem:(CSSearchableItem*)item {
-  self.knownItems[item.uniqueIdentifier] = item;
-}
-
-- (void)logIndexedItems:(NSArray<CSSearchableItem*>*)items {
-  for (CSSearchableItem* item in items) {
-    [self logIndexedItem:item];
-  }
-}
-
-- (void)logDeletionOfItemsWithIdentifiers:(NSArray<NSString*>*)identifiers {
-  for (NSString* identifier in identifiers) {
-    self.knownItems[identifier] = nil;
-  }
-}
-
-- (void)logDeletionOfItemsInDomain:(NSString*)domain {
-  for (NSString* key in self.knownItems.allKeys) {
-    CSSearchableItem* item = self.knownItems[key];
-    if ([item.domainIdentifier isEqualToString:domain]) {
-      self.knownItems[key] = nil;
-    }
-  }
-}
-
-- (void)logDeletionOfItemsInDomains:(NSArray<NSString*>*)domains {
-  for (NSString* domain in domains) {
-    [self logDeletionOfItemsInDomain:domain];
-  }
-}
-
-- (void)logDeletionOfAllItems {
-  [self.knownItems removeAllObjects];
-}
-
-- (NSArray*)knownIndexedItems {
-  return self.knownItems.allValues;
-}
-
-- (NSArray*)knownIndexedItemsInDomain:(NSString*)domain {
-  NSMutableArray* items = [[NSMutableArray alloc] init];
-  for (NSString* key in self.knownItems.allKeys) {
-    CSSearchableItem* item = self.knownItems[key];
-    if ([item.domainIdentifier isEqualToString:domain]) {
-      [items addObject:item];
-    }
-  }
-  return items;
 }
 
 - (void)logSpotlightError:(NSError*)error {

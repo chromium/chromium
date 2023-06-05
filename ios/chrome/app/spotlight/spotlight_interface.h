@@ -23,7 +23,6 @@
 + (SpotlightInterface*)defaultInterface;
 
 - (instancetype)initWithSearchableIndex:(CSSearchableIndex*)searchableIndex
-                                 logger:(SpotlightLogger*)logger
                             maxAttempts:(NSUInteger)maxAttempts
     NS_DESIGNATED_INITIALIZER;
 
@@ -31,9 +30,6 @@
 
 // Searchable index used internally.
 @property(nonatomic, readonly) CSSearchableIndex* searchableIndex;
-
-// Logger used by this instance.
-@property(nonatomic, readonly) SpotlightLogger* logger;
 
 /// Adds or updates searchable items.
 /// Takes care of retrying the call internally. No need to retry , this is done

@@ -30,17 +30,6 @@
 /// it's disabled, the error is reported through UMA.
 + (void)logSpotlightError:(NSError*)error;
 
-- (void)logIndexedItem:(CSSearchableItem*)item;
-- (void)logIndexedItems:(NSArray<CSSearchableItem*>*)items;
-
-- (void)logDeletionOfItemsWithIdentifiers:(NSArray<NSString*>*)identifiers;
-- (void)logDeletionOfItemsInDomain:(NSString*)domain;
-- (void)logDeletionOfItemsInDomains:(NSArray<NSString*>*)domains;
-- (void)logDeletionOfAllItems;
-
-- (NSArray<CSSearchableItem*>*)knownIndexedItems;
-- (NSArray<CSSearchableItem*>*)knownIndexedItemsInDomain:(NSString*)domain;
-
 @end
 
 #endif  // IOS_CHROME_APP_SPOTLIGHT_SPOTLIGHT_LOGGER_H_
