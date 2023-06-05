@@ -1956,6 +1956,13 @@
       status: "stable",
     },
     {
+      // A flag, just for local testing to make the
+      // HTML parser yield more often and take longer to resume.
+      // This helps when debugging flaky tests caused by parser
+      // yielding heuristics.
+      name: "HTMLParserYieldAndDelayOftenForTesting",
+    },
+    {
       // A kill-switch for crbug.com/1412729
       // (enabling the `v` flag for `pattern` RegExps).
       name: "HTMLPatternRegExpUnicodeSets",

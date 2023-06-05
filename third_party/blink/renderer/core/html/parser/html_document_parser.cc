@@ -643,6 +643,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
           ? task_runner_state_->GetDefaultBudget()
           : kInfiniteTokenizationBudget;
 
+  if (RuntimeEnabledFeatures::HTMLParserYieldAndDelayOftenForTestingEnabled()) {
+    budget = 2;
+  }
+
   base::TimeDelta timed_budget;
   if (TimedParserBudgetEnabled())
     timed_budget = GetTimedBudget(task_runner_state_->TimesYielded());
@@ -693,7 +697,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
     ConstructTreeFromToken(atomic_html_token);
     if (!should_run_until_completion && !IsPaused()) {
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
-      if (TimedParserBudgetEnabled()) {
+      if (TimedParserBudgetEnabled() &&
+          !RuntimeEnabledFeatures::
+              HTMLParserYieldAndDelayOftenForTestingEnabled()) {
         if (CheckParserBudgetLessOften()) {
           int newly_consumed_characters =
               input_.Current().NumberOfCharactersConsumed() -
@@ -769,6 +775,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   CHECK(!should_run_until_completion || !should_yield);
   if (should_yield)
     task_runner_state_->MarkYield();
+
   return should_yield;
 }
 
@@ -781,11 +788,16 @@ void HTMLDocumentParser::SchedulePumpTokenizer(bool from_finish_append) {
     // If the parser is already scheduled, there's no need to do anything.
     return;
   }
-  loading_task_runner_->PostTask(
+  base::TimeDelta delay = base::Milliseconds(0);
+  if (RuntimeEnabledFeatures::HTMLParserYieldAndDelayOftenForTestingEnabled()) {
+    delay = base::Milliseconds(1000);
+  }
+  loading_task_runner_->PostDelayedTask(
       FROM_HERE,
       WTF::BindOnce(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
                     WrapPersistent(this), from_finish_append,
-                    base::TimeTicks::Now()));
+                    base::TimeTicks::Now()),
+      delay);
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kScheduled);
 
