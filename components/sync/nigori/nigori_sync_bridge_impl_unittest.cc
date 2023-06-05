@@ -117,21 +117,6 @@ MATCHER_P(EncryptedDataEq, expected, "") {
          given.blob() == expected.blob();
 }
 
-MATCHER_P3(EncryptedDataEqAfterDecryption,
-           expected,
-           password,
-           derivation_params,
-           "") {
-  const sync_pb::EncryptedData& given = arg;
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::FromSingleKeyForTesting(password, derivation_params);
-  std::string decrypted_given;
-  EXPECT_TRUE(cryptographer->DecryptToString(given, &decrypted_given));
-  std::string decrypted_expected;
-  EXPECT_TRUE(cryptographer->DecryptToString(expected, &decrypted_expected));
-  return decrypted_given == decrypted_expected;
-}
-
 MATCHER_P2(IsDummyNigoriMetadataBatchWithTokenAndSequenceNumber,
            expected_token,
            expected_sequence_number,
