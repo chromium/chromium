@@ -1441,39 +1441,7 @@ class GetAuthTokenFunctionInteractivityTest
       public testing::WithParamInterface<
           IdentityGetAuthTokenFunction::InteractivityStatus> {
  public:
-  GetAuthTokenFunctionInteractivityTest() {
-    // Configure the `kGetAuthTokenCheckInteractivity` feature.
-    if (GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
-                          kAllowedNoIdleCheck) {
-      feature_list_.InitAndDisableFeature(kGetAuthTokenCheckInteractivity);
-    } else {
-      feature_list_.InitAndEnableFeature(kGetAuthTokenCheckInteractivity);
-    }
-  }
-
- protected:
-  // Checks that the histograms:
-  // - Signin.Extensions.GetAuthTokenNoGestureIdleTime.* are recorded only when
-  //   there is no user gesture
-  // - Signin.Extensions.GetAuthTokenInteractivityStatus.* are always recorded
-  //   and match the user activity.
-  void CheckUserActivityMetricsHistograms(const std::string& suffix) {
-    int idle_time_sample_count = 0;
-    if (GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
-                          kDisallowedIdle ||
-        GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
-                          kAllowedWithActivity) {
-      idle_time_sample_count = 1;
-    }
-    histogram_tester()->ExpectTotalCount(
-        std::string(extensions::kGetAuthTokenIdleTimeHistogramBaseName) +
-            suffix,
-        idle_time_sample_count);
-    histogram_tester()->ExpectUniqueSample(
-        std::string(extensions::kGetAuthTokenActivityStatusHistogramBaseName) +
-            suffix,
-        GetParam(), 1);
-  }
+  GetAuthTokenFunctionInteractivityTest() = default;
 
  private:
   void SetUpOnMainThread() override {
@@ -1488,20 +1456,18 @@ class GetAuthTokenFunctionInteractivityTest
         idle_state_ = std::make_unique<ui::ScopedSetIdleState>(
             ui::IdleState::IDLE_STATE_ACTIVE);
         SetUserGestureEnabled(false);
-        ASSERT_EQ(ui::CalculateIdleState(
-                      kDefaultGetAuthTokenInactivityThreshold.InSeconds()),
-                  ui::IDLE_STATE_ACTIVE);
+        ASSERT_EQ(
+            ui::CalculateIdleState(kGetAuthTokenInactivityTime.InSeconds()),
+            ui::IDLE_STATE_ACTIVE);
         break;
       case IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested:
       case IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle:
-      case IdentityGetAuthTokenFunction::InteractivityStatus::
-          kAllowedNoIdleCheck:
         SetUserGestureEnabled(false);
         idle_state_ = std::make_unique<ui::ScopedSetIdleState>(
             ui::IdleState::IDLE_STATE_LOCKED);
-        ASSERT_NE(ui::CalculateIdleState(
-                      kDefaultGetAuthTokenInactivityThreshold.InSeconds()),
-                  ui::IDLE_STATE_ACTIVE);
+        ASSERT_NE(
+            ui::CalculateIdleState(kGetAuthTokenInactivityTime.InSeconds()),
+            ui::IDLE_STATE_ACTIVE);
         break;
       case IdentityGetAuthTokenFunction::InteractivityStatus::
           kDisallowedSigninDisallowed:
@@ -1512,7 +1478,6 @@ class GetAuthTokenFunctionInteractivityTest
     GetAuthTokenFunctionTest::SetUpOnMainThread();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ui::ScopedSetIdleState> idle_state_;
 };
 
@@ -1574,7 +1539,6 @@ IN_PROC_BROWSER_TEST_P(GetAuthTokenFunctionInteractivityTest,
   }
   histogram_tester()->ExpectUniqueSample(kGetAuthTokenResultHistogramName,
                                          expected_error_state, 1);
-  CheckUserActivityMetricsHistograms(kGetAuthTokenHistogramSigninSuffix);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1633,8 +1597,6 @@ IN_PROC_BROWSER_TEST_P(GetAuthTokenFunctionInteractivityTest,
   EXPECT_FALSE(func->login_ui_shown());
   histogram_tester()->ExpectUniqueSample(kGetAuthTokenResultHistogramName,
                                          expected_error_state, 1);
-  CheckUserActivityMetricsHistograms(
-      extensions::kGetAuthTokenHistogramConsentSuffix);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1644,9 +1606,8 @@ INSTANTIATE_TEST_SUITE_P(
         IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested,
         IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle,
         IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedWithGesture,
-        IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedWithActivity,
         IdentityGetAuthTokenFunction::InteractivityStatus::
-            kAllowedNoIdleCheck));
+            kAllowedWithActivity));
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveApprovalAborted) {
   SignIn("primary@example.com");

@@ -96485,15 +96485,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Timeout"/>
 </enum>
 
-<enum name="SigninExtensionsGetAuthTokenInteractivityStatus">
-  <int value="0" label="kNotRequested"/>
-  <int value="1" label="kDisallowedIdle"/>
-  <int value="2" label="kDisallowedSigninDisallowed"/>
-  <int value="3" label="kAllowedWithGesture"/>
-  <int value="4" label="kAllowedWithActivity"/>
-  <int value="5" label="kAllowedNoIdleCheck"/>
-</enum>
-
 <enum name="SigninGaiaCookieManagerLogout">
   <int value="0" label="Request started"/>
   <int value="1" label="Success"/>

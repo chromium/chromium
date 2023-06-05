@@ -90,34 +90,11 @@ bool IsInteractionAllowed(
     case IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedWithGesture:
     case IdentityGetAuthTokenFunction::InteractivityStatus::
         kAllowedWithActivity:
-    case IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedNoIdleCheck:
       return true;
   }
 }
 
-// Returns the idle time threshold, which is a parameter of the
-// `kGetAuthTokenCheckInteractivity` experiment. Defaults to
-// `kDefaultGetAuthTokenInactivityThreshold` if the parameter is not defined.
-base::TimeDelta GetIdleTimeThreshold() {
-  DCHECK(base::FeatureList::IsEnabled(kGetAuthTokenCheckInteractivity));
-  int threshold_seconds = base::GetFieldTrialParamByFeatureAsInt(
-      kGetAuthTokenCheckInteractivity, "idle_time_threshold_seconds",
-      kDefaultGetAuthTokenInactivityThreshold.InSeconds());
-  return base::Seconds(threshold_seconds);
-}
-
 }  // namespace
-
-BASE_FEATURE(kGetAuthTokenCheckInteractivity,
-             "InteractiveGetAuthTokenCheckActivity",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kGetAuthTokenActivityStatusHistogramBaseName[] =
-    "Signin.Extensions.GetAuthTokenInteractivityStatus";
-const char kGetAuthTokenIdleTimeHistogramBaseName[] =
-    "Signin.Extensions.GetAuthTokenNoGestureIdleTime";
-const char kGetAuthTokenHistogramConsentSuffix[] = ".Consent";
-const char kGetAuthTokenHistogramSigninSuffix[] = ".Signin";
 
 IdentityGetAuthTokenFunction::IdentityGetAuthTokenFunction() = default;
 
@@ -275,7 +252,6 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
   if (account_info.IsEmpty() ||
       !IdentityManagerFactory::GetForProfile(GetProfile())
            ->HasAccountWithRefreshToken(account_info.account_id)) {
-    RecordInteractivityMetrics(InteractionType::kSignin);
     if (!ShouldStartSigninFlow()) {
       CompleteFunctionWithError(
           GetErrorFromInteractivityStatus(InteractionType::kSignin));
@@ -435,7 +411,6 @@ void IdentityGetAuthTokenFunction::StartMintTokenFlow(
   if (!IsInteractionAllowed(interactivity_status_for_consent_)) {
     if (type == IdentityMintRequestQueue::MINT_TYPE_INTERACTIVE) {
       // GAIA told us to do a consent UI.
-      RecordInteractivityMetrics(InteractionType::kConsent);
       CompleteFunctionWithError(
           GetErrorFromInteractivityStatus(InteractionType::kConsent));
       return;
@@ -543,7 +518,6 @@ void IdentityGetAuthTokenFunction::StartMintToken(
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT:
-        RecordInteractivityMetrics(InteractionType::kConsent);
         ShowRemoteConsentDialog(resolution_data_);
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED:
@@ -581,7 +555,6 @@ void IdentityGetAuthTokenFunction::OnMintTokenFailure(
   switch (error.state()) {
     case GoogleServiceAuthError::SERVICE_ERROR:
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
-      RecordInteractivityMetrics(InteractionType::kSignin);
       if (ShouldStartSigninFlow()) {
         StartSigninFlow();
         return;
@@ -954,44 +927,6 @@ std::string IdentityGetAuthTokenFunction::GetSelectedUserId() const {
   return "";
 }
 
-void IdentityGetAuthTokenFunction::RecordInteractivityMetrics(
-    InteractionType interaction_type) {
-  // Only record the metrics once per function call.
-  if (interactivity_metrics_recorded_) {
-    return;
-  }
-  interactivity_metrics_recorded_ = true;
-
-  InteractivityStatus interactivity_status = InteractivityStatus::kNotRequested;
-
-  base::StringPiece histogram_suffix;
-  switch (interaction_type) {
-    case InteractionType::kSignin:
-      histogram_suffix = kGetAuthTokenHistogramSigninSuffix;
-      interactivity_status = interactivity_status_for_signin_;
-      break;
-    case InteractionType::kConsent:
-      histogram_suffix = kGetAuthTokenHistogramConsentSuffix;
-      interactivity_status = interactivity_status_for_consent_;
-      break;
-  }
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {kGetAuthTokenActivityStatusHistogramBaseName, histogram_suffix}),
-      interactivity_status);
-
-  // When the request is allowed or disallowed based on the idle state, log the
-  // idle time, to help tweak the threshold value. Do not log when
-  // `user_gesture()` is true because these requests should always be allowed.
-  if (interactivity_status == InteractivityStatus::kAllowedWithActivity ||
-      interactivity_status == InteractivityStatus::kDisallowedIdle) {
-    base::UmaHistogramLongTimes(
-        base::StrCat(
-            {kGetAuthTokenIdleTimeHistogramBaseName, histogram_suffix}),
-        idle_time_);
-  }
-}
-
 void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(
     const absl::optional<api::identity::TokenDetails>& details) {
   bool interactive = details && details->interactive.value_or(false);
@@ -1001,19 +936,15 @@ void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(
     return;
   }
 
-  InteractivityStatus status = InteractivityStatus::kAllowedNoIdleCheck;
+  InteractivityStatus status = InteractivityStatus::kDisallowedIdle;
   // Interactive mode requires user action, to prevent unwanted signin tabs.
   // See b/259072565.
-  if (base::FeatureList::IsEnabled(kGetAuthTokenCheckInteractivity)) {
-    idle_time_ = base::Seconds(ui::CalculateIdleTime());
-    if (user_gesture()) {
-      status = InteractivityStatus::kAllowedWithGesture;
-    } else if (ui::CalculateIdleState(GetIdleTimeThreshold().InSeconds()) ==
-               ui::IDLE_STATE_ACTIVE) {
-      status = InteractivityStatus::kAllowedWithActivity;
-    } else {
-      status = InteractivityStatus::kDisallowedIdle;
-    }
+  idle_time_ = base::Seconds(ui::CalculateIdleTime());
+  if (user_gesture()) {
+    status = InteractivityStatus::kAllowedWithGesture;
+  } else if (ui::CalculateIdleState(kGetAuthTokenInactivityTime.InSeconds()) ==
+             ui::IDLE_STATE_ACTIVE) {
+    status = InteractivityStatus::kAllowedWithActivity;
   }
 
   interactivity_status_for_consent_ = status;
@@ -1057,7 +988,6 @@ IdentityGetAuthTokenFunction::GetErrorFromInteractivityStatus(
       break;
     case InteractivityStatus::kAllowedWithGesture:
     case InteractivityStatus::kAllowedWithActivity:
-    case InteractivityStatus::kAllowedNoIdleCheck:
       NOTREACHED();
       break;
   }
