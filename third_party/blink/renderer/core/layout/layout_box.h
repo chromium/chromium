@@ -100,11 +100,9 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   Member<LayoutMultiColumnSpannerPlaceholder> spanner_placeholder_;
 
   bool has_override_containing_block_content_logical_width_ : 1;
-  bool has_override_containing_block_content_logical_height_ : 1;
   bool has_previous_content_box_rect_ : 1;
 
   LayoutUnit override_containing_block_content_logical_width_;
-  LayoutUnit override_containing_block_content_logical_height_;
 
   // For snap area, the owning snap container.
   Member<LayoutBox> snap_container_;
@@ -874,7 +872,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool HasOverrideContainingBlockContentLogicalWidth() const;
   bool HasOverrideContainingBlockContentLogicalHeight() const;
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
-  void SetOverrideContainingBlockContentLogicalHeight(LayoutUnit);
   void ClearOverrideContainingBlockContentSize();
 
   // When an available inline size override has been set, we'll use that to fill

@@ -465,7 +465,6 @@ LayoutBoxRareData::LayoutBoxRareData()
     : spanner_placeholder_(nullptr),
       // TODO(rego): We should store these based on physical direction.
       has_override_containing_block_content_logical_width_(false),
-      has_override_containing_block_content_logical_height_(false),
       has_previous_content_box_rect_(false),
       snap_container_(nullptr) {}
 
@@ -2088,9 +2087,7 @@ LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalWidth() const {
 LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalHeight() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideContainingBlockContentLogicalHeight());
-  if (extra_input_)
-    return extra_input_->containing_block_content_block_size;
-  return rare_data_->override_containing_block_content_logical_height_;
+  return extra_input_->containing_block_content_block_size;
 }
 
 // TODO (lajava) Shouldn't we implement these functions based on physical
@@ -2107,10 +2104,7 @@ bool LayoutBox::HasOverrideContainingBlockContentLogicalWidth() const {
 // direction ?.
 bool LayoutBox::HasOverrideContainingBlockContentLogicalHeight() const {
   NOT_DESTROYED();
-  if (extra_input_)
-    return true;
-  return rare_data_ &&
-         rare_data_->has_override_containing_block_content_logical_height_;
+  return extra_input_;
 }
 
 // TODO (lajava) Shouldn't we implement these functions based on physical
@@ -2127,26 +2121,12 @@ void LayoutBox::SetOverrideContainingBlockContentLogicalWidth(
 
 // TODO (lajava) Shouldn't we implement these functions based on physical
 // direction ?.
-void LayoutBox::SetOverrideContainingBlockContentLogicalHeight(
-    LayoutUnit logical_height) {
-  NOT_DESTROYED();
-  DCHECK(!extra_input_);
-  DCHECK_GE(logical_height, LayoutUnit(-1));
-  EnsureRareData().override_containing_block_content_logical_height_ =
-      logical_height;
-  EnsureRareData().has_override_containing_block_content_logical_height_ = true;
-}
-
-// TODO (lajava) Shouldn't we implement these functions based on physical
-// direction ?.
 void LayoutBox::ClearOverrideContainingBlockContentSize() {
   NOT_DESTROYED();
   DCHECK(!extra_input_);
   if (!rare_data_)
     return;
   EnsureRareData().has_override_containing_block_content_logical_width_ = false;
-  EnsureRareData().has_override_containing_block_content_logical_height_ =
-      false;
 }
 
 LayoutUnit LayoutBox::OverrideAvailableInlineSize() const {
