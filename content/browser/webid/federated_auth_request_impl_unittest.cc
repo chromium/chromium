@@ -4246,4 +4246,40 @@ TEST_F(FederatedAuthRequestImplTest,
       FederatedAuthRequestImpl::ShouldMediateAuthz({"profile", "email"}));
 }
 
+class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {
+ protected:
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    test_api_permission_delegate_ =
+        std::make_unique<TestApiPermissionDelegate>();
+    test_permission_delegate_ = std::make_unique<TestPermissionDelegate>();
+    test_auto_reauthn_permission_delegate_ =
+        std::make_unique<TestAutoReauthnPermissionDelegate>();
+    test_identity_registry_ = std::make_unique<TestIdentityRegistry>(
+        web_contents(), federated_auth_request_impl_,
+        url::Origin::Create(GURL(kIdpUrl)));
+
+    static_cast<TestWebContents*>(web_contents())
+        ->NavigateAndCommit(GURL("chrome://newtab/"), ui::PAGE_TRANSITION_LINK);
+
+    federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
+        *main_test_rfh(), test_api_permission_delegate_.get(),
+        test_auto_reauthn_permission_delegate_.get(),
+        test_permission_delegate_.get(), test_identity_registry_.get(),
+        request_remote_.BindNewPipeAndPassReceiver());
+
+    std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
+        std::make_unique<TestIdpNetworkRequestManager>();
+    SetNetworkRequestManager(std::move(network_request_manager));
+
+    federated_auth_request_impl_->SetTokenRequestDelayForTests(
+        base::TimeDelta());
+  }
+};
+
+TEST_F(FederatedAuthRequestImplNewTabTest, SuccessfulFlow) {
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+}
+
 }  // namespace content

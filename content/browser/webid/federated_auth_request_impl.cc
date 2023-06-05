@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_formatter.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -269,7 +270,8 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
         GURL(url.scheme() + "://" + formatted_url_str),
         url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
-  return GURL(url.scheme() + "://" + formatted_url_str).spec();
+  return base::UTF16ToUTF8(
+      url_formatter::FormatUrl(GURL(url.scheme() + "://" + formatted_url_str)));
 }
 
 std::string FormatOriginForDisplay(const url::Origin& origin) {
