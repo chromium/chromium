@@ -105,6 +105,7 @@
     "android-arm64-all-targets-dbg": "Ubuntu-22.04",
     "android-arm64-rel": "Ubuntu-22.04",
     "android-arm64-rel-compilator": "Ubuntu-22.04",
+    "android-bfcache-rel": "Ubuntu-22.04",
     "android-binary-size": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
