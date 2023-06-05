@@ -940,6 +940,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/omaha/android:java",
       "//chrome/browser/optimization_guide/android:java",
       "//chrome/browser/partnercustomizations:java",
+      "//chrome/browser/partnercustomizations:junit",
       "//chrome/browser/password_edit_dialog/android:junit",
       "//chrome/browser/password_entry_edit/android/internal:junit",
       "//chrome/browser/password_manager/android:java",

@@ -56,6 +56,13 @@ chromium-metrics-reviews@google.com.
   <variant name="Waived" summary="strongest binding of Waived"/>
 </variants>
 
+<variants name="CustomizationDelegate">
+  <variant name="GService" summary="GService"/>
+  <variant name="None" summary="None-valid"/>
+  <variant name="Phenotype" summary="Phenotype/Heterodyne"/>
+  <variant name="PreloadApk" summary="Preload-APK"/>
+</variants>
+
 <variants name="MessageIdentifiers">
   <variant name=".AboutThisSite"/>
   <variant name=".AddToHomescreenIPH"/>
@@ -2705,6 +2712,74 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PartnerCustomization.DelegateConflict" enum="Boolean"
+    expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records whether a delegate confict occurred due to starting up multiple
+    async background tasks that use different delegates. Recorded when a partner
+    customization delegate is changed from one kind of delegate to another.
+    Recorded at startup.
+  </summary>
+</histogram>
+
+<histogram name="Android.PartnerCustomization.DelegateUnusedReason"
+    enum="PartnerDelegateUnusedReason" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records a reason that a delegate could not be used for partner
+    customization. Multiple records can be written when more than one delegate
+    is tried and fails during a single initialization session. Recorded when a
+    partner customization delegate tries to initialize but fails. Delegates may
+    lazily initialize, so having one succeed may cause another to be skipped and
+    the skipped one's potential failure would not be recorded. Trying to use the
+    PreloadApk delegate is only done when actually needed so these numbers
+    should reflect actual usage attempts.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.TryFailedDuration.{CustomizationDelegate}"
+    units="ms" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the amount of time it took for the {CustomizationDelegate} delegate
+    to run in the async task that does partner customization. Recorded when the
+    task completes but was unable to use the delegate for some reason - see
+    DelegateUnusedReason histogram for some possible reasons. Trying to use the
+    PreloadApk delegate is only done when actually needed so these numbers
+    should reflect actual usage attempts.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.TrySucceededDuration.{CustomizationDelegate}"
+    units="ms" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the amount of time it took for the {CustomizationDelegate} delegate
+    to run in the async task that does partner customization. Recorded when the
+    task completes successfully and a delegate providing customizations is
+    found. Trying to use the PreloadApk delegate is only done when actually
+    needed so these numbers should reflect actual usage attempts.
+  </summary>
+</histogram>
+
+<histogram name="Android.PartnerCustomization.Usage"
+    enum="PartnerCustomizationUsage" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records which customization usage is being invoked, at the time it is
+    requested. The possible usages include a custom Homepage URL, suppressing
+    incognito, etc.
+  </summary>
+</histogram>
+
 <histogram name="Android.PartnerCustomizationInitializedBeforeInitialTab"
     enum="Boolean" expires_after="2023-11-12">
   <owner>wenyufu@chromium.org</owner>
@@ -2717,14 +2792,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PartnerHomepageCustomization.Delegate"
-    enum="PartnerHomepageCustomizationDelegate" expires_after="M120">
+<histogram name="Android.PartnerHomepageCustomization.Delegate2"
+    enum="PartnerCustomizationProviderDelegate" expires_after="M120">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
     Records which delegate will be used to provide the home page URL that is
-    needed for a custom provider's home page. Recorded at startup on Android.
+    needed for a custom provider's customization. Recorded at startup on
+    Android.
   </summary>
 </histogram>
 
