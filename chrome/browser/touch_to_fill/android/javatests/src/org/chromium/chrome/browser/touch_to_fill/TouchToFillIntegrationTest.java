@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
@@ -88,8 +89,9 @@ public class TouchToFillIntegrationTest {
     public void setUp() throws InterruptedException {
         sExampleUrl = new GURL("https://www.example.xyz");
         // TODO(https://crbug.com/783819): Migrate Credential to GURL.
-        sAna = new Credential("Ana", "S3cr3t", "Ana", sExampleUrl.getSpec(), false, false, 0);
-        sBob = new Credential("Bob", "*****", "Bob", MOBILE_URL, true, false, 0);
+        sAna = new Credential(
+                "Ana", "S3cr3t", "Ana", sExampleUrl.getSpec(), GetLoginMatchType.EXACT, 0);
+        sBob = new Credential("Bob", "*****", "Bob", MOBILE_URL, GetLoginMatchType.PSL, 0);
         sCam = new WebAuthnCredential(
                 "example.net", new byte[] {1}, new byte[] {2}, "cam@example.net");
 

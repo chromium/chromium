@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.data;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 
 /**
  * This class holds the data used to represent a selectable credential in the Touch To Fill sheet.
@@ -14,30 +15,25 @@ public class Credential {
     private final String mPassword;
     private final String mFormattedUsername;
     private final String mOriginUrl;
-    private final boolean mIsPublicSuffixMatch;
-    private final boolean mIsAffiliationBasedMatch;
+    private final @GetLoginMatchType int mMatchType;
     private final long mLastUsedMsSinceEpoch;
 
     /**
      * @param username Username shown to the user.
      * @param password Password shown to the user.
      * @param originUrl Origin URL shown to the user in case this credential is a PSL match.
-     * @param isPublicSuffixMatch Indicating whether the credential is a PSL match.
-     * @param isAffiliationBasedMatch Indicating whether the credential is an affiliation based
-     * match (i.e. whether it is an Android credential).
+     * @param matchType Indicating which type of a match the credential.
      * @param lastUsedMsSinceEpoch Elapsed number of milliseconds from the unix epoch when the
      * credential was used the last time.
      */
     public Credential(String username, String password, String formattedUsername, String originUrl,
-            boolean isPublicSuffixMatch, boolean isAffiliationBasedMatch,
-            long lastUsedMsSinceEpoch) {
+            @GetLoginMatchType int matchType, long lastUsedMsSinceEpoch) {
         assert originUrl != null : "Credential origin is null! Pass an empty one instead.";
         mUsername = username;
         mPassword = password;
         mFormattedUsername = formattedUsername;
         mOriginUrl = originUrl;
-        mIsPublicSuffixMatch = isPublicSuffixMatch;
-        mIsAffiliationBasedMatch = isAffiliationBasedMatch;
+        mMatchType = matchType;
         mLastUsedMsSinceEpoch = lastUsedMsSinceEpoch;
     }
 
@@ -61,13 +57,8 @@ public class Credential {
     }
 
     @CalledByNative
-    public boolean isPublicSuffixMatch() {
-        return mIsPublicSuffixMatch;
-    }
-
-    @CalledByNative
-    public boolean isAffiliationBasedMatch() {
-        return mIsAffiliationBasedMatch;
+    public int getMatchType() {
+        return mMatchType;
     }
 
     @CalledByNative
@@ -76,6 +67,6 @@ public class Credential {
     }
 
     public boolean isExactMatch() {
-        return !mIsPublicSuffixMatch && !mIsAffiliationBasedMatch;
+        return mMatchType == GetLoginMatchType.EXACT;
     }
 }

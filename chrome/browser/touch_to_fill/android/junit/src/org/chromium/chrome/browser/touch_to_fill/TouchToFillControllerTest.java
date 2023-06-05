@@ -57,6 +57,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
@@ -90,11 +91,11 @@ public class TouchToFillControllerTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false, 0);
+            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", GetLoginMatchType.PSL, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false, 0);
-    private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), false, false, 0);
+            new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, GetLoginMatchType.PSL, 0);
+    private static final Credential CARL = new Credential(
+            "Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), GetLoginMatchType.EXACT, 0);
     private static final WebAuthnCredential DINO =
             new WebAuthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;

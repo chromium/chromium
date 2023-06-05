@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/view_android.h"
@@ -47,10 +48,8 @@ UiCredential ConvertJavaCredential(JNIEnv* env,
                                Java_Credential_getPassword(env, credential)),
       url::Origin::Create(GURL(ConvertJavaStringToUTF8(
           env, Java_Credential_getOriginUrl(env, credential)))),
-      UiCredential::IsPublicSuffixMatch(
-          Java_Credential_isPublicSuffixMatch(env, credential)),
-      UiCredential::IsAffiliationBasedMatch(
-          Java_Credential_isAffiliationBasedMatch(env, credential)),
+      static_cast<password_manager_util::GetLoginMatchType>(
+          Java_Credential_getMatchType(env, credential)),
       base::Time::FromJavaTime(
           Java_Credential_lastUsedMsSinceEpoch(env, credential)));
 }
@@ -118,8 +117,7 @@ void TouchToFillViewImpl::Show(
         ConvertUTF16ToJavaString(env, credential.password()),
         ConvertUTF16ToJavaString(env, GetDisplayUsername(credential)),
         ConvertUTF8ToJavaString(env, credential.origin().Serialize()),
-        credential.is_public_suffix_match().value(),
-        credential.is_affiliation_based_match().value(),
+        static_cast<int>(credential.match_type()),
         credential.last_used().ToJavaTime());
   }
 

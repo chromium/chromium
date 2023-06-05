@@ -77,8 +77,8 @@ autofill::UserInfo TranslateCredentials(bool current_field_is_password,
   DCHECK(!credential.origin().opaque());
   UserInfo user_info(
       credential.origin().Serialize(),
-      IsExactMatch(!credential.is_public_suffix_match().value() &&
-                   !credential.is_affiliation_based_match().value()));
+      IsExactMatch(credential.match_type() ==
+                   password_manager_util::GetLoginMatchType::kExact));
 
   std::u16string username = GetDisplayUsername(credential);
   user_info.add_field(AccessorySheetField(
@@ -178,7 +178,8 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
         credential_cache_->GetCredentialStore(origin).GetCredentials();
     info_to_add.reserve(suggestions.size());
     for (const auto& credential : suggestions) {
-      if (credential.is_public_suffix_match() &&
+      if (credential.match_type() ==
+              password_manager_util::GetLoginMatchType::kPSL &&
           !base::FeatureList::IsEnabled(
               autofill::features::kAutofillKeyboardAccessory)) {
         continue;  // PSL origins have no representation in V1. Don't show them!

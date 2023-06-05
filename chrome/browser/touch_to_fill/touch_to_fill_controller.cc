@@ -27,12 +27,13 @@ std::vector<UiCredential> SortCredentials(
     base::span<const UiCredential> credentials) {
   std::vector<UiCredential> result(credentials.begin(), credentials.end());
   // Sort `credentials` according to the following criteria:
-  // 1) Prefer non-PSL matches over PSL matches.
+  // 1) Prefer exact matches then affiliated, then PSL matches.
   // 2) Prefer credentials that were used recently over others.
   //
   // Note: This ordering matches password_manager_util::FindBestMatches().
   base::ranges::sort(result, std::greater<>{}, [](const UiCredential& cred) {
-    return std::make_pair(!cred.is_public_suffix_match(), cred.last_used());
+    return std::make_pair(-static_cast<int>(cred.match_type()),
+                          cred.last_used());
   });
 
   return result;

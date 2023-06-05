@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -47,9 +48,6 @@ using password_manager::UiCredential;
 using CallbackFunctionMock = testing::MockFunction<void()>;
 
 using DismissCallback = base::MockCallback<base::OnceCallback<void()>>;
-
-using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;
-using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 
 using RequestsToFillPassword =
     AllPasswordsBottomSheetController::RequestsToFillPassword;
@@ -102,7 +100,7 @@ UiCredential MakeUiCredential(const std::u16string& username,
                               const std::u16string& password) {
   return UiCredential(
       username, password, url::Origin::Create(GURL(kExampleCom)),
-      IsPublicSuffixMatch(false), IsAffiliationBasedMatch(false), base::Time());
+      password_manager_util::GetLoginMatchType::kExact, base::Time());
 }
 
 PasswordForm MakeSavedPassword(const std::string& signon_realm,

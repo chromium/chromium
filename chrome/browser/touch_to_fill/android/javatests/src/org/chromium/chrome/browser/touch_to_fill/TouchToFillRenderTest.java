@@ -44,6 +44,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
@@ -81,11 +82,11 @@ public class TouchToFillRenderTest {
 
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final Credential ARON =
-            new Credential("אהרן", "S3cr3t", "אהרן", "", false, false, 0);
+            new Credential("אהרן", "S3cr3t", "אהרן", "", GetLoginMatchType.EXACT, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", "", false, false, 0);
+            new Credential("Bob", "*****", "Bob", "", GetLoginMatchType.EXACT, 0);
     private static final Credential MARIAM =
-            new Credential("مريم", "***", "مريم", "", false, false, 0);
+            new Credential("مريم", "***", "مريم", "", GetLoginMatchType.EXACT, 0);
 
     @Mock
     private Callback<Integer> mDismissHandler;

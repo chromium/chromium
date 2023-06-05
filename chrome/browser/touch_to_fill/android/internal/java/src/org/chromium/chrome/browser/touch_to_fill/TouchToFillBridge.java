@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
@@ -56,10 +57,9 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     @CalledByNative
     private static void insertCredential(Credential[] credentials, int index, String username,
             String password, String formattedUsername, String originUrl,
-            boolean isPublicSuffixMatch, boolean isAffiliationBasedMatch,
-            long lastUsedMsSinceEpoch) {
-        credentials[index] = new Credential(username, password, formattedUsername, originUrl,
-                isPublicSuffixMatch, isAffiliationBasedMatch, lastUsedMsSinceEpoch);
+            @GetLoginMatchType int mMatchType, long lastUsedMsSinceEpoch) {
+        credentials[index] = new Credential(
+                username, password, formattedUsername, originUrl, mMatchType, lastUsedMsSinceEpoch);
     }
 
     @CalledByNative

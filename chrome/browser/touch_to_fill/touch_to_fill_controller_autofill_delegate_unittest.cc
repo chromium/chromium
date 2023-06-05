@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -53,9 +54,6 @@ using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 using ::testing::WithArg;
 using IsOriginSecure = TouchToFillView::IsOriginSecure;
-
-using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;
-using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 
 constexpr char kExampleCom[] = "https://example.com/";
 
@@ -107,17 +105,15 @@ struct MakeUiCredentialParams {
   base::StringPiece username;
   base::StringPiece password;
   base::StringPiece origin = kExampleCom;
-  bool is_public_suffix_match = false;
-  bool is_affiliation_based_match = false;
+  password_manager_util::GetLoginMatchType match_type =
+      password_manager_util::GetLoginMatchType::kExact;
   base::TimeDelta time_since_last_use;
 };
 
 UiCredential MakeUiCredential(MakeUiCredentialParams params) {
   return UiCredential(
       base::UTF8ToUTF16(params.username), base::UTF8ToUTF16(params.password),
-      url::Origin::Create(GURL(params.origin)),
-      IsPublicSuffixMatch(params.is_public_suffix_match),
-      IsAffiliationBasedMatch(params.is_affiliation_based_match),
+      url::Origin::Create(GURL(params.origin)), params.match_type,
       base::Time::Now() - params.time_since_last_use);
 }
 
@@ -520,7 +516,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
           .username = "bob",
           .password = "s3cr3t",
           .origin = "",
-          .is_affiliation_based_match = true,
+          .match_type = password_manager_util::GetLoginMatchType::kAffiliated,
           .time_since_last_use = base::Minutes(3),
       }),
   };
@@ -568,7 +564,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Orders_Credentials) {
   auto bob = MakeUiCredential({
       .username = "bob",
       .password = "s3cr3t",
-      .is_public_suffix_match = true,
+      .match_type = password_manager_util::GetLoginMatchType::kPSL,
       .time_since_last_use = base::Minutes(1),
   });
   auto charlie = MakeUiCredential({
@@ -579,7 +575,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Orders_Credentials) {
   auto david = MakeUiCredential({
       .username = "david",
       .password = "even_more_s3cr3t",
-      .is_public_suffix_match = true,
+      .match_type = password_manager_util::GetLoginMatchType::kPSL,
       .time_since_last_use = base::Minutes(4),
   });
 

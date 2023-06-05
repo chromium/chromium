@@ -25,6 +25,7 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",

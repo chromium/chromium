@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,9 +21,6 @@ namespace password_manager {
 namespace {
 
 using url::Origin;
-
-using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;
-using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 using IsOriginBlocklisted = CredentialCache::IsOriginBlocklisted;
 
 constexpr char kExampleSite[] = "https://example.com/";
@@ -34,12 +32,10 @@ UiCredential MakeUiCredential(
     base::StringPiece username,
     base::StringPiece password,
     base::StringPiece origin = kExampleSite,
-    IsPublicSuffixMatch is_public_suffix_match = IsPublicSuffixMatch(false),
-    IsAffiliationBasedMatch is_affiliation_based_match =
-        IsAffiliationBasedMatch(false)) {
+    password_manager_util::GetLoginMatchType match_type =
+        password_manager_util::GetLoginMatchType::kExact) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
-                      Origin::Create(GURL(origin)), is_public_suffix_match,
-                      is_affiliation_based_match, base::Time());
+                      Origin::Create(GURL(origin)), match_type, base::Time());
 }
 
 }  // namespace
@@ -89,22 +85,22 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
           MakeUiCredential("Carl", "P1238C"),
           // Affiliation based matches are first class citizens and should be
           // treated as a first-party credential.
-          MakeUiCredential("Cesar", "V3V1V", kExampleSite,
-                           IsPublicSuffixMatch(false),
-                           IsAffiliationBasedMatch(true)),
+          MakeUiCredential(
+              "Cesar", "V3V1V", kExampleSite,
+              password_manager_util::GetLoginMatchType::kAffiliated),
           MakeUiCredential("Dora", "PakudC"),
 
           // Alphabetical entries of PSL-match https://accounts.example.com:
           MakeUiCredential("Elfi", "a65ddm", kExampleSiteSubdomain,
-                           IsPublicSuffixMatch(true)),
+                           password_manager_util::GetLoginMatchType::kPSL),
           MakeUiCredential("Greg", "5fnd1m", kExampleSiteSubdomain,
-                           IsPublicSuffixMatch(true)),
+                           password_manager_util::GetLoginMatchType::kPSL),
 
           // Alphabetical entries of PSL-match https://m.example.com:
           MakeUiCredential("Alf", "R4nd50m", kExampleSiteMobile,
-                           IsPublicSuffixMatch(true)),
+                           password_manager_util::GetLoginMatchType::kPSL),
           MakeUiCredential("Rolf", "A4nd0m", kExampleSiteMobile,
-                           IsPublicSuffixMatch(true))));
+                           password_manager_util::GetLoginMatchType::kPSL)));
 }
 
 TEST_F(CredentialCacheTest, StoredCredentialsForIndependentOrigins) {
