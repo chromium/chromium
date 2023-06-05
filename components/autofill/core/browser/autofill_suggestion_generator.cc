@@ -142,7 +142,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   }
 
   for (auto& suggestion : suggestions) {
-    suggestion.popup_item_id = kAddressEntry;
+    suggestion.popup_item_id = PopupItemId::kAddressEntry;
 
     // Populate feature IPH for externally created account profiles.
     const AutofillProfile* profile = personal_data_->GetProfileByGUID(
@@ -466,8 +466,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 
   Suggestion suggestion;
   suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
-  CHECK(suggestion.popup_item_id == kAutocompleteEntry);
-  suggestion.popup_item_id = kCreditCardEntry;
+  CHECK(suggestion.popup_item_id == PopupItemId::kAutocompleteEntry);
+  suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
   suggestion.payload = Suggestion::BackendId(credit_card.guid());
   suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
                                                : Suggestion::SUBSTRING_MATCH;

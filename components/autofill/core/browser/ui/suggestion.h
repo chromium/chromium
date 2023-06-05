@@ -175,8 +175,9 @@ struct Suggestion {
 #if defined(UNIT_TEST)
 inline void PrintTo(const Suggestion& suggestion, std::ostream* os) {
   *os << std::endl
-      << "Suggestion (popup_item_id:" << suggestion.popup_item_id
-      << ", main_text:\"" << suggestion.main_text.value << "\""
+      << "Suggestion (popup_item_id:"
+      << base::to_underlying(suggestion.popup_item_id) << ", main_text:\""
+      << suggestion.main_text.value << "\""
       << (suggestion.main_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", minor_text:\"" << suggestion.minor_text.value << "\""
       << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")

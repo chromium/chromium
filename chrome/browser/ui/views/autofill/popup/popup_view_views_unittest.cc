@@ -208,7 +208,7 @@ class PopupViewViewsTestWithClickablePopupItemId
 };
 
 TEST_F(PopupViewViewsTest, ShowHideTest) {
-  CreateAndShowView({kAutocompleteEntry});
+  CreateAndShowView({PopupItemId::kAutocompleteEntry});
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   view().Hide();

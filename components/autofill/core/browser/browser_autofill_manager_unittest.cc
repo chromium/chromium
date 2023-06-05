@@ -2231,7 +2231,7 @@ TEST_F(BrowserAutofillManagerTest,
   CheckSuggestions(
       form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", kMixedFormMessage));
+                 "", PopupItemId::kMixedFormMessage));
 
   // Clear the test credit cards and try again -- we should still show the
   // mixed form warning.
@@ -2240,7 +2240,7 @@ TEST_F(BrowserAutofillManagerTest,
   CheckSuggestions(
       form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", kMixedFormMessage));
+                 "", PopupItemId::kMixedFormMessage));
 }
 
 // Test that we return credit card suggestions for secure pages that have an
@@ -2752,10 +2752,11 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(field.global_id(),
-                   Suggestion(l10n_util::GetStringUTF8(
-                                  IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
-                              "", "", kInsecureContextPaymentDisabledMessage));
+  CheckSuggestions(
+      field.global_id(),
+      Suggestion(
+          l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
+          "", "", PopupItemId::kInsecureContextPaymentDisabledMessage));
 
   // Clear the test credit cards and try again -- we shouldn't return a warning.
   personal_data().ClearCreditCards();
@@ -3359,8 +3360,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(field.global_id(),
-                   Suggestion("one", "", "", kAutocompleteEntry),
-                   Suggestion("two", "", "", kAutocompleteEntry));
+                   Suggestion("one", "", "", PopupItemId::kAutocompleteEntry),
+                   Suggestion("two", "", "", PopupItemId::kAutocompleteEntry));
 }
 
 // Test that we do not return duplicate values drawn from multiple profiles when

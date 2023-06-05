@@ -532,7 +532,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       autofillManager->OnUserAcceptedCardsFromAccountOption();
     }
   } else {
-    NOTREACHED() << "unknown identifier " << suggestion.popupItemId;
+    NOTREACHED() << "unknown identifier "
+                 << base::to_underlying(suggestion.popupItemId);
   }
 }
 

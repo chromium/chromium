@@ -1143,7 +1143,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.popup_item_id, kCreditCardEntry);
+  EXPECT_EQ(real_card_suggestion.popup_item_id, PopupItemId::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
@@ -1162,7 +1162,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.popup_item_id, kCreditCardEntry);
+  EXPECT_EQ(real_card_suggestion.popup_item_id, PopupItemId::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_TRUE(VerifyCardArtImageExpectation(real_card_suggestion, GURL(),
@@ -1204,7 +1204,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.popup_item_id, kCreditCardEntry);
+  EXPECT_EQ(real_card_suggestion.popup_item_id, PopupItemId::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000002"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
@@ -1345,7 +1345,7 @@ TEST_P(AutofillSuggestionGeneratorTestForOffer,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/true);
 
-  EXPECT_EQ(real_card_suggestion.popup_item_id, kCreditCardEntry);
+  EXPECT_EQ(real_card_suggestion.popup_item_id, PopupItemId::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
 
