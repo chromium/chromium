@@ -1592,6 +1592,12 @@ const char kMutationEventsDescription[] =
     "these events can cause breakage on some sites that are still reliant on "
     "these deprecated features.";
 
+const char kHTMLPopoverAttributeName[] = "Enable the popover API";
+const char kHTMLPopoverAttributeDescription[] =
+    "The popover API is a set of features built into the Web to enable the "
+    "construction of popovers. It is accessed primarily via the `popover` "
+    "attribute.";
+
 const char kFillOnAccountSelectName[] = "Fill passwords on account selection";
 const char kFillOnAccountSelectDescription[] =
     "Filling of passwords when an account is explicitly selected by the user "

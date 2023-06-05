@@ -6199,6 +6199,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "popover-attribute",
+    "owners": [ "masonf" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "power-bookmark-backend",
     "owners": [ "wylieb", "skym" ],
     "expiry_milestone": 118

@@ -60474,6 +60474,7 @@ from previous Chrome versions.
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
   <int value="-1292766410" label="IntentChipSkipsPicker:disabled"/>
+  <int value="-1292735488" label="HTMLPopoverAttribute:disabled"/>
   <int value="-1292615467"
       label="OmniboxSuggestionTransparencyOptions:disabled"/>
   <int value="-1291963295" label="ComputePressure:disabled"/>
@@ -62855,6 +62856,7 @@ from previous Chrome versions.
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
   <int value="-37556470" label="FeedBottomSyncBanner:enabled"/>
+  <int value="-36550471" label="HTMLPopoverAttribute:enabled"/>
   <int value="-36503306" label="HomepageLocationPolicy:enabled"/>
   <int value="-36234530" label="PluginVmShowMicrophonePermissions:enabled"/>
   <int value="-36077995" label="SplitCacheByNetworkIsolationKey:disabled"/>

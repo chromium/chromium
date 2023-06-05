@@ -890,6 +890,9 @@ extern const char kFillingAcrossGroupedSitesDescription[];
 extern const char kMutationEventsName[];
 extern const char kMutationEventsDescription[];
 
+extern const char kHTMLPopoverAttributeName[];
+extern const char kHTMLPopoverAttributeDescription[];
+
 extern const char kFillOnAccountSelectName[];
 extern const char kFillOnAccountSelectDescription[];
 
