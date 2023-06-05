@@ -1084,8 +1084,10 @@ ParseLacrosDataBackwardMigrationMode(base::StringPiece value) {
   if (it != kLacrosDataBackwardMigrationModeMap.end())
     return it->second;
 
-  LOG(ERROR) << "Unknown LacrosDataBackwardMigrationMode policy value: "
-             << value;
+  if (!value.empty()) {
+    LOG(ERROR) << "Unknown LacrosDataBackwardMigrationMode policy value: "
+               << value;
+  }
   return absl::nullopt;
 }
 
