@@ -452,7 +452,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 
     // When `kAutofillImportFromAutocompleteUnrecognized` is enabled, Autofill
     // imports from fields despite an unrecognized autocomplete attribute.
-    if (field->HasPredictionDespiteUnrecognizedAutocompleteAttribute()) {
+    if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
       if (!features::kAutofillImportFromAutocompleteUnrecognized.Get()) {
         continue;
       }

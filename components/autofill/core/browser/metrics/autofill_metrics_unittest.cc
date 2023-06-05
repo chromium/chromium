@@ -358,7 +358,7 @@ TEST_F(AutofillMetricsTest,
        NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillFillAndImportFromMoreFields);
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
   // Set up our form data with two autofilled fields.
   test::FormDescription form_description = {
       .description_for_logging = "NumberOfAutofilledFields",

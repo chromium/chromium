@@ -113,9 +113,12 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const FormFieldData& field,
     const AutofillField& autofill_field,
     const std::string& app_locale) {
-  std::vector<ServerFieldType> field_types(form.field_count());
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    field_types.push_back(form.field(i)->Type().GetStorableType());
+  std::vector<ServerFieldType> field_types;
+  field_types.reserve(form.field_count());
+  for (const std::unique_ptr<AutofillField>& form_field : form) {
+    if (!form_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      field_types.push_back(form_field->Type().GetStorableType());
+    }
   }
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(

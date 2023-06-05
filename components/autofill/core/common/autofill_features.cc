@@ -113,24 +113,18 @@ BASE_FEATURE(kAutofillDeferSubmissionClassificationAfterAjax,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, server/heuristic predictions take precedence over an unrecognized
-// autocomplete attribute. Depending on the parameters, these fields are then
-// filled or imported from. Independently of any parameters, suggestions are
-// suppressed for such fields.
-// Predicting a type for a field can influence other fields due to
-// rationalization and sectioning. This also affects metrics like
-// Autofill.FieldFillingStats, which rely on the types.
-// When only the importing part of this feature is enabled, only the importing
-// metrics are reliable.
-// TODO(crbug.com/1295728): Remove the feature when the experiment is completed.
-BASE_FEATURE(kAutofillFillAndImportFromMoreFields,
-             "AutofillFillAndImportFromMoreFields",
+// autocomplete attribute. Suggestions are suppressed for such fields and they
+// won't be considered for filling or importing. The fields do however affect
+// rationalization and sectioning, and non-(key and quality) metrics.
+// When `kAutofillFillAndImportFromMoreFields` is enabled, fields with
+// unrecognized autocomplete attribute are considered for import.
+// TODO(crbug.com/1446318): Remove the feature when the experiment is completed.
+BASE_FEATURE(kAutofillPredictionsForAutocompleteUnrecognized,
+             "AutofillPredictionsForAutocompleteUnrecognized",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kAutofillFillAutocompleteUnrecognized{
-    &kAutofillFillAndImportFromMoreFields, "fill_unrecognized_autocomplete",
-    false};
 const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
-    &kAutofillFillAndImportFromMoreFields,
-    "import_from_unrecognized_autocomplete", false};
+    &kAutofillPredictionsForAutocompleteUnrecognized,
+    "import_from_autocomplete_unrecognized", false};
 
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,

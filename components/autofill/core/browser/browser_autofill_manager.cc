@@ -2289,16 +2289,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       continue;
     }
 
-    // If `kAutofillFillAndImportFromMoreFields` is enabled, predictions are
-    // generated for autocomplete=unrecognized fields. The fields are only
-    // filled when the `kAutofillFillAutocompleteUnrecognized` parameter is
-    // enabled.
-    if (form_structure->field(i)
-            ->HasPredictionDespiteUnrecognizedAutocompleteAttribute() &&
-        !features::kAutofillFillAutocompleteUnrecognized.Get()) {
-      LOG_AF(buffer)
-          << Tr{}
-          << "Skipped: kAutofillFillAutocompleteUnrecognized not enabled";
+    // Address fields with unrecognized autocomplete attribute have a type, but
+    // are not filled.
+    // TODO(crbug.com/1446318): Fill them.
+    if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      LOG_AF(buffer) << Tr{} << "Skipped: Unrecognized autocomplete attribute";
+      LogSkippedStatusIfFill(SkipStatus::kUnrecognizedAutocompleteAttribute);
       continue;
     }
 
@@ -3198,8 +3194,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   // Do not offer suggestions for fields that have an unrecognized autocomplete
   // attribute, unless those are credit card fields.
   if (context->focused_field &&
-      context->focused_field
-          ->HasPredictionDespiteUnrecognizedAutocompleteAttribute()) {
+      context->focused_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     context->suppress_reason = SuppressReason::kAutocompleteUnrecognized;
     suggestions->clear();
     return;

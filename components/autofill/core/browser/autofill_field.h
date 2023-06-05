@@ -201,14 +201,15 @@ class AutofillField : public FormFieldData {
   // Returns true if the field's type is a credit card expiration type.
   bool HasExpirationDateType() const;
 
-  // Address Autofill gets disabled by an unrecognized autocomplete attribute.
-  // If `kAutofillFillAndImportFromMoreFields` is enabled, this changes and the
-  // server/heuristic predictions overwrite the unrecognized autocomplete
-  // attribute. Depending on the feature's parameters, Autofill then fills or
-  // imports from these fields.
-  // This function returns true if the field's type prediction is only available
-  // due to the aforementioned feature.
-  bool HasPredictionDespiteUnrecognizedAutocompleteAttribute() const;
+  // Address Autofill is disabled for fields with unrecognized autocomplete
+  // attribute - except if the field has a server overwrite.
+  // Without `kAutofillPredictionsForAutocompleteUnrecognized`, this happens
+  // implicitly, since ac=unrecognized suppresses the predicted type. As of
+  // `kAutofillPredictionsForAutocompleteUnrecognized`, ac=unrecognized fields
+  // receive a predictions, but suggestions and filling are still suppressed.
+  // This function can be used to determine whether suggestions and filling
+  // should be suppressed for this field (independently of the predicted type).
+  bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
   void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
   absl::optional<uint32_t> initial_value_hash() { return initial_value_hash_; }
@@ -432,6 +433,9 @@ class AutofillField : public FormFieldData {
   // to the autofill profile's GUID for the current value if `is_autofilled` is
   // set or for the previously autofilled value if the field was changed after
   // filling. nullopt means the field wasn't autofilled.
+  // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
+  // is not a sufficient condition for `autofill_source_profile_guid_` to have a
+  // value.
   absl::optional<std::string> autofill_source_profile_guid_;
 };
 
