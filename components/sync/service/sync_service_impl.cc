@@ -2102,11 +2102,7 @@ void SyncServiceImpl::RecordMemoryUsageAndCountsHistograms() {
   ModelTypeSet active_types = GetActiveDataTypes();
   for (ModelType type : active_types) {
     auto dtc_it = data_type_controllers_.find(type);
-    if (dtc_it != data_type_controllers_.end() &&
-        dtc_it->second->state() != DataTypeController::NOT_RUNNING) {
-      // It's possible that a data type is considered active, but its
-      // DataTypeController is still NOT_RUNNING, in the case where we're
-      // waiting for a custom passphrase.
+    if (dtc_it != data_type_controllers_.end()) {
       dtc_it->second->RecordMemoryUsageAndCountsHistograms();
     }
   }

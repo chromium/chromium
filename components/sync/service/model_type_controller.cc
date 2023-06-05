@@ -267,8 +267,10 @@ void ModelTypeController::GetTypeEntitiesCount(
 }
 
 void ModelTypeController::RecordMemoryUsageAndCountsHistograms() {
-  DCHECK(delegate_);
-  delegate_->RecordMemoryUsageAndCountsHistograms();
+  DCHECK(CalledOnValidThread());
+  if (delegate_) {
+    delegate_->RecordMemoryUsageAndCountsHistograms();
+  }
 }
 
 ModelTypeControllerDelegate* ModelTypeController::GetDelegateForTesting(
