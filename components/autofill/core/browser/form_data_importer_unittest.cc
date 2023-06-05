@@ -4023,6 +4023,30 @@ TEST_P(FormDataImporterTest, FormAssociator) {
   EXPECT_FALSE(associations->last_credit_card_form_submitted);
 }
 
+// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
+// ac=unrecognized fields have a prediction, but are not imported.
+TEST_P(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
+
+  // Create a `form_structure` where the email field has ac=unrecognized.
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  AutofillField* email_field = form_structure->field(2);
+  ASSERT_EQ(email_field->Type().GetStorableType(), EMAIL_ADDRESS);
+  email_field->SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
+
+  // Expect that ac=unrecognized doesn't change the prediction.
+  EXPECT_EQ(email_field->Type().GetStorableType(), EMAIL_ADDRESS);
+
+  // Expect that the email address is not imported.
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  expected_profile.ClearFields({EMAIL_ADDRESS});
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(FormDataImporterTest,
        ProcessIBANImportCandidate_ShouldOfferLocalSave_NewIBAN) {
