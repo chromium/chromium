@@ -76,8 +76,7 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
 #endif
 }
 
-HostContentSettingsMapFactory::~HostContentSettingsMapFactory() {
-}
+HostContentSettingsMapFactory::~HostContentSettingsMapFactory() = default;
 
 // static
 HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
@@ -90,7 +89,8 @@ HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
 
 // static
 HostContentSettingsMapFactory* HostContentSettingsMapFactory::GetInstance() {
-  return base::Singleton<HostContentSettingsMapFactory>::get();
+  static base::NoDestructor<HostContentSettingsMapFactory> instance;
+  return instance.get();
 }
 
 scoped_refptr<RefcountedKeyedService>

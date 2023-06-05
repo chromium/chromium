@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/favicon/chrome_favicon_client.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,7 +64,8 @@ favicon::FaviconService* FaviconServiceFactory::GetForProfile(
 
 // static
 FaviconServiceFactory* FaviconServiceFactory::GetInstance() {
-  return base::Singleton<FaviconServiceFactory>::get();
+  static base::NoDestructor<FaviconServiceFactory> instance;
+  return instance.get();
 }
 
 // static

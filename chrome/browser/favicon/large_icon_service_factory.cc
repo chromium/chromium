@@ -4,7 +4,7 @@
 
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -45,7 +45,8 @@ favicon::LargeIconService* LargeIconServiceFactory::GetForBrowserContext(
 
 // static
 LargeIconServiceFactory* LargeIconServiceFactory::GetInstance() {
-  return base::Singleton<LargeIconServiceFactory>::get();
+  static base::NoDestructor<LargeIconServiceFactory> instance;
+  return instance.get();
 }
 
 LargeIconServiceFactory::LargeIconServiceFactory()
@@ -60,7 +61,7 @@ LargeIconServiceFactory::LargeIconServiceFactory()
   DependsOn(FaviconServiceFactory::GetInstance());
 }
 
-LargeIconServiceFactory::~LargeIconServiceFactory() {}
+LargeIconServiceFactory::~LargeIconServiceFactory() = default;
 
 KeyedService* LargeIconServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

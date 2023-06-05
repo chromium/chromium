@@ -35,7 +35,8 @@ CookieSettingsFactory::GetForProfile(Profile* profile) {
 
 // static
 CookieSettingsFactory* CookieSettingsFactory::GetInstance() {
-  return base::Singleton<CookieSettingsFactory>::get();
+  static base::NoDestructor<CookieSettingsFactory> instance;
+  return instance.get();
 }
 
 CookieSettingsFactory::CookieSettingsFactory()

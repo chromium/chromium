@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GCM_INSTANCE_ID_INSTANCE_ID_PROFILE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_GCM_INSTANCE_ID_INSTANCE_ID_PROFILE_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace instance_id {
@@ -26,7 +26,7 @@ class InstanceIDProfileServiceFactory : public ProfileKeyedServiceFactory {
       const InstanceIDProfileServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<InstanceIDProfileServiceFactory>;
+  friend base::NoDestructor<InstanceIDProfileServiceFactory>;
 
   InstanceIDProfileServiceFactory();
   ~InstanceIDProfileServiceFactory() override;

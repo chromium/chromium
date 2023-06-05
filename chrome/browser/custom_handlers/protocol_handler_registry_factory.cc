@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/chrome_protocol_handler_registry_delegate.h"
@@ -16,7 +16,8 @@
 
 // static
 ProtocolHandlerRegistryFactory* ProtocolHandlerRegistryFactory::GetInstance() {
-  return base::Singleton<ProtocolHandlerRegistryFactory>::get();
+  static base::NoDestructor<ProtocolHandlerRegistryFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -38,8 +39,7 @@ ProtocolHandlerRegistryFactory::ProtocolHandlerRegistryFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-ProtocolHandlerRegistryFactory::~ProtocolHandlerRegistryFactory() {
-}
+ProtocolHandlerRegistryFactory::~ProtocolHandlerRegistryFactory() = default;
 
 // Will be created when initializing profile_io_data, so we might
 // as well have the framework create this along with other

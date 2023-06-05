@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_SUGGESTIONS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_COMPANION_VISUAL_SEARCH_VISUAL_SEARCH_SUGGESTIONS_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -34,8 +34,7 @@ class VisualSearchSuggestionsServiceFactory
       const VisualSearchSuggestionsServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      VisualSearchSuggestionsServiceFactory>;
+  friend base::NoDestructor<VisualSearchSuggestionsServiceFactory>;
 
   VisualSearchSuggestionsServiceFactory();
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
@@ -26,7 +26,8 @@ ScalableIphFactory::ScalableIphFactory()
 ScalableIphFactory::~ScalableIphFactory() = default;
 
 ScalableIphFactory* ScalableIphFactory::GetInstance() {
-  return base::Singleton<ScalableIphFactory>::get();
+  static base::NoDestructor<ScalableIphFactory> instance;
+  return instance.get();
 }
 
 scalable_iph::ScalableIph* ScalableIphFactory::GetForProfile(Profile* profile) {

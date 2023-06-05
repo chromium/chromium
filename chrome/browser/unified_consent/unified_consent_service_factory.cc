@@ -71,7 +71,8 @@ UnifiedConsentService* UnifiedConsentServiceFactory::GetForProfile(
 
 // static
 UnifiedConsentServiceFactory* UnifiedConsentServiceFactory::GetInstance() {
-  return base::Singleton<UnifiedConsentServiceFactory>::get();
+  static base::NoDestructor<UnifiedConsentServiceFactory> instance;
+  return instance.get();
 }
 
 void UnifiedConsentServiceFactory::RegisterProfilePrefs(

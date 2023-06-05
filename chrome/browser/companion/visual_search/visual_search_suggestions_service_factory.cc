@@ -33,7 +33,8 @@ VisualSearchSuggestionsServiceFactory::VisualSearchSuggestionsServiceFactory()
 // static
 VisualSearchSuggestionsServiceFactory*
 VisualSearchSuggestionsServiceFactory::GetInstance() {
-  return base::Singleton<VisualSearchSuggestionsServiceFactory>::get();
+  static base::NoDestructor<VisualSearchSuggestionsServiceFactory> instance;
+  return instance.get();
 }
 
 KeyedService* VisualSearchSuggestionsServiceFactory::BuildServiceInstanceFor(

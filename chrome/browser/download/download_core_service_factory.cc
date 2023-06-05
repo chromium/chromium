@@ -23,7 +23,8 @@ DownloadCoreService* DownloadCoreServiceFactory::GetForBrowserContext(
 
 // static
 DownloadCoreServiceFactory* DownloadCoreServiceFactory::GetInstance() {
-  return base::Singleton<DownloadCoreServiceFactory>::get();
+  static base::NoDestructor<DownloadCoreServiceFactory> instance;
+  return instance.get();
 }
 
 DownloadCoreServiceFactory::DownloadCoreServiceFactory()
@@ -43,7 +44,7 @@ DownloadCoreServiceFactory::DownloadCoreServiceFactory()
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
 }
 
-DownloadCoreServiceFactory::~DownloadCoreServiceFactory() {}
+DownloadCoreServiceFactory::~DownloadCoreServiceFactory() = default;
 
 KeyedService* DownloadCoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

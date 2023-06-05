@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class DownloadCoreService;
@@ -27,7 +27,7 @@ class DownloadCoreServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* profile) const override;
 
  private:
-  friend struct base::DefaultSingletonTraits<DownloadCoreServiceFactory>;
+  friend base::NoDestructor<DownloadCoreServiceFactory>;
 
   DownloadCoreServiceFactory();
   ~DownloadCoreServiceFactory() override;

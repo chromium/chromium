@@ -27,7 +27,8 @@ InstanceIDProfileService* InstanceIDProfileServiceFactory::GetForProfile(
 // static
 InstanceIDProfileServiceFactory*
 InstanceIDProfileServiceFactory::GetInstance() {
-  return base::Singleton<InstanceIDProfileServiceFactory>::get();
+  static base::NoDestructor<InstanceIDProfileServiceFactory> instance;
+  return instance.get();
 }
 
 InstanceIDProfileServiceFactory::InstanceIDProfileServiceFactory()
@@ -43,8 +44,7 @@ InstanceIDProfileServiceFactory::InstanceIDProfileServiceFactory()
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
 }
 
-InstanceIDProfileServiceFactory::~InstanceIDProfileServiceFactory() {
-}
+InstanceIDProfileServiceFactory::~InstanceIDProfileServiceFactory() = default;
 
 KeyedService* InstanceIDProfileServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

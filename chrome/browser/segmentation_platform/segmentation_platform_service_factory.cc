@@ -5,7 +5,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 
 #include "base/files/file_path.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -76,7 +76,8 @@ std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
 // static
 SegmentationPlatformServiceFactory*
 SegmentationPlatformServiceFactory::GetInstance() {
-  return base::Singleton<SegmentationPlatformServiceFactory>::get();
+  static base::NoDestructor<SegmentationPlatformServiceFactory> instance;
+  return instance.get();
 }
 
 // static

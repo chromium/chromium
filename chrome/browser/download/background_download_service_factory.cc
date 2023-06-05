@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -119,7 +119,8 @@ class DownloadBlobContextGetterFactory
 // static
 BackgroundDownloadServiceFactory*
 BackgroundDownloadServiceFactory::GetInstance() {
-  return base::Singleton<BackgroundDownloadServiceFactory>::get();
+  static base::NoDestructor<BackgroundDownloadServiceFactory> instance;
+  return instance.get();
 }
 
 // static
