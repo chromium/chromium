@@ -1488,6 +1488,34 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate_->CheckNoSuggestions(form.fields[2].global_id());
 }
 
+// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
+// ac=unrecognized fields still don't trigger any suggestions (even though the
+// field has a type).
+TEST_F(BrowserAutofillManagerTest,
+       GetProfileSuggestions_UnrecognizedAttribute_Predictions) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
+
+  // Create a form where the first field has ac=unrecognized.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  form.fields[0].parsed_autocomplete =
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  FormsSeen({form});
+
+  // Expect that no suggestions are returned for the first field.
+  GetAutofillSuggestions(form, form.fields[0]);
+  external_delegate_->CheckNoSuggestions(form.fields[0].global_id());
+
+  // Expect that two suggestions are returned for all other fields.
+  // Two, because the fixture created three profiles during set up, one of which
+  // is empty and cannot be suggested (see `CreateTestAutofillProfiles()`).
+  for (size_t i = 1; i < form.fields.size(); i++) {
+    GetAutofillSuggestions(form, form.fields[i]);
+    external_delegate_->CheckSuggestionCount(form.fields[i].global_id(), 2);
+  }
+}
+
 // Test that when small forms are disabled (min required fields enforced) no
 // suggestions are returned when there are less than three fields and none of
 // them have an autocomplete attribute.
@@ -3616,6 +3644,29 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
 
   EXPECT_EQ(2U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
+}
+
+// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
+// ac=unrecognized fields are not filled (even though they have a prediction).
+TEST_F(BrowserAutofillManagerTest, DontFillAutocompleteUnrecognizedFields) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
+
+  // Create a form where the middle name field has ac=unrecognized.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  ASSERT_EQ(form.fields[1].name, u"middlename");
+  form.fields[1].parsed_autocomplete =
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  FormsSeen({form});
+
+  // Fill the `form` and expect that everything but the middle name was filled.
+  FormData filled_form;
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], kElvisProfileGuid,
+                                     &filled_form);
+  TestAddressFillData fill_data = kElvisAddressFillData;
+  fill_data.middle = "";
+  ExpectFilledForm(filled_form, fill_data, /*card_fill_data=*/absl::nullopt);
 }
 
 TEST_F(BrowserAutofillManagerTest, WillFillCreditCardNumber) {
