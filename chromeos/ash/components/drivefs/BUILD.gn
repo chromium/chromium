@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/drivefs/mojom",

@@ -24,6 +24,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -147,7 +148,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 //    bulk pinning event).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     : public DriveFsHostObserver,
-      public ash::UserDataAuthClient::Observer {
+      ash::UserDataAuthClient::Observer,
+      ash::SpacedClient::Observer {
  public:
   using Path = base::FilePath;
 
@@ -383,6 +385,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // ash::UserDataAuthClient::Observer
   void LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) override;
 
+  // ash::SpacedClient::Observer
+  void OnSpaceUpdate(const SpaceEvent& event) override;
+
+  // Starts and stops monitoring space using the SpacedClient::Observer.
+  bool StartMonitoringSpace();
+  void StopMonitoringSpace();
+
   // Counts the files that have been marked as pinned and that are still being
   // tracked. Should always be equal to progress_.syncing_files. For debugging
   // only.
@@ -416,6 +425,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // `OnSyncingStatusUpdate`.
   bool should_use_on_item_progress_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+
+  // `spaced` daemon client.
+  ash::SpacedClient* spaced_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Interval at which the free space is periodically checked.
   base::TimeDelta space_check_interval_ GUARDED_BY_CONTEXT(sequence_checker_) =

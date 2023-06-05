@@ -24,6 +24,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -205,9 +206,15 @@ class DriveFsPinManagerTest : public testing::Test {
     mount_path_ = temp_dir_.GetPath().Append("root");
   }
 
-  void SetUp() override { ash::UserDataAuthClient::InitializeFake(); }
+  void SetUp() override {
+    ash::UserDataAuthClient::InitializeFake();
+    ash::SpacedClient::InitializeFake();
+  }
 
-  void TearDown() override { ash::UserDataAuthClient::Shutdown(); }
+  void TearDown() override {
+    ash::UserDataAuthClient::Shutdown();
+    ash::SpacedClient::Shutdown();
+  }
 
   PinManager::SpaceGetter GetSpaceGetter() {
     return base::BindRepeating(&MockSpaceGetter::GetFreeSpace,
@@ -2214,6 +2221,9 @@ TEST_F(DriveFsPinManagerTest, OnFreeSpaceRetrieved2) {
 TEST_F(DriveFsPinManagerTest, PeriodicSpaceCheck) {
   CompletionCallback completion_callback;
   RunLoop run_loop;
+
+  // Fall back on the periodic space check instead of using the DBus signals.
+  ash::FakeSpacedClient::Get()->set_connected(false);
 
   EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));

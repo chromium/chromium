@@ -19,7 +19,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
@@ -27,6 +26,7 @@
 namespace drivefs::pinning {
 namespace {
 
+using ash::SpacedClient;
 using base::SequencedTaskRunner;
 using base::TimeDelta;
 using mojom::FileMetadata;
@@ -46,7 +46,7 @@ int Percentage(const int64_t a, const int64_t b) {
 
 // Calls the spaced daemon.
 void GetFreeSpace(const Path& path, PinManager::SpaceResult callback) {
-  ash::SpacedClient* const spaced = ash::SpacedClient::Get();
+  SpacedClient* const spaced = SpacedClient::Get();
   DCHECK(spaced);
   spaced->GetFreeDiskSpace(path.value(),
                            base::BindOnce(
@@ -575,13 +575,13 @@ PinManager::PinManager(Path profile_path,
       drivefs_(drivefs),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
-  CHECK(ash::UserDataAuthClient::Get());
   ash::UserDataAuthClient::Get()->AddObserver(this);
 }
 
 PinManager::~PinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(ash::UserDataAuthClient::Get());
+
+  StopMonitoringSpace();
   ash::UserDataAuthClient::Get()->RemoveObserver(this);
 
   DCHECK(!InProgress(progress_.stage))
@@ -642,7 +642,7 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   DCHECK_EQ(progress_.stage, Stage::kGettingFreeSpace);
 
   if (free_space < 0) {
-    LOG(ERROR) << "Cannot get free space: " << free_space;
+    LOG(ERROR) << "Cannot get free space: Got negative number " << free_space;
     return Complete(Stage::kCannotGetFreeSpace);
   }
 
@@ -672,21 +672,32 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (free_space < 0) {
-    LOG(ERROR) << "Cannot get free space: " << free_space;
+    LOG(ERROR) << "Cannot get free space: Got negative number " << free_space;
     return Complete(Stage::kCannotGetFreeSpace);
   }
 
   progress_.free_space = free_space;
   VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
-  NotifyProgress();
 
-  if (!progress_.HasEnoughFreeSpace()) {
-    return Complete(Stage::kNotEnoughSpace);
+  if (progress_.HasEnoughFreeSpace()) {
+    if (progress_.stage == Stage::kNotEnoughSpace) {
+      return Complete(Stage::kSuccess);
+    }
+
+    NotifyProgress();
+  } else {
+    if (progress_.stage != Stage::kNotEnoughSpace) {
+      return Complete(Stage::kNotEnoughSpace);
+    }
   }
 
-  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
-      space_check_interval_);
+  // Periodically retrieve the disk space only if the `StatefulDiskSpaceUpdate`
+  // signal has not been connected successfully.
+  if (!spaced_) {
+    SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
+        space_check_interval_);
+  }
 }
 
 void PinManager::ListItems(const Id dir_id, Path dir_path) {
@@ -942,6 +953,12 @@ void PinManager::Complete(const Stage stage) {
       LOG(ERROR) << "Finished with error: " << Quote(stage);
   }
 
+  if (progress_.stage == Stage::kNotEnoughSpace) {
+    StartMonitoringSpace();
+  } else {
+    StopMonitoringSpace();
+  }
+
   weak_ptr_factory_.InvalidateWeakPtrs();
   listed_items_.clear();
   files_to_pin_.clear();
@@ -980,8 +997,39 @@ void PinManager::StartPinning() {
       FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
       kStalledFileInterval);
 
-  CheckFreeSpace();
+  if (!StartMonitoringSpace()) {
+    CheckFreeSpace();
+  }
+
   PinSomeFiles();
+}
+
+bool PinManager::StartMonitoringSpace() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (spaced_) {
+    LOG(ERROR) << "SpacedClient observer is already registered";
+    return true;
+  }
+
+  SpacedClient* const spaced = SpacedClient::Get();
+  if (!spaced->IsConnected()) {
+    LOG(ERROR) << "SpacedClient is not connected";
+    return false;
+  }
+
+  spaced_ = spaced;
+  spaced_->AddObserver(this);
+  VLOG(1) << "Added SpacedClient observer";
+  return true;
+}
+
+void PinManager::StopMonitoringSpace() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (spaced_) {
+    spaced_->RemoveObserver(this);
+    spaced_ = nullptr;
+    VLOG(1) << "Removed SpacedClient observer";
+  }
 }
 
 void PinManager::PinSomeFiles() {
@@ -1327,6 +1375,11 @@ void PinManager::LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) {
   LOG(ERROR) << "Got LowDiskSpace "
              << HumanReadableSize(status.disk_free_bytes());
   OnFreeSpaceRetrieved2(status.disk_free_bytes());
+}
+
+void PinManager::OnSpaceUpdate(const SpaceEvent& event) {
+  VLOG(1) << "OnSpaceUpdate: " << HumanReadableSize(event.free_space_bytes());
+  OnFreeSpaceRetrieved2(event.free_space_bytes());
 }
 
 void PinManager::CheckStalledFiles() {
