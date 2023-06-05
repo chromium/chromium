@@ -122,6 +122,7 @@
     "android-cronet-x86-rel-kitkat-tests": "Ubuntu-22.04",
     "android-deterministic-dbg": "Ubuntu-22.04",
     "android-deterministic-rel": "Ubuntu-22.04",
+    "android-fieldtrial-rel": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
