@@ -36,6 +36,7 @@ namespace dnr_api = extensions::api::declarative_net_request;
 constexpr char kAnchorCharacter = '|';
 constexpr char kSeparatorCharacter = '^';
 constexpr char kWildcardCharacter = '*';
+constexpr int kLargeRegexUMALimit = 1024 * 100;
 
 // Returns true if bitmask |sub| is a subset of |super|.
 constexpr bool IsSubset(unsigned sub, unsigned super) {
@@ -416,6 +417,28 @@ void RecordLargeRegexUMA(bool is_large_regex) {
   UMA_HISTOGRAM_BOOLEAN(kIsLargeRegexHistogram, is_large_regex);
 }
 
+void RecordRegexRuleSizeUMA(int program_size) {
+  // Max reported size at 100KB.
+  UMA_HISTOGRAM_COUNTS_100000(kRegexRuleSizeHistogram, program_size);
+}
+
+void RecordRuleSizeForLargeRegex(const std::string& regex_string,
+                                 bool is_case_sensitive,
+                                 bool require_capturing) {
+  re2::RE2::Options large_regex_options =
+      CreateRE2Options(is_case_sensitive, require_capturing);
+
+  // Record the size of regex rules that exceed the 2Kb limit, with any rules
+  // exceeding 100Kb recorded as 100Kb. Note that these rules are not enabled.
+  large_regex_options.set_max_mem(kLargeRegexUMALimit);
+  re2::RE2 regex(regex_string, large_regex_options);
+  if (regex.error_code() == re2::RE2::ErrorPatternTooLarge) {
+    RecordRegexRuleSizeUMA(kLargeRegexUMALimit);
+  } else if (regex.ok()) {
+    RecordRegexRuleSizeUMA(regex.ProgramSize());
+  }
+}
+
 ParseResult ValidateHeaders(
     const std::vector<dnr_api::ModifyHeaderInfo>& headers,
     bool are_request_headers) {
@@ -556,6 +579,10 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
 
     if (regex.error_code() == re2::RE2::ErrorPatternTooLarge) {
       RecordLargeRegexUMA(true);
+      RecordRuleSizeForLargeRegex(*parsed_rule.condition.regex_filter,
+                                  IsCaseSensitive(parsed_rule),
+                                  require_capturing);
+
       return ParseResult::ERROR_REGEX_TOO_LARGE;
     }
 
@@ -568,6 +595,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
       return ParseResult::ERROR_INVALID_REGEX_SUBSTITUTION;
     }
 
+    RecordRegexRuleSizeUMA(regex.ProgramSize());
     RecordLargeRegexUMA(false);
   }
 

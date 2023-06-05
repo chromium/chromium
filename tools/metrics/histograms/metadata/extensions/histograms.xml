@@ -826,6 +826,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.DeclarativeNetRequest.RegexRuleSize" units="bytes"
+    expires_after="2024-06-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Logs the size of a regex rule in bytes, including rules that exceed the
+    per-rule memory limit that aren't indexed. Note that any rules above 100Kb
+    are recorded as 100Kb. Emitted for every regex rule an extension adds.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderAdded"
     enum="WebRequest.RequestHeader" expires_after="2023-08-08">
   <owner>rdevlin.cronin@chromium.org</owner>
