@@ -1190,7 +1190,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   if (util::IsDriveFsBulkPinningEnabled(profile_)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!pin_manager_);
-    pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(),
+    pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(), mount_path,
                                                 GetDriveFsInterface());
     pin_manager_->AddObserver(this);
     DCHECK(!bulk_pinning_pref_updater_);

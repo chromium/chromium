@@ -151,7 +151,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
  public:
   using Path = base::FilePath;
 
-  PinManager(Path profile_path, mojom::DriveFs* drivefs);
+  PinManager(Path profile_path, Path mount_path, mojom::DriveFs* drivefs);
 
   PinManager(const PinManager&) = delete;
   PinManager& operator=(const PinManager&) = delete;
@@ -218,6 +218,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnUnmounted() override;
   void OnFilesChanged(const std::vector<mojom::FileChange>& changes) override;
   void OnError(const mojom::DriveError& error) override;
+  void OnItemProgress(const mojom::ProgressEvent& event) override;
 
   base::WeakPtr<PinManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -309,6 +310,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
               const Path& path,
               int64_t transferred,
               int64_t total);
+  bool Update(Id id, const Path& path, int8_t progress_percent);
 
   void OnFileCreated(const mojom::FileChange& event);
   void OnFileDeleted(const mojom::FileChange& event);
@@ -398,6 +400,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   SEQUENCE_CHECKER(sequence_checker_);
 
   const Path profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const Path mount_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -408,6 +411,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?
   bool should_pin_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+
+  // Should the feature use `OnItemProgress`, if false it will fall back to
+  // `OnSyncingStatusUpdate`.
+  bool should_use_on_item_progress_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   // Interval at which the free space is periodically checked.
   base::TimeDelta space_check_interval_ GUARDED_BY_CONTEXT(sequence_checker_) =
@@ -443,6 +451,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Remove);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSyncingEvent);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSyncingStatusUpdate);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnItemProgress);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CanPin);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileCreated);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileModified);

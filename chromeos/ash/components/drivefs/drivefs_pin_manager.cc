@@ -189,6 +189,13 @@ ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
              << ", is_download: " << e.is_download << "}";
 }
 
+ostream& operator<<(ostream& out, Quoter<mojom::ProgressEvent> q) {
+  const mojom::ProgressEvent& e = *q.value;
+  return out << "{" << PinManager::Id(e.stable_id) << " " << Quote(e.path)
+             << ", progress: " << base::StringPrintf("%hhu", e.progress)
+             << "%}";
+}
+
 ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
   const mojom::FileChange& change = *q.value;
   return out << "{" << Quote(change.type) << " "
@@ -482,6 +489,22 @@ void PinManager::Remove(const Files::iterator it,
 
 bool PinManager::Update(const Id id,
                         const Path& path,
+                        const int8_t progress_percent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const Files::iterator it = files_to_track_.find(id);
+  if (it == files_to_track_.end()) {
+    VLOG(3) << "Not tracked: " << id << " " << path;
+    return false;
+  }
+
+  DCHECK_EQ(it->first, id);
+  const int64_t transferred = it->second.total * progress_percent / 100;
+  return Update(*it, path, transferred, it->second.total);
+}
+
+bool PinManager::Update(const Id id,
+                        const Path& path,
                         const int64_t transferred,
                         const int64_t total) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -544,8 +567,11 @@ bool PinManager::Update(Files::value_type& entry,
   return modified;
 }
 
-PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
+PinManager::PinManager(Path profile_path,
+                       Path mount_path,
+                       mojom::DriveFs* const drivefs)
     : profile_path_(std::move(profile_path)),
+      mount_path_(std::move(mount_path)),
       drivefs_(drivefs),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
@@ -1059,6 +1085,10 @@ void PinManager::OnFilePinned(const Id id,
 void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (should_use_on_item_progress_) {
+    return;
+  }
+
   for (const mojom::ItemEventPtr& event : status.item_events) {
     DCHECK(event);
 
@@ -1127,6 +1157,44 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
 
   LOG(ERROR) << "Unexpected event type: " << Quote(event);
   return false;
+}
+
+void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!should_use_on_item_progress_) {
+    return;
+  }
+
+  if (!InProgress(progress_.stage)) {
+    VLOG(2) << "Ignored " << Quote(event);
+    return;
+  }
+  VLOG(3) << "Received " << Quote(event);
+
+  Path relative_path("/");
+  if (!mount_path_.AppendRelativePath(Path(event.path), &relative_path)) {
+    LOG(ERROR) << "Path not relative to drive mount";
+    return;
+  }
+  const Id id = Id(event.stable_id);
+
+  if (event.progress >= 0 && event.progress < 100) {
+    Update(id, relative_path, event.progress);
+  } else if (event.progress == 100) {
+    if (!Remove(id, relative_path)) {
+      LOG(ERROR) << "Failed removing finished event " << Quote(event);
+      return;
+    }
+    VLOG(2) << "Synced " << id << " " << Quote(relative_path);
+    VLOG_IF(1, !VLOG_IS_ON(2))
+        << "Synced " << id << " " << Quote(relative_path);
+    progress_.pinned_files++;
+  } else if (!Remove(id, relative_path)) {
+    LOG(ERROR) << "Invalid event " << Quote(event);
+  }
+
+  PinSomeFiles();
 }
 
 void PinManager::NotifyDelete(const Id id, const Path& path) {

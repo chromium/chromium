@@ -48,6 +48,7 @@ using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
 using mojom::ItemEvent;
 using mojom::ItemEventPtr;
+using mojom::ProgressEvent;
 using mojom::QueryItem;
 using mojom::QueryItemPtr;
 using mojom::QueryParameters;
@@ -199,7 +200,9 @@ class DriveFsPinManagerTest : public testing::Test {
   DriveFsPinManagerTest() {
     logging::SetMinLogLevel(-3);
     CHECK(temp_dir_.CreateUniqueTempDir());
-    gcache_dir_ = temp_dir_.GetPath().Append("GCache");
+    profile_path_ = temp_dir_.GetPath().Append("Profile");
+    gcache_dir_ = profile_path_.Append("GCache");
+    mount_path_ = temp_dir_.GetPath().Append("root");
   }
 
   void SetUp() override { ash::UserDataAuthClient::InitializeFake(); }
@@ -214,6 +217,8 @@ class DriveFsPinManagerTest : public testing::Test {
   const int original_log_level_ = logging::GetMinLogLevel();
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
+  base::FilePath profile_path_;
+  base::FilePath mount_path_;
   Path gcache_dir_;
   MockSpaceGetter space_getter_;
   testing::StrictMock<MockDriveFs> drivefs_;
@@ -351,7 +356,7 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
 
 // Tests PinManager::Add().
 TEST_F(DriveFsPinManagerTest, Add) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   {
     const Progress progress = manager.GetProgress();
@@ -555,7 +560,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
 
 // Tests PinManager::Update().
 TEST_F(DriveFsPinManagerTest, Update) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.pinned_bytes = 5000;
@@ -732,7 +737,7 @@ TEST_F(DriveFsPinManagerTest, Update) {
 
 // Tests PinManager::Remove().
 TEST_F(DriveFsPinManagerTest, Remove) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.pinned_bytes = 5000;
@@ -865,7 +870,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
 
 // Tests PinManager::OnFileCreated().
 TEST_F(DriveFsPinManagerTest, OnFileCreated) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
@@ -949,7 +954,7 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
 
 // Tests PinManager::OnFileDeleted().
 TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
@@ -988,7 +993,7 @@ TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
 
 // Tests PinManager::OnFilesChanged().
 TEST_F(DriveFsPinManagerTest, OnFilesChanged) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
@@ -1030,7 +1035,7 @@ TEST_F(DriveFsPinManagerTest, OnFilesChanged) {
 
 // Tests PinManager::OnFilePinned().
 TEST_F(DriveFsPinManagerTest, OnFilePinned) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
@@ -1115,7 +1120,7 @@ TEST_F(DriveFsPinManagerTest, OnFilePinned) {
 
 // Tests PinManager::OnMetadataForCreatedFile().
 TEST_F(DriveFsPinManagerTest, OnMetadataForCreatedFile) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   EXPECT_THAT(manager.files_to_pin_, IsEmpty());
@@ -1165,7 +1170,7 @@ TEST_F(DriveFsPinManagerTest, OnMetadataForCreatedFile) {
 
 // Tests PinManager::OnFileModified().
 TEST_F(DriveFsPinManagerTest, OnFileModified) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
@@ -1236,7 +1241,7 @@ TEST_F(DriveFsPinManagerTest, OnFileModified) {
 
 // Tests PinManager::OnMetadataForModifiedFile().
 TEST_F(DriveFsPinManagerTest, OnMetadataForModifiedFile) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   EXPECT_THAT(manager.files_to_pin_, IsEmpty());
@@ -1374,7 +1379,7 @@ TEST_F(DriveFsPinManagerTest, OnMetadataForModifiedFile) {
 
 // Tests PinManager::OnSyncingEvent().
 TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.bytes_to_pin = 30000;
@@ -1583,7 +1588,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
 
 // Tests PinManager::OnSyncingStatusUpdate().
 TEST_F(DriveFsPinManagerTest, OnSyncingStatusUpdate) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
@@ -1611,6 +1616,28 @@ TEST_F(DriveFsPinManagerTest, OnSyncingStatusUpdate) {
   }
 
   EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  // Expect `OnItemProgress` events are ignored.
+  {
+    ProgressEvent event;
+    event.stable_id = static_cast<int64_t>(id1);
+    event.path = path1.value();
+    event.progress = 20;
+    manager.OnItemProgress(event);
+  }
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
+    EXPECT_EQ(progress.syncing_files, 2);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 32768);
+    EXPECT_EQ(progress.useful_events, 0);
+    EXPECT_EQ(progress.duplicated_events, 0);
+  }
 
   // Prepare a list of syncing status events.
   SyncingStatus events;
@@ -1723,6 +1750,282 @@ TEST_F(DriveFsPinManagerTest, OnSyncingStatusUpdate) {
   }
 }
 
+// Tests PinManager::OnItemProgress().
+TEST_F(DriveFsPinManagerTest, OnItemProgress) {
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.should_use_on_item_progress_ = true;
+  manager.progress_.bytes_to_pin = 30000;
+  manager.progress_.required_space = 32768;
+  manager.progress_.stage = Stage::kSyncing;
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 32768);
+  }
+
+  const Id id1 = Id(549);
+  const Path path1 = mount_path_.Append("Path 1");
+
+  const Id id2 = Id(17);
+  const Path path2 = mount_path_.Append("Path 2");
+
+  // Put in place a couple of files to track.
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id1, PinManager::File{
+                 .path = Path("/Path 1"), .total = 10000, .pinned = true});
+    ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
+  }
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id2, PinManager::File{
+                 .path = Path("/Path 2"), .total = 20000, .pinned = true});
+    ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 2);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 32768);
+  }
+
+  // Mark file 1 as queued.
+  {
+    ProgressEvent event;
+    event.stable_id = static_cast<int64_t>(id1);
+    event.path = path1.value();
+    event.progress = 0;
+    manager.OnItemProgress(event);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 2);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 32768);
+  }
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id1);
+    EXPECT_EQ(file.path, Path("/Path 1"));
+    EXPECT_EQ(file.total, 10000);
+    EXPECT_EQ(file.transferred, 0);
+    EXPECT_TRUE(file.pinned);
+    EXPECT_FALSE(file.in_progress);
+  }
+
+  // Mark file 1 as in progress.
+  {
+    ProgressEvent event;
+    event.stable_id = static_cast<int64_t>(id1);
+    event.path = path1.value();
+    event.progress = 20;
+    manager.OnItemProgress(event);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 2);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 2000);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 28672);
+  }
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id1);
+    EXPECT_EQ(file.path, Path("/Path 1"));
+    EXPECT_EQ(file.total, 10000);
+    EXPECT_EQ(file.transferred, 2000);
+    EXPECT_TRUE(file.pinned);
+    EXPECT_TRUE(file.in_progress);
+  }
+
+  // Mark file 2 as in progress.
+  {
+    ProgressEvent event;
+    event.stable_id = static_cast<int64_t>(id2);
+    event.path = path2.value();
+    event.progress = 50;
+    manager.OnItemProgress(event);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 2);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 12000);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 16384);
+  }
+
+  {
+    const auto it = manager.files_to_track_.find(id2);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id2);
+    EXPECT_EQ(file.path, Path("/Path 2"));
+    EXPECT_EQ(file.total, 20000);
+    EXPECT_EQ(file.transferred, 10000);
+    EXPECT_TRUE(file.pinned);
+    EXPECT_TRUE(file.in_progress);
+  }
+
+  // Mark file 1 as completed.
+  {
+    ProgressEvent event;
+    event.stable_id = static_cast<int64_t>(id1);
+    event.path = path1.value();
+    event.progress = 100;
+    manager.OnItemProgress(event);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 1);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 1);
+    EXPECT_EQ(progress.pinned_bytes, 20000);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 8192);
+  }
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    EXPECT_EQ(it, manager.files_to_track_.end());
+  }
+
+  // Paths not parented at the `mount_path_` should be ignored.
+  {
+    ProgressEvent event;
+    event.stable_id = 329;
+    event.path = profile_path_.Append("Path 3").value();
+    event.progress = 0;
+    manager.OnItemProgress(event);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 1);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 1);
+    EXPECT_EQ(progress.pinned_bytes, 20000);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 8192);
+  }
+
+  // Untracked ids should not increment the pinned file count.
+  {
+    ProgressEvent event;
+    event.stable_id = 458;
+    event.path = mount_path_.Append("Path 2").value();
+    event.progress = 100;
+    manager.OnItemProgress(event);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 1);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 1);
+    EXPECT_EQ(progress.pinned_bytes, 20000);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 8192);
+  }
+
+  // Events sent via `OnSsyncingStatusUpdate` are ignored when expecting
+  // `OnItemProgress`.
+  SyncingStatus events;
+
+  {
+    // An event with an unknown type is ignored.
+    ItemEventPtr event = ItemEvent::New();
+    event->is_download = true;
+    event->stable_id = static_cast<int64_t>(id2);
+    event->path = path2.value();
+    event->state = ItemEvent::State(-1);
+    event->bytes_to_transfer = -1;
+    event->bytes_transferred = -1;
+    events.item_events.push_back(std::move(event));
+  }
+
+  manager.OnSyncingStatusUpdate(std::as_const(events));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 1);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 1);
+    EXPECT_EQ(progress.pinned_bytes, 20000);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 8192);
+  }
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    EXPECT_EQ(it, manager.files_to_track_.end());
+  }
+
+  manager.Stop();
+
+  // Events received when the PinManager is stopped are ignored.
+  {
+    ProgressEvent event;
+    event.stable_id = static_cast<int64_t>(id2);
+    event.path = path2.value();
+    event.progress = 80;
+    manager.OnItemProgress(event);
+  }
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+    EXPECT_EQ(progress.syncing_files, 0);
+    EXPECT_EQ(progress.failed_files, 0);
+    EXPECT_EQ(progress.pinned_files, 1);
+    EXPECT_EQ(progress.pinned_bytes, 20000);
+    EXPECT_EQ(progress.bytes_to_pin, 30000);
+    EXPECT_EQ(progress.required_space, 8192);
+  }
+}
+
 // Tests what happens when PinManager cannot get free space during initial
 // setup.
 TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace1) {
@@ -1736,7 +2039,7 @@ TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace1) {
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(-1));
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
@@ -1761,7 +2064,7 @@ TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace2) {
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(-1));
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
@@ -1789,7 +2092,7 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
@@ -1824,7 +2127,7 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(int64_t(2560) << 20));  // 2.5 GB.
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
@@ -1849,7 +2152,7 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace2) {
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(200 << 20));  // 200 MB
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
@@ -1875,7 +2178,7 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace3) {
   EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetCompletionCallback(completion_callback.Get());
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
@@ -1892,7 +2195,7 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace3) {
 
 // Tests what happens when there is enough free space during the periodic check.
 TEST_F(DriveFsPinManagerTest, OnFreeSpaceRetrieved2) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
   manager.OnFreeSpaceRetrieved2(int64_t(2) << 30);
@@ -1921,7 +2224,7 @@ TEST_F(DriveFsPinManagerTest, PeriodicSpaceCheck) {
           RunOnceCallback<1>(int64_t(2100) << 20))  // 2100 MB is enough space
       .WillOnce(RunOnceCallback<1>(400 << 20));     // 400 MB is not enough
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
 
   // Check the original time interval.
@@ -1967,7 +2270,7 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(int64_t(2560) << 20));  // 2.5 GB.
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
   manager.CalculateRequiredSpace();
@@ -2000,7 +2303,7 @@ TEST_F(DriveFsPinManagerTest, WhenMoreResultsReturnedNextPageIsAttempted) {
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(int64_t(2560) << 20));  // 2.5 GB.
 
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.SetCompletionCallback(completion_callback.Get());
   manager.CalculateRequiredSpace();
@@ -2016,7 +2319,7 @@ TEST_F(DriveFsPinManagerTest, WhenMoreResultsReturnedNextPageIsAttempted) {
 
 // Tests PinManager::SetOnline().
 TEST_F(DriveFsPinManagerTest, SetOnline) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
@@ -2064,7 +2367,7 @@ TEST_F(DriveFsPinManagerTest, SetOnline) {
 
 // Tests PinManager::HandleQueryItem().
 TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kListingFiles;
@@ -2318,7 +2621,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
 // Tests PinManager::OnNextPage() when a query is dropped before the response
 // is received.
 TEST_F(DriveFsPinManagerTest, DropQuery) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kListingFiles;
@@ -2345,7 +2648,7 @@ TEST_F(DriveFsPinManagerTest, DropQuery) {
 // Tests PinManager::OnSearchResult() when a query finishes and there are still
 // other active queries.
 TEST_F(DriveFsPinManagerTest, OnSearchResult) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kListingFiles;
@@ -2371,7 +2674,7 @@ TEST_F(DriveFsPinManagerTest, OnSearchResult) {
 
 // Tests PinManager::OnSearchResult() with transient errors.
 TEST_F(DriveFsPinManagerTest, OnTransientError) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kListingFiles;
@@ -2400,7 +2703,7 @@ TEST_F(DriveFsPinManagerTest, OnTransientError) {
 
 // Tests PinManager::OnError().
 TEST_F(DriveFsPinManagerTest, OnError) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
@@ -2443,7 +2746,7 @@ TEST_F(DriveFsPinManagerTest, OnError) {
 // Tests that calling PinManager::Start() when the PinManager is already in
 // progress does not have any effect.
 TEST_F(DriveFsPinManagerTest, StartWhenInProgress) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kGettingFreeSpace;
@@ -2457,7 +2760,7 @@ TEST_F(DriveFsPinManagerTest, StartWhenInProgress) {
 
 // Tests PinManager::StartPinning().
 TEST_F(DriveFsPinManagerTest, StartPinning) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kListingFiles;
@@ -2534,7 +2837,7 @@ TEST_F(DriveFsPinManagerTest, StartPinning) {
 
 // Tests PinManager::PinSomeFiles().
 TEST_F(DriveFsPinManagerTest, PinSomeFiles) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kListingFiles;
@@ -2669,7 +2972,7 @@ TEST_F(DriveFsPinManagerTest, PinSomeFiles) {
 
 // Tests PinManager::CheckStalledFiles().
 TEST_F(DriveFsPinManagerTest, CheckStalledFiles) {
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
@@ -2772,7 +3075,7 @@ TEST_F(DriveFsPinManagerTest, OnDrop) {
   {
     MockObserver observer;
     PinManager::Observer observer2;
-    PinManager manager(temp_dir_.GetPath(), &drivefs_);
+    PinManager manager(profile_path_, mount_path_, &drivefs_);
     manager.AddObserver(&observer);
     manager.AddObserver(&observer2);
     EXPECT_CALL(observer, OnDrop()).Times(1);
@@ -2781,7 +3084,7 @@ TEST_F(DriveFsPinManagerTest, OnDrop) {
     MockObserver observer;
     PinManager::Observer observer2;
     EXPECT_CALL(observer, OnDrop()).Times(0);
-    PinManager manager(temp_dir_.GetPath(), &drivefs_);
+    PinManager manager(profile_path_, mount_path_, &drivefs_);
     manager.AddObserver(&observer);
     manager.AddObserver(&observer2);
     manager.RemoveObserver(&observer);
@@ -2792,7 +3095,7 @@ TEST_F(DriveFsPinManagerTest, OnDrop) {
 TEST_F(DriveFsPinManagerTest, NotifyProgress) {
   MockObserver observer;
   PinManager::Observer observer2;
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  PinManager manager(profile_path_, mount_path_, &drivefs_);
   manager.AddObserver(&observer);
   manager.AddObserver(&observer2);
 
