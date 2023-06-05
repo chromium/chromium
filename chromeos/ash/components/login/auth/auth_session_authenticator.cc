@@ -906,6 +906,11 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       // would be detected by PinStorageCryptohome.
       error.ResolveToFailure(default_error);
       break;
+    case user_data_auth::CRYPTOHOME_ERROR_CREDENTIAL_EXPIRED:
+      // TODO(b/285459974): Decide how to deal with credential expired error
+      // from cryptohome.
+      error.ResolveToFailure(default_error);
+      break;
     case user_data_auth::CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY:
       // Assumption about system state is not correct
       error.ResolveToFailure(default_error);
