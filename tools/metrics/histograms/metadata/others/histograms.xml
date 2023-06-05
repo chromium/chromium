@@ -5842,7 +5842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedEmail" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5853,7 +5853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedFile" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5864,7 +5864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedScreenshot" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5875,7 +5875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedSystemInfo" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5886,7 +5886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.IncludedUrl" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5897,7 +5897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.Openduration" units="ms"
-    expires_after="2023-07-15">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5920,7 +5920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.TimeOnPage.{FeedbackAppPage}" units="s"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5948,7 +5948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedImage" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5970,7 +5970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedScreenshot" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -5981,7 +5981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.ViewedSystemAndAppInfo" units="boolean"
-    expires_after="2023-07-27">
+    expires_after="2024-06-04">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
