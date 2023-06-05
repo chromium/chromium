@@ -58,9 +58,6 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
     UIGestureRecognizerDelegate,
     UITableViewDataSource,
     UITableViewDelegate> {
-  // Row in the table of suggestions of the use selectesd suggestion.
-  NSInteger _row;
-
   // If YES: the table view is currently showing a single suggestion
   // If NO: the table view is currently showing all suggestions
   BOOL _tableViewIsMinimized;
@@ -195,10 +192,14 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  _row = indexPath.row;
+  if (_suggestions.count <= 1) {
+    return;
+  }
 
   if (_tableViewIsMinimized) {
     _tableViewIsMinimized = NO;
+    [_tableView cellForRowAtIndexPath:indexPath].accessoryView = nil;
+    [self addSuggestionsToTableView];
 
     // Update table view height.
     __weak __typeof(self) weakSelf = self;
@@ -210,8 +211,14 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
     [self expand];
   }
 
-  // Refresh cells to show the checkmark icon next to the selected suggestion.
-  [_tableView reloadData];
+  [_tableView cellForRowAtIndexPath:indexPath].accessoryType =
+      UITableViewCellAccessoryCheckmark;
+}
+
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [_tableView cellForRowAtIndexPath:indexPath].accessoryType =
+      UITableViewCellAccessoryNone;
 }
 
 // Long press open context menu.
@@ -286,17 +293,6 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
         initWithImage:DefaultSymbolTemplateWithPointSize(
                           kChevronDownSymbol, kSymbolAccessoryPointSize)];
     cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
-  } else if (_row == indexPath.row) {
-    // The table view is showing all suggestions, and this cell contains the
-    // currently selected suggestion, so we display a checkmark on this cell.
-    cell.accessoryView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolTemplateWithPointSize(
-                          kCheckmarkSymbol, kSymbolAccessoryPointSize)];
-    cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
-  } else {
-    // The table view is showing all suggestions, and this cell does not contain
-    // the currently selected suggestion.
-    cell.accessoryView = nil;
   }
   [self loadFaviconAtIndexPath:indexPath forCell:cell];
   return cell;
@@ -403,6 +399,10 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 
   _tableView.translatesAutoresizingMaskIntoConstraints = NO;
 
+  [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                          animated:NO
+                    scrollPosition:UITableViewScrollPositionNone];
+
   return _tableView;
 }
 
@@ -450,7 +450,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 
 // Notifies the delegate that a password suggestion was selected by the user.
 - (void)didSelectSuggestion {
-  [self.delegate didSelectSuggestion:_row];
+  [self.delegate didSelectSuggestion:_tableView.indexPathForSelectedRow.row];
 }
 
 // Returns whether the provided index path points to the last row of the table
@@ -546,6 +546,20 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
           UISheetPresentationControllerDetentIdentifierLarge;
     }];
   }
+}
+
+// Starting with a table view containing a single suggestion, add all other
+// suggestions to the table view.
+- (void)addSuggestionsToTableView {
+  [_tableView beginUpdates];
+  NSMutableArray<NSIndexPath*>* indexPaths =
+      [NSMutableArray arrayWithCapacity:_suggestions.count - 1];
+  for (NSUInteger i = 1; i < _suggestions.count; i++) {
+    [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+  }
+  [_tableView insertRowsAtIndexPaths:indexPaths
+                    withRowAnimation:UITableViewRowAnimationNone];
+  [_tableView endUpdates];
 }
 
 // Creates the UI action used to open the password manager.
