@@ -60915,6 +60915,7 @@ from previous Chrome versions.
   <int value="-1065697407" label="PriceInsights:enabled"/>
   <int value="-1065227777" label="CrOSAutoSelect:disabled"/>
   <int value="-1064733740" label="ui-show-composited-layer-borders"/>
+  <int value="-1064729659" label="LauncherFuzzyMatchAcrossProviders:enabled"/>
   <int value="-1064302126"
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1062534902" label="SyncingCompromisedCredentials:disabled"/>
@@ -63776,6 +63777,7 @@ from previous Chrome versions.
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>
+  <int value="445851683" label="LauncherFuzzyMatchAcrossProviders:disabled"/>
   <int value="446316019" label="enable-threaded-compositing"/>
   <int value="447286624"
       label="OmniboxDiscardTemporaryInputOnTabSwitch:enabled"/>

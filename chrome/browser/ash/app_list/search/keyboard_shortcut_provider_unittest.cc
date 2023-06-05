@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,12 +18,21 @@
 namespace app_list::test {
 
 namespace {
-constexpr double kResultRelevanceThreshold = 0.89;
+constexpr double kResultRelevanceThreshold = 0.79;
 }
 
-class KeyboardShortcutProviderTest : public ChromeAshTestBase {
+class KeyboardShortcutProviderTest : public ChromeAshTestBase,
+                                     public testing::WithParamInterface<bool> {
  public:
-  KeyboardShortcutProviderTest() = default;
+  KeyboardShortcutProviderTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          search_features::kLauncherFuzzyMatchAcrossProviders);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          search_features::kLauncherFuzzyMatchAcrossProviders);
+    }
+  }
 
  protected:
   void SetUp() override {
@@ -36,8 +46,6 @@ class KeyboardShortcutProviderTest : public ChromeAshTestBase {
     auto provider = std::make_unique<KeyboardShortcutProvider>(profile_.get());
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
-
-    Wait();
   }
 
   void Wait() { task_environment()->RunUntilIdle(); }
@@ -50,22 +58,34 @@ class KeyboardShortcutProviderTest : public ChromeAshTestBase {
     search_controller_->StartSearch(query);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
   raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
 };
 
+INSTANTIATE_TEST_SUITE_P(FuzzyMatchForProviders,
+                         KeyboardShortcutProviderTest,
+                         testing::Bool());
+
 // Make search queries which yield shortcut results with shortcut key
 // combinations of differing length and format. Check that the top result has a
 // high relevance score, and correctly set title and accessible name.
-TEST_F(KeyboardShortcutProviderTest, Search) {
+TEST_P(KeyboardShortcutProviderTest, Search) {
+  Wait();
+
   // Result format: Single Key
   StartSearch(u"overview mode");
   Wait();
 
   ASSERT_FALSE(results().empty());
   EXPECT_EQ(results()[0]->title(), u"Overview mode");
-  EXPECT_GT(results()[0]->relevance(), kResultRelevanceThreshold);
+  if (GetParam()) {
+    EXPECT_EQ(results()[0]->relevance(), 1.0);
+
+  } else {
+    EXPECT_GT(results()[0]->relevance(), kResultRelevanceThreshold);
+  }
   EXPECT_EQ(results()[0]->accessible_name(),
             u"Overview mode, Shortcuts, Overview mode key");
 

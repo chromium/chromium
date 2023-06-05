@@ -24,7 +24,7 @@ using ::ash::string_matching::TokenizedString;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
-constexpr double kResultRelevanceThreshold = 0.89;
+constexpr double kResultRelevanceThreshold = 0.79;
 
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,

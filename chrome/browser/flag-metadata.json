@@ -4870,6 +4870,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "launcher-fuzzy-match-across-providers",
+    "owners": ["chenjih", "laurencom"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "launcher-fuzzy-match-for-omnibox",
     "owners": ["wrong", "laurencom"],
     "expiry_milestone": 120

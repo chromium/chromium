@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
@@ -35,6 +36,7 @@ using ::ash::string_matching::TokenizedString;
 constexpr char kFileSearchSchema[] = "file_search://";
 constexpr int kMaxResults = 25;
 constexpr int kSearchTimeoutMs = 100;
+constexpr double kRelevanceThreshold = 0.79;
 
 // Construct a case-insensitive and accent-insensitive fnmatch query from
 // |query|. E.g. for abc123, the result would be *[aAáàâäāåÁÀÂÄĀÅ][bB][cC]123*.
@@ -168,7 +170,6 @@ void FileSearchProvider::Start(const std::u16string& query) {
           it.first.Append(it.second.relative_folder_path));
     }
   }
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(SearchFilesByPattern, root_path_, query, query_start_time_,
@@ -195,6 +196,10 @@ void FileSearchProvider::OnSearchComplete(
     double relevance = FileResult::CalculateRelevance(
         last_tokenized_query_, path.path, path.last_accessed);
     DCHECK((relevance >= 0.0) && (relevance <= 1.0));
+    if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled() &&
+        relevance < kRelevanceThreshold) {
+      continue;
+    }
     results.push_back(MakeResult(path, relevance));
   }
 

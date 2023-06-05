@@ -18,8 +18,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -31,11 +33,21 @@ namespace app_list {
 
 namespace {
 
+using ::ash::string_matching::FuzzyTokenizedStringMatch;
 using ::ash::string_matching::TokenizedString;
 using ::ash::string_matching::TokenizedStringMatch;
 
 // The default relevance returned by CalculateRelevance.
 constexpr double kDefaultRelevance = 0.5;
+
+// Parameters for FuzzyTokenizedStringMatch.
+constexpr bool kUseWeightedRatio = false;
+
+// Flag to enable/disable diacritics stripping
+constexpr bool kStripDiacritics = true;
+
+// Flag to enable/disable acronym matcher.
+constexpr bool kUseAcronymMatcher = true;
 
 // The maximum penalty applied to a relevance by PenalizeRelevanceByAccessTime,
 // which will multiply the relevance by a number in [`kMaxPenalty`, 1].
@@ -194,11 +206,18 @@ double FileResult::CalculateRelevance(
                         use_default_relevance);
   if (use_default_relevance)
     return kDefaultRelevance;
-
-  TokenizedStringMatch match;
-  const double relevance = match.Calculate(query.value(), title);
-  if (!last_accessed)
+  double relevance;
+  if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled()) {
+    FuzzyTokenizedStringMatch fuzzy_match;
+    relevance = fuzzy_match.Relevance(query.value(), title, kUseWeightedRatio,
+                                      kStripDiacritics, kUseAcronymMatcher);
+  } else {
+    TokenizedStringMatch match;
+    relevance = match.Calculate(query.value(), title);
+  }
+  if (!last_accessed) {
     return relevance;
+  }
 
   // Apply a gaussian penalty based on the time delta. `time_delta` is converted
   // into millisecond fractions of a day for numerical stability.

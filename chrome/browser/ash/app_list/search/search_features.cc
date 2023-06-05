@@ -21,6 +21,10 @@ BASE_FEATURE(kLauncherQueryFederatedAnalyticsPHH,
              "LauncherQueryFederatedAnalyticsPHH",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLauncherFuzzyMatchAcrossProviders,
+             "LauncherFuzzyMatchAcrossProviders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLauncherFuzzyMatchForOmnibox,
              "LauncherFuzzyMatchForOmnibox",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -52,6 +56,10 @@ bool IsLauncherKeywordExtractionScoringEnabled() {
 
 bool IsLauncherQueryFederatedAnalyticsPHHEnabled() {
   return base::FeatureList::IsEnabled(kLauncherQueryFederatedAnalyticsPHH);
+}
+
+bool IsLauncherFuzzyMatchAcrossProvidersEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherFuzzyMatchAcrossProviders);
 }
 
 bool isLauncherFuzzyMatchForOmniboxEnabled() {

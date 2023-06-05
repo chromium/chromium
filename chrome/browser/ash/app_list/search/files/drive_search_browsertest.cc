@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -10,9 +11,18 @@ namespace app_list::test {
 
 // This class contains additional logic to set up DriveFS and enable testing for
 // Drive file search in the launcher.
-class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
+class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest,
+                                      public testing::WithParamInterface<bool> {
  public:
-  AppListDriveSearchBrowserTest() = default;
+  AppListDriveSearchBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          search_features::kLauncherFuzzyMatchAcrossProviders);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          search_features::kLauncherFuzzyMatchAcrossProviders);
+    }
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     create_drive_integration_service_ = base::BindRepeating(
@@ -43,10 +53,15 @@ class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
       service_factory_for_test_;
   std::map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
       fake_drivefs_helpers_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(FuzzyMatchForProviders,
+                         AppListDriveSearchBrowserTest,
+                         testing::Bool());
+
 // Test that Drive files can be searched.
-IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FileSearch) {
+IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FileSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -67,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FileSearch) {
 }
 
 // Test that Drive folders can be searched.
-IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FolderSearch) {
+IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FolderSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -87,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FolderSearch) {
 }
 
 // Test that files are ordered based on access time.
-IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, ResultOrdering) {
+IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
