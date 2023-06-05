@@ -1119,10 +1119,7 @@ void SetIsInHiddenPage(
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerSimpleTest) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
   base::HistogramTester histogram_tester;
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
@@ -1174,39 +1171,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerSimpleTest) {
   EXPECT_TRUE(bridge->IsValid());
 }
 
-TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerDisabledTest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation},
-      {features::kCanvasCompressHibernatedImage});
-
-  auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 200), RasterMode::kGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-
-  auto& handler = bridge->GetHibernationHandlerForTesting();
-  handler.SetTaskRunnersForTesting(task_runner, task_runner);
-
-  SetIsInHiddenPage(bridge.get(), platform, true);
-
-  EXPECT_TRUE(bridge->IsHibernating());
-
-  // No posted tasks.
-  EXPECT_TRUE(task_runner->delayed().empty());
-  EXPECT_TRUE(task_runner->immediate().empty());
-
-  // But still hibernating.
-  EXPECT_TRUE(bridge->IsHibernating());
-}
-
 TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerForegroundTooEarly) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1232,10 +1199,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerForegroundTooEarly) {
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerBackgroundForeground) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1260,10 +1224,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerBackgroundForeground) {
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerForegroundAfterEncoding) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1292,10 +1253,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerForegroundAfterEncoding) {
 TEST_F(Canvas2DLayerBridgeTest,
        HibernationHandlerForegroundFlipForAfterEncoding) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1334,10 +1292,7 @@ TEST_F(Canvas2DLayerBridgeTest,
 TEST_F(Canvas2DLayerBridgeTest,
        HibernationHandlerForegroundFlipForBeforeEncoding) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1369,10 +1324,7 @@ TEST_F(Canvas2DLayerBridgeTest,
 TEST_F(Canvas2DLayerBridgeTest,
        HibernationHandlerCanvasSnapshottedInBackground) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1399,10 +1351,7 @@ TEST_F(Canvas2DLayerBridgeTest,
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerCanvasWriteInBackground) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1427,10 +1376,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerCanvasWriteInBackground) {
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerCanvasWriteWhileCompressing) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1457,10 +1403,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerCanvasWriteWhileCompressing) {
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationMemoryMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kCanvasCompressHibernatedImage},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;

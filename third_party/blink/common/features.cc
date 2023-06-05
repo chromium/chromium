@@ -794,7 +794,7 @@ BASE_FEATURE(
 // Whether to losslessly compress the resulting image after canvas hibernation.
 BASE_FEATURE(kCanvasCompressHibernatedImage,
              "CanvasCompressHibernatedImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to aggressively free resources for canvases in background pages.
 BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
