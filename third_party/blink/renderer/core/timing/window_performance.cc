@@ -572,8 +572,22 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
   base::TimeDelta time_to_next_paint =
       base::Milliseconds(entry_end_time - entry->processingEnd());
 
-  if (last_visibility_change_timestamp_ > event_timestamp &&
-      last_visibility_change_timestamp_ < presentation_timestamp) {
+  const bool is_artificial_pointerup_or_click =
+      (entry->name() == event_type_names::kPointerup ||
+       entry->name() == event_type_names::kClick) &&
+      entry->startTime() == pending_pointer_down_start_time_;
+
+  if (is_artificial_pointerup_or_click) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEventTimingArtificialPointerupOrClick);
+  }
+
+  if ((last_visibility_change_timestamp_ > event_timestamp &&
+       last_visibility_change_timestamp_ < presentation_timestamp)
+#if BUILDFLAG(IS_MAC)
+      || is_artificial_pointerup_or_click
+#endif  // BUILDFLAG(IS_MAC)
+  ) {
     // The page visibility was changed. Ignore the presentation_timestamp and
     // fallback to processingEnd (as if there was no next paint needed).
     entry_end_time = entry->processingEnd();
@@ -592,6 +606,7 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
   entry->SetUnsafePresentationTimestamp(entry_presentation_timestamp);
 
   if (entry->name() == "pointerdown") {
+    pending_pointer_down_start_time_ = entry->startTime();
     pending_pointer_down_input_delay_ = input_delay;
     pending_pointer_down_processing_time_ = processing_time;
     pending_pointer_down_time_to_next_paint_ = time_to_next_paint;

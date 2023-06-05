@@ -262,6 +262,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   mutable Member<PerformanceNavigation> navigation_;
   mutable Member<PerformanceTiming> timing_;
   mutable Member<PerformanceTimingForReporting> timing_for_reporting_;
+  DOMHighResTimeStamp pending_pointer_down_start_time_;
   absl::optional<base::TimeDelta> pending_pointer_down_input_delay_;
   absl::optional<base::TimeDelta> pending_pointer_down_processing_time_;
   absl::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;

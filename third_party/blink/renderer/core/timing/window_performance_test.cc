@@ -1029,6 +1029,72 @@ TEST_P(WindowPerformanceTest, TouchesWithoutClick) {
   EXPECT_EQ(0u, entries.size());
 }
 
+#if BUILDFLAG(IS_MAC)
+//  Test artificial pointerup and click on MacOS fall back to use processingEnd
+//  as event duration ending time.
+//  See crbug.com/1321819
+TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
+  // Random keycode picked for testing
+  PointerId pointer_id = 4;
+
+  // Pointerdown
+  base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
+  base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
+  base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
+  base::TimeTicks presentation_time_pointerdown = GetTimeStamp(3);
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id);
+  SimulatePaintAndResolvePresentationPromise(presentation_time_pointerdown);
+  // Artificial Pointerup
+  base::TimeTicks pointerup_timestamp = pointerdown_timestamp;
+  base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
+  base::TimeTicks processing_end_pointerup = GetTimeStamp(6);
+  base::TimeTicks presentation_time_pointerup = GetTimeStamp(10);
+  RegisterPointerEvent("pointerup", pointerup_timestamp,
+                       processing_start_pointerup, processing_end_pointerup,
+                       pointer_id);
+  SimulatePaintAndResolvePresentationPromise(presentation_time_pointerup);
+  // Artificial Click
+  base::TimeTicks click_timestamp = pointerup_timestamp;
+  base::TimeTicks processing_start_click = GetTimeStamp(11);
+  base::TimeTicks processing_end_click = GetTimeStamp(12);
+  base::TimeTicks presentation_time_click = GetTimeStamp(20);
+  RegisterPointerEvent("click", click_timestamp, processing_start_click,
+                       processing_end_click, pointer_id);
+  SimulatePaintAndResolvePresentationPromise(presentation_time_click);
+
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
+  // Check UKM recording.
+  auto entries = GetUkmRecorder()->GetEntriesByName(
+      ukm::builders::Responsiveness_UserInteraction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* ukm_entry = entries[0];
+  GetUkmRecorder()->ExpectEntryMetric(
+      ukm_entry,
+      ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 12);
+  GetUkmRecorder()->ExpectEntryMetric(
+      ukm_entry,
+      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
+      12);
+  GetUkmRecorder()->ExpectEntryMetric(
+      ukm_entry,
+      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
+
+  // Check UMA recording.
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.AllTypes", 1);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.Keyboard", 0);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.TapOrClick", 1);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 0);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
