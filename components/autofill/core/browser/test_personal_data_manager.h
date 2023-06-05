@@ -127,7 +127,7 @@ class TestPersonalDataManager : public PersonalDataManager {
     return num_times_save_imported_profile_called_;
   }
 
-  AutofillProfile* last_save_imported_profile() {
+  const AutofillProfile* last_save_imported_profile() const {
     return last_save_imported_profile_.get();
   }
 

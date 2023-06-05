@@ -1151,11 +1151,11 @@ class BrowserAutofillManagerTest : public testing::Test {
            test::ObfuscatedCardDigitsAsUTF8(last_four, ObfuscationLength());
   }
 
- protected:
   TestPersonalDataManager& personal_data() {
     return *autofill_client_.GetPersonalDataManager();
   }
 
+ protected:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
@@ -7018,9 +7018,9 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   EXPECT_EQ(0, personal_data().num_times_save_imported_profile_called());
 }
 
-// Test that we save form data when a <select> in the form contains the
-// default value.
-TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
+void DoTestFormSubmittedControlWithDefaultValue(
+    BrowserAutofillManagerTest* test,
+    const std::string& form_control_type) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -7029,27 +7029,39 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
   // reject default values for text fields.
   FormFieldData* state_field = form.FindFieldByName(u"state");
   ASSERT_TRUE(state_field != nullptr);
-  state_field->form_control_type = "select-one";
+  state_field->form_control_type = form_control_type;
   state_field->value = base::UTF8ToUTF16(kElvisAddressFillData.state);
 
-  FormsSeen({form});
+  test->FormsSeen({form});
 
   // Fill the form.
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[3], kElvisProfileGuid,
-                                     &response_data);
+  test->FillAutofillFormDataAndSaveResults(form, form.fields[3],
+                                           kElvisProfileGuid, &response_data);
 
-  FormSubmitted(response_data);
-  ASSERT_EQ(1, personal_data().num_times_save_imported_profile_called());
+  test->FormSubmitted(response_data);
+  const TestPersonalDataManager& personal_data = test->personal_data();
+  ASSERT_EQ(1, personal_data.num_times_save_imported_profile_called());
   EXPECT_EQ(u"Tennessee",
-            personal_data().last_save_imported_profile()->GetRawInfo(
+            personal_data.last_save_imported_profile()->GetRawInfo(
                 ADDRESS_HOME_STATE));
 }
 
-// Test that we save form data when a non-country, non-state <select> in the
-// form contains the default value.
-TEST_F(BrowserAutofillManagerTest,
-       FormSubmittedNonAddressSelectWithDefaultValue) {
+// Test that we save form data when a <select> in the form contains the
+// default value.
+TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
+  DoTestFormSubmittedControlWithDefaultValue(this, "select-one");
+}
+
+// Test that we save form data when a <selectmenu> in the form contains the
+// default value.
+TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectMenuWithDefaultValue) {
+  DoTestFormSubmittedControlWithDefaultValue(this, "selectmenu");
+}
+
+void DoTestFormSubmittedNonAddressControlWithDefaultValue(
+    BrowserAutofillManagerTest* test,
+    const std::string& form_control_type) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -7064,7 +7076,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormFieldData country_code_field;
   test::CreateTestFormField("Country Code", "countrycode", "1", "text",
                             "tel-country-code", &country_code_field);
-  country_code_field.form_control_type = "select-one";
+  country_code_field.form_control_type = form_control_type;
   form.fields.push_back(country_code_field);
 
   FormFieldData phonenumber_field;
@@ -7072,23 +7084,38 @@ TEST_F(BrowserAutofillManagerTest,
                             "tel-national", &phonenumber_field);
   form.fields.push_back(phonenumber_field);
 
-  FormsSeen({form});
+  test->FormsSeen({form});
 
   // Fill the form.
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[3], kElvisProfileGuid,
-                                     &response_data);
+  test->FillAutofillFormDataAndSaveResults(form, form.fields[3],
+                                           kElvisProfileGuid, &response_data);
 
-  FormSubmitted(response_data);
+  test->FormSubmitted(response_data);
 
   // Value of country code field should have been saved.
-  ASSERT_EQ(1, personal_data().num_times_save_imported_profile_called());
+  const TestPersonalDataManager& personal_data = test->personal_data();
+  ASSERT_EQ(1, personal_data.num_times_save_imported_profile_called());
   std::u16string formatted_phone_number =
-      personal_data().last_save_imported_profile()->GetRawInfo(
+      personal_data.last_save_imported_profile()->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER);
   std::u16string phone_number_numbers_only;
   base::RemoveChars(formatted_phone_number, u"+- ", &phone_number_numbers_only);
   EXPECT_TRUE(base::StartsWith(phone_number_numbers_only, u"1"));
+}
+
+// Test that we save form data when a non-country, non-state <select> in the
+// form contains the default value.
+TEST_F(BrowserAutofillManagerTest,
+       FormSubmittedNonAddressSelectWithDefaultValue) {
+  DoTestFormSubmittedNonAddressControlWithDefaultValue(this, "select-one");
+}
+
+// Test that we save form data when a non-country, non-state <selectmenu> in the
+// form contains the default value.
+TEST_F(BrowserAutofillManagerTest,
+       FormSubmittedNonAddressSelectMenuWithDefaultValue) {
+  DoTestFormSubmittedNonAddressControlWithDefaultValue(this, "selectmenu");
 }
 
 struct ProfileMatchingTypesTestCase {

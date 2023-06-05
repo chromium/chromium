@@ -958,7 +958,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // During form parsing (as in "assigning field types to fields")
         // the `value` represents the initial value found at page load and needs
         // to be preserved.
-        if (field->form_control_type != "select-one") {
+        if (!field->IsSelectOrSelectMenuElement()) {
           field->value = cached_field->value;
           value_from_dynamic_change_form_ = true;
         }
@@ -975,7 +975,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         const bool field_is_neither_state_nor_country =
             field->server_type() != ADDRESS_HOME_COUNTRY &&
             field->server_type() != ADDRESS_HOME_STATE;
-        if (field->form_control_type != "select-one" &&
+        if (!field->IsSelectOrSelectMenuElement() &&
             same_value_as_on_page_load && field_is_neither_state_nor_country) {
           field->value = std::u16string();
         }
