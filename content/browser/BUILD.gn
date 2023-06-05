@@ -2431,10 +2431,6 @@ source_set("browser") {
       "lock_screen/lock_screen_storage_impl.h",
       "ml/ml_service_impl_cros.cc",
       "ml/ml_service_impl_cros.h",
-      "smart_card/smart_card_reader_tracker.cc",
-      "smart_card/smart_card_reader_tracker.h",
-      "smart_card/smart_card_reader_tracker_impl.cc",
-      "smart_card/smart_card_reader_tracker_impl.h",
       "smart_card/smart_card_service.cc",
       "smart_card/smart_card_service.h",
     ]

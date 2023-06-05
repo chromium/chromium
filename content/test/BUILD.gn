@@ -3197,11 +3197,6 @@ test("content_unittests") {
     }
   }
 
-  if (is_chromeos) {
-    sources +=
-        [ "../browser/smart_card/smart_card_reader_tracker_impl_unittest.cc" ]
-  }
-
   if (use_aura) {
     deps += [
       "//ui/aura:test_support",

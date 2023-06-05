@@ -3044,8 +3044,6 @@ if (target_os != "android") {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.h",
   ]
@@ -3056,12 +3054,6 @@ if (target_os != "android") {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_context.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_event.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_event.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_observer.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_observer.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.h",
   ]
