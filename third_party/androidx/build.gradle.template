@@ -29,6 +29,8 @@ dependencies {
     compile 'androidx.annotation:annotation-jvm:{{androidx_dependency_version}}'
     compile 'androidx.appcompat:appcompat:{{androidx_dependency_version}}'
     compile 'androidx.appcompat:appcompat-resources:{{androidx_dependency_version}}'
+    compile 'androidx.appsearch:appsearch:{{androidx_dependency_version}}'
+    compile 'androidx.appsearch:appsearch-platform-storage:{{androidx_dependency_version}}'
     compile 'androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}'
     compile 'androidx.asynclayoutinflater:asynclayoutinflater-appcompat:{{androidx_dependency_version}}'
     compile 'androidx.biometric:biometric:{{androidx_dependency_version}}'
