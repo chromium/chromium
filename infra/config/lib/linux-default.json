@@ -117,6 +117,7 @@
     "android-cronet-x86-dbg": "Ubuntu-22.04",
     "android-cronet-x86-dbg-11-tests": "Ubuntu-22.04",
     "android-cronet-x86-dbg-oreo-tests": "Ubuntu-22.04",
+    "android-cronet-x86-dbg-pie-tests": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
