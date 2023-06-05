@@ -835,6 +835,32 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
   BLUETOOTH_LOG(EVENT) << __func__ << device_cleared;
 }
 
+void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
+    FlossAdapterClient::BtPropertyType prop_type,
+    const FlossDeviceId& device) {
+  DCHECK(FlossDBusManager::Get());
+  DCHECK(IsPresent());
+
+  BLUETOOTH_LOG(EVENT) << __func__ << device;
+
+  BluetoothDeviceFloss* device_ptr =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device.address));
+
+  if (!device_ptr) {
+    return;
+  }
+
+  switch (prop_type) {
+    case FlossAdapterClient::BtPropertyType::kBdName:
+      if (device.name.size() != 0) {
+        device_ptr->SetName(device.name);
+        NotifyDeviceChanged(device_ptr);
+      }
+      break;
+    default:;  // Do nothing for other property types for now
+  }
+}
+
 void BluetoothAdapterFloss::AdapterSspRequest(
     const FlossDeviceId& remote_device,
     uint32_t cod,

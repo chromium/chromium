@@ -239,6 +239,12 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       base::BindOnce(&HandleExported, adapter::kOnDeviceCleared));
 
   callbacks->ExportMethod(
+      adapter::kCallbackInterface, adapter::kOnDevicePropertiesChanged,
+      base::BindRepeating(&FlossAdapterClient::OnDevicePropertiesChanged,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HandleExported, adapter::kOnDevicePropertiesChanged));
+
+  callbacks->ExportMethod(
       adapter::kCallbackInterface, adapter::kOnDiscoveringChanged,
       base::BindRepeating(&FlossAdapterClient::OnDiscoveringChanged,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -430,6 +436,32 @@ void FlossAdapterClient::OnDeviceCleared(
 
   for (auto& observer : observers_) {
     observer.AdapterClearedDevice(device);
+  }
+
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void FlossAdapterClient::OnDevicePropertiesChanged(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  FlossDeviceId device;
+  std::vector<uint32_t> props;
+
+  DVLOG(1) << __func__;
+
+  if (!ReadAllDBusParams(&reader, &device, &props)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, kErrorInvalidParameters, std::string()));
+    return;
+  }
+
+  for (auto& prop : props) {
+    BtPropertyType prop_type = static_cast<BtPropertyType>(prop);
+    for (auto& observer : observers_) {
+      observer.AdapterDevicePropertyChanged(prop_type, device);
+    }
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));

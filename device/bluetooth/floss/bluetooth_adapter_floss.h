@@ -273,6 +273,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void AdapterDiscoveringChanged(bool state) override;
   void AdapterFoundDevice(const FlossDeviceId& device_found) override;
   void AdapterClearedDevice(const FlossDeviceId& device_found) override;
+  void AdapterDevicePropertyChanged(
+      FlossAdapterClient::BtPropertyType prop_type,
+      const FlossDeviceId& device) override;
   void AdapterSspRequest(const FlossDeviceId& remote_device,
                          uint32_t cod,
                          FlossAdapterClient::BluetoothSspVariant variant,

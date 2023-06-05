@@ -123,6 +123,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     // some amount of time ago).
     virtual void AdapterClearedDevice(const FlossDeviceId& device_cleared) {}
 
+    // Notification sent when a device property has changed.
+    virtual void AdapterDevicePropertyChanged(BtPropertyType prop_type,
+                                              const FlossDeviceId& device) {}
+
     // Notification sent for Simple Secure Pairing.
     virtual void AdapterSspRequest(const FlossDeviceId& remote_device,
                                    uint32_t cod,
@@ -341,6 +345,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle callback |OnDeviceCleared| on exported object path.
   void OnDeviceCleared(dbus::MethodCall* method_call,
                        dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDevicePropertiesChanged| on exported object path.
+  void OnDevicePropertiesChanged(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnSspRequest| on exported object path.
   void OnSspRequest(dbus::MethodCall* method_call,

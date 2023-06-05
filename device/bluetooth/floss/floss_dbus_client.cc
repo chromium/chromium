@@ -91,6 +91,7 @@ const char kOnNameChanged[] = "OnNameChanged";
 const char kOnDiscoverableChanged[] = "OnDiscoverableChanged";
 const char kOnDeviceFound[] = "OnDeviceFound";
 const char kOnDeviceCleared[] = "OnDeviceCleared";
+const char kOnDevicePropertiesChanged[] = "OnDevicePropertiesChanged";
 const char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
 const char kOnSspRequest[] = "OnSspRequest";
 const char kOnPinDisplay[] = "OnPinDisplay";
