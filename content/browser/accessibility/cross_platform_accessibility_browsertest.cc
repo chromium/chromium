@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        GetBoundsRectIframes) {
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_LT(first_list_item_bounds.y() - select_bounds.y(), 70);
   EXPECT_LT(second_list_item_bounds.y() - select_bounds.y(), 70);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
 
 // Select controls behave differently on Mac/Android, this test doesn't apply.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
