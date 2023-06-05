@@ -128,20 +128,20 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
     } copy];
     if (coldStart) {
       tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumTabAtStartup:),
+          [MetricsMediator class], @selector(recordStartupTabCount:),
           num_tabs_swizzle_block_));
       ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumNTPTabAtStartup:),
+          [MetricsMediator class], @selector(recordStartupNTPTabCount:),
           num_ntp_tabs_swizzle_block_));
     } else {
       tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumTabAtResume:),
+          [MetricsMediator class], @selector(recordResumeTabCount:),
           num_tabs_swizzle_block_));
       ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumNTPTabAtResume:),
+          [MetricsMediator class], @selector(recordResumeNTPTabCount:),
           num_ntp_tabs_swizzle_block_));
       live_ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumLiveNTPTabAtResume:),
+          [MetricsMediator class], @selector(recordResumeLiveNTPTabCount:),
           num_live_ntp_tabs_swizzle_block_));
     }
   }
