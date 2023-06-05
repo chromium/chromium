@@ -139,6 +139,13 @@ void CompanionTabHelper::SetTextQuery(const std::string& text_query) {
   }
 }
 
+void CompanionTabHelper::OnCompanionSidePanelClosed() {
+  image_query_.reset();
+  text_query_.clear();
+  side_panel_open_trigger_ = absl::nullopt;
+  delegate_->OnCompanionSidePanelClosed();
+}
+
 void CompanionTabHelper::CreateAndRegisterEntry() {
   delegate_->CreateAndRegisterEntry();
 }

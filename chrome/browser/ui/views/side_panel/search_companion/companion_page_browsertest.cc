@@ -969,12 +969,25 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenInNewTabButtonClicked) {
   builder2.is_exps_opted_in = true;
   EXPECT_TRUE(ExecJs(builder2.Build()));
   WaitForHistogram("Companion.IsUserOptedInToExps");
-  side_panel_coordinator()->OpenInNewTab();
 
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            open_in_new_tab_url);
+  side_panel_coordinator()->OpenInNewTab();
   WaitForTabCount(2);
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
       open_in_new_tab_url.spec()));
+
+  // Close side panel and reopen. The new tab button shouldn't be shown.
+  side_panel_coordinator()->Close();
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            GURL());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {

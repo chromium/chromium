@@ -79,6 +79,10 @@ void CompanionSidePanelController::UpdateNewTabButton(GURL url_to_open) {
       ->UpdateNewTabButtonState();
 }
 
+void CompanionSidePanelController::OnCompanionSidePanelClosed() {
+  open_in_new_tab_url_ = GURL();
+}
+
 content::WebContents*
 CompanionSidePanelController::GetCompanionWebContentsForTesting() {
   return web_contents();

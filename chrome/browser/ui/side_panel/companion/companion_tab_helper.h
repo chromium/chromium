@@ -42,6 +42,8 @@ class CompanionTabHelper
         SidePanelOpenTrigger side_panel_open_trigger) = 0;
     // Triggers an update of the 'open in new tab' button.
     virtual void UpdateNewTabButton(GURL url_to_open) = 0;
+    // Called when the companion side panel is closed.
+    virtual void OnCompanionSidePanelClosed() = 0;
     // Retrieves the web contents for testing purposes.
     virtual content::WebContents* GetCompanionWebContentsForTesting() = 0;
   };
@@ -76,6 +78,10 @@ class CompanionTabHelper
   // Returns the latest image data saved to the helper and not passed to the
   // handler or an empty pointer if none.
   std::unique_ptr<side_panel::mojom::ImageQuery> GetImageQuery();
+
+  // Called when the companion side panel is closed. Used for cleaning up any
+  // local state.
+  void OnCompanionSidePanelClosed();
 
   // Triggers the companion side panel entry to be created and registered for
   // the tab.
