@@ -4486,6 +4486,12 @@ extern const char kHeuristicMemorySaverDescription[] =
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
 
+const char kHideIncognitoMediaMetadataName[] =
+    "Hide media metadata when in Incognito";
+const char kHideIncognitoMediaMetadataDescription[] =
+    "When enabled, media metadata will be hidden from your OS' media player "
+    "if you are in an Incognito session.";
+
 extern const char kHighEfficiencyModeTimeBeforeDiscardName[] =
     "Configure discard timer for Memory Saver";
 extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[] =

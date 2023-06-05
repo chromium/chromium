@@ -2566,6 +2566,9 @@ extern const char kGlobalMediaControlsCastStartStopDescription[];
 extern const char kHeuristicMemorySaverName[];
 extern const char kHeuristicMemorySaverDescription[];
 
+extern const char kHideIncognitoMediaMetadataName[];
+extern const char kHideIncognitoMediaMetadataDescription[];
+
 extern const char kHighEfficiencyModeTimeBeforeDiscardName[];
 extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[];
 

@@ -4363,6 +4363,15 @@
     "expiry_milestone": 120
   },
   {
+    "name": "hide-incognito-media-metadata",
+    "owners": [
+      "fsenra@google.com",
+      "zalmashni@google.com",
+      "chrome-incognito@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "hide-non-displayable-account-email",
     "owners": [ "ddac", "chrome-kids-eng@google.com" ],
     "expiry_milestone": 118

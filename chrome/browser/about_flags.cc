@@ -9797,6 +9797,12 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kHeuristicMemorySaver,
          kHeuristicMemorySaverVariations,
          "HeuristicMemorySaver")},
+
+    {"hide-incognito-media-metadata",
+     flag_descriptions::kHideIncognitoMediaMetadataName,
+     flag_descriptions::kHideIncognitoMediaMetadataDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kHideIncognitoMediaMetadata)},
+
     {"high-efficiency-mode-time-before-discard",
      flag_descriptions::kHighEfficiencyModeTimeBeforeDiscardName,
      flag_descriptions::kHighEfficiencyModeTimeBeforeDiscardDescription,

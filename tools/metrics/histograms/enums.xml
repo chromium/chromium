@@ -62367,6 +62367,7 @@ from previous Chrome versions.
   <int value="-296493265" label="ProjectorAppDebug:enabled"/>
   <int value="-296179618" label="CookiesWithoutSameSiteMustBeSecure:enabled"/>
   <int value="-295237704" label="EnableRemovingAllThirdPartyCookies:enabled"/>
+  <int value="-293546827" label="HideIncognitoMediaMetadata:enabled"/>
   <int value="-292450031"
       label="EnableWebUsbOnExtensionServiceWorker:disabled"/>
   <int value="-291936879" label="UsernameFirstFlowFilling:disabled"/>
@@ -63134,6 +63135,7 @@ from previous Chrome versions.
   <int value="105164136" label="EnterpriseReportingUI:enabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>
   <int value="106235373" label="LauncherSystemInfoAnswerCards:enabled"/>
+  <int value="106596969" label="HideIncognitoMediaMetadata:disabled"/>
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
   <int value="106840653" label="mus"/>
   <int value="107358678" label="GalleryAppPdfEditNotification:enabled"/>
