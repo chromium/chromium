@@ -689,11 +689,6 @@ void AXObject::Init(AXObject* parent) {
   // determine whether an AXObject can have children.
   children_dirty_ = CanHaveChildren();
 
-  // Ensure that the aria-owns relationship is set before attempting
-  // to update cached attribute values.
-  if (GetNode())
-    AXObjectCache().MaybeNewRelationTarget(*GetNode(), this);
-
   UpdateCachedAttributeValuesIfNeeded(false);
 
   DCHECK(GetDocument()) << "All AXObjects must have a document: "
