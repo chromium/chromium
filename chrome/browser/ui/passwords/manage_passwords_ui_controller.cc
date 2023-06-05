@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
@@ -112,6 +113,15 @@ const password_manager::InteractionsStats* FindStatsByUsername(
   auto it = base::ranges::find(
       stats, username, &password_manager::InteractionsStats::username_value);
   return it == stats.end() ? nullptr : &*it;
+}
+
+void MaybeShowPasswordManagerShortcutIPH(Browser* browser) {
+  // Don't show IPH if shortcut can't be created.
+  if (!web_app::AreWebAppsEnabled(browser->profile())) {
+    return;
+  }
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHPasswordManagerShortcutFeature);
 }
 
 }  // namespace
@@ -281,11 +291,13 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
               !base::ranges::all_of(GetCurrentForms(), &std::u16string::empty,
                                     &password_manager::PasswordForm::
                                         GetNoteWithEmptyUniqueDisplayName);
-          if (has_non_empty_note) {
-            browser->window()->MaybeShowFeaturePromo(
-                feature_engagement::
-                    kIPHPasswordsManagementBubbleDuringSigninFeature);
+          if (has_non_empty_note &&
+              browser->window()->MaybeShowFeaturePromo(
+                  feature_engagement::
+                      kIPHPasswordsManagementBubbleDuringSigninFeature)) {
+            return;
           }
+          MaybeShowPasswordManagerShortcutIPH(browser);
         }
       }
     }
@@ -626,8 +638,12 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
   if (Browser* browser = chrome::FindBrowserWithWebContents(web_contents())) {
     browser->window()->GetAutofillBubbleHandler()->OnPasswordSaved();
-    browser->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
+    if (browser->window()->MaybeShowFeaturePromo(
+            feature_engagement::
+                kIPHPasswordsManagementBubbleAfterSaveFeature)) {
+      return;
+    }
+    MaybeShowPasswordManagerShortcutIPH(browser);
   }
 }
 

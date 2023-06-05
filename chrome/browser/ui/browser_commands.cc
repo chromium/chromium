@@ -1445,6 +1445,8 @@ void ManagePasswordsForPage(Browser* browser) {
       feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
   browser->window()->CloseFeaturePromo(
       feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature);
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHPasswordManagerShortcutFeature);
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ManagePasswordsUIController* controller =
