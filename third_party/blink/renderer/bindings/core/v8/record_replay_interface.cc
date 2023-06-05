@@ -1527,6 +1527,8 @@ function getInternalFunctionLocationProp(cdpProperties) {
 
 function previewFunction(cdpProperties) {
   const nameProperty = cdpProperties.result.find(prop => prop.name == "name");
+  const locationProperty = getInternalFunctionLocationProp(cdpProperties);
+
   if (nameProperty) {
     this.extra.functionName = nameProperty?.value?.value || "";
     if (!this.extra.functionName) {
@@ -1534,7 +1536,6 @@ function previewFunction(cdpProperties) {
     }
   }
 
-  const locationProperty = getInternalFunctionLocationProp(cdpProperties);
   if (locationProperty) {
     const loc = locationProperty?.value?.value || "";
     if (!loc) {
