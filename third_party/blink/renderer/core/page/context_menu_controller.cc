@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
@@ -762,7 +761,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
                                                 /*element=*/anchor,
                                                 /*request_id=*/absl::nullopt)) {
           data.impression = blink::Impression{
-              .nav_type = mojom::blink::AttributionNavigationType::kContextMenu,
               .runtime_features = attribution_src_loader->GetRuntimeFeatures(),
           };
         }

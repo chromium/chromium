@@ -285,7 +285,6 @@ NavigationControllerAndroid::LoadUrl(
     blink::Impression impression;
     impression.attribution_src_token =
         GetAttributionSrcTokenFromJavaImpression(env, j_impression).value();
-    impression.nav_type = blink::mojom::AttributionNavigationType::kContextMenu;
     impression.runtime_features =
         GetAttributionRuntimeFeaturesFromJavaImpression(env, j_impression);
     params.impression = impression;

@@ -61,7 +61,6 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -77,8 +76,6 @@ using ::attribution_reporting::TriggerRegistration;
 using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
-
-using ::blink::mojom::AttributionNavigationType;
 
 using AttributionFilters = ::attribution_reporting::FiltersDisjunction;
 
@@ -545,7 +542,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     data_host_manager_.NotifyNavigationRegistrationStarted(
         attribution_src_token, page_origin,
-        AttributionNavigationType::kContextMenu,
         /*is_within_fenced_frame=*/false, kFrameId,
         /*navigation_id=*/kNavigationId);
 
@@ -621,7 +617,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token, page_origin,
-      AttributionNavigationType::kContextMenu,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
   task_environment_.RunUntilIdle();
@@ -741,7 +736,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -790,7 +784,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -844,7 +837,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token, source_origin,
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -863,7 +855,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporting_origin, source_origin,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
@@ -903,7 +895,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -952,7 +943,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, /*navigation_id=*/1);
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -973,7 +963,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token_2,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, /*navigation_id=*/2);
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote_2;
   data_host_manager_.RegisterDataHost(
@@ -996,7 +985,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token_3,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, /*navigation_id=*/3);
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote_3;
   data_host_manager_.RegisterDataHost(
@@ -1042,7 +1030,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -1074,12 +1061,12 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationStarted(
-      attribution_src_token, source_site, AttributionNavigationType::kAnchor,
+      attribution_src_token, source_site,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
@@ -1088,7 +1075,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, /*headers=*/nullptr, reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
@@ -1115,7 +1102,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       // The cross to web runtime feature defaults to false.
       network::AttributionReportingRuntimeFeatures(),
@@ -1148,7 +1135,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*is_final_response=*/false);
@@ -1176,7 +1163,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*is_final_response=*/false);
@@ -1219,7 +1206,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
 
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporter, source_site,
-        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        AttributionInputEvent(),
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
         {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
         /*is_final_response=*/false);
@@ -1232,7 +1219,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
 
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporter, source_site,
-        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        AttributionInputEvent(),
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
         {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
         /*is_final_response=*/false);
@@ -1263,7 +1250,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*is_final_response=*/false);
@@ -1285,7 +1272,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
@@ -1323,7 +1310,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
 
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporter, source_site,
-        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        AttributionInputEvent(),
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
         network::AttributionReportingRuntimeFeatures(),
         /*is_final_response=*/false);
@@ -1337,7 +1324,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
 
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporter, source_site,
-        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        AttributionInputEvent(),
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
         network::AttributionReportingRuntimeFeatures(),
         /*is_final_response=*/false);
@@ -1363,13 +1350,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
 
   data_host_manager_.NotifyNavigationRegistrationStarted(
-      attribution_src_token, source_site, AttributionNavigationType::kAnchor,
+      attribution_src_token, source_site,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
@@ -1378,7 +1365,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
@@ -1403,7 +1390,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationStarted(
-      attribution_src_token, source_site, AttributionNavigationType::kAnchor,
+      attribution_src_token, source_site,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -1413,7 +1400,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      "!!!invalid json");
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
@@ -1424,7 +1411,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
@@ -1454,7 +1441,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationStarted(
-      attribution_src_token, source_site, AttributionNavigationType::kAnchor,
+      attribution_src_token, source_site,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -1463,7 +1450,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
@@ -1480,7 +1467,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                                  /*verifications=*/{});
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, /*headers=*/nullptr, reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
@@ -1517,18 +1504,18 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationStarted(
-      attribution_src_token, source_site, AttributionNavigationType::kAnchor,
+      attribution_src_token, source_site,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
@@ -1575,20 +1562,20 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter, source_site,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
 
   // Wait for parsing.
   data_host_manager_.NotifyNavigationRegistrationStarted(
-      attribution_src_token, source_site, AttributionNavigationType::kAnchor,
+      attribution_src_token, source_site,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -1669,7 +1656,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, /*headers=*/nullptr, reporting_origin,
       source_origin, AttributionInputEvent(),
-      AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
@@ -1722,7 +1708,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page1.example"),
-      AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -1790,8 +1775,8 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationDataHostNotRegistered) {
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page.example"),
-      AttributionNavigationType::kAnchor, /*is_within_fenced_frame=*/false,
-      kFrameId, /*navigation_id=*/kNavigationId);
+      /*is_within_fenced_frame=*/false, kFrameId,
+      /*navigation_id=*/kNavigationId);
 
   // kNotFound = 1.
   histograms.ExpectUniqueSample(kNavigationDataHostStatusHistogram, 1, 1);
@@ -1811,8 +1796,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token, *SuitableOrigin::Deserialize("https://s.test"),
-      AttributionNavigationType::kAnchor, /*is_within_fenced_frame=*/false,
-      kFrameId, /*navigation_id=*/kNavigationId);
+      /*is_within_fenced_frame=*/false, kFrameId,
+      /*navigation_id=*/kNavigationId);
 
   mojo::test::BadMessageObserver bad_message_observer;
 
@@ -1861,8 +1846,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       *SuitableOrigin::Deserialize("https://page.example"),
-      AttributionNavigationType::kAnchor, /*is_within_fenced_frame=*/false,
-      kFrameId, /*navigation_id=*/kNavigationId);
+      /*is_within_fenced_frame=*/false, kFrameId,
+      /*navigation_id=*/kNavigationId);
 
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
@@ -1953,8 +1938,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token,
       /*source_origin=*/*SuitableOrigin::Deserialize("https://source.test"),
-      AttributionNavigationType::kAnchor, /*is_within_fenced_frame=*/true,
-      kFrameId, /*navigation_id=*/kNavigationId);
+      /*is_within_fenced_frame=*/true, kFrameId,
+      /*navigation_id=*/kNavigationId);
 
   data_host_remote->SourceDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -1977,7 +1962,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*source_origin=*/*SuitableOrigin::Deserialize("https://source.test"),
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/true, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/false);
@@ -2016,7 +2001,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationData(
       blink::AttributionSrcToken(), /*headers=*/nullptr,
       *SuitableOrigin::Deserialize("https://reporter.example"), source_origin,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
@@ -2051,7 +2036,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationData(
       blink::AttributionSrcToken(), /*headers=*/nullptr,
       *SuitableOrigin::Create(reporting_origin), source_origin,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
@@ -2100,7 +2085,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // This is irrelevant to beacon source registrations.
   data_host_manager_.NotifyNavigationRegistrationStarted(
       blink::AttributionSrcToken(), source_origin,
-      AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -2152,7 +2136,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationData(
       blink::AttributionSrcToken(), /*headers=*/nullptr, source_origin,
       source_origin, AttributionInputEvent(),
-      AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
@@ -2200,7 +2183,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // This is irrelevant to beacon source registrations.
   data_host_manager_.NotifyNavigationRegistrationStarted(
       blink::AttributionSrcToken(), source_origin,
-      AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -2236,7 +2218,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // This is irrelevant to beacon source registrations.
   data_host_manager_.NotifyNavigationRegistrationStarted(
       blink::AttributionSrcToken(), source_origin,
-      AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -2275,7 +2256,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // This is irrelevant to beacon source registrations.
   data_host_manager_.NotifyNavigationRegistrationStarted(
       blink::AttributionSrcToken(), source_origin,
-      AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 }
@@ -2430,7 +2410,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token, source_origin,
-      blink::mojom::AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId,
       /*navigation_id=*/kNavigationId);
 
@@ -2449,7 +2428,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporting_origin, source_origin,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor,
+      AttributionInputEvent(),
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
       network::AttributionReportingRuntimeFeatures(),
       /*is_final_response=*/true);
@@ -2720,7 +2699,7 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
     const blink::AttributionSrcToken attribution_src_token;
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporter, source_site,
-        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        AttributionInputEvent(),
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
         network::AttributionReportingRuntimeFeatures(),
         /*is_final_response=*/false);

@@ -1950,10 +1950,6 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
 
     EXPECT_EQ(context_menu_data.impression.has_value(),
               test_case.impression_expected);
-    if (context_menu_data.impression.has_value()) {
-      EXPECT_EQ(context_menu_data.impression->nav_type,
-                mojom::blink::AttributionNavigationType::kContextMenu);
-    }
   }
 }
 

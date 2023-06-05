@@ -58,7 +58,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -71,7 +70,6 @@ using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
-using ::blink::mojom::AttributionNavigationType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -129,17 +127,14 @@ class AttributionDataHostManagerImpl::ReceiverContext {
                   RegistrationType registration_type,
                   bool is_within_fenced_frame,
                   AttributionInputEvent input_event,
-                  absl::optional<AttributionNavigationType> nav_type,
                   GlobalRenderFrameHostId render_frame_id,
                   absl::optional<int64_t> navigation_id)
       : context_origin_(std::move(context_origin)),
         registration_type_(registration_type),
         is_within_fenced_frame_(is_within_fenced_frame),
         input_event_(std::move(input_event)),
-        nav_type_(nav_type),
         render_frame_id_(render_frame_id),
         navigation_id_(navigation_id) {
-    DCHECK(!nav_type_ || registration_type_ == RegistrationType::kSource);
     DCHECK(!navigation_id_ || registration_type_ == RegistrationType::kSource);
   }
 
@@ -158,10 +153,6 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
   absl::optional<int64_t> navigation_id() const { return navigation_id_; }
-
-  absl::optional<AttributionNavigationType> nav_type() const {
-    return nav_type_;
-  }
 
   GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
 
@@ -183,9 +174,6 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   // hosts. The underlying Java object will be null for event sources.
   // Logically const.
   AttributionInputEvent input_event_;
-
-  // Logically const.
-  absl::optional<AttributionNavigationType> nav_type_;
 
   // The ID of the topmost render frame host.
   // Logically const.
@@ -222,7 +210,6 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
     blink::AttributionSrcToken attribution_src_token;
 
     // Will not change over the course of the redirect chain.
-    AttributionNavigationType nav_type;
     int64_t navigation_id;
   };
 
@@ -412,11 +399,10 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     RegistrationType registration_type,
     GlobalRenderFrameHostId render_frame_id,
     int64_t last_navigation_id) {
-  ReceiverContext receiver_context(std::move(context_origin), registration_type,
-                                   is_within_fenced_frame,
-                                   /*input_event=*/AttributionInputEvent(),
-                                   /*nav_type=*/absl::nullopt, render_frame_id,
-                                   /*navigation_id=*/absl::nullopt);
+  ReceiverContext receiver_context(
+      std::move(context_origin), registration_type, is_within_fenced_frame,
+      /*input_event=*/AttributionInputEvent(), render_frame_id,
+      /*navigation_id=*/absl::nullopt);
 
   switch (registration_type) {
     case RegistrationType::kTrigger:
@@ -534,7 +520,6 @@ void AttributionDataHostManagerImpl::HandleNextOsDecode(
 void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     const blink::AttributionSrcToken& attribution_src_token,
     const SuitableOrigin& source_origin,
-    AttributionNavigationType nav_type,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id,
     int64_t navigation_id) {
@@ -555,7 +540,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     receivers_.Add(this, std::move(it->second.data_host),
                    ReceiverContext(source_origin, RegistrationType::kSource,
                                    is_within_fenced_frame,
-                                   std::move(it->second.input_event), nav_type,
+                                   std::move(it->second.input_event),
                                    render_frame_id, navigation_id));
 
     navigation_data_host_map_.erase(it);
@@ -571,7 +556,6 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     SuitableOrigin reporting_origin,
     const SuitableOrigin& source_origin,
     AttributionInputEvent input_event,
-    AttributionNavigationType nav_type,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id,
     int64_t navigation_id,
@@ -586,7 +570,6 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
         render_frame_id,
         SourceRegistrations::ForegroundNavigation{
             .attribution_src_token = attribution_src_token,
-            .nav_type = nav_type,
             .navigation_id = navigation_id,
         });
     DCHECK(!it->registrations_complete());
@@ -654,9 +637,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
-  // TODO(csharrison): Remove `nav_type` via reverting crrev.com/c/4070064.
   auto source_type = SourceType::kEvent;
-  if (auto nav_type = context->nav_type()) {
+  if (context->navigation_id().has_value()) {
     source_type = SourceType::kNavigation;
   }
 

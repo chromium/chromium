@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -71,7 +70,6 @@ class AttributionDataHostManager
   virtual void NotifyNavigationRegistrationStarted(
       const blink::AttributionSrcToken& attribution_src_token,
       const attribution_reporting::SuitableOrigin& source_origin,
-      blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id) = 0;
@@ -88,7 +86,6 @@ class AttributionDataHostManager
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
       AttributionInputEvent input_event,
-      blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id,

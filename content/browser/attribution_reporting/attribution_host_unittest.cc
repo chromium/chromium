@@ -69,7 +69,6 @@ using ::testing::Optional;
 using ::testing::Return;
 
 using ::attribution_reporting::mojom::RegistrationType;
-using ::blink::mojom::AttributionNavigationType;
 
 const char kConversionUrl[] = "https://b.com";
 
@@ -180,13 +179,11 @@ TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
 
 TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
   blink::Impression impression;
-  impression.nav_type = AttributionNavigationType::kWindowOpen;
 
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationStarted(
                   impression.attribution_src_token,
                   *SuitableOrigin::Deserialize("https://secure_impression.com"),
-                  impression.nav_type,
                   /*is_within_fenced_frame=*/false, main_rfh()->GetGlobalId(),
                   /*navigation_id=*/_));
 
@@ -200,7 +197,6 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
 
 TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
   blink::Impression impression;
-  impression.nav_type = AttributionNavigationType::kWindowOpen;
 
   auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -218,33 +214,29 @@ TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
   const SuitableOrigin d_origin = *SuitableOrigin::Create(d_url);
 
   GlobalRenderFrameHostId frame_id = main_rfh()->GetGlobalId();
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyNavigationRegistrationStarted(
-          impression.attribution_src_token, source_origin, impression.nav_type,
-          /*is_within_fenced_frame=*/false, frame_id,
-          /*navigation_id=*/_));
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyNavigationRegistrationData(
-          impression.attribution_src_token, redirect_headers.get(),
-          /*reporting_origin=*/b_origin, source_origin, _, impression.nav_type,
-          /*is_within_fenced_frame=*/false, frame_id, _, _,
-          /*is_final_response=*/false));
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyNavigationRegistrationData(
-          impression.attribution_src_token, redirect_headers.get(),
-          /*reporting_origin=*/c_origin, source_origin, _, impression.nav_type,
-          /*is_within_fenced_frame=*/false, frame_id, _, _,
-          /*is_final_response=*/false));
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyNavigationRegistrationData(
-          impression.attribution_src_token, headers.get(),
-          /*reporting_origin=*/d_origin, source_origin, _, impression.nav_type,
-          /*is_within_fenced_frame=*/false, frame_id, _, _,
-          /*is_final_response=*/true));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationStarted(
+                  impression.attribution_src_token, source_origin,
+                  /*is_within_fenced_frame=*/false, frame_id,
+                  /*navigation_id=*/_));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationData(
+                  impression.attribution_src_token, redirect_headers.get(),
+                  /*reporting_origin=*/b_origin, source_origin, _,
+                  /*is_within_fenced_frame=*/false, frame_id, _, _,
+                  /*is_final_response=*/false));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationData(
+                  impression.attribution_src_token, redirect_headers.get(),
+                  /*reporting_origin=*/c_origin, source_origin, _,
+                  /*is_within_fenced_frame=*/false, frame_id, _, _,
+                  /*is_final_response=*/false));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationData(
+                  impression.attribution_src_token, headers.get(),
+                  /*reporting_origin=*/d_origin, source_origin, _,
+                  /*is_within_fenced_frame=*/false, frame_id, _, _,
+                  /*is_final_response=*/true));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -306,7 +298,7 @@ TEST_F(AttributionHostTest,
 
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
-                                               _, _, _, _, _, _, _, _, _,
+                                               _, _, _, _, _, _, _, _,
                                                /*is_final_response=*/true));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
@@ -324,7 +316,7 @@ TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Notified) {
 
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
-                                               _, _, _, _, _, _, _, _, _,
+                                               _, _, _, _, _, _, _, _,
                                                /*is_final_response=*/true));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
@@ -692,7 +684,6 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
 
 TEST_F(AttributionHostTest, ImpressionNavigation_FeaturePolicyChecked) {
   blink::Impression impression;
-  impression.nav_type = AttributionNavigationType::kWindowOpen;
 
   static constexpr char kAllowedOriginUrl[] = "https://a.test";
 
