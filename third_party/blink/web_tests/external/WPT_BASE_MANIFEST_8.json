@@ -273088,16 +273088,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "f143a127f4529e4b139132362984c693fb0d63f2",
-     []
-    ],
-    "mtime.json": [
-     "a79d8733929b4344afa06f3b32acee0e806d8a46",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -566451,25 +566441,6 @@
      ],
      "chained-setTimeout.html": [
       "a530837392d617af1fe3024b13ca25a86f9c1902",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "consumption-crossorigin.sub.tentative.html": [
-      "ebb1661559e84af3437465d38f52649cc5afd60f",
-      [
-       null,
-       {
-        "testdriver": true,
-        "timeout": "long"
-       }
-      ]
-     ],
-     "consumption-sameorigin.tentative.html": [
-      "81cd5d3ca197998e3c839cdf51cd2c682994fd33",
       [
        null,
        {
