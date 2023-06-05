@@ -170,6 +170,10 @@ found in the LICENSE file.
     margin-top: 32px;
     width: 100%;
   }
+  :host-context(body.jelly-enabled) #oobe-progress ::slotted(paper-progress) {
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
+  }
 
   #oobe-subtitle {
     padding-top: 16px;
