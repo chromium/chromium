@@ -56,15 +56,13 @@ class MockCompositorLockClient : public ui::CompositorLockClient {
 }  // namespace
 
 TEST_F(CompositorLockTest, LocksTimeOut) {
-  std::unique_ptr<CompositorLock> lock;
-
   base::TimeDelta timeout = base::Milliseconds(100);
 
   {
     testing::StrictMock<MockCompositorLockClient> lock_client;
     // This lock has a timeout.
-    lock = lock_manager()->GetCompositorLock(&lock_client, timeout,
-                                             CreateReleaseCallback());
+    std::unique_ptr<CompositorLock> lock = lock_manager()->GetCompositorLock(
+        &lock_client, timeout, CreateReleaseCallback());
     EXPECT_TRUE(lock_manager()->IsLocked());
     EXPECT_CALL(lock_client, CompositorLockTimedOut()).Times(1);
     task_runner()->FastForwardBy(timeout);
@@ -76,8 +74,8 @@ TEST_F(CompositorLockTest, LocksTimeOut) {
   {
     testing::StrictMock<MockCompositorLockClient> lock_client;
     // This lock has no timeout.
-    lock = lock_manager()->GetCompositorLock(&lock_client, base::TimeDelta(),
-                                             CreateReleaseCallback());
+    std::unique_ptr<CompositorLock> lock = lock_manager()->GetCompositorLock(
+        &lock_client, base::TimeDelta(), CreateReleaseCallback());
     EXPECT_TRUE(lock_manager()->IsLocked());
     EXPECT_CALL(lock_client, CompositorLockTimedOut()).Times(0);
     task_runner()->FastForwardBy(timeout);
