@@ -103,7 +103,6 @@
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_version_info.h"
@@ -1267,16 +1266,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                           GLsizei height,
                                           GLboolean flip_y,
                                           const volatile GLbyte* src_mailbox);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
-                                              uint32_t texture_target,
-                                              gl::GLImage* image) override;
-#elif !BUILDFLAG(IS_ANDROID)
-  void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
-                                             uint32_t texture_target,
-                                             gl::GLImage* image) override;
-#endif
 
   void DoTraceEndCHROMIUM(void);
 
@@ -18378,50 +18367,6 @@ void GLES2DecoderImpl::DoPushGroupMarkerEXT(
 
 void GLES2DecoderImpl::DoPopGroupMarkerEXT(void) {
 }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-void GLES2DecoderImpl::AttachImageToTextureWithDecoderBinding(
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    gl::GLImage* image) {
-  TextureRef* ref = texture_manager()->GetTexture(client_texture_id);
-  if (!ref) {
-    return;
-  }
-
-  GLenum bind_target = GLES2Util::GLFaceTargetToTextureTarget(texture_target);
-  if (ref->texture()->target() != bind_target) {
-    return;
-  }
-
-  if (image) {
-    texture_manager()->SetUnboundLevelImage(ref, texture_target, 0, image);
-  } else {
-    texture_manager()->UnsetLevelImage(ref, texture_target, 0);
-  }
-}
-#elif !BUILDFLAG(IS_ANDROID)
-void GLES2DecoderImpl::AttachImageToTextureWithClientBinding(
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    gl::GLImage* image) {
-  TextureRef* ref = texture_manager()->GetTexture(client_texture_id);
-  if (!ref) {
-    return;
-  }
-
-  GLenum bind_target = GLES2Util::GLFaceTargetToTextureTarget(texture_target);
-  if (ref->texture()->target() != bind_target) {
-    return;
-  }
-
-  if (image) {
-    texture_manager()->SetBoundLevelImage(ref, texture_target, 0, image);
-  } else {
-    texture_manager()->UnsetLevelImage(ref, texture_target, 0);
-  }
-}
-#endif
 
 error::Error GLES2DecoderImpl::HandleTraceBeginCHROMIUM(
     uint32_t immediate_data_size,

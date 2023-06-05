@@ -179,17 +179,6 @@ class MockGLES2Decoder : public GLES2Decoder {
   MOCK_CONST_METHOD0(WasContextLostByRobustnessExtension, bool());
   MOCK_METHOD1(MarkContextLost, void(gpu::error::ContextLostReason reason));
   MOCK_METHOD0(CheckResetStatus, bool());
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  MOCK_METHOD3(AttachImageToTextureWithDecoderBinding,
-               void(uint32_t client_texture_id,
-                    uint32_t texture_target,
-                    gl::GLImage* image));
-#elif !BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD3(AttachImageToTextureWithClientBinding,
-               void(uint32_t client_texture_id,
-                    uint32_t texture_target,
-                    gl::GLImage* image));
-#endif
   MOCK_METHOD1(
       SetCopyTextureResourceManagerForTest,
       void(CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager));

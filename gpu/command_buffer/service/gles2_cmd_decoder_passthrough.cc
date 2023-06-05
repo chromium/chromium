@@ -2078,57 +2078,6 @@ GLES2DecoderPassthroughImpl::GetTranslator(GLenum type) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-void GLES2DecoderPassthroughImpl::AttachImageToTextureWithDecoderBinding(
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    gl::GLImage* image) {
-  BindImageInternal(client_texture_id, texture_target, image,
-                    /*can_bind_to_sampler=*/false);
-}
-#elif !BUILDFLAG(IS_ANDROID)
-void GLES2DecoderPassthroughImpl::AttachImageToTextureWithClientBinding(
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    gl::GLImage* image) {
-  BindImageInternal(client_texture_id, texture_target, image,
-                    /*can_bind_to_sampler=*/true);
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
-                                                    uint32_t texture_target,
-                                                    gl::GLImage* image,
-                                                    bool can_bind_to_sampler) {
-  scoped_refptr<TexturePassthrough> passthrough_texture;
-  if (!resources_->texture_object_map.GetServiceID(client_texture_id,
-                                                   &passthrough_texture) ||
-      passthrough_texture == nullptr) {
-    return;
-  }
-
-  DCHECK(passthrough_texture != nullptr);
-
-  // |can_bind_to_sampler| indicates that we don't need to take any action.
-  // Otherwise, we do it when the texture is first used for drawing.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  CHECK(!can_bind_to_sampler);
-  passthrough_texture->set_bind_pending();
-#else
-  CHECK(can_bind_to_sampler);
-#endif
-
-  GLenum bind_target = GLES2Util::GLFaceTargetToTextureTarget(texture_target);
-  if (passthrough_texture->target() != bind_target) {
-    return;
-  }
-
-  // Reference the image even if it is not bound as a sampler.
-  passthrough_texture->SetLevelImage(texture_target, 0, image);
-}
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void GLES2DecoderPassthroughImpl::BindOnePendingImage(
     GLenum target,
     TexturePassthrough* texture) {
