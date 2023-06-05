@@ -35,6 +35,16 @@
           ],
         },
       },
+      'linux-exp-asan-lsan-fyi-rel': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1442303): Move to Jammy when it's compatible.
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        },
+      },
     },
   },
   'android_browsertests': {
@@ -1259,6 +1269,14 @@
           'shards': 50,
         },
       },
+      'linux-exp-asan-lsan-fyi-rel': {
+        'ci_only': True,
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 40,
+        },
+      },
       # asan tests is slower.
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -1767,6 +1785,13 @@
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
+      'linux-exp-asan-lsan-fyi-rel': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 5,
+        },
+      },
       'linux-exp-tsan-fyi-rel': {
         'swarming': {
           'shards': 2,
@@ -2056,6 +2081,11 @@
           'shards': 12,
         },
       },
+      'linux-exp-asan-lsan-fyi-rel': {
+        'swarming': {
+          'shards': 24,
+        },
+      },
       'linux-exp-tsan-fyi-rel': {
         'swarming': {
           'shards': 30,
@@ -2226,6 +2256,13 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.content_unittests.filter',
         ],
+      },
+      'linux-exp-asan-lsan-fyi-rel': {
+        # These are slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 2,
+        },
       },
       'linux-rel-dev': {
         'swarming': {
@@ -2465,6 +2502,7 @@
       'ToTLinuxASan',  # https://crbug.com/831667
       'Linux ASan LSan Tests (1)',  # https://crbug.com/831667
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
+      'linux-exp-asan-lsan-fyi-rel',  # https://crbug.com/831667
     ],
     'modifications': {
       'android-arm64-proguard-rel': {
@@ -2533,6 +2571,21 @@
         },
       },
       'Linux TSan Tests': {
+        'args': [
+          '--use-gpu-in-tests',
+          '--no-xvfb',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': '10de:2184',
+              'os': 'Ubuntu',
+              'pool': 'chromium.tests.gpu',
+            },
+          ],
+        },
+      },
+      'linux-exp-asan-lsan-fyi-rel': {
         'args': [
           '--use-gpu-in-tests',
           '--no-xvfb',
@@ -2891,6 +2944,12 @@
       'linux-code-coverage': {
         'swarming': {
           'shards': 10,
+        },
+      },
+      'linux-exp-asan-lsan-fyi-rel': {
+        # These are slow on the ASan trybot for some reason, crbug.com/1257927
+        'swarming': {
+          'shards': 12,
         },
       },
       'linux-exp-tsan-fyi-rel': {
@@ -3294,6 +3353,13 @@
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 2,
+        },
+      },
+      'linux-exp-asan-lsan-fyi-rel': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 16,
         },
       },
       'linux-exp-tsan-fyi-rel': {
@@ -3784,6 +3850,11 @@
           'shards': 4,
         },
       },
+      'linux-exp-asan-lsan-fyi-rel': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'linux-exp-tsan-fyi-rel': {
         'swarming': {
           'shards': 6,
@@ -4050,6 +4121,13 @@
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 2,
+        },
+      },
+      'linux-exp-asan-lsan-fyi-rel': {
+        # These are slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 4,
         },
       },
       'linux-exp-tsan-fyi-rel': {
@@ -4700,6 +4778,13 @@
       'Linux TSan Tests': {
         'swarming': {
           'shards': 2,
+        },
+      },
+      'linux-exp-asan-lsan-fyi-rel': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 5,
         },
       },
       'linux-exp-tsan-fyi-rel': {

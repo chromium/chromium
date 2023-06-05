@@ -5317,6 +5317,17 @@
     'name': 'chromium.memory.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'linux-exp-asan-lsan-fyi-rel': {
+        'mixins': [
+          'linux-jammy',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_and_gl_gtests',
+        },
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+        ],
+      },
       'linux-exp-tsan-fyi-rel': {
         'mixins': [
           'linux-jammy',

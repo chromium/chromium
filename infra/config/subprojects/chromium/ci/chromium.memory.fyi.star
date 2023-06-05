@@ -28,6 +28,35 @@ consoles.console_view(
 # TODO(crbug.com/1442587): Remove this builder after burning down failures
 # found when we now post-process stdout.
 ci.builder(
+    name = "linux-exp-asan-lsan-fyi-rel",
+    schedule = "with 24h interval",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "lsan",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    builderless = 1,
+    console_view_entry = consoles.console_view_entry(
+        category = "experimental|linux",
+        short_name = "asan lsan",
+    ),
+    execution_timeout = 4 * time.hour,
+    reclient_jobs = reclient.jobs.DEFAULT,
+)
+
+# TODO(crbug.com/1442587): Remove this builder after burning down failures
+# found when we now post-process stdout.
+ci.builder(
     name = "linux-exp-tsan-fyi-rel",
     schedule = "with 24h interval",
     triggered_by = [],
