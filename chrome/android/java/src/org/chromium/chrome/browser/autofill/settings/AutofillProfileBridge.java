@@ -4,24 +4,16 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import android.app.Activity;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -207,26 +199,6 @@ public final class AutofillProfileBridge {
         for (int s : array) {
             list.add(s);
         }
-    }
-
-    @CalledByNative
-    private static void showAutofillProfileSettings(WebContents webContents) {
-        RecordUserAction.record("AutofillAddressesViewed");
-        showSettingSubpage(webContents, AutofillProfilesFragment.class);
-    }
-
-    @CalledByNative
-    private static void showAutofillCreditCardSettings(WebContents webContents) {
-        RecordUserAction.record("AutofillCreditCardsViewed");
-        showSettingSubpage(webContents, AutofillPaymentMethodsFragment.class);
-    }
-
-    private static void showSettingSubpage(
-            WebContents webContents, Class<? extends Fragment> fragment) {
-        WeakReference<Activity> currentActivity =
-                webContents.getTopLevelNativeWindow().getActivity();
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(currentActivity.get(), fragment);
     }
 
     @NativeMethods

@@ -2761,6 +2761,8 @@ static_library("browser") {
       "android/preferences/autofill/autofill_payment_methods_delegate.h",
       "android/preferences/autofill/autofill_profile_bridge.cc",
       "android/preferences/autofill/autofill_profile_bridge.h",
+      "android/preferences/autofill/settings_launcher_helper.cc",
+      "android/preferences/autofill/settings_launcher_helper.h",
       "android/preferences/browser_prefs_android.cc",
       "android/preferences/browser_prefs_android.h",
       "android/preferences/clipboard_android.cc",
