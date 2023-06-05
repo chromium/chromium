@@ -10328,10 +10328,10 @@
             ],
             "experiments": [
                 {
-                    "name": "XRequestedWithDeprecation_20230302",
+                    "name": "XRequestedWithDeprecation_20230605",
                     "enable_features": [
                         "PersistentOriginTrials",
-                        "WebViewXRequestedWithDeprecation"
+                        "WebViewXRequestedWithHeaderControl"
                     ]
                 }
             ]
