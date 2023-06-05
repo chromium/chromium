@@ -12,9 +12,7 @@
 
 namespace chrome_pdf {
 
-namespace {
-
-class FileAvail : public FX_FILEAVAIL {
+class PDFiumDocument::FileAvail : public FX_FILEAVAIL {
  public:
   explicit FileAvail(DocumentLoader* doc_loader) : doc_loader_(doc_loader) {
     DCHECK(doc_loader);
@@ -31,10 +29,10 @@ class FileAvail : public FX_FILEAVAIL {
     return file_avail->doc_loader_->IsDataAvailable(offset, size);
   }
 
-  raw_ptr<DocumentLoader, LeakedDanglingUntriaged> doc_loader_;
+  raw_ptr<DocumentLoader> doc_loader_;
 };
 
-class DownloadHints : public FX_DOWNLOADHINTS {
+class PDFiumDocument::DownloadHints : public FX_DOWNLOADHINTS {
  public:
   explicit DownloadHints(DocumentLoader* doc_loader) : doc_loader_(doc_loader) {
     DCHECK(doc_loader);
@@ -51,10 +49,10 @@ class DownloadHints : public FX_DOWNLOADHINTS {
     return download_hints->doc_loader_->RequestData(offset, size);
   }
 
-  raw_ptr<DocumentLoader, LeakedDanglingUntriaged> doc_loader_;
+  raw_ptr<DocumentLoader> doc_loader_;
 };
 
-class FileAccess : public FPDF_FILEACCESS {
+class PDFiumDocument::FileAccess : public FPDF_FILEACCESS {
  public:
   explicit FileAccess(DocumentLoader* doc_loader) : doc_loader_(doc_loader) {
     DCHECK(doc_loader);
@@ -73,10 +71,8 @@ class FileAccess : public FPDF_FILEACCESS {
     return file_access->doc_loader_->GetBlock(position, size, buffer);
   }
 
-  raw_ptr<DocumentLoader, LeakedDanglingUntriaged> doc_loader_;
+  raw_ptr<DocumentLoader> doc_loader_;
 };
-
-}  // namespace
 
 PDFiumDocument::PDFiumDocument(DocumentLoader* doc_loader)
     : doc_loader_(doc_loader),
@@ -85,6 +81,18 @@ PDFiumDocument::PDFiumDocument(DocumentLoader* doc_loader)
       download_hints_(std::make_unique<DownloadHints>(doc_loader)) {}
 
 PDFiumDocument::~PDFiumDocument() = default;
+
+FPDF_FILEACCESS& PDFiumDocument::file_access() {
+  return *file_access_;
+}
+
+FX_FILEAVAIL& PDFiumDocument::file_availability() {
+  return *file_availability_;
+}
+
+FX_DOWNLOADHINTS& PDFiumDocument::download_hints() {
+  return *download_hints_;
+}
 
 void PDFiumDocument::CreateFPDFAvailability() {
   fpdf_availability_.reset(
