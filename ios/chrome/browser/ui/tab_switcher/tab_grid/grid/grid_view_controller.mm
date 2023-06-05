@@ -193,6 +193,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic) BOOL localDragActionInProgress;
 // Tracks if the Inactive Tabs button is being animated out.
 @property(nonatomic) BOOL inactiveTabsHeaderHideAnimationInProgress;
+// Tracks if the items are in a batch action, which are the "Close All" or
+// "Undo" the close all.
+@property(nonatomic) BOOL isClosingAllOrUndoRunning;
 @end
 
 @implementation GridViewController {
@@ -553,6 +556,34 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.currentLayout.animatesItemUpdates = NO;
 }
 
+- (void)willCloseAll {
+  self.isClosingAllOrUndoRunning = YES;
+}
+
+- (void)didCloseAll {
+  self.isClosingAllOrUndoRunning = NO;
+}
+
+- (void)willUndoCloseAll {
+  self.isClosingAllOrUndoRunning = YES;
+}
+
+- (void)didUndoCloseAll {
+  self.isClosingAllOrUndoRunning = NO;
+
+  // Reload the button and ensure it is not hidden, as this is the only flow
+  // where the button can dynamically reappear when the app is running and the
+  // reappearance is not managed by default.
+  [self reloadInactiveTabsButtonHeader];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:kOpenTabsSectionIndex];
+  InactiveTabsButtonHeader* header =
+      base::mac::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
+          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
+                              atIndexPath:indexPath]);
+  header.hidden = NO;
+}
+
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:
@@ -743,6 +774,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // `collectionViewLayout` should always be a flow layout.
   DCHECK(
       [collectionViewLayout isKindOfClass:[UICollectionViewFlowLayout class]]);
+  if (self.isClosingAllOrUndoRunning) {
+    return CGSizeZero;
+  }
   UICollectionViewFlowLayout* layout =
       (UICollectionViewFlowLayout*)collectionViewLayout;
   CGSize itemSize = layout.itemSize;
@@ -768,6 +802,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   switch (_mode) {
     case TabGridModeNormal:
       if (!IsInactiveTabsAvailable()) {
+        return CGSizeZero;
+      }
+      if (self.isClosingAllOrUndoRunning) {
         return CGSizeZero;
       }
       if (self.inactiveTabsHeaderHideAnimationInProgress) {

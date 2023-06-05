@@ -2800,22 +2800,36 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)undoCloseAllItemsForRegularTabs {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+
+  [regularViewController willUndoCloseAll];
+
   // This was saved as a stack: first save the inactive tabs, then the active
   // tabs. So undo in the reverse order: first undo the active tabs, then the
   // inactive tabs.
   [self.regularTabsDelegate undoCloseAllItems];
   [self.inactiveTabsDelegate undoCloseAllItems];
 
+  [regularViewController didUndoCloseAll];
+
   self.undoCloseAllAvailable = NO;
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
 }
 
 - (void)saveAndCloseAllItemsForRegularTabs {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+
+  [regularViewController willCloseAll];
+
   // This was saved as a stack: first save the inactive tabs, then the active
   // tabs. So undo in the reverse order: first undo the active tabs, then the
   // inactive tabs.
   [self.inactiveTabsDelegate saveAndCloseAllItems];
   [self.regularTabsDelegate saveAndCloseAllItems];
+
+  [regularViewController didCloseAll];
 
   self.undoCloseAllAvailable = YES;
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
