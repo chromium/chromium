@@ -2817,6 +2817,22 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   EXPECT_TRUE(content::NavigateToURLFromRenderer(guest2, coop_url));
 }
 
+// This test creates a situation where we have two unattached webviews which
+// have an opener relationship, and ensures that we can shutdown safely. See
+// https://crbug.com/1450397.
+IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, DestroyOpenerBeforeAttachment) {
+  TestHelper("testDestroyOpenerBeforeAttachment", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+
+  content::RenderProcessHost* embedder_rph =
+      GetEmbedderWebContents()->GetPrimaryMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher kill_observer(
+      embedder_rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(embedder_rph->Shutdown(content::RESULT_CODE_KILLED));
+  kill_observer.Wait();
+}
+
 IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuInspectElement) {
   LoadAppWithGuest("web_view/context_menus/basic");
   content::RenderFrameHost* guest_rfh = GetGuestRenderFrameHost();
