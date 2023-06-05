@@ -24,7 +24,9 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
@@ -998,14 +1000,12 @@ TurbulencePaintFilter::TurbulencePaintFilter(TurbulenceType turbulence_type,
   sk_sp<SkShader> shader;
   switch (turbulence_type_) {
     case TurbulenceType::kTurbulence:
-      shader = SkPerlinNoiseShader::MakeTurbulence(
-          base_frequency_x_, base_frequency_y_, num_octaves_, seed_,
-          &tile_size_);
+      shader = SkShaders::MakeTurbulence(base_frequency_x_, base_frequency_y_,
+                                         num_octaves_, seed_, &tile_size_);
       break;
     case TurbulenceType::kFractalNoise:
-      shader = SkPerlinNoiseShader::MakeFractalNoise(
-          base_frequency_x_, base_frequency_y_, num_octaves_, seed_,
-          &tile_size_);
+      shader = SkShaders::MakeFractalNoise(base_frequency_x_, base_frequency_y_,
+                                           num_octaves_, seed_, &tile_size_);
       break;
   }
 
