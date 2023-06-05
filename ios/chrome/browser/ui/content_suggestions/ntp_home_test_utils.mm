@@ -11,6 +11,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -39,6 +41,12 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
   return nil;
 }
 
+// Returns the SetUpListView, if present.
+SetUpListView* GetSetUpListView() {
+  return base::mac::ObjCCast<SetUpListView>(SubviewWithAccessibilityIdentifier(
+      @"kSetUpListAccessibilityID", GetAnyKeyWindow()));
+}
+
 }  // namespace
 
 namespace ntp_home {
@@ -63,6 +71,12 @@ UIView* FakeOmnibox() {
 UILabel* DiscoverHeaderLabel() {
   return base::mac::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
       DiscoverHeaderTitleAccessibilityID(), GetAnyKeyWindow()));
+}
+
+SetUpListItemView* SetUpListItemViewWithAccessibilityId(
+    NSString* accessibility_id) {
+  return base::mac::ObjCCast<SetUpListItemView>(
+      SubviewWithAccessibilityIdentifier(accessibility_id, GetSetUpListView()));
 }
 
 }  // namespace ntp_home

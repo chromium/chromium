@@ -9,12 +9,15 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_test_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -23,6 +26,7 @@
 #endif
 
 using content_suggestions::SearchFieldWidth;
+using set_up_list_prefs::SetUpListItemState;
 
 @implementation NewTabPageAppInterface
 
@@ -47,6 +51,35 @@ using content_suggestions::SearchFieldWidth;
 
 + (UILabel*)discoverHeaderLabel {
   return ntp_home::DiscoverHeaderLabel();
+}
+
++ (void)resetSetUpListPrefs {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  SetUpListItemState unknown = SetUpListItemState::kUnknown;
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kSignInSync,
+                                  unknown);
+  set_up_list_prefs::SetItemState(localState,
+                                  SetUpListItemType::kDefaultBrowser, unknown);
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kAutofill,
+                                  unknown);
+}
+
++ (BOOL)setUpListItemSignInSyncIsComplete {
+  return ntp_home::SetUpListItemViewWithAccessibilityId(
+             @"kSetUpListItemSignInID")
+      .complete;
+}
+
++ (BOOL)setUpListItemDefaultBrowserIsComplete {
+  return ntp_home::SetUpListItemViewWithAccessibilityId(
+             @"kSetUpListItemDefaultBrowserID")
+      .complete;
+}
+
++ (BOOL)setUpListItemAutofillIsComplete {
+  return ntp_home::SetUpListItemViewWithAccessibilityId(
+             @"kSetUpListItemAutofillID")
+      .complete;
 }
 
 @end
