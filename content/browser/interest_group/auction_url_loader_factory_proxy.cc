@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/escape.h"
@@ -134,6 +135,20 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   if (!is_request_allowed) {
+    // Debugging for https://crbug.com/1448458
+    SCOPED_CRASH_KEY_STRING32("fledge", "req-accept", accept_header);
+    SCOPED_CRASH_KEY_STRING256("fledge", "req-url",
+                               url_request.url.possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256("fledge", "expect-script-url",
+                               script_url_.possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "fledge", "expect-wasm-url",
+        wasm_url_.value_or(GURL()).possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "fledge", "expect-trusted",
+        trusted_signals_base_url_.value_or(GURL()).possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256("fledge", "expect-top-frame",
+                               top_frame_origin_.host());
     receiver_.ReportBadMessage("Unexpected request");
     return;
   }
