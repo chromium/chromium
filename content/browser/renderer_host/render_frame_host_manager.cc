@@ -1724,23 +1724,6 @@ void RenderFrameHostManager::DiscardSpeculativeRFH(
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   if (speculative_render_frame_host_) {
     bool was_loading = speculative_render_frame_host_->is_loading();
-    SCOPED_CRASH_KEY_BOOL("Bug1450023", "is_main_frame",
-                          frame_tree_node_->IsMainFrame());
-    SCOPED_CRASH_KEY_NUMBER(
-        "Bug1450023", "queueing_level",
-        static_cast<int>(GetNavigationQueueingFeatureLevel()));
-    SCOPED_CRASH_KEY_NUMBER(
-        "Bug1450023", "current_rfh_si",
-        static_cast<int>(current_frame_host()->GetSiteInstance()->GetId()));
-    SCOPED_CRASH_KEY_NUMBER(
-        "Bug1450023", "spec_rfh_si",
-        static_cast<int>(
-            speculative_render_frame_host_->GetSiteInstance()->GetId()));
-    SCOPED_CRASH_KEY_STRING64(
-        "Bug1450023", "spec_rfh_lifecycle",
-        RenderFrameHostImpl::LifecycleStateImplToString(
-            speculative_render_frame_host_->lifecycle_state()));
-
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(reason));
     // If we were navigating away from a crashed main frame then we will have
     // set the RVH's main frame routing ID to MSG_ROUTING_NONE. We need to set
@@ -1803,9 +1786,7 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
           speculative_render_frame_host_->browsing_context_state()
               ->GetRenderFrameProxyHost(
                   speculative_render_frame_host_->GetSiteInstance()->group());
-
-      SCOPED_CRASH_KEY_BOOL("Bug1450023", "proxy_exists", !!proxy);
-      CHECK(proxy);
+      DCHECK(proxy);
       // Note: this advances the RenderFrameHost's lifecycle state to
       // kReadyToBeDeleted.
       speculative_render_frame_host_->UndoCommitNavigation(
