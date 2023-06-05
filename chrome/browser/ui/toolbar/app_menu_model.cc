@@ -1245,10 +1245,7 @@ void AppMenuModel::Build() {
       AddItem(IDC_SHOW_SEARCH_COMPANION, u"Chrome Search Companion");
     }
 #endif
-
-    // TODO(josephjoopark): Update translate string with StringId when
-    // finalized.
-    AddItem(IDC_TRANSLATE_PAGE, u"Google Translate");
+    AddItemWithStringId(IDC_TRANSLATE_PAGE, IDS_SHOW_TRANSLATE);
 
     sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,

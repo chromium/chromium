@@ -1547,6 +1547,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_SHOW_PERFORMANCE" desc="The text label of the Performance menu item">
           Performance
         </message>
+        <message name="IDS_SHOW_TRANSLATE" desc="The text label of the Translate menu item">
+          Translate...
+        </message>
         <message name="IDS_SETTINGS" desc="The text label of the Settings menu item">
           Settin&amp;gs
         </message>
@@ -1596,6 +1599,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_SHOW_PERFORMANCE" desc="In Title Case: The text label of the Performance menu item">
           Performance
+        </message>
+        <message name="IDS_SHOW_TRANSLATE" desc="In Title Case: The text label of the Translate menu item">
+          Translate
         </message>
         <message name="IDS_SETTINGS" desc="In Title Case: The text label of the Settings menu item">
           &amp;Settings
