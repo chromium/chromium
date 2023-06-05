@@ -122,6 +122,47 @@ OperatorPtr CreateElementWiseBinaryOperator(
   return operator_mojo;
 }
 
+OperatorPtr CreateReluOperator(const OperandToIdMap& operand_to_id_map,
+                               const MLOperator* relu) {
+  const uint64_t input_operand_id = GetOperatorInputId(relu, operand_to_id_map);
+  const uint64_t output_operand_id =
+      GetOperatorOutputId(relu, operand_to_id_map);
+
+  auto operator_mojo = webnn::mojom::blink::Operator::New();
+  operator_mojo->kind = Operator::Kind::kRelu;
+  operator_mojo->input_operands = {input_operand_id};
+  operator_mojo->output_operands = {output_operand_id};
+  return operator_mojo;
+}
+
+OperatorPtr CreateReshapeOperator(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* reshape) {
+  const uint64_t input_operand_id =
+      GetOperatorInputId(reshape, operand_to_id_map);
+  const uint64_t output_operand_id =
+      GetOperatorOutputId(reshape, operand_to_id_map);
+
+  auto operator_mojo = webnn::mojom::blink::Operator::New();
+  operator_mojo->kind = Operator::Kind::kReshape;
+  operator_mojo->input_operands = {input_operand_id};
+  operator_mojo->output_operands = {output_operand_id};
+  return operator_mojo;
+}
+
+OperatorPtr CreateSoftmaxOperator(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* softmax) {
+  const uint64_t input_operand_id =
+      GetOperatorInputId(softmax, operand_to_id_map);
+  const uint64_t output_operand_id =
+      GetOperatorOutputId(softmax, operand_to_id_map);
+
+  auto operator_mojo = webnn::mojom::blink::Operator::New();
+  operator_mojo->kind = Operator::Kind::kSoftmax;
+  operator_mojo->input_operands = {input_operand_id};
+  operator_mojo->output_operands = {output_operand_id};
+  return operator_mojo;
+}
+
 }  // namespace
 
 OperatorPtr ConvertToMojoOperator(const OperandToIdMap& operand_to_id_map,
@@ -134,14 +175,17 @@ OperatorPtr ConvertToMojoOperator(const OperandToIdMap& operand_to_id_map,
     case MLOperator::OperatorKind::kMin:
     case MLOperator::OperatorKind::kMax:
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kRelu:
+      return CreateReluOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kReshape:
+      return CreateReshapeOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kSoftmax:
+      return CreateSoftmaxOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kClamp:
     case MLOperator::OperatorKind::kConv2d:
     case MLOperator::OperatorKind::kGemm:
     case MLOperator::OperatorKind::kAveragePool2d:
     case MLOperator::OperatorKind::kMaxPool2d:
-    case MLOperator::OperatorKind::kRelu:
-    case MLOperator::OperatorKind::kSoftmax:
-    case MLOperator::OperatorKind::kReshape:
     case MLOperator::OperatorKind::kHardSwish:
     case MLOperator::OperatorKind::kResample2d:
     case MLOperator::OperatorKind::kSigmoid:

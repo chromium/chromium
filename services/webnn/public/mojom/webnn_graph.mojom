@@ -39,6 +39,9 @@ struct Operator {
     kDiv,
     kMax,
     kMin,
+    kRelu,
+    kReshape,
+    kSoftmax,
   };
 
   // The kind of this `Operator`.

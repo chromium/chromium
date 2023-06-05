@@ -199,4 +199,209 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   }
 }
 
+struct ReluTester {
+  OperandInfo input;
+  OperandInfo output;
+  bool expected;
+
+  void Test(WebNNGraphImplTest& helper) {
+    // Build the graph with mojo type.
+    auto graph_info = mojom::GraphInfo::New();
+    uint64_t input_operand_id =
+        helper.BuildInput(graph_info, "input", input.dimensions, input.type);
+    uint64_t output_operand_id = helper.BuildOutput(
+        graph_info, "output", output.dimensions, output.type);
+    auto operation = CreateOperator(mojom::Operator::Kind::kRelu,
+                                    {input_operand_id}, {output_operand_id});
+    graph_info->operators.emplace_back(std::move(operation));
+    auto result = helper.ValidateGraph(std::move(graph_info));
+    EXPECT_EQ(result, expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ReluTest) {
+  {
+    // Test relu operator for 3-D tensor with float32 input.
+    ReluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {2, 6, 4}},
+               .output = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2, 6, 4}},
+               .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test relu operator for 4-D tensor with int32 input.
+    ReluTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                         .dimensions = {1, 5, 3, 7}},
+               .output = {.type = mojom::Operand::DataType::kInt32,
+                          .dimensions = {1, 5, 3, 7}},
+               .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    ReluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4, 2}},
+               .output = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2}},
+               .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    ReluTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test(*this);
+  }
+}
+
+struct ReshapeTester {
+  OperandInfo input;
+  OperandInfo output;
+  bool expected;
+
+  void Test(WebNNGraphImplTest& helper) {
+    // Build the graph with mojo type.
+    auto graph_info = mojom::GraphInfo::New();
+    uint64_t input_operand_id =
+        helper.BuildInput(graph_info, "input", input.dimensions, input.type);
+    uint64_t output_operand_id = helper.BuildOutput(
+        graph_info, "output", output.dimensions, output.type);
+    auto operation = CreateOperator(mojom::Operator::Kind::kReshape,
+                                    {input_operand_id}, {output_operand_id});
+    graph_info->operators.emplace_back(std::move(operation));
+    auto result = helper.ValidateGraph(std::move(graph_info));
+    EXPECT_EQ(result, expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ReshapeTest) {
+  {
+    // Test reshape operator from 2-D tensor to 1-D tensor.
+    ReshapeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 4}},
+                  .output = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {8}},
+                  .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test reshape operator from 4-D tensor to 2-D tensor.
+    ReshapeTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 3, 2, 1}},
+                  .output = {.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {1, 6}},
+                  .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when one value of new shape is 0.
+    ReshapeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {4, 2}},
+                  .output = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 0}},
+                  .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when the number of input elements are not equal to
+    // the number of output elements.
+    ReshapeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 3, 4}},
+                  .output = {.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {3, 5}},
+                  .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    ReshapeTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test(*this);
+  }
+}
+
+struct SoftmaxTester {
+  OperandInfo input;
+  OperandInfo output;
+  bool expected;
+
+  void Test(WebNNGraphImplTest& helper) {
+    // Build the graph with mojo type.
+    auto graph_info = mojom::GraphInfo::New();
+    uint64_t input_operand_id =
+        helper.BuildInput(graph_info, "input", input.dimensions, input.type);
+    uint64_t output_operand_id = helper.BuildOutput(
+        graph_info, "output", output.dimensions, output.type);
+    auto operation = CreateOperator(mojom::Operator::Kind::kSoftmax,
+                                    {input_operand_id}, {output_operand_id});
+    graph_info->operators.emplace_back(std::move(operation));
+    auto result = helper.ValidateGraph(std::move(graph_info));
+    EXPECT_EQ(result, expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, SoftmaxTest) {
+  {
+    // Test softmax operator for input operand with [2, 2] dimensions.
+    SoftmaxTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 2}},
+                  .output = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}},
+                  .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test softmax operator for input operand with [1, 4] dimensions.
+    SoftmaxTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                            .dimensions = {1, 4}},
+                  .output = {.type = mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 4}},
+                  .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when building softmax with 4-D input.
+    SoftmaxTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 4, 2}},
+                  .output = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 4, 2}},
+                  .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when building softmax with int32 input.
+    SoftmaxTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {2, 3}},
+                  .output = {.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {2, 3}},
+                  .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    SoftmaxTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {4, 2}},
+                  .output = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2}},
+                  .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    SoftmaxTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 5}},
+                  .output = {.type = mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 5}},
+                  .expected = false}
+        .Test(*this);
+  }
+}
+
 }  // namespace webnn
