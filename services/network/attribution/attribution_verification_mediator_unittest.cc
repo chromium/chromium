@@ -26,6 +26,7 @@
 #include "url/gurl.h"
 
 namespace network {
+namespace {
 
 using ::testing::IsEmpty;
 
@@ -427,4 +428,5 @@ TEST_F(AttributionVerificationMediatorTest,
       /*expected_bucket_count=*/1);
 }
 
+}  // namespace
 }  // namespace network

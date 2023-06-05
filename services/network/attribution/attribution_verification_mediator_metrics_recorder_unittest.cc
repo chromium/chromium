@@ -11,6 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
+namespace {
+
 using base::test::TaskEnvironment;
 using GetHeadersStatus = AttributionVerificationMediator::GetHeadersStatus;
 using ProcessVerificationStatus =
@@ -319,4 +321,6 @@ TEST_F(AttributionVerificationMediatorMetricsRecorderTest, Success) {
       ProcessVerificationStatus::kSuccess,
       /*expected_bucket_count=*/1);
 }
+
+}  // namespace
 }  // namespace network

@@ -28,6 +28,8 @@
 
 namespace network {
 
+namespace {
+
 using Cryptographer = AttributionVerificationMediator::Cryptographer;
 using metrics_recorder = AttributionVerificationMediator::MetricsRecorder;
 
@@ -35,6 +37,8 @@ using Message = AttributionVerificationMediator::Message;
 using BlindedMessage = AttributionVerificationMediator::BlindedMessage;
 using BlindedToken = AttributionVerificationMediator::BlindedToken;
 using Token = AttributionVerificationMediator::Token;
+
+}  // namespace
 
 struct AttributionVerificationMediator::CryptographersAndBlindedMessages {
   std::vector<std::unique_ptr<Cryptographer>> cryptographers;
