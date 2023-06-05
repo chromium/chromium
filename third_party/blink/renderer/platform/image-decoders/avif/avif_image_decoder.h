@@ -116,8 +116,8 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   wtf_size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
-  std::unique_ptr<avifDecoder, void (*)(avifDecoder*)> decoder_{nullptr,
-                                                                nullptr};
+  std::unique_ptr<avifDecoder, decltype(&avifDecoderDestroy)> decoder_{
+      nullptr, avifDecoderDestroy};
   avifIO avif_io_ = {};
   AvifIOData avif_io_data_;
 

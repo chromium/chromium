@@ -767,8 +767,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   have_parsed_current_data_ = true;
 
   if (!decoder_) {
-    decoder_ = std::unique_ptr<avifDecoder, void (*)(avifDecoder*)>(
-        avifDecoderCreate(), avifDecoderDestroy);
+    decoder_.reset(avifDecoderCreate());
     if (!decoder_)
       return false;
 
