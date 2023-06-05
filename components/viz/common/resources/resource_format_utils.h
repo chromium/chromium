@@ -10,7 +10,6 @@
 #include "components/viz/common/viz_resource_format_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
-#include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include <vulkan/vulkan_core.h>
@@ -31,10 +30,6 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLInternalFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
     ResourceFormat format,
     bool use_angle_rgbx_format);
-
-// Returns whether the format can be used with GpuMemoryBuffer texture storage.
-VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
-    ResourceFormat format);
 
 #if BUILDFLAG(ENABLE_VULKAN)
 VIZ_RESOURCE_FORMAT_EXPORT bool HasVkFormat(ResourceFormat format);

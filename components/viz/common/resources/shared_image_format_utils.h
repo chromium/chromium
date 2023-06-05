@@ -33,6 +33,12 @@ ToClosestSkColorType(bool gpu_compositing,
 VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
 SkColorTypeToSinglePlaneSharedImageFormat(SkColorType color_type);
 
+// Returns whether `format`, which must be a single-planar format, can be used
+// with GpuMemoryBuffer texture storage.
+VIZ_RESOURCE_FORMAT_EXPORT bool
+CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
+    SharedImageFormat format);
+
 // Checks if there is an equivalent BufferFormat.
 VIZ_RESOURCE_FORMAT_EXPORT bool HasEquivalentBufferFormat(
     SharedImageFormat format);

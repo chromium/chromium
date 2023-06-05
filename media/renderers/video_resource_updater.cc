@@ -496,7 +496,7 @@ class VideoResourceUpdater::HardwarePlaneResource
     overlay_candidate_ =
         use_gpu_memory_buffer_resources &&
         caps.supports_scanout_shared_images &&
-        IsGpuMemoryBufferFormatSupported(format.resource_format());
+        CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
     uint32_t shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     if (overlay_candidate_) {

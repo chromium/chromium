@@ -4656,7 +4656,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     overlay_candidate =
         settings_.resource_settings.use_gpu_memory_buffer_resources &&
         caps.supports_scanout_shared_images &&
-        viz::IsGpuMemoryBufferFormatSupported(format.resource_format());
+        viz::CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target = gpu::GetBufferTextureTarget(
