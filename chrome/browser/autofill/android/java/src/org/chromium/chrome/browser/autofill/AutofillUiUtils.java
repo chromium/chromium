@@ -596,6 +596,9 @@ public class AutofillUiUtils {
      * @param cardArtUrl URL to fetch custom card art.
      * @param defaultIconId Resource Id for the default (network) icon if the card art doesn't exist
      *         or couldn't be retrieved.
+     * @param iconWidthId Resource Id for the icon's width spec.
+     * @param iconHeightId Resource Id for the icon's height spec.
+     * @param iconEndMarginId Resource Id for the margin spec between the icon and the card name.
      * @param cardNameAndNumberTextAppearance Text appearance Id for the card name and the card
      *         number.
      * @param cardLabelTextAppearance Text appearance Id for the card label.
