@@ -5,6 +5,7 @@
 #ifndef BASE_CPU_H_
 #define BASE_CPU_H_
 
+#include <cstdint>
 #include <string>
 
 #include "base/base_export.h"
