@@ -47,6 +47,19 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {
+namespace {
+
+bool IsManifestUrlChange(const InstallableData& result) {
+  if (result.errors.empty()) {
+    return false;
+  }
+  if (result.errors[0] != MANIFEST_URL_CHANGED) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
 
 class AppBannerManager::StatusReporter {
  public:
@@ -276,26 +289,14 @@ AppBannerManager::UrlType AppBannerManager::GetUrlType(
 }
 
 bool AppBannerManager::CheckIfShouldShowBanner() {
-  if (ShouldBypassEngagementChecks())
+  if (ShouldBypassEngagementChecks()) {
     return true;
-
-  InstallableStatusCode code = ShouldShowBannerCode();
-  switch (code) {
-    case NO_ERROR_DETECTED:
-      return true;
-    case PREVIOUSLY_BLOCKED:
-      TrackDisplayEvent(DISPLAY_EVENT_BLOCKED_PREVIOUSLY);
-      break;
-    case PREVIOUSLY_IGNORED:
-      TrackDisplayEvent(DISPLAY_EVENT_IGNORED_PREVIOUSLY);
-      break;
-    case PACKAGE_NAME_OR_START_URL_EMPTY:
-      break;
-    default:
-      NOTREACHED();
   }
-  Stop(code);
-  return false;
+  if (GetAppIdentifier().empty()) {
+    Stop(PACKAGE_NAME_OR_START_URL_EMPTY);
+    return false;
+  }
+  return true;
 }
 
 bool AppBannerManager::ShouldDeferToRelatedNonWebApp() const {
@@ -342,36 +343,11 @@ bool AppBannerManager::ShouldAllowWebAppReplacementInstall() {
   return false;
 }
 
-bool AppBannerManager::DidRetryInstallableManagerRequest(
-    const InstallableData& result) {
-  if (result.errors.empty())
-    return false;
-  if (result.errors[0] != MANIFEST_URL_CHANGED)
-    return false;
-  ReportStatus(MANIFEST_URL_CHANGED);
-  switch (state_) {
-    case State::FETCHING_MANIFEST:
-    case State::PENDING_INSTALLABLE_CHECK:
-      UpdateState(State::INACTIVE);
-      RequestAppBanner(validated_url_);
-      return true;
-    case State::INACTIVE:
-    case State::ACTIVE:
-    case State::FETCHING_NATIVE_DATA:
-    case State::PENDING_ENGAGEMENT:
-    case State::SENDING_EVENT:
-    case State::SENDING_EVENT_GOT_EARLY_PROMPT:
-    case State::PENDING_PROMPT_CANCELED:
-    case State::PENDING_PROMPT_NOT_CANCELED:
-    case State::COMPLETE:
-      NOTREACHED();
-      return false;
-  }
-}
-
 void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
-  if (DidRetryInstallableManagerRequest(data))
+  // The pipeline will be restarted from DidUpdateWebManifestURL.
+  if (IsManifestUrlChange(data)) {
     return;
+  }
   UpdateState(State::ACTIVE);
   if (!data.NoBlockingErrors()) {
     Stop(data.errors[0]);
@@ -432,8 +408,10 @@ void AppBannerManager::PerformInstallableWebAppCheck() {
 
 void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     const InstallableData& data) {
-  if (DidRetryInstallableManagerRequest(data))
+  // The pipeline will be restarted from DidUpdateWebManifestURL.
+  if (IsManifestUrlChange(data)) {
     return;
+  }
 
   UpdateState(State::ACTIVE);
   if (data.valid_manifest)
@@ -678,7 +656,6 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   ResetCurrentPageData();
 
   if (handle->IsServedFromBackForwardCache()) {
-    UpdateState(State::INACTIVE);
     RequestAppBanner(validated_url_);
   }
 }
@@ -730,8 +707,11 @@ void AppBannerManager::DidUpdateWebManifestURL(
   GURL url = validated_url_;
   switch (state_) {
     case State::INACTIVE:
+      return;
     case State::FETCHING_MANIFEST:
     case State::PENDING_INSTALLABLE_CHECK:
+      UpdateState(State::INACTIVE);
+      RequestAppBanner(validated_url_);
       return;
     case State::ACTIVE:
     case State::FETCHING_NATIVE_DATA:
@@ -748,7 +728,8 @@ void AppBannerManager::DidUpdateWebManifestURL(
         // re-compute that, instead of calling RequestAppBanner, DidFinishLoad
         // is called. That method will re-fetch the engagement data and re-set
         // that field.
-        RecheckInstallabilityForLoadedPage(url, false);
+        ResetCurrentPageData();
+        DidFinishLoad(nullptr, url);
       }
       return;
   }
@@ -915,12 +896,6 @@ void AppBannerManager::RecordCouldShowBanner() {
   AppBannerSettingsHelper::RecordBannerEvent(
       contents, validated_url_, GetAppIdentifier(),
       AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW, GetCurrentTime());
-}
-
-InstallableStatusCode AppBannerManager::ShouldShowBannerCode() {
-  if (GetAppIdentifier().empty())
-    return PACKAGE_NAME_OR_START_URL_EMPTY;
-  return NO_ERROR_DETECTED;
 }
 
 void AppBannerManager::OnBannerPromptReply(

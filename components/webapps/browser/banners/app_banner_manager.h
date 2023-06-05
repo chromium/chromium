@@ -307,11 +307,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // overwritten with a new app install for the current page.
   virtual bool ShouldAllowWebAppReplacementInstall();
 
-  // Possibly retries the installable manager request given the current state
-  // and the result. Returns |true| if the request was restarted.
-  // Currently only called during requests to InstallationManager
-  bool DidRetryInstallableManagerRequest(const InstallableData& result);
-
   // Callback invoked by the InstallableManager once it has fetched the page's
   // manifest.
   virtual void OnDidGetManifest(const InstallableData& data);
@@ -453,9 +448,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // Called when Blink has prevented a banner from being shown, and is now
   // requesting that it be shown later.
   void DisplayAppBanner() override;
-
-  // Returns a status code indicating whether a banner should be shown.
-  InstallableStatusCode ShouldShowBannerCode();
 
   // Returns a status code based on the current state, to log when terminating.
   InstallableStatusCode TerminationCode() const;
