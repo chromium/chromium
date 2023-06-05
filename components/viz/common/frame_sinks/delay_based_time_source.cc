@@ -150,14 +150,16 @@ base::TimeTicks DelayBasedTimeSource::Now() const {
 void DelayBasedTimeSource::PostNextTickTask(base::TimeTicks now) {
   if (interval_.is_zero()) {
     next_tick_time_ = now;
+    timer_.Start(FROM_HERE, base::TimeTicks(), tick_closure_,
+                 base::subtle::DelayPolicy::kPrecise);
   } else {
     next_tick_time_ = now.SnappedToNextTick(timebase_, interval_);
     if (next_tick_time_ == now)
       next_tick_time_ += interval_;
     DCHECK_GT(next_tick_time_, now);
+    timer_.Start(FROM_HERE, next_tick_time_, tick_closure_,
+                 base::subtle::DelayPolicy::kPrecise);
   }
-  timer_.Start(FROM_HERE, next_tick_time_, tick_closure_,
-               base::subtle::DelayPolicy::kPrecise);
 }
 
 std::string DelayBasedTimeSource::TypeString() const {
