@@ -2,24 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://os-settings/lazy_load.js';
 
+import {AppManagementPinToShelfItemElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore} from 'chrome://os-settings/os_settings.js';
-import {convertOptionalBoolToBool} from 'chrome://resources/cr_components/app_management/util.js';
-import {setupFakeHandler, replaceBody} from './test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {convertOptionalBoolToBool} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import {replaceBody, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-pin-to-shelf-item>', () => {
-  let pinToShelfItem;
-  let fakeHandler;
+  let pinToShelfItem: AppManagementPinToShelfItemElement;
+  let fakeHandler: FakePageHandler;
 
-  setup(async () => {
+  setup(() => {
     fakeHandler = setupFakeHandler();
     pinToShelfItem = document.createElement('app-management-pin-to-shelf-item');
 
     replaceBody(pinToShelfItem);
     flushTasks();
+  });
+
+  teardown(() => {
+    pinToShelfItem.remove();
   });
 
   test('Toggle pin to shelf', async () => {
@@ -33,14 +41,16 @@ suite('<app-management-pin-to-shelf-item>', () => {
 
     await fakeHandler.flushPipesForTesting();
     pinToShelfItem.app = app;
-    assertFalse(convertOptionalBoolToBool(
-        AppManagementStore.getInstance().data.apps[app.id].isPinned));
+    let selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    assertTrue(!!selectedApp);
+    assertFalse(convertOptionalBoolToBool(selectedApp.isPinned));
 
     pinToShelfItem.click();
     flushTasks();
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(convertOptionalBoolToBool(
-        AppManagementStore.getInstance().data.apps[app.id].isPinned));
+    selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    assertTrue(!!selectedApp);
+    assertTrue(convertOptionalBoolToBool(selectedApp.isPinned));
   });
 });

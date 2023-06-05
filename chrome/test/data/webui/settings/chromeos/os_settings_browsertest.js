@@ -192,7 +192,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
  ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementPage', 'app_management/app_management_page_tests.js'],
- ['AppManagementPinToShelfItem', 'app_management/pin_to_shelf_item_test.js'],
  [
    'AppManagementPluginVmDetailView',
    'app_management/plugin_vm_detail_view_test.js',
@@ -501,6 +500,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsAppsPageAppManagementPageMainView',
    'os_apps_page/app_management_page/main_view_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPagePinToShelfItem',
+   'os_apps_page/app_management_page/pin_to_shelf_item_test.js'
  ],
  [
    'OsAppsPageAppManagementPagePwaDetailView',
