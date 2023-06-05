@@ -29,9 +29,11 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
   void GetSegmentInfoForSegments(const base::flat_set<SegmentId>& segment_ids,
                                  MultipleSegmentInfoCallback callback) override;
   void GetSegmentInfo(SegmentId segment_id,
+                      ModelSource model_source,
                       SegmentInfoCallback callback) override;
   absl::optional<SegmentInfo> GetCachedSegmentInfo(
-      SegmentId segment_id) override;
+      SegmentId segment_id,
+      ModelSource model_source) override;
   void UpdateSegment(SegmentId segment_id,
                      absl::optional<proto::SegmentInfo> segment_info,
                      SuccessCallback callback) override;
@@ -42,6 +44,7 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                         const proto::TrainingData& data,
                         SuccessCallback callback) override;
   void GetTrainingData(SegmentId segment_id,
+                       ModelSource model_source,
                        TrainingRequestId request_id,
                        bool delete_from_db,
                        TrainingDataCallback callback) override;

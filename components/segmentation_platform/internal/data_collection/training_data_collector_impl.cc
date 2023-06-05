@@ -233,8 +233,9 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
     param->output_metric_hash = hash;
     param->output_value = static_cast<float>(sample);
     for (auto segment : segments) {
+      // TODO (ritikagup@) : Add handling for default models, if required.
       segment_info_database_->GetSegmentInfo(
-          segment,
+          segment, proto::ModelSource::SERVER_MODEL_SOURCE,
           base::BindOnce(
               &TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo,
               weak_ptr_factory_.GetWeakPtr(), param));
@@ -251,8 +252,9 @@ void TrainingDataCollectorImpl::OnUserAction(const std::string& user_action,
   if (it != immediate_trigger_user_actions_.end()) {
     auto segments = it->second;
     for (auto segment : segments) {
+      // TODO (ritikagup@) : Add handling for default models, if required.
       segment_info_database_->GetSegmentInfo(
-          segment,
+          segment, ModelSource::SERVER_MODEL_SOURCE,
           base::BindOnce(
               &TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo,
               weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
@@ -430,7 +432,9 @@ void TrainingDataCollectorImpl::CollectTrainingData(
     TrainingRequestId request_id,
     const TrainingLabels& param,
     SuccessCallback callback) {
-  auto segment_info = segment_info_database_->GetCachedSegmentInfo(segment_id);
+  // TODO (ritikagup@) : Add handling for default models, if required.
+  auto segment_info = segment_info_database_->GetCachedSegmentInfo(
+      segment_id, proto::ModelSource::SERVER_MODEL_SOURCE);
   if (!segment_info) {
     return;
   }

@@ -48,16 +48,19 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
 }
 
 void SegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
+                                         ModelSource model_source,
                                          SegmentInfoCallback callback) {
   std::move(callback).Run(cache_->GetSegmentInfo(segment_id));
 }
 
 absl::optional<SegmentInfo> SegmentInfoDatabase::GetCachedSegmentInfo(
-    SegmentId segment_id) {
+    SegmentId segment_id,
+    ModelSource model_source) {
   return cache_->GetSegmentInfo(segment_id);
 }
 
 void SegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
+                                          ModelSource model_source,
                                           TrainingRequestId request_id,
                                           bool delete_from_db,
                                           TrainingDataCallback callback) {

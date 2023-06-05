@@ -58,7 +58,9 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
               (override));
   MOCK_METHOD(void,
               GetSegmentInfo,
-              (SegmentId segment_id, SegmentInfoCallback callback),
+              (SegmentId segment_id,
+               proto::ModelSource model_source,
+               SegmentInfoCallback callback),
               (override));
   MOCK_METHOD(void,
               UpdateSegment,
@@ -142,7 +144,7 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
 
   // Verify that the ModelExecutionManager never invokes its
   // SegmentInfoDatabase, nor invokes the callback.
-  EXPECT_CALL(*mock_segment_database_ptr, GetSegmentInfo(_, _)).Times(0);
+  EXPECT_CALL(*mock_segment_database_ptr, GetSegmentInfo(_, _, _)).Times(0);
   EXPECT_CALL(callback, Run(_)).Times(0);
   model_provider_data_.model_providers_callbacks[segment_id].Run(
       segment_id, metadata, kModelVersion);
@@ -174,7 +176,8 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   EXPECT_CALL(db_callback, Run(_)).WillOnce(SaveArg<0>(&segment_info_from_db));
 
   // Fetch SegmentInfo from the database.
-  segment_database_->GetSegmentInfo(segment_id, db_callback.Get());
+  segment_database_->GetSegmentInfo(
+      segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, db_callback.Get());
   EXPECT_TRUE(segment_info_from_db.has_value());
   EXPECT_EQ(segment_id, segment_info_from_db->segment_id());
 
@@ -203,7 +206,8 @@ TEST_F(ModelExecutionManagerTest,
   absl::optional<proto::SegmentInfo> segment_info_from_db_1;
   EXPECT_CALL(db_callback_1, Run(_))
       .WillOnce(SaveArg<0>(&segment_info_from_db_1));
-  segment_database_->GetSegmentInfo(segment_id, db_callback_1.Get());
+  segment_database_->GetSegmentInfo(
+      segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, db_callback_1.Get());
   EXPECT_TRUE(segment_info_from_db_1.has_value());
   EXPECT_EQ(segment_id, segment_info_from_db_1->segment_id());
 
@@ -271,7 +275,8 @@ TEST_F(ModelExecutionManagerTest,
   absl::optional<proto::SegmentInfo> segment_info_from_db_2;
   EXPECT_CALL(db_callback_2, Run(_))
       .WillOnce(SaveArg<0>(&segment_info_from_db_2));
-  segment_database_->GetSegmentInfo(segment_id, db_callback_2.Get());
+  segment_database_->GetSegmentInfo(
+      segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, db_callback_2.Get());
   EXPECT_TRUE(segment_info_from_db_2.has_value());
   EXPECT_EQ(segment_id, segment_info_from_db_2->segment_id());
   EXPECT_EQ(clock_.Now().ToDeltaSinceWindowsEpoch().InSeconds(),

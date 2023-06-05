@@ -27,6 +27,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
+using proto::ModelSource;
 using proto::SegmentId;
 
 class SegmentationResultPrefs;

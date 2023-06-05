@@ -40,8 +40,10 @@ void TrainingDataCache::GetInputsAndDelete(SegmentId segment_id,
     segment_data.erase(it);
     std::move(callback).Run(result);
   } else {
+    // TODO (ritikagup@) : Add handling for default models, if required.
     segment_info_database_->GetTrainingData(
-        segment_id, request_id, /*delete_from_db=*/true, std::move(callback));
+        segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, request_id,
+        /*delete_from_db=*/true, std::move(callback));
   }
 }
 

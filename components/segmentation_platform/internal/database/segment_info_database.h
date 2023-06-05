@@ -20,6 +20,7 @@
 
 namespace segmentation_platform {
 
+using proto::ModelSource;
 using proto::SegmentId;
 
 namespace proto {
@@ -53,22 +54,26 @@ class SegmentInfoDatabase {
 
   virtual void Initialize(SuccessCallback callback);
 
-  // Called to get metadata for a given list of segments.
+  // Called to get metadata for a given list of server model segments.
   virtual void GetSegmentInfoForSegments(
       const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback);
 
-  // Called to get the metadata for a given segment.
+  // Called to get the metadata for a given segment. ModelSource defines whether
+  // to give metadata from server/default models for the given segment.
   virtual void GetSegmentInfo(SegmentId segment_id,
+                              ModelSource model_source,
                               SegmentInfoCallback callback);
 
   virtual absl::optional<SegmentInfo> GetCachedSegmentInfo(
-      SegmentId segment_id);
+      SegmentId segment_id,
+      ModelSource model_source);
 
-  // Called to get the training data for a given segment and request ID. If
-  // delete_from_db is set to true, it will delete the corresponding entry in
-  // the cache and in the database.
+  // Called to get the training data for a given segment with given model source
+  // and request ID. If delete_from_db is set to true, it will delete the
+  // corresponding entry in the cache and in the database.
   virtual void GetTrainingData(SegmentId segment_id,
+                               ModelSource model_source,
                                TrainingRequestId request_id,
                                bool delete_from_db,
                                TrainingDataCallback callback);

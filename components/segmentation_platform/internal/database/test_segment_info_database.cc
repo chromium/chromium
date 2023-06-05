@@ -37,12 +37,14 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
 }
 
 void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
+                                             ModelSource model_source,
                                              SegmentInfoCallback callback) {
-  std::move(callback).Run(GetCachedSegmentInfo(segment_id));
+  std::move(callback).Run(GetCachedSegmentInfo(segment_id, model_source));
 }
 
 absl::optional<SegmentInfo> TestSegmentInfoDatabase::GetCachedSegmentInfo(
-    SegmentId segment_id) {
+    SegmentId segment_id,
+    ModelSource model_source) {
   auto result =
       base::ranges::find(segment_infos_, segment_id,
                          &std::pair<SegmentId, proto::SegmentInfo>::first);
@@ -92,6 +94,7 @@ void TestSegmentInfoDatabase::SaveTrainingData(SegmentId segment_id,
 }
 
 void TestSegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
+                                              ModelSource model_source,
                                               TrainingRequestId request_id,
                                               bool delete_from_db,
                                               TrainingDataCallback callback) {

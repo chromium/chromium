@@ -79,9 +79,9 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
       segment_id, /* processed = */ false, validation);
   if (validation != metadata_utils::ValidationResult::kValidationSuccess)
     return;
-
+  // TODO (ritikagup@) : Add handling for default models, if required.
   segment_database_->GetSegmentInfo(
-      segment_id,
+      segment_id, proto::ModelSource::SERVER_MODEL_SOURCE,
       base::BindOnce(
           &ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate,
           weak_ptr_factory_.GetWeakPtr(), segment_id, std::move(metadata),
