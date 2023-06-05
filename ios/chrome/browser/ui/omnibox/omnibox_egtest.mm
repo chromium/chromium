@@ -615,95 +615,6 @@ void FocusFakebox() {
                  @"Context menu is still visible.");
 }
 
-// Copies and pastes a URL, then performs an undo of the paste, and attempts to
-// perform a second undo.
-// TODO(crbug.com/1041478): This test is flaky.
-- (void)FLAKY_testCopyPasteUndo {
-  [self openPage1];
-
-  [ChromeEarlGreyUI focusOmnibox];
-  [self checkLocationBarEditState];
-
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"C"
-                                          flags:UIKeyModifierCommand];
-
-  // Edit menu takes a while to copy, and not waiting here will cause Page 2 to
-  // load before the copy happens, so Page 2 URL may be copied.
-  GREYCondition* copyCondition = [GREYCondition
-      conditionWithName:@"page1 URL copied condition"
-                  block:^BOOL {
-                    return [UIPasteboard.generalPasteboard.string
-                        hasSuffix:base::SysUTF8ToNSString(kPage1URL)];
-                  }];
-  // Wait for copy to happen or timeout after 5 seconds.
-  GREYAssertTrue([copyCondition waitWithTimeout:5],
-                 @"Copying page 1 URL failed");
-
-  // Defocus the omnibox.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // This won't defocus the omnibox, it would only dismiss the keyboard.
-    id<GREYMatcher> typingShield = grey_accessibilityID(@"Typing Shield");
-    [[EarlGrey selectElementWithMatcher:typingShield] performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_buttonTitle(@"Cancel")]
-        performAction:grey_tap()];
-  }
-
-  [self openPage2];
-
-  [ChromeEarlGreyUI focusOmnibox];
-
-  // Attempt to paste.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"V"
-                                          flags:UIKeyModifierCommand];
-
-  // Verify that paste happened.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage1URL)];
-
-  // Attempt to undo.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"Z"
-                                          flags:UIKeyModifierCommand];
-
-  // Verify that undo happened.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage2URL)];
-
-  // Attempt to undo again. Nothing should happen. In the past this could lead
-  // to a crash.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"Z"
-                                          flags:UIKeyModifierCommand];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage2URL)];
-}
-
-// Focus the omnibox and hit "cmd+X". This should remove all text from the
-// omnibox and put it in the clipboard. This had been broken before because of
-// the preedit state complexity. Paste to verify that the URL was indeed copied.
-// TODO(crbug.com/1049603): Re-enable this test.
-- (void)DISABLED_testCutInPreedit {
-  [self openPage1];
-
-  [ChromeEarlGreyUI focusOmnibox];
-  [self checkLocationBarEditState];
-
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"X"
-                                          flags:UIKeyModifierCommand];
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
-
-  // Verify that the omnibox is empty.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText("")];
-
-  // Attempt to paste.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"V"
-                                          flags:UIKeyModifierCommand];
-
-  // Verify that paste happened.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage1URL)];
-}
-
 - (void)testOmniboxDefocusesOnTabSwitch {
   [self openPage1];
   [ChromeEarlGrey openNewTab];
@@ -1202,7 +1113,8 @@ void FocusFakebox() {
 @end
 
 @implementation OmniboxHardwareKeyboardInteractionTestCase {
-  GURL _URL;
+  GURL _URL1;
+  GURL _URL2;
 }
 
 - (void)setUp {
@@ -1215,7 +1127,8 @@ void FocusFakebox() {
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
-  _URL = self.testServer->GetURL(kPage1URL);
+  _URL1 = self.testServer->GetURL(kPage1URL);
+  _URL2 = self.testServer->GetURL(kPage2URL);
 
   // Clear the pasteboard in case there is a URL copied.
   [ChromeEarlGrey clearPasteboard];
@@ -1233,13 +1146,13 @@ void FocusFakebox() {
 // Tests that in SRP/webpage state, pressing on forward delete HW key would
 // erase the selected url.
 - (void)testHardwareBackspaceKey {
-  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   [ChromeEarlGreyUI focusOmnibox];
   // Omnibox contains the page url.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent())];
 
   // Press the backspace HW keyboard key.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\b" flags:0];
@@ -1253,13 +1166,13 @@ void FocusFakebox() {
 // would exit pre-edit state and put the cursor to the end (right arrow) or to
 // the begining (left arrow)
 - (void)testHardwareLeftRightArrowKey {
-  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   [ChromeEarlGreyUI focusOmnibox];
   // Omnibox contains the page url.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent())];
 
   // Simulate press the HW right arrow key.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"rightArrow" flags:0];
@@ -1269,7 +1182,8 @@ void FocusFakebox() {
 
   // Omnibox now should contain the page url suffixed with 'hello'
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent() +
+
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent() +
                                                       "hello")];
 
   [self defocusOmnibox];
@@ -1277,8 +1191,7 @@ void FocusFakebox() {
   [ChromeEarlGreyUI focusOmnibox];
   // Omnibox contains the page url.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
-
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent())];
   // Simulate press the HW right arrow key.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"leftArrow" flags:0];
 
@@ -1288,7 +1201,78 @@ void FocusFakebox() {
   // Omnibox now should contain the page url prefixed with 'hello'
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("hello" +
-                                                      _URL.GetContent())];
+                                                      _URL1.GetContent())];
+}
+
+// Copies and pastes a URL, then performs an undo of the paste, and attempts to
+// perform a second undo.
+- (void)testCopyPasteUndo {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  [ChromeEarlGreyUI focusOmnibox];
+
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"C"
+                                          flags:UIKeyModifierCommand];
+
+  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+
+  // Defocus the omnibox.
+  [self defocusOmnibox];
+
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage2];
+
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Attempt to paste.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"V"
+                                          flags:UIKeyModifierCommand];
+
+  // Verify that paste happened.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage1URL)];
+
+  // Attempt to undo.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"Z"
+                                          flags:UIKeyModifierCommand];
+
+  // Verify that undo happened.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage2URL)];
+
+  // Attempt to undo again. Nothing should happen. In the past this could lead
+  // to a crash.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"Z"
+                                          flags:UIKeyModifierCommand];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage2URL)];
+}
+
+// Focus the omnibox and hit "cmd+X". This should remove all text from the
+// omnibox and put it in the clipboard. This had been broken before because of
+// the preedit state complexity. Paste to verify that the URL was indeed copied.
+- (void)testCutInPreedit {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  [ChromeEarlGreyUI focusOmnibox];
+
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"X"
+                                          flags:UIKeyModifierCommand];
+  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+
+  // Verify that the omnibox is empty.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText("")];
+
+  // Attempt to paste.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"V"
+                                          flags:UIKeyModifierCommand];
+
+  // Verify that paste happened.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage1URL)];
 }
 
 #pragma mark - Helpers
