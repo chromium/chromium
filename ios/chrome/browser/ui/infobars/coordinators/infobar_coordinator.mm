@@ -9,8 +9,10 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/timer/timer.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_accessibility_util.h"
@@ -230,12 +232,10 @@
 #pragma mark InfobarBannerPositioner
 
 - (CGFloat)bannerYPosition {
-  NamedGuide* omniboxGuide =
-      [NamedGuide guideWithName:kOmniboxGuide
-                           view:self.baseViewController.view];
-  UIView* omniboxView = omniboxGuide.owningView;
-  CGRect omniboxFrame = [omniboxView convertRect:omniboxGuide.layoutFrame
-                                          toView:omniboxView.window];
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  UIView* omnibox = [layoutGuideCenter referencedViewUnderName:kOmniboxGuide];
+  CGRect omniboxFrame = [omnibox convertRect:omnibox.bounds toView:nil];
   return CGRectGetMaxY(omniboxFrame);
 }
 

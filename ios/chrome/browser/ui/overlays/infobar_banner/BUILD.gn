@@ -18,6 +18,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars/banners",

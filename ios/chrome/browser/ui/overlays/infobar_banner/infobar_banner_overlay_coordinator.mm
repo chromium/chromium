@@ -13,7 +13,9 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_accessibility_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
@@ -76,12 +78,10 @@
 #pragma mark - InfobarBannerPositioner
 
 - (CGFloat)bannerYPosition {
-  NamedGuide* omniboxGuide =
-      [NamedGuide guideWithName:kOmniboxGuide
-                           view:self.baseViewController.view];
-  UIView* owningView = omniboxGuide.owningView;
-  CGRect omniboxFrame = [owningView convertRect:omniboxGuide.layoutFrame
-                                         toView:owningView.window];
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  UIView* omnibox = [layoutGuideCenter referencedViewUnderName:kOmniboxGuide];
+  CGRect omniboxFrame = [omnibox convertRect:omnibox.bounds toView:nil];
   return CGRectGetMaxY(omniboxFrame);
 }
 
