@@ -16,6 +16,7 @@
 #include "components/viz/host/gpu_client_delegate.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "components/viz/host/viz_host_export.h"
+#include "gpu/ipc/common/client_gmb_interface.mojom.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -70,9 +71,16 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
   void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
                            base::UnsafeSharedMemoryRegion shared_memory,
                            CopyGpuMemoryBufferCallback callback) override;
+
   // mojom::Gpu overrides:
   void CreateGpuMemoryBufferFactory(
       mojo::PendingReceiver<mojom::GpuMemoryBufferFactory> receiver) override;
+
+  // mojom::ClientGmbInterface is direct interface between renderer and GPU
+  // process to create GpuMemoryBuffers.
+  void CreateClientGpuMemoryBufferFactory(
+      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) override;
+
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

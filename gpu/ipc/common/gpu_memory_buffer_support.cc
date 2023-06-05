@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
@@ -219,6 +220,13 @@ bool GpuMemoryBufferSupport::IsConfigurationSupportedForTest(
 
   NOTREACHED();
   return false;
+}
+
+// static
+bool GpuMemoryBufferSupport::IsSizeValid(const gfx::Size& size) {
+  base::CheckedNumeric<int> bytes = size.width();
+  bytes *= size.height();
+  return bytes.IsValid();
 }
 
 std::unique_ptr<GpuMemoryBufferImpl>

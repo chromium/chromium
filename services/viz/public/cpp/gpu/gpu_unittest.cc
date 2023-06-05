@@ -50,6 +50,10 @@ class TestGpuImpl : public mojom::Gpu {
   void CreateGpuMemoryBufferFactory(
       mojo::PendingReceiver<mojom::GpuMemoryBufferFactory> receiver) override {}
 
+  void CreateClientGpuMemoryBufferFactory(
+      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) override {
+  }
+
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override {
     if (close_binding_on_request_) {
       // Don't run |callback| and trigger a connection error on the other end.

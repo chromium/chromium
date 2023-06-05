@@ -210,6 +210,7 @@ mojom("gpu_channel_mojom") {
   sources = [ "gpu_channel.mojom" ]
 
   public_deps = [
+    ":surface_handle",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:resource_format",
     "//services/viz/public/mojom:shared_image_format",
@@ -291,6 +292,39 @@ mojom("gpu_channel_mojom") {
   cpp_configs = [ "//gpu:gpu_implementation" ]
 }
 
+mojom("gmb_interface") {
+  generate_java = true
+  visibility = [
+    "//gpu/*",
+    "//services/*",
+  ]
+  sources = [ "client_gmb_interface.mojom" ]
+  deps = [
+    ":surface_handle",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+  ]
+}
+
+mojom("surface_handle") {
+  generate_java = true
+  sources = [ "surface_handle.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SurfaceHandle"
+          cpp = "::gpu::SurfaceHandle"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "surface_handle_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx:native_widget_types" ]
+    },
+  ]
+}
+
 mojom("interfaces") {
   generate_java = true
   sources = [
@@ -305,7 +339,6 @@ mojom("interfaces") {
     "mailbox.mojom",
     "mailbox_holder.mojom",
     "memory_stats.mojom",
-    "surface_handle.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -316,6 +349,7 @@ mojom("interfaces") {
 
   public_deps = [
     ":gpu_preferences_interface",
+    ":surface_handle",
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
@@ -495,17 +529,6 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "memory_stats_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.SurfaceHandle"
-          cpp = "::gpu::SurfaceHandle"
-          copyable_pass_by_value = true
-        },
-      ]
-      traits_headers = [ "surface_handle_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/gfx:native_widget_types" ]
     },
     {
       types = [

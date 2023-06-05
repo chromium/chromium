@@ -25,6 +25,7 @@ import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/gpu_peak_memory.mojom";
 import "gpu/ipc/common/memory_stats.mojom";
+import "gpu/ipc/common/client_gmb_interface.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
@@ -121,6 +122,10 @@ interface GpuService {
   // already been taken. Also see media/mojo/mojom/dcomp_surface_registry.mojom.
   [EnableIf=is_win]
   UnregisterDCOMPSurfaceHandle(mojo_base.mojom.UnguessableToken token);
+
+  // Binds the pending receiver.
+  BindClientGmbInterface(
+  pending_receiver<gpu.mojom.ClientGmbInterface> receiver, int32 client_id);
 
   // Creates a VideoEncodeAcceleratorProvider and binds it to |vea_provider|.
   CreateVideoEncodeAcceleratorProvider(

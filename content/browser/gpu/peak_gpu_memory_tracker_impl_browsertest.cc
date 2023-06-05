@@ -99,6 +99,11 @@ class TestGpuService : public viz::mojom::GpuService {
   void UnregisterDCOMPSurfaceHandle(
       const base::UnguessableToken& token) override {}
 #endif
+
+  void BindClientGmbInterface(
+      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver,
+      int client_id) override {}
+
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           receiver) override {}

@@ -48,6 +48,9 @@ mojom("mojom") {
     "hit_test/hit_test_region_list.mojom",
     "hit_test/input_target_client.mojom",
   ]
+
+  deps = [ "//gpu/ipc/common:gmb_interface" ]
+
   public_deps = [
     ":resource_format",
     ":shared_image_format",

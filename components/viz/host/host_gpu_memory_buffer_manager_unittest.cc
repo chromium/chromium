@@ -184,6 +184,10 @@ class TestGpuService : public mojom::GpuService {
     std::move(callback).Run(false);
   }
 
+  void BindClientGmbInterface(
+      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver,
+      int client_id) override {}
+
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override {}
 
