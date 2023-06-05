@@ -773,14 +773,24 @@ suite('PrintManagementTest', () => {
     await mojoApi_.whenCalled('getPrintJobs');
     flush();
 
-    // Assert that printer setup UI is not hidden when flag enabled.
+    // Assert that printer setup UI is not hidden and ongoing empty state
+    // message is hidden when flag enabled and there are no printer jobs.
+    assertTrue(
+        querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
+        boolean);
     assertFalse(
         querySelector<PrinterSetupInfoElement>(
             page!, PrinterSetupInfoElement.is)
             ?.hidden as boolean);
   });
 
-  test('CancelOngoingPrintJob', async () => {
+  // Verify expected elements render when there are no ongoing jobs, at least
+  // one historical job, and the printer setup flag is off.
+  test('CancelOngoingPrintJob_SetupAssistanceFlagOff', async () => {
+    // Ensure printer setup assistance flag is disabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: false,
+    });
     const kId = 'fileA';
     const kTitle = 'titleA';
     const kTime =
@@ -808,10 +818,54 @@ suite('PrintManagementTest', () => {
         /*shouldAttemptCancel*/ true, expectedHistoryList);
     flush();
 
-    // Verify that there are no ongoing print jobs and history list is
-    // populated.
+    // Verify that there are no ongoing print jobs, history list is
+    // populated, and printer setup UI is hidden.
     assertTrue(!querySelector(page!, '#ongoingList'));
     verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
+    assertFalse(isVisible(querySelector<PrinterSetupInfoElement>(
+        page!, PrinterSetupInfoElement.is)));
+  });
+
+  // Verify expected elements render when there are no ongoing jobs, at least
+  // one historical job, and the printer setup flag is on.
+  test('CancelOngoingPrintJob_SetupAssistanceFlagOn', async () => {
+    // Ensure printer setup assistance flag is enabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+    const expectedArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    const expectedHistoryList = [createJobEntry(
+        kId, kTitle, kTime, PrinterErrorCode.kNoError,
+        createCompletedPrintJobInfo(PrintJobCompletionStatus.kCanceled))];
+
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    const jobEntries = getOngoingPrintJobEntries(page!);
+    verifyPrintJobs(expectedArr, jobEntries);
+
+    await simulateCancelPrintJob(
+        jobEntries[0]!, mojoApi_,
+        /*shouldAttemptCancel*/ true, expectedHistoryList);
+    flush();
+
+    // Verify that there are no ongoing print jobs, history list is
+    // populated, and printer setup UI is hidden.
+    assertTrue(!querySelector(page!, '#ongoingList'));
+    verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
+    assertFalse(isVisible(querySelector<PrinterSetupInfoElement>(
+        page!, PrinterSetupInfoElement.is)));
   });
 
   test('CancelOngoingPrintJobNotAttempted', async () => {

@@ -167,11 +167,14 @@
       </iron-list>
     </template>
 
-    <div id="ongoingEmptyState" hidden="[[ongoingPrintJobs.length]]">
+    <div id="ongoingEmptyState" hidden="[[!shouldShowOngoingEmptyState(
+          ongoingPrintJobs.length, printJobs.length)]]">
       [[i18n('noPrintJobInProgress')]]
     </div>
 
-    <printer-setup-info hidden$="[[!showSetupAssistance]]"></printer-setup-info>
+    <printer-setup-info hidden="[[!shouldShowSetupAssistance(
+        ongoingPrintJobs.length, printJobs.length)]]">
+    </printer-setup-info>
 
     <template is="dom-if" if="[[printJobs.length]]" restamp>
       <div id="historyHeaderContainer" class="column-headers flex-center">

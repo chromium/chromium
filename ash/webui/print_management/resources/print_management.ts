@@ -348,6 +348,18 @@ export class PrintManagementElement extends PrintManagementElementBase
     this.$.deleteIcon.classList.toggle(
         'delete-disabled', this.shouldDisableClearAllButton);
   }
+
+  /** Determine if printer setup UI should be shown. */
+  private shouldShowSetupAssistance(): boolean {
+    return this.showSetupAssistance && this.ongoingPrintJobs.length === 0 &&
+        this.printJobs.length === 0;
+  }
+
+  /** Determine if ongoing jobs empty messaging should be shown. */
+  private shouldShowOngoingEmptyState(): boolean {
+    return !this.shouldShowSetupAssistance() &&
+        this.ongoingPrintJobs.length === 0;
+  }
 }
 
 customElements.define(PrintManagementElement.is, PrintManagementElement);
