@@ -252,19 +252,23 @@ void ImageAnnotationWorker::ProcessImage(
     DVLOG(1) << "CompareModifiedTime: "
              << stored_annotations_with_this_path.size() << " same? "
              << (file_info->last_modified ==
-                 stored_annotations_with_this_path[0].last_modified);
+                 stored_annotations_with_this_path[0].last_modified)
+             << " is_ignored: "
+             << stored_annotations_with_this_path[0].is_ignored;
     // Annotations are updated on a file change and have the file's last
     // modified time. So skip inserting the image annotations if the file
     // has not changed since the last update.
-    if (file_info->last_modified ==
-        stored_annotations_with_this_path[0].last_modified) {
+    if (stored_annotations_with_this_path[0].is_ignored ||
+        file_info->last_modified ==
+            stored_annotations_with_this_path[0].last_modified) {
       return;
     }
   }
 
   DVLOG(1) << "Processing new " << image_path << " "
            << file_info->last_modified;
-  ImageInfo image_info({}, image_path, file_info->last_modified);
+  ImageInfo image_info({}, image_path, file_info->last_modified,
+                       /*is_ignored=*/0);
 
   auto callback =
       use_ica_ || use_ocr_

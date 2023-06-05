@@ -35,7 +35,7 @@ class ImageAnnotationWorkerTest : public testing::Test {
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
     storage_ = std::make_unique<AnnotationStorage>(
         std::move(test_db), /*histogram_tag=*/"test",
-        /*current_version_number=*/2, /*annotation_worker=*/nullptr);
+        /*annotation_worker=*/nullptr);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -68,10 +68,10 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   task_environment_.FastForwardBy(base::Seconds(1));
   task_environment_.RunUntilIdle();
 
-  ImageInfo jpg_image({"bar"}, jpg_path, image_time);
-  ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time);
-  ImageInfo png_image({"bar2"}, png_path, image_time);
-  ImageInfo JPG_image({"bar5"}, JPG_path, image_time);
+  ImageInfo jpg_image({"bar"}, jpg_path, image_time, /*is_ignored=*/false);
+  ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time, /*is_ignored=*/false);
+  ImageInfo png_image({"bar2"}, png_path, image_time, /*is_ignored=*/false);
+  ImageInfo JPG_image({"bar5"}, JPG_path, image_time, /*is_ignored=*/false);
 
   auto annotations = storage_->GetAllAnnotations();
   EXPECT_THAT(annotations, testing::UnorderedElementsAreArray(
@@ -93,7 +93,8 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
                                                   /*error=*/false);
   task_environment_.RunUntilIdle();
 
-  ImageInfo bar_image({"bar"}, bar_image_path_, bar_image_time);
+  ImageInfo bar_image({"bar"}, bar_image_path_, bar_image_time,
+                      /*is_ignored=*/false);
 
   EXPECT_THAT(storage_->GetAllAnnotations(),
               testing::ElementsAreArray({bar_image}));
@@ -121,7 +122,8 @@ TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
                                                   /*error=*/false);
   task_environment_.RunUntilIdle();
 
-  ImageInfo bar_image_updated({"bar"}, bar_image_path_, bar_image_time_updated);
+  ImageInfo bar_image_updated({"bar"}, bar_image_path_, bar_image_time_updated,
+                              /*is_ignored=*/false);
   EXPECT_THAT(storage_->GetAllAnnotations(),
               testing::ElementsAreArray({bar_image_updated}));
 

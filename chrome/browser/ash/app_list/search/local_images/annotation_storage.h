@@ -31,10 +31,13 @@ struct ImageInfo {
   base::FilePath path;
   // The image's last modified time.
   base::Time last_modified;
+  // Remove the image from further search.
+  bool is_ignored;
 
   ImageInfo(const std::set<std::string>& annotations,
             const base::FilePath& path,
-            const base::Time& last_modified);
+            const base::Time& last_modified,
+            bool is_ignored);
 
   ~ImageInfo();
   ImageInfo(const ImageInfo&);
@@ -61,15 +64,8 @@ struct FileSearchResult {
 // not null, it updates the database on file changes.
 class AnnotationStorage {
  public:
-  enum class TableColumnName {
-    kLabel,
-    kImagePath,
-    kLastModifiedTime,
-  };
-
   AnnotationStorage(const base::FilePath& path_to_db,
                     const std::string& histogram_tag,
-                    int current_version_number,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
   AnnotationStorage(const AnnotationStorage&) = delete;
   AnnotationStorage& operator=(const AnnotationStorage&) = delete;
@@ -97,6 +93,11 @@ class AnnotationStorage {
       const std::u16string& query);
 
  private:
+  AnnotationStorage(const base::FilePath& path_to_db,
+                    const std::string& histogram_tag,
+                    int current_version_number,
+                    std::unique_ptr<ImageAnnotationWorker> annotation_worker);
+
   std::unique_ptr<ImageAnnotationWorker> annotation_worker_;
   std::unique_ptr<SqlDatabase> sql_database_;
 

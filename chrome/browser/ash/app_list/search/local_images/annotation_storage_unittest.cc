@@ -11,11 +11,24 @@
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
 #include "chrome/browser/ash/app_list/search/local_images/local_image_search_test_util.h"
+#include "chrome/browser/ash/app_list/search/local_images/sql_database.h"
+#include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
 namespace {
+
+int CreateOldTestSchema(SqlDatabase* db) {
+  static constexpr char kQuery[] =
+      // clang-format off
+            "CREATE TABLE test("
+              "key TEXT NOT NULL)";
+  // clang-format on
+  db->GetStatementForQuery(SQL_FROM_HERE, kQuery).Run();
+  return 2;
+}
 
 class AnnotationStorageTest : public testing::Test {
  protected:
@@ -28,7 +41,7 @@ class AnnotationStorageTest : public testing::Test {
     base::FilePath test_db = test_directory_.AppendASCII("test.db");
     storage_ = std::make_unique<AnnotationStorage>(
         std::move(test_db), /*histogram_tag=*/"test",
-        /*current_version_number=*/2, /*annotation_worker=*/nullptr);
+        /*annotation_worker=*/nullptr);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -51,7 +64,7 @@ TEST_F(AnnotationStorageTest, InsertOrReplace) {
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
 
   storage_->Insert(bar_image);
 
@@ -60,7 +73,7 @@ TEST_F(AnnotationStorageTest, InsertOrReplace) {
   task_environment_.RunUntilIdle();
 
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
 
   storage_->Insert(foo_image);
 
@@ -74,9 +87,9 @@ TEST_F(AnnotationStorageTest, Remove) {
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
   storage_->Insert(bar_image);
   storage_->Insert(foo_image);
 
@@ -104,9 +117,9 @@ TEST_F(AnnotationStorageTest, FindImagePath) {
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
   storage_->Insert(bar_image);
   storage_->Insert(foo_image);
 
@@ -126,11 +139,14 @@ TEST_F(AnnotationStorageTest, LinearSearchAnnotations) {
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image({"test", "bar"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                      base::Time::Now(), /*is_ignored=*/false);
+  ImageInfo ignore_image({"test2"}, test_directory_.AppendASCII("remove.png"),
+                         base::Time::Now(), /*is_ignored=*/true);
   storage_->Insert(bar_image);
   storage_->Insert(foo_image);
+  storage_->Insert(ignore_image);
 
   auto images =
       storage_->LinearSearchAnnotations(base::UTF8ToUTF16(std::string("test")));
@@ -143,6 +159,35 @@ TEST_F(AnnotationStorageTest, LinearSearchAnnotations) {
           testing::Pair(foo_image.path,
                         FileSearchResult(foo_image.last_modified, 0.909375))));
 
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AnnotationStorageTest, SchemaMigration) {
+  storage_.reset();
+
+  auto sql_database = std::make_unique<SqlDatabase>(
+      test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
+      /*current_version_number=*/2, base::BindRepeating(CreateOldTestSchema),
+      base::BindRepeating([](SqlDatabase* db, int current_version_number) {
+        return current_version_number;
+      }));
+
+  sql_database->Initialize();
+  task_environment_.RunUntilIdle();
+  sql_database->Close();
+
+  storage_ = std::make_unique<AnnotationStorage>(
+      test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
+      /*annotation_worker=*/nullptr);
+  storage_->Initialize();
+  task_environment_.RunUntilIdle();
+
+  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
+                      base::Time::Now(), /*is_ignored=*/false);
+
+  storage_->Insert(bar_image);
+  EXPECT_THAT(storage_->GetAllAnnotations(),
+              testing::ElementsAreArray({bar_image}));
   task_environment_.RunUntilIdle();
 }
 

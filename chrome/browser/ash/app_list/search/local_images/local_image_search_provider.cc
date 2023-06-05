@@ -38,8 +38,7 @@ LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
           ConstructPathToAnnotationDb(profile_),
-          /* histogram_tag = */ kHistogramTag,
-          /* current_version_number= */ 2,
+          kHistogramTag,
           std::make_unique<ImageAnnotationWorker>(
               root_path_,
               search_features::IsLauncherImageSearchOcrEnabled(),
