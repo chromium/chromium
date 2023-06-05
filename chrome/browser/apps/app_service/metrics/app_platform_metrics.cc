@@ -285,6 +285,7 @@ constexpr char kWebAppTabHistogramName[] = "WebAppTab";
 constexpr char kWebAppWindowHistogramName[] = "WebAppWindow";
 
 constexpr char kUsageTimeAppIdKey[] = "app_id";
+constexpr char kUsageTimeAppPublisherIdKey[] = "app_publisher_id";
 constexpr char kUsageTimeAppTypeKey[] = "app_type";
 constexpr char kUsageTimeDurationKey[] = "time";
 constexpr char kReportingUsageTimeDurationKey[] = "reporting_usage_time";
@@ -378,6 +379,10 @@ void RecordAppLaunchMetrics(Profile* profile,
   }
 }
 
+AppPlatformMetrics::UsageTime::UsageTime() = default;
+
+AppPlatformMetrics::UsageTime::~UsageTime() = default;
+
 AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
   const base::Value::Dict* data_dict = value.GetIfDict();
   if (!data_dict) {
@@ -388,6 +393,12 @@ AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
       data_dict->FindString(kUsageTimeAppIdKey);
   if (!app_id_value) {
     return;
+  }
+
+  const std::string* const app_publisher_id_value =
+      data_dict->FindString(kUsageTimeAppPublisherIdKey);
+  if (app_publisher_id_value) {
+    app_publisher_id = *app_publisher_id_value;
   }
 
   const std::string* const app_type_value =
@@ -424,6 +435,7 @@ AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
 base::Value::Dict AppPlatformMetrics::UsageTime::ConvertToDict() const {
   base::Value::Dict usage_time_dict;
   usage_time_dict.Set(kUsageTimeAppIdKey, app_id);
+  usage_time_dict.Set(kUsageTimeAppPublisherIdKey, app_publisher_id);
   usage_time_dict.Set(kUsageTimeAppTypeKey,
                       GetAppTypeHistogramName(app_type_name));
   usage_time_dict.Set(kUsageTimeDurationKey,
@@ -1243,7 +1255,7 @@ void AppPlatformMetrics::SaveUsageTime() {
   }
 
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(), kAppUsageTime);
-  for (auto it : usage_time_per_two_hours_) {
+  for (const auto& it : usage_time_per_two_hours_) {
     const std::string& instance_id = it.first.ToString();
     auto* const usage_info = usage_dict_pref->FindDictByDottedPath(instance_id);
     if (!usage_info) {
