@@ -41,11 +41,18 @@ public class AndroidStylusWritingHandler
     private final InputMethodManager mInputMethodManager;
     private View mTargetView;
 
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static boolean isEnabled(Context context) {
         if (!BuildInfo.isAtLeastT()) return false;
 
-        int value = Settings.Global.getInt(
-                context.getContentResolver(), "stylus_handwriting_enabled", -1);
+        int value = -1;
+        if (BuildCompat.isAtLeastU()) {
+            value = Settings.Secure.getInt(
+                    context.getContentResolver(), "stylus_handwriting_enabled", -1);
+        } else {
+            value = Settings.Global.getInt(
+                    context.getContentResolver(), "stylus_handwriting_enabled", -1);
+        }
 
         if (value != 1) {
             Log.d(TAG, "Stylus feature disabled.", value);
