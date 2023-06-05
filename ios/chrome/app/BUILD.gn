@@ -766,7 +766,8 @@ if (current_toolchain == default_toolchain) {
 
   if (ios_enable_credential_provider_extension) {
     extension_bundle_data("credential_provider_extension_bundle") {
-      extension_target = "//ios/chrome/credential_provider_extension"
+      extension_name = "credential_provider_extension"
+      extension_target = "//ios/chrome/credential_provider_extension/app"
     }
   }
 
