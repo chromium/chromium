@@ -2583,6 +2583,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimFeature.WebPageInfoSource"
     enum="PowerMLSmartDimWebPageInfoSource" expires_after="2022-11-01">
+  <expired_intentionally>
+    Kept because it's used in tast power.SmartDim.
+  </expired_intentionally>
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
