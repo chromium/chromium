@@ -5,6 +5,7 @@
 #import <AVFoundation/AVFoundation.h>
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -193,8 +194,8 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
                 gfx::Rect([content_layer bounds]));
       EXPECT_EQ(kCALayerLeftEdge, [content_layer edgeAntialiasingMask]);
       EXPECT_EQ(properties.opacity, [content_layer opacity]);
-      EXPECT_NSEQ(kCAFilterLinear, [content_layer minificationFilter]);
-      EXPECT_NSEQ(kCAFilterLinear, [content_layer magnificationFilter]);
+      EXPECT_NSEQ(kCAFilterNearest, [content_layer minificationFilter]);
+      EXPECT_NSEQ(kCAFilterNearest, [content_layer magnificationFilter]);
       EXPECT_EQ(properties.scale_factor, [content_layer contentsScale]);
     }
 
@@ -758,6 +759,9 @@ TEST_F(CALayerTreeTest, SortingContextMustHaveConsistentClip) {
 
 // Test updating each layer's properties.
 TEST_F(CALayerTreeTest, AVLayer) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({ui::kFullscreenLowPowerBackdropMac}, {});
+
   CALayerProperties properties;
   properties.io_surface =
       CreateScopedIOSurface(gfx::Size(256, 256), gfx::BufferFormat::BGRA_8888);
@@ -862,6 +866,9 @@ TEST_F(CALayerTreeTest, AVLayer) {
 
 // Ensure that blocklisting AVSampleBufferDisplayLayer works.
 TEST_F(CALayerTreeTest, AVLayerBlocklist) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({ui::kFullscreenLowPowerBackdropMac}, {});
+
   CALayerProperties properties;
   properties.io_surface = CreateScopedIOSurface(
       gfx::Size(256, 256), gfx::BufferFormat::YUV_420_BIPLANAR);
@@ -919,6 +926,9 @@ TEST_F(CALayerTreeTest, AVLayerBlocklist) {
 
 // Test fullscreen low power detection.
 TEST_F(CALayerTreeTest, FullscreenLowPower) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({ui::kFullscreenLowPowerBackdropMac}, {});
+
   CALayerProperties properties;
   properties.io_surface = CreateScopedIOSurface(
       gfx::Size(256, 256), gfx::BufferFormat::YUV_420_BIPLANAR);

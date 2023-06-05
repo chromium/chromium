@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +32,10 @@
 @class AVSampleBufferDisplayLayer;
 
 namespace ui {
+
+ACCELERATED_WIDGET_MAC_EXPORT BASE_DECLARE_FEATURE(
+    kFullscreenLowPowerBackdropMac);
+ACCELERATED_WIDGET_MAC_EXPORT BASE_DECLARE_FEATURE(kCALayerTreeOptimization);
 
 struct CARendererLayerParams;
 

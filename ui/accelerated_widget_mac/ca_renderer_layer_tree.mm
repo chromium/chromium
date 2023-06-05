@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,6 +28,17 @@
 
 namespace ui {
 
+// Transitioning between AVSampleBufferDisplayLayer and CALayer with IOSurface
+// contents can cause flickering.
+// https://crbug.com/1441762
+BASE_FEATURE(kFullscreenLowPowerBackdropMac,
+             "FullscreenLowPowerBackdropMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCALayerTreeOptimization,
+             "CALayerTreeOptimization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 class ComparatorSkColor4f {
@@ -37,10 +47,6 @@ class ComparatorSkColor4f {
     return std::tie(a.fR, a.fG, a.fB, a.fA) < std::tie(b.fR, b.fG, b.fB, b.fA);
   }
 };
-
-BASE_FEATURE(kCALayerTreeOptimization,
-             "CALayerTreeOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void RecordIOSurfaceHistograms(
     int changed_io_surfaces_during_commit,
@@ -606,6 +612,10 @@ void CARendererLayerTree::TransformLayer::CALayerFallBack() {
 }
 
 bool CARendererLayerTree::RootLayer::WantsFullscreenLowPowerBackdrop() const {
+  if (!base::FeatureList::IsEnabled(kFullscreenLowPowerBackdropMac)) {
+    return false;
+  }
+
   bool found_video_layer = false;
   for (auto& clip_layer : clip_and_sorting_layers_) {
     for (auto& transform_layer : clip_layer.transform_layers_) {
