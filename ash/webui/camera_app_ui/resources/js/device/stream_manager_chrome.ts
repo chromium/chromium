@@ -34,8 +34,8 @@ export class StreamManagerChrome {
         toMediaStreamConstraints(constraints));
   }
 
-  getCaptureStream(): MediaStream {
-    return assertExists(this.captureStream);
+  getCaptureStream(): MediaStream|null {
+    return this.captureStream;
   }
 
   stopCaptureStream(): void {

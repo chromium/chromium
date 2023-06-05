@@ -302,16 +302,13 @@ export class Video extends ModeBase {
 
   override async clear(): Promise<void> {
     await this.stopCapture();
-    if (this.captureStream !== null) {
-      if (expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING)) {
-        await StreamManager.getInstance().closeCaptureStream(
-            this.captureStream);
-      } else if (expert.isEnabled(
-                     expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
-        StreamManagerChrome.getInstance().stopCaptureStream();
-      }
-      this.captureStream = null;
+
+    if (StreamManagerChrome.getInstance().getCaptureStream() !== null) {
+      StreamManagerChrome.getInstance().stopCaptureStream();
+    } else if (this.captureStream !== null) {
+      await StreamManager.getInstance().closeCaptureStream(this.captureStream);
     }
+    this.captureStream = null;
   }
 
   /**
@@ -588,7 +585,7 @@ export class Video extends ModeBase {
       if (expert.isEnabled(
               expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
         this.captureStream =
-            StreamManagerChrome.getInstance().getCaptureStream();
+            assertExists(StreamManagerChrome.getInstance().getCaptureStream());
       } else if (this.captureConstraints !== null) {
         this.captureStream =
             await StreamManager.getInstance().openCaptureStream(
