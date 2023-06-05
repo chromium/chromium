@@ -174,7 +174,6 @@ suite('<main-page-container>', function() {
         loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
         document.body.classList.add('revamp-wayfinding-enabled');
 
-        Router.getInstance().navigateTo(routes.BASIC);
         mainPageContainer = init();
       });
 
@@ -246,6 +245,22 @@ suite('<main-page-container>', function() {
 
             assertOnlyActivePageIsVisible('bluetooth');
           });
+
+          test(
+              'to Root by clearing search should show Network page',
+              async () => {
+                Router.getInstance().navigateTo(
+                    routes.BASIC, new URLSearchParams('search=bluetooth'));
+
+                const navigationCompletePromise =
+                    eventToPromise('show-container', window);
+                Router.getInstance().navigateTo(
+                    routes.BASIC, /*dynamicParameters=*/ undefined,
+                    /*removeSearch=*/ true);
+                await navigationCompletePromise;
+
+                assertOnlyActivePageIsVisible('internet');
+              });
         });
 
         suite('From Page', () => {

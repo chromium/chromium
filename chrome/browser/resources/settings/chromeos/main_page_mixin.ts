@@ -231,6 +231,20 @@ export const MainPageMixin = dedupingMixin(
         }
 
         /**
+         * Activate and display the first page (Network page). This page
+         * should be the default visible page when the root page is visited.
+         */
+        private activateFirstPage(): void {
+          // The About page does not have the Network page so we should not
+          // attempt to activate it.
+          // TODO(b/282961146) Investigate removing MainPageMixin from
+          // the About page so this check can be removed.
+          if (isRevampWayfindingEnabled() && this.isMainPageContainer) {
+            this.activatePage(FIRST_PAGE_ROUTE);
+          }
+        }
+
+        /**
          * Detects which state transition is appropriate for the given new/old
          * routes.
          */
@@ -288,13 +302,7 @@ export const MainPageMixin = dedupingMixin(
                 return;
 
               case RouteState.ROOT:
-                // Do not activate the Network page if the host element is
-                // the About page since it does not contain that page.
-                // TODO(b/282961146) Investigate removing MainPageMixin from
-                // the About page so this check can be removed.
-                if (isRevampWayfindingEnabled() && this.isMainPageContainer) {
-                  this.activatePage(FIRST_PAGE_ROUTE);
-                }
+                this.activateFirstPage();
                 return;
 
               // Nothing to do here for the DIALOG case.
@@ -318,7 +326,7 @@ export const MainPageMixin = dedupingMixin(
               // Happens when clearing search results (Navigating from
               // '/?search=foo' to '/')
               case RouteState.ROOT:
-                // TODO(b/282961146) Activate first top-level page (Network)
+                this.activateFirstPage();
                 return;
 
               // Nothing to do here for the DIALOG case.
