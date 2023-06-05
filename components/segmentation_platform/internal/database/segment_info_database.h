@@ -97,15 +97,18 @@ class SegmentInfoDatabase {
       SuccessCallback callback);
 
   // Called to write the model execution results for a given segment. It will
-  // first read the currently stored result, and then overwrite it with
-  // |result|. If |result| is null, the existing result will be deleted.
+  // first read the currently stored result for given model source, and then
+  // overwrite it with |result|. If |result| is null, the existing result will
+  // be deleted.
   virtual void SaveSegmentResult(SegmentId segment_id,
+                                 ModelSource model_source,
                                  absl::optional<proto::PredictionResult> result,
                                  SuccessCallback callback);
 
-  // Called to write partial training data for a given segment. New training
-  // data are appended to the existing ones.
+  // Called to write partial training data for a given segment and model source.
+  // New training data are appended to the existing ones.
   virtual void SaveTrainingData(SegmentId segment_id,
+                                ModelSource model_source,
                                 const proto::TrainingData& data,
                                 SuccessCallback callback);
 

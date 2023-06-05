@@ -74,6 +74,7 @@ void TestSegmentInfoDatabase::UpdateSegment(
 
 void TestSegmentInfoDatabase::SaveSegmentResult(
     SegmentId segment_id,
+    ModelSource model_source,
     absl::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
@@ -86,6 +87,7 @@ void TestSegmentInfoDatabase::SaveSegmentResult(
 }
 
 void TestSegmentInfoDatabase::SaveTrainingData(SegmentId segment_id,
+                                               ModelSource model_source,
                                                const proto::TrainingData& data,
                                                SuccessCallback callback) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
@@ -222,6 +224,7 @@ void TestSegmentInfoDatabase::SetBucketDuration(SegmentId segment_id,
   info->mutable_model_metadata()->set_time_unit(time_unit);
 }
 
+// TODO(ritikagup@) : Add ModelSource as param to this function.
 proto::SegmentInfo* TestSegmentInfoDatabase::FindOrCreateSegment(
     SegmentId segment_id) {
   proto::SegmentInfo* info = nullptr;

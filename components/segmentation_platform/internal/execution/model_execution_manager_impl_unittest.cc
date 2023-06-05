@@ -71,6 +71,7 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
   MOCK_METHOD(void,
               SaveSegmentResult,
               (SegmentId segment_id,
+               ModelSource model_source,
                absl::optional<proto::PredictionResult> result,
                SuccessCallback callback),
               (override));

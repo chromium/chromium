@@ -99,7 +99,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
     if (result.has_value())
       prediction_result.add_result(result.value());
 
-    segment_db_->SaveSegmentResult(segment_id,
+    segment_db_->SaveSegmentResult(segment_id, model_source,
                                    result.has_value()
                                        ? absl::make_optional(prediction_result)
                                        : absl::nullopt,
@@ -118,7 +118,8 @@ class SegmentInfoDatabaseTest : public testing::Test {
     training_data.add_inputs(data);
     training_data.set_request_id(request_id);
 
-    segment_db_->SaveTrainingData(segment_id, training_data, base::DoNothing());
+    segment_db_->SaveTrainingData(segment_id, model_source, training_data,
+                                  base::DoNothing());
     if (!segment_info_cache_->GetSegmentInfo(segment_id).has_value()) {
       db_->GetCallback(true);
     }

@@ -98,7 +98,8 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
   }
 
   segment_database_->SaveSegmentResult(
-      segment_id, success ? absl::make_optional(segment_result) : absl::nullopt,
+      segment_id, proto::ModelSource::SERVER_MODEL_SOURCE,
+      success ? absl::make_optional(segment_result) : absl::nullopt,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnResultSaved,
                      weak_ptr_factory_.GetWeakPtr(), segment_id));
 }

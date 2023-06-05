@@ -147,7 +147,7 @@ class SegmentResultProviderTest : public testing::Test {
     base::RunLoop wait_for_save;
     segment_database_->SetBucketDuration(segment, 1, proto::TimeUnit::DAY);
     segment_database_->SaveSegmentResult(
-        segment, std::move(result),
+        segment, proto::ModelSource::SERVER_MODEL_SOURCE, std::move(result),
         base::BindOnce(
             [](base::OnceClosure quit, bool success) { std::move(quit).Run(); },
             wait_for_save.QuitClosure()));

@@ -20,8 +20,10 @@ void TrainingDataCache::StoreInputs(proto::SegmentId segment_id,
                                     const proto::TrainingData& data,
                                     bool save_to_db) {
   if (save_to_db) {
-    segment_info_database_->SaveTrainingData(segment_id, std::move(data),
-                                             base::DoNothing());
+    // TODO (ritikagup@) : Add handling for default models, if required.
+    segment_info_database_->SaveTrainingData(
+        segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, std::move(data),
+        base::DoNothing());
   } else {
     cache[segment_id][TrainingRequestId::FromUnsafeValue(data.request_id())] =
         std::move(data);

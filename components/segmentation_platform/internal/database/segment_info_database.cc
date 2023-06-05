@@ -153,6 +153,7 @@ void SegmentInfoDatabase::UpdateMultipleSegments(
 
 void SegmentInfoDatabase::SaveSegmentResult(
     SegmentId segment_id,
+    ModelSource model_source,
     absl::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
   auto segment_info = cache_->GetSegmentInfo(segment_id);
@@ -180,6 +181,7 @@ void SegmentInfoDatabase::SaveSegmentResult(
 }
 
 void SegmentInfoDatabase::SaveTrainingData(SegmentId segment_id,
+                                           ModelSource model_source,
                                            const proto::TrainingData& data,
                                            SuccessCallback callback) {
   auto segment_info = cache_->GetSegmentInfo(segment_id);

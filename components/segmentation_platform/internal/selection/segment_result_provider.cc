@@ -380,9 +380,10 @@ void SegmentResultProviderImpl::OnModelExecuted(
   }
 
   if (!is_default_model && request_state->options->save_results_to_db) {
+    // TODO (ritikagup@) : Add handling for default models, if required.
     // Saving results to database.
     segment_database_->SaveSegmentResult(
-        segment_info->segment_id(),
+        segment_info->segment_id(), proto::ModelSource::SERVER_MODEL_SOURCE,
         success ? absl::make_optional(prediction_result) : absl::nullopt,
         base::BindOnce(&SegmentResultProviderImpl::RunCallback,
                        weak_ptr_factory_.GetWeakPtr(),
