@@ -1011,6 +1011,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
     const std::string& engine_id,
     const ui::KeyEvent& event,
     TextInputMethod::KeyEventDoneCallback callback) {
+  bool should_supress_auto_repeat = false;
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     switch (assistive_suggester_->OnKeyEvent(event)) {
       case AssistiveSuggesterKeyResult::kHandled:
@@ -1018,9 +1019,8 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
             ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
         return;
       case AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat:
-        std::move(callback).Run(
-            ui::ime::KeyEventHandledState::kNotHandledSuppressAutoRepeat);
-        return;
+        should_supress_auto_repeat = true;
+        break;
       case AssistiveSuggesterKeyResult::kNotHandled:
         break;
     }
@@ -1068,16 +1068,18 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
         key_event->key = mojom::DomKey::NewCodepoint(
             Utf16ToCodepoint(character_composer_.composed_character()));
       }
-
       auto process_key_event_callback = base::BindOnce(
           [](TextInputMethod::KeyEventDoneCallback original_callback,
-             mojom::KeyEventResult result) {
+             bool should_supress_auto_repeat, mojom::KeyEventResult result) {
             std::move(original_callback)
                 .Run((result == mojom::KeyEventResult::kConsumedByIme)
                          ? ui::ime::KeyEventHandledState::kHandledByIME
-                         : ui::ime::KeyEventHandledState::kNotHandled);
+                         : (should_supress_auto_repeat
+                                ? ui::ime::KeyEventHandledState::
+                                      kNotHandledSuppressAutoRepeat
+                                : ui::ime::KeyEventHandledState::kNotHandled));
           },
-          std::move(callback));
+          std::move(callback), should_supress_auto_repeat);
 
       input_method_->ProcessKeyEvent(std::move(key_event),
                                      std::move(process_key_event_callback));
