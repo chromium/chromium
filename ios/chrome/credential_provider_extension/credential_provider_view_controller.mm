@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/credential_provider_extension/app/credential_provider_view_controller.h"
+#import "ios/chrome/credential_provider_extension/credential_provider_view_controller.h"
 
 #import <Foundation/Foundation.h>
 
@@ -37,7 +37,7 @@ namespace {
 UIColor* BackgroundColor() {
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
-}  // namespace
+}
 
 @interface CredentialProviderViewController () <ConfirmationAlertActionHandler,
                                                 SuccessfulReauthTimeAccessor,
