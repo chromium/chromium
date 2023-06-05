@@ -4025,7 +4025,7 @@ deps = {
 
   'src/chrome/browser/internal': {
       'url': Var('chrome_git') + '/chrome/browser_internal.git' + '@' +
-        'd3a55d714679c55a73ff96a7ea77493b326dae91',
+        '86edf3656689330827cd0bd118656e6be5ec88a4',
       'condition': 'checkout_src_internal',
   },
 
