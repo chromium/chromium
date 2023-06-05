@@ -11,14 +11,6 @@ namespace blink {
 LayoutNGGrid::LayoutNGGrid(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
-void LayoutNGGrid::UpdateBlockLayout() {
-  if (IsOutOfFlowPositioned()) {
-    UpdateOutOfFlowBlockLayout();
-    return;
-  }
-  UpdateInFlowBlockLayout();
-}
-
 void LayoutNGGrid::AddChild(LayoutObject* new_child,
                             LayoutObject* before_child) {
   NOT_DESTROYED();

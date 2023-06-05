@@ -44,15 +44,6 @@ bool LayoutNGFlexibleBox::HasLeftOverflow() const {
           (style.ResolvedIsRowFlexDirection() && is_wrap_reverse));
 }
 
-void LayoutNGFlexibleBox::UpdateBlockLayout() {
-  if (IsOutOfFlowPositioned()) {
-    UpdateOutOfFlowBlockLayout();
-    return;
-  }
-
-  UpdateInFlowBlockLayout();
-}
-
 namespace {
 
 void MergeAnonymousFlexItems(LayoutObject* remove_child) {

@@ -61,13 +61,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       NGBoxFragmentBuilder* container_builder,
       absl::optional<LogicalSize> initial_containing_block_fixed_size);
 
-  // Normally this function lays out and positions all out-of-flow objects from
-  // the container_builder and additional ones it discovers through laying out
-  // those objects. However, if only_layout is specified, only that object will
-  // get laid out; any additional ones will be stored as out-of-flow
-  // descendants in the builder for use via
-  // LayoutResult::OutOfFlowPositionedDescendants.
-  void Run(const LayoutBox* only_layout = nullptr);
+  void Run();
 
   struct ColumnBalancingInfo {
     DISALLOW_NEW();
@@ -299,8 +293,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       bool adjust_for_fragmentation = false);
 
   void LayoutCandidates(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates,
-      const LayoutBox* only_layout);
+      HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates);
 
   void HandleMulticolsWithPendingOOFs(NGBoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
@@ -320,7 +313,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   const NGLayoutResult* LayoutOOFNode(
       NodeToLayout& oof_node_to_layout,
-      const LayoutBox* only_layout,
       const NGConstraintSpace* fragmentainer_constraint_space = nullptr,
       bool is_last_fragmentainer_so_far = false);
 
@@ -328,7 +320,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // changing this to a more accurate name.
   OffsetInfo CalculateOffset(
       const NodeInfo& node_info,
-      const LayoutBox* only_layout,
       bool is_first_run = true,
       const NGLogicalAnchorQueryMap* anchor_queries = nullptr);
   // Calculates offsets with the given ComputedStyle. Returns nullopt if
@@ -337,7 +328,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   absl::optional<OffsetInfo> TryCalculateOffset(
       const NodeInfo& node_info,
       const ComputedStyle& style,
-      const LayoutBox* only_layout,
       const NGLogicalAnchorQueryMap* anchor_queries,
       const LayoutObject* implicit_anchor,
       bool try_fit_available_space,

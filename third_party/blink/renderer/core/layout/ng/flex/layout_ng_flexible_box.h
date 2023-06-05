@@ -24,7 +24,10 @@ class CORE_EXPORT LayoutNGFlexibleBox : public LayoutNGBlock {
   bool HasTopOverflow() const override;
   bool HasLeftOverflow() const override;
 
-  void UpdateBlockLayout() override;
+  void UpdateBlockLayout() final {
+    NOT_DESTROYED();
+    NOTREACHED_NORETURN();
+  }
 
   bool IsFlexibleBoxIncludingNG() const final {
     NOT_DESTROYED();

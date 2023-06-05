@@ -189,18 +189,6 @@ void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
 }
 
 template <typename Base>
-void LayoutNGBlockFlowMixin<Base>::UpdateNGBlockLayout() {
-  Base::CheckIsNotDestroyed();
-
-  if (Base::IsOutOfFlowPositioned()) {
-    LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout();
-    return;
-  }
-
-  LayoutNGMixin<Base>::UpdateInFlowBlockLayout();
-}
-
-template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::Trace(Visitor* visitor) const {
   visitor->Trace(ng_inline_node_data_);
   LayoutNGMixin<Base>::Trace(visitor);

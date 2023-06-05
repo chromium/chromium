@@ -273,16 +273,6 @@ void NGBoxFragmentBuilder::AddBreakToken(const NGBreakToken* token,
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
 }
 
-void NGBoxFragmentBuilder::AddOutOfFlowLegacyCandidate(
-    NGBlockNode node,
-    const NGLogicalStaticPosition& static_position,
-    const LayoutInline* inline_container) {
-  oof_positioned_candidates_.emplace_back(
-      node, static_position,
-      NGInlineContainer<LogicalOffset>(inline_container,
-                                       /* relative_offset */ LogicalOffset()));
-}
-
 void NGBoxFragmentBuilder::PropagateSpaceShortage(
     absl::optional<LayoutUnit> space_shortage) {
   // Space shortage should only be reported when we already have a tentative

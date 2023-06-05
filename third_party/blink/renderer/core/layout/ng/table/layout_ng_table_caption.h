@@ -10,13 +10,9 @@
 
 namespace blink {
 
-class NGPhysicalFragment;
-
 class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGTableCaption(Element*);
-
-  void UpdateBlockLayout() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -33,11 +29,6 @@ class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
     return type == kLayoutObjectTableCaption ||
            LayoutNGBlockFlow::IsOfType(type);
   }
-
- private:
-  // Legacy-only API.
-  void CalculateAndSetMargins(const NGConstraintSpace&,
-                              const NGPhysicalFragment&);
 };
 
 // wtf/casting.h helper.

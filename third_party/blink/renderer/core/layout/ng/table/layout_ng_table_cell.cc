@@ -128,16 +128,6 @@ LayoutNGTable* LayoutNGTableCell::Table() const {
   return nullptr;
 }
 
-void LayoutNGTableCell::UpdateBlockLayout() {
-  NOT_DESTROYED();
-
-  if (IsOutOfFlowPositioned()) {
-    UpdateOutOfFlowBlockLayout();
-    return;
-  }
-  UpdateInFlowBlockLayout();
-}
-
 void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
   NOT_DESTROYED();

@@ -68,8 +68,6 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
 
   // LayoutBlockFlow methods start.
 
-  void UpdateBlockLayout() override;
-
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) final;
 

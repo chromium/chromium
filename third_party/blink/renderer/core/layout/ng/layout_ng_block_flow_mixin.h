@@ -65,10 +65,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   void DirtyLinesFromChangedChild(LayoutObject* child,
                                   MarkingBehavior marking_behavior) final;
 
-  // Intended to be called from UpdateLayout() for subclasses that want the same
-  // behavior as LayoutNGBlockFlow.
-  void UpdateNGBlockLayout();
-
   Member<NGInlineNodeData> ng_inline_node_data_;
 
   friend class NGBaseLayoutAlgorithmTest;
