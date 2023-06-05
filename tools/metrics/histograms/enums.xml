@@ -42897,6 +42897,21 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="kDbCleanOutdatedDataError"/>
 </enum>
 
+<enum name="FeedActivityBucket">
+  <int value="0" label="No Activity">
+    The user has no activity in the last 28 days.
+  </int>
+  <int value="1" label="Low Activity">
+    The user has 1-7 days of activity in the last 28 days.
+  </int>
+  <int value="2" label="Medium Activity">
+    The user has 8-15 days of activity in the last 28 days.
+  </int>
+  <int value="3" label="High Activity">
+    The user has 16+ days of activity in the last 28 days.
+  </int>
+</enum>
+
 <enum name="FeedAutoplayEvent">
   <obsolete>
     Removed as of 05/2021. Replaced by FeedVideoPlayEvent.
