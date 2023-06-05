@@ -114,6 +114,13 @@ class NGLineBreakerTest : public RenderingTest {
     return line_index;
   }
 
+  wtf_size_t BreakLines(NGInlineNode node,
+                        LayoutUnit available_width,
+                        base::span<NGLineInfo> line_info_list) {
+    Vector<NGLineBreakPoint> break_points;
+    return BreakLinesAt(node, available_width, break_points, line_info_list);
+  }
+
   MinMaxSizes ComputeMinMaxSizes(NGInlineNode node) {
     const auto space =
         NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
@@ -1184,6 +1191,66 @@ TEST_F(NGLineBreakerTest, BreakAtTrailingSpacesAfterAtomicInline) {
   EXPECT_EQ(line_info_list[1].Width(), LayoutUnit(20));
   EXPECT_EQ(line_info_list[0].Results().back().item_index, 3u);
   EXPECT_EQ(line_info_list[1].Results().front().item_index, 4u);
+}
+
+struct CanBreakInsideTestData {
+  bool can_break_insde;
+  const char* html;
+  const char* target_css = nullptr;
+  const char* style = nullptr;
+} can_break_inside_test_data[] = {
+    {false, "a"},
+    {true, "a b"},
+    {false, "a b", "white-space: nowrap;"},
+    {true, "<span>a</span>a b"},
+    {true, "<span>a</span> b"},
+    {true, "<span>a </span>b"},
+    {true, "a<span> </span>b"},
+    {false, "<ib></ib>", nullptr, "ib { display: inline-block; }"},
+    {true, "<ib></ib><ib></ib>", nullptr, "ib { display: inline-block; }"},
+    {true, "a<ib></ib>", nullptr, "ib { display: inline-block; }"},
+    {true, "<ib></ib>a", nullptr, "ib { display: inline-block; }"},
+};
+class CanBreakInsideTest
+    : public NGLineBreakerTest,
+      public testing::WithParamInterface<CanBreakInsideTestData> {};
+INSTANTIATE_TEST_SUITE_P(NGLineBreakerTest,
+                         CanBreakInsideTest,
+                         testing::ValuesIn(can_break_inside_test_data));
+
+TEST_P(CanBreakInsideTest, Data) {
+  const auto& data = GetParam();
+  SetBodyInnerHTML(String::Format(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-size: 10px;
+      width: 800px;
+      %s
+    }
+    %s
+    </style>
+    <div id="target">%s</div>
+  )HTML",
+                                  data.target_css, data.style, data.html));
+  NGInlineNode target = GetInlineNodeByElementId("target");
+  NGLineInfo line_info_list[1];
+  const LayoutUnit available_width = LayoutUnit(800);
+  const wtf_size_t num_lines =
+      BreakLines(target, available_width, line_info_list);
+  ASSERT_EQ(num_lines, 1u);
+
+  NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+  const NGInlineBreakToken* break_token = nullptr;
+  NGExclusionSpace exclusion_space;
+  NGPositionedFloatVector leading_floats;
+  NGLineLayoutOpportunity line_opportunity(available_width);
+  NGLineBreaker line_breaker(target, NGLineBreakerMode::kContent, space,
+                             line_opportunity, leading_floats, 0u, break_token,
+                             /* column_spanner_path */ nullptr,
+                             &exclusion_space);
+  EXPECT_EQ(line_breaker.CanBreakInside(line_info_list[0]),
+            data.can_break_insde);
 }
 
 }  // namespace

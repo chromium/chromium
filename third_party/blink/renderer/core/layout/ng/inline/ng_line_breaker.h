@@ -109,6 +109,10 @@ class CORE_EXPORT NGLineBreaker {
                         const NGLineInfo& line_info,
                         NGLineBreakCandidateContext& context);
 
+  // True if the argument can break; i.e. has at least one break opportunity.
+  bool CanBreakInside(const NGLineInfo& line_info);
+  bool CanBreakInside(const NGInlineItemResult& item_result);
+
  private:
   const String& Text() const { return text_content_; }
   const HeapVector<NGInlineItem>& Items() const { return items_data_.items; }

@@ -1960,6 +1960,46 @@ void NGLineBreaker::AppendCandidates(const NGInlineItemResult& item_result,
   }
 }
 
+bool NGLineBreaker::CanBreakInside(const NGLineInfo& line_info) {
+  const NGInlineItemResults& item_results = line_info.Results();
+  for (const NGInlineItemResult& item_result :
+       base::make_span(item_results.begin(), item_results.size() - 1)) {
+    if (item_result.can_break_after) {
+      return true;
+    }
+  }
+  for (const NGInlineItemResult& item_result : item_results) {
+    DCHECK(item_result.item);
+    const NGInlineItem& item = *item_result.item;
+    if (item.Type() == NGInlineItem::kText) {
+      if (item_result.may_break_inside && CanBreakInside(item_result)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool NGLineBreaker::CanBreakInside(const NGInlineItemResult& item_result) {
+  DCHECK(item_result.may_break_inside);
+  DCHECK(item_result.item);
+  const NGInlineItem& item = *item_result.item;
+  DCHECK_EQ(item.Type(), NGInlineItem::kText);
+  DCHECK(item.Style());
+  SetCurrentStyle(*item.Style());
+  if (!auto_wrap_) {
+    return false;
+  }
+  const NGTextOffsetRange& offset = item_result.TextOffset();
+  if (offset.start < break_iterator_.StartOffset()) {
+    break_iterator_.SetStartOffset(offset.start);
+  }
+  const wtf_size_t next_offset =
+      break_iterator_.NextBreakOpportunity(offset.start + 1);
+  // TODO: soft-hyphen
+  return next_offset < offset.end;
+}
+
 // Compute a new ShapeResult for the specified end offset.
 // The end is re-shaped if it is not safe-to-break.
 scoped_refptr<ShapeResultView> NGLineBreaker::TruncateLineEndResult(

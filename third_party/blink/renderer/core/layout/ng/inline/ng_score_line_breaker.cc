@@ -74,6 +74,11 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
       // Otherwise, the improvement is not worth the performance impact.
       return;
     }
+    if (line_breaker.CanBreakInside(last_line)) {
+      // Similarly, optimize only when the last line has a single word; i.e.,
+      // has no break opportunities.
+      return;
+    }
   }
 
   NGLineBreakPoints& break_points = context.LineBreakPoints();
