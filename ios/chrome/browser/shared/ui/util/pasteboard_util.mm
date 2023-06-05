@@ -26,14 +26,11 @@ void StoreURLInPasteboard(const GURL& url) {
 }
 
 void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
-  DCHECK(!urls.empty());
-
   NSMutableArray* pasteboard_items = [[NSMutableArray alloc] init];
   for (const GURL& URL : urls) {
-    DCHECK(URL.is_valid());
-    // Although this breaks the API contract, invalid URLs arrive here in
-    // production. Prevent crashing by continuing and early returning below if
-    // no valid URLs were passed in `urls`. (crbug.com/880525)
+    // Invalid URLs arrive here in production. Prevent crashing by continuing
+    // and early returning below if no valid URLs were passed in `urls`.
+    // (crbug.com/880525)
     if (!URL.is_valid()) {
       continue;
     }
