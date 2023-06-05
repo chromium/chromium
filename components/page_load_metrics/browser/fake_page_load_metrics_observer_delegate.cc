@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "base/time/default_tick_clock.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace page_load_metrics {
 
@@ -180,6 +181,11 @@ ukm::SourceId FakePageLoadMetricsObserverDelegate::GetPageUkmSourceId() const {
 
 uint32_t FakePageLoadMetricsObserverDelegate::GetSoftNavigationCount() const {
   return 0;
+}
+
+ukm::SourceId
+FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSoftNavigation() const {
+  return ukm::kInvalidSourceId;
 }
 
 bool FakePageLoadMetricsObserverDelegate::IsFirstNavigationInWebContents()

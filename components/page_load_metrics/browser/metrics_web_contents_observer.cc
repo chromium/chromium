@@ -1066,7 +1066,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     mojom::InputTimingPtr input_timing_delta,
     const absl::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
   // Replacing this call by GetPageLoadTracker breaks some tests.
   //
   // Note that if a PLMO only observes events at outermost page, misusing
@@ -1092,11 +1092,11 @@ void MetricsWebContentsObserver::OnTimingUpdated(
   }
 
   if (tracker) {
-    tracker->UpdateMetrics(render_frame_host, std::move(timing),
-                           std::move(metadata), std::move(new_features),
-                           resources, std::move(render_data),
-                           std::move(cpu_timing), std::move(input_timing_delta),
-                           subresource_load_metrics, soft_navigation_count);
+    tracker->UpdateMetrics(
+        render_frame_host, std::move(timing), std::move(metadata),
+        std::move(new_features), resources, std::move(render_data),
+        std::move(cpu_timing), std::move(input_timing_delta),
+        subresource_load_metrics, std::move(soft_navigation_metrics));
   }
 }
 
@@ -1127,13 +1127,13 @@ void MetricsWebContentsObserver::UpdateTiming(
     mojom::InputTimingPtr input_timing_delta,
     const absl::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
   OnTimingUpdated(render_frame_host, std::move(timing), std::move(metadata),
                   new_features, resources, std::move(render_data),
                   std::move(cpu_timing), std::move(input_timing_delta),
-                  subresource_load_metrics, soft_navigation_count);
+                  subresource_load_metrics, std::move(soft_navigation_metrics));
 }
 
 void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(

@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1">
+  <title>Test soft navigation UKM collection</title>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+</head>
+
+<body>
+  <main id=main>
+    <div>
+      <a id=link><img src="/images/lcp-256x256.png"></a>
+    </div>
+  </main>
+  <script>
+    const addImage = async (element) => {
+      const img = new Image();
+      img.src = '/images/lcp-133x106.png' + "?" + Math.random();
+      await img.decode();
+      element.appendChild(img);
+    };
+    const addImageToMain = async () => {
+      await addImage(document.getElementById('main'));
+    };
+    const waitOnPaintEntriesPromise = () => {
+      return new Promise((resolve, reject) => {
+        const paint_entries = []
+        new PerformanceObserver(list => {
+          paint_entries.push(...list.getEntries());
+          if (paint_entries.length == 2) {
+            resolve();
+          } else if (paint_entries.length > 2) {
+            reject();
+          }
+        }).observe({ type: 'paint', includeSoftNavigationObservations: true });
+      });
+    };
+
+    const waitForLcpEntries = async () => {
+      const entries = await new Promise(resolve => {
+        (new PerformanceObserver(list => resolve(
+          list.getEntries()))).observe(
+            {
+              type: 'largest-contentful-paint', buffered: true,
+              includeSoftNavigationObservations: true
+            });
+      });
+      return entries;
+    };
+
+    let counter = 0;
+    const setEvent = (button, pushState, addContent, pushUrl, eventType) => {
+      const URL = "foobar.html";
+      button.addEventListener(eventType, async e => {
+        // Jump through a task, to ensure task tracking is working properly.
+        await new Promise(r => setTimeout(r, 0));
+        const url = URL + "?" + counter;
+        if (pushState) {
+          if (pushUrl) {
+            pushState(url);
+          } else {
+            pushState();
+          }
+        }
+        await new Promise(r => setTimeout(r, 10));
+        await addContent(url);
+        ++counter;
+      });
+    };
+
+    const setEventAndWait = async () => {
+      await waitForLcpEntries();
+      const link = document.getElementById("link");
+      setEvent(link, /*pushState=*/url => history.pushState({}, '', url),
+        /*addContent=*/async () => await addImageToMain(), /*pushUrl=*/true,
+        /*eventType=*/"click");
+    }
+
+    const waitForSoftNavigationEntry = async () => {
+      await new Promise(resolve => {
+        (new PerformanceObserver(resolve)).observe({
+          type: 'soft-navigation', buffered: true
+        });
+      });
+      await waitOnPaintEntriesPromise();;
+      await waitForLcpEntries();
+    }
+
+    const waitForSoftNavigationEntry2 = async () => {
+      await new Promise(resolve => {
+        (new PerformanceObserver(() => resolve())).observe({
+          type: 'soft-navigation'
+        });
+      });
+      await waitOnPaintEntriesPromise();
+      await waitForLcpEntries();
+    }
+  </script>
+</body>
+
+</html>

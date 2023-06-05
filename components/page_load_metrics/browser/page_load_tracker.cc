@@ -29,6 +29,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace page_load_metrics {
@@ -598,6 +599,16 @@ void PageLoadTracker::DidCommitSameDocumentNavigation(
     parent_tracker_->DidFinishSubFrameNavigation(navigation_handle);
   }
 
+  // Update soft navigation URL and UKM source id;
+  // A same-document navigation may not be a soft navigation. But when a soft
+  // navigation updates comes in later, the URL and source id updated here would
+  // correspond to that soft navigation.
+  if (navigation_handle->IsInMainFrame()) {
+    potential_soft_navigation_source_id_ =
+        ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                               ukm::SourceIdObj::Type::NAVIGATION_ID);
+  }
+
   for (const auto& observer : observers_) {
     observer->OnCommitSameDocumentNavigation(navigation_handle);
   }
@@ -1034,15 +1045,22 @@ void PageLoadTracker::OnSubframeMetadataChanged(
   }
 }
 
-void PageLoadTracker::OnSoftNavigationCountChanged(
-    uint32_t soft_navigation_count) {
-  DCHECK(soft_navigation_count >= soft_navigation_count_);
-  if (soft_navigation_count == soft_navigation_count_) {
+void PageLoadTracker::OnSoftNavigationChanged(
+    const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
+  if (soft_navigation_metrics.Equals(*soft_navigation_metrics_)) {
     return;
   }
-  soft_navigation_count_ = soft_navigation_count;
+
+  CHECK(soft_navigation_metrics.count > soft_navigation_metrics_->count);
+  CHECK(soft_navigation_metrics.start_time >
+        soft_navigation_metrics_->start_time);
+  CHECK(soft_navigation_metrics.navigation_id !=
+        soft_navigation_metrics_->navigation_id);
+
+  soft_navigation_metrics_ = soft_navigation_metrics.Clone();
+
   for (const auto& observer : observers_) {
-    observer->OnSoftNavigationCountUpdated();
+    observer->OnSoftNavigationUpdated(soft_navigation_metrics_->Clone());
   }
 }
 
@@ -1267,7 +1285,11 @@ ukm::SourceId PageLoadTracker::GetPageUkmSourceId() const {
 }
 
 uint32_t PageLoadTracker::GetSoftNavigationCount() const {
-  return soft_navigation_count_;
+  return soft_navigation_metrics_->count;
+}
+
+ukm::SourceId PageLoadTracker::GetUkmSourceIdForSoftNavigation() const {
+  return potential_soft_navigation_source_id_;
 }
 
 bool PageLoadTracker::IsFirstNavigationInWebContents() const {
@@ -1343,20 +1365,20 @@ void PageLoadTracker::UpdateMetrics(
     mojom::InputTimingPtr input_timing_delta,
     const absl::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
   if (parent_tracker_) {
     parent_tracker_->UpdateMetrics(
         render_frame_host, timing.Clone(), metadata.Clone(), features,
         resources, render_data.Clone(), cpu_timing.Clone(),
         input_timing_delta.Clone(), subresource_load_metrics,
-        soft_navigation_count);
+        soft_navigation_metrics.Clone());
   }
 
   metrics_update_dispatcher_.UpdateMetrics(
       render_frame_host, std::move(timing), std::move(metadata),
       std::move(features), resources, std::move(render_data),
       std::move(cpu_timing), std::move(input_timing_delta),
-      subresource_load_metrics, soft_navigation_count, page_type_);
+      subresource_load_metrics, std::move(soft_navigation_metrics), page_type_);
 }
 
 void PageLoadTracker::SetPageMainFrame(content::RenderFrameHost* rfh) {

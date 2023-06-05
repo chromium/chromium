@@ -22466,6 +22466,30 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SoftNavigation" singular="True">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>haoliuk@chromium.org</owner>
+  <summary>
+    Records soft navigation metrics including LCP, CLS, INP. Soft navigation is
+    DOM changes that are perceived to be navigation, but there is no page load.
+    Soft navigation metrics like LCP are equivalent to their counterpart of the
+    PageLoad event.
+  </summary>
+  <metric name="NavigationId">
+    <summary>
+      Records the navigation id of a soft navigation. It is used to
+      differentiate soft navigations.
+    </summary>
+  </metric>
+  <metric name="StartTime">
+    <summary>
+      Records the start time of a soft navigation. The start time is a time
+      delta in milliseconds relative to the last hard navigation time. It is
+      used to analyze the frequency of soft navigations.
+    </summary>
+  </metric>
+</event>
+
 <event name="SSL.MixedContentShown">
   <obsolete>
     Replaced by SSL.MixedContentShown2. Removed in 03/2021.
