@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -110,10 +111,12 @@ void AnchorElementObserverForServiceWorker::UpdateVisibleAnchors(
     // computational load caused by IntersectionObserver.
     intersection_observer_->unobserve(element);
 
-    CHECK(IsA<HTMLAnchorElement>(*element));
-    HTMLAnchorElement& anchor = To<HTMLAnchorElement>(*element);
-    if (anchor.IsLink()) {
-      urls.push_back(anchor.Url());
+    HTMLAnchorElement* anchor = DynamicTo<HTMLAnchorElement>(element);
+    if (!anchor) {
+      anchor = DynamicTo<HTMLAreaElement>(element);
+    }
+    if (anchor && anchor->IsLink()) {
+      urls.push_back(anchor->Url());
     }
   }
 
