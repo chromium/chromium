@@ -83,14 +83,24 @@ enum SubtreeModificationAction {
 const int kInitialNodeVectorSize = 11;
 using NodeVector = HeapVector<Member<Node>, kInitialNodeVectorSize>;
 
-// Note: while ContainerNode itself isn't web-exposed, a number of methods it
-// implements (such as firstChild, lastChild) use web-style naming to shadow
-// the corresponding methods on Node. This is a performance optimization, as it
-// avoids a virtual dispatch if the type is statically known to be
-// ContainerNode.
+// ContainerNode itself isn't web-exposed exactly, but it maps closely to the
+// ParentNode mixin interface. A number of methods it implements (such as
+// firstChild, lastChild) use web-style naming to shadow the corresponding
+// methods on Node. This is a performance optimization, as it avoids a virtual
+// dispatch if the type is statically known to be ContainerNode.
 class CORE_EXPORT ContainerNode : public Node {
  public:
   ~ContainerNode() override;
+
+  // ParentNode web-exposed:
+  // Note that some of the ParentNode interface is implemented in Node.
+  HTMLCollection* children();
+  Element* firstElementChild();
+  Element* lastElementChild();
+  unsigned childElementCount();
+  Element* querySelector(const AtomicString& selectors, ExceptionState&);
+  StaticElementList* querySelectorAll(const AtomicString& selectors,
+                                      ExceptionState&);
 
   Node* firstChild() const { return first_child_; }
   Node* lastChild() const { return last_child_; }
@@ -104,8 +114,6 @@ class CORE_EXPORT ContainerNode : public Node {
     return HasOneChild() && first_child_->IsTextNode();
   }
   bool HasChildCount(unsigned) const;
-
-  HTMLCollection* Children();
 
   unsigned CountChildren() const;
 

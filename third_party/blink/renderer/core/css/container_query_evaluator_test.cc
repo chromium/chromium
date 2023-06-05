@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/dom/parent_node.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -748,10 +747,10 @@ TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* outer_size = ParentNode::firstElementChild(*GetDocument().body());
-  Element* outer = ParentNode::firstElementChild(*outer_size);
-  Element* inner_size = ParentNode::firstElementChild(*outer);
-  Element* inner = ParentNode::firstElementChild(*inner_size);
+  Element* outer_size = GetDocument().body()->firstElementChild();
+  Element* outer = outer_size->firstElementChild();
+  Element* inner_size = outer->firstElementChild();
+  Element* inner = inner_size->firstElementChild();
 
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
                 inner, ParseContainer("style(--foo: bar)")->Selector(),
@@ -792,11 +791,11 @@ TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* sticky_size = ParentNode::firstElementChild(*GetDocument().body());
-  Element* outer_sticky = ParentNode::firstElementChild(*sticky_size);
-  Element* outer = ParentNode::firstElementChild(*outer_sticky);
-  Element* inner_sticky = ParentNode::firstElementChild(*outer);
-  Element* inner = ParentNode::firstElementChild(*inner_sticky);
+  Element* sticky_size = GetDocument().body()->firstElementChild();
+  Element* outer_sticky = sticky_size->firstElementChild();
+  Element* outer = outer_sticky->firstElementChild();
+  Element* inner_sticky = outer->firstElementChild();
+  Element* inner = inner_sticky->firstElementChild();
 
   EXPECT_EQ(
       ContainerQueryEvaluator::FindContainer(

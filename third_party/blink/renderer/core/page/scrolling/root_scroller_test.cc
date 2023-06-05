@@ -203,7 +203,7 @@ TEST_F(RootScrollerTest, defaultEffectiveRootScrollerIsDocumentNode) {
   HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>> nodes;
   nodes.push_back(
       MakeGarbageCollected<V8UnionNodeOrStringOrTrustedScript>(iframe));
-  document->documentElement()->ReplaceWith(nodes, ASSERT_NO_EXCEPTION);
+  document->documentElement()->replaceWith(nodes, ASSERT_NO_EXCEPTION);
 
   UpdateAllLifecyclePhases(MainFrameView());
 

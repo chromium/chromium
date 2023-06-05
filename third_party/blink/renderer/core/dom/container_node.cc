@@ -1258,8 +1258,36 @@ void ContainerNode::SetDragged(bool new_value) {
     this_element->PseudoStateChanged(CSSSelector::kPseudoDrag);
 }
 
-HTMLCollection* ContainerNode::Children() {
+HTMLCollection* ContainerNode::children() {
   return EnsureCachedCollection<HTMLCollection>(kNodeChildren);
+}
+
+Element* ContainerNode::firstElementChild() {
+  return ElementTraversal::FirstChild(*this);
+}
+
+Element* ContainerNode::lastElementChild() {
+  return ElementTraversal::LastChild(*this);
+}
+
+unsigned ContainerNode::childElementCount() {
+  unsigned count = 0;
+  for (Element* child = ElementTraversal::FirstChild(*this); child;
+       child = ElementTraversal::NextSibling(*child)) {
+    ++count;
+  }
+  return count;
+}
+
+Element* ContainerNode::querySelector(const AtomicString& selectors,
+                                      ExceptionState& exception_state) {
+  return QuerySelector(selectors, exception_state);
+}
+
+StaticElementList* ContainerNode::querySelectorAll(
+    const AtomicString& selectors,
+    ExceptionState& exception_state) {
+  return QuerySelectorAll(selectors, exception_state);
 }
 
 unsigned ContainerNode::CountChildren() const {

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/editing/commands/insert_list_command.h"
 
-#include "third_party/blink/renderer/core/dom/parent_node.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
