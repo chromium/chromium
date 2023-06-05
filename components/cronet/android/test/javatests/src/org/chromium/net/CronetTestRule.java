@@ -34,7 +34,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.URL;
 import java.net.URLStreamHandlerFactory;
-import java.util.function.Function;
 
 /**
  * Custom TestRule for Cronet instrumentation tests.
@@ -534,26 +533,30 @@ public class CronetTestRule implements TestRule {
         AUTOMATIC,
     }
 
+    // This is a replacement for java.util.function.Function as Function is only available
+    // starting android API level 24.
+    private interface EngineBuilderSupplier {
+        ExperimentalCronetEngine.Builder getCronetEngineBuilder(Context context);
+    }
+
     public enum CronetImplementation {
-        STATICALLY_LINKED(
-                (context)
-                        -> (ExperimentalCronetEngine.Builder) new NativeCronetProvider(context)
-                                   .createBuilder()),
+        STATICALLY_LINKED(context
+                -> (ExperimentalCronetEngine.Builder) new NativeCronetProvider(context)
+                           .createBuilder()),
         FALLBACK((context)
                          -> (ExperimentalCronetEngine.Builder) new JavaCronetProvider(context)
                                     .createBuilder()),
         AOSP_PLATFORM(
                 (context) -> { throw new UnsupportedOperationException("Not implemented yet"); });
 
-        private final Function<Context, ExperimentalCronetEngine.Builder> mBuilderSupplier;
+        private final EngineBuilderSupplier mEngineSupplier;
 
-        private CronetImplementation(
-                Function<Context, ExperimentalCronetEngine.Builder> builderSupplier) {
-            this.mBuilderSupplier = builderSupplier;
+        private CronetImplementation(EngineBuilderSupplier engineSupplier) {
+            this.mEngineSupplier = engineSupplier;
         }
 
         ExperimentalCronetEngine.Builder createBuilder(Context context) {
-            return mBuilderSupplier.apply(context);
+            return mEngineSupplier.getCronetEngineBuilder(context);
         }
 
         private void verifyCronetEngineInstance(CronetEngine engine) {
