@@ -27,9 +27,8 @@ namespace {
 // allowing it bind it to an ChromeBrowserState as a KeyedService.
 class WebSessionStateCacheWrapper : public KeyedService {
  public:
-  explicit WebSessionStateCacheWrapper(
-      BrowserList* browser_list,
-      WebSessionStateCache* web_session_state_cache);
+  WebSessionStateCacheWrapper(BrowserList* browser_list,
+                              WebSessionStateCache* web_session_state_cache);
 
   WebSessionStateCacheWrapper(const WebSessionStateCacheWrapper&) = delete;
   WebSessionStateCacheWrapper& operator=(const WebSessionStateCacheWrapper&) =
