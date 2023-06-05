@@ -60,10 +60,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "empty",
           R"json({})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kExclude;
-          }),
+          TriggerRegistration(),
       },
       {
           "filters_valid",
@@ -304,7 +301,7 @@ TEST(TriggerRegistrationTest, ToJson) {
       {
           TriggerRegistration(),
           R"json({
-            "aggregatable_source_registration_time": "include",
+            "aggregatable_source_registration_time": "exclude",
             "debug_reporting": false
           })json",
       },
@@ -320,10 +317,10 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.filters.positive = FiltersDisjunction({{{"b", {}}}});
             r.filters.negative = FiltersDisjunction({{{"c", {}}}});
             r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kExclude;
+                mojom::SourceRegistrationTimeConfig::kInclude;
           }),
           R"json({
-            "aggregatable_source_registration_time": "exclude",
+            "aggregatable_source_registration_time": "include",
             "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
             "aggregatable_trigger_data": [{"key_piece":"0x0"}],
             "aggregatable_values": {"a": 2},
@@ -399,7 +396,7 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
       {
           TriggerRegistration(),
           R"json({
-            "aggregatable_source_registration_time": "include",
+            "aggregatable_source_registration_time": "exclude",
             "aggregation_coordinator_identifier": "aws-cloud",
             "debug_reporting": false
           })json",

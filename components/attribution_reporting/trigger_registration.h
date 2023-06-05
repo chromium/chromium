@@ -71,7 +71,10 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
       aggregation_service::mojom::AggregationCoordinator::kDefault;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config =
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kExclude;
+
+  // When adding new members, the corresponding `operator==()` definition in
+  // `test_utils.h` should also be updated.
 };
 
 }  // namespace attribution_reporting

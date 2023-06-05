@@ -274,7 +274,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                   ::aggregation_service::mojom::AggregationCoordinator::
                       kDefault,
                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                      kInclude)),
+                      kExclude)),
               destination_origin)),
           kFrameId));
 
