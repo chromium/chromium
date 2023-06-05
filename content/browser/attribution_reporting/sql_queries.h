@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SQL_QUERIES_H_
 
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
+#include "content/browser/attribution_reporting/rate_limit_table.h"
 
 namespace content::attribution_queries {
 
@@ -181,6 +182,15 @@ inline constexpr const char kRateLimitSelectReportingOriginsSql[] =
     "WHERE scope=? "
     "AND source_site=? "
     "AND destination_site=? "
+    "AND time>?";
+
+static_assert(static_cast<int>(RateLimitTable::Scope::kSource) == 0,
+              "update `scope=0` clause below");
+inline constexpr const char kRateLimitSelectSourceReportingOriginsBySiteSql[] =
+    "SELECT reporting_origin FROM rate_limits "
+    "WHERE scope=0 "
+    "AND source_site=?"
+    "AND reporting_site=? "
     "AND time>?";
 
 inline constexpr const char kDeleteRateLimitRangeSql[] =

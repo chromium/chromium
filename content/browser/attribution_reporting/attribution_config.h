@@ -35,6 +35,12 @@ struct CONTENT_EXPORT AttributionConfig {
     // site, reporting site> in `time_window`.
     int64_t max_attributions = 100;
 
+    static constexpr int kDefaultMaxReportingOriginsPerSourceReportingSite = 1;
+
+    base::TimeDelta origins_per_site_window = base::Days(1);
+
+    int GetMaxSourceReportingOriginsPerReportingSite() const;
+
     // When adding new members, the corresponding `Validate()` definition and
     // `operator==()` definition in `attribution_interop_parser_unittest.cc`
     // should also be updated.

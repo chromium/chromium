@@ -241,6 +241,51 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginLimit(
       source.registration().destination_set.destinations());
 }
 
+RateLimitResult RateLimitTable::SourceAllowedForReportingOriginPerSiteLimit(
+    sql::Database* db,
+    const StorableSource& source,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  size_t max_origins =
+      static_cast<size_t>(delegate_->GetRateLimits()
+                              .GetMaxSourceReportingOriginsPerReportingSite());
+
+  base::Time min_timestamp =
+      source_time - delegate_->GetRateLimits().origins_per_site_window;
+
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql));
+  statement.BindString(0, source.common_info().source_site().Serialize());
+  statement.BindString(
+      1,
+      net::SchemefulSite(source.common_info().reporting_origin()).Serialize());
+  statement.BindTime(2, min_timestamp);
+
+  std::string serialized_reporting_origin =
+      source.common_info().reporting_origin().Serialize();
+  std::set<std::string> reporting_origins;
+  while (statement.Step()) {
+    std::string origin = statement.ColumnString(0);
+
+    if (origin == serialized_reporting_origin) {
+      return RateLimitResult::kAllowed;
+    }
+
+    reporting_origins.insert(std::move(origin));
+    if (reporting_origins.size() == max_origins) {
+      return RateLimitResult::kNotAllowed;
+    }
+  }
+
+  if (!statement.Succeeded()) {
+    return RateLimitResult::kError;
+  }
+
+  return RateLimitResult::kAllowed;
+}
+
 RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
     sql::Database* db,
     const StorableSource& source,
