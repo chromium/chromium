@@ -482,6 +482,167 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationPassesOnValidResponse) {
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationPassesWhenMissingPasswordAndOpenNetwork) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "Open");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+
+  ASSERT_FALSE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<0>()->password, absl::nullopt);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenPasswordFoundAndOpenNetwork) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkPasswordKey, "password");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "Open");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_PSK) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_WEP) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "WEP");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_EAP) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "EAP");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_OWE) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "OWE");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_SAE) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "SAE");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::WifiCredentialsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+}
+
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
   base::Value::Dict wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "");
@@ -508,28 +669,6 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingSSID) {
   base::Value::Dict wifi_information;
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
-  wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
-  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
-
-  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
-  message.GetPayload()->Set(kWifiNetworkInformationKey,
-                            std::move(wifi_information));
-
-  base::test::TestFuture<
-      ::ash::quick_start::mojom::WifiCredentialsPtr,
-      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
-      future;
-
-  DoDecodeWifiCredentialsResponse(&message, future.GetCallback());
-
-  EXPECT_TRUE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<1>(),
-            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
-}
-
-TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingPassword) {
-  base::Value::Dict wifi_information;
-  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
 

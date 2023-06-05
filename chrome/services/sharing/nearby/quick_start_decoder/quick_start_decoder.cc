@@ -4,6 +4,8 @@
 
 #include "quick_start_decoder.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_tree.h"
@@ -368,15 +370,6 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     return;
   }
 
-  std::string* password =
-      wifi_network_information->FindString(kWifiNetworkPasswordKey);
-  if (!password) {
-    LOG(ERROR) << "Password cannot be found within WifiCredentialsResponse";
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
-    return;
-  }
-
   std::string* security_type_string =
       wifi_network_information->FindString(kWifiNetworkSecurityTypeKey);
   if (!security_type_string) {
@@ -387,16 +380,43 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     return;
   }
 
-  absl::optional<mojom::WifiSecurityType> security_type =
+  absl::optional<mojom::WifiSecurityType> maybe_security_type =
       WifiSecurityTypeFromString(*security_type_string);
 
-  if (!security_type.has_value()) {
+  if (!maybe_security_type.has_value()) {
     {
       LOG(ERROR) << "Security type was not a valid value.";
       std::move(callback).Run(
           nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
       return;
     }
+  }
+
+  mojom::WifiSecurityType security_type = maybe_security_type.value();
+
+  // Password may not be included in payload for passwordless, open networks.
+  absl::optional<std::string> password = absl::nullopt;
+  std::string* password_ptr =
+      wifi_network_information->FindString(kWifiNetworkPasswordKey);
+
+  if (password_ptr && security_type == mojom::WifiSecurityType::kOpen) {
+    LOG(ERROR) << "Password is found but network security type is open.";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  if (!password_ptr && security_type != mojom::WifiSecurityType::kOpen) {
+    LOG(ERROR) << "Password cannot be found within WifiCredentialsResponse but "
+                  "network is not open. wifi_security_type: "
+               << security_type;
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  if (password_ptr) {
+    password = *password_ptr;
   }
 
   absl::optional<bool> is_hidden =
@@ -410,8 +430,8 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   }
 
   std::move(callback).Run(
-      mojom::WifiCredentials::New(*ssid, security_type.value(),
-                                  is_hidden.value(), *password),
+      mojom::WifiCredentials::New(*ssid, security_type, is_hidden.value(),
+                                  password),
       absl::nullopt);
 }
 

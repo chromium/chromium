@@ -170,12 +170,12 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   /**
    * @param {string} ssid
-   * @param {string} password
+   * @param {string?} password
    */
   showConnectedToWifi(ssid, password) {
     this.setUIStep(QuickStartUIState.CONNECTED_TO_WIFI);
     this.ssid_ = ssid;
-    this.password_ = password;
+    this.password_ = password ? password : '';
   }
 
   /**

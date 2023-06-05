@@ -44,7 +44,7 @@ struct WifiCredentials {
   string ssid;
   WifiSecurityType security_type;
   bool is_hidden;
-  string password;
+  string? password;
 };
 
 struct GetAssertionResponse {

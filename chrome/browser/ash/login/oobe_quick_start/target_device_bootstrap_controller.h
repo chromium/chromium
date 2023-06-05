@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -63,7 +64,7 @@ class TargetDeviceBootstrapController
     Step step = Step::NONE;
     Payload payload;
     std::string ssid;
-    std::string password;
+    absl::optional<std::string> password;
     std::string fido_email;
   };
 
