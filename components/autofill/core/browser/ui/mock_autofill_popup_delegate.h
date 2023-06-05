@@ -25,9 +25,7 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
   MOCK_METHOD(void, OnPopupSuppressed, (), (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
-              (const std::u16string& value,
-               Suggestion::FrontendId frontend_id,
-               const Suggestion::BackendId& backend_id),
+              (const Suggestion& suggestion),
               (override));
   MOCK_METHOD(void,
               DidAcceptSuggestion,

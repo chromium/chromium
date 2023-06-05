@@ -515,10 +515,9 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  external_delegate_->DidSelectSuggestion(
-      std::u16string(),
-      Suggestion::FrontendId(kInsecureContextPaymentDisabledMessage),
-      Suggestion::BackendId());
+  const Suggestion suggestion{
+      Suggestion::FrontendId(kInsecureContextPaymentDisabledMessage)};
+  external_delegate_->DidSelectSuggestion(suggestion);
 
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(autofill_client_,
@@ -526,10 +525,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
       .Times(0);
 
-  external_delegate_->DidAcceptSuggestion(
-      Suggestion(
-          Suggestion::FrontendId(kInsecureContextPaymentDisabledMessage)),
-      0);
+  external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/0);
 }
 
 // Test that the Autofill delegate still allows previewing and filling
@@ -559,8 +555,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
                                      field_id_, masked_iban_value));
-  external_delegate_->DidSelectSuggestion(
-      masked_iban_value, PopupItemId::kIbanEntry, Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*autofill_driver_,
@@ -594,18 +589,13 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(*autofill_driver_,
               RendererShouldPreviewFieldWithValue(field_id_, promo_code_value));
-  external_delegate_->DidSelectSuggestion(promo_code_value,
-                                          PopupItemId::kMerchantPromoCodeEntry,
-                                          Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, promo_code_value));
 
-  external_delegate_->DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kMerchantPromoCodeEntry,
-                                     promo_code_value),
-      0);
+  external_delegate_->DidAcceptSuggestion(suggestions[0], 0);
 }
 
 // Test that the Autofill delegate routes the merchant promo code suggestions
@@ -629,21 +619,21 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   IssueOnQuery();
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   external_delegate_->DidSelectSuggestion(
-      u"baz foo", PopupItemId::kPasswordEntry, Suggestion::BackendId());
+      test::CreateAutofillSuggestion(PopupItemId::kPasswordEntry, u"baz foo"));
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewForm(mojom::RendererFormDataAction::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(u"baz foo", kAutofillProfileId,
-                                          Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(test::CreateAutofillSuggestion(
+      Suggestion::FrontendId(kAutofillProfileId), u"baz foo"));
 
   // Ensure selecting an autocomplete entry will cause any previews to
   // get cleared.
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
                                      field_id_, std::u16string(u"baz foo")));
-  external_delegate_->DidSelectSuggestion(
-      u"baz foo", PopupItemId::kAutocompleteEntry, Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(test::CreateAutofillSuggestion(
+      PopupItemId::kAutocompleteEntry, u"baz foo"));
 
   // Ensure selecting a virtual card entry will cause any previews to
   // get cleared.
@@ -651,9 +641,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewVirtualCardInformation(
                   mojom::RendererFormDataAction::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(std::u16string(),
-                                          PopupItemId::kVirtualCreditCardEntry,
-                                          Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(
+      test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry));
 }
 
 // Test that the popup is hidden once we are done editing the autofill field.
@@ -981,9 +970,8 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
   EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewVirtualCardInformation(
                   mojom::RendererFormDataAction::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(std::u16string(),
-                                          PopupItemId::kVirtualCreditCardEntry,
-                                          Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(
+      Suggestion(PopupItemId::kVirtualCreditCardEntry));
 }
 
 // Tests that the prompt to show account cards shows up when the corresponding

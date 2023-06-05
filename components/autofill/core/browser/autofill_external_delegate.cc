@@ -193,10 +193,12 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(
-    const std::u16string& value,
-    Suggestion::FrontendId frontend_id,
-    const Suggestion::BackendId& backend_id) {
+    const Suggestion& suggestion) {
   ClearPreviewedForm();
+
+  const Suggestion::FrontendId frontend_id = suggestion.frontend_id;
+  const Suggestion::BackendId backend_id =
+      suggestion.GetPayload<Suggestion::BackendId>();
 
   // Only preview the data if it is a profile or a virtual card.
   if (frontend_id.is_an_address_or_card_popup_item_id()) {
@@ -206,7 +208,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
              frontend_id == PopupItemId::kIbanEntry ||
              frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
     driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
-                                                 value);
+                                                 suggestion.main_text.value);
   } else if (frontend_id == PopupItemId::kVirtualCreditCardEntry) {
     manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kPreview, backend_id.value(),

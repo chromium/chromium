@@ -1333,9 +1333,9 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
   // Check that preview of the empty username works.
   EXPECT_CALL(*client.mock_driver(),
               PreviewSuggestion(std::u16string(), test_password_));
-  password_autofill_manager_->DidSelectSuggestion(
-      no_username_string, Suggestion::FrontendId() /*not used*/,
-      Suggestion::BackendId() /*not used*/);
+  const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      autofill::PopupItemId::kPasswordEntry, no_username_string);
+  password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that fill of the empty username works.
@@ -1345,10 +1345,7 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
-  password_autofill_manager_->DidAcceptSuggestion(
-      autofill::test::CreateAutofillSuggestion(
-          autofill::PopupItemId::kPasswordEntry, no_username_string),
-      1);
+  password_autofill_manager_->DidAcceptSuggestion(suggestion, /*position=*/1);
 
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 }
@@ -2129,9 +2126,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   // Check that preview of the "username" (i.e. the credential name) works.
   EXPECT_CALL(*client.mock_driver(),
               PreviewSuggestion(kName, /*password=*/std::u16string(u"")));
-  password_autofill_manager_->DidSelectSuggestion(
-      kName, autofill::PopupItemId::kWebauthnCredential,
-      Suggestion::BackendId() /*not used*/);
+  const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      autofill::PopupItemId::kWebauthnCredential, kName,
+      autofill::Suggestion::BackendId(kIdBase64));
+  password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.
@@ -2140,11 +2138,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
-  password_autofill_manager_->DidAcceptSuggestion(
-      autofill::test::CreateAutofillSuggestion(
-          autofill::PopupItemId::kWebauthnCredential, kName,
-          autofill::Suggestion::BackendId(kIdBase64)),
-      /*position=*/1);
+  password_autofill_manager_->DidAcceptSuggestion(suggestion,
+                                                  /*position=*/1);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

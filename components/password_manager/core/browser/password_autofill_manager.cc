@@ -384,10 +384,10 @@ void PasswordAutofillManager::OnPopupHidden() {}
 void PasswordAutofillManager::OnPopupSuppressed() {}
 
 void PasswordAutofillManager::DidSelectSuggestion(
-    const std::u16string& value,
-    autofill::Suggestion::FrontendId frontend_id,
-    const autofill::Suggestion::BackendId& backend_id) {
+    const autofill::Suggestion& suggestion) {
   ClearPreviewedForm();
+
+  const autofill::Suggestion::FrontendId frontend_id = suggestion.frontend_id;
   if (frontend_id == autofill::PopupItemId::kAllSavedPasswordsEntry ||
       frontend_id == autofill::PopupItemId::kPasswordAccountStorageEmpty ||
       frontend_id == autofill::PopupItemId::kGeneratePasswordEntry ||
@@ -399,7 +399,8 @@ void PasswordAutofillManager::DidSelectSuggestion(
     return;
   }
 
-  PreviewSuggestion(GetUsernameFromSuggestion(value), frontend_id);
+  PreviewSuggestion(GetUsernameFromSuggestion(suggestion.main_text.value),
+                    frontend_id);
 }
 
 void PasswordAutofillManager::OnUnlockItemAccepted(
