@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
@@ -90,14 +89,14 @@ public class PasswordMigrationWarningMediatorTest {
     }
 
     @Test
-    public void testOnAcknowledgeCollapsesTheSheet() {
+    public void testOnAcknowledgeHidesTheSheet() {
         mMediator.onAcknowledge(mBottomSheetController);
-        verify(mBottomSheetController).collapseSheet(true);
+        assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
-    public void testOnCancelCollapsesTheSheet() {
+    public void testOnCancelHidesTheSheet() {
         mMediator.onCancel(mBottomSheetController);
-        verify(mBottomSheetController).collapseSheet(true);
+        assertFalse(mModel.get(VISIBLE));
     }
 }

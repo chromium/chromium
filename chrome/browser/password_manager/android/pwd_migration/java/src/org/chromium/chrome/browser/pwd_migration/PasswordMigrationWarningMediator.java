@@ -37,7 +37,7 @@ class PasswordMigrationWarningMediator implements PasswordMigrationWarningOnClic
 
     @Override
     public void onAcknowledge(BottomSheetController bottomSheetController) {
-        bottomSheetController.collapseSheet(true);
+        mModel.set(VISIBLE, false);
     }
 
     @Override
@@ -53,6 +53,6 @@ class PasswordMigrationWarningMediator implements PasswordMigrationWarningOnClic
 
     @Override
     public void onCancel(BottomSheetController bottomSheetController) {
-        bottomSheetController.collapseSheet(true);
+        mModel.set(VISIBLE, false);
     }
 }
