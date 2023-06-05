@@ -185,14 +185,14 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
     ExternalInstallSource install_source,
     SynchronizeCallback callback) {
   CHECK(callback);
-  DCHECK(base::ranges::all_of(
+  CHECK(base::ranges::all_of(
       desired_apps_install_options,
       [&install_source](const ExternalInstallOptions& install_options) {
         return install_options.install_source == install_source;
       }));
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
-  DCHECK(!base::Contains(synchronize_requests_, install_source));
+  CHECK(!base::Contains(synchronize_requests_, install_source));
   command_scheduler_->ScheduleCallbackWithLock<AllAppsLock>(
       "ExternallyManagedAppManager::SynchronizeInstalledApps",
       std::make_unique<AllAppsLockDescription>(),
