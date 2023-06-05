@@ -52,6 +52,12 @@ void CaptionBubbleModel::OnTextChanged() {
     observer_->OnTextChanged();
 }
 
+void CaptionBubbleModel::OnAutoDetectedLanguageChanged() {
+  if (observer_) {
+    observer_->OnAutoDetectedLanguageChanged();
+  }
+}
+
 void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
   partial_text_ = partial_text;
   OnTextChanged();
@@ -110,6 +116,15 @@ void CaptionBubbleModel::CommitPartialText() {
     final_text_.erase(0, truncate_index);
     OnTextChanged();
   }
+}
+
+void CaptionBubbleModel::SetLanguage(const std::string& language_code) {
+  if (!observer_) {
+    return;
+  }
+
+  auto_detected_language_code_ = language_code;
+  OnAutoDetectedLanguageChanged();
 }
 
 // static

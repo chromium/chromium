@@ -206,4 +206,21 @@ CaptionBubble* CaptionBubbleControllerViews::GetCaptionBubbleForTesting() {
   return caption_bubble_;
 }
 
+void CaptionBubbleControllerViews::OnLanguageIdentificationEvent(
+    CaptionBubbleContext* caption_bubble_context,
+    const media::mojom::LanguageIdentificationEventPtr& event) {
+  if (!caption_bubble_) {
+    return;
+  }
+  SetActiveModel(caption_bubble_context);
+  if (active_model_->IsClosed()) {
+    return;
+  }
+
+  if (event->asr_switch_result ==
+      media::mojom::AsrSwitchResult::kSwitchSucceeded) {
+    active_model_->SetLanguage(event->language);
+  }
+}
+
 }  // namespace captions

@@ -33,7 +33,8 @@ class SpeechRecognitionRecognizerImpl
 
   using OnLanguageIdentificationEventCallback = base::RepeatingCallback<void(
       const std::string& language,
-      const media::mojom::ConfidenceLevel confidence_level)>;
+      const media::mojom::ConfidenceLevel confidence_level,
+      const media::mojom::AsrSwitchResult asr_switch_result)>;
 
   using OnSpeechRecognitionStoppedCallback = base::RepeatingCallback<void()>;
 
@@ -104,7 +105,8 @@ class SpeechRecognitionRecognizerImpl
 
   void OnLanguageIdentificationEvent(
       const std::string& language,
-      const media::mojom::ConfidenceLevel confidence_level);
+      const media::mojom::ConfidenceLevel confidence_level,
+      const media::mojom::AsrSwitchResult asr_switch_result);
 
   void OnRecognitionStoppedCallback();
 

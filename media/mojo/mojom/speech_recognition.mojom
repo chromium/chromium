@@ -9,6 +9,8 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Next MinVersion: 2
+
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
 [Stable, Extensible]
@@ -17,6 +19,16 @@ enum ConfidenceLevel {
   kNotConfident,
   kConfident,
   kHighlyConfident,
+};
+
+// Corresponds to the LangIdEvent.AsrSwitchResult defined in
+// http://google3/speech/soda/public/soda_event.proto.
+[Stable, Extensible]
+enum AsrSwitchResult {
+  [Default] kDefaultNoSwitch,
+  kSwitchSucceeded,
+  kSwitchFailed,
+  kSwitchSkipedNoLp,
 };
 
 // The main interface a renderer client uses to interact with a speech
@@ -142,6 +154,10 @@ struct LanguageIdentificationEvent {
 
   // The confidence interval.
   ConfidenceLevel confidence_level;
+
+  // If multilang is enabled, describes the actions Automatic Speech Recognition
+  // took as a result of this event.
+  [MinVersion=1] AsrSwitchResult? asr_switch_result;
 };
 
 // The interface used to notify the speech recognition client of events

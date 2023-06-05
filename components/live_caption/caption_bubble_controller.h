@@ -69,6 +69,10 @@ class CaptionBubbleController {
   virtual bool IsGenericErrorMessageVisibleForTesting() = 0;
   virtual std::string GetBubbleLabelTextForTesting() = 0;
   virtual void CloseActiveModelForTesting() = 0;
+
+  virtual void OnLanguageIdentificationEvent(
+      CaptionBubbleContext* caption_bubble_context,
+      const media::mojom::LanguageIdentificationEventPtr& event) = 0;
 };
 
 }  // namespace captions

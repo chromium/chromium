@@ -435,7 +435,14 @@ CaptionBubble::CaptionBubble(PrefService* profile_prefs,
       prefs::kLiveTranslateEnabled,
       base::BindRepeating(&CaptionBubble::OnLiveTranslateEnabledChanged,
                           base::Unretained(this)));
-
+  pref_change_registrar_->Add(
+      prefs::kLiveCaptionLanguageCode,
+      base::BindRepeating(&CaptionBubble::OnLiveCaptionLanguageChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kLiveTranslateTargetLanguageCode,
+      base::BindRepeating(&CaptionBubble::OnLiveTranslateTargetLanguageChanged,
+                          base::Unretained(this)));
   inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, base::Seconds(kNoActivityIntervalSeconds),
       base::BindRepeating(&CaptionBubble::OnInactivityTimeout,
@@ -475,10 +482,6 @@ void CaptionBubble::Init() {
       views::BoxLayout::Orientation::kHorizontal));
 
   views::View* right_header_container = new views::View();
-  right_header_container
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal))
-      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
   views::View* left_header_container = new views::View();
 
   views::View* content_container = new views::View();
@@ -643,34 +646,51 @@ void CaptionBubble::Init() {
       content_container->AddChildView(std::move(collapse_button));
 
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    auto live_translate_label = std::make_unique<views::StyledLabel>();
-    live_translate_label->SetVisible(
-        profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled));
-    live_translate_label->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
-    live_translate_label->SetHorizontalAlignment(
+    auto language_label = std::make_unique<views::StyledLabel>();
+    language_label->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
+    language_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
-    live_translate_label->GetViewAccessibility().OverrideIsIgnored(true);
+    language_label->GetViewAccessibility().OverrideIsIgnored(true);
 
-    source_language_ = speech::GetLanguageDisplayName(
-        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode),
-        application_locale_);
-    target_language_ = speech::GetLanguageDisplayName(
-        profile_prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode),
-        application_locale_);
-    std::u16string label_text = l10n_util::GetStringFUTF16(
-        IDS_LIVE_CAPTION_TRANSLATED_CAPTIONS, source_language_,
-        target_language_, &live_translate_label_offsets_);
-    live_translate_label->SetText(label_text);
-    live_translate_label_ =
-        left_header_container->AddChildView(std::move(live_translate_label));
+    source_language_code_ =
+        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
+    source_language_text_ = speech::GetLanguageDisplayName(
+        source_language_code_, application_locale_);
+    target_language_code_ =
+        profile_prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
+    target_language_text_ = speech::GetLanguageDisplayName(
+        target_language_code_, application_locale_);
+    language_label_ =
+        left_header_container->AddChildView(std::move(language_label));
+    UpdateLanguageLabelText();
+
+    auto caption_settings_button = BuildImageButton(
+        base::BindRepeating(&CaptionBubble::CaptionSettingsButtonPressed,
+                            base::Unretained(this)),
+        IDS_LIVE_CAPTION_BUBBLE_CAPTION_SETTINGS);
+    caption_settings_button_ =
+        left_header_container->AddChildView(std::move(caption_settings_button));
   }
 
-  auto caption_settings_button = BuildImageButton(
-      base::BindRepeating(&CaptionBubble::CaptionSettingsButtonPressed,
-                          base::Unretained(this)),
-      IDS_LIVE_CAPTION_BUBBLE_CAPTION_SETTINGS);
-  caption_settings_button_ =
-      left_header_container->AddChildView(std::move(caption_settings_button));
+  std::unique_ptr<views::BoxLayout> right_header_container_layout =
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal);
+  right_header_container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  right_header_container_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  right_header_container->SetLayoutManager(
+      std::move(right_header_container_layout));
+  std::unique_ptr<views::BoxLayout> left_header_container_layout =
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets::TLBR(
+              0, close_button_->GetBorder()->GetInsets().width() / 2, 0, 0));
+  left_header_container_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  left_header_container->SetLayoutManager(
+      std::move(left_header_container_layout));
+
   left_header_container_ =
       header_container->AddChildView(std::move(left_header_container));
   header_container->AddChildView(std::move(right_header_container));
@@ -728,8 +748,30 @@ void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void CaptionBubble::OnLiveTranslateEnabledChanged() {
-  live_translate_label_->SetVisible(
-      profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled));
+  UpdateLanguageLabelText();
+  SetTextColor();
+  Redraw();
+}
+
+void CaptionBubble::OnLiveCaptionLanguageChanged() {
+  source_language_code_ =
+      profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
+  source_language_text_ = speech::GetLanguageDisplayName(source_language_code_,
+                                                         application_locale_);
+
+  UpdateLanguageLabelText();
+  SetTextColor();
+  Redraw();
+}
+
+void CaptionBubble::OnLiveTranslateTargetLanguageChanged() {
+  target_language_code_ =
+      profile_prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
+  target_language_text_ = speech::GetLanguageDisplayName(target_language_code_,
+                                                         application_locale_);
+
+  UpdateLanguageLabelText();
+  SetTextColor();
   Redraw();
 }
 
@@ -824,6 +866,28 @@ void CaptionBubble::OnTextChanged() {
 
   if (GetWidget()->IsVisible())
     ResetInactivityTimer();
+}
+
+void CaptionBubble::OnAutoDetectedLanguageChanged() {
+  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    return;
+  }
+
+  source_language_code_ = model_->GetAutoDetectedLanguageCode();
+  source_language_text_ = speech::GetLanguageDisplayName(source_language_code_,
+                                                         application_locale_);
+
+  if (l10n_util::GetLanguage(
+          profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode)) !=
+      l10n_util::GetLanguage(source_language_code_)) {
+    // Append `(auto-detected)` to the end of the source language text.
+    source_language_text_ = l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_AUTODETECTED_SOURCE_LANGUAGE, source_language_text_);
+  }
+
+  UpdateLanguageLabelText();
+  SetTextColor();
+  Redraw();
 }
 
 bool CaptionBubble::ThemeColorsChanged() {
@@ -989,8 +1053,8 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
   label_->SetMaximumWidth(kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
   title_->SetLineHeight(kLineHeightDip * textScaleFactor);
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    live_translate_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
-                                         textScaleFactor);
+    language_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
+                                   textScaleFactor);
   }
   generic_error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
   generic_error_icon_->SetImageSize(
@@ -1029,16 +1093,16 @@ void CaptionBubble::SetTextColor() {
     const gfx::FontList live_translate_font_list =
         GetFontList(kLiveTranslateLabelFontSizePx);
 
-    views::StyledLabel::RangeStyleInfo live_translate_label_style;
-    live_translate_label_style.custom_font = live_translate_font_list;
-    live_translate_label_style.override_color = color_provider->GetColor(
+    views::StyledLabel::RangeStyleInfo language_label_style;
+    language_label_style.custom_font = live_translate_font_list;
+    language_label_style.override_color = color_provider->GetColor(
         ui::kColorLiveCaptionBubbleForegroundSecondary);
 
     views::StyledLabel::RangeStyleInfo live_translate_language_style;
     live_translate_language_style.custom_font = live_translate_font_list;
     live_translate_language_style.override_color = text_color;
 
-    UpdateLiveTranslateLabelStyle(live_translate_label_style,
+    UpdateLiveTranslateLabelStyle(language_label_style,
                                   live_translate_language_style);
   }
 #if BUILDFLAG(IS_WIN)
@@ -1118,20 +1182,42 @@ void CaptionBubble::SetBackgroundColor() {
 void CaptionBubble::UpdateLiveTranslateLabelStyle(
     views::StyledLabel::RangeStyleInfo label_style,
     views::StyledLabel::RangeStyleInfo languages_style) {
-  live_translate_label_->AddStyleRange(
-      gfx::Range(0, live_translate_label_offsets_[0]), label_style);
-  live_translate_label_->AddStyleRange(
-      gfx::Range(live_translate_label_offsets_[0],
-                 live_translate_label_offsets_[0] + source_language_.length()),
+  // Update the style of the label and source language.
+  language_label_->AddStyleRange(gfx::Range(0, language_label_offsets_[0]),
+                                 label_style);
+  language_label_->AddStyleRange(
+      gfx::Range(language_label_offsets_[0],
+                 language_label_offsets_[0] + source_language_text_.length()),
       languages_style);
-  live_translate_label_->AddStyleRange(
-      gfx::Range(live_translate_label_offsets_[0] + source_language_.length(),
-                 live_translate_label_offsets_[1]),
-      label_style);
-  live_translate_label_->AddStyleRange(
-      gfx::Range(live_translate_label_offsets_[1],
-                 live_translate_label_offsets_[1] + target_language_.length()),
-      languages_style);
+
+  // Update the style of the target language if applicable.
+  if (language_label_offsets_.size() > 1) {
+    language_label_->AddStyleRange(
+        gfx::Range(language_label_offsets_[0] + source_language_text_.length(),
+                   language_label_offsets_[1]),
+        label_style);
+    language_label_->AddStyleRange(
+        gfx::Range(language_label_offsets_[1],
+                   language_label_offsets_[1] + target_language_text_.length()),
+        languages_style);
+  }
+}
+
+void CaptionBubble::UpdateLanguageLabelText() {
+  language_label_offsets_.clear();
+
+  if (profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
+      l10n_util::GetLanguage(source_language_code_) !=
+          l10n_util::GetLanguage(target_language_code_)) {
+    language_label_->SetText(l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_TRANSLATED_CAPTION_LANGUAGE, source_language_text_,
+        target_language_text_, &language_label_offsets_));
+  } else {
+    size_t offset;
+    language_label_->SetText(l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_CAPTION_LANGUAGE, source_language_text_, &offset));
+    language_label_offsets_.push_back(offset);
+  }
 }
 
 void CaptionBubble::RepositionInContextRect(CaptionBubbleModel::Id model_id,
@@ -1175,16 +1261,15 @@ void CaptionBubble::UpdateContentSize() {
   auto button_size = close_button_->GetPreferredSize();
   left_header_container_->SetPreferredSize(
       gfx::Size(width - 3 * button_size.width(), button_size.height()));
-  int left_header_padding =
-      base::FeatureList::IsEnabled(media::kLiveTranslate) &&
-              live_translate_label_->GetVisible()
-          ? caption_settings_button_->GetBorder()->GetInsets().width() / 2
-          : 0;
-  left_header_container_
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(0, left_header_padding, 0, 0), 0))
-      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    // Set the maximum width of the live translate label to ensure that the
+    // caption settings button doesn't get crowded out.
+    language_label_->SizeToFit(
+        left_header_container_->GetPreferredSize().width() -
+        button_size.width());
+  }
+
 #if BUILDFLAG(IS_WIN)
   // The Media Foundation renderer error message should not scale with the
   // user's caption style preference.
@@ -1289,8 +1374,8 @@ views::Label* CaptionBubble::GetLabelForTesting() {
   return static_cast<views::Label*>(label_);
 }
 
-views::StyledLabel* CaptionBubble::GetLiveTranslateLabelForTesting() {
-  return static_cast<views::StyledLabel*>(live_translate_label_);
+views::StyledLabel* CaptionBubble::GetLanguageLabelForTesting() {
+  return static_cast<views::StyledLabel*>(language_label_);
 }
 
 bool CaptionBubble::IsGenericErrorMessageVisibleForTesting() const {

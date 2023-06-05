@@ -96,7 +96,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   bool HasActivity();
 
   views::Label* GetLabelForTesting();
-  views::StyledLabel* GetLiveTranslateLabelForTesting();
+  views::StyledLabel* GetLanguageLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
@@ -125,6 +125,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
                              const gfx::Rect& new_bounds) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnLiveTranslateEnabledChanged();
+  void OnLiveCaptionLanguageChanged();
+  void OnLiveTranslateTargetLanguageChanged();
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void OnThemeChanged() override;
@@ -145,6 +147,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
   void OnTextChanged();
+
+  // Called by CaptionBubbleModel to notify this object that the model's
+  // auto-detected language has changed.
+  void OnAutoDetectedLanguageChanged();
 
   // Used to prevent propagating theme changes when no theme colors have
   // changed. Returns whether the caption theme colors have changed since the
@@ -188,6 +194,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void UpdateLiveTranslateLabelStyle(
       views::StyledLabel::RangeStyleInfo label_style,
       views::StyledLabel::RangeStyleInfo languages_style);
+  void UpdateLanguageLabelText();
 
   // Places the bubble at the bottom center of the context widget for the active
   // model, ensuring that it's positioned where the user will spot it. If there
@@ -219,12 +226,14 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   raw_ptr<CaptionBubbleLabel> label_;
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
-  raw_ptr<views::StyledLabel> live_translate_label_;
+  raw_ptr<views::StyledLabel> language_label_;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
-  std::u16string source_language_;
-  std::u16string target_language_;
-  std::vector<size_t> live_translate_label_offsets_;
+  std::string source_language_code_;
+  std::string target_language_code_;
+  std::u16string source_language_text_;
+  std::u16string target_language_text_;
+  std::vector<size_t> language_label_offsets_;
   raw_ptr<views::ImageView> generic_error_icon_;
   raw_ptr<views::View> generic_error_message_;
   raw_ptr<views::ImageButton> back_to_tab_button_;
@@ -235,6 +244,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   raw_ptr<views::ImageButton> unpin_button_;
   raw_ptr<views::ImageButton> caption_settings_button_;
   raw_ptr<CaptionBubbleFrameView> frame_;
+
+  // Flag indicating whether the current source language does not match the user
+  // preference source language.
+  bool auto_detected_language_switched_ = false;
 
 #if BUILDFLAG(IS_WIN)
   raw_ptr<views::StyledLabel> media_foundation_renderer_error_text_;

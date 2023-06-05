@@ -250,8 +250,13 @@ void LiveCaptionController::OnAudioStreamEnd(
 }
 
 void LiveCaptionController::OnLanguageIdentificationEvent(
+    CaptionBubbleContext* caption_bubble_context,
     const media::mojom::LanguageIdentificationEventPtr& event) {
   // TODO(crbug.com/1175357): Implement the UI for language identification.
+  if (caption_bubble_controller_) {
+    return caption_bubble_controller_->OnLanguageIdentificationEvent(
+        caption_bubble_context, event);
+  }
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)

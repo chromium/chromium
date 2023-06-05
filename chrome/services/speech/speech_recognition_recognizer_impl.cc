@@ -96,7 +96,9 @@ void OnSodaResponse(const char* serialized_proto,
         ->language_identification_event_callback()
         .Run(std::string(event.language()),
              static_cast<media::mojom::ConfidenceLevel>(
-                 event.confidence_level()));
+                 event.confidence_level()),
+             static_cast<media::mojom::AsrSwitchResult>(
+                 event.asr_switch_result()));
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::STOP) {
@@ -171,11 +173,12 @@ void SpeechRecognitionRecognizerImpl::
 
 void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
     const std::string& language,
-    const media::mojom::ConfidenceLevel confidence_level) {
+    const media::mojom::ConfidenceLevel confidence_level,
+    const media::mojom::AsrSwitchResult asr_switch_result) {
   if (client_remote_.is_bound()) {
     client_remote_->OnLanguageIdentificationEvent(
-        media::mojom::LanguageIdentificationEvent::New(language,
-                                                       confidence_level));
+        media::mojom::LanguageIdentificationEvent::New(
+            language, confidence_level, asr_switch_result));
   }
 }
 

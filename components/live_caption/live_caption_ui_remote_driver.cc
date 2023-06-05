@@ -36,7 +36,7 @@ void LiveCaptionUiRemoteDriver::OnSpeechRecognitionRecognitionEvent(
 
 void LiveCaptionUiRemoteDriver::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
-  controller_->OnLanguageIdentificationEvent(std::move(event));
+  controller_->OnLanguageIdentificationEvent(&context_, std::move(event));
 }
 
 void LiveCaptionUiRemoteDriver::OnSpeechRecognitionError() {

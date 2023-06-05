@@ -100,10 +100,11 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
   void OnLanguageIdentificationEvent(
       content::RenderFrameHost* frame_host,
       const std::string& language,
-      const media::mojom::ConfidenceLevel confidence_level) {
+      const media::mojom::ConfidenceLevel confidence_level,
+      const media::mojom::AsrSwitchResult asr_switch_result) {
     remotes_[frame_host]->OnLanguageIdentificationEvent(
-        media::mojom::LanguageIdentificationEvent::New(language,
-                                                       confidence_level));
+        media::mojom::LanguageIdentificationEvent::New(
+            language, confidence_level, asr_switch_result));
   }
 
   void OnSpeechRecognitionError(content::RenderFrameHost* frame_host) {
@@ -204,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 
   SetLiveCaptionEnabled(true);
   OnLanguageIdentificationEvent(
-      frame_host, "en-US", media::mojom::ConfidenceLevel::kHighlyConfident);
+      frame_host, "en-US", media::mojom::ConfidenceLevel::kHighlyConfident,
+      media::mojom::AsrSwitchResult::kSwitchSucceeded);
 }
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
@@ -253,14 +255,11 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, LiveTranslate) {
   SetLiveCaptionEnabled(true);
   SetLiveTranslateEnabled(true);
 
-  // Dispatching the speech recognition should be successful, but the
-  // widget should remain hidden because the test does not fetch real
-  // translations.
   OnSpeechRecognitionRecognitionEvent(
       frame_host, "Elephants can live over 90 years in captivity.",
       /* expected_success= */ true);
   base::RunLoop().RunUntilIdle();
-  ExpectIsWidgetVisible(false);
+  ExpectIsWidgetVisible(true);
 }
 
 }  // namespace captions

@@ -93,6 +93,9 @@ class LiveCaptionSpeechRecognitionHost
   // should stop.
   bool stop_transcriptions_ = false;
 
+  // The source language code of the audio stream.
+  std::string source_language_;
+
   // The user preferences containing the target and source language codes.
   raw_ptr<PrefService> prefs_;
 
