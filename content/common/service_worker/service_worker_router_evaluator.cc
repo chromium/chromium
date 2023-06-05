@@ -7,6 +7,7 @@
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/re2/src/re2/set.h"
 
 namespace {
 
@@ -24,10 +25,15 @@ std::string ConvertToRegex(const blink::UrlPattern& url_pattern) {
 
 namespace content {
 
-ServiceWorkerRouterEvaluator::RouterRule::RouterRule()
-    : url_patterns(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)) {}
+struct ServiceWorkerRouterEvaluator::RouterRule {
+  RouterRule()
+      : url_patterns(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)) {}
+  ~RouterRule() = default;
 
-ServiceWorkerRouterEvaluator::RouterRule::~RouterRule() = default;
+  RE2::Set url_patterns;
+  size_t url_pattern_length = 0;
+  std::vector<blink::ServiceWorkerRouterSource> sources;
+};
 
 ServiceWorkerRouterEvaluator::ServiceWorkerRouterEvaluator(
     blink::ServiceWorkerRouterRules rules)
