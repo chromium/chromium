@@ -403,7 +403,12 @@ template <typename PhysicalRectCollector>
 void LayoutInline::CollectLineBoxRects(
     const PhysicalRectCollector& yield) const {
   NOT_DESTROYED();
-  DCHECK(IsInLayoutNGInlineFormattingContext());
+#if DCHECK_IS_ON()
+  if (!IsInLayoutNGInlineFormattingContext()) {
+    ShowLayoutTreeForThis();
+    DCHECK(IsInLayoutNGInlineFormattingContext());
+  }
+#endif
   NGInlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
