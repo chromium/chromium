@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
-import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.ALPHA_NUMERIC_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.EMAIL_ADDRESS_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.PERSON_NAME_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.PHONE_NUMBER_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.REGION_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.STREET_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.REGION_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
 
 import android.content.Context;
 import android.text.Editable;

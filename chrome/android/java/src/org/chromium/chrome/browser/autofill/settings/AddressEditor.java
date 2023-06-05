@@ -30,8 +30,9 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -132,10 +133,9 @@ public class AddressEditor {
     }
 
     // TODO(crbug.com/1432505): remove temporary unsupported countries filtering.
-    private static List<EditorFieldModel.DropdownKeyValue> getSupportedCountries(
+    private static List<DropdownKeyValue> getSupportedCountries(
             boolean filterOutUnsupportedCountries) {
-        List<EditorFieldModel.DropdownKeyValue> supportedCountries =
-                AutofillProfileBridge.getSupportedCountries();
+        List<DropdownKeyValue> supportedCountries = AutofillProfileBridge.getSupportedCountries();
         if (filterOutUnsupportedCountries) {
             PersonalDataManager personalDataManager = PersonalDataManager.getInstance();
             supportedCountries.removeIf(entry

@@ -14,7 +14,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.WebContents;
@@ -68,24 +68,22 @@ public final class AutofillProfileBridge {
     }
 
     /** @return The list of supported countries sorted by their localized display names. */
-    public static List<EditorFieldModel.DropdownKeyValue> getSupportedCountries() {
+    public static List<DropdownKeyValue> getSupportedCountries() {
         List<String> countryCodes = new ArrayList<>();
         List<String> countryNames = new ArrayList<>();
-        List<EditorFieldModel.DropdownKeyValue> countries = new ArrayList<>();
+        List<DropdownKeyValue> countries = new ArrayList<>();
 
         AutofillProfileBridgeJni.get().getSupportedCountries(countryCodes, countryNames);
 
         for (int i = 0; i < countryCodes.size(); i++) {
-            countries.add(new EditorFieldModel.DropdownKeyValue(
-                    countryCodes.get(i), countryNames.get(i)));
+            countries.add(new DropdownKeyValue(countryCodes.get(i), countryNames.get(i)));
         }
 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.PRIMARY);
-        Collections.sort(countries, new Comparator<EditorFieldModel.DropdownKeyValue>() {
+        Collections.sort(countries, new Comparator<DropdownKeyValue>() {
             @Override
-            public int compare(
-                    EditorFieldModel.DropdownKeyValue lhs, EditorFieldModel.DropdownKeyValue rhs) {
+            public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
                 int result = collator.compare(lhs.getValue(), rhs.getValue());
                 if (result == 0) result = lhs.getKey().compareTo(rhs.getKey());
                 return result;
@@ -95,21 +93,19 @@ public final class AutofillProfileBridge {
     }
 
     /** @return The list of admin areas sorted by their localized display names. */
-    public static List<EditorFieldModel.DropdownKeyValue> getAdminAreaDropdownList(
+    public static List<DropdownKeyValue> getAdminAreaDropdownList(
             String[] adminAreaCodes, String[] adminAreaNames) {
-        List<EditorFieldModel.DropdownKeyValue> adminAreas = new ArrayList<>();
+        List<DropdownKeyValue> adminAreas = new ArrayList<>();
 
         for (int i = 0; i < adminAreaCodes.length; ++i) {
-            adminAreas.add(
-                    new EditorFieldModel.DropdownKeyValue(adminAreaCodes[i], adminAreaNames[i]));
+            adminAreas.add(new DropdownKeyValue(adminAreaCodes[i], adminAreaNames[i]));
         }
 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.PRIMARY);
-        Collections.sort(adminAreas, new Comparator<EditorFieldModel.DropdownKeyValue>() {
+        Collections.sort(adminAreas, new Comparator<DropdownKeyValue>() {
             @Override
-            public int compare(
-                    EditorFieldModel.DropdownKeyValue lhs, EditorFieldModel.DropdownKeyValue rhs) {
+            public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
                 // Sorted according to the admin area values, such as Quebec,
                 // rather than the admin area keys, such as QC.
                 return collator.compare(lhs.getValue(), rhs.getValue());

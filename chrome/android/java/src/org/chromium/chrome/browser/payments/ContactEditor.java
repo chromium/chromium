@@ -25,8 +25,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.PropertyModel;
 
