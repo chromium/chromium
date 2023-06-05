@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">已知网络</translation>
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1240638468526743569">某个应用</translation>
+<translation id="1242704516557658755">在近期用过的窗口列表中反向循环浏览</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1246890715821376239">不支持的应用</translation>
 <translation id="1247372569136754018">麦克风（内部）</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">屏幕键盘已停用</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275285675049378717">正在为 <ph name="POWER_SOURCE" />充电</translation>
+<translation id="1276975447697633661">选择相应文件，然后按 <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />（<ph name="ANNOTATION" />）</translation>
 <translation id="1285992161347843613">定位手机</translation>
 <translation id="1287002645302686982">已经存在名为“<ph name="DESK_TEMPLATE_NAME" />”的已保存桌面</translation>
@@ -345,6 +347,7 @@
 <translation id="2528111225373402384">热点设置</translation>
 <translation id="2530896289327917474">开启或关闭光标浏览模式</translation>
 <translation id="2531025035050312891">设备运行缓慢</translation>
+<translation id="2531107890083353124">在拖动标签页的同时按 <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">将所选内容复制到剪贴板</translation>
 <translation id="2549711466868162843">改善光线</translation>
 <translation id="2549985041256363841">开始录制</translation>
@@ -390,6 +393,7 @@
 <translation id="2750932254614666392">“删除”</translation>
 <translation id="2750941250130734256">取消停靠活动窗口。</translation>
 <translation id="2761723519669354964">打开任务栏中的突出显示项</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 至 <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">退出截屏/录屏模式</translation>
 <translation id="2785499565474703580">已连接 1 部设备</translation>
@@ -423,6 +427,7 @@
 <translation id="2942350706960889382">停靠的放大镜</translation>
 <translation id="2942516765047364088">任务栏位置</translation>
 <translation id="2946119680249604491">添加连接</translation>
+<translation id="2949420361496057765">在按住 <ph name="MODIFIER" /> 的同时点击链接</translation>
 <translation id="295852781144570696">设备音频</translation>
 <translation id="2960314608273155470">截屏/录屏模式，默认为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键即可使用键盘进行导航。</translation>
 <translation id="2961963223658824723">出了点问题。请过几秒钟后重试。</translation>
@@ -528,6 +533,7 @@
 <translation id="3410336247007142655">显示深色主题设置</translation>
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
+<translation id="3426253816581969877">在按住 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 的同时，多次按 <ph name="KEY" /> 直到切换至您要打开的窗口，然后松开手指</translation>
 <translation id="3428447136709161042">断开与<ph name="NETWORK_NAME" />的连接</translation>
 <translation id="3430396595145920809">从右向左滑动手指即可返回</translation>
 <translation id="3431517721463707585">桌面 14</translation>
@@ -542,6 +548,7 @@
 <translation id="346243998268439747">重置缩放级别</translation>
 <translation id="3465223694362104965">这部设备当前连接的键盘已不同于您上次登录时所用的键盘。请确保您信任此键盘，然后再使用它。</translation>
 <translation id="3465356146291925647">由您的管理员管理</translation>
+<translation id="347117769229524881">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">任务栏已自动隐藏</translation>
@@ -606,6 +613,7 @@
 <translation id="3677931086890821290">如果您开启地理定位，即意味着允许所有具有位置信息权限的应用和网站以及 ChromeOS 使用 Wi-Fi 和移动网络位置信息。</translation>
 <translation id="3679827876008292680">转到窗口中的最后一个标签页</translation>
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>
+<translation id="3682279812299376603">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">网站</translation>
 <translation id="3702809606464356667">正在显示当前桌面中的窗口，按向上键即可显示所有桌面中的窗口</translation>
 <translation id="3702846122927433391">尼日利亚的人口</translation>
@@ -633,6 +641,7 @@
 <translation id="383058930331066723">省电模式已开启</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
 <translation id="384082539148746321">删除此模板？</translation>
+<translation id="3844627820291068572">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />，然后按 <ph name="KEY_ONE" /> 或 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /> 或 <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">没有可用的网络信息</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
@@ -848,6 +857,7 @@
 <translation id="4798622944000246716">您的移动网络不支持热点</translation>
 <translation id="479989351350248267">搜索</translation>
 <translation id="4804818685124855865">断开连接</translation>
+<translation id="4813311884204119883">将链接拖到标签栏的空白区域</translation>
 <translation id="4814539958450445987">登录屏幕</translation>
 <translation id="481455355267255546">即将到来的活动</translation>
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
@@ -855,6 +865,7 @@
 <translation id="485592688953820832">不执行任何操作（暂停）</translation>
 <translation id="485634149294284819">进入键盘菜单</translation>
 <translation id="485806788160414322">播放或暂停媒体</translation>
+<translation id="4858764087721901597">按 <ph name="MODIFIER_ONE" />，然后按 <ph name="KEY_ONE" /> 或 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /> 或 <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869">请检查您的网络连接状况以下载“<ph name="FILENAME" />”</translation>
 <translation id="4864369630010738180">正在登录…</translation>
 <translation id="4864648187878336334">桌面 15</translation>
@@ -997,6 +1008,7 @@
 <translation id="5463129623250377817">将所选内容剪切到剪贴板</translation>
 <translation id="5465662442746197494">需要帮助？</translation>
 <translation id="547979256943495781">任务栏位于屏幕右侧</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> 或 <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">有可用的固件更新</translation>
 <translation id="5503884284981862082">打开/关闭 Google 助理</translation>
 <translation id="5506975627792768506">开启或关闭放大镜</translation>
@@ -1188,6 +1200,7 @@
 <translation id="6330012934079202188">正在显示所有桌面中的窗口，按向上键即可显示当前桌面中的窗口</translation>
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
 <translation id="6344138931392227467">已连接到“<ph name="DEVICE_NAME" />”</translation>
+<translation id="6348449481487610270">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">应用推荐</translation>
 <translation id="6352082849089527770">未知网络</translation>
 <translation id="6359587239691116345">获取最新的功能和安全性方面的改进。如果您拒绝此更新，您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。</translation>
@@ -1233,6 +1246,7 @@
 <translation id="6537924328260219877">信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">正在扫描要下载的文件“<ph name="FILENAME" />”</translation>
 <translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
+<translation id="6555373427270923730">在地址栏中输入网址，然后按 <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 新安装</translation>
 <translation id="6559976592393364813">询问您的管理员</translation>
@@ -1634,6 +1648,7 @@
 <translation id="8425213833346101688">更改</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚上好！</translation>
 <translation id="8428213095426709021">设置</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 至 <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8433977262951327081">用于在任务栏中显示输入法选项菜单气泡的快捷键已更改。请使用<ph name="NEW_SHORTCUT" />（而不是 <ph name="OLD_SHORTCUT" />）。</translation>
 <translation id="8443879455002739353">“复制”</translation>
@@ -1664,6 +1679,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> 建议您更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">通知设置</translation>
 <translation id="857201607579416096">菜单已移至屏幕的右下角。</translation>
+<translation id="8581946341807941670">在按 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 的同时点击链接</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">按名称或颜色将您的应用排序</translation>
 <translation id="8609384513243082612">打开新标签页</translation>

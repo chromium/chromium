@@ -243,6 +243,7 @@
 <translation id="1998100899771863792">目前的桌面</translation>
 <translation id="2001444736072756133">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容。</translation>
 <translation id="2016340657076538683">輸入訊息</translation>
+<translation id="2017998995161831444">在「探索」應用程式中開啟「說明」</translation>
 <translation id="2018630726571919839">講笑話</translation>
 <translation id="2021864487439853900">按一下即可解鎖</translation>
 <translation id="2023558322300866873">您可隨時停止擷取封包</translation>
@@ -629,6 +630,7 @@
 <translation id="3765841986579723851">今天編輯過</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
 <translation id="3779139509281456663">正在連接「<ph name="NAME" />」</translation>
+<translation id="3781910048497807059">將焦點移至上一個窗格</translation>
 <translation id="3783640748446814672">Alt</translation>
 <translation id="3784455785234192852">鎖定</translation>
 <translation id="3796198851576711985">電池壽命</translation>
@@ -767,6 +769,7 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
+<translation id="4427695046139341014">遊戲資訊主頁</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4435022394553622295">在 <ph name="DEVICE_TYPE" /> 上查看手機的通知和應用程式</translation>
 <translation id="4441283832827406317">應用程式已按名稱排序</translation>
@@ -799,6 +802,7 @@
 <translation id="4541706525461326392">正在移除設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="4544483149666270818">選取要錄影的視窗</translation>
 <translation id="454541942614298893">我的裝置</translation>
+<translation id="4545950850562423083">將目前頁面儲存為書籤</translation>
 <translation id="4548482551627849548">將使用中的視窗移至左側桌面</translation>
 <translation id="4560576029703263363">已開啟</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -855,6 +859,7 @@
 <translation id="4789348252524569426">無法安裝語音檔案，裝置需要更新。請重新開機，然後再試一次。</translation>
 <translation id="478959186716341421">投放中</translation>
 <translation id="4798622944000246716">您的流動網絡不支援熱點</translation>
+<translation id="4798888871844665150">複製的項目已在剪貼簿中，按下 <ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看。</translation>
 <translation id="479989351350248267">搜尋</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4813311884204119883">將連結拖曳至分頁列上的空白區域</translation>
@@ -954,6 +959,7 @@
 <translation id="5229343007215035173">開啟/關閉私隱保護畫面</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="523505283826916779">協助工具設定</translation>
+<translation id="5238719049014159442">開啟/關閉啟動器</translation>
 <translation id="5245201184978705914">無法產生轉錄文字</translation>
 <translation id="5253783950165989294">已連接名為「<ph name="DEVICE_NAME" />」的裝置，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">沒有已儲存的桌面</translation>
@@ -1262,6 +1268,7 @@
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
 <translation id="6625718907317144388">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
+<translation id="662830937908749204">將焦點移至下一個窗格</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換「即時字幕」。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">根據名稱復原排列次序</translation>
@@ -1420,6 +1427,7 @@
 <translation id="7401222354741467707">擷取全螢幕截圖或進行全螢幕錄影</translation>
 <translation id="7405710164030118432">如要解鎖裝置，請輸入您的 Family Link 家長存取碼</translation>
 <translation id="7406608787870898861">完成流動網絡設定</translation>
+<translation id="7406854842098869085">按住 <ph name="MODIFIER_1" /> 鍵再輕按 <ph name="KEY" /> 鍵，直到切換至您要開啟的視窗，然後鬆開手指</translation>
 <translation id="740790383907119240">應用程式捷徑</translation>
 <translation id="7413851974711031813">㩒 Escape 掣就可以閂咗佢</translation>
 <translation id="7416471219712049036">儲存目前頁面</translation>
@@ -1499,6 +1507,7 @@
 <translation id="7727952505535211425">在新分頁中開啟網址列中的網站</translation>
 <translation id="77365090426890123">記憶體用量</translation>
 <translation id="7742327441377685481">沒有通知</translation>
+<translation id="7748275671948949022">突顯捷徑列上的「啟動器」按鈕</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7768784765476638775">揀選朗讀內容</translation>
@@ -1515,6 +1524,7 @@
 <translation id="7842569679327885685">警告：實驗性功能</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7848989271541991537">移咗去第 <ph name="PAGE_NUMBER" /> 頁，第 <ph name="ROW_NUMBER" /> 行，第<ph name="COLUMN_NUMBER" /> 欄。</translation>
+<translation id="7851039877802112575">將焦點移至彈出式視窗和對話框</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">用三隻手指向上滑動即可進入「概覽」</translation>
 <translation id="7862292329216937261">如要透過訪客身分使用這部置，請務必登出並選取畫面底部的 [以訪客身分瀏覽]。</translation>
@@ -1652,6 +1662,7 @@
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">網絡設定</translation>
 <translation id="8433977262951327081">在捷徑列中顯示輸入選項選單小視窗的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 以取代原有的 <ph name="OLD_SHORTCUT" />。</translation>
+<translation id="8437311513256731931">開啟意見反映工具</translation>
 <translation id="8443879455002739353">「複製」</translation>
 <translation id="8444246603146515890">已啟用桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
@@ -1703,6 +1714,7 @@
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8683506306463609433">效能追蹤使用中</translation>
 <translation id="8703634754197148428">開始錄影。如果喺開始之後想停止錄影，請㩒 Alt + Shift + L 鍵去捷徑列，然後搵停止錄影掣</translation>
+<translation id="8704155109538237473">突顯「畫中畫」視窗</translation>
 <translation id="870917907284186124">開啟/關閉語音聽寫功能 (使用語音輸入內容)</translation>
 <translation id="8717459106217102612">選取上一個字詞或字母</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>

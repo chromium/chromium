@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">کلید <ph name="KEY_NAME" /> فشار داده نشد</translation>
 <translation id="1435763214710588005">مصرف داده را در روز انتخاب‌شده از هر ماه به‌طور خودکار بازنشانی می‌کند</translation>
 <translation id="1442433966118452622">منبع تصویر</translation>
+<translation id="1449035143498573192">‏باز کردن در «جستجوی Google»</translation>
 <translation id="1451536289672181509">دستگاه صفحه‌کلید است.</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">ورودی‌ها</translation>
 <translation id="7955587717700691983">صفحه‌کلید بلوتوث</translation>
 <translation id="7960831585769876809">دما</translation>
+<translation id="7971535376154084247">کنترل‌های عمومی</translation>
 <translation id="7977800524392185497">برای پیوستن به <ph name="NETWORK_NAME" />، به «تنظیمات» بروید</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
 <translation id="7994702968232966508">‏روش EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">نام ارائه‌دهنده اصلی</translation>
 <translation id="8475690821716466388">‏شبکه Wi-Fi با پروتکل ضعیف WEP PSK ایمن شده است</translation>
 <translation id="8476242415522716722">زیرنور صفحه‌کلید</translation>
+<translation id="8476942730579767658">پنجره‌ها و میزکارها</translation>
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
 <translation id="8483248364096924578">‏نشانی IP</translation>
 <translation id="8491311378305535241">‏نمی‌توان در برنامه‌های Android ازطریق دیوار آتش به وب‌سایت‌های HTTPS متصل شد</translation>

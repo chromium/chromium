@@ -2445,6 +2445,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3038272154009688107">Ver todos los sitios</translation>
 <translation id="3038612606416062604">Añadir una impresora manualmente</translation>
 <translation id="3039491566278747710">Se ha producido un error al instalar la política sin conexión en el dispositivo.</translation>
+<translation id="3040982432432547149">Ayúdanos a mejorar Steam para Chromebook</translation>
 <translation id="3043016484125065343">Inicia sesión para ver tus marcadores</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">De <ph name="ORIGIN" /></translation>
@@ -4022,6 +4023,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4445446646109808714">Contrato de licencia de usuario final: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Duplicado</translation>
 <translation id="4448914100439890108">Ocultar contraseña de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
+<translation id="4449247303975391730">Gestionar permisos</translation>
 <translation id="4449948729197510913">Tu nombre de usuario pertenece a la cuenta de empresa de tu organización. Para registrar dispositivos en la cuenta, primero verifica la propiedad del dominio en la consola de administración. Necesitas tener privilegios de administrador para poder verificar la cuenta.</translation>
 <translation id="4449996769074858870">Esta pestaña está reproduciendo audio.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
@@ -5125,6 +5127,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Mostrar certificados de la organización</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> artículos</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{No hay ninguna contraseña reutilizada}=1{1 contraseña reutilizada}other{{NUM_REUSED} contraseñas reutilizadas}}</translation>
 <translation id="5448293924669608770">¡Vaya! Se ha producido un error al iniciar sesión</translation>
 <translation id="5449551289610225147">La contraseña no es válida</translation>
 <translation id="5449588825071916739">Añadir todas las pestañas a marcadores...</translation>

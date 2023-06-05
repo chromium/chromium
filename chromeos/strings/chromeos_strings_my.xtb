@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> ခလုတ် နှိပ်မထားပါ</translation>
 <translation id="1435763214710588005">လစဉ်လတိုင်း ရွေးချယ်ထားသည့်နေ့တွင် ဒေတာသုံးစွဲမှုကို အလိုအလျောက် ပြင်ဆင်သတ်မှတ်သည်</translation>
 <translation id="1442433966118452622">ပုံရင်းမြစ်</translation>
+<translation id="1449035143498573192">Google Search တွင် ဖွင့်ရန်</translation>
 <translation id="1451536289672181509">ကိရိယာသည် ကီးဘုတ်ဖြစ်သည်။</translation>
 <translation id="1459693405370120464">မိုးလေဝသ</translation>
 <translation id="1468664791493211953">အထူးဈေးနှုန်း</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">လက်ကွက်များ</translation>
 <translation id="7955587717700691983">ဘလူးတုသ် ကီးဘုတ်</translation>
 <translation id="7960831585769876809">အပူချိန်</translation>
+<translation id="7971535376154084247">အထွေထွေ သတ်မှတ်ချက်များ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>
 <translation id="7978412674231730200">ကိုယ်ပိုင် သော့</translation>
 <translation id="7994702968232966508">EAP နည်းလမ်း</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">ပင်မထောက်ပံ့သူအမည်</translation>
 <translation id="8475690821716466388">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP PSK ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="8476242415522716722">ကီးဘုတ် အောက်တွင်လင်းခြင်း</translation>
+<translation id="8476942730579767658">ဝင်းဒိုးနှင့် မျက်နှာပြင်များ</translation>
 <translation id="8477551185774834963">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို အနည်းငယ်ကျော်နေသည်</translation>
 <translation id="8483248364096924578">IP လိပ်စာ</translation>
 <translation id="8491311378305535241">Android အက်ပ်များမှ HTTP ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>

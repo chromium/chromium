@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">የ<ph name="KEY_NAME" /> ቁልፍ አልተጫነም</translation>
 <translation id="1435763214710588005">በተመረጠው ቀን በየወሩ የውሂብ አጠቃቀምን በራስሰር ዳግም ያስጀምራል</translation>
 <translation id="1442433966118452622">የምስል ምንጭ</translation>
+<translation id="1449035143498573192">በGoogle ፍለጋ ውስጥ ክፈት</translation>
 <translation id="1451536289672181509">መሣሪያ ቁልፍ ሰሌዳ ነው።</translation>
 <translation id="1459693405370120464">የአየር ሁኔታ</translation>
 <translation id="1468664791493211953">ቅናሽ</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">ግቤቶች</translation>
 <translation id="7955587717700691983">የብሉቱዝ ቁልፍ ሰሌዳ</translation>
 <translation id="7960831585769876809">የሙቀት መጠን</translation>
+<translation id="7971535376154084247">አጠቃላይ መቆጣጠሪያዎች</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> አውታረ መረብን ለመቀላቀል ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="7978412674231730200">የግል ቁልፍ</translation>
 <translation id="7994702968232966508">የEAP ስልት</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">የመነሻ አቅራቢ ስም</translation>
 <translation id="8475690821716466388">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP PSK የተጠበቀ ነው</translation>
 <translation id="8476242415522716722">የቁልፍ ሰሌዳ የስር መብራት</translation>
+<translation id="8476942730579767658">መስኮቶች እና ዴስኮች</translation>
 <translation id="8477551185774834963">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በትንሹ ይበልጣል</translation>
 <translation id="8483248364096924578">የአይፒ አድራሻ</translation>
 <translation id="8491311378305535241">ከAndroid መተግበሪያዎች በኬላ በኩል ወደ ኤችቲቲፒ ድር ጣቢያዎች መገናኘት አይቻልም</translation>

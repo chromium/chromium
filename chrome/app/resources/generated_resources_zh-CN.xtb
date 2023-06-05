@@ -1229,7 +1229,7 @@
 <translation id="2048554637254265991">启动容器管理器时出错。请重试。</translation>
 <translation id="2048653237708779538">无法执行操作</translation>
 <translation id="204914487372604757">创建快捷方式</translation>
-<translation id="2050339315714019657">人像</translation>
+<translation id="2050339315714019657">纵向</translation>
 <translation id="2051555741181591333">自动停用热点</translation>
 <translation id="2052572566310583903">已安装在您的其他设备上</translation>
 <translation id="2053105195397337973">我们正在探索如何既能让网站阻止垃圾广告和欺诈行为，又能限制跟踪。</translation>
@@ -2436,6 +2436,7 @@
 <translation id="3038272154009688107">查看所有网站</translation>
 <translation id="3038612606416062604">手动添加打印机</translation>
 <translation id="3039491566278747710">未能在此设备上安装离线政策。</translation>
+<translation id="3040982432432547149">欢迎帮助我们改进 Chromebook 版 Steam</translation>
 <translation id="3043016484125065343">登录即可查看您的书签</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">源自：<ph name="ORIGIN" /></translation>
@@ -4011,6 +4012,7 @@
 <translation id="4445446646109808714">最终用户许可协议：<ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">镜像</translation>
 <translation id="4448914100439890108">隐藏 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
+<translation id="4449247303975391730">管理权限</translation>
 <translation id="4449948729197510913">您的用户名属于贵单位的企业帐号。如需将设备注册到该帐号，请先在管理控制台中验证域名所有权。您需要拥有该帐号的管理员权限才能进行验证。</translation>
 <translation id="4449996769074858870">该标签页正在播放音频。</translation>
 <translation id="4450974146388585462">诊断</translation>
@@ -5114,6 +5116,7 @@
 <translation id="5445400788035474247">10 倍</translation>
 <translation id="5446983216438178612">显示用于特定组织的证书</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> 件商品</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{没有任何重复使用的密码}=1{有 1 个重复使用的密码}other{有 {NUM_REUSED} 个重复使用的密码}}</translation>
 <translation id="5448293924669608770">糟糕，登录时出了点问题</translation>
 <translation id="5449551289610225147">密码无效</translation>
 <translation id="5449588825071916739">为所有标签页添加书签</translation>

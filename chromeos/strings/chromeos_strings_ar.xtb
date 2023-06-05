@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">لم يتم الضغط على المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="1435763214710588005">إعادة ضبط استخدام البيانات تلقائيًا كل شهر في يوم محدَّد</translation>
 <translation id="1442433966118452622">مصدر الصورة</translation>
+<translation id="1449035143498573192">‏فتح في "بحث Google"</translation>
 <translation id="1451536289672181509">الجهاز هو لوحة مفاتيح.</translation>
 <translation id="1459693405370120464">الطقس</translation>
 <translation id="1468664791493211953">العروض</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">أساليب الإدخال</translation>
 <translation id="7955587717700691983">لوحة مفاتيح تتضمّن بلوتوث</translation>
 <translation id="7960831585769876809">درجة الحرارة</translation>
+<translation id="7971535376154084247">عناصر التحكّم العامة</translation>
 <translation id="7977800524392185497">للانضمام إلى شبكة <ph name="NETWORK_NAME" />، انتقِل إلى "الإعدادات".</translation>
 <translation id="7978412674231730200">مفتاح خاص</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">اسم مقدم الخدمة الرئيسي</translation>
 <translation id="8475690821716466388">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP PSK ضعيف.</translation>
 <translation id="8476242415522716722">الإضاءة الخلفية للوحة المفاتيح</translation>
+<translation id="8476942730579767658">النوافذ وأسطح المكتب</translation>
 <translation id="8477551185774834963">وقت استجابة "نظام أسماء النطاقات" أعلى بقليل من الحدّ الأقصى المسموح به.</translation>
 <translation id="8483248364096924578">‏عنوان IP</translation>
 <translation id="8491311378305535241">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP من خلال تطبيقات Android.</translation>

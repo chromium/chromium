@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Мэдэгдэж байгаа сүлжээ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> холбогдсон.</translation>
 <translation id="1240638468526743569">Апп</translation>
+<translation id="1242704516557658755">Хамгийн сүүлд ашигласан цонхны жагсаалтад арагш гүйлгэх</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1246890715821376239">Дэмжигдээгүй аппууд</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">Дэлгэцэн дээрх гарыг идэвхгүй болгосон байна</translation>
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />-г цэнэглэж байна</translation>
+<translation id="1276975447697633661">Файлаа сонгоод дараа нь <ph name="KEY" />-г дарна уу</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Утасны байршил тогтоох</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> нэртэй хадгалсан дэлгэц аль хэдийн байна</translation>
@@ -345,6 +347,7 @@
 <translation id="2528111225373402384">Сүлжээний цэгийн тохиргоо</translation>
 <translation id="2530896289327917474">Caret browsing-г асаах эсвэл унтраах</translation>
 <translation id="2531025035050312891">төхөөрөмж удаан</translation>
+<translation id="2531107890083353124">Табыг чирэх үедээ <ph name="KEY_ONE" />-г дарна уу</translation>
 <translation id="254900897760075745">Сонгосон контентыг түр санах ойд хуулах</translation>
 <translation id="2549711466868162843">Гэрэлтүүлгийг сайжруулах</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
@@ -390,6 +393,7 @@
 <translation id="2750932254614666392">"Устгах"</translation>
 <translation id="2750941250130734256">Идэвхтэй цонхыг салгасан.</translation>
 <translation id="2761723519669354964">Тавиураас тодруулсан зүйл нээх</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-с <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг</translation>
 <translation id="2782591952652094792">Зураг авах горимоос гарах</translation>
 <translation id="2785499565474703580">1 төхөөрөмж холбогдсон</translation>
@@ -423,6 +427,7 @@
 <translation id="2942350706960889382">Суурилуулсан томруулагч</translation>
 <translation id="2942516765047364088">Шельфийн байрлал</translation>
 <translation id="2946119680249604491">Холболт нэмэх</translation>
+<translation id="2949420361496057765"><ph name="MODIFIER" />-г дараад холбоосыг товшино уу</translation>
 <translation id="295852781144570696">Төхөөрөмжийн аудио</translation>
 <translation id="2960314608273155470">Зураг авах горим. Өгөгдмөл нь <ph name="SOURCE" /> <ph name="TYPE" /> байна. Гарын навигац ашиглах бол tab дээр дарна уу.</translation>
 <translation id="2961963223658824723">Алдаа гарлаа. Хэдэн секундын дараа дахин оролдоно уу.</translation>
@@ -528,6 +533,7 @@
 <translation id="3410336247007142655">Бараан загварын тохиргоог харуулах</translation>
 <translation id="3413817803639110246">Одоогоор мэдэгдэл алга</translation>
 <translation id="3417835166382867856">Табуудыг хайх</translation>
+<translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />-г удаан дараад та нээхийг хүссэн цонх руугаа очих хүртлээ <ph name="KEY" />-г товшиж дараа нь суллана уу</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-с салгах</translation>
 <translation id="3430396595145920809">Буцахын тулд баруун талаас шударна уу</translation>
 <translation id="3431517721463707585">14-р дэлгэц</translation>
@@ -542,6 +548,7 @@
 <translation id="346243998268439747">Томруулах түвшинг шинэчлэх</translation>
 <translation id="3465223694362104965">Таныг сүүлд нэвтэрснээс хойш энэ төхөөрөмжид өөр гар холбогдсон байна. Энэ гарыг ашиглахаасаа өмнө та итгэж болох эсэхээ шалгана уу.</translation>
 <translation id="3465356146291925647">Таны администратор удирддаг</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> дараа нь <ph name="KEY_TWO" /> эсвэл <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Shelf-г автоматаар нууна</translation>
@@ -606,6 +613,7 @@
 <translation id="3677931086890821290">Энэ нь байршлын зөвшөөрөлтэй бүх апп, вебсайт болон ChromeOS-т Wi-Fi, мобайл сүлжээнүүдийн байршлыг ашиглахыг зөвшөөрнө.</translation>
 <translation id="3679827876008292680">Цонхны сүүлийн таб руу очих</translation>
 <translation id="36813544980941320">Wi-Fi сүлжээг таны утас болон <ph name="DEVICE_NAME" />-н хооронд хуваалцана</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> дараа нь <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Вебсайт</translation>
 <translation id="3702809606464356667">Одоогийн дэлгэцээс цонхнуудыг харуулж байна. Бүх дэлгэцээс цонхнуудыг харуулахын тулд Дээш сум товчийг дарна уу</translation>
 <translation id="3702846122927433391">Нигери улсын хүн ам</translation>
@@ -634,6 +642,7 @@
 <translation id="383058930331066723">Батарей хэмнэгчийн горим асаалттай байна</translation>
 <translation id="383629559565718788">Гарын тохиргоог харуулах</translation>
 <translation id="384082539148746321">Загварыг устгах уу?</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> дараа нь <ph name="KEY_ONE" /> эсвэл <ph name="KEY_TWO" /> эсвэл <ph name="KEY_THREE" /> эсвэл <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Сүлжээтэй холбоотой мэдээлэл байхгүй байна</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="385300504083504382">Эхлэл</translation>
@@ -849,6 +858,7 @@
 <translation id="4798622944000246716">Таны мобайл сүлжээ нь сүлжээний цэгийг дэмждэггүй</translation>
 <translation id="479989351350248267">хайлт</translation>
 <translation id="4804818685124855865">Таслах</translation>
+<translation id="4813311884204119883">Таб зурваст холбоосыг хоосон бүс рүү чирнэ үү</translation>
 <translation id="4814539958450445987">Нэвтрэх дэлгэц</translation>
 <translation id="481455355267255546">Дараагийн</translation>
 <translation id="4831034276697007977">Автомат даралтыг унтраахдаа итгэлтэй байна уу?</translation>
@@ -856,6 +866,7 @@
 <translation id="485592688953820832">Үйлдэл алга (түр зогсоох)</translation>
 <translation id="485634149294284819">Гарын цэсийг оруулна уу</translation>
 <translation id="485806788160414322">Медиаг тоглуулах эсвэл түр зогсоох</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" /> дараа нь <ph name="KEY_ONE" /> эсвэл <ph name="KEY_TWO" /> эсвэл <ph name="KEY_THREE" /> эсвэл <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> татаж авахын тулд сүлжээний холболтоо шалгана уу</translation>
 <translation id="4864369630010738180">Нэвтэрч байна…</translation>
 <translation id="4864648187878336334">15-р дэлгэц</translation>
@@ -998,6 +1009,7 @@
 <translation id="5463129623250377817">Сонгосон контентыг түр санах ойд тасалж буулгах</translation>
 <translation id="5465662442746197494">Танд тусламж хэрэгтэй байна уу?</translation>
 <translation id="547979256943495781">Баруун талын shelf</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> эсвэл <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Жижиг программын шинэчлэлтүүд боломжтой байна</translation>
 <translation id="5503884284981862082">Google туслахыг нээх/хаах</translation>
 <translation id="5506975627792768506">Томруулагчийг асаах эсвэл унтраах</translation>
@@ -1189,6 +1201,7 @@
 <translation id="6330012934079202188">Бүх дэлгэцээс цонхнуудыг харуулж байна. Одоогийн дэлгэцээс цонхнуудыг харуулахын тулд Дээш сум товчийг дарна уу</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> нь <ph name="MANAGER" />-н удирддаг хяналттай харилцан үйлдэл юм</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> холбогдсон</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> дараа нь <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> эсвэл <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">АППЫН ЗӨВЛӨМЖ</translation>
 <translation id="6352082849089527770">Тодорхойгүй сүлжээ</translation>
 <translation id="6359587239691116345">Онцлог болон аюулгүй байдлын хамгийн сүүлийн үеийн сайжруулалтыг авна уу. Хэрэв та энэ шинэчлэлтээс татгалзвал төхөөрөмж тань цаашид зохих ёсоор ажиллахгүй байж магадгүй бөгөөд та аюулгүй байдал болон гүйцэтгэлийн асуудалтай тулгарч магадгүй.</translation>
@@ -1234,6 +1247,7 @@
 <translation id="6537924328260219877">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Татах <ph name="FILENAME" />-г скан хийж байна</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />-д дамжуулж байна</translation>
+<translation id="6555373427270923730">Хаяг оруулах хэсэгт веб хаягийг бичээд дараа нь <ph name="MODIFIER" /><ph name="KEY" />-г дарна уу</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Шинээр суулгасан</translation>
 <translation id="6559976592393364813">Админаас асуух</translation>
@@ -1638,6 +1652,7 @@
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8426708595819210923">Оройн мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-с <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Сүлжээний тохиргоо</translation>
 <translation id="8433977262951327081">Тавиурын оролтын сонголт цэсийг харуулдаг товчлолыг өөрчилсөн.
 <ph name="OLD_SHORTCUT" />-н оронд <ph name="NEW_SHORTCUT" />-г ашиглана уу.</translation>
@@ -1669,6 +1684,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> танд өөрийн <ph name="DEVICE_TYPE" />-г шинэчлэхийг зөвлөж байна</translation>
 <translation id="8563862697512465947">Мэдэгдлийн тохиргоо</translation>
 <translation id="857201607579416096">Цэсийг дэлгэцийн баруун доод булан руу зөөсөн.</translation>
+<translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />-г дараад холбоосыг товшино уу</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Аппуудаа нэр эсвэл өнгөөр эрэмбэлнэ үү</translation>
 <translation id="8609384513243082612">Шинэ таб нээх</translation>

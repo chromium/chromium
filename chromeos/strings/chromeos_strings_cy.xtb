@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Nid yw'r fysell <ph name="KEY_NAME" /> wedi'i phwyso</translation>
 <translation id="1435763214710588005">Yn ailosod defnydd data yn awtomatig bob mis ar ddiwrnod penodol</translation>
 <translation id="1442433966118452622">Ffynhonnell y llun</translation>
+<translation id="1449035143498573192">Agor yn Google Search</translation>
 <translation id="1451536289672181509">Mae'r ddyfais yn fysellfwrdd.</translation>
 <translation id="1459693405370120464">Tywydd</translation>
 <translation id="1468664791493211953">Cynigion</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Mewnbynnau</translation>
 <translation id="7955587717700691983">Bysellfwrdd Bluetooth</translation>
 <translation id="7960831585769876809">Tymheredd</translation>
+<translation id="7971535376154084247">Rheolyddion cyffredinol</translation>
 <translation id="7977800524392185497">I ymuno â rhwydwaith <ph name="NETWORK_NAME" />, ewch i'r Gosodiadau</translation>
 <translation id="7978412674231730200">Allwedd breifat</translation>
 <translation id="7994702968232966508">Dull EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Enw'r darparwr hafan</translation>
 <translation id="8475690821716466388">Diogelir y rhwydwaith Wi-Fi gyda'r protocol gwan WEP PSK</translation>
 <translation id="8476242415522716722">dan-gloywi bysellfwrdd</translation>
+<translation id="8476942730579767658">Ffenestri a desgiau</translation>
 <translation id="8477551185774834963">Mae cuddni DNS ychydig yn uwch na'r trothwy a ganiateir</translation>
 <translation id="8483248364096924578">Cyfeiriad IP</translation>
 <translation id="8491311378305535241">Methu â chysylltu â gwefannau HTTPS o apiau Android drwy fur cadarn</translation>

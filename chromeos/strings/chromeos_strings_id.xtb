@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Tombol <ph name="KEY_NAME" /> tidak ditekan</translation>
 <translation id="1435763214710588005">Otomatis mereset penggunaan data setiap bulan pada tanggal yang dipilih</translation>
 <translation id="1442433966118452622">Sumber gambar</translation>
+<translation id="1449035143498573192">Buka di Google Penelusuran</translation>
 <translation id="1451536289672181509">Perangkat adalah keyboard.</translation>
 <translation id="1459693405370120464">Cuaca</translation>
 <translation id="1468664791493211953">Penawaran</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Input</translation>
 <translation id="7955587717700691983">Keyboard Bluetooth</translation>
 <translation id="7960831585769876809">Suhu</translation>
+<translation id="7971535376154084247">Kontrol umum</translation>
 <translation id="7977800524392185497">Untuk bergabung ke jaringan <ph name="NETWORK_NAME" />, buka Setelan</translation>
 <translation id="7978412674231730200">Kunci pribadi</translation>
 <translation id="7994702968232966508">Metode EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Nama penyedia rumah</translation>
 <translation id="8475690821716466388">Jaringan Wi-Fi diamankan dengan protokol WEP PSK yang lemah</translation>
 <translation id="8476242415522716722">lampu latar keyboard</translation>
+<translation id="8476942730579767658">Jendela dan desktop</translation>
 <translation id="8477551185774834963">Latensi DNS sedikit melebihi ambang batas yang diizinkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8491311378305535241">Tidak dapat terhubung melewati firewall ke situs HTTP dari aplikasi Android</translation>

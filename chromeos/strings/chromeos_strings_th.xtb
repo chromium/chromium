@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">ไม่ได้กดปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
 <translation id="1435763214710588005">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตทุกเดือนโดยอัตโนมัติในวันที่เลือก</translation>
 <translation id="1442433966118452622">แหล่งที่มาของภาพ</translation>
+<translation id="1449035143498573192">เปิดใน Google Search</translation>
 <translation id="1451536289672181509">อุปกรณ์เป็นแป้นพิมพ์</translation>
 <translation id="1459693405370120464">สภาพอากาศ</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">การป้อนข้อมูล</translation>
 <translation id="7955587717700691983">แป้นพิมพ์บลูทูธ</translation>
 <translation id="7960831585769876809">อุณหภูมิ</translation>
+<translation id="7971535376154084247">การควบคุมทั่วไป</translation>
 <translation id="7977800524392185497">ไปที่การตั้งค่าเพื่อเข้าร่วมเครือข่าย <ph name="NETWORK_NAME" /></translation>
 <translation id="7978412674231730200">กุญแจส่วนตัว</translation>
 <translation id="7994702968232966508">วิธีการ EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">ชื่อผู้ให้บริการหน้าแรก</translation>
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
 <translation id="8476242415522716722">เรืองแสงใต้แป้นพิมพ์</translation>
+<translation id="8476942730579767658">หน้าต่างและเดสก์</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
 <translation id="8491311378305535241">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTP จากแอป Android</translation>

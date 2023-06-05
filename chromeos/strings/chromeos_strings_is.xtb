@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Ekki var ýtt á lykilinn <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Endurstillir gagnanotkun sjálfkrafa á völdum degi mánaðarlega</translation>
 <translation id="1442433966118452622">Uppruni myndar</translation>
+<translation id="1449035143498573192">Opna í Google-leit</translation>
 <translation id="1451536289672181509">Tækið er lyklaborð.</translation>
 <translation id="1459693405370120464">Veður</translation>
 <translation id="1468664791493211953">Tilboð</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Innsláttur</translation>
 <translation id="7955587717700691983">Bluetooth-lyklaborð</translation>
 <translation id="7960831585769876809">Hitastig</translation>
+<translation id="7971535376154084247">Almennar stýringar</translation>
 <translation id="7977800524392185497">Opnaðu stillingarnar til að tengjast <ph name="NETWORK_NAME" /> netkerfi</translation>
 <translation id="7978412674231730200">Einkalykill</translation>
 <translation id="7994702968232966508">EAP-aðferð</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Heiti heimaveitu</translation>
 <translation id="8475690821716466388">Wi-Fi netið er varið með veikum samskiptareglum, WEP PSK</translation>
 <translation id="8476242415522716722">undirlýsing lyklaborðs</translation>
+<translation id="8476942730579767658">Gluggar og skrifborð</translation>
 <translation id="8477551185774834963">DNS-biðtími er aðeins yfir leyfðum þröskuldi</translation>
 <translation id="8483248364096924578">IP-tala</translation>
 <translation id="8491311378305535241">Ekki er hægt að tengjast HTTPS-vefsvæðum úr Android forritum í gegnum eldvegg</translation>

@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">未㩒 <ph name="KEY_NAME" /> 制</translation>
 <translation id="1435763214710588005">系統會在每月指定日期自動重設數據用量</translation>
 <translation id="1442433966118452622">圖片來源</translation>
+<translation id="1449035143498573192">在「Google 搜尋」中開啟</translation>
 <translation id="1451536289672181509">裝置類型係鍵盤。</translation>
 <translation id="1459693405370120464">天氣</translation>
 <translation id="1468664791493211953">優惠</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">輸入方法</translation>
 <translation id="7955587717700691983">藍牙鍵盤</translation>
 <translation id="7960831585769876809">溫度</translation>
+<translation id="7971535376154084247">一般控制項</translation>
 <translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網絡，請前往「設定」頁面</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">家庭網絡供應商名稱</translation>
 <translation id="8475690821716466388">已使用防護力較弱的通訊協定 WEP PSK 保護 Wi-Fi 網絡</translation>
 <translation id="8476242415522716722">讓鍵盤變暗</translation>
+<translation id="8476942730579767658">視窗和桌面</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
 <translation id="8483248364096924578">IP 位址</translation>
 <translation id="8491311378305535241">無法從 Android 應用程式透過防火牆連線至 HTTP 網站</translation>

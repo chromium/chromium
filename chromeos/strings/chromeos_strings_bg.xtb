@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Клавишът <ph name="KEY_NAME" /> не е натиснат</translation>
 <translation id="1435763214710588005">Преносът на данни се нулира автоматично всеки месец в избрания ден</translation>
 <translation id="1442433966118452622">Източник на изображението</translation>
+<translation id="1449035143498573192">Отваряне в Google Търсене</translation>
 <translation id="1451536289672181509">Устройството е клавиатура.</translation>
 <translation id="1459693405370120464">Времето</translation>
 <translation id="1468664791493211953">Оферти</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Въвеждане</translation>
 <translation id="7955587717700691983">Клавиатура с Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7971535376154084247">Общи контроли</translation>
 <translation id="7977800524392185497">За да се присъедините към <ph name="NETWORK_NAME" /> мрежа, отворете „Настройки“</translation>
 <translation id="7978412674231730200">Личен ключ</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Име на собствения доставчик</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е защитена със слабия протокол WEP PSK</translation>
 <translation id="8476242415522716722">подсветка на клавиатурата</translation>
+<translation id="8476942730579767658">Прозорци и работни кътове</translation>
 <translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
 <translation id="8483248364096924578">IP адрес</translation>
 <translation id="8491311378305535241">През защитната стена не може да се установи връзка от приложения за Android с уебсайтове, работещи с HTTP</translation>
