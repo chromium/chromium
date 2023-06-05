@@ -148,6 +148,11 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
   onReturnClicked_() {
     this.userActed(UserAction.RETURN);
   }
+
+  getAriaLabelToggleButtons_(locale, title, subtitle) {
+    return this.i18nDynamic(locale, title) + '. ' +
+        this.i18nDynamic(locale, subtitle);
+  }
 }
 
 customElements.define(TouchpadScrollScreen.is, TouchpadScrollScreen);

@@ -132,6 +132,28 @@ export class OobeScreensList extends OobeScreensListBase {
   getScreenID(screen_id) {
     return 'cr-button-' + screen_id;
   }
+
+  getAriaLabelToggleButtons_(
+      locale, screen_title, screen_subtitle, screen_is_synced,
+      screen_is_completed, screen_id) {
+    var ariaLabel = this.i18nDynamic(locale, screen_title);
+    if (screen_subtitle) {
+      if (screen_id === 'display-size') {
+        ariaLabel = ariaLabel + '.' + screen_subtitle;
+      } else {
+        ariaLabel = ariaLabel + '.' + this.i18nDynamic(locale, screen_subtitle);
+      }
+    }
+    if (screen_is_completed) {
+      ariaLabel =
+          ariaLabel + '.' + this.i18nDynamic(locale, 'choobeVisitedTile');
+    }
+    if (!screen_is_completed && screen_is_synced) {
+      ariaLabel =
+          ariaLabel + '.' + this.i18nDynamic(locale, 'choobeSyncedTile');
+    }
+    return ariaLabel;
+  }
 }
 
 customElements.define(OobeScreensList.is, OobeScreensList);
