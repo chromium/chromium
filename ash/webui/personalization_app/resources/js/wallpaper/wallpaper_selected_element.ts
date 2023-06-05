@@ -272,41 +272,39 @@ export class WallpaperSelected extends WithPersonalizationStore {
         image?.descriptionTitle;
   }
 
-  private isCollectionPath_(path: string): boolean {
-    return path === Paths.COLLECTION_IMAGES ||
-        path === Paths.GOOGLE_PHOTOS_COLLECTION;
-  }
-
   private computeShowDailyRefreshButton_(
       path: string, collectionId: string, googlePhotosAlbumId: string|undefined,
       photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>) {
-    if (!this.isCollectionPath_(path)) {
-      return false;
-    }
     // Special collection where daily refresh is disabled.
     if (collectionId ===
         loadTimeData.getString('timeOfDayWallpaperCollectionId')) {
       return false;
     }
-    const isNonEmptyGooglePhotosAlbum = !!googlePhotosAlbumId &&
-        !!photosByAlbumId &&
-        isNonEmptyArray(photosByAlbumId[googlePhotosAlbumId]);
-    return path === Paths.COLLECTION_IMAGES ||
-        (path === Paths.GOOGLE_PHOTOS_COLLECTION &&
-         isNonEmptyGooglePhotosAlbum);
+    switch (path) {
+      case Paths.COLLECTION_IMAGES:
+        return true;
+      case Paths.GOOGLE_PHOTOS_COLLECTION:
+        return !!googlePhotosAlbumId && !!photosByAlbumId &&
+            isNonEmptyArray(photosByAlbumId[googlePhotosAlbumId]);
+      default:
+        return false;
+    }
   }
 
   private computeShowRefreshButton_(
       path: string, collectionId: string|undefined,
       googlePhotosAlbumId: string|undefined,
       dailyRefreshState: DailyRefreshState|null) {
-    if (!this.isCollectionPath_(path)) {
-      return false;
+    switch (path) {
+      case Paths.COLLECTION_IMAGES:
+        return !!collectionId &&
+            this.isDailyRefreshId_(collectionId, dailyRefreshState);
+      case Paths.GOOGLE_PHOTOS_COLLECTION:
+        return !!googlePhotosAlbumId &&
+            this.isDailyRefreshId_(googlePhotosAlbumId, dailyRefreshState);
+      default:
+        return false;
     }
-    return (!collectionId && !googlePhotosAlbumId) ?
-        false :
-        this.isDailyRefreshId_(
-            collectionId! || googlePhotosAlbumId!, dailyRefreshState);
   }
 
   private getWallpaperSrc_(image: CurrentWallpaper|null): string|null {
