@@ -179,8 +179,6 @@ void AppLauncherTabHelper::ShouldAllowRequest(
     return;
   }
 
-  std::move(callback).Run(policy_decision);
-
   // If there is an app launch request, request the app launch now.
   if (policy_decision_and_optional_app_launch_request.second) {
     const AppLaunchRequest& app_launch_request =
@@ -189,6 +187,8 @@ void AppLauncherTabHelper::ShouldAllowRequest(
                        app_launch_request.source_page_url,
                        app_launch_request.link_transition);
   }
+
+  std::move(callback).Run(policy_decision);
 }
 
 AppLauncherTabHelper::PolicyDecisionAndOptionalAppLaunchRequest
