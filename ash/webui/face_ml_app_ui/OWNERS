@@ -1,4 +1,3 @@
-googleo@chromium.org
 yipingchen@chromium.org
 
 per-file *.mojom=set noparent
