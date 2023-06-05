@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
@@ -10,7 +12,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State, Volume} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
-import {addVolume, removeVolume} from '../actions/volumes.js';
+import {addVolume, removeVolume, updateIsInteractiveVolume} from '../actions/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, getEntry} from '../store.js';
 
@@ -419,6 +421,41 @@ export async function testRemoveVolume(done: () => void) {
 
   // Expect the volume will be removed from the store.
   await waitDeepEquals(store, {}, (state) => state.volumes);
+
+  done();
+}
+
+export async function testUpdateIsInteractiveVolume(done: () => void) {
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  const volumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.ARCHIVE, 'test', 'test.zip');
+  volumeManager.volumeInfoList.add(volumeInfo);
+  const volume = convertVolumeInfoAndMetadataToVolume(
+      volumeInfo, createFakeVolumeMetadata(volumeInfo));
+  assertTrue(volume.isInteractive);
+  initialState.volumes[volume.volumeId] = volume;
+
+  const store = setupStore(initialState);
+
+  // Dispatch an action to set |isInteractive| for the volume to false.
+  store.dispatch(updateIsInteractiveVolume({
+    volumeId: volumeInfo.volumeId,
+    isInteractive: false,
+  }));
+
+  // Expect the volume is set to non-interactive.
+  const wantUpdatedVol = {
+    volumes: {
+      [volumeInfo.volumeId]: {
+        ...volume,
+        isInteractive: false,
+      },
+    },
+  };
+  await waitDeepEquals(store, wantUpdatedVol, (state) => ({
+                                                volumes: state.volumes,
+                                              }));
 
   done();
 }

@@ -364,6 +364,7 @@ export let NavigationTree;
  *   vmType: (chrome.fileManagerPrivate.VmType|undefined),
  *   isDisabled: boolean,
  *   prefixKey: (FileKey|undefined),
+ *   isInteractive: boolean,
  * }}
  */
 export let Volume;

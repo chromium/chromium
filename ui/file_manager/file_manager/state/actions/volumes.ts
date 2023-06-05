@@ -26,6 +26,15 @@ export interface RemoveVolumeAction extends BaseAction {
   };
 }
 
+/** Action to update isInteractive for a volume in the store. */
+export interface UpdateIsInteractiveVolumeAction extends BaseAction {
+  type: ActionType.UPDATE_IS_INTERACTIVE_VOLUME;
+  payload: {
+    volumeId: VolumeId,
+    isInteractive: boolean,
+  };
+}
+
 /** Action factory to add single volume into the store. */
 export function addVolume(
     {volumeMetadata, volumeInfo}: AddVolumeAction['payload']): AddVolumeAction {
@@ -44,5 +53,18 @@ export function removeVolume({volumeId}: RemoveVolumeAction['payload']):
   return {
     type: ActionType.REMOVE_VOLUME,
     payload: {volumeId},
+  };
+}
+
+/** Action factory to update isInteractive for a volume in the store. */
+export function updateIsInteractiveVolume(
+    {volumeId, isInteractive}: UpdateIsInteractiveVolumeAction['payload']):
+    UpdateIsInteractiveVolumeAction {
+  return {
+    type: ActionType.UPDATE_IS_INTERACTIVE_VOLUME,
+    payload: {
+      volumeId,
+      isInteractive,
+    },
   };
 }
