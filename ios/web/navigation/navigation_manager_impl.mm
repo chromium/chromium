@@ -549,10 +549,9 @@ void NavigationManagerImpl::GoToIndex(int index,
                                       NavigationInitiationType initiation_type,
                                       bool has_user_gesture) {
   if (index < 0 || index >= GetItemCount()) {
-    // There are bugs in WKWebView where the back/forward list can fall out
-    // of sync with reality. In these situations, a navigation item that
-    // appears in the back or forward list might not actually exist. See
-    // crbug.com/1407244.
+    // Button actions are executed asynchronously, so it is possible for the
+    // client to call this with an invalid index if the user quickly taps the
+    // back or foward button mulitple times. See crbug.com/1407244.
     return;
   }
 
