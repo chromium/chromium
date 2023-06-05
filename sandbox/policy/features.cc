@@ -72,6 +72,11 @@ BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
              "WinSboxHighRendererJobMemoryLimits",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Emergency "off switch" for closing the KsecDD handle in cryptbase.dll just
+// before sandbox lockdown in renderers.
+BASE_FEATURE(kWinSboxRendererCloseKsecDD,
+             "WinSboxRendererCloseKsecDD",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

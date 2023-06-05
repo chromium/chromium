@@ -87,6 +87,8 @@ base::Value::List FetchSandboxFeatures() {
       FeatureToValue(sandbox::policy::features::kRendererAppContainer));
   features.Append(
       FeatureToValue(sandbox::policy::features::kWinSboxAllowSystemFonts));
+  features.Append(
+      FeatureToValue(sandbox::policy::features::kWinSboxRendererCloseKsecDD));
   features.Append(FeatureToValue(
       sandbox::policy::features::kWinSboxDisableExtensionPoints));
   return features;
