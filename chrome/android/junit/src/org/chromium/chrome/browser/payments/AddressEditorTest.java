@@ -20,10 +20,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.app.Activity;
 
@@ -48,10 +48,10 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;

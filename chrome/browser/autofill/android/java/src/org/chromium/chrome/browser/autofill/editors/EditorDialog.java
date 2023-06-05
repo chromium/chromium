@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.prefeditor;
+package org.chromium.chrome.browser.autofill.editors;
 
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TEXT;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TITLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -44,11 +44,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldView;
-import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.autofill.editors.EditorTextField;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsUtils;

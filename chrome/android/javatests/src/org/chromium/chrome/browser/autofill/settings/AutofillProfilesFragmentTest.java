@@ -38,7 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;

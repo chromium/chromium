@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.payments;
 
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.ALL_KEYS;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -23,10 +23,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
+import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.PropertyModel;
 

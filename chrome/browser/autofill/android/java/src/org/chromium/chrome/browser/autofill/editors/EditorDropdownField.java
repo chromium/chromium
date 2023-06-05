@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.prefeditor;
+package org.chromium.chrome.browser.autofill.editors;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,11 +22,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.DropdownKeyValue;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldView;
-import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.prefeditor;
+package org.chromium.chrome.browser.autofill.editors;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.R;
 
 /** Simple class for displaying a toolbar in the editor dialog. */
 public class EditorDialogToolbar extends Toolbar {

@@ -19,7 +19,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;

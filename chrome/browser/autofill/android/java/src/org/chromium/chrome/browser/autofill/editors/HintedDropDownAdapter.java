@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.prefeditor;
+package org.chromium.chrome.browser.autofill.editors;
 
 import android.content.Context;
 import android.view.View;
@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.R;
 
 import java.util.List;
 

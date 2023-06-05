@@ -36,7 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
+import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;

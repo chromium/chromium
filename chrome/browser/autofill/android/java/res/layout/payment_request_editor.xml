@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:background="@macro/default_bg_color">
 
     <!-- Toolbar -->
-    <org.chromium.chrome.browser.autofill.prefeditor.EditorDialogToolbar
+    <org.chromium.chrome.browser.autofill.editors.EditorDialogToolbar
         android:id="@+id/action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"

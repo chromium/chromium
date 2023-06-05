@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.ALL_KEYS;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TEXT;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TITLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.content.Context;
 import android.os.Handler;
@@ -28,10 +28,10 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.Source;
+import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
