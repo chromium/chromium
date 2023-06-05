@@ -316,6 +316,12 @@ views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeSecondButtonForTest(
   return shown_nudges_[id]->GetSecondButton();
 }
 
+AnchoredNudge* AnchoredNudgeManagerImpl::GetShownNudgeForTest(
+    const std::string& id) {
+  CHECK(IsNudgeShown(id));
+  return shown_nudges_[id];
+}
+
 base::RepeatingClosure AnchoredNudgeManagerImpl::ChainCancelCallback(
     base::RepeatingClosure callback,
     const std::string& id) {

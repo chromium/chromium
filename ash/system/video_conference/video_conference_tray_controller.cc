@@ -11,17 +11,20 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -413,6 +416,14 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
         l10n_util::GetStringUTF16(
             IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED),
         /*anchor_view=*/GetVcTrayInActiveWindow()->audio_icon());
+    // Opens the privacy hub settings page with the mute nudge focused when
+    // clicking on the nudge.
+    nudge_data.nudge_click_callback = base::BindRepeating([]() -> void {
+      Shell::Get()
+          ->system_tray_model()
+          ->client()
+          ->ShowSpeakOnMuteDetectionSettings();
+    });
     AnchoredNudgeManager::Get()->Show(nudge_data);
 
     last_speak_on_mute_notification_time_.emplace(current_time);

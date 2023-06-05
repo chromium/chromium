@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
@@ -64,6 +65,10 @@ views::LabelButton* GetNudgeDismissButton(const std::string& id) {
 views::LabelButton* GetNudgeSecondButton(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->GetNudgeSecondButtonForTest(
       id);
+}
+
+AnchoredNudge* GetShownNudge(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetShownNudgeForTest(id);
 }
 
 }  // namespace
@@ -367,6 +372,21 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
   // cool down timer.
   controller()->OnSpeakOnMuteDetected();
   EXPECT_TRUE(IsNudgeShown(nudge_id));
+}
+
+TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudgeClick) {
+  auto* nudge_id = kVideoConferenceTraySpeakOnMuteDetectedNudgeId;
+
+  SetTrayAndButtonsVisible();
+
+  // Nudge should be displayed. Showing that client is speaking while on mute.
+  controller()->OnSpeakOnMuteDetected();
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+
+  // Clicks on the nudge should open the settings page.
+  EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 0);
+  LeftClickOn(GetShownNudge(nudge_id));
+  EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 1);
 }
 
 TEST_F(VideoConferenceTrayControllerTest, RecordRepeatedShows) {

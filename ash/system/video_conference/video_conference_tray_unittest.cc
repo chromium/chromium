@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -152,10 +151,6 @@ class VideoConferenceTrayTest : public AshTestBase {
     state.is_capturing_screen = true;
     controller()->UpdateWithMediaState(state);
     return state;
-  }
-
-  void OpenSpeakOnMuteDetectionSettingsPage() {
-    video_conference_tray()->OpenSpeakOnMuteDetectionSettingsPage();
   }
 
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
@@ -953,12 +948,6 @@ TEST_F(VideoConferenceTrayTest, CloseBubbleOnEffectSupportStateChange) {
   // When there's a change to effect support state, the bubble should be
   // automatically close to update.
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
-}
-
-TEST_F(VideoConferenceTrayTest, OpenSpeakOnMuteDetectionSettingsPage) {
-  EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 0);
-  OpenSpeakOnMuteDetectionSettingsPage();
-  EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 1);
 }
 
 }  // namespace ash

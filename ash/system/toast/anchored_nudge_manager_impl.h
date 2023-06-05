@@ -53,6 +53,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager {
   views::View* GetNudgeAnchorViewForTest(const std::string& id);
   views::LabelButton* GetNudgeDismissButtonForTest(const std::string& id);
   views::LabelButton* GetNudgeSecondButtonForTest(const std::string& id);
+  AnchoredNudge* GetShownNudgeForTest(const std::string& id);
 
   // Default nudge duration that is used for nudges that expire.
   static constexpr base::TimeDelta kAnchoredNudgeDuration = base::Seconds(6);
