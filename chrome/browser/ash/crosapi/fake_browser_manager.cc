@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -86,6 +87,12 @@ void FakeBrowserManager::InitializeAndStartIfNeeded() {
   StartRunning();
 }
 
-void FakeBrowserManager::OnSessionStateChanged() {}
+void FakeBrowserManager::OnSessionStateChanged() {
+  auto session_state = session_manager::SessionManager::Get()->session_state();
+  if (session_state == session_manager::SessionState::ACTIVE ||
+      session_state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE) {
+    StartRunning();
+  }
+}
 
 }  // namespace crosapi

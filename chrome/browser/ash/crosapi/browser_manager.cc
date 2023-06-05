@@ -78,6 +78,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -489,6 +490,12 @@ void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb,
       base::IgnoreArgs<const AccountId&>(std::move(cb)));
 }
 
+bool IsPreparingKiosk() {
+  return (session_manager::SessionManager::Get()->session_state() ==
+          session_manager::SessionState::LOGGED_IN_NOT_ACTIVE) &&
+         chromeos::IsKioskSession();
+}
+
 // The delegate keeps track of the most recent lacros-chrome binary version
 // loaded by the BrowserLoader.
 // It is the single source of truth for what is the most up-to-date launchable
@@ -760,11 +767,6 @@ void BrowserManager::CreateBrowserWithRestoredData(
 }
 
 void BrowserManager::InitializeAndStartIfNeeded() {
-  // If we already tried to load Lacros but for some reason it wasn't available
-  // (for example, in some tests), then we should return here to avoid failure.
-  if (state_ == State::UNAVAILABLE) {
-    return;
-  }
   DCHECK(state_ == State::NOT_INITIALIZED || state_ == State::RELOADING);
 
   // Ensure this isn't run multiple times.
@@ -1458,17 +1460,17 @@ void BrowserManager::OnSessionStateChanged() {
     return;
   }
 
-  // Wait for session to become active.
-  auto* session_manager = session_manager::SessionManager::Get();
-  if (session_manager->session_state() !=
-      session_manager::SessionState::ACTIVE) {
+  // Wait for the user to log in.
+  auto session_state = session_manager::SessionManager::Get()->session_state();
+  if (session_state != session_manager::SessionState::ACTIVE &&
+      !IsPreparingKiosk()) {
     return;
   }
 
   if (state_ == State::PRE_LAUNCHED) {
     // Resume Lacros launch after login, if it was pre-launched.
     ResumeLaunch();
-  } else {
+  } else if (state_ == State::NOT_INITIALIZED) {
     // Otherwise, just start Lacros normally, if appropriate.
     InitializeAndStartIfNeeded();
   }
@@ -1565,8 +1567,9 @@ void BrowserManager::ResumeLaunch() {
   // executed in |InitializeAndStartIfNeeded| (we call |PrelaunchAtLoginScreen|
   // instead) and |StartWithLogFile|, because they required the user to be
   // logged in.
-  DCHECK_EQ(session_manager::SessionManager::Get()->session_state(),
-            session_manager::SessionState::ACTIVE);
+  auto session_state = session_manager::SessionManager::Get()->session_state();
+  DCHECK(session_state == session_manager::SessionState::ACTIVE ||
+         session_state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
   DCHECK_EQ(state_, State::PRE_LAUNCHED);
 

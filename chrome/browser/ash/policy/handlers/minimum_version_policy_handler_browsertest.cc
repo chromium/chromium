@@ -844,7 +844,7 @@ class MinimumVersionKioskAutoLoginTest : public MinimumVersionExistingUserTest {
 // by DeviceMinimumVersion policy.
 IN_PROC_BROWSER_TEST_F(MinimumVersionKioskAutoLoginTest, AllowAutoLaunch) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
-            session_manager::SessionState::LOGIN_PRIMARY);
+            session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   ash::OobeScreenWaiter(ash::AppLaunchSplashScreenView::kScreenId).Wait();
   // Policy handler returns early when device is setup in auto launch kiosk
   // mode.

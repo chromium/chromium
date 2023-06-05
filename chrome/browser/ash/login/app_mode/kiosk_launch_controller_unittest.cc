@@ -892,6 +892,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   Profile* profile_;
+  session_manager::SessionManager session_manager_;
   FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   crosapi::FakeBrowserManager browser_manager_;

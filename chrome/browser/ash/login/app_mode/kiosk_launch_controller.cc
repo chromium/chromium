@@ -357,6 +357,9 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   network_ui_controller_->SetProfile(profile);
 
   InitializeKeyboard();
+  // Switch the session state so that BrowserManager can start or resume Lacros.
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   LaunchLacros();
 }
 
@@ -717,10 +720,6 @@ void KioskLaunchController::LaunchApp() {
   }
 
   DCHECK(app_state_ == AppState::kInstalled);
-  // We need to change the session state so we are able to create browser
-  // windows.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   splash_wait_timer_.Stop();
   app_launcher_->LaunchApp();
 }
