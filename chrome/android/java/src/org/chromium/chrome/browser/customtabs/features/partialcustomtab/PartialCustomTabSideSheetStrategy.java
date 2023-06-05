@@ -217,7 +217,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
                 }
                 initializeSize();
                 if (shouldDrawDividerLine()) drawDividerLine();
-                updateShadowOffset();
+                // We have a delay before showing the resized web contents so it has to be done
+                // for the shadow as well.
+                new Handler().postDelayed(this::updateShadowOffset, 20);
                 maybeInvokeResizeCallback();
             });
         }
