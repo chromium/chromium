@@ -296,9 +296,18 @@
       </if>
 
       <!-- Page Info -->
-      <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
-        You're viewing a secure Chromium page
-      </message>
+      <if expr="_is_chrome_for_testing_branded">
+        <then>
+          <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
+            You're viewing a secure Chrome for Testing page
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
+            You're viewing a secure Chromium page
+          </message>
+        </else>
+      </if>
 
       <!-- Session Crash -->
       <message name="IDS_SESSION_CRASHED_VIEW_MESSAGE" desc="Message shown when the last session didn't exit cleanly.">

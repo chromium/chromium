@@ -288,7 +288,8 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
       r'/RecordHistogram\.getHistogram(ValueCount|TotalCount|Samples)ForTesting\(',
       (
        'Raw histogram counts are easy to misuse; for example they don\'t reset '
-       'between batched tests. Use HistogramWatcher to check histogram records instead.',
+       'between batched tests. Use HistogramWatcher to check histogram records '
+       'instead.',
       ),
       False,
       excluded_paths=(
@@ -5005,6 +5006,10 @@ def CheckCorrectProductNameInMessages(input_api, output_api):
         "correct_name": "Chrome",
         "incorrect_name": "Chromium",
     }, {
+        "filename_postfix": "google_chrome_strings.grd",
+        "correct_name": "Chrome",
+        "incorrect_name": "Chrome for Testing",
+    }, {
         "filename_postfix": "chromium_strings.grd",
         "correct_name": "Chromium",
         "incorrect_name": "Chrome",
@@ -5023,6 +5028,9 @@ def CheckCorrectProductNameInMessages(input_api, output_api):
                 if "<message" in line or "<!--" in line or "-->" in line:
                     continue
                 if test_case["incorrect_name"] in line:
+                    # Chrome for Testing is a special edge case: https://goo.gle/chrome-for-testing#bookmark=id.n1rat320av91
+                    if (test_case["correct_name"] == "Chromium" and line.count("Chrome") == line.count("Chrome for Testing")):
+                        continue
                     problems.append("Incorrect product name in %s:%d" %
                                     (f.LocalPath(), line_num))
 

@@ -2325,6 +2325,34 @@ class CorrectProductNameInMessagesTest(unittest.TestCase):
     self.assertTrue(
         'chrome/app/google_chrome_strings.grd:2' in warnings[0].items[0])
 
+  def testChromeForTestingInChromium(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/chromium_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome for Testing!',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT.CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testChromeForTestingInChrome(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/google_chrome_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome for Testing!',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT.CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    self.assertTrue(
+        'chrome/app/google_chrome_strings.grd:2' in warnings[0].items[0])
+
   def testMultipleInstances(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [

@@ -276,12 +276,31 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         <part file="settings_chromium_strings.grdp" />
       </if>
 
-      <message name="IDS_PRODUCT_NAME" desc="The Chrome application name">
-        Chromium
-      </message>
-      <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome application short name.">
-        Chromium
-      </message>
+      <!--
+        Even though Google Chrome for Testing is a separate brand, there is
+        no separate file for it. Instead, we use the same file as Chromium, with
+        a few select overrides for the most prominent end-user strings.
+
+        Rationale: https://goo.gle/chrome-for-testing#bookmark=id.n1rat320av91
+      -->
+      <if expr="_is_chrome_for_testing_branded">
+        <then>
+          <message name="IDS_PRODUCT_NAME" desc="The Chrome for Testing application name" translateable="false">
+            Google Chrome for Testing
+          </message>
+          <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome for Testing application short name." translateable="false">
+            Chrome for Testing
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PRODUCT_NAME" desc="The Chromium application name">
+            Chromium
+          </message>
+          <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chromium application short name.">
+            Chromium
+          </message>
+        </else>
+      </if>
       <if expr="is_win">
         <message name="IDS_SXS_SHORTCUT_NAME" desc="Unused in Chromium builds" translateable="false">
         </message>
@@ -799,17 +818,35 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <if expr="use_titlecase and not chromeos_ash">
-        <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome menu item">
-          About &amp;Chromium
-        </message>
+        <if expr="_is_chrome_for_testing_branded">
+          <then>
+            <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome for Testing menu item">
+              About &amp;Google Chrome for Testing
+            </message>
+          </then>
+          <else>
+            <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome menu item">
+              About &amp;Chromium
+            </message>
+          </else>
+        </if>
         <message name="IDS_RELAUNCH_TO_UPDATE" desc="In Title Case: The text label of the relaunch to update Chrome menu item">
           Relaunch to Update &amp;Chromium
         </message>
       </if>
       <if expr="not use_titlecase and not chromeos_ash">
-        <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
-          About &amp;Chromium
-        </message>
+        <if expr="_is_chrome_for_testing_branded">
+          <then>
+            <message name="IDS_ABOUT" desc="The text label of the About Chrome for Testing menu item">
+              About &amp;Google Chrome for Testing
+            </message>
+          </then>
+          <else>
+            <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
+              About &amp;Chromium
+            </message>
+          </else>
+        </if>
         <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome menu item">
           Relaunch to update &amp;Chromium
         </message>

@@ -8,12 +8,24 @@
     </message>
   </if>
   <!-- About Page -->
-  <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
-    About Chromium
-  </message>
-  <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
-    Get help with Chromium
-  </message>
+  <if expr="_is_chrome_for_testing_branded">
+    <then>
+      <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chrome for Testing page.">
+        About Chrome for Testing
+      </message>
+      <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome for Testing help page.">
+        Get help with Chrome for Testing
+      </message>
+    </then>
+    <else>
+      <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
+        About Chromium
+      </message>
+      <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
+        Get help with Chromium
+      </message>
+    </else>
+  </if>
   <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating Chromium">
       Updating Chromium
@@ -88,9 +100,18 @@
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_ERROR" desc="The text displayed when Chrome cannot determine or set the default browser">
       Chromium cannot determine or set the default browser
     </message>
-    <message name="IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY" desc="The text displayed when Chromium is installed in side-by-side mode, which does not support setting as the default browser.">
-      This is a secondary installation of Chromium, and cannot be made your default browser.
-    </message>
+    <if expr="_is_chrome_for_testing_branded">
+      <then>
+        <message name="IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY" desc="The text displayed when Chrome for Testing is installed in side-by-side mode, which does not support setting as the default browser.">
+          Google Chrome for Testing cannot be made your default browser.
+        </message>
+      </then>
+      <else>
+        <message name="IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY" desc="The text displayed when Chromium is installed in side-by-side mode, which does not support setting as the default browser.">
+          This is a secondary installation of Chromium, and cannot be made your default browser.
+        </message>
+      </else>
+    </if>
   </if>
 
   <!-- Privacy Page -->
