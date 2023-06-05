@@ -252,8 +252,8 @@ bool SharedContextState::InitializeSkia(
   crash_key.Set(
       base::StringPrintf("%u", static_cast<uint32_t>(gr_context_type_)));
 
-  if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn ||
-      gpu_preferences.gr_context_type == GrContextType::kGraphiteMetal) {
+  if (gr_context_type_ == GrContextType::kGraphiteDawn ||
+      gr_context_type_ == GrContextType::kGraphiteMetal) {
     return InitializeGraphite(gpu_preferences);
   }
 
