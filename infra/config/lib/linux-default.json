@@ -102,6 +102,7 @@
     "android-12-x64-rel-compilator": "Ubuntu-22.04",
     "android-12l-x64-dbg": "Ubuntu-22.04",
     "android-13-x64-rel": "Ubuntu-22.04",
+    "android-arm64-all-targets-dbg": "Ubuntu-22.04",
     "android-arm64-rel": "Ubuntu-22.04",
     "android-arm64-rel-compilator": "Ubuntu-22.04",
     "android-binary-size": "Ubuntu-22.04",
