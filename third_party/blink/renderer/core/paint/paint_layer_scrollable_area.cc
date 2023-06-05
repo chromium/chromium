@@ -620,6 +620,11 @@ gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
   gfx::Size visible_size;
   if (this == controller.RootScrollerArea()) {
     visible_size = controller.RootScrollerVisibleArea();
+  } else if (RuntimeEnabledFeatures::ScrollableAreaNoSnappingEnabled()) {
+    visible_size = ToRoundedSize(
+        GetLayoutBox()
+            ->OverflowClipRect(PhysicalOffset(), kIgnoreOverlayScrollbarSize)
+            .size);
   } else {
     visible_size = ToPixelSnappedRect(GetLayoutBox()->OverflowClipRect(
                                           GetLayoutBox()->Location(),
@@ -663,9 +668,12 @@ gfx::Rect PaintLayerScrollableArea::VisibleContentRect(
   PhysicalRect layout_content_rect(LayoutContentRect(scrollbar_inclusion));
   // TODO(szager): It's not clear that Floor() is the right thing to do here;
   // what is the correct behavior for fractional scroll offsets?
-  return gfx::Rect(ToFlooredPoint(layout_content_rect.offset),
-                   ToPixelSnappedSize(layout_content_rect.size.ToLayoutSize(),
-                                      GetLayoutBox()->Location()));
+  gfx::Size size =
+      RuntimeEnabledFeatures::ScrollableAreaNoSnappingEnabled()
+          ? ToRoundedSize(layout_content_rect.size)
+          : ToPixelSnappedSize(layout_content_rect.size.ToLayoutSize(),
+                               GetLayoutBox()->Location());
+  return gfx::Rect(ToFlooredPoint(layout_content_rect.offset), size);
 }
 
 PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
@@ -687,7 +695,13 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
 }
 
 gfx::Size PaintLayerScrollableArea::ContentsSize() const {
-  LayoutPoint location = GetLayoutBox()->Location();
+  LayoutPoint location =
+      RuntimeEnabledFeatures::ScrollableAreaNoSnappingEnabled()
+          ? LayoutPoint()
+          : GetLayoutBox()->Location();
+  // We need to take into account of ClientLeft and ClientTop even if
+  // ScrollableAreaNoSnappingEnabled, for PaintLayerScrollableAreaTest
+  // .NotScrollsOverflowWithScrollableScrollbar.
   PhysicalOffset offset(GetLayoutBox()->ClientLeft() + location.X(),
                         GetLayoutBox()->ClientTop() + location.Y());
   // TODO(crbug.com/962299): The pixel snapping is incorrect in some cases.
@@ -1226,6 +1240,9 @@ bool PaintLayerScrollableArea::HasHorizontalOverflow() const {
                             VerticalScrollbarWidth(kIgnoreOverlayScrollbarSize);
   if (NeedsRelayout() && !HadVerticalScrollbarBeforeRelayout())
     client_width += VerticalScrollbarWidth();
+  if (RuntimeEnabledFeatures::ScrollableAreaNoSnappingEnabled()) {
+    return ScrollWidth().Round() > client_width.Round();
+  }
   LayoutUnit scroll_width(ScrollWidth());
   LayoutUnit box_x = GetLayoutBox()->Location().X();
   return SnapSizeToPixel(scroll_width, box_x) >
@@ -1236,6 +1253,9 @@ bool PaintLayerScrollableArea::HasVerticalOverflow() const {
   LayoutUnit client_height =
       LayoutContentRect(kIncludeScrollbars).Height() -
       HorizontalScrollbarHeight(kIgnoreOverlayScrollbarSize);
+  if (RuntimeEnabledFeatures::ScrollableAreaNoSnappingEnabled()) {
+    return ScrollHeight().Round() > client_height.Round();
+  }
   LayoutUnit scroll_height(ScrollHeight());
   LayoutUnit box_y = GetLayoutBox()->Location().Y();
   return SnapSizeToPixel(scroll_height, box_y) >

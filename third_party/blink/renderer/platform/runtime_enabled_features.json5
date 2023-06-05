@@ -2089,7 +2089,7 @@
     {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
-      depends_on: ["RemoveConvertToLayerCoords"],
+      depends_on: ["RemoveConvertToLayerCoords", "ScrollableAreaNoSnapping"],
       status: "test",
     },
     {
@@ -3069,6 +3069,10 @@
       name: "ScriptElementSupports",
       status: "stable",
       base_feature: "none",
+    },
+    {
+      name: "ScrollableAreaNoSnapping",
+      status: "stable",
     },
     {
       name: "ScrollbarColor",
