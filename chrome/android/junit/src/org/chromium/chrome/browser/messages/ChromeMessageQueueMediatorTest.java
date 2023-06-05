@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -81,6 +83,9 @@ public class ChromeMessageQueueMediatorTest {
 
     @Mock
     private ActivityTabProvider mActivityTabProvider;
+
+    @Mock
+    private Tab mTab;
 
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -225,6 +230,11 @@ public class ChromeMessageQueueMediatorTest {
         visibilitySupplier.set(true);
         when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0f);
 
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        when(mTab.isDestroyed()).thenReturn(false);
+        // Mock TabBrowserControlsConstraintsHelper to avoid NPE.
+        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
+
         mMediator.onRequestShowing(() -> {});
         Assert.assertTrue(mMediator.isReadyForShowing());
 
@@ -322,6 +332,7 @@ public class ChromeMessageQueueMediatorTest {
         mMediator.onAnimationEnd();
         verify(mMessageContainerCoordinator, times(1)).onAnimationEnd();
     }
+
     /**
      * Test the queue can be suspended and resumed correctly on omnibox focus events.
      */
@@ -341,5 +352,18 @@ public class ChromeMessageQueueMediatorTest {
         verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
         Assert.assertEquals("mUrlFocusToken should be invalidated.", TokenHolder.INVALID_TOKEN,
                 mMediator.getUrlFocusTokenForTesting());
+    }
+
+    /**
+     * Test when tab is destroyed before {@link ChromeMessageQueueMediator#destroy()}.
+     */
+    @Test
+    public void testTabDestroyed() {
+        initMediator();
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        when(mTab.isDestroyed()).thenReturn(true);
+
+        // Expect no error.
+        mMediator.areBrowserControlsReady();
     }
 }
