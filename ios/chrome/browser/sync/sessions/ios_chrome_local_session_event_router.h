@@ -15,12 +15,12 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
 
-class ChromeBrowserState;
 class AllWebStateListObservationRegistrar;
+class BrowserList;
 
 namespace sync_sessions {
 class SyncSessionsClient;
-}
+}  // namespace sync_sessions
 
 // A LocalEventRouter that drives session sync via observation of
 // web::WebState-related events.
@@ -28,8 +28,7 @@ class IOSChromeLocalSessionEventRouter
     : public sync_sessions::LocalSessionEventRouter {
  public:
   IOSChromeLocalSessionEventRouter(
-      // TODO(crbug.com/1450909): Pass a BrowserList directly instead.
-      ChromeBrowserState* browser_state,
+      BrowserList* browser_list,
       sync_sessions::SyncSessionsClient* sessions_client_,
       const syncer::SyncableService::StartSyncFlare& flare);
 

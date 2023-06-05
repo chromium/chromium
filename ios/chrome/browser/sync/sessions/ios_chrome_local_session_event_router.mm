@@ -14,8 +14,7 @@
 #import "components/sync_sessions/synced_tab_delegate.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/glue/sync_start_util.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
@@ -37,11 +36,11 @@ sync_sessions::SyncedTabDelegate* GetSyncedTabDelegateFromWebState(
 }  // namespace
 
 IOSChromeLocalSessionEventRouter::IOSChromeLocalSessionEventRouter(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     sync_sessions::SyncSessionsClient* sessions_client,
     const syncer::SyncableService::StartSyncFlare& flare)
     : registrar_(std::make_unique<AllWebStateListObservationRegistrar>(
-          BrowserListFactory::GetForBrowserState(browser_state),
+          browser_list,
           std::make_unique<Observer>(this),
           AllWebStateListObservationRegistrar::Mode::REGULAR)),
       sessions_client_(sessions_client),
