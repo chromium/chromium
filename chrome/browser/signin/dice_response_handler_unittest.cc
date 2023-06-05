@@ -342,9 +342,9 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   // Token fetch should be blocked on the binding registration token generation.
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
   // Simulate successful token generation.
-  SimulateRegistrationTokenHelperResult(RegistrationTokenHelper::Result{
-      .binding_key_id = unexportable_keys::UnexportableKeyId(),
-      .registration_token = "test_registration_token"});
+  SimulateRegistrationTokenHelperResult(RegistrationTokenHelper::Result(
+      unexportable_keys::UnexportableKeyId(), std::vector<uint8_t>{1, 2, 3},
+      "test_registration_token"));
 
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();

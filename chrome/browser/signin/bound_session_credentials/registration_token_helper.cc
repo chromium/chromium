@@ -28,6 +28,19 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 
 }  // namespace
 
+RegistrationTokenHelper::Result::Result(
+    unexportable_keys::UnexportableKeyId in_binding_key_id,
+    std::vector<uint8_t> in_wrapped_binding_key,
+    std::string in_registration_token)
+    : binding_key_id(in_binding_key_id),
+      wrapped_binding_key(in_wrapped_binding_key),
+      registration_token(in_registration_token) {}
+
+RegistrationTokenHelper::Result::~Result() = default;
+RegistrationTokenHelper::Result::Result(Result&& other) = default;
+RegistrationTokenHelper::Result& RegistrationTokenHelper::Result::operator=(
+    Result&& other) = default;
+
 RegistrationTokenHelper::RegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     base::StringPiece client_id,
@@ -92,7 +105,9 @@ void RegistrationTokenHelper::OnDataSigned(
   std::string registration_token =
       signin::AppendSignatureToHeaderAndPayload(header_and_payload_, signature);
 
+  std::vector<uint8_t> wrapped_key =
+      *unexportable_key_service_->GetWrappedKey(key_id_);
+
   std::move(callback_).Run(
-      Result{.binding_key_id = key_id_,
-             .registration_token = std::move(registration_token)});
+      Result(key_id_, std::move(wrapped_key), std::move(registration_token)));
 }

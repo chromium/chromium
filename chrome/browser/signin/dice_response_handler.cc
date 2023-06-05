@@ -226,16 +226,18 @@ void DiceResponseHandler::DiceTokenFetcher::OnClientOAuthSuccess(
   gaia_auth_fetcher_.reset();
   timeout_closure_.Cancel();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  absl::optional<unexportable_keys::UnexportableKeyId> binding_key_id;
-  if (switches::IsBoundSessionCredentialsEnabled() && result.is_bound_to_key) {
-    binding_key_id = binding_key_id_;
+  if (!switches::IsBoundSessionCredentialsEnabled() ||
+      !result.is_bound_to_key) {
+    // Pass an empty binding key if conditions don't apply. This key won't be
+    // needed for anything else, so we can just clear it in place.
+    wrapped_binding_key_.clear();
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   dice_response_handler_->OnTokenExchangeSuccess(
       this, result.refresh_token, result.is_under_advanced_protection
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       ,
-      binding_key_id
+      wrapped_binding_key_
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   );
   // |this| may be deleted at this point.
@@ -285,8 +287,8 @@ void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(
     absl::optional<RegistrationTokenHelper::Result> result) {
   CHECK(switches::IsBoundSessionCredentialsEnabled());
   if (result.has_value()) {
-    binding_key_id_ = result->binding_key_id;
     binding_registration_token_ = std::move(result->registration_token);
+    wrapped_binding_key_ = std::move(result->wrapped_binding_key);
   }
   registration_token_helper_.reset();
   StartTokenFetch();
@@ -503,7 +505,7 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
     bool is_under_advanced_protection
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     ,
-    absl::optional<unexportable_keys::UnexportableKeyId> binding_key_id
+    const std::vector<uint8_t>& wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
   const std::string& email = token_fetcher->email();
@@ -514,11 +516,15 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
       identity_manager_->PickAccountIdForAccount(gaia_id, email);
   bool is_new_account =
       !identity_manager_->HasAccountWithRefreshToken(account_id);
-  // TODO(http://b/274463812): propagate binding key to `IdentityManager`.
   identity_manager_->GetAccountsMutator()->AddOrUpdateAccount(
       gaia_id, email, refresh_token, is_under_advanced_protection,
       signin_metrics::SourceForRefreshTokenOperation::
-          kDiceResponseHandler_Signin);
+          kDiceResponseHandler_Signin
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
   about_signin_internals_->OnRefreshTokenReceived(
       base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
   token_fetcher->delegate()->HandleTokenExchangeSuccess(account_id,

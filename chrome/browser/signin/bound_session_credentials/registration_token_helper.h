@@ -31,7 +31,18 @@ class UnexportableKeyService;
 class RegistrationTokenHelper {
  public:
   struct Result {
+    Result(unexportable_keys::UnexportableKeyId binding_key_id,
+           std::vector<uint8_t> wrapped_binding_key,
+           std::string registration_token);
+    ~Result();
+
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+    Result(Result&& other);
+    Result& operator=(Result&& other);
+
     unexportable_keys::UnexportableKeyId binding_key_id;
+    std::vector<uint8_t> wrapped_binding_key;
     std::string registration_token;
   };
 

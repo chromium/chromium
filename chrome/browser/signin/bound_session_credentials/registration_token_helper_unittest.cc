@@ -54,6 +54,9 @@ TEST_F(RegistrationTokenHelperTest, Success) {
 
   EXPECT_TRUE(
       signin::VefiryJwtSingature(registration_token, algorithm, pubkey));
+
+  const auto& wrapped_key = future.Get()->wrapped_binding_key;
+  EXPECT_EQ(wrapped_key, unexportable_key_service().GetWrappedKey(key_id));
 }
 
 TEST_F(RegistrationTokenHelperTest, Failure) {

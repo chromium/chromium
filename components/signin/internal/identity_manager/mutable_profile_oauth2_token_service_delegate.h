@@ -18,6 +18,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "net/base/backoff_entry.h"
@@ -63,8 +64,14 @@ class MutableProfileOAuth2TokenServiceDelegate
       const override;
   void LoadCredentials(const CoreAccountId& primary_account_id,
                        bool is_syncing) override;
-  void UpdateCredentials(const CoreAccountId& account_id,
-                         const std::string& refresh_token) override;
+  void UpdateCredentials(
+      const CoreAccountId& account_id,
+      const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+          ) override;
   void RevokeAllCredentials() override;
   void RevokeCredentials(const CoreAccountId& account_id) override;
   void ExtractCredentials(ProfileOAuth2TokenService* to_service,
@@ -140,7 +147,12 @@ class MutableProfileOAuth2TokenServiceDelegate
 
   // Updates the in-memory representation of the credentials.
   void UpdateCredentialsInMemory(const CoreAccountId& account_id,
-                                 const std::string& refresh_token);
+                                 const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                 ,
+                                 const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 
   // Sets refresh token in error.
   void InvalidateTokenForMultilogin(
@@ -149,7 +161,12 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Persists credentials for |account_id|. Enables overriding for
   // testing purposes, or other cases, when accessing the DB is not desired.
   void PersistCredentials(const CoreAccountId& account_id,
-                          const std::string& refresh_token);
+                          const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                          ,
+                          const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 
   // Clears credentials persisted for |account_id|. Enables overriding for
   // testing purposes, or other cases, when accessing the DB is not desired.
@@ -163,10 +180,18 @@ class MutableProfileOAuth2TokenServiceDelegate
 
   std::string GetRefreshToken(const CoreAccountId& account_id) const;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::vector<uint8_t> GetWrappedBindingKey(
+      const CoreAccountId& account_id) const;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   // Creates a new AccountStatus and adds it to the AccountStatusMap.
   // The account must not be already in the map.
   void AddAccountStatus(const CoreAccountId& account_id,
                         const std::string& refresh_token,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                        const std::vector<uint8_t>& wrapped_binding_key,
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                         const GoogleServiceAuthError& error);
 
   // Called at when tokens are loaded. Performs housekeeping tasks and notifies

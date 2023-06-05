@@ -393,7 +393,8 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
   if (reason == HandlerSigninReason::kReauthentication) {
     DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
            chrome::enterprise_util::UserAcceptedAccountManagement(profile_));
-
+    // TODO(b/278545484): support LST binding for refresh tokens created by
+    // InlineSigninHelper.
     identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
         gaia_id_, email_, result.refresh_token,
         result.is_under_advanced_protection,
@@ -449,6 +450,8 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
   }
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+  // TODO(b/278545484): support LST binding for refresh tokens created by
+  // InlineSigninHelper.
   CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
           gaia_id_, email_, refresh_token,
