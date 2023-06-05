@@ -7,7 +7,6 @@ package org.chromium.net.test;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -243,7 +242,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertTrue(foundMethod.get());
+        assertThat(foundMethod.get()).isTrue();
     }
 
     @Test
@@ -274,7 +273,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertTrue(foundEntry.get());
+        assertThat(foundEntry.get()).isTrue();
     }
 
     @Test
@@ -429,7 +428,7 @@ public class FakeUrlRequestTest {
         callback.startNextRead(request);
         callback.waitForNextStep();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
-        assertTrue(Objects.equals(callback.mResponseAsString, longResponseString));
+        assertThat(Objects.equals(callback.mResponseAsString, longResponseString)).isTrue();
     }
 
     @Test
@@ -509,7 +508,7 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
 
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
-        assertTrue(request.isDone());
+        assertThat(request.isDone()).isTrue();
     }
 
     @Test

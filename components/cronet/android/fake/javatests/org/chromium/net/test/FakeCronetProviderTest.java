@@ -6,8 +6,6 @@ package org.chromium.net.test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -50,7 +48,7 @@ public class FakeCronetProviderTest {
     @Test
     @SmallTest
     public void testIsEnabled() {
-        assertTrue(mProvider.isEnabled());
+        assertThat(mProvider.isEnabled()).isTrue();
     }
 
     @Test

@@ -6,9 +6,7 @@ package org.chromium.net.test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import android.content.Context;
@@ -249,7 +247,7 @@ public class FakeCronetEngineTest {
     @SmallTest
     public void testShutdownBlockedWhenRequestCountNotZero() {
         // Start a request and verify the engine can't be shutdown.
-        assertTrue(mFakeCronetEngine.startRequest());
+        assertThat(mFakeCronetEngine.startRequest()).isTrue();
         try {
             mFakeCronetEngine.shutdown();
             fail("Shutdown not checked for running requests.");
@@ -269,7 +267,7 @@ public class FakeCronetEngineTest {
             @Override
             public void onRequestFinished(RequestFinishedInfo requestInfo) {}
         });
-        assertTrue(mFakeCronetEngine.hasRequestFinishedListeners());
+        assertThat(mFakeCronetEngine.hasRequestFinishedListeners()).isTrue();
     }
 
     @Test
@@ -280,9 +278,9 @@ public class FakeCronetEngineTest {
             public void onRequestFinished(RequestFinishedInfo requestInfo) {}
         };
         mFakeCronetEngine.addRequestFinishedListener(listener);
-        assertTrue(mFakeCronetEngine.hasRequestFinishedListeners());
+        assertThat(mFakeCronetEngine.hasRequestFinishedListeners()).isTrue();
         mFakeCronetEngine.removeRequestFinishedListener(listener);
-        assertFalse(mFakeCronetEngine.hasRequestFinishedListeners());
+        assertThat(mFakeCronetEngine.hasRequestFinishedListeners()).isFalse();
     }
 
     @Test
@@ -349,7 +347,7 @@ public class FakeCronetEngineTest {
     @SmallTest
     public void testCantStartRequestAfterEngineShutdown() {
         mFakeCronetEngine.shutdown();
-        assertFalse(mFakeCronetEngine.startRequest());
+        assertThat(mFakeCronetEngine.startRequest()).isFalse();
     }
 
     @Test
