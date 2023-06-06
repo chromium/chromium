@@ -379,8 +379,6 @@ AccessCodeCastIntegrationBrowserTest::GetDeviceAddedTimeFromDict(
 }
 
 void AccessCodeCastIntegrationBrowserTest::TearDownOnMainThread() {
-  ValidateCastMediaSinkServiceImpl();
-
   url_loader_interceptor_.reset();
 
   base::RunLoop().RunUntilIdle();
@@ -388,19 +386,18 @@ void AccessCodeCastIntegrationBrowserTest::TearDownOnMainThread() {
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
-void AccessCodeCastIntegrationBrowserTest::ValidateCastMediaSinkServiceImpl() {
-  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(
-      mock_cast_media_sink_service_impl()));
-}
-
 void AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasNoSinks(
+    base::OnceClosure callback,
     bool has_sink) {
   EXPECT_FALSE(has_sink);
+  std::move(callback).Run();
 }
 
 void AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasSink(
+    base::OnceClosure callback,
     bool has_sink) {
   EXPECT_TRUE(has_sink);
+  std::move(callback).Run();
 }
 
 std::unique_ptr<KeyedService>

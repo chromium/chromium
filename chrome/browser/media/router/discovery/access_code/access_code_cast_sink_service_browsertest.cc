@@ -95,6 +95,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   // it be added to the media router.
   EXPECT_FALSE(HasSinkInDevicesDict("cast:<1234>"));
 
+  base::RunLoop run_loop;
   mock_cast_media_sink_service_impl()
       ->task_runner()
       ->PostTaskAndReplyWithResult(
@@ -104,7 +105,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
                          "cast:<1234>"),
           base::BindOnce(&AccessCodeCastIntegrationBrowserTest::
                              ExpectMediaRouterHasNoSinks,
-                         weak_ptr_factory_.GetWeakPtr()));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, PRE_SavedDevice) {
@@ -167,6 +170,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
 
   EXPECT_TRUE(HasSinkInDevicesDict("cast:<1234>"));
 
+  base::RunLoop run_loop;
   mock_cast_media_sink_service_impl()
       ->task_runner()
       ->PostTaskAndReplyWithResult(
@@ -176,7 +180,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
                          "cast:<1234>"),
           base::BindOnce(
               &AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasSink,
-              weak_ptr_factory_.GetWeakPtr()));
+              weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  run_loop.Run();
+
   // Verify that the saved devices sink added time isn't reset after it has been
   // successfully opened and exists in the media router.
   EXPECT_EQ(GetDeviceAddedTimeFromDict("cast:<1234>").value(),

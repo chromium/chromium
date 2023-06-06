@@ -132,12 +132,8 @@ class AccessCodeCastIntegrationBrowserTest
       base::TimeDelta timeout = base::Seconds(60),
       media_router::MockMediaRouter* media_router = nullptr);
 
-  // Verifies that all testing expectations have been met on the
-  // CastMediaSinkServiceImpl object.
-  void ValidateCastMediaSinkServiceImpl();
-
-  void ExpectMediaRouterHasNoSinks(bool has_sink);
-  void ExpectMediaRouterHasSink(bool has_sink);
+  void ExpectMediaRouterHasNoSinks(base::OnceClosure callback, bool has_sink);
+  void ExpectMediaRouterHasSink(base::OnceClosure callback, bool has_sink);
 
   void MockOnChannelOpenedCall(const MediaSinkInternal& cast_sink,
                                std::unique_ptr<net::BackoffEntry> backoff_entry,
