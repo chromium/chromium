@@ -167,7 +167,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
                     .build();
 
@@ -245,7 +245,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1300962")
     public void testRenderGrid_3WebTabs(boolean isStartSurfaceRefactorEnabled) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -267,7 +266,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisabledTest(message = "https://crbug.com/1300962")
     public void testRenderGrid_10WebTabs(boolean isStartSurfaceRefactorEnabled) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -288,8 +286,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisabledTest(message = "https://crbug.com/1139807")
-    @DisableIf.Build(sdk_is_greater_than = O_MR1, message = "crbug.com/1077552")
     public void testRenderGrid_10WebTabs_InitialScroll(boolean isStartSurfaceRefactorEnabled)
             throws IOException {
         // clang-format on
@@ -1367,7 +1363,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
-    @DisabledTest(message = "https://crbug.com/1359687")
     public void testRenderGrid_withAspectRatioOfOne(
             boolean isStartSurfaceRefactorEnabled) throws IOException {
         // clang-format on
