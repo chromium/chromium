@@ -4,7 +4,6 @@
 
 // Set to Google Blue 600
 CANVAS_DIMENSIONS, 16,
-PATH_COLOR_ARGB, 0xFF, 0x1A, 0x73, 0xE8,
 MOVE_TO, 16, 14,
 H_LINE_TO, 0,
 V_LINE_TO, 2,
