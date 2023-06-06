@@ -12,6 +12,7 @@ module ash.cros_healthd.mojom;
 
 import "ash/system/diagnostics/mojom/input.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Implemented by clients who desire Bluetooth notifications.
 //
@@ -496,6 +497,48 @@ union StylusEventInfo {
   StylusConnectedEvent connected_event@2;
 };
 
+// Emitted within CrashEventInfo. Contains information available for uploaded
+// crash events only.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct CrashUploadInfo {
+  // Corresponding to "upload_id" in uploads.log.
+  string crash_report_id@0;
+  // The creation time of the uploads.log file.
+  // Used to distinguish uploads.log file in case it has been deleted and
+  // recreated.
+  mojo_base.mojom.Time creation_time@1;
+  // Number of valid logs before this event in uploads.log. Useful to inform
+  // subscribers that need to distinguish whether a crash event has been
+  // encountered before.
+  uint64 offset@2;
+};
+
+// Emitted once the observer gets new crash events.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+struct CrashEventInfo {
+  [Stable, Extensible]
+  enum CrashType {
+      [Default] kUnknown = 0,
+      kKernel,
+      kEmbeddedController,
+  };
+  // Type of the crash. Corresponding to "fatal_crash_type" in uploads.log.
+  CrashType crash_type@0;
+  // ID that represents crash locally. Corresponding to "path_hash" in
+  // uploads.log.
+  string local_id@1;
+  // The time at which the crash event is captured by the system. Corresponding
+  // to "capture_time" in uploads.log.
+  mojo_base.mojom.Time capture_time@2;
+  // Information available for uploaded crash events only. Missing if the crash
+  // hasn't been uploaded by crash_sender yet.
+  CrashUploadInfo? upload_info@3;
+};
+
 // Implemented by clients who desire events.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -507,7 +550,7 @@ interface EventObserver {
 
 // Union of event info.
 //
-// NextMinVersion: 9, NextIndex: 15
+// NextMinVersion: 10, NextIndex: 16
 [Stable, Extensible]
 union EventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -543,11 +586,13 @@ union EventInfo {
   [MinVersion=7] StylusGarageEventInfo stylus_garage_event_info@13;
   // Stylus event info.
   [MinVersion=8] StylusEventInfo stylus_event_info@14;
+  // Crash event info.
+  [MinVersion=9] CrashEventInfo crash_event_info@15;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 10, NextIndex: 16
+// NextMinVersion: 11, NextIndex: 17
 [Stable, Extensible]
 enum EventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -567,4 +612,5 @@ enum EventCategoryEnum {
   [MinVersion=7] kTouchscreen = 13,
   [MinVersion=8] kStylusGarage = 14,
   [MinVersion=9] kStylus = 15,
+  [MinVersion=10] kCrash = 16,
 };
