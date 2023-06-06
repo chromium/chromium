@@ -90,7 +90,6 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -164,7 +163,7 @@ public class BookmarkTest {
     @Mock
     private SyncService mSyncService;
     @Captor
-    private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+    private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
     private BookmarkModel mBookmarkModel;
     // Constant but can only be initialized after parameterized test runner setup because this would
@@ -1247,7 +1246,7 @@ public class BookmarkTest {
 
         verify(mSyncService, atLeast(1))
                 .addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
-        for (SyncStateChangedListener syncStateChangedListener :
+        for (SyncService.SyncStateChangedListener syncStateChangedListener :
                 mSyncStateChangedListenerCaptor.getAllValues()) {
             runOnUiThreadBlocking(syncStateChangedListener::syncStateChanged);
         }

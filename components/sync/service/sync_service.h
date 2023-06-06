@@ -19,6 +19,10 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 struct CoreAccountInfo;
 class GoogleServiceAuthError;
 class GURL;
@@ -228,6 +232,11 @@ class SyncService : public KeyedService {
   SyncService& operator=(const SyncService&) = delete;
 
   ~SyncService() override {}
+
+#if BUILDFLAG(IS_ANDROID)
+  // Return the java object that allows access to the SyncService.
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   //////////////////////////////////////////////////////////////////////////////
   // USER SETTINGS

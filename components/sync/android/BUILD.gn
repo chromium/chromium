@@ -5,11 +5,26 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/components/sync/SyncServiceImpl.java" ]
+}
+
 android_library("sync_java") {
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  srcjar_deps = [ ":java_enums" ]
-  sources = [ "java/src/org/chromium/components/sync/Passphrase.java" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/signin/public/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  srcjar_deps = [
+    ":java_enums",
+    ":jni_headers",
+   ]
+  sources = [
+    "java/src/org/chromium/components/sync/Passphrase.java",
+    "java/src/org/chromium/components/sync/SyncService.java",
+    "java/src/org/chromium/components/sync/SyncServiceImpl.java",
+  ]
 }
 
 java_cpp_enum("java_enums") {

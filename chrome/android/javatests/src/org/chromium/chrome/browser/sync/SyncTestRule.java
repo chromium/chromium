@@ -356,7 +356,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 startMainActivityForSyncTest();
 
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    SyncServiceImpl syncService = createSyncServiceImpl();
+                    SyncService syncService = createSyncServiceImpl();
                     if (syncService != null) {
                         SyncService.overrideForTests(syncService);
                     }
@@ -430,9 +430,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Returns an instance of SyncServiceImpl that can be overridden by subclasses.
+     * Returns an instance of SyncService that can be overridden by subclasses.
      */
-    protected SyncServiceImpl createSyncServiceImpl() {
+    protected SyncService createSyncServiceImpl() {
         return null;
     }
 

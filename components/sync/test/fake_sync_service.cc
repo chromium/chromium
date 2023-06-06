@@ -20,6 +20,12 @@ FakeSyncService::FakeSyncService() = default;
 
 FakeSyncService::~FakeSyncService() = default;
 
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject> FakeSyncService::GetJavaObject() {
+  return base::android::ScopedJavaLocalRef<jobject>();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void FakeSyncService::SetSyncFeatureRequested() {}
 
 syncer::SyncUserSettings* FakeSyncService::GetUserSettings() {

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
-#define CHROME_BROWSER_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
+#ifndef COMPONENTS_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
+#define COMPONENTS_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
 
 #include <memory>
 
-#include "base/android/jni_weak_ref.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/service/sync_service_observer.h"
 
 namespace syncer {
@@ -25,14 +24,13 @@ class SyncSetupInProgressHandle;
 // Must only be accessed from the UI thread.
 class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
  public:
-  // |native_sync_service| and |java_sync_service| must not be null.
-  SyncServiceAndroidBridge(JNIEnv* env,
-                           syncer::SyncService* native_sync_service,
-                           jobject java_sync_service);
+  explicit SyncServiceAndroidBridge(syncer::SyncService* native_sync_service);
   ~SyncServiceAndroidBridge() override;
 
   SyncServiceAndroidBridge(const SyncServiceAndroidBridge&) = delete;
   SyncServiceAndroidBridge& operator=(const SyncServiceAndroidBridge&) = delete;
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -93,10 +91,10 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   const raw_ptr<syncer::SyncService> native_sync_service_;
 
   // Java-side SyncServiceImpl object.
-  const JavaObjectWeakGlobalRef java_sync_service_;
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
 };
 
-#endif  // CHROME_BROWSER_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
+#endif  // COMPONENTS_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_

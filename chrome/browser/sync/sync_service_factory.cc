@@ -81,7 +81,11 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/passkey_model_factory.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/sync/android/jni_headers/SyncServiceFactory_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -316,3 +320,20 @@ BrowserContextKeyedServiceFactory::TestingFactory
 SyncServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildSyncService);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+static base::android::ScopedJavaLocalRef<jobject>
+JNI_SyncServiceFactory_GetForProfile(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_profile) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(java_profile);
+  DCHECK(profile);
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return base::android::ScopedJavaLocalRef<jobject>();
+  }
+  return sync_service->GetJavaObject();
+}
+#endif  // BUILDFLAG(IS_ANDROID)

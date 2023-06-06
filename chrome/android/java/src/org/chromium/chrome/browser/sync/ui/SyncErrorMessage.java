@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
@@ -54,7 +53,7 @@ import java.lang.annotation.RetentionPolicy;
  * practice however, because the time limit imposed between 2 displays is global, only one instance
  * in the whole application will exist at a time.
  */
-public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserData {
+public class SyncErrorMessage implements SyncService.SyncStateChangedListener, UnownedUserData {
     @VisibleForTesting
     @IntDef({MessageType.NOT_SHOWN, MessageType.AUTH_ERROR, MessageType.PASSPHRASE_REQUIRED,
             MessageType.SYNC_SETUP_INCOMPLETE, MessageType.CLIENT_OUT_OF_DATE,

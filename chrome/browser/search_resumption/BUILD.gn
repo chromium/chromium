@@ -37,6 +37,7 @@ android_library("java") {
     "//components/omnibox/browser:browser_java",
     "//components/search_engines/android:java",
     "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync;
+package org.chromium.components.sync;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -16,9 +16,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.PassphraseType;
-import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -32,9 +29,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * This class mostly makes calls to native and contains a minimum of business logic. It is only
  * usable from the UI thread as the native SyncServiceImpl requires its access to be on the
  * UI thread. See components/sync/service/sync_service_impl.h for more details.
+ * TODO(crbug.com/1451811): Update to no reference UI thread.
  */
 public class SyncServiceImpl extends SyncService {
-    // Can be null, i.e. 0, if no native sync service exists, e.g. when sync is disabled via CLI.
     private final long mSyncServiceAndroidBridge;
 
     private int mSetupInProgressCounter;
@@ -51,47 +48,46 @@ public class SyncServiceImpl extends SyncService {
             UserSelectableType.BOOKMARKS, UserSelectableType.PASSWORDS,
             UserSelectableType.PREFERENCES, UserSelectableType.TABS, UserSelectableType.HISTORY};
 
-    /** SyncService should be the only caller of this method. */
-    public static @Nullable SyncServiceImpl create() {
+    @CalledByNative
+    private SyncServiceImpl(long ptr) {
         ThreadUtils.assertOnUiThread();
-        SyncServiceImpl syncService = new SyncServiceImpl();
-        return syncService.mSyncServiceAndroidBridge == 0 ? null : syncService;
-    }
-
-    protected SyncServiceImpl() {
-        // This may cause us to create SyncServiceImpl even if sync has not
-        // been set up, but SyncServiceImpl won't actually start until
-        // credentials are available.
-        mSyncServiceAndroidBridge = SyncServiceImplJni.get().init(this);
+        assert ptr != 0;
+        mSyncServiceAndroidBridge = ptr;
     }
 
     @Override
     public boolean isEngineInitialized() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isEngineInitialized(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isTransportStateActive() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isTransportStateActive(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean canSyncFeatureStart() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().canSyncFeatureStart(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isSyncFeatureEnabled() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isSyncFeatureEnabled(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isSyncFeatureActive() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isSyncFeatureActive(mSyncServiceAndroidBridge);
     }
 
     @Override
     public @GoogleServiceAuthError.State int getAuthError() {
+        ThreadUtils.assertOnUiThread();
         int authErrorCode = SyncServiceImplJni.get().getAuthError(mSyncServiceAndroidBridge);
         if (authErrorCode < 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {
             throw new IllegalArgumentException("No state for code: " + authErrorCode);
@@ -101,31 +97,37 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isSyncDisabledByEnterprisePolicy() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isSyncDisabledByEnterprisePolicy(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean hasUnrecoverableError() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().hasUnrecoverableError(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean requiresClientUpgrade() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().requiresClientUpgrade(mSyncServiceAndroidBridge);
     }
 
     @Override
     public @Nullable CoreAccountInfo getAccountInfo() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().getAccountInfo(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean hasSyncConsent() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().hasSyncConsent(mSyncServiceAndroidBridge);
     }
 
     @Override
     public Set<Integer> getActiveDataTypes() {
+        ThreadUtils.assertOnUiThread();
         int[] activeDataTypes =
                 SyncServiceImplJni.get().getActiveDataTypes(mSyncServiceAndroidBridge);
         return modelTypeArrayToSet(activeDataTypes);
@@ -133,6 +135,7 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public Set<Integer> getSelectedTypes() {
+        ThreadUtils.assertOnUiThread();
         int[] userSelectableTypeArray =
                 SyncServiceImplJni.get().getSelectedTypes(mSyncServiceAndroidBridge);
         return userSelectableTypeArrayToSet(userSelectableTypeArray);
@@ -140,34 +143,40 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isTypeManagedByPolicy(@UserSelectableType int type) {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isTypeManagedByPolicy(mSyncServiceAndroidBridge, type);
     }
 
     @Override
     public boolean hasKeepEverythingSynced() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().hasKeepEverythingSynced(mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes) {
+        ThreadUtils.assertOnUiThread();
         SyncServiceImplJni.get().setSelectedTypes(mSyncServiceAndroidBridge, syncEverything,
                 syncEverything ? ALL_SELECTABLE_TYPES : userSelectableTypeSetToArray(enabledTypes));
     }
 
     @Override
     public void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource) {
+        ThreadUtils.assertOnUiThread();
         SyncServiceImplJni.get().setInitialSyncFeatureSetupComplete(
                 mSyncServiceAndroidBridge, syncFirstSetupCompleteSource);
     }
 
     @Override
     public boolean isInitialSyncFeatureSetupComplete() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isInitialSyncFeatureSetupComplete(
                 mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setSyncRequested() {
+        ThreadUtils.assertOnUiThread();
         SyncServiceImplJni.get().setSyncRequested(mSyncServiceAndroidBridge);
     }
 
@@ -216,7 +225,7 @@ public class SyncServiceImpl extends SyncService {
      * UI elements can update themselves.
      */
     @CalledByNative
-    protected void syncStateChanged() {
+    public void syncStateChanged() {
         for (SyncStateChangedListener listener : mListeners) {
             listener.syncStateChanged();
         }
@@ -224,6 +233,7 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public @PassphraseType int getPassphraseType() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         int passphraseType = SyncServiceImplJni.get().getPassphraseType(mSyncServiceAndroidBridge);
         if (passphraseType < 0 || passphraseType > PassphraseType.MAX_VALUE) {
@@ -234,6 +244,7 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public @Nullable Date getExplicitPassphraseTime() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         long timeInMilliseconds =
                 SyncServiceImplJni.get().getExplicitPassphraseTime(mSyncServiceAndroidBridge);
@@ -242,12 +253,14 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isUsingExplicitPassphrase() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isUsingExplicitPassphrase(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isPassphraseRequiredForPreferredDataTypes() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isPassphraseRequiredForPreferredDataTypes(
                 mSyncServiceAndroidBridge);
@@ -255,12 +268,14 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isTrustedVaultKeyRequired() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isTrustedVaultKeyRequired(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isTrustedVaultKeyRequiredForPreferredDataTypes() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isTrustedVaultKeyRequiredForPreferredDataTypes(
                 mSyncServiceAndroidBridge);
@@ -268,6 +283,7 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isTrustedVaultRecoverabilityDegraded() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isTrustedVaultRecoverabilityDegraded(
                 mSyncServiceAndroidBridge);
@@ -275,24 +291,28 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isCustomPassphraseAllowed() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isCustomPassphraseAllowed(mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean isEncryptEverythingEnabled() {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().isEncryptEverythingEnabled(mSyncServiceAndroidBridge);
     }
 
     @Override
     public void setEncryptionPassphrase(String passphrase) {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         SyncServiceImplJni.get().setEncryptionPassphrase(mSyncServiceAndroidBridge, passphrase);
     }
 
     @Override
     public boolean setDecryptionPassphrase(String passphrase) {
+        ThreadUtils.assertOnUiThread();
         assert isEngineInitialized();
         return SyncServiceImplJni.get().setDecryptionPassphrase(
                 mSyncServiceAndroidBridge, passphrase);
@@ -300,18 +320,21 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isPassphrasePromptMutedForCurrentProductVersion() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().isPassphrasePromptMutedForCurrentProductVersion(
                 mSyncServiceAndroidBridge);
     }
 
     @Override
     public void markPassphrasePromptMutedForCurrentProductVersion() {
+        ThreadUtils.assertOnUiThread();
         SyncServiceImplJni.get().markPassphrasePromptMutedForCurrentProductVersion(
                 mSyncServiceAndroidBridge);
     }
 
     @Override
     public boolean shouldOfferTrustedVaultOptIn() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().shouldOfferTrustedVaultOptIn(mSyncServiceAndroidBridge);
     }
 
@@ -327,12 +350,14 @@ public class SyncServiceImpl extends SyncService {
     @VisibleForTesting
     @Override
     public long getLastSyncedTimeForDebugging() {
+        ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().getLastSyncedTimeForDebugging(mSyncServiceAndroidBridge);
     }
 
     @VisibleForTesting
     @Override
     public void triggerRefresh() {
+        ThreadUtils.assertOnUiThread();
         SyncServiceImplJni.get().triggerRefresh(mSyncServiceAndroidBridge);
     }
 
@@ -351,6 +376,7 @@ public class SyncServiceImpl extends SyncService {
     @VisibleForTesting
     @Override
     public void getAllNodes(Callback<JSONArray> callback) {
+        ThreadUtils.assertOnUiThread();
         SyncServiceImplJni.get().getAllNodes(mSyncServiceAndroidBridge, callback);
     }
 
@@ -381,8 +407,6 @@ public class SyncServiceImpl extends SyncService {
 
     @NativeMethods
     interface Natives {
-        long init(SyncServiceImpl caller);
-
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
         void setSyncRequested(long nativeSyncServiceAndroidBridge);
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);

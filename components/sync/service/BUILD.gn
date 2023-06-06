@@ -99,5 +99,13 @@ static_library("service") {
     "//services/network/public/cpp",
   ]
 
+  if (is_android) {
+    sources += [
+      "../android/sync_service_android_bridge.cc",
+      "../android/sync_service_android_bridge.h",
+    ]
+    deps += [ "../android:jni_headers" ]
+  }
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

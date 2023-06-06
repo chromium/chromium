@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -41,7 +40,7 @@ import org.chromium.ui.base.ViewUtils;
  */
 public class SignInPreference
         extends Preference implements SignInStateObserver, ProfileDataCache.Observer,
-                                      SyncStateChangedListener, AccountsChangeObserver {
+                                      SyncService.SyncStateChangedListener, AccountsChangeObserver {
     private final PrefService mPrefService;
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;

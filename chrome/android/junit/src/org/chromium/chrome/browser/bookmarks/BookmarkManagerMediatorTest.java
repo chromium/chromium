@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.util.browser.Features;
@@ -182,7 +181,7 @@ public class BookmarkManagerMediatorTest {
     @Captor
     private ArgumentCaptor<DragListener> mDragListenerArgumentCaptor;
     @Captor
-    private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+    private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
     @Captor
     private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
 
@@ -440,7 +439,7 @@ public class BookmarkManagerMediatorTest {
     public void syncStateChangedBeforeModelLoaded() {
         verify(mSyncService, atLeast(1))
                 .addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
-        for (SyncStateChangedListener syncStateChangedListener :
+        for (SyncService.SyncStateChangedListener syncStateChangedListener :
                 mSyncStateChangedListenerCaptor.getAllValues()) {
             syncStateChangedListener.syncStateChanged();
         }

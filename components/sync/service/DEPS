@@ -7,6 +7,7 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/signin/public",
+  "+components/sync/android",
   "+components/sync/base",
   "+components/sync/engine",
   "+components/sync/invalidations",

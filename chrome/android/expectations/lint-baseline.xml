@@ -4731,8 +4731,8 @@
         errorLine1="        if (authErrorCode &lt; 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {"
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
-            file="../../chrome/browser/sync/android/java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java"
-            line="96"
+            file="../../components/sync/android/java/src/org/chromium/components/sync/SyncServiceImpl.java"
+            line="85"
             column="80"/>
     </issue>
 

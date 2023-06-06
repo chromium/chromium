@@ -43,6 +43,10 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+class SyncServiceAndroidBridge;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
@@ -100,6 +104,9 @@ class SyncServiceImpl : public SyncService,
   void Initialize();
 
   // SyncService implementation
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void SetSyncFeatureRequested() override;
   SyncUserSettings* GetUserSettings() override;
   const SyncUserSettings* GetUserSettings() const override;
@@ -511,6 +518,12 @@ class SyncServiceImpl : public SyncService,
 
   // Used to track download status changes during browser startup.
   std::unique_ptr<DownloadStatusRecorder> download_status_recorder_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Manage and fetch the java object that wraps this SyncService on
+  // android.
+  std::unique_ptr<SyncServiceAndroidBridge> sync_service_android_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // This weak factory invalidates its issued pointers when Sync is disabled.
   base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};

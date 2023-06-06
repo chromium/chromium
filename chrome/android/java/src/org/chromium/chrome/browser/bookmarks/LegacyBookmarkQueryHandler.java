@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -19,7 +18,8 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
     private final BasicBookmarkQueryHandler mBasicBookmarkQueryHandler;
     private final BookmarkModel mBookmarkModel;
     private final SyncService mSyncService;
-    private final SyncStateChangedListener mSyncStateChangedListener = this::syncStateChanged;
+    private final SyncService.SyncStateChangedListener mSyncStateChangedListener =
+            this::syncStateChanged;
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
     private final BookmarkUiPrefs mBookmarkUiPrefs;
 

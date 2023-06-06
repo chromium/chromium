@@ -10,6 +10,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -18,7 +19,7 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/sync/SyncService.java",
-    "java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java",
+    "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java",
   ]
 }
 
@@ -27,5 +28,5 @@ generate_jni("jni_headers") {
     ":*",
     "//chrome/browser",
   ]
-  sources = [ "java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java" ]
 }
