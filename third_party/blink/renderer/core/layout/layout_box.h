@@ -1146,11 +1146,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                                 : IntrinsicSize().Width();
   }
 
-  // Whether or not the element shrinks to its intrinsic width (rather than
-  // filling the width of a containing block). HTML4 buttons, <select>s,
-  // <input>s, legends, and floating/compact elements do this.
-  bool SizesLogicalWidthToFitContent(const Length& logical_width) const;
-
   bool AutoWidthShouldFitContent() const;
 
   LayoutUnit ComputeLogicalHeightUsing(

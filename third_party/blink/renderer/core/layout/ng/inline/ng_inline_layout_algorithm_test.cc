@@ -364,12 +364,9 @@ TEST_F(NGInlineLayoutAlgorithmTest, ContainerBorderPadding) {
     </style>
     <div id=container>test</div>
   )HTML");
-  auto* block_flow =
-      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  NGBlockNode block_node(block_flow);
-  NGConstraintSpace space =
-      NGConstraintSpace::CreateFromLayoutObject(*block_flow);
-  const NGLayoutResult* layout_result = block_node.Layout(space);
+
+  const auto* layout_result =
+      GetLayoutBoxByElementId("container")->GetSingleCachedLayoutResult();
 
   EXPECT_TRUE(layout_result->BfcBlockOffset().has_value());
   EXPECT_EQ(0, *layout_result->BfcBlockOffset());
@@ -440,11 +437,16 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
       <span id="text">The quick brown fox jumps over the lazy dog</span>
     </div>
   )HTML");
-  // ** Run LayoutNG algorithm **
-  auto [html_fragment, space] = RunBlockLayoutAlgorithmForElement(
-      GetDocument().getElementsByTagName("html")->item(0));
+
+  const auto& html_fragment = To<LayoutBox>(GetDocument()
+                                                .getElementsByTagName("html")
+                                                ->item(0)
+                                                ->GetLayoutObject())
+                                  ->GetSingleCachedLayoutResult()
+                                  ->PhysicalFragment();
+
   auto* body_fragment =
-      To<NGPhysicalBoxFragment>(html_fragment->Children()[0].get());
+      To<NGPhysicalBoxFragment>(html_fragment.Children()[0].get());
   auto* container_fragment =
       To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
   Vector<PhysicalOffset> line_offsets;

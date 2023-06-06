@@ -3320,44 +3320,6 @@ bool LayoutBox::IsStretchingColumnFlexItem() const {
   return false;
 }
 
-bool LayoutBox::SizesLogicalWidthToFitContent(
-    const Length& logical_width) const {
-  NOT_DESTROYED();
-  if (IsFloating() || IsInlineBlockOrInlineTable() ||
-      StyleRef().HasOutOfFlowPosition())
-    return true;
-
-  // Flexible box items should shrink wrap, so we lay them out at their
-  // intrinsic widths. In the case of columns that have a stretch alignment, we
-  // go ahead and layout at the stretched size to avoid an extra layout when
-  // applying alignment.
-  if (Parent()->IsFlexibleBoxIncludingNG()) {
-    // For multiline columns, we need to apply align-content first, so we can't
-    // stretch now.
-    if (!Parent()->StyleRef().ResolvedIsColumnFlexDirection() ||
-        Parent()->StyleRef().FlexWrap() != EFlexWrap::kNowrap)
-      return true;
-    if (!ColumnFlexItemHasStretchAlignment())
-      return true;
-  }
-
-  // Button, input, select, textarea, and legend treat width value of 'auto' as
-  // 'intrinsic' unless it's in a stretching column flexbox.
-  // FIXME: Think about writing-mode here.
-  // https://bugs.webkit.org/show_bug.cgi?id=46473
-  if (logical_width.IsAuto() && !IsStretchingColumnFlexItem() &&
-      AutoWidthShouldFitContent())
-    return true;
-
-  if (IsHorizontalWritingMode() != ContainingBlock()->IsHorizontalWritingMode())
-    return true;
-
-  if (IsCustomItem())
-    return IsCustomItemShrinkToFit();
-
-  return false;
-}
-
 bool LayoutBox::AutoWidthShouldFitContent() const {
   NOT_DESTROYED();
   return GetNode() &&

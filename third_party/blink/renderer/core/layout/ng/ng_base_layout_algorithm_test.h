@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class Element;
 class LayoutNGBlockFlow;
 class NGBlockNode;
 class NGBreakToken;
@@ -29,17 +28,12 @@ class NGBaseLayoutAlgorithmTest
  protected:
   void SetUp() override;
 
-  // Should be called before calling Layout(), if you're not using
-  // RunBlockLayoutAlgorithmForElement.
   void AdvanceToLayoutPhase();
 
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(
       NGBlockNode node,
       const NGConstraintSpace& space,
       const NGBreakToken* break_token = nullptr);
-
-  std::pair<const NGPhysicalBoxFragment*, NGConstraintSpace>
-  RunBlockLayoutAlgorithmForElement(Element* element);
 
   const NGPhysicalBoxFragment* RunFieldsetLayoutAlgorithm(
       NGBlockNode node,

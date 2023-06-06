@@ -45,21 +45,6 @@ const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
   return To<NGPhysicalBoxFragment>(&result->PhysicalFragment());
 }
 
-std::pair<const NGPhysicalBoxFragment*, NGConstraintSpace>
-NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithmForElement(Element* element) {
-  auto* block_flow = To<LayoutBlockFlow>(element->GetLayoutObject());
-  NGBlockNode node(block_flow);
-  NGConstraintSpace space =
-      NGConstraintSpace::CreateFromLayoutObject(*block_flow);
-  NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
-
-  const NGLayoutResult* result =
-      NGBlockLayoutAlgorithm({node, fragment_geometry, space}).Layout();
-  return std::make_pair(To<NGPhysicalBoxFragment>(&result->PhysicalFragment()),
-                        std::move(space));
-}
-
 const NGPhysicalBoxFragment*
 NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
     NGBlockNode node,
