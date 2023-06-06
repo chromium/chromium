@@ -70234,6 +70234,13 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Not muted"/>
 </enum>
 
+<enum name="Microsoft365Availability">
+  <int value="0" label="Neither MS365 PWA nor ODFS set up"/>
+  <int value="1" label="Only MS365 PWA set up"/>
+  <int value="2" label="Only ODFS set up"/>
+  <int value="3" label="Both MS365 PWA and ODFS set up"/>
+</enum>
+
 <enum name="MidiResult">
   <obsolete>
     Removed 06/2019.

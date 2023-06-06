@@ -986,6 +986,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FileBrowser.OfficeFiles.Setup.FirstTimeMicrosoft365Availability"
+    enum="Microsoft365Availability" expires_after="M124">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The state of MS365 PWA and ODFS on first setup
+    launch.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.TaskResult.{ProviderName}"
     enum="OfficeTaskResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>

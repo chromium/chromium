@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -79,6 +81,9 @@ constexpr char kOneDriveTransferRequiredMetric[] =
 constexpr char kFileHandlerSelectionMetricName[] =
     "FileBrowser.OfficeFiles.Setup.FileHandlerSelection";
 
+constexpr char kFirstTimeMicrosoft365AvailabilityMetric[] =
+    "FileBrowser.OfficeFiles.Setup.FirstTimeMicrosoft365Availability";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OfficeFilesTransferRequired {
@@ -111,6 +116,19 @@ enum class OfficeSetupFileHandler {
 enum class OfficeFilesSourceVolume {
   kUnknown = 100,
   kMicrosoftOneDrive = 101,
+};
+
+// Represents (as a bitmask) whether or not Microsoft 365 PWA and ODFS are set
+// up. Used to record this state when setup is launched.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class Microsoft365Availability {
+  kPWA = 0,
+  kODFS = 1,
+
+  kMinValue = kPWA,
+  kMaxValue = kODFS,
 };
 
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
@@ -338,6 +356,21 @@ bool HaveExplicitFileHandlers(
       });
 }
 
+void RecordMicrosoft365Availability(const char* metric, Profile* profile) {
+  base::EnumSet<Microsoft365Availability, Microsoft365Availability::kMinValue,
+                Microsoft365Availability::kMaxValue>
+      ms365_state;
+  if (CloudUploadDialog::IsOfficeWebAppInstalled(profile)) {
+    ms365_state.Put(Microsoft365Availability::kPWA);
+  }
+  if (CloudUploadDialog::IsODFSMounted(profile)) {
+    ms365_state.Put(Microsoft365Availability::kODFS);
+  }
+  base::UmaHistogramExactLinear(
+      metric, ms365_state.ToEnumBitmask(),
+      decltype(ms365_state)::All().ToEnumBitmask() + 1);
+}
+
 }  // namespace
 
 // static
@@ -382,6 +415,8 @@ bool CloudOpenTask::ExecuteInternal() {
   // With' menu. In that case we might need to run fixup or just open/move the
   // file, but without changing stored user file handler preferences.
   if (!HaveExplicitFileHandlers(profile_, file_urls_)) {
+    RecordMicrosoft365Availability(kFirstTimeMicrosoft365AvailabilityMetric,
+                                   profile_);
     return InitAndShowDialog(mojom::DialogPage::kFileHandlerDialog);
   }
 
