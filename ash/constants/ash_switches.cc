@@ -972,6 +972,10 @@ const char kUnfilteredBluetoothDevices[] = "unfiltered-bluetooth-devices";
 // for testing the policy behaviour on the DUT.
 const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 
+// Use the fake FakeCrasAudioClient to handle system audio controls.
+const char kUseFakeCrasAudioClientForDBus[] =
+    "use-fake-cras-audio-client-for-dbus";
+
 // Flag that stored MyFiles folder inside the user data directory.
 // $HOME/Downloads is used as MyFiles folder for ease access to local files for
 // debugging when running on Linux. By setting this flag, <cryptohome>/MyFiles
@@ -1142,6 +1146,11 @@ bool IsStabilizeTimeDependentViewForTestsEnabled() {
 bool IsCameraEffectsSupportedByHardware() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCameraEffectsSupportedByHardware);
+}
+
+bool UseFakeCrasAudioClientForDBus() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kUseFakeCrasAudioClientForDBus);
 }
 
 }  // namespace switches

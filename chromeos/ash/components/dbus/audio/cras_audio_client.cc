@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/format_macros.h"
+#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -18,7 +18,6 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
@@ -1313,7 +1312,13 @@ CrasAudioClient::~CrasAudioClient() {
 // static
 void CrasAudioClient::Initialize(dbus::Bus* bus) {
   DCHECK(bus);
-  new CrasAudioClientImpl(bus);
+  if (ash::switches::UseFakeCrasAudioClientForDBus()) {
+    LOG(WARNING) << "Using FakeCrasAudioClient due to switch: "
+                 << ash::switches::kUseFakeCrasAudioClientForDBus;
+    InitializeFake();
+  } else {
+    new CrasAudioClientImpl(bus);
+  }
 }
 
 // static

@@ -12,6 +12,7 @@ component("audio") {
   defines = [ "IS_DBUS_AUDIO_IMPL" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/dbus/common",
     "//dbus",
