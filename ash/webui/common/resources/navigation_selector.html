@@ -1,6 +1,6 @@
 <style include="cr-shared-style">
 :host {
-  --focus-border-width: 1px;
+  --focus-border-width: 2px;
 }
 
 :host-context(body.jelly-enabled) .navigation-item {
@@ -28,7 +28,7 @@
   justify-content: start;
   margin-bottom: 8px;
   margin-inline-end: 2px;
-  min-height: 32px;
+  min-height: 40px;
   padding-inline-start: 20px;
 }
 
@@ -46,7 +46,7 @@
 
 .navigation-item.selected {
   background-color: var(--cros-highlight-color);
-  color: var(--cros-color-prominent);
+  color: var(--cros-text-color-selection);
 }
 
 :host-context(body.jelly-enabled) .navigation-item.selected {
