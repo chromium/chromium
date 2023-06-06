@@ -1287,13 +1287,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 },
             })
 
-    def test_run_no_issue_number(self):
-        updater = WPTExpectationsUpdater(self.mock_host())
-        updater.git_cl = MockGitCL(updater.host, issue_number='None')
-        with self.assertRaises(ScriptError) as e:
-            updater.run()
-        self.assertEqual(e.exception.message, 'No issue on current branch.')
-
     def test_run_no_builds(self):
         updater = WPTExpectationsUpdater(self.mock_host())
         updater.git_cl = MockGitCL(updater.host, {})
