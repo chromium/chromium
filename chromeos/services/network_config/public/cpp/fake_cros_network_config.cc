@@ -74,10 +74,14 @@ void FakeCrosNetworkConfig::SetDeviceProperties(
 }
 
 void FakeCrosNetworkConfig::SetGlobalPolicy(
-    bool allow_only_policy_cellular_networks) {
+    bool allow_only_policy_cellular_networks,
+    bool dns_queries_monitored,
+    bool report_xdr_events_enabled) {
   global_policy_ = mojom::GlobalPolicy::New();
   global_policy_->allow_only_policy_cellular_networks =
       allow_only_policy_cellular_networks;
+  global_policy_->dns_queries_monitored = dns_queries_monitored;
+  global_policy_->report_xdr_events_enabled = report_xdr_events_enabled;
   for (auto& observer : observers_) {
     observer->OnPoliciesApplied(/*userhash=*/std::string());
   }

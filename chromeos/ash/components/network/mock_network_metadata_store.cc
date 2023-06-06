@@ -11,6 +11,7 @@ MockNetworkMetadataStore::MockNetworkMetadataStore()
           /*network_configuration_handler=*/nullptr,
           /*network_connection_handler=*/nullptr,
           /*network_state_handler=*/nullptr,
+          /*managed_network_configuration_handler=*/nullptr,
           /*profile_pref_service=*/nullptr,
           /*device_pref_service=*/nullptr,
           /*is_enterprise_managed=*/false) {}

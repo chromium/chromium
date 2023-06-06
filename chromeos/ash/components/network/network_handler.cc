@@ -238,8 +238,9 @@ void NetworkHandler::InitializePrefServices(
       ui_proxy_config_service_.get());
   network_metadata_store_.reset(new NetworkMetadataStore(
       network_configuration_handler_.get(), network_connection_handler_.get(),
-      network_state_handler_.get(), logged_in_profile_prefs, device_prefs,
-      is_enterprise_managed_));
+      network_state_handler_.get(),
+      managed_network_configuration_handler_.get(), logged_in_profile_prefs,
+      device_prefs, is_enterprise_managed_));
   cellular_network_metrics_logger_.reset(new CellularNetworkMetricsLogger(
       network_state_handler_.get(), network_metadata_store_.get(),
       connection_info_metrics_logger_.get()));

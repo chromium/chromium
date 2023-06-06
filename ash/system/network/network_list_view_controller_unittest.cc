@@ -196,7 +196,9 @@ class NetworkListViewControllerTest : public AshTestBase,
         ->ConfigureRemoteForTesting(cros_network()->GetPendingRemote());
     base::RunLoop().RunUntilIdle();
     cros_network_->SetGlobalPolicy(
-        /*allow_only_policy_cellular_networks=*/false);
+        /*allow_only_policy_cellular_networks=*/false,
+        /*dns_queries_monitored=*/false,
+        /*report_xdr_events_enabled=*/false);
 
     detailed_view_delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
@@ -687,7 +689,10 @@ TEST_P(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   // When no Mobile networks are available and eSIM policy is set to allow only
   // cellular devices which means adding a new eSIM is disallowed by enterprise
   // policy, add eSIM button is not displayed.
-  cros_network()->SetGlobalPolicy(/*allow_only_policy_cellular_networks=*/true);
+  cros_network()->SetGlobalPolicy(
+      /*allow_only_policy_cellular_networks=*/true,
+      /*dns_queries_monitored=*/false,
+      /*report_xdr_events_enabled=*/false);
 
   EXPECT_FALSE(GetAddEsimButton()->GetVisible());
 }
@@ -1271,8 +1276,10 @@ TEST_P(NetworkListViewControllerTest,
   EXPECT_THAT(GetConnectionWarning(), IsNull());
   auto network = CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
       kWifiName, NetworkType::kWiFi, ConnectionStateType::kConnected);
-  network->dns_queries_monitored = true;
-  cros_network()->AddNetworkAndDevice(std::move(network));
+  cros_network()->SetGlobalPolicy(
+      /*allow_only_policy_cellular_networks=*/false,
+      /*dns_queries_monitored=*/true,
+      /*report_xdr_events_enabled=*/false);
 
   views::ImageView* icon = GetConnectionWarningIcon();
   ASSERT_THAT(icon, NotNull());
@@ -1281,6 +1288,42 @@ TEST_P(NetworkListViewControllerTest,
   ASSERT_THAT(GetConnectionLabelView(), NotNull());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
+      GetConnectionLabelView()->GetText());
+}
+
+TEST_P(NetworkListViewControllerTest, ConnectionWarningDeviceReportXDREvents) {
+  EXPECT_THAT(GetConnectionWarning(), IsNull());
+  auto network = CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+      kWifiName, NetworkType::kWiFi, ConnectionStateType::kConnected);
+
+  // First set XDR policy as false to check that managed warning is shown.
+  cros_network()->SetGlobalPolicy(
+      /*allow_only_policy_cellular_networks=*/false,
+      /*dns_queries_monitored=*/true,
+      /*report_xdr_events_enabled=*/false);
+
+  views::ImageView* icon = GetConnectionWarningIcon();
+  ASSERT_THAT(icon, NotNull());
+  EXPECT_TRUE(IsManagedIcon(icon));
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
+      GetConnectionLabelView()->GetText());
+
+  // Update XDR policy to true and verify network monitored warning is shown.
+  cros_network()->SetGlobalPolicy(
+      /*allow_only_policy_cellular_networks=*/false,
+      /*dns_queries_monitored=*/true,
+      /*report_xdr_events_enabled=*/true);
+
+  icon = GetConnectionWarningIcon();
+  ASSERT_THAT(icon, NotNull());
+  EXPECT_TRUE(IsManagedIcon(icon));
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
 }
 

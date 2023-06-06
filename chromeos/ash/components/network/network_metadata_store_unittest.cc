@@ -18,8 +18,10 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler_impl.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_metadata_observer.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/account_id/account_id.h"
@@ -127,6 +129,15 @@ class NetworkMetadataStoreTest : public ::testing::Test {
 
     network_state_handler_ = helper_.network_state_handler();
     NetworkHandler::Initialize();
+    network_device_handler_ = NetworkDeviceHandler::InitializeForTesting(
+        network_state_handler_.get());
+    network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
+    managed_network_configuration_handler_ =
+        ManagedNetworkConfigurationHandler::InitializeForTesting(
+            network_state_handler_.get(), network_profile_handler_.get(),
+            network_device_handler_.get(), network_configuration_handler_.get(),
+            /*UIProxyConfigService=*/nullptr);
+
     user_prefs_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     device_prefs_ = std::make_unique<TestingPrefServiceSimple>();
@@ -144,7 +155,8 @@ class NetworkMetadataStoreTest : public ::testing::Test {
 
     metadata_store_ = std::make_unique<NetworkMetadataStore>(
         network_configuration_handler_.get(), network_connection_handler_.get(),
-        network_state_handler_, user_prefs_.get(), device_prefs_.get(),
+        network_state_handler_, managed_network_configuration_handler_.get(),
+        user_prefs_.get(), device_prefs_.get(),
         /*is_enterprise_enrolled=*/false);
     metadata_observer_ = std::make_unique<TestNetworkMetadataObserver>();
     metadata_store_->AddObserver(metadata_observer_.get());
@@ -159,6 +171,9 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     metadata_observer_.reset();
     user_prefs_.reset();
     device_prefs_.reset();
+    managed_network_configuration_handler_.reset();
+    network_profile_handler_.reset();
+    network_device_handler_.reset();
     network_connection_handler_.reset();
     scoped_user_manager_.reset();
     network_configuration_handler_.reset();
@@ -174,8 +189,8 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   void SetIsEnterpriseEnrolled(bool is_enterprise_enrolled) {
     metadata_store_ = std::make_unique<NetworkMetadataStore>(
         network_configuration_handler_.get(), network_connection_handler_.get(),
-        network_state_handler_, user_prefs_.get(), device_prefs_.get(),
-        is_enterprise_enrolled);
+        network_state_handler_, managed_network_configuration_handler_.get(),
+        user_prefs_.get(), device_prefs_.get(), is_enterprise_enrolled);
     metadata_store_->AddObserver(metadata_observer_.get());
   }
 
@@ -221,7 +236,8 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   void ResetStore() {
     metadata_store_ = std::make_unique<NetworkMetadataStore>(
         network_configuration_handler_.get(), network_connection_handler_.get(),
-        network_state_handler_, user_prefs_.get(), device_prefs_.get(),
+        network_state_handler_, managed_network_configuration_handler_.get(),
+        user_prefs_.get(), device_prefs_.get(),
         /*is_enterprise_enrolled=*/false);
     metadata_observer_ = std::make_unique<TestNetworkMetadataObserver>();
     metadata_store_->AddObserver(metadata_observer_.get());
@@ -289,6 +305,10 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
+  std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
+  std::unique_ptr<ManagedNetworkConfigurationHandler>
+      managed_network_configuration_handler_;
   std::unique_ptr<TestingPrefServiceSimple> device_prefs_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> user_prefs_;
   std::unique_ptr<NetworkMetadataStore> metadata_store_;

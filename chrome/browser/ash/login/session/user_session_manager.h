@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
+#include "chrome/browser/ash/net/xdr_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -622,6 +623,8 @@ class UserSessionManager
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
 
   std::unique_ptr<SecureDnsManager> secure_dns_manager_;
+
+  std::unique_ptr<XdrManager> xdr_manager_;
 
   std::unique_ptr<ChildPolicyObserver> child_policy_observer_;
 

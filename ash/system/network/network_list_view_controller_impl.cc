@@ -161,6 +161,7 @@ void NetworkListViewControllerImpl::NetworkListChanged() {
 
 void NetworkListViewControllerImpl::GlobalPolicyChanged() {
   UpdateMobileSection();
+  GetNetworkStateList();
 }
 
 void NetworkListViewControllerImpl::OnPropertiesUpdated(
@@ -399,17 +400,28 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
 size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
     size_t index) {
   const NetworkStateProperties* default_network = model()->default_network();
+  const GlobalPolicy* global_policy = model()->global_policy();
   bool using_proxy =
       default_network && default_network->proxy_mode != ProxyMode::kDirect;
-  bool dns_queries_monitored =
-      default_network && default_network->dns_queries_monitored;
+  bool enterprise_monitored_web_requests =
+      global_policy && (global_policy->dns_queries_monitored ||
+                        global_policy->report_xdr_events_enabled);
 
-  if (!connected_vpn_guid_.empty() || using_proxy || dns_queries_monitored) {
+  if (!connected_vpn_guid_.empty() || using_proxy ||
+      enterprise_monitored_web_requests) {
     if (!connection_warning_) {
-      ShowConnectionWarning(/*show_managed_icon=*/dns_queries_monitored);
+      ShowConnectionWarning(
+          /*show_managed_icon=*/enterprise_monitored_web_requests);
+    }
+    // If the warning is already shown check if the label needs to be updated
+    // with a different message.
+    else if (connection_warning_label_->GetText() !=
+             GenerateLabelText(enterprise_monitored_web_requests)) {
+      connection_warning_label_->SetText(
+          GenerateLabelText(enterprise_monitored_web_requests));
     }
 
-    if (!dns_queries_monitored) {
+    if (!enterprise_monitored_web_requests) {
       MaybeShowConnectionWarningManagedIcon(using_proxy);
     }
 
@@ -904,6 +916,23 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
   return index;
 }
 
+std::u16string NetworkListViewControllerImpl::GenerateLabelText(
+    bool show_managed_icon) {
+  // If the device is not managed then the high risk disclosure should be shown.
+  if (!show_managed_icon) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING);
+  }
+
+  // If XDR reporting is enabled the high risk disclosure should be shown.
+  if (model()->global_policy()->report_xdr_events_enabled) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING);
+}
+
 void NetworkListViewControllerImpl::ShowConnectionWarning(
     bool show_managed_icon) {
   // Set up layout and apply sticky row property.
@@ -917,9 +946,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
   // Set message label in middle of row.
   std::unique_ptr<views::Label> label =
       base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
-  label->SetText(l10n_util::GetStringUTF16(
-      show_managed_icon ? IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING
-                        : IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING));
+  label->SetText(GenerateLabelText(show_managed_icon));
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
@@ -936,7 +963,6 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
 
   // Nothing to the right of the text.
   connection_warning->SetContainerVisible(TriView::Container::END, false);
-
   connection_warning->SetID(static_cast<int>(
       NetworkListViewControllerViewChildId::kConnectionWarning));
   // The warning messages are shown in the ethernet section.

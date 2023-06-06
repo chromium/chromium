@@ -105,8 +105,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
           networks);
 
   // Adds a warning indicator if connected to a VPN, if the default network
-  // has a proxy installed or if the secure DNS template URIs contain user or
-  // device identifiers.
+  // has a proxy installed, if the secure DNS template URIs contain user/device
+  // identifiers or if DeviceReportXDREvents is enabled.
   size_t ShowConnectionWarningIfNetworkMonitored(size_t index);
 
   // Returns true if mobile data section should be added to view.
@@ -153,9 +153,14 @@ class ASH_EXPORT NetworkListViewControllerImpl
           networks,
       NetworkIdToViewMap* previous_views);
 
+  // Generates the correct warning to display based on the enterprise status
+  // andn XDR reporting policy.
+  std::u16string GenerateLabelText(bool show_managed_icon);
+
   // Creates a view that indicates connections might be monitored if
-  // connected to a VPN, if the default network has a proxy installed or if the
-  // secure DNS template URIs contain identifiers.
+  // connected to a VPN, if the default network has a proxy installed, if the
+  // secure DNS template URIs contain identifiers or if DeviceReportXDREvents is
+  // enabled.
   void ShowConnectionWarning(bool show_managed_icon);
 
   // Hides a connection warning, if visible.

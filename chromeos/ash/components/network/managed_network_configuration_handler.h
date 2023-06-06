@@ -243,6 +243,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // Return the list of blocked WiFi networks (identified by HexSSIDs).
   virtual std::vector<std::string> GetBlockedHexSSIDs() const = 0;
 
+  // Called after either secure DNS status or deviceReportXDREvents policy is
+  // updated.
+  virtual void OnEnterpriseMonitoredWebPoliciesApplied() const = 0;
+
   // Called just before destruction to give observers a chance to remove
   // themselves and disable any networking.
   virtual void Shutdown() = 0;

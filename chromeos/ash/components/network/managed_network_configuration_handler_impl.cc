@@ -794,6 +794,13 @@ void ManagedNetworkConfigurationHandlerImpl::OnCellularPoliciesApplied(
   }
 }
 
+void ManagedNetworkConfigurationHandlerImpl::
+    OnEnterpriseMonitoredWebPoliciesApplied() const {
+  for (auto& observer : observers_) {
+    observer.PoliciesApplied(std::string());
+  }
+}
+
 void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     const NetworkProfile& profile,
     const base::flat_set<std::string>& new_cellular_policy_guids) {

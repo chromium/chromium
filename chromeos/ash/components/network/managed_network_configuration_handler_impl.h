@@ -163,6 +163,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const base::Value::Dict& new_properties,
       base::OnceClosure callback) override;
 
+  void OnEnterpriseMonitoredWebPoliciesApplied() const override;
+
   void OnPoliciesApplied(
       const NetworkProfile& profile,
       const base::flat_set<std::string>& new_cellular_policy_guids) override;

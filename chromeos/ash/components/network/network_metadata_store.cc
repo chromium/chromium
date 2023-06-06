@@ -108,12 +108,15 @@ NetworkMetadataStore::NetworkMetadataStore(
     NetworkConfigurationHandler* network_configuration_handler,
     NetworkConnectionHandler* network_connection_handler,
     NetworkStateHandler* network_state_handler,
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
     PrefService* profile_pref_service,
     PrefService* device_pref_service,
     bool is_enterprise_managed)
     : network_configuration_handler_(network_configuration_handler),
       network_connection_handler_(network_connection_handler),
       network_state_handler_(network_state_handler),
+      managed_network_configuration_handler_(
+          managed_network_configuration_handler),
       profile_pref_service_(profile_pref_service),
       device_pref_service_(device_pref_service),
       is_enterprise_managed_(is_enterprise_managed) {
@@ -571,6 +574,27 @@ const base::Value* NetworkMetadataStore::GetEnableTrafficCountersAutoReset(
 const base::Value* NetworkMetadataStore::GetDayOfTrafficCountersAutoReset(
     const std::string& network_guid) {
   return GetPref(network_guid, kDayOfTrafficCountersAutoReset);
+}
+
+void NetworkMetadataStore::SetSecureDnsTemplatesWithIdentifiersActive(
+    bool active) {
+  if (secure_dns_templates_with_identifiers_active_ == active) {
+    return;
+  }
+
+  secure_dns_templates_with_identifiers_active_ = active;
+  managed_network_configuration_handler_
+      ->OnEnterpriseMonitoredWebPoliciesApplied();
+}
+
+void NetworkMetadataStore::SetReportXdrEventsEnabled(bool enabled) {
+  if (report_xdr_events_enabled_ == enabled) {
+    return;
+  }
+
+  report_xdr_events_enabled_ = enabled;
+  managed_network_configuration_handler_
+      ->OnEnterpriseMonitoredWebPoliciesApplied();
 }
 
 void NetworkMetadataStore::SetPref(const std::string& network_guid,

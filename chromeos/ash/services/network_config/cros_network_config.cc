@@ -446,13 +446,6 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
                 NetworkHandler::GetUiProxyConfigService()->ProxyModeForNetwork(
                     network))
           : mojom::ProxyMode::kDirect;
-  result->dns_queries_monitored =
-      NetworkHandler::IsInitialized() &&
-              NetworkHandler::Get()->network_metadata_store()
-          ? NetworkHandler::Get()
-                ->network_metadata_store()
-                ->secure_dns_templates_with_identifiers_active()
-          : false;
 
   switch (type) {
     case mojom::NetworkType::kCellular: {
@@ -2169,6 +2162,26 @@ mojom::TrafficCounterSource ConvertToTrafficCounterSourceEnum(
   return mojom::TrafficCounterSource::kUnknown;
 }
 
+bool GetDnsQueriesMonitoredValue() {
+  if (!NetworkHandler::IsInitialized() ||
+      !NetworkHandler::Get()->network_metadata_store()) {
+    return false;
+  }
+
+  NetworkMetadataStore* store = NetworkHandler::Get()->network_metadata_store();
+  return store->secure_dns_templates_with_identifiers_active();
+}
+
+bool GetReportXdrEventsEnabledValue() {
+  if (!NetworkHandler::IsInitialized() ||
+      !NetworkHandler::Get()->network_metadata_store()) {
+    return false;
+  }
+
+  NetworkMetadataStore* store = NetworkHandler::Get()->network_metadata_store();
+  return store->report_xdr_events_enabled();
+}
+
 }  // namespace
 
 CrosNetworkConfig::CrosNetworkConfig()
@@ -2955,6 +2968,9 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
       /*value_if_key_missing_from_dict=*/
       result->allow_only_policy_wifi_networks_to_connect_if_available);
+  result->dns_queries_monitored = GetDnsQueriesMonitoredValue();
+  result->report_xdr_events_enabled = GetReportXdrEventsEnabledValue();
+
   absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
       global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
   if (blocked_hex_ssids) {

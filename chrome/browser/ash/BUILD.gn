@@ -2127,6 +2127,8 @@ source_set("ash") {
     "net/system_proxy_manager.h",
     "net/traffic_counters_handler.cc",
     "net/traffic_counters_handler.h",
+    "net/xdr_manager.cc",
+    "net/xdr_manager.h",
     "network_change_manager_client.cc",
     "network_change_manager_client.h",
     "night_light/night_light_client.cc",

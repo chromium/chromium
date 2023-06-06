@@ -308,7 +308,6 @@ class SystemInfoProviderTest : public testing::Test {
         /*portal_probe_url=*/absl::nullopt,
         /*priority=*/1,
         /*proxy_mode=*/network_config::mojom::ProxyMode::kDirect,
-        /*dns_queries_monitored=*/false,
         /*prohibited_by_policy=*/false,
         /*source=*/
         network_config::mojom::OncSource::kUser,

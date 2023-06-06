@@ -3383,8 +3383,9 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   EXPECT_FALSE(policy->allow_only_policy_cellular_networks);
   EXPECT_TRUE(policy->allow_only_policy_networks_to_autoconnect);
   EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect);
-  EXPECT_EQ(false,
-            policy->allow_only_policy_wifi_networks_to_connect_if_available);
+  EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect_if_available);
+  EXPECT_FALSE(policy->dns_queries_monitored);
+  EXPECT_FALSE(policy->report_xdr_events_enabled);
   ASSERT_EQ(2u, policy->blocked_hex_ssids.size());
   EXPECT_EQ("blocked_ssid1", policy->blocked_hex_ssids[0]);
   EXPECT_EQ("blocked_ssid2", policy->blocked_hex_ssids[1]);
@@ -3411,6 +3412,8 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   EXPECT_FALSE(policy->allow_only_policy_networks_to_autoconnect);
   EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect);
   EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect_if_available);
+  EXPECT_FALSE(policy->dns_queries_monitored);
+  EXPECT_FALSE(policy->report_xdr_events_enabled);
   EXPECT_EQ(1, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
 }
 

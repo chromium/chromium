@@ -1718,6 +1718,9 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
 
       secure_dns_manager_ =
           std::make_unique<SecureDnsManager>(g_browser_process->local_state());
+
+      xdr_manager_ =
+          std::make_unique<XdrManager>(g_browser_process->policy_service());
     }
 
     // Save sync password hash and salt to profile prefs if they are available.
@@ -2451,6 +2454,7 @@ void UserSessionManager::Shutdown() {
   password_service_voted_.reset();
   password_was_saved_ = false;
   secure_dns_manager_.reset();
+  xdr_manager_.reset();
 }
 
 void UserSessionManager::SetSwitchesForUser(
