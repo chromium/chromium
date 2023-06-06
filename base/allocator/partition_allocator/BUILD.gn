@@ -279,6 +279,8 @@ component("partition_alloc") {
     sources += [
       "partition_alloc_base/mac/foundation_util.h",
       "partition_alloc_base/mac/foundation_util.mm",
+      "partition_alloc_base/mac/mach_logging.cc",
+      "partition_alloc_base/mac/mach_logging.h",
       "partition_alloc_base/mac/scoped_cftyperef.h",
       "partition_alloc_base/mac/scoped_typeref.h",
     ]

@@ -25,8 +25,8 @@
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
 #include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
-#include "base/mac/mach_logging.h"
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -135,7 +135,7 @@ void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
   vm_address_t* zones = nullptr;
   kern_return_t result =
       malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
-  MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
+  PA_MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
 
   // "find_zone_and_free" expected by try_free_default.
   //

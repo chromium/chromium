@@ -29,12 +29,12 @@
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "base/allocator/partition_allocator/third_party/apple_apsl/CFBase.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -79,7 +79,7 @@ bool DeprotectMallocZone(ChromeMallocZone* default_zone,
                    VM_REGION_BASIC_INFO_64,
                    reinterpret_cast<vm_region_info_t>(&info), &count, &unused);
   if (result != KERN_SUCCESS) {
-    MACH_LOG(ERROR, result) << "vm_region_64";
+    PA_MACH_LOG(ERROR, result) << "vm_region_64";
     return false;
   }
 
@@ -114,7 +114,7 @@ bool DeprotectMallocZone(ChromeMallocZone* default_zone,
         vm_protect(mach_task_self(), *reprotection_start, *reprotection_length,
                    false, info.protection | VM_PROT_WRITE);
     if (result != KERN_SUCCESS) {
-      MACH_LOG(ERROR, result) << "vm_protect";
+      PA_MACH_LOG(ERROR, result) << "vm_protect";
       return false;
     }
   }
@@ -617,7 +617,7 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
     kern_return_t result =
         vm_protect(mach_task_self(), reprotection_start, reprotection_length,
                    false, reprotection_value);
-    MACH_DCHECK(result == KERN_SUCCESS, result) << "vm_protect";
+    PA_MACH_DCHECK(result == KERN_SUCCESS, result) << "vm_protect";
   }
 }
 
