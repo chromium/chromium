@@ -285,7 +285,6 @@ class Port(object):
             self.set_option_default('wpt_only', False)
         self._test_configuration = None
         self._results_directory = None
-        self._virtual_test_suites = None
         self._used_expectation_files = None
 
     def __str__(self):
@@ -2308,38 +2307,40 @@ class Port(object):
     def sample_process(self, name, pid):
         pass
 
+    @memoized
     def virtual_test_suites(self):
-        if self._virtual_test_suites is None:
-            path_to_virtual_test_suites = self._filesystem.join(
-                self.web_tests_dir(), 'VirtualTestSuites')
-            assert self._filesystem.exists(path_to_virtual_test_suites), \
-                path_to_virtual_test_suites + ' not found'
-            try:
-                test_suite_json = json.loads(
-                    self._filesystem.read_text_file(
-                        path_to_virtual_test_suites))
-                self._virtual_test_suites = []
-                current_time = datetime.now()
-                for json_config in test_suite_json:
-                    # Strings are treated as comments.
-                    if isinstance(json_config, str):
-                        continue
-                    expires = json_config.get('expires', 'never')
-                    if (expires.lower() != 'never' and datetime.strptime(
-                            expires, '%b %d, %Y') <= current_time):
-                        # do not load expired virtual suites
-                        continue
-                    vts = VirtualTestSuite(**json_config)
-                    if any(vts.full_prefix == s.full_prefix
-                           for s in self._virtual_test_suites):
-                        raise ValueError(
-                            '{} contains entries with the same prefix: {!r}. Please combine them'
-                            .format(path_to_virtual_test_suites, json_config))
-                    self._virtual_test_suites.append(vts)
-            except ValueError as error:
-                raise ValueError('{} is not a valid JSON file: {}'.format(
-                    path_to_virtual_test_suites, error))
-        return self._virtual_test_suites
+        include_expired = self.get_option('include_expired', False)
+        path_to_virtual_test_suites = self._filesystem.join(
+            self.web_tests_dir(), 'VirtualTestSuites')
+        assert self._filesystem.exists(path_to_virtual_test_suites), \
+            path_to_virtual_test_suites + ' not found'
+        virtual_test_suites = []
+        try:
+            test_suite_json = json.loads(
+                self._filesystem.read_text_file(path_to_virtual_test_suites))
+            current_time = datetime.now()
+            for json_config in test_suite_json:
+                # Strings are treated as comments.
+                if isinstance(json_config, str):
+                    continue
+                expires = json_config.get('expires', 'never')
+                expired = (expires.lower() != 'never' and datetime.strptime(
+                    expires, '%b %d, %Y') <= current_time)
+                if expired and not include_expired:
+                    # Do not include expired virtual suites, except when requested (such as
+                    # for presubmit checks).
+                    continue
+                vts = VirtualTestSuite(**json_config)
+                if any(vts.full_prefix == s.full_prefix
+                       for s in virtual_test_suites):
+                    raise ValueError(
+                        '{} contains entries with the same prefix: {!r}. Please combine them'
+                        .format(path_to_virtual_test_suites, json_config))
+                virtual_test_suites.append(vts)
+        except ValueError as error:
+            raise ValueError('{} is not a valid JSON file: {}'.format(
+                path_to_virtual_test_suites, error))
+        return virtual_test_suites
 
     def _all_virtual_tests(self, tests_by_dir):
         tests = []
