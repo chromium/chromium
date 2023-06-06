@@ -44,6 +44,11 @@ class AutofillBottomSheetTabHelper
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       web::WebFrame* frame);
 
+  // Prepare bottom sheet using data from the credit card form prediction.
+  void AttachPaymentsListeners(
+      const std::vector<autofill::FieldRendererId>& renderer_ids,
+      web::WebFrame* frame);
+
   // Detach the listeners, which will deactivate the bottom sheet.
   void DetachListenersAndRefocus(web::WebFrame* frame);
 
@@ -64,6 +69,12 @@ class AutofillBottomSheetTabHelper
   // by the user.
   bool HasReachedDismissLimit();
 
+  // Prepare bottom sheet using data from the form prediction.
+  void AttachListeners(
+      const std::vector<autofill::FieldRendererId>& renderer_ids,
+      std::set<autofill::FieldRendererId>& registered_renderer_ids,
+      web::WebFrame* frame);
+
   // Handler used to request showing the password bottom sheet.
   __weak id<AutofillBottomSheetCommands> commands_handler_;
 
@@ -78,6 +89,9 @@ class AutofillBottomSheetTabHelper
 
   // List of password bottom sheet related renderer ids.
   std::set<autofill::FieldRendererId> registered_password_renderer_ids_;
+
+  // List of payments bottom sheet related renderer ids.
+  std::set<autofill::FieldRendererId> registered_payments_renderer_ids_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
