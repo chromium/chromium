@@ -95,10 +95,13 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   // When StructuredMetricsService is enabled then the StructuredMetricsProvider
   // will not upload metrics.
   if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    NOTREACHED();
+    std::move(done_callback).Run(false);
     return;
   }
 
   if (!recording_enabled_) {
+    std::move(done_callback).Run(false);
     return;
   }
 
