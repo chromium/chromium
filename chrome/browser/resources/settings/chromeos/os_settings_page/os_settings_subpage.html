@@ -22,15 +22,6 @@
     background-color: var(--cros-sys-app_base);
   }
 
-  @media (forced-colors: active) {
-    /* Use border instead of box-shadow (which does not work) in Windows
-       HCM. */
-    :host(:not(.multi-card)) {
-      border-inline-end: var(--cr-border-hcm);
-      border-inline-start: var(--cr-border-hcm);
-    }
-  }
-
   #headerLine {
     min-height: 40px;
     padding-bottom: 24px;

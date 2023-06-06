@@ -24,7 +24,7 @@ import {getTemplate} from './os_settings_section.html.js';
 
 export class OsSettingsSectionElement extends PolymerElement {
   static get is() {
-    return 'os-settings-section';
+    return 'os-settings-section' as const;
   }
 
   static get template() {
@@ -48,22 +48,11 @@ export class OsSettingsSectionElement extends PolymerElement {
         type: String,
         value: '',
       },
-
-      /**
-       * A CSS attribute used for temporarily hiding a SETTINGS-SECTION for the
-       * purposes of searching.
-       */
-      hiddenBySearch: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
     };
   }
 
   section: string;
   pageTitle: string;
-  hiddenBySearch: boolean;
 
   /**
    * Get the value to which to set the aria-hidden attribute of the section
@@ -83,7 +72,7 @@ export class OsSettingsSectionElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-section': OsSettingsSectionElement;
+    [OsSettingsSectionElement.is]: OsSettingsSectionElement;
   }
 }
 
