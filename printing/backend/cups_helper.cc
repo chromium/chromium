@@ -160,23 +160,35 @@ void GetResolutionSettings(ppd_file_t* ppd,
   constexpr gfx::Size kDefaultMissingDpi(kDefaultPdfDpi, kDefaultPdfDpi);
 #endif
 
-  if (!res) {
-    dpis->push_back(kDefaultMissingDpi);
-    *default_dpi = kDefaultMissingDpi;
-    return;
-  }
-  for (int i = 0; i < res->num_choices; i++) {
-    char* choice = res->choices[i].choice;
-    CHECK(choice);
-    absl::optional<gfx::Size> parsed_size = ParseResolutionString(choice);
-    if (!parsed_size.has_value()) {
-      continue;
-    }
+  if (res) {
+    for (int i = 0; i < res->num_choices; i++) {
+      char* choice = res->choices[i].choice;
+      CHECK(choice);
+      absl::optional<gfx::Size> parsed_size = ParseResolutionString(choice);
+      if (!parsed_size.has_value()) {
+        continue;
+      }
 
-    dpis->push_back(parsed_size.value());
-    if (!strcmp(choice, res->defchoice))
-      *default_dpi = dpis->back();
+      dpis->push_back(parsed_size.value());
+      if (!strcmp(choice, res->defchoice)) {
+        *default_dpi = dpis->back();
+      }
+    }
+  } else {
+    // If there is no resolution option, then check for a standalone
+    // DefaultResolution.
+    ppd_attr_t* attr = ppdFindAttr(ppd, "DefaultResolution", nullptr);
+    if (attr) {
+      CHECK(attr->value);
+      absl::optional<gfx::Size> parsed_size =
+          ParseResolutionString(attr->value);
+      if (parsed_size.has_value()) {
+        dpis->push_back(parsed_size.value());
+        *default_dpi = parsed_size.value();
+      }
+    }
   }
+
   if (dpis->empty()) {
     dpis->push_back(kDefaultMissingDpi);
     *default_dpi = kDefaultMissingDpi;

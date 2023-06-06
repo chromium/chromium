@@ -748,8 +748,7 @@ TEST(PrintBackendCupsHelperTest, PpdParsingResolutionTagNames) {
   }
 }
 
-TEST(PrintBackendCupsHelperTest,
-     TestPpdParsingResolutionInvalidDefaultResolution) {
+TEST(PrintBackendCupsHelperTest, PpdParsingResolutionInvalidDefaultResolution) {
   constexpr char kTestPpdData[] =
       R"(*PPD-Adobe: "4.3"
 *OpenUI *Resolution/Resolution: PickOne
@@ -764,29 +763,78 @@ TEST(PrintBackendCupsHelperTest,
   EXPECT_TRUE(caps.default_dpi.IsEmpty());
 }
 
+TEST(PrintBackendCupsHelperTest,
+     PpdParsingResolutionStandaloneDefaultResolution) {
+  // The PPD spec allows for standalone default keywords, which implies there is
+  // only 1 resolution and it is the default.
+  constexpr char kTestPpdData[] =
+      R"(*PPD-Adobe: "4.3"
+*OpenUI *ColorModel/Color Model: PickOne
+*DefaultColorModel: CMYK
+*ColorModel CMYK/Color: "(cmyk) RCsetdevicecolor"
+*ColorModel Gray/Black and White: "(gray) RCsetdevicecolor"
+*CloseUI: *ColorModel
+*DefaultResolution: 500dpi
+*OpenUI *Duplex/2-Sided Printing: PickOne
+*DefaultDuplex: DuplexTumble
+*Duplex None/Off: <</Duplex false>>setpagedevice"
+*Duplex DuplexNoTumble/LongEdge: <</Duplex true/Tumble false>>setpagedevice"
+*CloseUI: *Duplex)";
+  constexpr gfx::Size kExpectedResolution(500, 500);
+
+  PrinterSemanticCapsAndDefaults caps;
+  EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                   kTestPpdData, &caps));
+  EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedResolution));
+  EXPECT_EQ(kExpectedResolution, caps.default_dpi);
+}
+
 TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoResolution) {
-  // If the PPD does not have a valid resolution, the DPI should still be set to
-  // an OS-dependent default value.
 #if BUILDFLAG(IS_MAC)
   constexpr gfx::Size kExpectedDpi(kDefaultMacDpi, kDefaultMacDpi);
 #else
   constexpr gfx::Size kExpectedDpi(kDefaultPdfDpi, kDefaultPdfDpi);
 #endif
 
-  constexpr char kTestPpdData[] =
-      R"(*PPD-Adobe: "4.3"
+  // If the PPD does not have a valid resolution, the DPI should still be set to
+  // an OS-dependent default value.
+  {
+    constexpr char kPpdWithNoResolutionValue[] =
+        R"(*PPD-Adobe: "4.3"
 *OpenUI *Resolution/Resolution: PickOne
 *CloseUI: *Resolution)";
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                     kPpdWithNoResolutionValue, &caps));
+    EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedDpi));
+    EXPECT_EQ(kExpectedDpi, caps.default_dpi);
+  }
 
-  PrinterSemanticCapsAndDefaults caps;
-  EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
-                                   kTestPpdData, &caps));
-  EXPECT_EQ(std::vector<gfx::Size>{kExpectedDpi}, caps.dpis);
-  EXPECT_EQ(caps.default_dpi, kExpectedDpi);
-  EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
-                                   "*PPD-Adobe: \"4.3\"", &caps));
-  EXPECT_EQ(std::vector<gfx::Size>{kExpectedDpi}, caps.dpis);
-  EXPECT_EQ(caps.default_dpi, kExpectedDpi);
+  // Same goes for a PPD that is missing the resolution option entirely.
+  {
+    constexpr char kPpdWithNoResolutionOption[] = R"(*PPD-Adobe: "4.3")";
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(
+        /*dest=*/nullptr, /*locale=*/"", kPpdWithNoResolutionOption, &caps));
+    EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedDpi));
+    EXPECT_EQ(kExpectedDpi, caps.default_dpi);
+  }
+
+  // Same goes for a PPD where the resolution option only contains a
+  // DefaultResolution but no actual Resolution values.
+  {
+    constexpr char kPpdWithOnlyDefaultResolutionValue[] =
+        R"(*PPD-Adobe: "4.3"
+*OpenUI *Resolution/Resolution: PickOne
+*DefaultResolution: 500dpi
+*CloseUI: *Resolution)";
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                     kPpdWithOnlyDefaultResolutionValue,
+                                     &caps));
+    EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedDpi));
+    EXPECT_EQ(kExpectedDpi, caps.default_dpi);
+  }
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoDefaultResolution) {
