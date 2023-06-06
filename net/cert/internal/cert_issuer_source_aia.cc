@@ -17,6 +17,8 @@ namespace net {
 
 namespace {
 
+const void* const kAiaDebugDataKey = &kAiaDebugDataKey;
+
 // TODO(mattm): These are arbitrary choices. Re-evaluate.
 const int kTimeoutMilliseconds = 10000;
 const int kMaxResponseBytes = 65536;
@@ -90,7 +92,8 @@ class AiaRequest : public CertIssuerSource::Request {
   ~AiaRequest() override;
 
   // CertIssuerSource::Request implementation.
-  void GetNext(ParsedCertificateList* issuers) override;
+  void GetNext(ParsedCertificateList* issuers,
+               base::SupportsUserData* debug_data) override;
 
   void AddCertFetcherRequest(
       std::unique_ptr<CertNetFetcher::Request> cert_fetcher_request);
@@ -106,7 +109,11 @@ class AiaRequest : public CertIssuerSource::Request {
 
 AiaRequest::~AiaRequest() = default;
 
-void AiaRequest::GetNext(ParsedCertificateList* out_certs) {
+void AiaRequest::GetNext(ParsedCertificateList* out_certs,
+                         base::SupportsUserData* debug_data) {
+  CertIssuerSourceAia::AiaDebugData* aia_debug_data =
+      debug_data ? CertIssuerSourceAia::AiaDebugData::GetOrCreate(debug_data)
+                 : nullptr;
   // TODO(eroman): Rather than blocking in FIFO order, select the one that
   // completes first.
   while (current_request_ < cert_fetcher_requests_.size()) {
@@ -115,8 +122,16 @@ void AiaRequest::GetNext(ParsedCertificateList* out_certs) {
     auto req = std::move(cert_fetcher_requests_[current_request_++]);
     req->WaitForResult(&error, &bytes);
 
-    if (AddCompletedFetchToResults(error, std::move(bytes), out_certs))
+    if (AddCompletedFetchToResults(error, std::move(bytes), out_certs)) {
+      if (aia_debug_data) {
+        aia_debug_data->IncrementAiaFetchSuccess();
+      }
       return;
+    } else {
+      if (aia_debug_data) {
+        aia_debug_data->IncrementAiaFetchFail();
+      }
+    }
   }
 }
 
@@ -149,6 +164,31 @@ bool AiaRequest::AddCompletedFetchToResults(Error error,
 }
 
 }  // namespace
+
+// static
+const CertIssuerSourceAia::AiaDebugData* CertIssuerSourceAia::AiaDebugData::Get(
+    const base::SupportsUserData* debug_data) {
+  return static_cast<AiaDebugData*>(debug_data->GetUserData(kAiaDebugDataKey));
+}
+
+// static
+CertIssuerSourceAia::AiaDebugData*
+CertIssuerSourceAia::AiaDebugData::GetOrCreate(
+    base::SupportsUserData* debug_data) {
+  AiaDebugData* data =
+      static_cast<AiaDebugData*>(debug_data->GetUserData(kAiaDebugDataKey));
+  if (!data) {
+    std::unique_ptr<AiaDebugData> new_data = std::make_unique<AiaDebugData>();
+    data = new_data.get();
+    debug_data->SetUserData(kAiaDebugDataKey, std::move(new_data));
+  }
+  return data;
+}
+
+std::unique_ptr<base::SupportsUserData::Data>
+CertIssuerSourceAia::AiaDebugData::Clone() {
+  return std::make_unique<AiaDebugData>(*this);
+}
 
 CertIssuerSourceAia::CertIssuerSourceAia(
     scoped_refptr<CertNetFetcher> cert_fetcher)

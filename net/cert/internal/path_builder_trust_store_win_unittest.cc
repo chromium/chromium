@@ -77,7 +77,8 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
     ~StaticAsyncRequest() override = default;
 
-    void GetNext(ParsedCertificateList* out_certs) override {
+    void GetNext(ParsedCertificateList* out_certs,
+                 base::SupportsUserData* debug_data) override {
       if (issuers_iter_ != issuers_.end())
         out_certs->push_back(std::move(*issuers_iter_++));
     }

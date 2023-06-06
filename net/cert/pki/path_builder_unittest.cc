@@ -36,6 +36,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Exactly;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -86,7 +87,8 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
     ~StaticAsyncRequest() override = default;
 
-    void GetNext(ParsedCertificateList* out_certs) override {
+    void GetNext(ParsedCertificateList* out_certs,
+                 base::SupportsUserData* debug_data) override {
       if (issuers_iter_ != issuers_.end())
         out_certs->push_back(std::move(*issuers_iter_++));
     }
@@ -1559,7 +1561,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestDuplicateIntermediateAndRoot) {
 
 class MockCertIssuerSourceRequest : public CertIssuerSource::Request {
  public:
-  MOCK_METHOD1(GetNext, void(ParsedCertificateList*));
+  MOCK_METHOD2(GetNext, void(ParsedCertificateList*, base::SupportsUserData*));
 };
 
 class MockCertIssuerSource : public CertIssuerSource {
@@ -1595,7 +1597,10 @@ class AppendCertToList {
       const std::shared_ptr<const ParsedCertificate>& cert)
       : cert_(cert) {}
 
-  void operator()(ParsedCertificateList* out) { out->push_back(cert_); }
+  void operator()(ParsedCertificateList* out,
+                  base::SupportsUserData* debug_data) {
+    out->push_back(cert_);
+  }
 
  private:
   std::shared_ptr<const ParsedCertificate> cert_;
@@ -1633,7 +1638,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestMultipleAsyncIssuersFromSingleSource) {
         .WillOnce(Invoke(&req_mover, &CertIssuerSourceRequestMover::MoveIt));
   }
 
-  EXPECT_CALL(*target_issuers_req, GetNext(_))
+  EXPECT_CALL(*target_issuers_req, GetNext(_, _))
       // First async batch: return oldintermediate_.
       .WillOnce(Invoke(AppendCertToList(oldintermediate_)))
       // Second async batch: return newintermediate_.
@@ -1720,7 +1725,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestDuplicateAsyncIntermediates) {
               oldintermediate_->der_cert().Length(), nullptr)),
           {}, nullptr));
 
-  EXPECT_CALL(*target_issuers_req, GetNext(_))
+  EXPECT_CALL(*target_issuers_req, GetNext(_, _))
       // First async batch: return oldintermediate_.
       .WillOnce(Invoke(AppendCertToList(oldintermediate_)))
       // Second async batch: return a different copy of oldintermediate_ again.

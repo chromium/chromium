@@ -268,7 +268,8 @@ void CertIssuersIter::GetNextIssuer(IssuerEntry* out) {
     while (!HasCurrentIssuer() &&
            cur_async_request_ < pending_async_requests_.size()) {
       ParsedCertificateList new_issuers;
-      pending_async_requests_[cur_async_request_]->GetNext(&new_issuers);
+      pending_async_requests_[cur_async_request_]->GetNext(&new_issuers,
+                                                           debug_data_);
       if (new_issuers.empty()) {
         // Request is exhausted, no more results pending from that
         // CertIssuerSource.

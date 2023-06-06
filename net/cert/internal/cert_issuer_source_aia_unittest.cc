@@ -106,7 +106,7 @@ TEST(CertIssuerSourceAiaTest, FileAia) {
 
   // No results.
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_TRUE(result_certs.empty());
 }
 
@@ -143,12 +143,12 @@ TEST(CertIssuerSourceAiaTest, OneAia) {
   ASSERT_NE(nullptr, cert_source_request);
 
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(1u, result_certs.size());
   ASSERT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
 
   result_certs.clear();
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_TRUE(result_certs.empty());
 }
 
@@ -179,11 +179,11 @@ TEST(CertIssuerSourceAiaTest, OneFileOneHttpAia) {
   ASSERT_NE(nullptr, cert_source_request);
 
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(1u, result_certs.size());
   ASSERT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
 
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_EQ(1u, result_certs.size());
 }
 
@@ -207,13 +207,13 @@ TEST(CertIssuerSourceAiaTest, OneInvalidOneHttpAia) {
   ASSERT_NE(nullptr, cert_source_request);
 
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
 
   // No more results.
   result_certs.clear();
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_EQ(0u, result_certs.size());
 }
 
@@ -248,18 +248,18 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeries) {
   // GetNext() should return intermediate_cert followed by intermediate_cert2.
   // They are returned in two separate batches.
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
 
   result_certs.clear();
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert2->der_cert());
 
   // No more results.
   result_certs.clear();
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_EQ(0u, result_certs.size());
 }
 
@@ -283,7 +283,7 @@ TEST(CertIssuerSourceAiaTest, OneAiaHttpError) {
 
   // No results.
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(0u, result_certs.size());
 }
 
@@ -308,7 +308,7 @@ TEST(CertIssuerSourceAiaTest, OneAiaParseError) {
 
   // No results.
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(0u, result_certs.size());
 }
 
@@ -341,13 +341,13 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesFirstFails) {
 
   // GetNext() should return intermediate_cert2.
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert2->der_cert());
 
   // No more results.
   result_certs.clear();
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_EQ(0u, result_certs.size());
 }
 
@@ -380,13 +380,13 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesSecondFails) {
 
   // GetNext() should return intermediate_cert.
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
 
   // No more results.
   result_certs.clear();
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_EQ(0u, result_certs.size());
 }
 
@@ -430,7 +430,7 @@ TEST(CertIssuerSourceAiaTest, MaxFetchesPerCert) {
   // GetNext() will not get any certificates (since the first 5 fail to be
   // parsed, and the sixth URL is not attempted).
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(0u, result_certs.size());
 }
 
@@ -458,7 +458,7 @@ TEST(CertIssuerSourceAiaTest, CertsOnlyCmsMessage) {
   ASSERT_NE(nullptr, cert_source_request);
 
   ParsedCertificateList result_certs;
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   ASSERT_EQ(2u, result_certs.size());
 
   // The fingerprint of the Google certificate used in the parsing tests.
@@ -476,7 +476,7 @@ TEST(CertIssuerSourceAiaTest, CertsOnlyCmsMessage) {
   EXPECT_EQ(thawte_parse_fingerprint, X509Certificate::CalculateFingerprint256(
                                           result_certs[1]->cert_buffer()));
   result_certs.clear();
-  cert_source_request->GetNext(&result_certs);
+  cert_source_request->GetNext(&result_certs, /*debug_data=*/nullptr);
   EXPECT_TRUE(result_certs.empty());
 }
 
