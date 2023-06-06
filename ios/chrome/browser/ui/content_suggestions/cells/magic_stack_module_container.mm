@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -38,6 +40,12 @@ const float kCornerRadius = 24;
 // The width of the modules.
 const int kModuleWidthCompact = 343;
 const int kModuleWidthRegular = 382;
+
+const CGFloat kSeparatorHeight = 0.5;
+
+// The margin spacing between the top horizontal StackView (containing the title
+// and "See More" button) and the module's overall vertical container StackView.
+const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 
 }  // namespace
 
@@ -71,13 +79,37 @@ const int kModuleWidthRegular = 382;
     self.layer.cornerRadius = kCornerRadius;
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
+    UIStackView* titleStackView = [[UIStackView alloc] init];
+    titleStackView.alignment = UIStackViewAlignmentCenter;
+    titleStackView.axis = UILayoutConstraintAxisHorizontal;
+    titleStackView.distribution = UIStackViewDistributionFill;
+
     UILabel* title = [[UILabel alloc] init];
     title.text = [MagicStackModuleContainer titleStringForModule:type];
-    title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    title.font =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
+    title.adjustsFontForContentSizeCategory = YES;
     title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     title.accessibilityTraits |= UIAccessibilityTraitHeader;
     title.accessibilityIdentifier =
         [MagicStackModuleContainer titleStringForModule:type];
+    [titleStackView addArrangedSubview:title];
+
+    if ([self shouldShowSeeMore]) {
+      UIButton* showMoreButton = [[UIButton alloc] init];
+      [showMoreButton
+          setTitle:l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_SEE_MORE)
+          forState:UIControlStateNormal];
+      [showMoreButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                           forState:UIControlStateNormal];
+      [showMoreButton.titleLabel
+          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
+      showMoreButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      [showMoreButton addTarget:self
+                         action:@selector(seeMoreButtonWasTapped:)
+               forControlEvents:UIControlEventTouchUpInside];
+      [titleStackView addArrangedSubview:showMoreButton];
+    }
 
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -86,7 +118,27 @@ const int kModuleWidthRegular = 382;
     stackView.spacing = kContentVerticalSpacing;
     stackView.distribution = UIStackViewDistributionFill;
     if ([title.text length] > 0) {
-      [stackView addArrangedSubview:title];
+      [stackView addArrangedSubview:titleStackView];
+      [NSLayoutConstraint activateConstraints:@[
+        [titleStackView.leadingAnchor
+            constraintEqualToAnchor:stackView.leadingAnchor],
+        [titleStackView.trailingAnchor
+            constraintEqualToAnchor:stackView.trailingAnchor
+                           constant:-kTitleStackViewTrailingMargin],
+      ]];
+    }
+    if ([self shouldShowSeparator]) {
+      UIView* separator = [[UIView alloc] init];
+      separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+      [stackView addArrangedSubview:separator];
+      [NSLayoutConstraint activateConstraints:@[
+        [separator.heightAnchor
+            constraintEqualToConstant:AlignValueToPixel(kSeparatorHeight)],
+        [separator.leadingAnchor
+            constraintEqualToAnchor:stackView.leadingAnchor],
+        [separator.trailingAnchor
+            constraintEqualToAnchor:stackView.trailingAnchor],
+      ]];
     }
     [stackView addArrangedSubview:contentView];
 
@@ -185,6 +237,31 @@ const int kModuleWidthRegular = 382;
 }
 
 #pragma mark - Helpers
+
+- (void)seeMoreButtonWasTapped:(UIButton*)button {
+  // TODO(crbug.com/1432252): Implement presenting views for different module
+  // types.
+}
+
+- (BOOL)shouldShowSeeMore {
+  switch (_type) {
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
+- (BOOL)shouldShowSeparator {
+  switch (_type) {
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+      return YES;
+    default:
+      return NO;
+  }
+}
 
 // Returns the expected width of the contentView subview.
 - (CGFloat)contentViewWidth {
