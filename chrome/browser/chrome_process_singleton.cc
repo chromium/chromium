@@ -11,7 +11,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_switches.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "base/hash/hash.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
@@ -26,10 +26,6 @@
 #include "base/files/file_util.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace {
 
 constexpr char kEarlySingletonForceEnabledGroup[] = "Enabled_Forced3";
@@ -37,14 +33,14 @@ constexpr char kEarlySingletonEnabledGroup[] = "Enabled3";
 constexpr char kEarlySingletonDisabledMergeGroup[] = "Disabled_Merge3";
 constexpr char kEarlySingletonDefaultGroup[] = "Default3";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 constexpr char kEarlySingletonDisabledGroup[] = "Disabled3";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 const char* g_early_singleton_feature_group_ = nullptr;
 ChromeProcessSingleton* g_chrome_process_singleton_ = nullptr;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 std::string GetMachineGUID() {
   std::string machine_guid;
@@ -66,12 +62,7 @@ std::string GetMachineGUID() {
                               &machine_guid)) {
     return std::string();
   }
-#endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_MAC)
-  machine_guid = base::mac::GetPlatformSerialNumber();
-#endif  // BUILDFLAG(IS_MAC)
-
+#endif
   return machine_guid;
 }
 
@@ -102,7 +93,7 @@ const char* EnrollMachineInEarlySingletonFeature() {
       return kEarlySingletonDefaultGroup;
   }
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -180,7 +171,7 @@ void ChromeProcessSingleton::SetupEarlySingletonFeature(
     return;
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   g_early_singleton_feature_group_ = EnrollMachineInEarlySingletonFeature();
 #else
   g_early_singleton_feature_group_ = kEarlySingletonDefaultGroup;
