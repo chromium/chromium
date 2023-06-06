@@ -2705,9 +2705,17 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SCAN"
                desc="Label for the button prompting for Deep Scanning">
-        Scan for malware
+        Scan
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_OPEN"
+               desc="Label for the button prompting to bypass Deep Scanning">
+        Open
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SCAN_UPDATED"
+               desc="Label for the button prompting for Deep Scanning">
+        Scan for malware
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN_UPDATED"
                desc="Label for the button prompting to bypass Deep Scanning">
         Open anyway
       </message>
@@ -2847,7 +2855,7 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary of warning for a file blocked for being too large.">
         Your organization blocked this file because it is too big for a security check. You can open files up to 50 MB.
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED"
                desc="Subpage summary of warning for a file where we recommend sending the file for deep scanning.">
         This file might be a virus or malware.
 

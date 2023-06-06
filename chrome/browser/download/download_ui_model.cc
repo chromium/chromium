@@ -1156,17 +1156,25 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                   IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT))
               .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
                                ui::kColorAlertMediumSeverityIcon)
-              .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
-              .AddPrimarySubpageButton(
-                  l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
-                  DownloadCommands::Command::DEEP_SCAN)
-              .AddSecondarySubpageButton(
-                  l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN),
-                  DownloadCommands::Command::BYPASS_DEEP_SCANNING,
-                  ui::kColorButtonForeground);
-      if (!base::FeatureList::IsEnabled(
-              safe_browsing::kDeepScanningUpdatedUX)) {
-        ui_info.AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN);
+              .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText);
+      if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
+        ui_info
+            .AddPrimarySubpageButton(
+                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN_UPDATED),
+                DownloadCommands::Command::DEEP_SCAN)
+            .AddSecondarySubpageButton(
+                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_UPDATED),
+                DownloadCommands::Command::BYPASS_DEEP_SCANNING,
+                ui::kColorButtonForeground);
+      } else {
+        ui_info.AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN)
+            .AddPrimarySubpageButton(
+                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
+                DownloadCommands::Command::DEEP_SCAN)
+            .AddSecondarySubpageButton(
+                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN),
+                DownloadCommands::Command::BYPASS_DEEP_SCANNING,
+                ui::kColorAlertMediumSeverityText);
       }
 
       return ui_info;
