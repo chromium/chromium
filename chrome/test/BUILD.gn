@@ -8850,6 +8850,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/device_trust_connector_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/device_trust_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/navigation_throttle_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/signals/signals_filterer_unittest.cc",
       "../browser/enterprise/connectors/device_trust/signals/signals_service_impl_unittest.cc",
       "../browser/enterprise/signals/user_delegate_impl_unittest.cc",
       "../browser/performance_manager/user_tuning/high_efficiency_policy_handler_unittest.cc",

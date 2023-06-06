@@ -6096,6 +6096,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/navigation_throttle.h",
       "enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.cc",
       "enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.h",
+      "enterprise/connectors/device_trust/signals/signals_filterer.cc",
+      "enterprise/connectors/device_trust/signals/signals_filterer.h",
       "enterprise/connectors/device_trust/signals/signals_service_factory.cc",
       "enterprise/connectors/device_trust/signals/signals_service_factory.h",
       "enterprise/connectors/device_trust/signals/signals_service_impl.cc",
