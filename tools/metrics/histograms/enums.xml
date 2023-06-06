@@ -26735,6 +26735,17 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Platform dual-screen support used"/>
 </enum>
 
+<enum name="DevToolsElementsSidebarTab">
+  <int value="0" label="Other sidebar pane"/>
+  <int value="1" label="Elements - Styles"/>
+  <int value="2" label="Elements - Computed"/>
+  <int value="3" label="Elements - Layout"/>
+  <int value="4" label="Elements - Event Listeners"/>
+  <int value="5" label="Elements - DOM Breakpoints"/>
+  <int value="6" label="Elements - Properties"/>
+  <int value="7" label="Elements - Accessibility"/>
+</enum>
+
 <enum name="DevtoolsExperiments">
   <int value="0" label="applyCustomStylesheet"/>
   <int value="1" label="captureNodeCreationStacks"/>
@@ -27461,6 +27472,15 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="10" label="Sources - Overrides"/>
   <int value="11" label="Sources - Content Scripts"/>
   <int value="12" label="Sources - Snippets"/>
+</enum>
+
+<enum name="DevToolsSourcesSidebarTab">
+  <int value="0" label="Other sidebar pane"/>
+  <int value="1" label="Sources - Page"/>
+  <int value="2" label="Sources - Filesystem"/>
+  <int value="3" label="Sources - Overrides"/>
+  <int value="4" label="Sources - Content Scripts"/>
+  <int value="5" label="Sources - Snippets"/>
 </enum>
 
 <enum name="DevToolsStyleTextCopied">

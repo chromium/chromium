@@ -173,6 +173,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.Elements.SidebarTabShown"
+    enum="DevToolsElementsSidebarTab" expires_after="2023-12-31">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <summary>
+    Specified DevTools sidebar tab was shown in the Elements panel.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
     expires_after="2023-10-22">
   <owner>yangguo@chromium.org</owner>
@@ -460,6 +469,15 @@ chromium-metrics-reviews@google.com.
   <owner>bmeurer@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <summary>Specified DevTools sidebar pane was shown.</summary>
+</histogram>
+
+<histogram name="DevTools.Sources.SidebarTabShown"
+    enum="DevToolsSourcesSidebarTab" expires_after="2023-12-31">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>jarin@chromium.org</owner>
+  <summary>
+    Specified DevTools sidebar tab was shown in the Sources panel.
+  </summary>
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
