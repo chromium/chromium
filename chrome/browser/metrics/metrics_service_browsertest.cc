@@ -56,8 +56,18 @@
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+
+void VerifyRendererExitCodeIsSignal(
+    const base::HistogramTester& histogram_tester,
+    int signal) {
+  histogram_tester.ExpectUniqueSample(
+      "CrashExitCodes.Renderer", std::abs(static_cast<int32_t>(signal)), 1);
+}
+
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Check CrashExitCodes.Renderer histogram for a single bucket entry and then
 // verify that the bucket entry contains a signal and the signal is |signal|.
@@ -73,8 +83,9 @@ void VerifyRendererExitCodeIsSignal(
   EXPECT_EQ(signal, WTERMSIG(exit_code));
 }
 
-}  // namespace
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
 
 // This test class verifies that metrics reporting works correctly for various
 // renderer behaviors such as page loads, recording crashed tabs, and browser
@@ -193,9 +204,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
 #if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
   // histograms and used for stability measurement.
-  histogram_tester.ExpectUniqueSample(
-      "CrashExitCodes.Renderer",
-      std::abs(static_cast<int32_t>(STATUS_ACCESS_VIOLATION)), 1);
+  VerifyRendererExitCodeIsSignal(histogram_tester, STATUS_ACCESS_VIOLATION);
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
 #endif
@@ -246,9 +255,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
 #if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
   // histograms and used for stability measurement.
-  histogram_tester.ExpectUniqueSample(
-      "CrashExitCodes.Renderer",
-      std::abs(static_cast<int32_t>(STATUS_BREAKPOINT)), 1);
+  VerifyRendererExitCodeIsSignal(histogram_tester, STATUS_BREAKPOINT);
 #elif BUILDFLAG(IS_MAC)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGTRAP);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -259,6 +266,30 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
 #endif  // defined(OFFICIAL_BUILD)
 #endif
 }
+
+#if BUILDFLAG(BUILD_RUST_CRASH)
+IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
+  base::HistogramTester histogram_tester;
+
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUICrashRustURL);
+
+  // Verify that the expected stability metrics were recorded.
+  // The three tabs from OpenTabs() and the one tab to open
+  // chrome://crash/rust/.
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     metrics::StabilityEventType::kPageLoad, 3);
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
+
+#if BUILDFLAG(IS_WIN)
+  // Consult Stability Team before changing this test as it's recorded to
+  // histograms and used for stability measurement.
+  VerifyRendererExitCodeIsSignal(histogram_tester, STATUS_ACCESS_VIOLATION);
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
+#endif
+}
+#endif  // BUILDFLAG(BUILD_RUST_CRASH)
 
 // OOM code only works on Windows.
 #if BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)
