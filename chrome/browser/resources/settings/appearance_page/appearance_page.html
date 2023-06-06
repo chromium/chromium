@@ -117,6 +117,17 @@
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
 
+        <template is="dom-if" if="[[showHoverCardImagesOption_]]">
+          <div id="hoverCardImagesHr" class="hr"
+              hidden="[[!pageVisibility.hoverCardImages]]">
+          </div>
+          <settings-toggle-button
+              hidden="[[!pageVisibility.hoverCardImages]]"
+              pref="{{prefs.browser.hovercard_images_enabled}}"
+              label="$i18n{showHoverCardImages}">
+          </settings-toggle-button>
+        </template>
+
         <template is="dom-if" if="[[showSidePanelOptions_]]">
           <div class="cr-row">$i18n{sidePanel}</div>
           <div class="list-frame">

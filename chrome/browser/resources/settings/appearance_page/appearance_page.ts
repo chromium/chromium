@@ -174,6 +174,13 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      showHoverCardImagesOption_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showHoverCardImagesOption');
+        },
+      },
+
       showManagedThemeDialog_: Boolean,
     };
   }
@@ -202,6 +209,7 @@ export class SettingsAppearancePageElement extends
   private focusConfig_: Map<string, string>;
   private showReaderModeOption_: boolean;
   private isForcedTheme_: boolean;
+  private showHoverCardImagesOption_: boolean;
 
   // <if expr="is_linux">
   private showCustomChromeFrame_: boolean;

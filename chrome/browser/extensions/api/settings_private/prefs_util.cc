@@ -242,6 +242,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #endif
   (*s_allowlist)[dom_distiller::prefs::kOfferReaderMode] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[prefs::kHoverCardImagesEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // On startup.
   (*s_allowlist)[::prefs::kRestoreOnStartup] =

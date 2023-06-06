@@ -371,6 +371,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
     {"chromeColors", IDS_SETTINGS_CHROME_COLORS},
     {"showHomeButton", IDS_SETTINGS_SHOW_HOME_BUTTON},
     {"showBookmarksBar", IDS_SETTINGS_SHOW_BOOKMARKS_BAR},
+    {"showHoverCardImages", IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES},
     {"sidePanel", IDS_SETTINGS_SIDE_PANEL},
     {"homePageNtp", IDS_SETTINGS_HOME_PAGE_NTP},
     {"changeHomePage", IDS_SETTINGS_CHANGE_HOME_PAGE},
@@ -418,6 +419,9 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showReaderModeOption",
                           dom_distiller::OfferReaderModeInSettings());
   html_source->AddBoolean("showSidePanelOptions", true);
+  html_source->AddBoolean(
+      "showHoverCardImagesOption",
+      base::FeatureList::IsEnabled(features::kTabHoverCardImageSettings));
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

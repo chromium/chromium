@@ -236,6 +236,9 @@
   <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
     Show bookmarks bar
   </message>
+  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES" desc="Label for the checkbox which enables or disables showing image previews for tab hovercards.">
+    Show images on tab hover preview cards
+  </message>
   <message name="IDS_SETTINGS_SIDE_PANEL" desc="Title for the side panel section. Allows the user to toggle which side the side panel is displayed on.">
     Side panel
   </message>
