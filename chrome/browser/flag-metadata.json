@@ -1470,7 +1470,7 @@
     "owners": [
       "//ash/webui/diagnostics_ui/OWNERS", "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "disable-accelerated-2d-canvas",
@@ -2434,7 +2434,7 @@
   {
     "name": "enable-experimental-rgb-keyboard-patterns",
     "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-experimental-web-platform-features",
@@ -2470,7 +2470,7 @@
   {
     "name": "enable-external-keyboards-in-diagnostics-app",
     "owners": [ "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-fake-keyboard-heuristic",
@@ -3446,7 +3446,7 @@
   {
     "name": "enable-touchpads-in-diagnostics-app",
     "owners": [ "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-touchscreen-calibration",
@@ -3458,7 +3458,7 @@
   {
     "name": "enable-touchscreens-in-diagnostics-app",
     "owners": [ "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-translate-sub-frames",
@@ -4148,9 +4148,10 @@
   {
     "name": "firmware-update-jelly",
     "owners": [
-      "//ash/webui/firmware_update_ui/OWNERS"
+      "//ash/webui/firmware_update_ui/OWNERS",
+      "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "focus-follows-cursor",
@@ -5930,7 +5931,7 @@
     "owners": [
       "ashleydp", "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "os-settings-app-badging-toggle",
@@ -6253,9 +6254,10 @@
   {
     "name": "print-management-jelly",
     "owners": [
-      "//ash/webui/print_management/OWNERS"
+      "//ash/webui/print_management/OWNERS",
+      "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "print-management-setup-assistance",
@@ -6697,9 +6699,10 @@
   {
     "name": "scanning-app-jelly",
     "owners": [
-      "//ash/webui/scanning/OWNERS"
+      "//ash/webui/scanning/OWNERS",
+      "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "scheduler-configuration",
