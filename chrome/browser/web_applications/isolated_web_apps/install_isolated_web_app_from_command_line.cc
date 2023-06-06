@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -164,6 +165,15 @@ void IsolatedWebAppCommandLineInstallManager::Start() {
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (IsWebAppsCrosapiEnabled()) {
+    // If Lacros manages Web Apps, then Ash only manages System Web Apps. Thus,
+    // do not attempt to install IWAs in Ash, because Lacros will take care of
+    // that.
+    return;
+  }
+#endif
+
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
     ReportInstallationResult(base::unexpected(
         "Unable to install IWA due to browser shutting down."));
@@ -181,7 +191,7 @@ void IsolatedWebAppCommandLineInstallManager::Start() {
   InstallFromCommandLine(command_line, std::move(keep_alive),
                          std::move(optional_profile_keep_alive),
                          base::TaskPriority::BEST_EFFORT);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void IsolatedWebAppCommandLineInstallManager::Shutdown() {
