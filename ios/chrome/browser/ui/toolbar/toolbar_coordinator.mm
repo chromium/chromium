@@ -127,6 +127,20 @@
   return self.secondaryToolbarCoordinator;
 }
 
+#pragma mark Omnibox and LocationBar
+
+- (void)transitionToLocationBarFocusedState:(BOOL)focused {
+  [self.primaryToolbarCoordinator transitionToLocationBarFocusedState:focused];
+}
+
+- (BOOL)isOmniboxFirstResponder {
+  return [self.locationBarCoordinator isOmniboxFirstResponder];
+}
+
+- (BOOL)showingOmniboxPopup {
+  return [self.locationBarCoordinator showingOmniboxPopup];
+}
+
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {

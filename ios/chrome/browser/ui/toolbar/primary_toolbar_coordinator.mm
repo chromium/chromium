@@ -213,8 +213,8 @@
 
 - (void)viewControllerTraitCollectionDidChange:
     (UITraitCollection*)previousTraitCollection {
-  BOOL omniboxFocused = self.isOmniboxFirstResponder ||
-                        [self.locationBarCoordinator showingOmniboxPopup];
+  BOOL omniboxFocused =
+      self.isOmniboxFirstResponder || [self showingOmniboxPopup];
   [self.orchestrator
       transitionToStateOmniboxFocused:omniboxFocused
                       toolbarExpanded:omniboxFocused &&
@@ -294,6 +294,16 @@
 - (void)resetToolbarAfterSideSwipeSnapshot {
   [super resetToolbarAfterSideSwipeSnapshot];
   [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
+}
+
+#pragma mark - Private
+
+- (BOOL)isOmniboxFirstResponder {
+  return [self.locationBarCoordinator isOmniboxFirstResponder];
+}
+
+- (BOOL)showingOmniboxPopup {
+  return [self.locationBarCoordinator showingOmniboxPopup];
 }
 
 @end

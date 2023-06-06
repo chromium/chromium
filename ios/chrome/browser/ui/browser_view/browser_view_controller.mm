@@ -2536,8 +2536,7 @@ enum HeaderBehaviour {
                      }];
   }
 
-  [self.toolbarCoordinator.primaryToolbarCoordinator
-      transitionToLocationBarFocusedState:YES];
+  [self.toolbarCoordinator transitionToLocationBarFocusedState:YES];
 }
 
 - (void)omniboxDidResignFirstResponder {
@@ -2554,15 +2553,13 @@ enum HeaderBehaviour {
         // on the omnibox again during this animation. If the animation is
         // interrupted and the toolbar controller is first responder, it's safe
         // to assume `self.typingShield` shouldn't be hidden here.
-        if (!finished && [self.toolbarCoordinator.primaryToolbarCoordinator
-                                 isOmniboxFirstResponder]) {
+        if (!finished && [self.toolbarCoordinator isOmniboxFirstResponder]) {
           return;
         }
         [self.typingShield setHidden:YES];
       }];
 
-  [self.toolbarCoordinator.primaryToolbarCoordinator
-      transitionToLocationBarFocusedState:NO];
+  [self.toolbarCoordinator transitionToLocationBarFocusedState:NO];
 }
 
 #pragma mark - BrowserCommands
@@ -2972,10 +2969,8 @@ enum HeaderBehaviour {
 }
 
 - (BOOL)canBeginToolbarSwipe {
-  return ![self.toolbarCoordinator
-                 .primaryToolbarCoordinator isOmniboxFirstResponder] &&
-         ![self.toolbarCoordinator
-                 .primaryToolbarCoordinator showingOmniboxPopup];
+  return ![self.toolbarCoordinator isOmniboxFirstResponder] &&
+         ![self.toolbarCoordinator showingOmniboxPopup];
 }
 
 - (UIView*)topToolbarView {

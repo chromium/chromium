@@ -66,6 +66,16 @@
 /// Returns the snapshop provider of secondary toolbar.
 - (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider;
 
+#pragma mark Omnibox and LocationBar
+
+/// Coordinates the location bar focusing/defocusing. For example, initiates
+/// transition to the expanded location bar state of the view controller.
+- (void)transitionToLocationBarFocusedState:(BOOL)focused;
+/// Whether the omnibox is currently the first responder.
+- (BOOL)isOmniboxFirstResponder;
+/// Whether the omnibox popup is currently presented.
+- (BOOL)showingOmniboxPopup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_COORDINATOR_H_

@@ -33,11 +33,6 @@ class Browser;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Whether the omnibox is currently the first responder.
-- (BOOL)isOmniboxFirstResponder;
-// Whether the omnibox popup is currently presented.
-- (BOOL)showingOmniboxPopup;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_ADAPTIVE_TOOLBAR_COORDINATOR_H_
