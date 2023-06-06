@@ -34,6 +34,7 @@ namespace reporting {
 namespace {
 
 constexpr char kTestAppId[] = "TestApp";
+constexpr char kTestAppPublisherId[] = "com.google.test";
 constexpr base::TimeDelta kAppUsageCollectionInterval = base::Minutes(5);
 
 // Mock retriever for the `AppPlatformMetrics` component.
@@ -63,7 +64,7 @@ class AppUsageObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
         {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
     // Pre-install app so it can be used by tests to simulate usage.
-    InstallOneApp(kTestAppId, ::apps::AppType::kArc, /*publisher_id=*/"",
+    InstallOneApp(kTestAppId, ::apps::AppType::kArc, kTestAppPublisherId,
                   ::apps::Readiness::kReady, ::apps::InstallSource::kPlayStore);
 
     // Set up `AppUsageObserver` with relevant test params.
@@ -105,6 +106,9 @@ class AppUsageObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
     EXPECT_THAT(*usage_dict_pref.FindDict(instance_id.ToString())
                      ->FindString(::apps::kUsageTimeAppIdKey),
                 StrEq(kTestAppId));
+    EXPECT_THAT(*usage_dict_pref.FindDict(instance_id.ToString())
+                     ->FindString(::apps::kUsageTimeAppPublisherIdKey),
+                StrEq(kTestAppPublisherId));
     EXPECT_THAT(base::ValueToTimeDelta(
                     usage_dict_pref.FindDict(instance_id.ToString())
                         ->Find(::apps::kReportingUsageTimeDurationKey)),

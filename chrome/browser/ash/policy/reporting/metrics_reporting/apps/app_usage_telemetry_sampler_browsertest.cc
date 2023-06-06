@@ -69,7 +69,7 @@ namespace {
 constexpr char kDMToken[] = "token";
 
 // Standalone webapp start URL.
-constexpr char kWebAppUrl[] = "https://test.example.com";
+constexpr char kWebAppUrl[] = "https://test.example.com/";
 
 // App usage UKM entry name.
 constexpr char kAppUsageUKMEntryName[] = "ChromeOSApp.UsageTime";
@@ -190,9 +190,9 @@ class AppUsageTelemetrySamplerBrowserTest
   }
 
   void VerifyAppUsage(const AppUsageData::AppUsage& app_usage,
-                      const ::web_app::AppId& app_id,
                       const base::TimeDelta& running_time) {
     EXPECT_TRUE(app_usage.has_app_instance_id());
+    EXPECT_THAT(app_usage.app_id(), StrEq(kWebAppUrl));
     EXPECT_THAT(app_usage.app_type(),
                 Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
 
@@ -305,8 +305,8 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
   const auto& app_usage_data =
       metric_data.telemetry_data().app_telemetry().app_usage_data();
   ASSERT_THAT(app_usage_data.app_usage().size(), Eq(1));
-  const auto& app_usage = app_usage_data.app_usage().at(0);
-  VerifyAppUsage(app_usage, app_id, kAppUsageDuration);
+  const auto& app_usage = app_usage_data.app_usage(0);
+  VerifyAppUsage(app_usage, kAppUsageDuration);
 
   // Trigger upload to UKM by advancing the timer.
   test::MockClock::Get().Advance(kAppUsageUKMReportingInterval);
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   const auto& app_usage_data =
       metric_data.telemetry_data().app_telemetry().app_usage_data();
   ASSERT_THAT(app_usage_data.app_usage().size(), Eq(1));
-  VerifyAppUsage(app_usage_data.app_usage().at(0), app_id, kAppUsageDuration);
+  VerifyAppUsage(app_usage_data.app_usage(0), kAppUsageDuration);
 
   // Advance timer and verify no data is reported to UKM.
   test::MockClock::Get().Advance(kAppUsageUKMReportingInterval);
@@ -416,8 +416,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   const auto& app_usage_data =
       metric_data.telemetry_data().app_telemetry().app_usage_data();
   ASSERT_THAT(app_usage_data.app_usage().size(), Eq(1));
-  const auto& app_usage = app_usage_data.app_usage().at(0);
-  VerifyAppUsage(app_usage, app_id, kAppUsageDuration);
+  VerifyAppUsage(app_usage_data.app_usage(0), kAppUsageDuration);
 }
 
 }  // namespace
