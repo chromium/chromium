@@ -110,6 +110,30 @@ void RecordAddToHomescreenDialogDuration(base::TimeDelta duration) {
   UMA_HISTOGRAM_TIMES("Webapp.AddToHomescreenDialog.Timeout", duration);
 }
 
+void RecordMobileCapableUserActions(mojom::WebPageMobileCapable mobile_capable,
+                                    bool has_manifest) {
+  if (has_manifest) {
+    base::RecordAction(base::UserMetricsAction("webapps.AddShortcut.Manifest"));
+    return;
+  }
+
+  // Record the use of web-app-capable meta flag.
+  switch (mobile_capable) {
+    case mojom::WebPageMobileCapable::ENABLED:
+      base::RecordAction(
+          base::UserMetricsAction("webapps.AddShortcut.AppShortcut"));
+      break;
+    case mojom::WebPageMobileCapable::ENABLED_APPLE:
+      base::RecordAction(
+          base::UserMetricsAction("webapps.AddShortcut.AppShortcutApple"));
+      break;
+    case mojom::WebPageMobileCapable::UNSPECIFIED:
+      base::RecordAction(
+          base::UserMetricsAction("webapps.AddShortcut.Bookmark"));
+      break;
+  }
+}
+
 }  // namespace
 
 AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
@@ -170,22 +194,7 @@ void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
     shortcut_info_.UpdateSource(
         ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
   }
-
-  // Record what type of shortcut was added by the user.
-  switch (web_page_metadata->mobile_capable) {
-    case mojom::WebPageMobileCapable::ENABLED:
-      base::RecordAction(
-          base::UserMetricsAction("webapps.AddShortcut.AppShortcut"));
-      break;
-    case mojom::WebPageMobileCapable::ENABLED_APPLE:
-      base::RecordAction(
-          base::UserMetricsAction("webapps.AddShortcut.AppShortcutApple"));
-      break;
-    case mojom::WebPageMobileCapable::UNSPECIFIED:
-      base::RecordAction(
-          base::UserMetricsAction("webapps.AddShortcut.Bookmark"));
-      break;
-  }
+  mobile_capable_meta_ = web_page_metadata->mobile_capable;
 
   // Kick off a timeout for downloading web app manifest data. If we haven't
   // finished within the timeout, fall back to using any fetched icon, or at
@@ -228,8 +237,10 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   is_waiting_for_manifest_ = false;
 
+  RecordMobileCapableUserActions(mobile_capable_meta_,
+                                 !blink::IsEmptyManifest(*data.manifest));
+
   if (!blink::IsEmptyManifest(*data.manifest)) {
-    base::RecordAction(base::UserMetricsAction("webapps.AddShortcut.Manifest"));
     shortcut_info_.UpdateFromManifest(*data.manifest);
     shortcut_info_.manifest_url = (*data.manifest_url);
   }

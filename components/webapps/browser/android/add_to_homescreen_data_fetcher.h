@@ -121,6 +121,8 @@ class AddToHomescreenDataFetcher {
 
   bool is_waiting_for_manifest_;
 
+  mojom::WebPageMobileCapable mobile_capable_meta_;
+
   base::WeakPtrFactory<AddToHomescreenDataFetcher> weak_ptr_factory_{this};
 };
 
