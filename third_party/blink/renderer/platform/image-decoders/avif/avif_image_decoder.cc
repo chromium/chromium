@@ -986,12 +986,10 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
   // |index| should be less than what DecodeFrameCount() returns, so we should
   // not get the AVIF_RESULT_NO_IMAGES_REMAINING error.
   DCHECK_NE(ret, AVIF_RESULT_NO_IMAGES_REMAINING);
-  if (ret != AVIF_RESULT_OK) {
-    if (ret != AVIF_RESULT_WAITING_ON_IO) {
-      DVLOG(1) << "avifDecoderNthImage(" << index
-               << ") failed: " << avifResultToString(ret) << ": "
-               << AvifDecoderErrorMessage(decoder_.get());
-    }
+  if (ret != AVIF_RESULT_OK && ret != AVIF_RESULT_WAITING_ON_IO) {
+    DVLOG(1) << "avifDecoderNthImage(" << index
+             << ") failed: " << avifResultToString(ret) << ": "
+             << AvifDecoderErrorMessage(decoder_.get());
     return ret;
   }
 
@@ -1013,7 +1011,7 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
     DVLOG(1) << "Frame YUV format must be equal to container YUV format";
     return AVIF_RESULT_UNKNOWN_ERROR;
   }
-  return AVIF_RESULT_OK;
+  return ret;
 }
 
 void AVIFImageDecoder::UpdateColorTransform(const gfx::ColorSpace& frame_cs,
