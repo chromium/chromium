@@ -31,14 +31,19 @@ enum TriggerRegistrationError {
   kAggregatableTriggerDataSourceKeysKeyTooLong = 23,
 
   kEventTriggerDataListWrongType = 24,
+  kEventTriggerDataValueInvalid = 25,
   kEventTriggerDataWrongType = 26,
 
-  kAggregationCoordinatorWrongType = 27,
-  kAggregationCoordinatorUnknownValue = 28,
+  kEventPriorityValueInvalid = 27,
+  kEventDedupKeyValueInvalid = 28,
 
-  kAggregatableDedupKeyListWrongType = 29,
-  kAggregatableDedupKeyWrongType = 31,
+  kAggregationCoordinatorWrongType = 29,
+  kAggregationCoordinatorUnknownValue = 30,
 
-  kAggregatableSourceRegistrationTimeWrongType = 32,
-  kAggregatableSourceRegistrationTimeUnknownValue = 33,
+  kAggregatableDedupKeyListWrongType = 31,
+  kAggregatableDedupKeyValueInvalid = 32,
+  kAggregatableDedupKeyWrongType = 33,
+
+  kAggregatableSourceRegistrationTimeWrongType = 34,
+  kAggregatableSourceRegistrationTimeUnknownValue = 35,
 };

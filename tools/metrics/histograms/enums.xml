@@ -19868,6 +19868,11 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="aggregation_keys value has wrong type"/>
   <int value="17" label="aggregation_keys value has wrong format"/>
   <int value="18" label="number of destinations exceeds limit"/>
+  <int value="19" label="source_event_id value is invalid"/>
+  <int value="20" label="priority value is invalid"/>
+  <int value="21" label="expiry value is invalid"/>
+  <int value="22" label="event_report_window value is invalid"/>
+  <int value="23" label="aggregatable_report_window value is invalid"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">
@@ -19948,13 +19953,17 @@ Called by update_net_error_codes.py.-->
   <int value="23"
       label="aggregatable_trigger_data value source_keys key too long"/>
   <int value="24" label="event_trigger_data has wrong type"/>
+  <int value="25" label="event_trigger_data value is invalid"/>
   <int value="26" label="event_trigger_data value has wrong type"/>
-  <int value="27" label="aggregation_coordinator_identifier has wrong type"/>
-  <int value="28" label="aggregation_coordinator_identifier has unknown value"/>
-  <int value="29" label="aggregatable_deduplication_keys has wrong type"/>
-  <int value="31" label="aggregatable_deduplication_keys value has wrong type"/>
-  <int value="32" label="aggregatable_source_registration_time has wrong type"/>
-  <int value="33"
+  <int value="27" label="event_trigger priority value is invalid"/>
+  <int value="28" label="event_trigger dedup key value is invalid"/>
+  <int value="29" label="aggregation_coordinator_identifier has wrong type"/>
+  <int value="30" label="aggregation_coordinator_identifier has unknown value"/>
+  <int value="31" label="aggregatable_deduplication_keys has wrong type"/>
+  <int value="32" label="aggregatable_deduplication_keys value is invalid"/>
+  <int value="33" label="aggregatable_deduplication_keys value has wrong type"/>
+  <int value="34" label="aggregatable_source_registration_time has wrong type"/>
+  <int value="35"
       label="aggregatable_source_registration_time has unknown value"/>
 </enum>
 

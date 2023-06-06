@@ -47,44 +47,54 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
   const struct {
     const char* description;
     const char* json;
-    absl::optional<uint64_t> expected;
+    absl::optional<uint64_t> expected_out;
+    bool expected_return;
   } kTestCases[] = {
       {
           "missing_key",
           R"json({})json",
           absl::nullopt,
+          true,
       },
       {
           "not_string",
           R"json({"key":123})json",
           absl::nullopt,
+          false,
       },
       {
           "negative",
           R"json({"key":"-1"})json",
           absl::nullopt,
+          false,
       },
       {
           "zero",
           R"json({"key":"0"})json",
           0,
+          true,
       },
       {
           "max",
           R"json({"key":"18446744073709551615"})json",
           std::numeric_limits<uint64_t>::max(),
+          true,
       },
       {
           "out_of_range",
           R"json({"key":"18446744073709551616"})json",
           absl::nullopt,
+          false,
       },
   };
 
   for (const auto& test_case : kTestCases) {
     base::Value value = base::test::ParseJson(test_case.json);
-    EXPECT_EQ(ParseUint64(value.GetDict(), "key"), test_case.expected)
+    absl::optional<uint64_t> out;
+    EXPECT_EQ(ParseUint64(value.GetDict(), "key", out),
+              test_case.expected_return)
         << test_case.description;
+    EXPECT_EQ(out, test_case.expected_out) << test_case.description;
   }
 }
 
@@ -92,44 +102,54 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
   const struct {
     const char* description;
     const char* json;
-    absl::optional<int64_t> expected;
+    absl::optional<int64_t> expected_out;
+    bool expected_return;
   } kTestCases[] = {
       {
           "missing_key",
           R"json({})json",
           absl::nullopt,
+          true,
       },
       {
           "not_string",
           R"json({"key":123})json",
           absl::nullopt,
+          false,
       },
       {
           "zero",
           R"json({"key":"0"})json",
           0,
+          true,
       },
       {
           "min",
           R"json({"key":"-9223372036854775808"})json",
           std::numeric_limits<int64_t>::min(),
+          true,
       },
       {
           "max",
           R"json({"key":"9223372036854775807"})json",
           std::numeric_limits<int64_t>::max(),
+          true,
       },
       {
           "out_of_range",
           R"json({"key":"9223372036854775808"})json",
           absl::nullopt,
+          false,
       },
   };
 
   for (const auto& test_case : kTestCases) {
     base::Value value = base::test::ParseJson(test_case.json);
-    EXPECT_EQ(ParseInt64(value.GetDict(), "key"), test_case.expected)
+    absl::optional<int64_t> out;
+    EXPECT_EQ(ParseInt64(value.GetDict(), "key", out),
+              test_case.expected_return)
         << test_case.description;
+    EXPECT_EQ(out, test_case.expected_out) << test_case.description;
   }
 }
 
