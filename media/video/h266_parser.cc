@@ -1021,8 +1021,8 @@ H266Parser::Result H266Parser::ParseRefPicListStruct(
       } else {
         // Combine short term ref delta POC values with their signs.
         ref_pic_list_struct->delta_poc_val_st[i] =
-            (1 - 2 * ref_pic_list_struct->strp_entry_sign_flag[i] *
-                     abs_delta_poc_st);
+            (1 - 2 * ref_pic_list_struct->strp_entry_sign_flag[i]) *
+            abs_delta_poc_st;
       }
     }
   }
@@ -2965,12 +2965,20 @@ H266Parser::Result H266Parser::ParseRefPicLists(
                             &ref_pic_lists->rpl_ref_lists[i]);
     }
 
-    for (int j = 0; j < ref_pic_lists->rpl_ref_lists[i].num_ltrp_entries; j++) {
-      if (ref_pic_lists->rpl_ref_lists[i].ltrp_in_header_flag) {
+    int num_ltrp_entries =
+        !ref_pic_lists->rpl_sps_flag[i]
+            ? ref_pic_lists->rpl_ref_lists[i].num_ltrp_entries
+            : sps.ref_pic_list_struct[i][ref_pic_lists->rpl_idx[i]]
+                  .num_ltrp_entries;
+    bool ltrp_in_header =
+        !ref_pic_lists->rpl_sps_flag[i]
+            ? ref_pic_lists->rpl_ref_lists[i].ltrp_in_header_flag
+            : sps.ref_pic_list_struct[i][ref_pic_lists->rpl_idx[i]]
+                  .ltrp_in_header_flag;
+    for (int j = 0; j < num_ltrp_entries; j++) {
+      if (ltrp_in_header) {
         READ_BITS_OR_RETURN(sps.sps_log2_max_pic_order_cnt_lsb_minus4 + 4,
                             &ref_pic_lists->poc_lsb_lt[i][j]);
-        // Currently we do not use PocLsbLt[i][j], so equation 147 is not
-        // handled.
       }
       READ_BOOL_OR_RETURN(
           &ref_pic_lists->delta_poc_msb_cycle_present_flag[i][j]);
@@ -2981,6 +2989,16 @@ H266Parser::Result H266Parser::ParseRefPicLists(
             std::pow(2, 32 - sps.sps_log2_max_pic_order_cnt_lsb_minus4 - 4));
       } else {
         ref_pic_lists->delta_poc_msb_cycle_lt[i][j] = 0;
+      }
+
+      // Equation 148
+      if (j == 0) {
+        ref_pic_lists->unpacked_delta_poc_msb_cycle_lt[i][j] =
+            ref_pic_lists->delta_poc_msb_cycle_lt[i][j];
+      } else {
+        ref_pic_lists->unpacked_delta_poc_msb_cycle_lt[i][j] =
+            ref_pic_lists->delta_poc_msb_cycle_lt[i][j] +
+            ref_pic_lists->unpacked_delta_poc_msb_cycle_lt[i][j - 1];
       }
     }
 
@@ -3935,20 +3953,30 @@ H266Parser::Result H266Parser::ParseSliceHeader(
     ref_pic_lists = &ph->ref_pic_lists;
   }
 
+  const H266RefPicListStruct* ref_pic_list_structs[2] = {nullptr, nullptr};
+  for (int i = 0; i < 2; i++) {
+    if (ref_pic_lists->rpl_sps_flag[i]) {
+      ref_pic_list_structs[i] =
+          &sps->ref_pic_list_struct[0][ref_pic_lists->rpl_idx[i]];
+    } else {
+      ref_pic_list_structs[i] = &ref_pic_lists->rpl_ref_lists[i];
+    }
+  }
+
   // Caution!!! |sh_num_ref_idx_active_override| might be inferred
   // instead of read from bitstream, and used for subsequent syntax
   // parsing after it.
   shdr->sh_num_ref_idx_active_override_flag = 1;
   if ((shdr->sh_slice_type != H266SliceHeader::kSliceTypeI &&
-       ref_pic_lists->rpl_ref_lists[0].num_ref_entries > 1) ||
+       ref_pic_list_structs[0]->num_ref_entries > 1) ||
       (shdr->sh_slice_type == H266SliceHeader::kSliceTypeB &&
-       ref_pic_lists->rpl_ref_lists[1].num_ref_entries > 1)) {
+       ref_pic_list_structs[1]->num_ref_entries > 1)) {
     READ_BOOL_OR_RETURN(&shdr->sh_num_ref_idx_active_override_flag);
     if (shdr->sh_num_ref_idx_active_override_flag) {
       for (int i = 0;
            i < (shdr->sh_slice_type == H266SliceHeader::kSliceTypeB ? 2 : 1);
            i++) {
-        if (ref_pic_lists->rpl_ref_lists[i].num_ref_entries > 1) {
+        if (ref_pic_list_structs[i]->num_ref_entries > 1) {
           READ_UE_OR_RETURN(&shdr->sh_num_ref_idx_active_minus1[i]);
           IN_RANGE_OR_RETURN(shdr->sh_num_ref_idx_active_minus1[i], 0, 14);
         } else {
@@ -3965,13 +3993,13 @@ H266Parser::Result H266Parser::ParseSliceHeader(
       if (shdr->sh_num_ref_idx_active_override_flag) {
         shdr->num_ref_idx_active[i] = shdr->sh_num_ref_idx_active_minus1[i] + 1;
       } else {
-        if (ref_pic_lists->rpl_ref_lists[i].num_ref_entries >=
+        if (ref_pic_list_structs[i]->num_ref_entries >=
             pps->pps_num_ref_idx_default_active_minus1[i] + 1) {
           shdr->num_ref_idx_active[i] =
               pps->pps_num_ref_idx_default_active_minus1[i] + 1;
         } else {
           shdr->num_ref_idx_active[i] =
-              ref_pic_lists->rpl_ref_lists[i].num_ref_entries;
+              ref_pic_list_structs[i]->num_ref_entries;
         }
       }
     } else {
@@ -4195,8 +4223,7 @@ H266Parser::Result H266Parser::ParseSliceHeader(
   shdr->header_size = shdr->nalu_size -
                       shdr->header_emulation_prevention_bytes -
                       br_.NumBitsLeft() / 8;
-
-  return res;
+  return kOk;
 }
 
 const H266VPS* H266Parser::GetVPS(int vps_id) const {

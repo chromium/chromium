@@ -39,6 +39,8 @@
 //media/test/data/bbb_9tiles.vvc
 //media/test/data/bbb_9tiles_18slices.vvc
 //media/test/data/bbb_chroma_qp_offset_lists.vvc
+//media/test/data/bbb_poc_gop8.vvc
+//media/test/data/bbb_poc_msb.vvc
 //media/test/data/bbb_rpl_in_ph_nut.vvc
 //media/test/data/bbb_rpl_in_slice.vvc
 //media/test/data/bbb_scaling_lists.vvc
@@ -452,6 +454,7 @@
 //media/test/data/vp9-duplicate-frame.webm
 //media/test/data/vp9-hdr-init-segment.mp4
 //media/test/data/vp90_2_10_show_existing_frame2.vp9.ivf
+//media/test/data/vvc_frames_with_ltr.vvc
 //media/test/data/webaudio_oscillator.html
 //media/test/data/webm_content_encodings
 //media/test/data/webm_ebml_element

@@ -308,12 +308,18 @@ struct MEDIA_EXPORT H266RefPicLists {
   bool rpl_sps_flag[2];
   int rpl_idx[2];
   H266RefPicListStruct rpl_ref_lists[2];
+  // Be noted below three members actually have their
+  // second dimension indexed within 0 to associated
+  // ref_pic_list_struct's NumLtrpEntries - 1.
   int poc_lsb_lt[2][kMaxRefEntries];
   bool delta_poc_msb_cycle_present_flag[2][kMaxRefEntries];
   int delta_poc_msb_cycle_lt[2][kMaxRefEntries];
 
   // Calculated values.
   int rpls_idx[2];
+  // The second dimension is indexed within 0 to associated
+  // ref_pic_list's NumLtrpEntries - 1.
+  int unpacked_delta_poc_msb_cycle_lt[2][kMaxRefEntries];
 };
 
 // ITU-T H.274: Video usability information parameters.

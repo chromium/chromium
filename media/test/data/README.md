@@ -226,10 +226,11 @@ EncoderApp -f 5 --EnablePicPartitioning=1 --CTUSize=128 \
   --SliceLevelRpl=1 --SliceLevelDblk=1 --SliceLevelSao=1 --SliceLevelAlf=1 \
   --SliceLevelDeltaQp=1 --ALF=1 --JointCbCr=1 --SAO=1 --WeightedPredP=1 \
   --WeightedPredB=1 --WeightedPredMethod=4 --CCALF=1 \
-  --VirtualBoundariesPresentInSPSFlag=0 --SliceLevelWeightedPrediction=1
+  --VirtualBoundariesPresentInSPSFlag=0 --SliceLevelWeightedPrediction=1 \
+  --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_rpl_in_slice.vvc
 ```
 
-#### bbb_slice_with_entrypoints
+#### bbb_slice_with_entrypoints.vvc
 VVC stream generated with VTM that is used to verify slices with entrypoints
 specified in slice header, and also with deblocking filter params in it.
 Created with VTM and ffmpeg:
@@ -246,10 +247,10 @@ EncoderApp --EnablePicPartitioning=1 --CTUSize=128 --TileColumnWidthArray=5 \
   --DeblockingFilterCbBetaOffset_div2=-2 --DeblockingFilterCbTcOffset_div2=0 \
   --DeblockingFilterCrBetaOffset_div2=-2 --DeblockingFilterCrTcOffset_div2=0 \
   --DeblockingFilterMetric=0 --EntryPointsPresent=1 --WaveFrontSynchro=1 \
-  -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles.vvc
+  -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_slice_with_entrypoints.vvc
 ```
 
-#### bbb_2_subpictures_8_slices
+#### bbb_2_subpictures_8_slices.vvc
 VVC stream generated with VTM that is used to verify VVC slice parser on stream
 that is with multiple subpictures.
 Created with VTM and ffmpeg:
@@ -265,8 +266,28 @@ EncoderApp --EnablePicPartitioning=1 --CTUSize=128 --TileColumnWidthArray=3,4 \
  --SubPicHeight=9,9 --SubPicTreatedAsPicFlag=1,1 \
  --LoopFilterAcrossSubpicEnabledFlag=0,0 \
  --SubPicIdMappingExplicitlySignalledFlag=0 \
- -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles.vvc
+ -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_2_subpictures_8slices.vvc
 ```
+
+#### bbb_poc_msb.vvc
+VVC stream generated with VTM that is modified to limit the POC LSB maximum value
+to 16. This is done by change sps_log2_max_pic_order_cnt_lsb_minus4 to 0 in the
+VTM encoder implementation.
+
+#### bbb_poc_gop8.vvc
+VVC stream generated with VTM that is configured to having a GOP size of 4 and
+IDR interval of 8, to verify the POC difference for IDR frame with HEVC.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb_320x240.yuv
+EncoderApp --CTUSize=128 --GOPSize=4 --DecodingRefreshType=2 --IntraPeriod=8 \
+  --InputFile=bbb_320x240.yuv --BitstreamFile=bbb__poc_gop8.vvc
+```
+
+#### vvc_frames_with_ltr.vvc
+VVC stream generated manually with modified VTM to enable long term reference
+pictures. The stream is also encoded with multiple slices per AU, and each
+slice is with different reference picture lists.
 
 ### AV1
 
