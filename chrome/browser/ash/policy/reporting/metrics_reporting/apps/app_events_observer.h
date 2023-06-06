@@ -27,9 +27,21 @@ namespace reporting {
 class AppEventsObserver : public MetricEventObserver,
                           public ::apps::AppPlatformMetrics::Observer {
  public:
-  AppEventsObserver(std::unique_ptr<AppPlatformMetricsRetriever>
-                        app_platform_metrics_retriever,
-                    const ReportingSettings* reporting_settings);
+  // Static helper that instantiates the `AppEventsObserver` for the given
+  // profile using the specified `ReportingSettings`.
+  static std::unique_ptr<AppEventsObserver> CreateForProfile(
+      Profile* profile,
+      const ReportingSettings* reporting_settings);
+
+  // Static test helper that instantiates the `AppEventsObserver` for the given
+  // profile using the specified `AppPlatformMetricsRetriever` and
+  // `ReportingSettings`.
+  static std::unique_ptr<AppEventsObserver> CreateForTest(
+      Profile* profile,
+      std::unique_ptr<AppPlatformMetricsRetriever>
+          app_platform_metrics_retriever,
+      const ReportingSettings* reporting_settings);
+
   AppEventsObserver(const AppEventsObserver& other) = delete;
   AppEventsObserver& operator=(const AppEventsObserver& other) = delete;
   ~AppEventsObserver() override;
@@ -41,6 +53,11 @@ class AppEventsObserver : public MetricEventObserver,
   void SetReportingEnabled(bool is_enabled) override;
 
  private:
+  AppEventsObserver(base::WeakPtr<Profile> profile,
+                    std::unique_ptr<AppPlatformMetricsRetriever>
+                        app_platform_metrics_retriever,
+                    const ReportingSettings* reporting_settings);
+
   // Initializes events observer and starts observing app events tracked by the
   // `AppPlatformMetrics` component (if initialized).
   void InitEventObserver(::apps::AppPlatformMetrics* app_platform_metrics);
@@ -66,6 +83,10 @@ class AppEventsObserver : public MetricEventObserver,
   void OnAppPlatformMetricsDestroyed() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Weak pointer to the user profile. Needed to retrieve the app publisher id
+  // for reporting purposes.
+  base::WeakPtr<Profile> profile_;
 
   // Retriever that retrieves the `AppPlatformMetrics` component so the
   // `AppEventsObserver` can start observing app events.

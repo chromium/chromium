@@ -35,6 +35,7 @@ namespace reporting {
 namespace {
 
 constexpr char kTestAppId[] = "TestApp";
+constexpr char kTestAppPublisherId[] = "com.google.test";
 
 // Fake `AppPublisher` used by the test to simulate app launches.
 class FakePublisher : public ::apps::AppPublisher {
@@ -88,7 +89,7 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
     ::apps::AppPlatformMetricsServiceTestBase::SetUp();
 
     // Pre-install app so it can be used by tests.
-    InstallOneApp(kTestAppId, ::apps::AppType::kArc, /*publisher_id=*/"",
+    InstallOneApp(kTestAppId, ::apps::AppType::kArc, kTestAppPublisherId,
                   ::apps::Readiness::kReady, ::apps::InstallSource::kPlayStore);
 
     // Set up `AppEventsObserver` with relevant test params.
@@ -100,8 +101,9 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
           std::move(callback).Run(
               app_platform_metrics_service()->AppPlatformMetrics());
         });
-    app_events_observer_ = std::make_unique<AppEventsObserver>(
-        std::move(mock_app_platform_metrics_retriever), &reporting_settings_);
+    app_events_observer_ = AppEventsObserver::CreateForTest(
+        profile(), std::move(mock_app_platform_metrics_retriever),
+        &reporting_settings_);
   }
 
   void TearDown() override {
@@ -192,6 +194,41 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_DisallowedAppType) {
   ASSERT_TRUE(test_event.no_result());
 }
 
+TEST_F(AppEventsObserverTest, OnAppInstalledWithPublisherId) {
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
+  test::TestEvent<MetricData> test_event;
+  app_events_observer_->SetOnEventObservedCallback(test_event.repeating_cb());
+
+  // Install new app.
+  static constexpr char kNewAppId[] = "TestNewApp";
+  static constexpr char kNewAppPublisherId[] = "com.google.TestNew";
+  InstallOneApp(kNewAppId, ::apps::AppType::kArc, kNewAppPublisherId,
+                ::apps::Readiness::kReady, ::apps::InstallSource::kBrowser);
+
+  // Verify data being reported.
+  const MetricData& result = test_event.result();
+  ASSERT_TRUE(result.has_event_data());
+  EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_INSTALLED));
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
+  ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_install_data());
+
+  const AppInstallData& app_install_data =
+      result.telemetry_data().app_telemetry().app_install_data();
+  EXPECT_THAT(app_install_data.app_id(), StrEq(kNewAppPublisherId));
+  EXPECT_THAT(app_install_data.app_type(),
+              Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
+  EXPECT_THAT(
+      app_install_data.app_install_reason(),
+      Eq(::apps::ApplicationInstallReason::APPLICATION_INSTALL_REASON_USER));
+  EXPECT_THAT(
+      app_install_data.app_install_source(),
+      Eq(::apps::ApplicationInstallSource::APPLICATION_INSTALL_SOURCE_BROWSER));
+  EXPECT_THAT(
+      app_install_data.app_install_time(),
+      Eq(::apps::ApplicationInstallTime::APPLICATION_INSTALL_TIME_INIT));
+}
+
 TEST_F(AppEventsObserverTest, OnAppLaunched) {
   SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
   test::TestEvent<MetricData> test_event;
@@ -214,7 +251,7 @@ TEST_F(AppEventsObserverTest, OnAppLaunched) {
 
   const AppLaunchData& app_launch_data =
       result.telemetry_data().app_telemetry().app_launch_data();
-  EXPECT_THAT(app_launch_data.app_id(), StrEq(kTestAppId));
+  EXPECT_THAT(app_launch_data.app_id(), StrEq(kTestAppPublisherId));
   EXPECT_THAT(app_launch_data.app_type(),
               Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
   EXPECT_THAT(app_launch_data.app_launch_source(),
@@ -276,7 +313,7 @@ TEST_F(AppEventsObserverTest, OnAppUninstalled) {
 
   const AppUninstallData& app_uninstall_data =
       result.telemetry_data().app_telemetry().app_uninstall_data();
-  EXPECT_THAT(app_uninstall_data.app_id(), StrEq(kTestAppId));
+  EXPECT_THAT(app_uninstall_data.app_id(), StrEq(kTestAppPublisherId));
   EXPECT_THAT(app_uninstall_data.app_type(),
               Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
   EXPECT_THAT(app_uninstall_data.app_uninstall_source(),

@@ -519,9 +519,8 @@ void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK(user_reporting_settings_);
   DCHECK(user_telemetry_report_queue_);
   // App events.
-  auto app_events_observer = std::make_unique<AppEventsObserver>(
-      std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr()),
-      user_reporting_settings_.get());
+  auto app_events_observer = AppEventsObserver::CreateForProfile(
+      profile, user_reporting_settings_.get());
   InitEventObserverManager(
       std::move(app_events_observer), user_event_report_queue_.get(),
       user_reporting_settings_.get(),

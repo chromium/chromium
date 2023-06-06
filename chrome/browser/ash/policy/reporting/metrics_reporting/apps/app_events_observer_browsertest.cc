@@ -49,7 +49,7 @@ namespace {
 constexpr char kDMToken[] = "token";
 
 // Standalone webapp start URL.
-constexpr char kWebAppUrl[] = "https://test.example.com";
+constexpr char kWebAppUrl[] = "https://test.example.com/";
 
 // Assert event data in a record with relevant DM token and returns the
 // underlying `MetricData` object.
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportInstalledApp) {
       metric_data.telemetry_data().app_telemetry().has_app_install_data());
   const auto& app_install_data =
       metric_data.telemetry_data().app_telemetry().app_install_data();
-  EXPECT_THAT(app_install_data.app_id(), StrEq(app_id));
+  EXPECT_THAT(app_install_data.app_id(), StrEq(kWebAppUrl));
   EXPECT_THAT(app_install_data.app_type(),
               Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
   EXPECT_THAT(
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
   EXPECT_THAT(
       app_launch_data.app_launch_source(),
       Eq(::apps::ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_TEST));
-  EXPECT_THAT(app_launch_data.app_id(), StrEq(app_id));
+  EXPECT_THAT(app_launch_data.app_id(), StrEq(kWebAppUrl));
   EXPECT_THAT(app_launch_data.app_type(),
               Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
 }
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportUninstalledApp) {
   EXPECT_THAT(app_uninstall_data.app_uninstall_source(),
               Eq(::apps::ApplicationUninstallSource::
                      APPLICATION_UNINSTALL_SOURCE_APP_LIST));
-  EXPECT_THAT(app_uninstall_data.app_id(), StrEq(app_id));
+  EXPECT_THAT(app_uninstall_data.app_id(), StrEq(kWebAppUrl));
   EXPECT_THAT(app_uninstall_data.app_type(),
               Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
 }

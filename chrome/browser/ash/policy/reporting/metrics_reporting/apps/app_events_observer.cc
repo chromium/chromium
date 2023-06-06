@@ -8,14 +8,19 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_metric_reporting_utils.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/metrics/metric_event_observer.h"
+#include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -24,10 +29,36 @@
 
 namespace reporting {
 
+// static
+std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForProfile(
+    Profile* profile,
+    const ReportingSettings* reporting_settings) {
+  DCHECK(profile);
+  const auto profile_weak_ptr = profile->GetWeakPtr();
+  auto app_platform_metrics_retriever =
+      std::make_unique<AppPlatformMetricsRetriever>(profile_weak_ptr);
+  return base::WrapUnique(new AppEventsObserver(
+      profile_weak_ptr, std::move(app_platform_metrics_retriever),
+      reporting_settings));
+}
+
+// static
+std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForTest(
+    Profile* profile,
+    std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever,
+    const ReportingSettings* reporting_settings) {
+  DCHECK(profile);
+  return base::WrapUnique(new AppEventsObserver(
+      profile->GetWeakPtr(), std::move(app_platform_metrics_retriever),
+      reporting_settings));
+}
+
 AppEventsObserver::AppEventsObserver(
+    base::WeakPtr<Profile> profile,
     std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever,
     const ReportingSettings* reporting_settings)
-    : app_platform_metrics_retriever_(
+    : profile_(profile),
+      app_platform_metrics_retriever_(
           std::move(app_platform_metrics_retriever)),
       reporting_settings_(reporting_settings) {
   DCHECK(app_platform_metrics_retriever_);
@@ -69,9 +100,9 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
                                        ::apps::InstallTime app_install_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(reporting_settings_);
-  if (!::ash::reporting::IsAppTypeAllowed(
-          app_type, reporting_settings_.get(),
-          ::ash::reporting::kReportAppInventory)) {
+  if (!profile_ || !::ash::reporting::IsAppTypeAllowed(
+                       app_type, reporting_settings_.get(),
+                       ::ash::reporting::kReportAppInventory)) {
     return;
   }
 
@@ -81,7 +112,13 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
   auto* const app_install_data = metric_data.mutable_telemetry_data()
                                      ->mutable_app_telemetry()
                                      ->mutable_app_install_data();
-  app_install_data->set_app_id(app_id);
+  auto public_app_id = app_id;
+  if (const absl::optional<std::string> app_publisher_id =
+          GetPublisherIdForApp(app_id, profile_.get());
+      app_publisher_id.has_value()) {
+    public_app_id = app_publisher_id.value();
+  }
+  app_install_data->set_app_id(public_app_id);
   app_install_data->set_app_type(
       ::apps::ConvertAppTypeToProtoApplicationType(app_type));
   app_install_data->set_app_install_source(
@@ -102,9 +139,9 @@ void AppEventsObserver::OnAppLaunched(const std::string& app_id,
                                       ::apps::LaunchSource app_launch_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(reporting_settings_);
-  if (!::ash::reporting::IsAppTypeAllowed(
-          app_type, reporting_settings_.get(),
-          ::ash::reporting::kReportAppInventory)) {
+  if (!profile_ || !::ash::reporting::IsAppTypeAllowed(
+                       app_type, reporting_settings_.get(),
+                       ::ash::reporting::kReportAppInventory)) {
     return;
   }
 
@@ -114,7 +151,13 @@ void AppEventsObserver::OnAppLaunched(const std::string& app_id,
   auto* const app_launch_data = metric_data.mutable_telemetry_data()
                                     ->mutable_app_telemetry()
                                     ->mutable_app_launch_data();
-  app_launch_data->set_app_id(app_id);
+  auto public_app_id = app_id;
+  if (const absl::optional<std::string> app_publisher_id =
+          GetPublisherIdForApp(app_id, profile_.get());
+      app_publisher_id.has_value()) {
+    public_app_id = app_publisher_id.value();
+  }
+  app_launch_data->set_app_id(public_app_id);
   app_launch_data->set_app_type(
       ::apps::ConvertAppTypeToProtoApplicationType(app_type));
   app_launch_data->set_app_launch_source(
@@ -130,9 +173,9 @@ void AppEventsObserver::OnAppUninstalled(
     ::apps::UninstallSource app_uninstall_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(reporting_settings_);
-  if (!::ash::reporting::IsAppTypeAllowed(
-          app_type, reporting_settings_.get(),
-          ::ash::reporting::kReportAppInventory)) {
+  if (!profile_ || !::ash::reporting::IsAppTypeAllowed(
+                       app_type, reporting_settings_.get(),
+                       ::ash::reporting::kReportAppInventory)) {
     return;
   }
 
@@ -142,7 +185,13 @@ void AppEventsObserver::OnAppUninstalled(
   auto* const app_uninstall_data = metric_data.mutable_telemetry_data()
                                        ->mutable_app_telemetry()
                                        ->mutable_app_uninstall_data();
-  app_uninstall_data->set_app_id(app_id);
+  auto public_app_id = app_id;
+  if (const absl::optional<std::string> app_publisher_id =
+          GetPublisherIdForApp(app_id, profile_.get());
+      app_publisher_id.has_value()) {
+    public_app_id = app_publisher_id.value();
+  }
+  app_uninstall_data->set_app_id(public_app_id);
   app_uninstall_data->set_app_type(
       ::apps::ConvertAppTypeToProtoApplicationType(app_type));
   app_uninstall_data->set_app_uninstall_source(
