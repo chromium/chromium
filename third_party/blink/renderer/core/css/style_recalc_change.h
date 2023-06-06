@@ -138,6 +138,7 @@ class CORE_EXPORT StyleRecalcChange {
   }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }
   bool RecalcDescendants() const { return propagate_ == kRecalcDescendants; }
+  bool RecalcContainerQueryDependent(const Node&) const;
   bool UpdatePseudoElements() const { return propagate_ != kNo; }
   // Returns true if we should and can do independent inheritance. The passed in
   // computed style is the existing style for the element we are considering.

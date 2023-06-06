@@ -3489,7 +3489,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
   DCHECK(GetDocument().InStyleRecalc());
 
   StyleRecalcContext new_style_recalc_context = style_recalc_context;
-  if (change.RecalcChildren() && NeedsStyleRecalc()) {
+  if ((change.RecalcChildren() ||
+       change.RecalcContainerQueryDependent(*this)) &&
+      NeedsStyleRecalc()) {
     if (HasRareData()) {
       // This element needs recalc because its parent changed inherited
       // properties or there was some style change in the ancestry which needed
