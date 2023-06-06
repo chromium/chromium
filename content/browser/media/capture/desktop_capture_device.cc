@@ -138,6 +138,31 @@ void LogDesktopCaptureRequestRefreshRate(DesktopMediaID::Type capturer_type,
   }
 }
 
+// Helper class which request that the system-global Windows timer interrupt
+// frequency be raised at construction. The corresponding deactivation is done
+// at destruction. How high the frequency is raised depends on the system's
+// power state and possibly other options. Only supported on Windows.
+class ScopedHighResolutionTimer {
+ public:
+#if !BUILDFLAG(IS_WIN)
+  ScopedHighResolutionTimer() {}
+#else
+  ScopedHighResolutionTimer() {
+    if (!base::Time::IsHighResolutionTimerInUse()) {
+      enabled_ = base::Time::ActivateHighResolutionTimer(true);
+    }
+  }
+  ~ScopedHighResolutionTimer() {
+    if (enabled_) {
+      base::Time::ActivateHighResolutionTimer(false);
+    }
+  }
+
+ private:
+  bool enabled_;
+#endif
+};
+
 }  // namespace
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
@@ -196,6 +221,10 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   base::TimeTicks NowTicks() const;
 
   bool zero_hertz_is_supported() const { return zero_hertz_is_supported_; }
+
+  // Requests high-resolution timers on Windows if not already active.
+  // Created in AllocateAndStart() and destroyed in ~Core().
+  std::unique_ptr<ScopedHighResolutionTimer> scoped_high_res_timer_;
 
   // Task runner used for capturing operations.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -334,6 +363,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   DCHECK(client);
   DCHECK(!client_);
 
+  scoped_high_res_timer_ = std::make_unique<ScopedHighResolutionTimer>();
   client_ = std::move(client);
   requested_frame_rate_ = params.requested_format.frame_rate;
   frame_rate_ = requested_frame_rate_;
