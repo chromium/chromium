@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   // TODO(crbug.com/1275945): We need to wait a bit longer for the
   // WebAppInstallTask to complete before starting another install.
   // Move the install/update/uninstall events out of
-  // AppRegistrarObserver and into a WebAppInstallManagerObserver
+  // WebAppRegistrarObserver and into a WebAppInstallManagerObserver
   // interface so they can be guaranteed to fire after the
   // WebAppInstallTask's lifetime has ended.
   base::RunLoop().RunUntilIdle();

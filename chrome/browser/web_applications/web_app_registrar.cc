@@ -23,7 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -34,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -70,8 +70,9 @@ bool WebAppSourceSupported(const WebApp& web_app) {
 WebAppRegistrar::WebAppRegistrar(Profile* profile) : profile_(profile) {}
 
 WebAppRegistrar::~WebAppRegistrar() {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnAppRegistrarDestroyed();
+  }
 }
 
 bool WebAppRegistrar::IsLocallyInstalled(const GURL& start_url) const {
@@ -142,84 +143,96 @@ absl::optional<AppId> WebAppRegistrar::LookupPlaceholderAppId(
   return absl::nullopt;
 }
 
-void WebAppRegistrar::AddObserver(AppRegistrarObserver* observer) {
+void WebAppRegistrar::AddObserver(WebAppRegistrarObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void WebAppRegistrar::RemoveObserver(AppRegistrarObserver* observer) {
+void WebAppRegistrar::RemoveObserver(WebAppRegistrarObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
 void WebAppRegistrar::NotifyWebAppProtocolSettingsChanged() {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppProtocolSettingsChanged();
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppFileHandlerApprovalStateChanged(
     const AppId& app_id) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppFileHandlerApprovalStateChanged(app_id);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppsWillBeUpdatedFromSync(
     const std::vector<const WebApp*>& new_apps_state) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppsWillBeUpdatedFromSync(new_apps_state);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppDisabledStateChanged(const AppId& app_id,
                                                        bool is_disabled) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppDisabledStateChanged(app_id, is_disabled);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppsDisabledModeChanged() {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppsDisabledModeChanged();
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppLastBadgingTimeChanged(
     const AppId& app_id,
     const base::Time& time) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppLastBadgingTimeChanged(app_id, time);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppLastLaunchTimeChanged(
     const AppId& app_id,
     const base::Time& time) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppLastLaunchTimeChanged(app_id, time);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppInstallTimeChanged(const AppId& app_id,
                                                      const base::Time& time) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppInstallTimeChanged(app_id, time);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppProfileWillBeDeleted(const AppId& app_id) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppProfileWillBeDeleted(app_id);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppUserDisplayModeChanged(
     const AppId& app_id,
     mojom::UserDisplayMode user_display_mode) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppUserDisplayModeChanged(app_id, user_display_mode);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppRunOnOsLoginModeChanged(
     const AppId& app_id,
     RunOnOsLoginMode run_on_os_login_mode) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppRunOnOsLoginModeChanged(app_id, run_on_os_login_mode);
+  }
 }
 
 void WebAppRegistrar::NotifyWebAppSettingsPolicyChanged() {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppSettingsPolicyChanged();
+  }
 }
 
 base::flat_map<AppId, base::flat_set<GURL>>
@@ -635,8 +648,9 @@ bool WebAppRegistrar::AlwaysShowToolbarInFullscreen(const AppId& app_id) const {
 void WebAppRegistrar::NotifyAlwaysShowToolbarInFullscreenChanged(
     const AppId& app_id,
     bool show) {
-  for (AppRegistrarObserver& observer : observers_)
+  for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnAlwaysShowToolbarInFullscreenChanged(app_id, show);
+  }
 }
 #endif
 

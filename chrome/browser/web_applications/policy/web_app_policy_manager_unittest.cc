@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -207,7 +207,7 @@ ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions() {
   return options;
 }
 
-class MockAppRegistrarObserver : public AppRegistrarObserver {
+class MockAppRegistrarObserver : public WebAppRegistrarObserver {
  public:
   void OnWebAppSettingsPolicyChanged() override {
     on_policy_changed_call_count++;

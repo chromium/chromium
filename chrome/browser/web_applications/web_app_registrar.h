@@ -49,7 +49,7 @@ enum class WebappInstallSource;
 
 namespace web_app {
 
-class AppRegistrarObserver;
+class WebAppRegistrarObserver;
 class WebApp;
 class WebAppPolicyManager;
 class WebAppTranslationManager;
@@ -385,8 +385,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
                                                   bool show);
 #endif
 
-  void AddObserver(AppRegistrarObserver* observer);
-  void RemoveObserver(AppRegistrarObserver* observer);
+  void AddObserver(WebAppRegistrarObserver* observer);
+  void RemoveObserver(WebAppRegistrarObserver* observer);
 
   void NotifyWebAppProtocolSettingsChanged();
   void NotifyWebAppFileHandlerApprovalStateChanged(const AppId& app_id);
@@ -523,7 +523,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
-  base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
+  base::ObserverList<WebAppRegistrarObserver, /*check_empty=*/true> observers_;
 
   Registry registry_;
 #if DCHECK_IS_ON()

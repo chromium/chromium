@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -93,7 +93,7 @@ using BarrierCallback =
 // all OS hooks during Web App lifecycle.
 // It contains individual OS integration managers and takes
 // care of inter-dependencies among them.
-class OsIntegrationManager : public AppRegistrarObserver {
+class OsIntegrationManager : public WebAppRegistrarObserver {
  public:
   // Used to suppress OS hooks during this object's lifetime.
   class ScopedSuppressForTesting {
@@ -231,7 +231,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
                                base::StringPiece old_name,
                                ResultCallback callback);
 
-  // AppRegistrarObserver:
+  // WebAppRegistrarObserver:
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
@@ -378,7 +378,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   bool set_subsystems_called_ = false;
   bool first_synchronize_called_ = false;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
       registrar_observation_{this};
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};

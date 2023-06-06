@@ -32,7 +32,6 @@
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
@@ -44,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -84,7 +84,7 @@ static const auto& kUserGroupParam =
 // ChromeOS only.
 class PreinstalledWebAppWindowExperimentBrowserTest
     : public InProcessBrowserTest,
-      public AppRegistrarObserver,
+      public WebAppRegistrarObserver,
       public apps::PreferredAppsListHandle::Observer {
  public:
   PreinstalledWebAppWindowExperimentBrowserTest()
@@ -126,14 +126,14 @@ class PreinstalledWebAppWindowExperimentBrowserTest
 #endif
   }
 
-  // AppRegistrarObserver:
+  // WebAppRegistrarObserver:
   void OnWebAppUserDisplayModeChanged(
       const AppId& app_id,
       UserDisplayMode user_display_mode) override {
     recorded_display_mode_changes_[app_id] = user_display_mode;
   }
 
-  // AppRegistrarObserver:
+  // WebAppRegistrarObserver:
   void OnAppRegistrarDestroyed() override { registrar_observation_.Reset(); }
 
   // apps::PreferredAppsListHandle::Observer:
@@ -247,7 +247,7 @@ class PreinstalledWebAppWindowExperimentBrowserTest
     return provider;
   }
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
       registrar_observation_{this};
 
   base::ScopedObservation<apps::PreferredAppsListHandle,

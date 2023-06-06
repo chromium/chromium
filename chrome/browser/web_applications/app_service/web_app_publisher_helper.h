@@ -23,7 +23,6 @@
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -105,7 +105,7 @@ void UninstallImpl(WebAppProvider* provider,
 RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
     apps::RunOnOsLoginMode login_mode);
 
-class WebAppPublisherHelper : public AppRegistrarObserver,
+class WebAppPublisherHelper : public WebAppRegistrarObserver,
                               public WebAppInstallManagerObserver,
 #if BUILDFLAG(IS_CHROMEOS)
                               public NotificationDisplayService::Observer,
@@ -324,7 +324,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  // AppRegistrarObserver:
+  // WebAppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
   void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) override;
   void OnWebAppLastLaunchTimeChanged(
@@ -436,7 +436,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
       registrar_observation_{this};
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

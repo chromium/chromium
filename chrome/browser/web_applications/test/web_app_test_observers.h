@@ -10,11 +10,11 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 
 class Profile;
 
@@ -98,10 +98,10 @@ class WebAppInstallManagerObserverAdapter
   base::WeakPtrFactory<WebAppInstallManagerObserverAdapter> weak_factory_{this};
 };
 
-// This is an adapter for the AppRegistrarObserver. This class registers
+// This is an adapter for the WebAppRegistrarObserver. This class registers
 // itself as an observer on construction, and will call the respective
-// delegates (if set) for all AppRegistrarObserver calls.
-class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
+// delegates (if set) for all WebAppRegistrarObserver calls.
+class WebAppTestRegistryObserverAdapter : public WebAppRegistrarObserver {
  public:
   explicit WebAppTestRegistryObserverAdapter(WebAppRegistrar* registrar);
   explicit WebAppTestRegistryObserverAdapter(Profile* profile);
@@ -137,7 +137,7 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   void SetWebAppProtocolSettingsChangedDelegate(
       WebAppProtocolSettingsChangedDelegate delegate);
 
-  // AppRegistrarObserver:
+  // WebAppRegistrarObserver:
   void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) override;
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
@@ -163,8 +163,8 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   WebAppLastBadgingTimeChangedDelegate app_last_badging_time_changed_delegate_;
   WebAppProtocolSettingsChangedDelegate app_protocol_settings_changed_delegate_;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
-      this};
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
+      observation_{this};
 
  protected:
   base::WeakPtrFactory<WebAppTestRegistryObserverAdapter> weak_factory_{this};

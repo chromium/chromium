@@ -155,7 +155,6 @@
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/api/autotest_private.h"

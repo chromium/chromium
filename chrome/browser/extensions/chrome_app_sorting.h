@@ -15,11 +15,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/app_sorting.h"
@@ -37,7 +37,7 @@ namespace extensions {
 
 class ChromeAppSorting : public AppSorting,
                          public ExtensionRegistryObserver,
-                         public web_app::AppRegistrarObserver,
+                         public web_app::WebAppRegistrarObserver,
                          public web_app::WebAppInstallManagerObserver {
  public:
   explicit ChromeAppSorting(content::BrowserContext* browser_context);
@@ -85,7 +85,7 @@ class ChromeAppSorting : public AppSorting,
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::WebAppRegistrarObserver:
   void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const web_app::WebApp*>& updated_apps_state) override;
   void OnAppRegistrarDestroyed() override;
@@ -189,7 +189,7 @@ class ChromeAppSorting : public AppSorting,
   raw_ptr<web_app::WebAppSyncBridge, DanglingUntriaged> web_app_sync_bridge_ =
       nullptr;
   base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+                          web_app::WebAppRegistrarObserver>
       app_registrar_observation_{this};
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

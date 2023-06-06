@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_REGISTRAR_OBSERVER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_APP_REGISTRAR_OBSERVER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_REGISTRAR_OBSERVER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_REGISTRAR_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -17,7 +17,7 @@ class Time;
 namespace web_app {
 class WebApp;
 
-class AppRegistrarObserver : public base::CheckedObserver {
+class WebAppRegistrarObserver : public base::CheckedObserver {
  public:
   // Called before any field of a web app is updated from the sync server.
   // A call site may compare existing WebApp state from the registry against
@@ -66,4 +66,4 @@ class AppRegistrarObserver : public base::CheckedObserver {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_REGISTRAR_OBSERVER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_REGISTRAR_OBSERVER_H_

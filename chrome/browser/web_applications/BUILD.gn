@@ -8,7 +8,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("web_applications") {
   sources = [
-    "app_registrar_observer.h",
     "callback_utils.h",
     "commands/callback_command.cc",
     "commands/callback_command.h",
@@ -252,6 +251,7 @@ source_set("web_applications") {
     "web_app_provider_factory.h",
     "web_app_registrar.cc",
     "web_app_registrar.h",
+    "web_app_registrar_observer.h",
     "web_app_registry_update.cc",
     "web_app_registry_update.h",
     "web_app_sources.h",

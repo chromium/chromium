@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"

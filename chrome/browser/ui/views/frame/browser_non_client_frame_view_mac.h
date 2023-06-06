@@ -14,8 +14,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/prefs/pref_member.h"
 
 namespace base {
@@ -31,7 +31,7 @@ class Label;
 class CaptionButtonPlaceholderContainer;
 
 class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
-                                     public web_app::AppRegistrarObserver {
+                                     public web_app::WebAppRegistrarObserver {
  public:
   // Mac implementation of BrowserNonClientFrameView.
   BrowserNonClientFrameViewMac(BrowserFrame* frame, BrowserView* browser_view);
@@ -74,7 +74,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   gfx::Size GetMinimumSize() const override;
   void PaintChildren(const views::PaintInfo& info) override;
 
-  // web_app::AppRegistrarObserver
+  // web_app::WebAppRegistrarObserver
   void OnAlwaysShowToolbarInFullscreenChanged(const web_app::AppId& app_id,
                                               bool show) override;
   void OnAppRegistrarDestroyed() override;
@@ -128,7 +128,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
   base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+                          web_app::WebAppRegistrarObserver>
       always_show_toolbar_in_fullscreen_observation_{this};
 
   // A placeholder container that lies on top of the traffic lights to indicate
