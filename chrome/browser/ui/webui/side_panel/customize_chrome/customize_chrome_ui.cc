@@ -96,6 +96,12 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
       {"ok", IDS_OK},
+      // CustomizeColorSchemeMode strings.
+      {"colorSchemeModeLabel",
+       IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_GROUP_LABEL},
+      {"lightMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_LIGHT_LABEL},
+      {"darkMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_DARK_LABEL},
+      {"systemMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {CustomizeColorSchemeModeBrowserProxy} from 'chrome://resources/cr_components/customize_color_scheme_mode/browser_proxy.js';
@@ -35,7 +36,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
   }
 
   colorSchemeModeOptions.forEach((mode: ColorSchemeModeOption) => {
-    test(`Set ${mode.name} on initialization`, async () => {
+    test(`Set ${mode.id} on initialization`, async () => {
       // Arrange.
       const element = await initializeElement(mode.value);
 
@@ -51,7 +52,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
       });
     });
 
-    test(`Click ${mode.name} sets scheme mode`, async () => {
+    test(`Click ${mode.id} sets scheme mode`, async () => {
       // Arrange.
       const element = await initializeElement(mode.value);
 

@@ -28,6 +28,8 @@ export class CrSegmentedButtonElement extends PolymerElement {
         type: String,
         value: 'cr-segmented-button-option',
       },
+
+      groupAriaLabel: String,
     };
   }
 

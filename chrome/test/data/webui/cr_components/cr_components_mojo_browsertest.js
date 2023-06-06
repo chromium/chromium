@@ -23,7 +23,7 @@ var CrComponentsCustomizeColorSchemeModeTest =
     class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/customize_color_scheme_mode_test.js';
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html?module=cr_components/customize_color_scheme_mode_test.js';
   }
 };
 

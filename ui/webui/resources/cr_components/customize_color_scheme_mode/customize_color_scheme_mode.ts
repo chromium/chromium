@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button.js';
 import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button_option.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -15,29 +16,28 @@ import {ColorSchemeMode, CustomizeColorSchemeModeClientCallbackRouter, Customize
 
 export interface ColorSchemeModeOption {
   id: string;
-  name: string;
   value: ColorSchemeMode;
 }
 
 export const colorSchemeModeOptions: ColorSchemeModeOption[] = [
   {
     id: 'lightMode',
-    name: 'Light',
     value: ColorSchemeMode.kLight,
   },
   {
     id: 'darkMode',
-    name: 'Dark',
     value: ColorSchemeMode.kDark,
   },
   {
     id: 'systemMode',
-    name: 'System',
     value: ColorSchemeMode.kSystem,
   },
 ];
 
-export class CustomizeColorSchemeModeElement extends PolymerElement {
+const CustomizeColorSchemeModeElementBase = I18nMixin(PolymerElement);
+
+export class CustomizeColorSchemeModeElement extends
+    CustomizeColorSchemeModeElementBase {
   static get is() {
     return 'customize-color-scheme-mode';
   }
