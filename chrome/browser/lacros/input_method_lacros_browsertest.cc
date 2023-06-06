@@ -60,8 +60,7 @@ struct TestParam {
   // Enables the following Ash feature flags:
   // - AlwaysConfirmComposition
   //
-  // Will not be true if `extended_confirm_composition` or `fix_268467697` are
-  // false.
+  // Will not be true if `extended_confirm_composition` is false.
   bool fix_265853952 = false;
 };
 
@@ -573,20 +572,20 @@ class InputMethodLacrosBrowserTest
   base::test::ScopedFeatureList feature_list_override_;
 };
 
-INSTANTIATE_TEST_SUITE_P(InputMethodLacrosBrowserTestAllParams,
-                         InputMethodLacrosBrowserTest,
-                         ::testing::Values(
-                             // All features off.
-                             TestParam{},
-                             // Enable `extended_confirm_composition` first.
-                             TestParam{.extended_confirm_composition = true},
-                             // Enable `fix_268467697` next.
-                             TestParam{.extended_confirm_composition = true,
-                                       .fix_268467697 = true},
-                             // Enable `fix_265853952` last.
-                             TestParam{.extended_confirm_composition = true,
-                                       .fix_268467697 = true,
-                                       .fix_265853952 = true}));
+INSTANTIATE_TEST_SUITE_P(
+    InputMethodLacrosBrowserTestAllParams,
+    InputMethodLacrosBrowserTest,
+    ::testing::Values(
+        // All features off.
+        TestParam{},
+        // Enable `extended_confirm_composition` first.
+        TestParam{.extended_confirm_composition = true},
+        // Combos of `fix_268467697` and `fix_265853952`.
+        TestParam{.extended_confirm_composition = true, .fix_268467697 = true},
+        TestParam{.extended_confirm_composition = true, .fix_265853952 = true},
+        TestParam{.extended_confirm_composition = true,
+                  .fix_268467697 = true,
+                  .fix_265853952 = true}));
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {

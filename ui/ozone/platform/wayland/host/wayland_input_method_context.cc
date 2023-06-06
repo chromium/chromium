@@ -92,6 +92,26 @@ bool IsImeEnabled() {
   return false;
 }
 
+// Whether the input method requires fixes for b/268467697
+// (kWaylandCancelComposition and kWaylandKeepSelectionFix). If so, then we need
+// to keep the fixes enabled for b/268467697 in Lacros even if the flag for the
+// fixes are disabled. This avoids breakages due to version skew between Ash and
+// Lacros. Only ever true for Lacros.
+bool ImeRequiresFixesFor268467697() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros chrome, we check whether ash-chrome supports IME, then
+  // enable IME if so. This allows us to control IME enabling state in
+  // Lacros-chrome side, which helps us on releasing.
+  // TODO(crbug.com/1159237): In the future, we may want to unify the behavior
+  // of ozone/wayland across platforms.
+  auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
+  if (capabilities && base::Contains(*capabilities, "b/265853952")) {
+    return true;
+  }
+#endif
+  return false;
+}
+
 // Returns ImeTextSpan style to be assigned. Maybe nullopt if it is not
 // supported.
 absl::optional<std::pair<ImeTextSpan::Type, ImeTextSpan::Thickness>>
@@ -313,7 +333,8 @@ void WaylandInputMethodContext::UpdatePreeditText(
 
 void WaylandInputMethodContext::Reset() {
   character_composer_.Reset();
-  if (base::FeatureList::IsEnabled(features::kWaylandCancelComposition)) {
+  if (base::FeatureList::IsEnabled(features::kWaylandCancelComposition) ||
+      ImeRequiresFixesFor268467697()) {
     // TODO(b/269964109): In ChromeOS, 'reset' means to reset the composition
     // only, excluding surrounding text etc. In Wayland, text-input-v1 doesn't
     // define what state is reset in a 'reset' call. However, based on the
@@ -598,7 +619,8 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
   }
 
   const gfx::Range new_selection_range =
-      base::FeatureList::IsEnabled(features::kWaylandKeepSelectionFix)
+      base::FeatureList::IsEnabled(features::kWaylandKeepSelectionFix) ||
+              ImeRequiresFixesFor268467697()
           ? gfx::Range(offsets[1] + utf16_offset, offsets[0] + utf16_offset)
           : gfx::Range(offsets[0] + utf16_offset, offsets[1] + utf16_offset);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
