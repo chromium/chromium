@@ -74,4 +74,9 @@ BASE_FEATURE(kWebAuthnNewHybridUI,
              "WebAuthenticationNewHybridUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnPrelinkPlayServices,
+             "WebAuthenticationPrelinkPlayServices",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

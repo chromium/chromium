@@ -31,6 +31,15 @@ GetSyncDataIfRegistered();
 // |registry|.
 void RegisterLocalState(PrefRegistrySimple* registry);
 
+namespace internal {
+
+// PaaskInfoFromCBOR parses a CBOR-encoded linking structure from Play Services
+// into the structure used by Sync.
+absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
+    base::span<const uint8_t> cbor);
+
+}  // namespace internal
+
 }  // namespace authenticator
 }  // namespace webauthn
 

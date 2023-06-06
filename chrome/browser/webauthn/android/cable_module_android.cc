@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/sys_byteorder.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -26,6 +29,7 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_registration.h"
+#include "device/fido/cbor_extract.h"
 #include "device/fido/features.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -67,6 +71,9 @@ class RegistrationState {
     DCHECK(!linking_registration_);
     DCHECK(!sync_registration_);
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+    prelink_play_services_ =
+        base::FeatureList::IsEnabled(device::kWebAuthnPrelinkPlayServices);
 
     instance_id::InstanceIDDriver* const driver =
         instance_id::InstanceIDProfileServiceFactory::GetForProfile(
@@ -135,7 +142,8 @@ class RegistrationState {
   // put information into sync's DeviceInfo.
   bool have_data_for_sync() const {
     return device_supports_cable_.has_value() && identity_key_ &&
-           sync_registration_ != nullptr && sync_registration_->contact_id();
+           sync_registration_ != nullptr && sync_registration_->contact_id() &&
+           have_play_services_data();
   }
 
   const EC_KEY* identity_key() const {
@@ -144,15 +152,70 @@ class RegistrationState {
   }
 
   bool device_supports_cable() const { return *device_supports_cable_; }
+  bool prelink_play_services() const { return prelink_play_services_; }
+
+  const absl::optional<std::vector<uint8_t>>& link_data_from_play_services()
+      const {
+    DCHECK(prelink_play_services_);
+    DCHECK(have_link_data_from_play_services_);
+    return link_data_from_play_services_;
+  }
 
   void SignalSyncWhenReady() {
     if (sync_registration_ && !sync_registration_->contact_id()) {
       sync_registration_->PrepareContactID();
     }
+    if (!have_play_services_data() && !play_services_query_pending_) {
+      QueryPlayServices();
+    }
     signal_sync_when_ready_ = true;
   }
 
+  void OnHavePlayServicesLinkingInformation(
+      absl::optional<std::vector<uint8_t>> cbor) {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    DCHECK(play_services_query_pending_);
+
+    play_services_query_pending_ = false;
+    link_data_from_play_services_ = std::move(cbor);
+    have_link_data_from_play_services_ = true;
+    link_data_from_play_services_timeticks_ = base::TimeTicks::Now();
+    MaybeSignalSync();
+  }
+
  private:
+  bool have_play_services_data() const {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+    // If querying Play Services is disabled then it's always "ready".
+    if (!prelink_play_services_) {
+      return true;
+    }
+    // If there's no result, then we're not ready.
+    if (!have_link_data_from_play_services_) {
+      return false;
+    }
+    // If there's a query already pending then the result must be stale and
+    // there's nothing more to do here.
+    if (play_services_query_pending_) {
+      return false;
+    }
+    const base::TimeDelta staleness =
+        base::TimeTicks::Now() - link_data_from_play_services_timeticks_;
+    return staleness < base::Hours(12);
+  }
+
+  void QueryPlayServices() {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    DCHECK(!play_services_query_pending_);
+
+    play_services_query_pending_ = true;
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&RegistrationState::
+                           GetPrelinkFromPlayServicesOnBackgroundSequence));
+  }
+
   void OnLinkingRegistrationReady() { MaybeFlushPendingEvent(); }
 
   void OnSyncRegistrationReady() { MaybeSignalSync(); }
@@ -239,6 +302,13 @@ class RegistrationState {
         base::android::AttachCurrentThread());
   }
 
+  static void GetPrelinkFromPlayServicesOnBackgroundSequence() {
+    // This runs on a worker thread because this Java function can take a
+    // little while and it shouldn't block the UI thread.
+    Java_CableAuthenticatorModuleProvider_getLinkingInformation(
+        base::android::AttachCurrentThread());
+  }
+
   // OnCanDeviceSupportCable is run with the result of `TestDeviceSupport`.
   void OnDeviceSupportResult(bool result) {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -278,7 +348,25 @@ class RegistrationState {
   // always use a QR code if pre-linking hasn't worked by the time they need
   // it.
   absl::optional<bool> device_supports_cable_;
+  // link_data_from_play_services_ contains the response from Play Services, as
+  // CBOR-encoded linking information, or `nullopt` if the call was
+  // unsuccessful. This field is only meaningful if
+  // `have_link_data_from_play_services_` is true.
+  absl::optional<std::vector<uint8_t>> link_data_from_play_services_;
+  // have_link_data_from_play_services_ is true if any call to Play Services has
+  // ever completed, successful or not.
+  bool have_link_data_from_play_services_ = false;
+  // link_data_from_play_services_timeticks_ contains the timestamp when
+  // `link_data_from_play_services_` was set.
+  base::TimeTicks link_data_from_play_services_timeticks_;
+  // play_services_query_pending_ is true if a request to Play Services is
+  // currently outstanding.
+  bool play_services_query_pending_ = false;
   bool signal_sync_when_ready_ = false;
+  // prelink_play_services_ records the value of the feature flag
+  // `kWebAuthnPrelinkPlayServices`. It's recorded here because its value could
+  // change at run-time, but this code doesn't handle that.
+  bool prelink_play_services_ = false;
 };
 
 RegistrationState* GetRegistrationState() {
@@ -286,7 +374,84 @@ RegistrationState* GetRegistrationState() {
   return state.get();
 }
 
+using device::cbor_extract::IntKey;
+using device::cbor_extract::Is;
+using device::cbor_extract::Map;
+using device::cbor_extract::StepOrByte;
+using device::cbor_extract::Stop;
+
+// PreLinkInfo reflects the linking information provided by Play Services.
+struct PreLinkInfo {
+  // All fields below are not a raw_ptr<T> because cbor_extract.cc would
+  // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
+  // ref-counting mismatch.
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* contact_id;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* pairing_id;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* secret;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* peer_public_key_x962;
+};
+
+// kPreLinkInfoSteps contains parsing instructions for cbor_extract to convert
+// the CBOR-encoded data from Play Services into a `PreLinkInfo`. The format
+// that Play Services uses mostly follows the "linking map" structure defined in
+// https://fidoalliance.org/specs/fido-v2.2-rd-20230321/fido-client-to-authenticator-protocol-v2.2-rd-20230321.html#hybrid-qr-initiated
+static constexpr StepOrByte<PreLinkInfo> kPreLinkInfoSteps[] = {
+    // clang-format off
+    ELEMENT(Is::kRequired, PreLinkInfo, contact_id),
+    IntKey<PreLinkInfo>(1),
+    ELEMENT(Is::kRequired, PreLinkInfo, pairing_id),
+    IntKey<PreLinkInfo>(2),
+    ELEMENT(Is::kRequired, PreLinkInfo, secret),
+    IntKey<PreLinkInfo>(3),
+    ELEMENT(Is::kRequired, PreLinkInfo, peer_public_key_x962),
+    IntKey<PreLinkInfo>(4),
+
+    Stop<PreLinkInfo>(),
+    // clang-format on
+};
+
 }  // namespace
+
+namespace internal {
+
+absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
+    base::span<const uint8_t> cbor) {
+  absl::optional<cbor::Value> value = cbor::Reader::Read(cbor);
+  if (!value || !value->is_map()) {
+    return absl::nullopt;
+  }
+
+  PreLinkInfo info;
+  uint64_t pairing_id;
+  std::array<uint8_t, 32> secret;
+  std::array<uint8_t, 65> peer_public_key_x962;
+  if (!device::cbor_extract::Extract<PreLinkInfo>(&info, kPreLinkInfoSteps,
+                                                  value->GetMap()) ||
+      info.pairing_id->size() != sizeof(pairing_id) ||
+      info.secret->size() != secret.size() ||
+      info.peer_public_key_x962->size() != peer_public_key_x962.size()) {
+    return absl::nullopt;
+  }
+  memcpy(&pairing_id, info.pairing_id->data(), sizeof(pairing_id));
+  pairing_id = base::ByteSwap(pairing_id);
+
+  memcpy(secret.data(), info.secret->data(), secret.size());
+  memcpy(peer_public_key_x962.data(), info.peer_public_key_x962->data(),
+         peer_public_key_x962.size());
+
+  syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
+  paask_info.tunnel_server_domain = device::cablev2::kTunnelServer.value();
+  paask_info.contact_id = std::move(*info.contact_id);
+  if (pairing_id > std::numeric_limits<uint32_t>::max()) {
+    return absl::nullopt;
+  }
+  paask_info.id = static_cast<uint32_t>(pairing_id);
+  paask_info.secret = secret;
+  paask_info.peer_public_key_x962 = peer_public_key_x962;
+  return paask_info;
+}
+
+}  // namespace internal
 
 void RegisterForCloudMessages() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -309,6 +474,17 @@ GetSyncDataIfRegistered() {
     // function will be called again.
     state->SignalSyncWhenReady();
     return absl::nullopt;
+  }
+
+  if (state->prelink_play_services() && state->link_data_from_play_services()) {
+    absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
+        internal::PaaskInfoFromCBOR(*state->link_data_from_play_services());
+    if (paask_info) {
+      return *paask_info;
+    } else {
+      LOG(ERROR)
+          << "Failed to parse PaaSK prelink information from Play Services";
+    }
   }
 
   if (!state->device_supports_cable()) {
@@ -373,6 +549,30 @@ static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_CableAuthenticatorModuleProvider_GetSecret(JNIEnv* env) {
   return base::android::ToJavaByteArray(
       env, webauthn::authenticator::GetRegistrationState()->secret());
+}
+
+static void OnHavePlayServicesLinkingInformation(
+    absl::optional<std::vector<uint8_t>> cbor) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  webauthn::authenticator::GetRegistrationState()
+      ->OnHavePlayServicesLinkingInformation(std::move(cbor));
+}
+
+static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jbyteArray>& cbor_java) {
+  absl::optional<std::vector<uint8_t>> optional_cbor;
+
+  if (cbor_java) {
+    std::vector<uint8_t> cbor;
+    base::android::JavaByteArrayToByteVector(env, cbor_java, &cbor);
+    optional_cbor = std::move(cbor);
+  }
+
+  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&OnHavePlayServicesLinkingInformation,
+                                std::move(optional_cbor)));
 }
 
 static void JNI_PrivacySettingsFragment_RevokeAllLinkedDevices(JNIEnv* env) {

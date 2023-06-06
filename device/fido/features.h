@@ -70,6 +70,10 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudKeychain);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
 
+// Get caBLE pre-linking information from Play Services
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnPrelinkPlayServices);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

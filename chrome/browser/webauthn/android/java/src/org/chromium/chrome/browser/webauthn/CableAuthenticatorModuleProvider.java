@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +29,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import com.google.android.gms.tasks.Task;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -38,6 +41,8 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorModule;
+import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.webauthn.Fido2ApiCall;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 
@@ -247,6 +252,30 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         return NotificationManagerCompat.from(context).areNotificationsEnabled();
     }
 
+    @CalledByNative
+    public static void getLinkingInformation() {
+        ExternalAuthUtils externalAuthUtils = ExternalAuthUtils.getInstance();
+        if (!externalAuthUtils.canUseFirstPartyGooglePlayServices()) {
+            Log.i(TAG, "Cannot get linking information from Play Services without 1p access.");
+            CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(null);
+            return;
+        }
+
+        Fido2ApiCall call = new Fido2ApiCall(
+                ContextUtils.getApplicationContext(), Fido2ApiCall.FIRST_PARTY_API);
+        Parcel args = call.start();
+        Fido2ApiCall.ByteArrayResult result = new Fido2ApiCall.ByteArrayResult();
+        args.writeStrongBinder(result);
+        Task<byte[]> task = call.run(Fido2ApiCall.METHOD_GET_LINK_INFO,
+                Fido2ApiCall.TRANSACTION_GET_LINK_INFO, args, result);
+        task.addOnSuccessListener(linkInfo -> {
+                CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(linkInfo);
+            }).addOnFailureListener(exception -> {
+            Log.e(TAG, "Call to get linking information from Play Services failed", exception);
+            CableAuthenticatorModuleProviderJni.get().onHaveLinkingInformation(null);
+        });
+    }
+
     @NativeMethods
     interface Natives {
         // getSystemNetworkContext returns a pointer, encoded in a long, to the
@@ -263,5 +292,9 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         byte[] getSecret();
         // freeEvent releases resources used by the given event.
         void freeEvent(long event);
+        // onHaveLinkingInformation is called when pre-link information has been received from Play
+        // Services. The argument is a CBOR-encoded linking structure, as defined in CTAP 2.2, or is
+        // null on error.
+        void onHaveLinkingInformation(byte[] cbor);
     }
 }
