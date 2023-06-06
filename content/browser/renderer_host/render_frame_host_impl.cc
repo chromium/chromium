@@ -2985,15 +2985,10 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
 
     // Note: the full constructor is used, to force developers to make an
     // explicit decision when adding new fields to the PolicyContainer.
-    // The IP address space of fenced frame is set to `kPublic`.
-    // 1. This makes it subject to local network access checks, restricting
-    // its ability to access the private network.
-    // 2. The IP address space of the parent does not leak to the fenced frame.
     SetPolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies(
             network::mojom::ReferrerPolicy::kDefault,
-            IsFencedFrameRoot() ? network::mojom::IPAddressSpace::kPublic
-                                : network::mojom::IPAddressSpace::kUnknown,
+            network::mojom::IPAddressSpace::kUnknown,
             /*is_web_secure_context=*/false,
             std::vector<network::mojom::ContentSecurityPolicyPtr>(),
             parent_policies.cross_origin_opener_policy,

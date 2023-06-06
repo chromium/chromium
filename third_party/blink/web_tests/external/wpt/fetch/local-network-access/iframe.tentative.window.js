@@ -18,55 +18,55 @@ setup(() => {
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_LOCAL },
   target: { server: Server.HTTP_LOCAL },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 }), "local to local: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_LOCAL },
   target: { server: Server.HTTP_PRIVATE },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 }), "local to private: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_LOCAL },
   target: { server: Server.HTTP_PUBLIC },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 }), "local to public: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PRIVATE },
   target: { server: Server.HTTP_LOCAL },
-  expected: FrameTestResult.FAILURE,
+  expected: IframeTestResult.FAILURE,
 }), "private to local: failure.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PRIVATE },
   target: { server: Server.HTTP_PRIVATE },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 }), "private to private: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PRIVATE },
   target: { server: Server.HTTP_PUBLIC },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 }), "private to public: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PUBLIC },
   target: { server: Server.HTTP_LOCAL },
-  expected: FrameTestResult.FAILURE,
+  expected: IframeTestResult.FAILURE,
 }), "public to local: failure.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PUBLIC },
   target: { server: Server.HTTP_PRIVATE },
-  expected: FrameTestResult.FAILURE,
+  expected: IframeTestResult.FAILURE,
 }), "public to private: failure.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PUBLIC },
   target: { server: Server.HTTP_PUBLIC },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 }), "public to public: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
@@ -75,7 +75,7 @@ promise_test_parallel(t => iframeTest(t, {
     treatAsPublic: true,
   },
   target: { server: Server.HTTP_LOCAL },
-  expected: FrameTestResult.FAILURE,
+  expected: IframeTestResult.FAILURE,
 }), "treat-as-public-address to local: failure.");
 
 promise_test_parallel(t => iframeTest(t, {
@@ -84,7 +84,7 @@ promise_test_parallel(t => iframeTest(t, {
     treatAsPublic: true,
   },
   target: { server: Server.HTTP_PRIVATE },
-  expected: FrameTestResult.FAILURE,
+  expected: IframeTestResult.FAILURE,
 }), "treat-as-public-address to private: failure.");
 
 promise_test_parallel(t => iframeTest(t, {
@@ -93,7 +93,7 @@ promise_test_parallel(t => iframeTest(t, {
     treatAsPublic: true,
   },
   target: { server: Server.HTTP_PUBLIC },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 }), "treat-as-public-address to public: no preflight required.");
 
 // The following test verifies that when a grandparent frame navigates its
@@ -106,5 +106,5 @@ iframeGrandparentTest({
   grandparentServer: Server.HTTP_LOCAL,
   child: { server: Server.HTTP_PUBLIC },
   grandchild: { server: Server.HTTP_LOCAL },
-  expected: FrameTestResult.SUCCESS,
+  expected: IframeTestResult.SUCCESS,
 });
