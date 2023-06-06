@@ -302,9 +302,8 @@ void Adapter::AdapterDiscoveringChanged(device::BluetoothAdapter* adapter,
 
 void Adapter::DeviceAdded(device::BluetoothAdapter* adapter,
                           device::BluetoothDevice* device) {
-  auto device_info = Device::ConstructDeviceInfoStruct(device);
   for (auto& observer : observers_)
-    observer->DeviceAdded(device_info->Clone());
+    observer->DeviceAdded(Device::ConstructDeviceInfoStruct(device));
 }
 
 void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
@@ -317,9 +316,8 @@ void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
                                                    /*device=*/nullptr);
   }
 
-  auto device_info = Device::ConstructDeviceInfoStruct(device);
   for (auto& observer : observers_)
-    observer->DeviceChanged(device_info->Clone());
+    observer->DeviceChanged(Device::ConstructDeviceInfoStruct(device));
 }
 
 void Adapter::DeviceRemoved(device::BluetoothAdapter* adapter,
@@ -327,9 +325,8 @@ void Adapter::DeviceRemoved(device::BluetoothAdapter* adapter,
   ProcessPendingInsecureServiceConnectionRequest(device->GetAddress(),
                                                  /*device=*/nullptr);
 
-  auto device_info = Device::ConstructDeviceInfoStruct(device);
   for (auto& observer : observers_)
-    observer->DeviceRemoved(device_info->Clone());
+    observer->DeviceRemoved(Device::ConstructDeviceInfoStruct(device));
 }
 
 void Adapter::GattServicesDiscovered(device::BluetoothAdapter* adapter,
