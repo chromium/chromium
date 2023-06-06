@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,7 +17,6 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -46,6 +47,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
+import java.util.List;
+
 /**
  * Unit tests for Quick Delete dialog.
  */
@@ -54,24 +57,22 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 public class QuickDeleteDialogDelegateUnitTest {
     @Mock
     private Callback<Integer> mOnDismissCallbackMock;
-
     @Mock
     private TabModelSelector mTabModelSelectorMock;
-
     @Mock
     private IdentityServicesProvider mIdentityServicesProviderMock;
-
     @Mock
     private Profile mProfileMock;
-
     @Mock
     private Tab mTabMock;
-
     @Mock
     private TabModel mTabModelMock;
-
     @Mock
     private IdentityManager mIdentityManagerMock;
+    @Mock
+    private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
+    @Mock
+    private List<Tab> mClosedTabListMock;
 
     private FakeModalDialogManager mModalDialogManager;
 
@@ -106,8 +107,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testCancelQuickDelete() {
         setSignedInStatus(false);
-        new QuickDeleteDialogDelegate(
-                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
                 .showDialog();
 
         mModalDialogManager.clickNegativeButton();
@@ -119,8 +120,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testConfirmQuickDelete() {
         setSignedInStatus(false);
-        new QuickDeleteDialogDelegate(
-                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
                 .showDialog();
 
         mModalDialogManager.clickPositiveButton();
@@ -132,8 +133,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testSearchHistoryDisambiguationNotShown_WhenUserIsSignedOut() {
         setSignedInStatus(false);
-        new QuickDeleteDialogDelegate(
-                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
                 .showDialog();
 
         View dialogView =
@@ -142,15 +143,15 @@ public class QuickDeleteDialogDelegateUnitTest {
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 dialogView.findViewById(R.id.search_history_disambiguation);
 
-        Assert.assertEquals(searchHistoryDisambiguation.getVisibility(), View.GONE);
+        assertEquals(searchHistoryDisambiguation.getVisibility(), View.GONE);
     }
 
     @Test
     @SmallTest
     public void testSearchHistoryDisambiguation_SearchHistoryLink() {
         setSignedInStatus(true);
-        new QuickDeleteDialogDelegate(
-                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
                 .showDialog();
 
         View dialogView =
@@ -159,7 +160,7 @@ public class QuickDeleteDialogDelegateUnitTest {
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 dialogView.findViewById(R.id.search_history_disambiguation);
 
-        Assert.assertEquals(searchHistoryDisambiguation.getClickableSpans().length, 2);
+        assertEquals(searchHistoryDisambiguation.getClickableSpans().length, 2);
         searchHistoryDisambiguation.getClickableSpans()[0].onClick(searchHistoryDisambiguation);
 
         ArgumentCaptor<LoadUrlParams> argument = ArgumentCaptor.forClass(LoadUrlParams.class);
@@ -167,8 +168,7 @@ public class QuickDeleteDialogDelegateUnitTest {
         verify(mTabModelSelectorMock, times(1))
                 .openNewTab(argument.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mTabMock),
                         eq(false));
-        Assert.assertEquals(
-                UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD, argument.getValue().getUrl());
+        assertEquals(UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD, argument.getValue().getUrl());
         verify(mOnDismissCallbackMock, times(1)).onResult(DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
@@ -176,8 +176,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testSearchHistoryDisambiguation_OtherActivityLink() {
         setSignedInStatus(true);
-        new QuickDeleteDialogDelegate(
-                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
                 .showDialog();
 
         View dialogView =
@@ -186,7 +186,7 @@ public class QuickDeleteDialogDelegateUnitTest {
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 dialogView.findViewById(R.id.search_history_disambiguation);
 
-        Assert.assertEquals(searchHistoryDisambiguation.getClickableSpans().length, 2);
+        assertEquals(searchHistoryDisambiguation.getClickableSpans().length, 2);
         searchHistoryDisambiguation.getClickableSpans()[1].onClick(searchHistoryDisambiguation);
 
         ArgumentCaptor<LoadUrlParams> argument = ArgumentCaptor.forClass(LoadUrlParams.class);
@@ -194,7 +194,68 @@ public class QuickDeleteDialogDelegateUnitTest {
         verify(mTabModelSelectorMock, times(1))
                 .openNewTab(argument.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mTabMock),
                         eq(false));
-        Assert.assertEquals(UrlConstants.MY_ACTIVITY_URL_IN_QD, argument.getValue().getUrl());
+        assertEquals(UrlConstants.MY_ACTIVITY_URL_IN_QD, argument.getValue().getUrl());
         verify(mOnDismissCallbackMock, times(1)).onResult(DialogDismissalCause.ACTION_ON_CONTENT);
+    }
+
+    @Test
+    @SmallTest
+    public void testTabsToBeClosed_ZeroTabs_RemovesTheTabsClosedText() {
+        when(mClosedTabListMock.size()).thenReturn(0);
+        when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed()).thenReturn(mClosedTabListMock);
+
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
+                .showDialog();
+
+        View dialogView =
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
+        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
+                dialogView.findViewById(R.id.quick_delete_tabs_close_row);
+        assertEquals(View.GONE, quickDeleteTabsCloseRowTextView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabsToBeClosed_OneTab_UpdatesTabsClosedText_Singular() {
+        final int tabsToBeClosed = 1;
+        when(mClosedTabListMock.size()).thenReturn(tabsToBeClosed);
+        when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed()).thenReturn(mClosedTabListMock);
+
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
+                .showDialog();
+
+        View dialogView =
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
+        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
+                dialogView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        String expected = mActivity.getResources().getQuantityString(
+                R.plurals.quick_delete_dialog_tabs_closed_text, tabsToBeClosed, tabsToBeClosed);
+        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
+        assertEquals(View.VISIBLE, quickDeleteTabsCloseRowTextView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabsToBeClosed_MultipleTab_UpdatesTabsClosedText_Plural() {
+        final int tabsToBeClosed = 2;
+        when(mClosedTabListMock.size()).thenReturn(tabsToBeClosed);
+        when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed()).thenReturn(mClosedTabListMock);
+
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
+                .showDialog();
+
+        View dialogView =
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
+        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
+                dialogView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        String expected = mActivity.getResources().getQuantityString(
+                R.plurals.quick_delete_dialog_tabs_closed_text, tabsToBeClosed, tabsToBeClosed);
+        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
+        assertEquals(View.VISIBLE, quickDeleteTabsCloseRowTextView.getVisibility());
     }
 }

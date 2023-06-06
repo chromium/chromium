@@ -60,10 +60,10 @@ public class QuickDeleteController {
         mDelegate = delegate;
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
-        mDialogDelegate = new QuickDeleteDialogDelegate(
-                context, modalDialogManager, this::onDialogDismissed, tabModelSelector);
         mDeleteTabsFilter =
                 new QuickDeleteTabsFilter(tabModelSelector.getModel(/*incognito=*/false));
+        mDialogDelegate = new QuickDeleteDialogDelegate(context, modalDialogManager,
+                this::onDialogDismissed, tabModelSelector, mDeleteTabsFilter);
 
         mAnimationView = animationView;
         mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);

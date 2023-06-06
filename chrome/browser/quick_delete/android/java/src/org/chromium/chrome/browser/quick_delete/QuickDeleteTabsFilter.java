@@ -45,7 +45,7 @@ class QuickDeleteTabsFilter {
         mTabModel.closeMultipleTabs(mTabs, /*canUndo=*/false);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     List<Tab> getListOfTabsToBeClosed() {
         List<Tab> mTabList = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); ++i) {

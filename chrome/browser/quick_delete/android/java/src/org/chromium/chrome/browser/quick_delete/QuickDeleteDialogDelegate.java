@@ -37,9 +37,10 @@ class QuickDeleteDialogDelegate {
     private final @NonNull Context mContext;
     private final @NonNull Callback<Integer> mOnDismissCallback;
     private final @NonNull TabModelSelector mTabModelSelector;
+    private final @NonNull QuickDeleteTabsFilter mQuickDeleteTabsFilter;
     /**The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
      * shown.*/
-    private final PropertyModel mModalDialogPropertyModel;
+    private PropertyModel mModalDialogPropertyModel;
 
     /**
      * The modal dialog controller to detect events on the dialog.
@@ -64,23 +65,27 @@ class QuickDeleteDialogDelegate {
             };
 
     /**
-     * @param context The associated {@link Context}.
-     * @param modalDialogManager A {@link ModalDialogManager} responsible for showing the quick
-     *         delete modal dialog.
-     * @param onDismissCallback A {@link Callback} that will be notified when the user confirms or
-     *         cancels the deletion;
-     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
-     *         history disambiguation notice.
+     * @param context               The associated {@link Context}.
+     * @param modalDialogManager    A {@link ModalDialogManager} responsible for showing the quick
+     *                              delete modal dialog.
+     * @param onDismissCallback     A {@link Callback} that will be notified when the user
+     *                              confirms or
+     *                              cancels the deletion;
+     * @param tabModelSelector      {@link TabModelSelector} to use for opening the links in search
+     *                              history disambiguation notice.
+     * @param quickDeleteTabsFilter {@link QuickDeleteTabsFilter} which is used to get the list of
+     *         tabs which would be closed.
      */
     QuickDeleteDialogDelegate(@NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector) {
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull QuickDeleteTabsFilter quickDeleteTabsFilter) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
-        mModalDialogPropertyModel = createQuickDeleteDialogProperty();
+        mQuickDeleteTabsFilter = quickDeleteTabsFilter;
     }
 
     /**
@@ -93,13 +98,21 @@ class QuickDeleteDialogDelegate {
         View quickDeleteDialogView =
                 LayoutInflater.from(mContext).inflate(R.layout.quick_delete_dialog, /*root=*/null);
 
-        // TODO(crbug.com/1412087): Supply the right quantity once the tab close logic is in place.
-        String tabDescription = mContext.getResources().getQuantityString(
-                R.plurals.quick_delete_dialog_tabs_closed_text, 1);
+        // Update the count of tabs to be closed text.
         TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
                 quickDeleteDialogView.findViewById(R.id.quick_delete_tabs_close_row);
-        quickDeleteTabsCloseRowTextView.setText(tabDescription);
+        final int countOfTabsToBeClosed = mQuickDeleteTabsFilter.getListOfTabsToBeClosed().size();
 
+        if (countOfTabsToBeClosed > 0) {
+            String tabDescription = mContext.getResources().getQuantityString(
+                    R.plurals.quick_delete_dialog_tabs_closed_text, countOfTabsToBeClosed,
+                    countOfTabsToBeClosed);
+            quickDeleteTabsCloseRowTextView.setText(tabDescription);
+        } else {
+            quickDeleteTabsCloseRowTextView.setVisibility(View.GONE);
+        }
+
+        // Update search history footer text.
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 quickDeleteDialogView.findViewById(R.id.search_history_disambiguation);
 
@@ -164,6 +177,7 @@ class QuickDeleteDialogDelegate {
      * Shows the Quick delete dialog.
      */
     void showDialog() {
+        mModalDialogPropertyModel = createQuickDeleteDialogProperty();
         mModalDialogManager.showDialog(
                 mModalDialogPropertyModel, ModalDialogManager.ModalDialogType.APP);
     }
