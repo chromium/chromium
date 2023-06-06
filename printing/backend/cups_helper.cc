@@ -25,6 +25,7 @@
 #include "printing/print_job_constants_cups.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -109,6 +110,34 @@ void GetDuplexSettings(ppd_file_t* ppd,
   }
 }
 
+absl::optional<gfx::Size> ParseResolutionString(const char* input) {
+  int len = strlen(input);
+  if (len == 0) {
+    VLOG(1) << "Bad PPD resolution choice: null string";
+    return absl::nullopt;
+  }
+
+  int n = 0;  // number of chars successfully parsed by sscanf()
+  int dpi_x;
+  int dpi_y;
+  sscanf(input, "%ddpi%n", &dpi_x, &n);
+  if (n == len) {
+    dpi_y = dpi_x;
+  } else {
+    sscanf(input, "%dx%ddpi%n", &dpi_x, &dpi_y, &n);
+    if (n != len) {
+      VLOG(1) << "Bad PPD resolution choice: " << input;
+      return absl::nullopt;
+    }
+  }
+  if (dpi_x <= 0 || dpi_y <= 0) {
+    VLOG(1) << "Invalid PPD resolution dimensions: " << dpi_x << " " << dpi_y;
+    return absl::nullopt;
+  }
+
+  return gfx::Size(dpi_x, dpi_y);
+}
+
 void GetResolutionSettings(ppd_file_t* ppd,
                            std::vector<gfx::Size>* dpis,
                            gfx::Size* default_dpi) {
@@ -138,30 +167,13 @@ void GetResolutionSettings(ppd_file_t* ppd,
   }
   for (int i = 0; i < res->num_choices; i++) {
     char* choice = res->choices[i].choice;
-    DCHECK(choice);
-    int len = strlen(choice);
-    if (len == 0) {
-      VLOG(1) << "Bad PPD resolution choice: null string";
+    CHECK(choice);
+    absl::optional<gfx::Size> parsed_size = ParseResolutionString(choice);
+    if (!parsed_size.has_value()) {
       continue;
     }
-    int n = 0;  // number of chars successfully parsed by sscanf()
-    int dpi_x;
-    int dpi_y;
-    sscanf(choice, "%ddpi%n", &dpi_x, &n);
-    if (n == len) {
-      dpi_y = dpi_x;
-    } else {
-      sscanf(choice, "%dx%ddpi%n", &dpi_x, &dpi_y, &n);
-      if (n != len) {
-        VLOG(1) << "Bad PPD resolution choice: " << choice;
-        continue;
-      }
-    }
-    if (dpi_x <= 0 || dpi_y <= 0) {
-      VLOG(1) << "Invalid PPD resolution dimensions: " << dpi_x << " " << dpi_y;
-      continue;
-    }
-    dpis->push_back({dpi_x, dpi_y});
+
+    dpis->push_back(parsed_size.value());
     if (!strcmp(choice, res->defchoice))
       *default_dpi = dpis->back();
   }
