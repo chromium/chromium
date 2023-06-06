@@ -4,7 +4,13 @@
 
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 
+#include <memory>
+#include <vector>
+
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chromeos/ash/components/scalable_iph/iph_session.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 
 namespace scalable_iph {
 
@@ -24,7 +30,7 @@ const std::map<ScalableIph::Event, std::string>& GetEventNamesMap() {
 
 // The list of IPH features `SclableIph` supports. `ScalableIph` checks trigger
 // conditions of all events listed in this list when it receives an `Event`.
-const std::vector<const base::Feature*>& GetFeatureList() {
+const std::vector<const base::Feature*>& GetFeatureListConstant() {
   static const base::NoDestructor<std::vector<const base::Feature*>>
       feature_list({});
   return *feature_list;
@@ -32,15 +38,27 @@ const std::vector<const base::Feature*>& GetFeatureList() {
 
 }  // namespace
 
-ScalableIph::ScalableIph(feature_engagement::Tracker* tracker)
-    : tracker_(tracker) {
+ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
+                         std::unique_ptr<ScalableIphDelegate> delegate)
+    : tracker_(tracker), delegate_(std::move(delegate)) {
   CHECK(tracker_);
+  CHECK(delegate_);
 }
 
 ScalableIph::~ScalableIph() = default;
 
 void ScalableIph::Shutdown() {
   tracker_ = nullptr;
+  delegate_.reset();
+}
+
+void ScalableIph::OverrideFeatureListForTesting(
+    const std::vector<const base::Feature*> feature_list) {
+  CHECK(feature_list_for_testing_.size() == 0)
+      << "It's NOT allowed to override feature list twice for testing";
+  CHECK(feature_list.size() > 0) << "An empty list is NOT allowed to set.";
+
+  feature_list_for_testing_ = feature_list;
 }
 
 void ScalableIph::RecordEvent(ScalableIph::Event event) {
@@ -88,9 +106,20 @@ void ScalableIph::CheckTriggerConditions() {
 
   for (const base::Feature* feature : GetFeatureList()) {
     if (tracker_->ShouldTriggerHelpUI(*feature)) {
-      // TODO(b/284053005): Call the UI framework to trigger a help UI.
+      // TODO(b/284053005): Add the actual implementations.
+      ScalableIphDelegate::BubbleParams params;
+      delegate_->ShowBubble(params,
+                            std::make_unique<IphSession>(*feature, tracker_));
     }
   }
+}
+
+const std::vector<const base::Feature*>& ScalableIph::GetFeatureList() const {
+  if (!feature_list_for_testing_.empty()) {
+    return feature_list_for_testing_;
+  }
+
+  return GetFeatureListConstant();
 }
 
 }  // namespace scalable_iph

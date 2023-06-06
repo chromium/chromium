@@ -7,10 +7,14 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
+#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -36,8 +40,8 @@ void ScalableIphBrowserTestBase::SetUp() {
   // before command lines are set, etc.
   subscription_ =
       BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(
-              base::BindRepeating(&ScalableIphBrowserTestBase::CreateServices));
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &ScalableIphBrowserTestBase::SetTestingFactories));
 
   InProcessBrowserTest::SetUp();
 }
@@ -60,30 +64,63 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
 
   ON_CALL(*mock_tracker_, IsInitialized).WillByDefault(testing::Return(true));
 
+  CHECK(ScalableIphFactory::GetInstance()->has_delegate_factory_for_testing())
+      << "This test uses MockScalableIphDelegate. A factory for testing must "
+         "be set.";
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForProfile(browser()->profile());
+  CHECK(scalable_iph);
+
+  mock_delegate_ = static_cast<test::MockScalableIphDelegate*>(
+      scalable_iph->delegate_for_testing());
+  CHECK(mock_delegate_);
+
   InProcessBrowserTest::SetUpOnMainThread();
 }
 
 void ScalableIphBrowserTestBase::TearDownOnMainThread() {
-  // We are going to release a reference to a MockTracker below. Verify the
-  // expectation in advance to have a predictable behavior.
+  // We are going to release references to mock objects below. Verify the
+  // expectations in advance to have a predictable behavior.
   testing::Mock::VerifyAndClearExpectations(mock_tracker_);
   mock_tracker_ = nullptr;
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_);
+  mock_delegate_ = nullptr;
 
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
 // static
-void ScalableIphBrowserTestBase::CreateServices(
+void ScalableIphBrowserTestBase::SetTestingFactories(
     content::BrowserContext* browser_context) {
   feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
       browser_context,
       base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockTracker));
+
+  ScalableIphFactory* scalable_iph_factory = ScalableIphFactory::GetInstance();
+  CHECK(scalable_iph_factory);
+
+  // This method can be called more than once for a single browser context.
+  if (scalable_iph_factory->has_delegate_factory_for_testing()) {
+    return;
+  }
+
+  // This is NOT a testing factory of a keyed service factory .But the delegate
+  // factory is called from the factory of `ScalableIphFactory`. Set this at the
+  // same time.
+  scalable_iph_factory->SetDelegateFactoryForTesting(
+      base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockDelegate));
 }
 
 // static
 std::unique_ptr<KeyedService> ScalableIphBrowserTestBase::CreateMockTracker(
     content::BrowserContext* browser_context) {
   return std::make_unique<feature_engagement::test::MockTracker>();
+}
+
+// static
+std::unique_ptr<scalable_iph::ScalableIphDelegate>
+ScalableIphBrowserTestBase::CreateMockDelegate() {
+  return std::make_unique<test::MockScalableIphDelegate>();
 }
 
 }  // namespace ash

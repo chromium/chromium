@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -27,14 +28,18 @@ class ScalableIphBrowserTestBase : public InProcessBrowserTest {
   feature_engagement::test::MockTracker* mock_tracker() {
     return mock_tracker_;
   }
+  test::MockScalableIphDelegate* mock_delegate() { return mock_delegate_; }
 
  private:
-  static void CreateServices(content::BrowserContext* browser_context);
+  static void SetTestingFactories(content::BrowserContext* browser_context);
   static std::unique_ptr<KeyedService> CreateMockTracker(
       content::BrowserContext* browser_context);
+  static std::unique_ptr<scalable_iph::ScalableIphDelegate>
+  CreateMockDelegate();
 
   base::CallbackListSubscription subscription_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  raw_ptr<test::MockScalableIphDelegate> mock_delegate_;
 };
 
 }  // namespace ash
