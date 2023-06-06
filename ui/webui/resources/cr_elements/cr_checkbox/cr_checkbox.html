@@ -115,8 +115,8 @@
       }
 
       :host-context([chrome-refresh-2023]) #checkbox:focus-visible {
-        border: none;
         outline: 2px solid var(--cr-focus-outline-color);
+        outline-offset: 2px;
       }
 
       #checkmark {
@@ -144,11 +144,6 @@
         background: var(--cr-checkbox-checked-box-background-color,
             var(--cr-checkbox-checked-box-color));
         border-color: var(--cr-checkbox-checked-box-color);
-      }
-
-      :host-context([chrome-refresh-2023]):host([checked]) #checkbox:focus-visible {
-        background-clip: padding-box;
-        border: 2px solid transparent;
       }
 
       paper-ripple {
