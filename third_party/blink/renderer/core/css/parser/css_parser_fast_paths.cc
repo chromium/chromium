@@ -32,6 +32,16 @@
 
 namespace blink {
 
+template <typename CharacterType>
+static unsigned ParsePositiveDouble(const CharacterType* string,
+                                    const CharacterType* end,
+                                    double& value);
+
+template <typename CharacterType>
+static bool ParseDoubleWithPrefix(const CharacterType* string,
+                                  const CharacterType* end,
+                                  double& value);
+
 static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
                                             bool& accepts_negative_numbers) {
   static CSSBitset properties{{
@@ -113,12 +123,10 @@ static inline bool ParseSimpleLength(const LChar* characters,
     unit = CSSPrimitiveValue::UnitType::kPercentage;
   }
 
-  // We rely on charactersToDouble for validation as well. The function
-  // will set "ok" to "false" if the entire passed-in character range does
-  // not represent a double.
-  bool ok;
-  number = CharactersToDouble(characters, length, &ok);
-  if (!ok) {
+  // We rely on ParseDoubleWithPrefix() for validation as well. The function
+  // will return a length different from “length” if the entire passed-in
+  // character range does not represent a double.
+  if (!ParseDoubleWithPrefix(characters, characters + length, number)) {
     return false;
   }
   number = ClampTo<double>(number, -std::numeric_limits<float>::max(),
@@ -196,12 +204,10 @@ static inline bool ParseSimpleAngle(const CharacterType* characters,
     unit = CSSPrimitiveValue::UnitType::kNumber;
   }
 
-  // We rely on charactersToDouble for validation as well. The function
-  // will set "ok" to "false" if the entire passed-in character range does
-  // not represent a double.
-  bool ok;
-  number = CharactersToDouble(characters, length, &ok);
-  if (!ok) {
+  // We rely on ParseDoubleWithPrefix() for validation as well. The function
+  // will return a length different from “length” if the entire passed-in
+  // character range does not represent a double.
+  if (!ParseDoubleWithPrefix(characters, characters + length, number)) {
     return false;
   }
   number = ClampTo<double>(number, -std::numeric_limits<float>::max(),
@@ -252,8 +258,8 @@ static inline bool ColorPropertyAllowsQuirkyColor(CSSPropertyID property_id) {
 
 // Returns the number of initial characters which form a valid double.
 template <typename CharacterType>
-static int FindLengthOfValidDouble(const CharacterType* string,
-                                   const CharacterType* end) {
+static unsigned FindLengthOfValidDouble(const CharacterType* string,
+                                        const CharacterType* end) {
   int length = static_cast<int>(end - string);
   if (length < 1) {
     return 0;
@@ -272,7 +278,7 @@ static int FindLengthOfValidDouble(const CharacterType* string,
     }
   }
 
-  if (decimal_mark_seen && processed_length == 1) {
+  if (processed_length > 0 && string[processed_length - 1] == '.') {
     return 0;
   }
 
@@ -297,18 +303,56 @@ static bool ContainsCharAtPos(const CharacterType* string,
          (also_accept_whitespace && IsHTMLSpace(string[pos]));
 }
 
+// Like ParsePositiveDouble(), but also accepts initial whitespace and negative
+// values. This is similar to CharactersToDouble(), but does not support
+// trailing periods (e.g. “100.”), cf.
+//
+//   https://drafts.csswg.org/css-syntax/#consume-number
+//   https://drafts.csswg.org/css-syntax/#number-token-diagram
+//
+// It also does not support exponential notation (e.g. “100e3”), which means
+// that such cases go through the slow path.
+template <typename CharacterType>
+static bool ParseDoubleWithPrefix(const CharacterType* string,
+                                  const CharacterType* end,
+                                  double& value) {
+  while (string < end && IsHTMLSpace(*string)) {
+    ++string;
+  }
+  if (string < end && *string == '-') {
+    if (end - string == 1) {
+      return false;
+    }
+    double v;
+    if (ParsePositiveDouble(string + 1, end, v) !=
+        static_cast<unsigned>(end - string - 1)) {
+      return false;
+    }
+    value = -v;
+    return true;
+  } else if (string == end) {
+    return false;
+  } else {
+    return ParsePositiveDouble(string, end, value) ==
+           static_cast<unsigned>(end - string);
+  }
+}
+
 // Returns the number of characters consumed for parsing a valid double,
 // or 0 if the string did not start with a valid double.
+//
+// NOTE: Digits after the seventh decimal are ignored, potentially leading
+// to accuracy issues. (All digits _before_ the decimal points are used.)
 template <typename CharacterType>
-static int ParseDouble(const CharacterType* string,
-                       const CharacterType* end,
-                       double& value) {
-  int length = FindLengthOfValidDouble(string, end);
+static unsigned ParsePositiveDouble(const CharacterType* string,
+                                    const CharacterType* end,
+                                    double& value) {
+  unsigned length = FindLengthOfValidDouble(string, end);
   if (length == 0) {
     return 0;
   }
 
-  int position = 0;
+  unsigned position = 0;
   double local_value = 0;
 
   // The consumed characters here are guaranteed to be
@@ -328,7 +372,7 @@ static int ParseDouble(const CharacterType* string,
   double fraction = 0;
   double scale = 1;
 
-  const double kMaxScale = 1000000;
+  const double kMaxScale = 10000000;
   while (position < length && scale < kMaxScale) {
     fraction = fraction * 10 + string[position++] - '0';
     scale *= 10;
@@ -381,7 +425,7 @@ static bool ParseFloatWithMaxValue(const CharacterType*& string,
     // We already parsed the integral part, try to parse
     // the fraction part.
     double fractional = 0;
-    int num_characters_parsed = ParseDouble(current, end, fractional);
+    int num_characters_parsed = ParsePositiveDouble(current, end, fractional);
     if (num_characters_parsed == 0) {
       return false;
     }
@@ -607,7 +651,7 @@ static inline bool ParseAlphaValue(const CharacterType*& string,
   }
 
   double alpha = 0;
-  int dbl_length = ParseDouble(string, end, alpha);
+  int dbl_length = ParsePositiveDouble(string, end, alpha);
   if (dbl_length == 0 || !ContainsCharAtPos(string, end, dbl_length, terminator,
                                             /*also_accept_whitespace=*/false)) {
     return false;
@@ -1697,10 +1741,8 @@ static bool ParseTransformNumberArguments(const LChar*& pos,
       return false;
     }
     unsigned argument_length = static_cast<unsigned>(delimiter);
-    bool ok;
-    double number = CSSValueClampingUtils::ClampDouble(
-        CharactersToDouble(pos, argument_length, &ok));
-    if (!ok) {
+    double number;
+    if (!ParseDoubleWithPrefix(pos, pos + argument_length, number)) {
       return false;
     }
     transform_value->Append(*CSSNumericLiteralValue::Create(
@@ -1718,12 +1760,6 @@ static CSSFunctionValue* ParseSimpleTransformValue(const LChar*& pos,
   if (end - pos < kShortestValidTransformStringLength) {
     return nullptr;
   }
-
-  // TODO(crbug.com/841960): Many of these use CharactersToDouble(),
-  // which accepts numbers in scientific notation that do not end
-  // in a digit; e.g., 1.e10px. (1.0e10px is allowed.) This means that
-  // the fast path accepts some invalid lengths that the regular path
-  // does not.
 
   const bool is_translate = MatchesLiteral(pos, "translate");
 

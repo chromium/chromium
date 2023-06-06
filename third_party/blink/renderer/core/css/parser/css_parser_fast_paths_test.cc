@@ -98,6 +98,43 @@ TEST(CSSParserFastPathsTest, ParseRevertLayer) {
   }
 }
 
+TEST(CSSParserFastPathsTest, ParseSimpleLength) {
+  CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kWidth, "234px", kHTMLStandardMode);
+  ASSERT_NE(nullptr, value);
+  EXPECT_FALSE(value->IsValueList());
+  EXPECT_EQ("234px", value->CssText());
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth,
+                                              "234.567px", kHTMLStandardMode);
+  ASSERT_NE(nullptr, value);
+  EXPECT_FALSE(value->IsValueList());
+  EXPECT_EQ("234.567px", value->CssText());
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, ".567px",
+                                              kHTMLStandardMode);
+  ASSERT_NE(nullptr, value);
+  EXPECT_FALSE(value->IsValueList());
+  EXPECT_EQ("0.567px", value->CssText());
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234.px",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234.e2px",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, ".",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+
+  // This is legal, but we don't support it in the fast path.
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234e2px",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+}
+
 TEST(CSSParserFastPathsTest, ParseTransform) {
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(
       CSSPropertyID::kTransform, "translate(5.5px, 5px)", kHTMLStandardMode);
@@ -279,6 +316,11 @@ TEST(CSSParserFastPathsTest, ParseHSL) {
             CSSParserFastPaths::ParseColor("hsla(45deg, 150%, 50%)",
                                            kHTMLStandardMode, color));
   EXPECT_EQ("rgb(255, 191, 0)", color.SerializeAsCSSColor());
+
+  // Stray period at the end
+  EXPECT_NE(ParseColorResult::kColor,
+            CSSParserFastPaths::ParseColor("hsl(0.turn, 25%, 50%)",
+                                           kHTMLStandardMode, color));
 }
 
 TEST(CSSParserFastPathsTest, ParseHSLWithAlpha) {
