@@ -29,6 +29,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -265,8 +266,8 @@ PasskeySyncBridge::GetAllPasskeys() const {
 
 bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   // Find the credential with the given |credential_id|.
-  const auto passkey_it = std::find_if(
-      data_.begin(), data_.end(), [&credential_id](const auto& passkey) {
+  const auto passkey_it =
+      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
         return passkey.second.credential_id() == credential_id;
       });
   if (passkey_it == data_.end()) {
@@ -305,6 +306,33 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
     change_processor()->Delete(sync_id, write_batch->GetMetadataChangeList());
     write_batch->DeleteData(sync_id);
   }
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
+  NotifyPasskeysChanged();
+  return true;
+}
+
+bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
+                                      PasskeyChange change) {
+  // Find the credential with the given |credential_id|.
+  const auto passkey_it =
+      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
+        return passkey.second.credential_id() == credential_id;
+      });
+  if (passkey_it == data_.end()) {
+    DVLOG(1) << "Attempted to update non existent passkey";
+    return false;
+  }
+  sync_pb::WebauthnCredentialSpecifics passkey = passkey_it->second;
+  passkey.set_user_name(std::move(change.user_name));
+  passkey.set_user_display_name(std::move(change.user_display_name));
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  change_processor()->Put(passkey.sync_id(), CreateEntityData(passkey),
+                          write_batch->GetMetadataChangeList());
+  write_batch->WriteData(passkey.sync_id(), passkey.SerializeAsString());
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,

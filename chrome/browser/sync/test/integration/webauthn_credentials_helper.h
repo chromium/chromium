@@ -32,6 +32,25 @@ class PasskeySyncActiveChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
+class LocalPasskeysChangedChecker : public StatusChangeChecker,
+                                    public PasskeyModel::Observer {
+ public:
+  explicit LocalPasskeysChangedChecker(int profile);
+  ~LocalPasskeysChangedChecker() override;
+
+  // SingleClientStatusChangeChecker:
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // PasskeyModel::Observer:
+  void OnPasskeysChanged() override;
+
+ private:
+  int profile_;
+  bool satisfied_ = false;
+  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer> observation_{
+      this};
+};
+
 class LocalPasskeysMatchChecker : public StatusChangeChecker,
                                   public PasskeyModel::Observer {
  public:
@@ -93,6 +112,15 @@ sync_pb::WebauthnCredentialSpecifics NewPasskey();
 // given `sync_id`. Use with `ServerPasskeysMatchChecker`.
 MATCHER_P(EntityHasSyncId, expected_sync_id, "") {
   return arg.specifics().webauthn_credential().sync_id() == expected_sync_id;
+}
+
+MATCHER_P(EntityHasUsername, expected_username, "") {
+  return arg.specifics().webauthn_credential().user_name() == expected_username;
+}
+
+MATCHER_P(EntityHasDisplayName, expected_display_name, "") {
+  return arg.specifics().webauthn_credential().user_display_name() ==
+         expected_display_name;
 }
 
 // Matches the `sync_id` of a `sync_pb::WebauthnCredentialSpecifics`. Use with

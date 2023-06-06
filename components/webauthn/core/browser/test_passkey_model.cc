@@ -57,6 +57,21 @@ bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
   return removed;
 }
 
+bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
+                                     PasskeyChange change) {
+  const auto credential_it = std::ranges::find_if(
+      credentials_, [&credential_id](const auto& credential) {
+        return credential.credential_id() == credential_id;
+      });
+  if (credential_it == credentials_.end()) {
+    return false;
+  }
+  credential_it->set_user_name(std::move(change.user_name));
+  credential_it->set_user_display_name(std::move(change.user_display_name));
+  NotifyPasskeysChanged();
+  return true;
+}
+
 void TestPasskeyModel::NotifyPasskeysChanged() {
   for (auto& observer : observers_) {
     observer.OnPasskeysChanged();

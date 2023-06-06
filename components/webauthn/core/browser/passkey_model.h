@@ -43,6 +43,13 @@ class PasskeyModel : public KeyedService {
     virtual void OnPasskeysChanged() = 0;
   };
 
+  // Attributes of a passkey that can be updated. If an attribute is set to
+  // empty, then the entity attribute will also be set to empty.
+  struct PasskeyChange {
+    std::string user_name;
+    std::string user_display_name;
+  };
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
@@ -60,6 +67,12 @@ class PasskeyModel : public KeyedService {
   // are deleted as well.
   // Returns true if a passkey was found and deleted, false otherwise.
   virtual bool DeletePasskey(const std::string& credential_id) = 0;
+
+  // Updates attributes of the passkey with the given |credential_id|. Returns
+  // true if the credential was found and updated, false otherwise.
+  virtual bool UpdatePasskey(const std::string& credential_id,
+                             PasskeyChange change) = 0;
+
   virtual std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) = 0;
 };

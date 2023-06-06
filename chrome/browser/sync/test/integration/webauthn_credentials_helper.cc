@@ -53,6 +53,22 @@ bool PasskeySyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   return service()->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL);
 }
 
+LocalPasskeysChangedChecker::LocalPasskeysChangedChecker(int profile)
+    : profile_(profile) {
+  observation_.Observe(&GetModel(profile_));
+}
+
+LocalPasskeysChangedChecker::~LocalPasskeysChangedChecker() = default;
+
+bool LocalPasskeysChangedChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return satisfied_;
+}
+
+void LocalPasskeysChangedChecker::OnPasskeysChanged() {
+  satisfied_ = true;
+  CheckExitCondition();
+}
+
 LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
                                                      Matcher matcher)
     : profile_(profile), matcher_(matcher) {

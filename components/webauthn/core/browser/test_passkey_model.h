@@ -27,6 +27,8 @@ class TestPasskeyModel : public PasskeyModel {
   std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) override;
   bool DeletePasskey(const std::string& credential_id) override;
+  bool UpdatePasskey(const std::string& credential_id,
+                     PasskeyChange change) override;
 
  private:
   void NotifyPasskeysChanged();
