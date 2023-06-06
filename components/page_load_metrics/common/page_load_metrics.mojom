@@ -579,7 +579,7 @@ interface PageLoadMetrics {
                CpuTiming cpu_load_timing,
                InputTiming input_timing_delta,
                SubresourceLoadMetrics? subresource_load_metrics,
-               SoftNavigationMetrics soft_navigation_metrics);
+               uint32 soft_navigation_count);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
   // to the browser. The structure is defined in
@@ -603,18 +603,4 @@ struct BackForwardCacheTiming {
   // or pointer down followed by a pointer up after the time when the page is
   // restored from the back-forward cache.
   mojo_base.mojom.TimeDelta? first_input_delay_after_back_forward_cache_restore;
-};
-
-// Metrics about soft navigation. See soft navigation at https://github.com/WICG/soft-navigations.
-// The metrics are to be added in a SoftNavigation Event which is parallel to
-// a PageLoad event.
-struct SoftNavigationMetrics {
-  // The number of soft navigations that occur during a page load.
-  uint64 count;
-  // The start time of a soft navigation. It is the time user initialize the
-  // soft navigation.
-  mojo_base.mojom.TimeDelta start_time;
-  // The renderer side navigation id that increments when a soft navigation
-  // happens.
-  string navigation_id;
 };

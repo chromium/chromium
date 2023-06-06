@@ -280,7 +280,6 @@ source_set("headers") {
     "page_state/page_state_serialization.h",
     "peerconnection/webrtc_ip_handling_policy.h",
     "performance/largest_contentful_paint_type.h",
-    "performance/performance_timeline_constants.h",
     "permissions/permission_utils.h",
     "permissions_policy/document_policy.h",
     "permissions_policy/document_policy_features.h",

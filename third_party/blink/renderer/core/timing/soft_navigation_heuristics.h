@@ -45,7 +45,6 @@ class SoftNavigationHeuristics
   ExecutionContext* GetExecutionContext() override;
 
  private:
-  void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
   void CheckAndReportSoftNavigation(ScriptState*);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
   enum FlagType : uint8_t {

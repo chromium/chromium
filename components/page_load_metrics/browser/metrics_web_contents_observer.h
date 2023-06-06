@@ -153,7 +153,7 @@ class MetricsWebContentsObserver
       mojom::InputTimingPtr input_timing_delta,
       const absl::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      mojom::SoftNavigationMetricsPtr);
+      uint32_t soft_navigation_count);
 
   // Informs the observers of the currently committed primary page load that
   // it's likely that prefetch will occur in this WebContents. This should
@@ -210,17 +210,16 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle);
 
   // page_load_metrics::mojom::PageLoadMetrics implementation.
-  void UpdateTiming(
-      mojom::PageLoadTimingPtr timing,
-      mojom::FrameMetadataPtr metadata,
-      const std::vector<blink::UseCounterFeature>& new_features,
-      std::vector<mojom::ResourceDataUpdatePtr> resources,
-      mojom::FrameRenderDataUpdatePtr render_data,
-      mojom::CpuTimingPtr cpu_timing,
-      mojom::InputTimingPtr input_timing,
-      const absl::optional<blink::SubresourceLoadMetrics>&
-          subresource_load_metrics,
-      mojom::SoftNavigationMetricsPtr soft_navigation_metrics) override;
+  void UpdateTiming(mojom::PageLoadTimingPtr timing,
+                    mojom::FrameMetadataPtr metadata,
+                    const std::vector<blink::UseCounterFeature>& new_features,
+                    std::vector<mojom::ResourceDataUpdatePtr> resources,
+                    mojom::FrameRenderDataUpdatePtr render_data,
+                    mojom::CpuTimingPtr cpu_timing,
+                    mojom::InputTimingPtr input_timing,
+                    const absl::optional<blink::SubresourceLoadMetrics>&
+                        subresource_load_metrics,
+                    uint32_t soft_navigation_count) override;
 
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;

@@ -4376,10 +4376,9 @@ void RenderFrameImpl::DidObserveNewFeatureUsage(
     observer.DidObserveNewFeatureUsage(feature);
 }
 
-void RenderFrameImpl::DidObserveSoftNavigation(
-    blink::SoftNavigationMetrics metrics) {
+void RenderFrameImpl::DidObserveSoftNavigation(uint32_t count) {
   for (auto& observer : observers_) {
-    observer.DidObserveSoftNavigation(metrics);
+    observer.DidObserveSoftNavigation(count);
   }
 }
 

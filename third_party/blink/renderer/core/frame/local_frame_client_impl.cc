@@ -775,10 +775,9 @@ void LocalFrameClientImpl::DidObserveNewFeatureUsage(
 }
 
 // A new soft navigation was observed.
-void LocalFrameClientImpl::DidObserveSoftNavigation(
-    SoftNavigationMetrics metrics) {
+void LocalFrameClientImpl::DidObserveSoftNavigation(uint32_t count) {
   if (WebLocalFrameClient* client = web_frame_->Client()) {
-    client->DidObserveSoftNavigation(metrics);
+    client->DidObserveSoftNavigation(count);
   }
 }
 
