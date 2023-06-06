@@ -127,7 +127,7 @@ void StyleUtil::SetUpInkDropForButton(views::Button* button,
                                       bool highlight_on_hover,
                                       bool highlight_on_focus,
                                       SkColor background_color) {
-  button->SetInstallFocusRingOnFocus(true);
+  SetUpFocusRingForView(button);
   views::InkDropHost* const ink_drop = views::InkDrop::Get(button);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
   button->SetHasInkDropActionOnClick(true);
