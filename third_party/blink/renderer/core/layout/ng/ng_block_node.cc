@@ -545,8 +545,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   //   or the available space to our children changing.
   // - A child changed scrollbars causing our size to change (shrink-to-fit).
   //
-  // Skip this part if side-effects aren't allowed, though. Calling
-  // ClearLayoutResults() when in this state is forbidden. Also skip it if we
+  // Skip this part if side-effects aren't allowed, though. Also skip it if we
   // are resuming layout after a fragmentainer break. Changing the intrinsic
   // inline-size halfway through layout of a node doesn't make sense.
   NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
@@ -574,7 +573,7 @@ const NGLayoutResult* NGBlockNode::Layout(
       // incorrect if we try and reuse it.
       LayoutSize old_box_size = box_->Size();
       params.previous_result = nullptr;
-      box_->ClearLayoutResults();
+      box_->SetShouldSkipLayoutCache(true);
 
 #if DCHECK_IS_ON()
       // Ensure turning on/off scrollbars only once at most, when we call
@@ -831,16 +830,11 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
   if (NGDisableSideEffectsScope::IsDisabled())
     return;
 
-  // If we abort layout and don't clear the cached layout-result, we can end
-  // up in a state where the layout-object tree doesn't match fragment tree
-  // referenced by this layout-result.
   if (layout_result->Status() != NGLayoutResult::kSuccess) {
-    // This would be really dangerous to do if we're not at the first fragment,
-    // though, as it would mean that we'd also clear the first successful
-    // result(s).
-    DCHECK(!IsBreakInside(break_token));
-
-    box_->ClearLayoutResults();
+    // Layout aborted, but there may be results from a previous layout lying
+    // around. They are fine to keep, but since we aborted, it means that we
+    // want to attempt layout again. Be sure to miss the cache.
+    box_->SetShouldSkipLayoutCache(true);
     return;
   }
 

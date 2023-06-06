@@ -74,6 +74,10 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   if (early_break)
     return nullptr;
 
+  if (ShouldSkipLayoutCache()) {
+    return nullptr;
+  }
+
   DCHECK_EQ(cached_layout_result->Status(), NGLayoutResult::kSuccess);
 
   // Set our initial temporary cache status to "hit".

@@ -4957,15 +4957,6 @@ TEST_F(WebViewTest, PreferredSizeWithNGGridSkipped) {
                                    )HTML",
                                      base_url);
 
-  LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
-  Document* document = main_frame->GetDocument();
-  Element* element = document->getElementById("target");
-
-  // Note: Not entirely clear how we get into this state in release builds, we
-  // *should* be layout clean and have cached results for the preferred size
-  // query. See https://crbug.com/1245654 for how we saw this issue in the wild.
-  element->GetLayoutBox()->ClearLayoutResults();
-
   gfx::Size size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(10, size.width());
   EXPECT_EQ(10, size.height());

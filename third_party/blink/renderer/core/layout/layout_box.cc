@@ -3024,18 +3024,6 @@ void LayoutBox::FinalizeLayoutResults() {
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
-void LayoutBox::ClearLayoutResults() {
-  NOT_DESTROYED();
-  if (measure_result_)
-    InvalidateItems(*measure_result_);
-  measure_result_ = nullptr;
-
-  if (HasFragmentItems())
-    NGFragmentItems::ClearAssociatedFragments(this);
-
-  ShrinkLayoutResults(0);
-}
-
 void LayoutBox::RebuildFragmentTreeSpine() {
   DCHECK(PhysicalFragmentCount());
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(

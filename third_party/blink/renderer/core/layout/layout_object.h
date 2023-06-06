@@ -3359,6 +3359,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetScrollAnchorDisablingStyleChanged(changed);
   }
 
+  bool ShouldSkipLayoutCache() const {
+    NOT_DESTROYED();
+    return bitfields_.ShouldSkipLayoutCache();
+  }
+  void SetShouldSkipLayoutCache(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetShouldSkipLayoutCache(b);
+  }
+
   BackgroundPaintLocation GetBackgroundPaintLocation() const {
     NOT_DESTROYED();
     return static_cast<BackgroundPaintLocation>(background_paint_location_);
@@ -3942,6 +3951,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           can_composite_background_attachment_fixed_(false),
           is_scroll_anchor_object_(false),
           scroll_anchor_disabling_style_changed_(false),
+          should_skip_layout_cache_(false),
           has_box_decoration_background_(false),
           background_needs_full_paint_invalidation_(true),
           outline_may_be_affected_by_descendants_(false),
@@ -4178,6 +4188,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // See http://bit.ly/sanaclap for more info.
     ADD_BOOLEAN_BITFIELD(scroll_anchor_disabling_style_changed_,
                          ScrollAnchorDisablingStyleChanged);
+
+    ADD_BOOLEAN_BITFIELD(should_skip_layout_cache_, ShouldSkipLayoutCache);
 
     ADD_BOOLEAN_BITFIELD(has_box_decoration_background_,
                          HasBoxDecorationBackground);
@@ -4484,6 +4496,8 @@ inline void LayoutObject::ClearNeedsLayoutWithoutPaintInvalidation() {
 #endif
 
   SetScrollAnchorDisablingStyleChanged(false);
+
+  SetShouldSkipLayoutCache(false);
 }
 
 inline void LayoutObject::ClearNeedsLayout() {

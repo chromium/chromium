@@ -984,8 +984,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // added.
   void FinalizeLayoutResults();
 
-  void ClearLayoutResults();
-
   void RebuildFragmentTreeSpine();
 
   // Call when NG fragment count or size changed. Only call if the fragment
