@@ -1150,19 +1150,26 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
               DownloadCommands::Command::KEEP,
               ui::kColorAlertMediumSeverityText);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      return DownloadUIModel::BubbleUIInfo()
-          .AddSubpageSummary(l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT))
-          .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                           ui::kColorAlertMediumSeverityIcon)
-          .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
-          .AddPrimarySubpageButton(
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
-              DownloadCommands::Command::DEEP_SCAN)
-          .AddSecondarySubpageButton(
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN),
-              DownloadCommands::Command::BYPASS_DEEP_SCANNING,
-              ui::kColorButtonForeground);
+      ui_info =
+          DownloadUIModel::BubbleUIInfo()
+              .AddSubpageSummary(l10n_util::GetStringUTF16(
+                  IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT))
+              .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                               ui::kColorAlertMediumSeverityIcon)
+              .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
+              .AddPrimarySubpageButton(
+                  l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
+                  DownloadCommands::Command::DEEP_SCAN)
+              .AddSecondarySubpageButton(
+                  l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN),
+                  DownloadCommands::Command::BYPASS_DEEP_SCANNING,
+                  ui::kColorButtonForeground);
+      if (!base::FeatureList::IsEnabled(
+              safe_browsing::kDeepScanningUpdatedUX)) {
+        ui_info.AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN);
+      }
+
+      return ui_info;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING: {
       BubbleUIInfo bubble_ui_info = DownloadUIModel::BubbleUIInfo()
                                         .AddProgressBar()
@@ -1450,12 +1457,18 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      // "Scan for malware • Suspicious"
-      return l10n_util::GetStringFUTF16(
-          IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT),
-          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS));
+      if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
+        // "Scan for malware • Suspicious"
+        return l10n_util::GetStringFUTF16(
+            IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
+            l10n_util::GetStringUTF16(
+                IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT_UPDATED),
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS));
+      } else {
+        // "Scan before opening"
+        return l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT);
+      }
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
 #if BUILDFLAG(IS_ANDROID)
       // "Scanning..."
