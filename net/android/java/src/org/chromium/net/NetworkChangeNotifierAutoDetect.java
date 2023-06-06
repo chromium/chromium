@@ -413,8 +413,12 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 NetworkRequest networkRequest, NetworkCallback networkCallback, Handler handler) {
             // Starting with Oreo specifying a Handler is allowed.  Use this to avoid thread-hops.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ApiHelperForO.registerNetworkCallback(
-                        mConnectivityManager, networkRequest, networkCallback, handler);
+                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                    // Samsung Android O devices aggressively trigger StrictMode violations.
+                    // See https://crbug.com/1450175 for detail.
+                    mConnectivityManager.registerNetworkCallback(
+                            networkRequest, networkCallback, handler);
+                }
             } else {
                 mConnectivityManager.registerNetworkCallback(networkRequest, networkCallback);
             }
