@@ -116,33 +116,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "VR Linux",
-    branch_selector = branches.selector.LINUX_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "lacros-amd64-generic-rel-fyi",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

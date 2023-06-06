@@ -450,12 +450,6 @@ builder.
   * [`//tools/mb/mb_config_expectations/tryserver.chromium.linux.json`](https://cs.chromium.org/search?q=+file:tools/mb/mb_config_expectations/tryserver.chromium.linux.json)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
 
-* [linux_vr](https://ci.chromium.org/p/chromium/builders/try/linux_vr) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_vr""))
-
-  Location filters:
-  * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
-  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
-
 * [mac-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-updater-try-builder-dbg""))
 
   Location filters:

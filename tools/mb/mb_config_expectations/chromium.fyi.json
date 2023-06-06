@@ -317,16 +317,6 @@
       "use_remoteexec": true
     }
   },
-  "VR Linux": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_vr": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_ozone": true,
-      "use_remoteexec": true
-    }
-  },
   "Win 10 Fast Ring": {
     "gn_args": {
       "dcheck_always_on": true,

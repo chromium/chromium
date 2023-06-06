@@ -638,22 +638,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux_vr",
-    branch_selector = branches.selector.LINUX_BRANCHES,
-    mirrors = [
-        "ci/VR Linux",
-    ],
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "chrome/browser/vr/.+",
-            "content/browser/xr/.+",
-        ],
-    ),
-)
-
-try_.builder(
     name = "network_service_linux",
     mirrors = [
         "ci/Network Service Linux",

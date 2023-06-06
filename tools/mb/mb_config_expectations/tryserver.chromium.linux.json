@@ -849,17 +849,6 @@
       "use_goma": true
     }
   },
-  "linux_vr": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_vr": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_ozone": true,
-      "use_remoteexec": true
-    }
-  },
   "network_service_linux": {
     "gn_args": {
       "dcheck_always_on": true,

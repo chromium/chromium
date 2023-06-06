@@ -2128,33 +2128,6 @@
       }
     ]
   },
-  "VR Linux": {
-    "additional_compile_targets": [
-      "vr_common_perftests"
-    ],
-    "gtest_tests": [
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "vr_common_unittests",
-        "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
-      }
-    ]
-  },
   "Win 10 Fast Ring": {
     "gtest_tests": [
       {

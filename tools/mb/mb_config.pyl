@@ -404,7 +404,6 @@
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols_reclient',
       'Mac deterministic (dbg)': 'debug_bot_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64_reclient',
-      'VR Linux': 'vr_release_bot_reclient',
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
@@ -1257,7 +1256,6 @@
 
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'linux_upload_clang': 'release_bot',
-      'linux_vr': 'vr_release_trybot_reclient',
       'network_service_linux': 'release_trybot_reclient',
     },
 
@@ -3659,14 +3657,6 @@
       'v8_future', 'release_bot_reclient',
     ],
 
-    'vr_release_bot_reclient': [
-      'vr', 'release_bot_reclient', 'ozone',
-    ],
-
-    'vr_release_trybot_reclient': [
-      'vr', 'release_trybot_reclient', 'ozone',
-    ],
-
     'win32_arm64_release_bot_reclient': [
       'arm64', 'disable_nacl', 'minimal_symbols', 'release_bot_reclient',
     ],
@@ -4432,10 +4422,6 @@
       'gn_args': 'optimize_webui=false',
     },
 
-    'ozone': {
-      'gn_args': 'use_ozone=true',
-    },
-
     'ozone_headless': {
       'gn_args': 'ozone_platform_headless=true',
     },
@@ -4731,10 +4717,6 @@
 
     'volteer': {
       'args_file': '//build/args/chromeos/volteer.gni',
-    },
-
-    'vr': {
-      'gn_args': 'enable_vr=true',
     },
 
     'webview_google': {

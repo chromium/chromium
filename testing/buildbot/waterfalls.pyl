@@ -3181,18 +3181,6 @@
           'walleye',
         ],
       },
-      'VR Linux': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'vr_common_perftests',
-        ],
-        'test_suites': {
-          'gtest_tests': 'vr_platform_specific_chromium_gtests',
-        },
-      },
       'Win 10 Fast Ring': {
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
