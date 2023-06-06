@@ -76,6 +76,7 @@ class PermissionRequestManager
  public:
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnTabVisibilityChanged(content::Visibility visibility) {}
     virtual void OnPromptAdded() {}
     virtual void OnPromptRemoved() {}
     // Called when recreation of the permission prompt is not possible. It means
@@ -363,6 +364,7 @@ class PermissionRequestManager
   // Calls RequestFinished on a request and all its duplicates.
   void RequestFinishedIncludingDuplicates(PermissionRequest* request);
 
+  void NotifyTabVisibilityChanged(content::Visibility visibility);
   void NotifyPromptAdded();
   void NotifyPromptRemoved();
   void NotifyPromptRecreateFailed();

@@ -30,6 +30,7 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
@@ -94,19 +95,6 @@ void ChipController::OnPermissionRequestManagerDestructed() {
   }
 }
 
-void ChipController::OnWebContentsChanged() {
-  if (!is_waiting_for_confirmation_collapse) {
-    return;
-  }
-
-  if (!active_chip_permission_request_manager_.has_value() ||
-      !active_chip_permission_request_manager_.value()->IsRequestInProgress()) {
-    // Because the web contents changed, we should no longer display any chip
-    // that was displayed for the previous web contents.
-    ResetChip();
-  }
-}
-
 void ChipController::OnNavigation(
     content::NavigationHandle* navigation_handle) {
   // TODO(crbug.com/1416493): Refactor this so that this observer method is only
@@ -120,11 +108,8 @@ void ChipController::OnNavigation(
   ResetPermissionPromptChip();
 }
 
-void ChipController::OnPromptRemoved() {
-  bool is_tab_hidden = active_chip_permission_request_manager_.value()
-                           ->GetWebContents()
-                           .GetVisibility() == content::Visibility::HIDDEN;
-  if (is_tab_hidden || !is_confirmation_showing_) {
+void ChipController::OnTabVisibilityChanged(content::Visibility visibility) {
+  if (visibility == content::Visibility::HIDDEN) {
     ResetPermissionPromptChip();
   }
 }
@@ -139,7 +124,7 @@ void ChipController::OnRequestDecided(
       GetLocationBarView()->GetWidget()->IsFullscreen()) {
     // If the location bar isn't drawn or during fullscreen, the chip can't be
     // shown anywhere.
-    ResetChip();
+    ResetPermissionPromptChip();
   } else if (base::FeatureList::IsEnabled(
                  permissions::features::kConfirmationChip)) {
     HandleConfirmation(permission_action);
@@ -226,7 +211,7 @@ void ChipController::InitializePermissionPrompt(
     return;
   }
 
-  ResetChip();
+  ResetPermissionPromptChip();
 
   // Here we just initialize the controller with the current request. We might
   // not yet want to display the chip, for example when a prompt bubble without
@@ -298,16 +283,6 @@ void ChipController::ShowPermissionPrompt(
   }
 }
 
-void ChipController::ResetChip() {
-  // This is a placeholder method, additional chip functionality will be added
-  // and will be reset here.
-  ResetPermissionPromptChip();
-}
-
-void ChipController::ResetChipCallbacks() {
-  chip_->SetCallback(base::RepeatingCallback<void()>(base::DoNothing()));
-}
-
 void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
   views::Widget* const bubble_widget = GetBubbleWidget();
   if (bubble_widget) {
@@ -316,8 +291,10 @@ void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
     bubble_widget->Close();
   }
 
+  // Reset button click callback
+  chip_->SetCallback(base::RepeatingCallback<void()>(base::DoNothing()));
+
   ResetTimers();
-  ResetChipCallbacks();
 }
 
 void ChipController::ResetPermissionPromptChip() {
@@ -434,7 +411,7 @@ void ChipController::HandleConfirmation(
     collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
                           &ChipController::CollapseConfirmation);
   } else {
-    ResetChip();
+    ResetPermissionPromptChip();
   }
 }
 
@@ -642,10 +619,10 @@ void ChipController::SyncChipWithModel() {
 }
 
 void ChipController::StartCollapseTimer() {
-  collapse_timer_.Start(
-      FROM_HERE, kDelayBeforeCollapsingChip,
-      base::BindOnce(&ChipController::CollapsePrompt, base::Unretained(this),
-                     /*allow_restart=*/true));
+  collapse_timer_.Start(FROM_HERE, kDelayBeforeCollapsingChip,
+                        base::BindOnce(&ChipController::CollapsePrompt,
+                                       weak_factory_.GetWeakPtr(),
+                                       /*allow_restart=*/true));
 }
 
 void ChipController::StartDismissTimer() {
