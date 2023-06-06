@@ -160,6 +160,7 @@
 #include "chrome/browser/ash/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
+#include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -1423,6 +1424,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
         std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
     vc_app_service_client_ =
         std::make_unique<VideoConferenceAppServiceClient>();
+    vc_ash_feature_client_ =
+        std::make_unique<VideoConferenceAshFeatureClient>();
   }
 
   apn_migrator_ = std::make_unique<ApnMigrator>(
@@ -1637,6 +1640,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
   vc_app_service_client_.reset();
+  vc_ash_feature_client_.reset();
 
   // Has a dependency on Profile, so it needs to be destroyed before Profile
   // gets destroyed during ProfileManager destruction, which happens inside

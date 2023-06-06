@@ -82,6 +82,11 @@ enum VideoConferenceAppType {
   kArcApp,
   // App is traced by AppService, but the type is unknown.
   kAppServiceUnknown,
+  [MinVersion=1] kCrostiniVm,
+  [MinVersion=1] kPluginVm,
+  [MinVersion=1] kBorealis,
+  // App is traced by AshClient, but the type is unknown.
+  [MinVersion=1] kAshClientUnknown,
 };
 
 [Stable]

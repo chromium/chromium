@@ -26,6 +26,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -158,11 +159,22 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   int name_id() const { return name_id_; }
   NotificationType notification_type() const { return notifications_.active; }
 
-  void SetMicActive(bool active) { OnDeviceUpdated(DeviceType::kMic, active); }
+  void SetMicActive(bool active) {
+    OnDeviceUpdated(DeviceType::kMic, active);
+
+    if (features::IsVideoConferenceEnabled()) {
+      VideoConferenceAshFeatureClient::Get()->OnVmDeviceUpdated(
+          vm_type_, DeviceType::kMic, active);
+    }
+  }
 
   void SetCameraAccessing(bool accessing) {
     camera_accessing_ = accessing;
     OnCameraUpdated();
+    if (features::IsVideoConferenceEnabled()) {
+      VideoConferenceAshFeatureClient::Get()->OnVmDeviceUpdated(
+          vm_type_, DeviceType::kCamera, accessing);
+    }
   }
   void SetCameraPrivacyIsOn(bool on) {
     camera_privacy_is_on_ = on;

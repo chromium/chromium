@@ -93,6 +93,7 @@ class ShutdownPolicyForwarder;
 class SigninProfileHandler;
 class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
+class VideoConferenceAshFeatureClient;
 class WebKioskAppManager;
 class KioskAppManager;
 
@@ -237,6 +238,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       lacros_data_backward_migration_mode_policy_observer_;
 
   std::unique_ptr<VideoConferenceAppServiceClient> vc_app_service_client_;
+  std::unique_ptr<VideoConferenceAshFeatureClient> vc_ash_feature_client_;
 
   std::unique_ptr<power::SmartChargingManager> smart_charging_manager_;
 
