@@ -130,7 +130,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   // Whether the privacy sandbox APIs can be allowed given the current
   // environment. For example, the privacy sandbox is always disabled in
   // Incognito and for restricted accounts.
-  Status GetPrivacySandboxAllowedStatus() const;
+  Status GetPrivacySandboxAllowedStatus(
+      bool should_ignore_restriction = false) const;
 
   // Whether the privacy sandbox associated with  the |pref_name| is enabled.
   // For individual sites, check as well with GetSiteAccessAllowedStatus.

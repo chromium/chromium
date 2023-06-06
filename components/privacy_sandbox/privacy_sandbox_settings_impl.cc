@@ -651,12 +651,13 @@ PrivacySandboxSettingsImpl::GetSiteAccessAllowedStatus(
 }
 
 PrivacySandboxSettingsImpl::Status
-PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus() const {
+PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus(
+    bool should_ignore_restriction /*=false*/) const {
   if (delegate_->IsIncognitoProfile()) {
     return Status::kIncognitoProfile;
   }
 
-  if (IsPrivacySandboxRestricted()) {
+  if (IsPrivacySandboxRestricted() && !should_ignore_restriction) {
     return Status::kRestricted;
   }
 
@@ -670,7 +671,11 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
 
-  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
+  bool should_ignore_restriction =
+      pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled &&
+      IsRestrictedNoticeEnabled();
+  PrivacySandboxSettingsImpl::Status status =
+      GetPrivacySandboxAllowedStatus(should_ignore_restriction);
   if (!IsAllowed(status)) {
     return status;
   }
