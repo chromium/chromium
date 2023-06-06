@@ -305,8 +305,6 @@ skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
     int plane_index,
     bool mipmapped) {
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
-  // TODO(crbug.com/1445450): Add support for multiplanar formats, passing
-  // |plane_index|.
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
   if (wgpu_format != wgpu::TextureFormat::Undefined) {
     dawn_texture_info.fSampleCount = 1;
