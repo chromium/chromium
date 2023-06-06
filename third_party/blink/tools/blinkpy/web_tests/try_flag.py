@@ -106,10 +106,11 @@ class TryFlag(object):
             builder_names=BUILDER_CONFIGS.keys())
         results_fetcher = self._host.results_fetcher
         for build in sorted(jobs):
-            step_names = results_fetcher.get_layout_test_step_names(build)
+            step_names = self._host.builders.step_names_for_builder(
+                build.builder_name)
             generic_steps = [
                 step_name for step_name in step_names
-                if not results_fetcher.builders.flag_specific_option(
+                if not self._host.builders.flag_specific_option(
                     build.builder_name, step_name)
             ]
             if len(generic_steps) != 1:

@@ -678,8 +678,8 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         tests = self._host_port.tests(args)
         for builder in builders_to_check:
             build = Build(builder)
-            step_names = self._tool.results_fetcher.get_layout_test_step_names(
-                build)
+            step_names = self._tool.builders.step_names_for_builder(
+                build.builder_name)
             for step_name in step_names:
                 for test in tests:
                     test_baseline_set.add(test, build, step_name)

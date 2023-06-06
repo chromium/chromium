@@ -36,31 +36,34 @@ class BaseTestCase(unittest.TestCase):
         self.tool.builders = BuilderList({
             'MOCK Mac10.10 (dbg)': {
                 'port_name': 'test-mac-mac10.10',
-                'specifiers': ['Mac10.10', 'Debug']
+                'specifiers': ['Mac10.10', 'Debug'],
             },
             'MOCK Mac10.10': {
                 'port_name': 'test-mac-mac10.10',
-                'specifiers': ['Mac10.10', 'Release']
+                'specifiers': ['Mac10.10', 'Release'],
             },
             'MOCK Mac10.11 (dbg)': {
                 'port_name': 'test-mac-mac10.11',
-                'specifiers': ['Mac10.11', 'Debug']
+                'specifiers': ['Mac10.11', 'Debug'],
             },
             'MOCK Mac10.11 ASAN': {
                 'port_name': 'test-mac-mac10.11',
-                'specifiers': ['Mac10.11', 'Release']
+                'specifiers': ['Mac10.11', 'Release'],
             },
             'MOCK Mac10.11': {
                 'port_name': 'test-mac-mac10.11',
-                'specifiers': ['Mac10.11', 'Release']
+                'specifiers': ['Mac10.11', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Precise': {
                 'port_name': 'test-linux-precise',
-                'specifiers': ['Precise', 'Release']
+                'specifiers': ['Precise', 'Release'],
             },
             'MOCK Trusty': {
                 'port_name': 'test-linux-trusty',
-                'specifiers': ['Trusty', 'Release']
+                'specifiers': ['Trusty', 'Release'],
             },
             'MOCK Trusty Multiple Steps': {
                 'port_name': 'test-linux-trusty',
@@ -74,31 +77,37 @@ class BaseTestCase(unittest.TestCase):
             },
             'MOCK Win10': {
                 'port_name': 'test-win-win10',
-                'specifiers': ['Win10', 'Release']
+                'specifiers': ['Win10', 'Release'],
             },
             'MOCK Win7 (dbg)': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Debug']
+                'specifiers': ['Win7', 'Debug'],
             },
             'MOCK Win7 (dbg)(1)': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Debug']
+                'specifiers': ['Win7', 'Debug'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Win7 (dbg)(2)': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Debug']
+                'specifiers': ['Win7', 'Debug'],
             },
             'MOCK Win7': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Release']
+                'specifiers': ['Win7', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK wpt(1)': {
                 'port_name': 'test-linux-trusty',
-                'specifiers': ['Trusty', 'Release']
+                'specifiers': ['Trusty', 'Release'],
             },
             'MOCK wpt(2)': {
                 'port_name': 'test-linux-trusty',
-                'specifiers': ['Trusty', 'Release']
+                'specifiers': ['Trusty', 'Release'],
             },
         })
         self.mac_port = self.tool.port_factory.get_from_builder_name(

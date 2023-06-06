@@ -66,22 +66,34 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'port_name': 'test-win-win7',
                 'specifiers': ['Win7', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Try Linux': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Try Mac': {
                 'port_name': 'test-mac-mac10.11',
                 'specifiers': ['Mac10.11', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Try Linux (CQ duplicate)': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
                 'is_cq_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
         })
 

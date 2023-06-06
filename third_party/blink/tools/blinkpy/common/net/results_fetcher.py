@@ -54,15 +54,13 @@ class TestResultsFetcher:
     _test_id_pattern = re.compile(
         r'ninja://\S*blink_(web|wpt)_tests/(?P<name>\S+)')
 
-    def __init__(self, web, luci_auth, builders=None):
+    def __init__(self, web, luci_auth):
         self.web = web
         self._resultdb_client = ResultDBClient(web, luci_auth)
-        self.builders = builders or BuilderList.load_default_builder_list(
-            FileSystem())
 
     @classmethod
     def from_host(cls, host):
-        return cls(host.web, LuciAuth(host), host.builders)
+        return cls(host.web, LuciAuth(host))
 
     @memoized
     def gather_results(self,
@@ -167,13 +165,6 @@ class TestResultsFetcher:
         return self.web.get_binary('%s/%s' %
                                    (url_base, file_name),
                                    return_none_on_404=True)
-
-    @memoized
-    def get_layout_test_step_names(self, build):
-        if build.builder_name is None:
-            _log.debug('Builder name is None')
-            return []
-        return self.builders.step_names_for_builder(build.builder_name)
 
     def fetch_wpt_report_urls(self, *build_ids):
         """Get a list of URLs pointing to a given build's wptreport artifacts.

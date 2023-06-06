@@ -257,7 +257,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 # web tests to download baselines for.
                 continue
 
-            step_names = results_fetcher.get_layout_test_step_names(build)
+            step_names = self._tool.builders.step_names_for_builder(
+                build.builder_name)
             build_steps.extend((build, step_name) for step_name in step_names)
 
         map_fn = self._io_pool.map if self._io_pool else map

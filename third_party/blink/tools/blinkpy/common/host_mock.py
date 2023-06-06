@@ -102,16 +102,25 @@ class MockHost(MockSystemHost):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'win7-rel': {
                 'port_name': 'win-win7',
                 'specifiers': ['Win7', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'mac-rel': {
                 'port_name': 'mac-mac12',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
         })
         self.results_fetcher = MockTestResultsFetcher.from_host(self)
