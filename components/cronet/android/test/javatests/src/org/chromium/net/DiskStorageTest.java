@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -254,9 +253,9 @@ public class DiskStorageTest {
 
         String testStorage = getTestStorage(getContext());
         File diskCacheDir = new File(testStorage + "/disk_cache");
-        assertFalse(diskCacheDir.exists());
+        assertThat(diskCacheDir.exists()).isFalse();
         File prefsDir = new File(testStorage + "/prefs");
-        assertFalse(prefsDir.exists());
+        assertThat(prefsDir.exists()).isFalse();
     }
 
     @Test
@@ -281,7 +280,7 @@ public class DiskStorageTest {
         cronetEngine.shutdown();
 
         File diskCacheDir = new File(testStorage + "/disk_cache");
-        assertFalse(diskCacheDir.exists());
+        assertThat(diskCacheDir.exists()).isFalse();
         File prefsDir = new File(testStorage + "/prefs");
         assertTrue(prefsDir.exists());
     }

@@ -27,7 +27,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -123,16 +122,21 @@ public class CronetSampleTest {
     @Test
     @SmallTest
     public void testCronetLoggingManifestMetadataNotSet() {
-        Assert.assertFalse(CronetManifest.isAppOptedInForTelemetry(
-                InstrumentationRegistry.getTargetContext(), null));
-        Assert.assertFalse(
+        assertThat(CronetManifest.isAppOptedInForTelemetry(
+                           InstrumentationRegistry.getTargetContext(), null))
+                .isFalse();
+        assertThat(
                 CronetManifest.isAppOptedInForTelemetry(InstrumentationRegistry.getTargetContext(),
-                        CronetSource.CRONET_SOURCE_STATICALLY_LINKED));
-        Assert.assertFalse(
+                        CronetSource.CRONET_SOURCE_STATICALLY_LINKED))
+                .isFalse();
+        assertThat(
                 CronetManifest.isAppOptedInForTelemetry(InstrumentationRegistry.getTargetContext(),
-                        CronetSource.CRONET_SOURCE_PLAY_SERVICES));
-        Assert.assertFalse(CronetManifest.isAppOptedInForTelemetry(
-                InstrumentationRegistry.getTargetContext(), CronetSource.CRONET_SOURCE_FALLBACK));
+                        CronetSource.CRONET_SOURCE_PLAY_SERVICES))
+                .isFalse();
+        assertThat(
+                CronetManifest.isAppOptedInForTelemetry(InstrumentationRegistry.getTargetContext(),
+                        CronetSource.CRONET_SOURCE_FALLBACK))
+                .isFalse();
     }
 
     /**

@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -102,7 +101,7 @@ public class ExperimentalOptionsTest {
         cronetEngine.stopNetLog();
         assertFileContainsString(logfile, "HostResolverRules");
         assertTrue(logfile.delete());
-        assertFalse(logfile.exists());
+        assertThat(logfile.exists()).isFalse();
     }
 
     @Test
@@ -125,7 +124,7 @@ public class ExperimentalOptionsTest {
     public void testEnableTelemetryDefault() throws Exception {
         CronetUrlRequestContext context =
                 (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
-        assertFalse(context.getEnableTelemetryForTesting());
+        assertThat(context.getEnableTelemetryForTesting()).isFalse();
     }
 
     @Test
@@ -155,7 +154,7 @@ public class ExperimentalOptionsTest {
 
         assertFileContainsString(file, "CLIENT_HANDSHAKE_TRAFFIC_SECRET");
         assertTrue(file.delete());
-        assertFalse(file.exists());
+        assertThat(file.exists()).isFalse();
     }
 
     // Helper method to assert that file contains content. It retries 5 times

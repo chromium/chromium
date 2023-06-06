@@ -7,7 +7,6 @@ package org.chromium.net.urlconnection;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -432,7 +431,7 @@ public class CronetFixedModeOutputStreamTest {
     @SmallTest
     @OnlyRunCronetHttpURLConnection
     public void testRewindWithCronet() throws Exception {
-        assertFalse(mTestRule.testingSystemHttpURLConnection());
+        assertThat(mTestRule.testingSystemHttpURLConnection()).isFalse();
         // Post preserving redirect should fail.
         URL url = new URL(NativeTestServer.getRedirectToEchoBody());
         mConnection = (HttpURLConnection) url.openConnection();

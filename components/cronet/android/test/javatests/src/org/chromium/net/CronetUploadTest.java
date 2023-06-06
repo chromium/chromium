@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -91,13 +90,13 @@ public class CronetUploadTest {
         // Reset and then init, which should trigger a rewind.
         mHandler.reset();
         assertThat(mHandler.getData()).isEmpty();
-        assertFalse(mHandler.init());
+        assertThat(mHandler.init()).isFalse();
         mDataProvider.waitForRewindRequest();
         mHandler.checkInitCallbackNotInvoked();
 
         // Before rewind completes, reset and init should block.
         mHandler.reset();
-        assertFalse(mHandler.init());
+        assertThat(mHandler.init()).isFalse();
 
         // Signal rewind completes, and wait for init to complete.
         mHandler.checkInitCallbackNotInvoked();
@@ -140,7 +139,7 @@ public class CronetUploadTest {
         // Reset and then init, which should trigger a rewind.
         mHandler.reset();
         assertThat(mHandler.getData()).isEmpty();
-        assertFalse(mHandler.init());
+        assertThat(mHandler.init()).isFalse();
         mDataProvider.waitForRewindRequest();
         mHandler.checkInitCallbackNotInvoked();
 
@@ -180,7 +179,7 @@ public class CronetUploadTest {
         mHandler.checkReadCallbackNotInvoked();
         mHandler.reset();
         // Init should return asynchronously, since there is a pending read.
-        assertFalse(mHandler.init());
+        assertThat(mHandler.init()).isFalse();
         mDataProvider.assertRewindNotPending();
         mHandler.checkInitCallbackNotInvoked();
         assertThat(mDataProvider.getNumRewindCalls()).isEqualTo(0);
@@ -239,7 +238,7 @@ public class CronetUploadTest {
         assertThat(mHandler.getData()).isEmpty();
 
         // Init should trigger a rewind.
-        assertFalse(mHandler.init());
+        assertThat(mHandler.init()).isFalse();
         mDataProvider.waitForRewindRequest();
         mHandler.checkInitCallbackNotInvoked();
         mDataProvider.onRewindSucceeded(mUploadDataStream);
@@ -307,7 +306,7 @@ public class CronetUploadTest {
         // Reset and then init, which should trigger a rewind.
         mHandler.reset();
         assertThat(mHandler.getData()).isEmpty();
-        assertFalse(mHandler.init());
+        assertThat(mHandler.init()).isFalse();
         mDataProvider.waitForRewindRequest();
         mHandler.checkInitCallbackNotInvoked();
 

@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import android.os.ConditionVariable;
@@ -199,7 +198,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onStreamReady(BidirectionalStream stream) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mResponseStep).isEqualTo(ResponseStep.NOTHING);
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_STREAM_READY;
@@ -212,7 +211,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onResponseHeadersReceived(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.NOTHING, ResponseStep.ON_STREAM_READY,
                         ResponseStep.ON_WRITE_COMPLETED);
@@ -230,7 +229,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onReadCompleted(BidirectionalStream stream, UrlResponseInfo info,
             ByteBuffer byteBuffer, boolean endOfStream) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
                         ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
@@ -263,7 +262,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onWriteCompleted(BidirectionalStream stream, UrlResponseInfo info,
             ByteBuffer buffer, boolean endOfStream) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_WRITE_COMPLETED;
         mResponseInfo = info;
@@ -281,7 +280,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onResponseTrailersReceived(BidirectionalStream stream, UrlResponseInfo info,
             UrlResponseInfo.HeaderBlock trailers) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_TRAILERS;
         mResponseInfo = info;
@@ -298,8 +297,8 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
                         ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
-        assertFalse(mOnErrorCalled);
-        assertFalse(mOnCanceledCalled);
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mOnCanceledCalled).isFalse();
         assertThat(mError).isNull();
         assertThat(mWriteBuffers).isEmpty();
         assertThat(mWriteBuffersToBeAcked).isEmpty();
@@ -318,8 +317,8 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         // Shouldn't happen after success.
         assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single stream.
-        assertFalse(mOnErrorCalled);
-        assertFalse(mOnCanceledCalled);
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mOnCanceledCalled).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_FAILED;
         mResponseInfo = info;
@@ -336,8 +335,8 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         checkOnValidThread();
         assertTrue(stream.isDone());
         // Should happen at most once for a single stream.
-        assertFalse(mOnCanceledCalled);
-        assertFalse(mOnErrorCalled);
+        assertThat(mOnCanceledCalled).isFalse();
+        assertThat(mOnErrorCalled).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_CANCELED;
         mResponseInfo = info;

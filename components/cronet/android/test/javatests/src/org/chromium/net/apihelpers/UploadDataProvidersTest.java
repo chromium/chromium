@@ -6,7 +6,6 @@ package org.chromium.net.apihelpers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -241,7 +240,7 @@ public class UploadDataProvidersTest {
         urlRequest.start();
         first.block();
         callback.blockForDone();
-        assertFalse(callback.mOnCanceledCalled);
+        assertThat(callback.mOnCanceledCalled).isFalse();
         assertThat(callback.mError).isInstanceOf(CallbackException.class);
         assertThat(callback.mError)
                 .hasMessageThat()

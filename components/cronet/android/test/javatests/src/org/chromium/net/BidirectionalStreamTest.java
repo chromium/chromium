@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -80,7 +79,7 @@ public class BidirectionalStreamTest {
         assertThat(responseInfo.getUrlChain()).containsExactly(expectedUrl);
         assertThat(responseInfo.getHttpStatusCode()).isEqualTo(expectedHttpStatusCode);
         assertThat(responseInfo.getHttpStatusText()).isEqualTo(expectedHttpStatusText);
-        assertFalse(responseInfo.wasCached());
+        assertThat(responseInfo.wasCached()).isFalse();
         assertThat(responseInfo.toString()).isNotEmpty();
     }
 
@@ -1145,7 +1144,7 @@ public class BidirectionalStreamTest {
             callback.startNextRead(stream, readBuffer);
             callback.waitForNextReadStep();
             assertThat(readBuffer.position()).isEqualTo(expected.length());
-            assertFalse(stream.isDone());
+            assertThat(stream.isDone()).isFalse();
         }
 
         callback.setAutoAdvance(true);
@@ -1175,7 +1174,7 @@ public class BidirectionalStreamTest {
         callback.waitForNextReadStep();
 
         assertThat(callback.mError).isNull();
-        assertFalse(callback.isDone());
+        assertThat(callback.isDone()).isFalse();
         assertThat(callback.mResponseStep)
                 .isEqualTo(TestBidirectionalStreamCallback.ResponseStep.ON_RESPONSE_STARTED);
 
@@ -1187,7 +1186,7 @@ public class BidirectionalStreamTest {
         // possible to need one read per character, though in practice,
         // shouldn't happen.
         while (callback.mResponseAsString.length() < 2) {
-            assertFalse(callback.isDone());
+            assertThat(callback.isDone()).isFalse();
             callback.startNextRead(stream, readBuffer);
             callback.waitForNextReadStep();
         }
@@ -1273,7 +1272,7 @@ public class BidirectionalStreamTest {
         callback.waitForNextReadStep();
 
         assertThat(callback.mError).isNull();
-        assertFalse(callback.isDone());
+        assertThat(callback.isDone()).isFalse();
         assertThat(callback.mResponseStep)
                 .isEqualTo(TestBidirectionalStreamCallback.ResponseStep.ON_RESPONSE_STARTED);
 
@@ -1407,7 +1406,7 @@ public class BidirectionalStreamTest {
         assertThat(callback.mResponseInfo).isNotNull();
         // Check that error thrown from 'onSucceeded' callback is not reported.
         assertThat(callback.mError).isNull();
-        assertFalse(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isFalse();
     }
 
     @Test
@@ -1423,8 +1422,8 @@ public class BidirectionalStreamTest {
                 (CronetBidirectionalStream) builder.setHttpMethod("GET").build();
         stream.start();
         callback.waitForNextReadStep();
-        assertFalse(callback.isDone());
-        assertFalse(stream.isDone());
+        assertThat(callback.isDone()).isFalse();
+        assertThat(stream.isDone()).isFalse();
 
         final ConditionVariable streamDestroyed = new ConditionVariable(false);
         stream.setOnDestroyedCallbackForTesting(new Runnable() {
@@ -1442,7 +1441,7 @@ public class BidirectionalStreamTest {
         // but stream will be destroyed from network thread.
         streamDestroyed.block();
 
-        assertFalse(callback.isDone());
+        assertThat(callback.isDone()).isFalse();
         assertTrue(stream.isDone());
     }
 

@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -373,8 +372,7 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
         UrlRequest urlRequest = urlRequestBuilder.build();
-
-        assertFalse(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork));
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
         urlRequest.start();
         assertTrue(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork));
 
@@ -401,7 +399,7 @@ public class CronetUrlRequestContextTest {
         });
         CronetLibraryLoader.postToInitThread(task);
         task.get();
-        assertFalse(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork));
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
     }
 
     @Test
@@ -427,7 +425,7 @@ public class CronetUrlRequestContextTest {
         urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
         UrlRequest urlRequest = urlRequestBuilder.build();
 
-        assertFalse(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork));
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
         urlRequest.start();
         assertTrue(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork));
 
@@ -451,7 +449,7 @@ public class CronetUrlRequestContextTest {
         // mError should be null due to urlRequest.cancel().
         assertThat(callback.mError).isNull();
         // urlRequest.cancel(); should destroy the underlying network bound context.
-        assertFalse(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork));
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
     }
 
     @Test
@@ -476,7 +474,7 @@ public class CronetUrlRequestContextTest {
         cronetEngine.stopNetLog();
         assertTrue(file.exists());
         assertThat(file.length()).isNotEqualTo(0);
-        assertFalse(hasBytesInNetLog(file));
+        assertThat(hasBytesInNetLog(file)).isFalse();
         assertTrue(file.delete());
         assertTrue(!file.exists());
     }
@@ -488,7 +486,7 @@ public class CronetUrlRequestContextTest {
         Context context = getContext();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
         assertTrue(netLogDir.mkdir());
         File logFile = new File(netLogDir, "netlog.json");
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -506,9 +504,9 @@ public class CronetUrlRequestContextTest {
         cronetEngine.stopNetLog();
         assertTrue(logFile.exists());
         assertThat(logFile.length()).isNotEqualTo(0);
-        assertFalse(hasBytesInNetLog(logFile));
+        assertThat(hasBytesInNetLog(logFile)).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir);
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
     }
 
     @Test
@@ -533,7 +531,7 @@ public class CronetUrlRequestContextTest {
         cronetEngine.shutdown();
         assertTrue(file.exists());
         assertThat(file.length()).isNotEqualTo(0);
-        assertFalse(hasBytesInNetLog(file));
+        assertThat(hasBytesInNetLog(file)).isFalse();
         assertTrue(file.delete());
         assertTrue(!file.exists());
     }
@@ -547,7 +545,7 @@ public class CronetUrlRequestContextTest {
         Context context = getContext();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
         assertTrue(netLogDir.mkdir());
         File logFile = new File(netLogDir, "netlog.json");
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -565,7 +563,7 @@ public class CronetUrlRequestContextTest {
         assertThat(logFile.length()).isNotEqualTo(0);
 
         FileUtils.recursivelyDeleteFile(netLogDir);
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
     }
 
     @Test
@@ -911,10 +909,10 @@ public class CronetUrlRequestContextTest {
         Context context = getContext();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir1 = new File(directory, "NetLog1");
-        assertFalse(netLogDir1.exists());
+        assertThat(netLogDir1.exists()).isFalse();
         assertTrue(netLogDir1.mkdir());
         File netLogDir2 = new File(directory, "NetLog2");
-        assertFalse(netLogDir2.exists());
+        assertThat(netLogDir2.exists()).isFalse();
         assertTrue(netLogDir2.mkdir());
         File logFile1 = new File(netLogDir1, "netlog.json");
         File logFile2 = new File(netLogDir2, "netlog.json");
@@ -954,9 +952,9 @@ public class CronetUrlRequestContextTest {
         assertTrue(containsStringInNetLog(logFile2, mUrl500));
 
         FileUtils.recursivelyDeleteFile(netLogDir1);
-        assertFalse(netLogDir1.exists());
+        assertThat(netLogDir1.exists()).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir2);
-        assertFalse(netLogDir2.exists());
+        assertThat(netLogDir2.exists()).isFalse();
     }
 
     private CronetEngine createCronetEngineWithCache(int cacheType) {
@@ -1096,7 +1094,7 @@ public class CronetUrlRequestContextTest {
         } catch (Exception e) {
             assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
         }
-        assertFalse(hasBytesInNetLog(file));
+        assertThat(hasBytesInNetLog(file)).isFalse();
         assertTrue(file.delete());
         assertTrue(!file.exists());
     }
@@ -1115,7 +1113,7 @@ public class CronetUrlRequestContextTest {
 
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
         assertTrue(netLogDir.mkdir());
         File logFile = new File(netLogDir, "netlog.json");
         try {
@@ -1124,9 +1122,9 @@ public class CronetUrlRequestContextTest {
         } catch (Exception e) {
             assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
         }
-        assertFalse(logFile.exists());
+        assertThat(logFile.exists()).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir);
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
     }
 
     @Test
@@ -1150,7 +1148,7 @@ public class CronetUrlRequestContextTest {
         cronetEngine.stopNetLog();
         assertTrue(file.exists());
         assertThat(file.length()).isNotEqualTo(0);
-        assertFalse(hasBytesInNetLog(file));
+        assertThat(hasBytesInNetLog(file)).isFalse();
         assertTrue(file.delete());
         assertTrue(!file.exists());
     }
@@ -1162,7 +1160,7 @@ public class CronetUrlRequestContextTest {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
         assertTrue(netLogDir.mkdir());
         File logFile = new File(netLogDir, "netlog.json");
         // Start NetLog multiple times. This should be equivalent to starting NetLog
@@ -1180,9 +1178,9 @@ public class CronetUrlRequestContextTest {
         cronetEngine.stopNetLog();
         assertTrue(logFile.exists());
         assertThat(logFile.length()).isNotEqualTo(0);
-        assertFalse(hasBytesInNetLog(logFile));
+        assertThat(hasBytesInNetLog(logFile)).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir);
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
     }
 
     @Test
@@ -1207,7 +1205,7 @@ public class CronetUrlRequestContextTest {
         cronetEngine.stopNetLog();
         assertTrue(file.exists());
         assertThat(file.length()).isNotEqualTo(0);
-        assertFalse(hasBytesInNetLog(file));
+        assertThat(hasBytesInNetLog(file)).isFalse();
         assertTrue(file.delete());
         assertTrue(!file.exists());
     }
@@ -1219,7 +1217,7 @@ public class CronetUrlRequestContextTest {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
         assertTrue(netLogDir.mkdir());
         File logFile = new File(netLogDir, "netlog.json");
         cronetEngine.startNetLogToDisk(netLogDir.getPath(), false, MAX_FILE_SIZE);
@@ -1238,9 +1236,9 @@ public class CronetUrlRequestContextTest {
         cronetEngine.stopNetLog();
         assertTrue(logFile.exists());
         assertThat(logFile.length()).isNotEqualTo(0);
-        assertFalse(hasBytesInNetLog(logFile));
+        assertThat(hasBytesInNetLog(logFile)).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir);
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
     }
 
     @Test
@@ -1274,7 +1272,7 @@ public class CronetUrlRequestContextTest {
         Context context = getContext();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
         assertTrue(netLogDir.mkdir());
         File logFile = new File(netLogDir, "netlog.json");
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -1292,7 +1290,7 @@ public class CronetUrlRequestContextTest {
         assertThat(logFile.length()).isNotEqualTo(0);
         assertTrue(hasBytesInNetLog(logFile));
         FileUtils.recursivelyDeleteFile(netLogDir);
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
     }
 
     private boolean hasBytesInNetLog(File logFile) throws Exception {
@@ -1678,7 +1676,7 @@ public class CronetUrlRequestContextTest {
         builder.setLibraryLoader(loader);
         CronetEngine engine = builder.build();
         assertThat(engine).isNotNull();
-        assertFalse(loader.wasCalled());
+        assertThat(loader.wasCalled()).isFalse();
     }
 
     // Creates a CronetEngine on another thread and then one on the main thread.  This shouldn't

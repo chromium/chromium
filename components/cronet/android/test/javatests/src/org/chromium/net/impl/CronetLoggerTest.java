@@ -9,7 +9,6 @@ import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP;
@@ -338,8 +337,8 @@ public final class CronetLoggerTest {
         UrlRequest request = requestBuilder.build();
         request.start();
         callback.blockForDone();
-        assertFalse(callback.mOnCanceledCalled);
-        assertFalse(callback.mOnErrorCalled);
+        assertThat(callback.mOnCanceledCalled).isFalse();
+        assertThat(callback.mOnErrorCalled).isFalse();
         mTestLogger.waitForLogCronetTrafficInfo();
 
         final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
@@ -351,8 +350,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getHeadersLatency()).isNotEqualTo(Duration.ofSeconds(0));
         assertThat(trafficInfo.getTotalLatency()).isNotEqualTo(Duration.ofSeconds(0));
         assertThat(trafficInfo.getNegotiatedProtocol()).isNotNull();
-        assertFalse(trafficInfo.wasConnectionMigrationAttempted());
-        assertFalse(trafficInfo.didConnectionMigrationSucceed());
+        assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();
+        assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -375,7 +374,7 @@ public final class CronetLoggerTest {
         UrlRequest request = requestBuilder.build();
         request.start();
         callback.blockForDone();
-        assertFalse(callback.mOnCanceledCalled);
+        assertThat(callback.mOnCanceledCalled).isFalse();
         assertTrue(callback.mOnErrorCalled);
         mTestLogger.waitForLogCronetTrafficInfo();
 
@@ -389,8 +388,8 @@ public final class CronetLoggerTest {
         // logging.
         assertThat(trafficInfo.getResponseStatusCode()).isEqualTo(0);
         assertThat(trafficInfo.getNegotiatedProtocol()).isEmpty();
-        assertFalse(trafficInfo.wasConnectionMigrationAttempted());
-        assertFalse(trafficInfo.didConnectionMigrationSucceed());
+        assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();
+        assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -416,7 +415,7 @@ public final class CronetLoggerTest {
         request.cancel();
         callback.blockForDone();
         assertTrue(callback.mOnCanceledCalled);
-        assertFalse(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isFalse();
         mTestLogger.waitForLogCronetTrafficInfo();
 
         final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
@@ -429,8 +428,8 @@ public final class CronetLoggerTest {
         // logging.
         assertThat(trafficInfo.getResponseStatusCode()).isEqualTo(0);
         assertThat(trafficInfo.getNegotiatedProtocol()).isEmpty();
-        assertFalse(trafficInfo.wasConnectionMigrationAttempted());
-        assertFalse(trafficInfo.didConnectionMigrationSucceed());
+        assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();
+        assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);

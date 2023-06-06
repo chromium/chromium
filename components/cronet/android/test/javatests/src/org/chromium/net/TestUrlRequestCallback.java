@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import static org.junit.Assert.fail;
@@ -206,7 +205,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     public void onRedirectReceived(
             UrlRequest request, UrlResponseInfo info, String newLocationUrl) {
         checkExecutorThread();
-        assertFalse(request.isDone());
+        assertThat(request.isDone()).isFalse();
         assertTrue(mResponseStep == ResponseStep.NOTHING
                 || mResponseStep == ResponseStep.ON_RECEIVED_REDIRECT);
         assertThat(mError).isNull();
@@ -224,7 +223,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     @Override
     public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
         checkExecutorThread();
-        assertFalse(request.isDone());
+        assertThat(request.isDone()).isFalse();
         assertTrue(mResponseStep == ResponseStep.NOTHING
                 || mResponseStep == ResponseStep.ON_RECEIVED_REDIRECT);
         assertThat(mError).isNull();
@@ -240,7 +239,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     @Override
     public void onReadCompleted(UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
         checkExecutorThread();
-        assertFalse(request.isDone());
+        assertThat(request.isDone()).isFalse();
         assertTrue(mResponseStep == ResponseStep.ON_RESPONSE_STARTED
                 || mResponseStep == ResponseStep.ON_READ_COMPLETED);
         assertThat(mError).isNull();
@@ -270,8 +269,8 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         assertTrue(request.isDone());
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED);
-        assertFalse(mOnErrorCalled);
-        assertFalse(mOnCanceledCalled);
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mOnCanceledCalled).isFalse();
         assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_SUCCEEDED;
@@ -293,8 +292,8 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // Shouldn't happen after success.
         assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single request.
-        assertFalse(mOnErrorCalled);
-        assertFalse(mOnCanceledCalled);
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mOnCanceledCalled).isFalse();
         assertThat(mError).isNull();
         if (mCallbackExceptionThrown) {
             assertThat(error).isInstanceOf(CallbackException.class);
@@ -317,8 +316,8 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         checkExecutorThread();
         assertTrue(request.isDone());
         // Should happen at most once for a single request.
-        assertFalse(mOnCanceledCalled);
-        assertFalse(mOnErrorCalled);
+        assertThat(mOnCanceledCalled).isFalse();
+        assertThat(mOnErrorCalled).isFalse();
         assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_CANCELED;
@@ -369,7 +368,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         }
 
         if (mFailureType == FailureType.THROW_SYNC) {
-            assertFalse(mCallbackExceptionThrown);
+            assertThat(mCallbackExceptionThrown).isFalse();
             mCallbackExceptionThrown = true;
             throw new IllegalStateException("Listener Exception.");
         }

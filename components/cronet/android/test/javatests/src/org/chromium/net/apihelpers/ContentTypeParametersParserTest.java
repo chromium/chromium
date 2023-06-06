@@ -7,7 +7,6 @@ package org.chromium.net.apihelpers;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -34,7 +33,7 @@ public class ContentTypeParametersParserTest {
 
         assertThat(parameter.getKey()).isEqualTo("charset");
         assertThat(parameter.getValue()).isEqualTo("utf-8");
-        assertFalse(parser.hasMore());
+        assertThat(parser.hasMore()).isFalse();
     }
 
     @Test
@@ -47,7 +46,7 @@ public class ContentTypeParametersParserTest {
 
         assertThat(parameter.getKey()).isEqualTo("charset");
         assertThat(parameter.getValue()).isEqualTo("utf-8");
-        assertFalse(parser.hasMore());
+        assertThat(parser.hasMore()).isFalse();
     }
 
     @Test
@@ -60,7 +59,7 @@ public class ContentTypeParametersParserTest {
 
         assertThat(parameter.getKey()).isEqualTo("charset");
         assertThat(parameter.getValue()).isEqualTo("utf-  8");
-        assertFalse(parser.hasMore());
+        assertThat(parser.hasMore()).isFalse();
     }
 
     @Test
@@ -73,7 +72,7 @@ public class ContentTypeParametersParserTest {
 
         assertThat(parameter.getKey()).isEqualTo("charset");
         assertThat(parameter.getValue()).isEqualTo("utf-\\8");
-        assertFalse(parser.hasMore());
+        assertThat(parser.hasMore()).isFalse();
     }
 
     @Test
@@ -105,7 +104,7 @@ public class ContentTypeParametersParserTest {
 
         assertThat(parameter.getKey()).isEqualTo("abc");
         assertThat(parameter.getValue()).isEqualTo("def");
-        assertFalse(parser.hasMore());
+        assertThat(parser.hasMore()).isFalse();
     }
 
     @Test
