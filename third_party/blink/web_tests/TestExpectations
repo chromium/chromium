@@ -6695,3 +6695,6 @@ crbug.com/1422552 http/tests/devtools/tracing/timeline-misc/timeline-window-filt
 
 # Flaky test on mac
 crbug.com/1451711 [ Mac10.15 ] http/tests/inspector-protocol/tracing/prerender.js [ Failure Pass ]
+
+# Sheriff 2023-06-06
+crbug.com/1451810 [ Linux ] wpt_internal/css/css-contain/container-queries/state-initially-stuck.html [ Failure ]
