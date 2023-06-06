@@ -98,7 +98,8 @@ net::RedirectInfo SetupRedirect(
   response_head->response_start = response_head->request_start;
   std::string header_string = base::StringPrintf(
       "HTTP/1.1 %i Temporary Redirect\n"
-      "Location: %s\n",
+      "Location: %s\n"
+      "Non-Authoritative-Reason: HttpsUpgrades\n",
       net::HTTP_TEMPORARY_REDIRECT, new_url.spec().c_str());
   response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(header_string));
