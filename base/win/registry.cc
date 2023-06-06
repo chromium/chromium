@@ -501,6 +501,12 @@ LONG GenericRegKey<Reg>::CreateWithDisposition(HKEY rootkey,
 template <typename Reg>
 LONG GenericRegKey<Reg>::CreateKey(const wchar_t* name, REGSAM access) {
   DCHECK(name && access);
+
+  if (!Valid()) {
+    // The parent key has not been opened or created.
+    return ERROR_INVALID_HANDLE;
+  }
+
   // After the application has accessed an alternate registry view using one
   // of the [KEY_WOW64_32KEY / KEY_WOW64_64KEY] flags, all subsequent
   // operations (create, delete, or open) on child registry keys must
@@ -544,6 +550,12 @@ template <typename Reg>
 LONG GenericRegKey<Reg>::OpenKey(const wchar_t* relative_key_name,
                                  REGSAM access) {
   DCHECK(relative_key_name && access);
+
+  if (!Valid()) {
+    // The parent key has not been opened or created.
+    return ERROR_INVALID_HANDLE;
+  }
+
   // After the application has accessed an alternate registry view using one
   // of the [KEY_WOW64_32KEY / KEY_WOW64_64KEY] flags, all subsequent
   // operations (create, delete, or open) on child registry keys must
