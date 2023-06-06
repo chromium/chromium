@@ -193,12 +193,85 @@
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
         Shopping Insights
       </message>
+      <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
+        Price History
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
+        Low Priced Option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_HIGH_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively high price.">
+        High Priced Option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option's price is typical.">
+        Typical Price
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
+        Save and Track price
+      </message>
     </if> <!-- use_titlecase -->
     <if expr="not use_titlecase">
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
         Shopping insights
       </message>
+      <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
+        Price history
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
+        Low priced option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_HIGH_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively high price.">
+        High priced option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option's price is typical.">
+        Typical price
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
+        Save and track price
+      </message>
     </if> <!-- not use_titlecase -->
+
+    <message name="IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS" desc="Text shown in Shopping Insights side panel. Clicking this link will bring users to a new tab where users can check price insights of all available buying options.">
+      Buying options
+    </message>
+    <message name="IDS_PRICE_HISTORY_TODAY_PRICE" desc="Text shown on the price history graph indicating today's price.">
+      Today
+    </message>
+    <message name="IDS_PRICE_HISTORY_YESTERDAY_PRICE" desc="Text shown on the price history graph indicating yesterday's price.">
+      Yesterday
+    </message>
+    <message name="IDS_PRICE_HISTORY_DESCRIPTION" desc="The description of the Price History section in the Shopping Insights side panel explaining how the prices are gathered.">
+      Typical prices are based on stores across the web over the past 90 days.
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_COLLECT_FEEDBACK" desc="Text shown in Shopping Insights side panel. Clicking this link will pop up the feedback dialog which allows users to share feedback about the feature.">
+      Give feedback
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_FEEDBACK_FORM_TITLE" desc="The title name of the feedback form which allows users to share feedback about the Shopping Insights feature.">
+      Tell us about your experience
+    </message>
+    <message name="IDS_PRICE_RANGE_ALL_OPTIONS" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page.">
+      All options typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
+    </message>
+    <message name="IDS_PRICE_RANGE_ALL_OPTIONS_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page. This string is used when we only find one typical price instead of a typical range.">
+      All options typically <ph name="TYPICAL_PRICE">$1<ex>500</ex></ph>
+    </message>
+    <message name="IDS_PRICE_RANGE_SINGLE_OPTION" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page.">
+      Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
+    </message>
+    <message name="IDS_PRICE_RANGE_SINGLE_OPTION_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page and we only find one typical price for this option instead of a typical range.">
+      Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph>
+    </message>
+    <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option has relatively low price. This string is used when we only find one buying option on the page.">
+      This price is low
+    </message>
+    <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_HIGH_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option has relatively high price. This string is used when we only find one buying option on the page.">
+      This price is high
+    </message>
+    <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option's price is typical. This string is used when we only find one buying option on the page.">
+      This price is typical
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION" desc="The description of the Price Tracking section in the Shopping Insights side panel.">
+      You'll get email alerts if the price drops on any site.
+    </message>
   </if>
 
   <!-- Android only -->
