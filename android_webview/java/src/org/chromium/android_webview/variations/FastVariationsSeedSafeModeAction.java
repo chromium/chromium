@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link SafeModeAction} to ensure the variations seed is distributed on an app's first run.
@@ -75,8 +77,12 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
         sHasRun = true;
         long currDateTime = new Date().getTime();
         SeedParser parser = new SeedParser();
-
         long stampTime = sSeedFile.lastModified();
+        long ageInMillis = currDateTime - stampTime;
+
+        if (sSeedFile.exists() && ageInMillis > 0) {
+            logSeedFileAge(ageInMillis);
+        }
         // If we see that the local seed file has not exceeded the
         // maximum seed age of 15 minutes, parse the local seed instead
         // of requesting a new one from the ContentProvider
@@ -93,6 +99,16 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             Log.e(TAG, "Failed to fetch seed from ContentProvider.");
             return false;
         }
+    }
+
+    private void logSeedFileAge(long ageInMillis) {
+        int seconds = (int) (ageInMillis / 1000) % 60;
+        int minutes = (int) (ageInMillis / TimeUnit.MINUTES.toMillis(1)) % 60;
+        int hrs = (int) (ageInMillis / TimeUnit.HOURS.toMillis(1));
+
+        String formattedAge =
+                String.format(Locale.US, "%02d:%02d:%02d (hh:mm:ss)", hrs, minutes, seconds);
+        Log.i(TAG, "Seed file age - " + formattedAge);
     }
 
     /**
@@ -211,6 +227,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             String filePath = sSeedFile.getPath();
             try (FileOutputStream out = new FileOutputStream(filePath, false)) {
                 out.write(mProtoAsByteArray);
+                out.flush();
                 return true;
             } catch (IOException e) {
                 Log.e(TAG, "Failed writing seed file: " + e.getMessage());
