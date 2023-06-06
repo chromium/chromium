@@ -133,10 +133,10 @@ HotspotMetricsHelper::GetSetEnabledMetricsResult(
       return HotspotMetricsSetEnabledResult::kUpstreamNotAvailable;
     case HotspotControlResult::kNetworkSetupFailure:
       return HotspotMetricsSetEnabledResult::kNetworkSetupFailure;
-    case HotspotControlResult::kWifiDriverFailure:
-      return HotspotMetricsSetEnabledResult::kWifiDriverFailure;
-    case HotspotControlResult::kCellularAttachFailure:
-      return HotspotMetricsSetEnabledResult::kCellularAttachFailure;
+    case HotspotControlResult::kDownstreamWifiFailure:
+      return HotspotMetricsSetEnabledResult::kDownstreamWifiFailure;
+    case HotspotControlResult::kUpstreamFailure:
+      return HotspotMetricsSetEnabledResult::kUpstreamFailure;
     case HotspotControlResult::kShillOperationFailed:
       return HotspotMetricsSetEnabledResult::kShillOperationFailure;
     case HotspotControlResult::kAlreadyFulfilled:

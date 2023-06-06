@@ -86,12 +86,12 @@ enum HotspotControlResult {
   kInvalidConfiguration,
   // Upstream network is not available.
   kUpstreamNotAvailable,
-  // Network setup failure
+  // Failed to setup or tear down network layer for hotspot.
   kNetworkSetupFailure,
-  // Wifi driver setup failure.
-  kWifiDriverFailure,
-  // Cellular attach failure.
-  kCellularAttachFailure,
+  // Downstream WiFi operation failure.
+  kDownstreamWifiFailure,
+  // Upstream network operation failure.
+  kUpstreamFailure,
   // Failed due to Shill operation error.
   kShillOperationFailed,
   // The hotspot's current state is the same as the state requested.

@@ -14,11 +14,6 @@ namespace ash {
 
 namespace {
 
-// TODO (jiajunz): Use shill constants after they are added.
-const char kShillNetworkingFailure[] = "network_failure";
-const char kShillWifiDriverFailure[] = "wifi_driver_failure";
-const char kShillCellularAttachFailure[] = "cellular_attach_failure";
-
 hotspot_config::mojom::WiFiBand ShillBandToMojom(
     const std::string& shill_band) {
   using hotspot_config::mojom::WiFiBand;
@@ -228,14 +223,19 @@ hotspot_config::mojom::HotspotControlResult SetTetheringEnabledResultToMojom(
       shill::kTetheringEnableResultUpstreamNotAvailable) {
     return HotspotControlResult::kUpstreamNotAvailable;
   }
-  if (shill_enabled_result == kShillNetworkingFailure) {
+  if (shill_enabled_result ==
+      shill::kTetheringEnableResultNetworkSetupFailure) {
     return HotspotControlResult::kNetworkSetupFailure;
   }
-  if (shill_enabled_result == kShillWifiDriverFailure) {
-    return HotspotControlResult::kWifiDriverFailure;
+  if (shill_enabled_result ==
+      shill::kTetheringEnableResultDownstreamWiFiFailure) {
+    return HotspotControlResult::kDownstreamWifiFailure;
   }
-  if (shill_enabled_result == kShillCellularAttachFailure) {
-    return HotspotControlResult::kCellularAttachFailure;
+  if (shill_enabled_result == shill::kTetheringEnableResultUpstreamFailure) {
+    return HotspotControlResult::kUpstreamFailure;
+  }
+  if (shill_enabled_result == shill::kTetheringEnableResultWrongState) {
+    return HotspotControlResult::kAlreadyFulfilled;
   }
 
   NET_LOG(ERROR) << "Unknown enable/disable tethering error: "

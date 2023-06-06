@@ -29,7 +29,6 @@ namespace {
 const char kCellularServicePath[] = "/service/cellular0";
 const char kCellularServiceGuid[] = "cellular_guid0";
 const char kCellularServiceName[] = "cellular_name0";
-const char kShillNetworkingFailure[] = "network_failure";
 const char kHotspotFeatureUsage[] = "ChromeOS.FeatureUsage.Hotspot";
 
 class TestObserver : public HotspotController::Observer {
@@ -347,10 +346,11 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 1);
 
-  // Simulate enable tethering operation fail with kShillNetworkingFailure
-  // error.
+  // Simulate enable tethering operation fail with
+  // kTetheringEnableResultNetworkSetupFailure error.
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, kShillNetworkingFailure);
+      FakeShillSimulatedResult::kSuccess,
+      shill::kTetheringEnableResultNetworkSetupFailure);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNetworkSetupFailure,
@@ -429,7 +429,8 @@ TEST_F(HotspotControllerTest, PrepareEnableWifi) {
             observer_.last_disable_reason());
 
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, kShillNetworkingFailure);
+      FakeShillSimulatedResult::kSuccess,
+      shill::kTetheringEnableResultNetworkSetupFailure);
   EXPECT_FALSE(PrepareEnableWifi());
 }
 

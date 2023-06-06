@@ -50730,16 +50730,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="kNetworkSetupFailure: The operation failed because of network
              setup failure."/>
   <int value="7"
-      label="kWifiDriverFailure: The operation failed because of Wifi driver
-             error."/>
+      label="kDownstreamWifiFailure: The operation failed because of
+             downstream WiFi operation failure."/>
   <int value="8"
-      label="kCellularAttachFailure: The operation failed because of cellular
-             attach failure."/>
+      label="kUpstreamFailure: The operation failed because of upstream
+             network operation failure."/>
   <int value="9"
       label="kShillOperationFailure: The operation failed because of shill
              operation error."/>
   <int value="10"
-      label="kUnknownFailure: The operation is failed because of unknow
+      label="kUnknownFailure: The operation is failed because of unknown
              error."/>
   <int value="11"
       label="kAlreadyFulfilled: The hotspot's current state is the same as
