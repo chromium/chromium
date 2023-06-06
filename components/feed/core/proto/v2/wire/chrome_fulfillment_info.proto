@@ -16,6 +16,7 @@ message ChromeFulfillmentInfo {
   repeated InfoCardTrackingState info_card_tracking_state = 3;
   optional ChromeFeatureUsage chrome_feature_usage = 4;
   optional ChromeSignInStatus sign_in_status = 5;
+  optional DefaultSearchEngine default_search_engine = 6;
 }
 message ChromeFeatureUsage {
   optional int32 times_followed_from_web_page_menu = 1;
@@ -29,4 +30,12 @@ message ChromeSignInStatus {
     SIGNIN_DISALLOWED_BY_CONFIG = 4;
   }
   optional SignInStatus sign_in_status = 1;
+}
+message DefaultSearchEngine {
+  enum SearchEngine {
+    ENGINE_UNSPECIFIED = 0;
+    ENGINE_GOOGLE = 1;
+    ENGINE_OTHER = 2;
+  }
+  optional SearchEngine search_engine = 1;
 }
