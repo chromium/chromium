@@ -1866,6 +1866,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-audio-focus-enforcement",
+    "owners": [ "liberato", "steimel", "meganlfu", "media-dev" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-auto-disable-accessibility",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

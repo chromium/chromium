@@ -4134,6 +4134,8 @@ extern const char kDisableLacrosTtsSupportDescription[];
 extern const char kPromiseIconsName[];
 extern const char kPromiseIconsDescription[];
 
+extern const char kEnableAudioFocusEnforcementName[];
+extern const char kEnableAudioFocusEnforcementDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // ============================================================================

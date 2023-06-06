@@ -10351,7 +10351,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrosWebAppShortcutUiUpdateName,
      flag_descriptions::kCrosWebAppShortcutUiUpdateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kCrosWebAppShortcutUiUpdate)},
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-audio-focus-enforcement",
+     flag_descriptions::kEnableAudioFocusEnforcementName,
+     flag_descriptions::kEnableAudioFocusEnforcementDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media_session::features::kAudioFocusEnforcement)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"use-gpu-scheduler-dfs", flag_descriptions::kUseGpuSchedulerDfsName,
      flag_descriptions::kUseGpuSchedulerDfsDescription, kOsAll,
