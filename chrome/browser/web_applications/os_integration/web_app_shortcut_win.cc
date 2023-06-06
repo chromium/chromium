@@ -242,6 +242,7 @@ void DeleteShortcuts(std::vector<base::FilePath> all_shortcuts,
   for (const auto& shortcut : all_shortcuts) {
     if (!base::DeleteFile(shortcut))
       result = false;
+    SHChangeNotify(SHCNE_DELETE, SHCNF_PATH, shortcut.value().c_str(), nullptr);
   }
   std::move(result_callback).Run(result);
 }
