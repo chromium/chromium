@@ -5,6 +5,7 @@
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/rules.gni")
+import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 
 tweak_info_plist("info_plist") {
@@ -17,13 +18,13 @@ compile_entitlements("entitlements") {
     "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
   ]
   entitlements_templates =
-      [ "entitlements/extenal/intents_extension.entitlements" ]
+      [ "entitlements/external/intents_extension.entitlements" ]
   output_name = "$target_gen_dir/chrome_intents.entitlements"
 }
 
 ios_appex_bundle("appex") {
   output_name = "intents_extension"
-  deps = [ ":intents" ]
+  deps = [ "//ios/chrome/intents_extension:intents" ]
 
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
   assert_no_deps = ios_extension_assert_no_deps

@@ -784,7 +784,7 @@ if (current_toolchain == default_toolchain) {
 
   if (ios_enable_intents_extension) {
     extension_bundle_data("intents_extension_bundle") {
-      extension_target = "intents_extension.appex"
+      extension_name = "intents_extension.appex"
       extension_target =
           "//ios/chrome/intents_extension/appex(${_extension_toolchain})"
     }

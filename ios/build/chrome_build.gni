@@ -23,7 +23,7 @@ declare_args() {
   ios_enable_credential_provider_extension = true
 
   # Enable intents extension.
-  ios_enable_intents_extension = false
+  ios_enable_intents_extension = true
 
   # Enable iOS 14, WidgetKit extension.
   ios_enable_widget_kit_extension = true
