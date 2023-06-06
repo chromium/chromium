@@ -125,13 +125,13 @@ WrappedGraphiteTextureBacking::~WrappedGraphiteTextureBacking() {
 
 bool WrappedGraphiteTextureBacking::Initialize() {
   CHECK(!format().IsCompressed());
-
-  int num_planes = format().NumberOfPlanes();
+  const bool mipmapped = usage() & SHARED_IMAGE_USAGE_MIPMAP;
+  const int num_planes = format().NumberOfPlanes();
   graphite_textures_.resize(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {
-    skgpu::graphite::TextureInfo texture_info =
-        gpu::GetGraphiteTextureInfo(context_state_->gr_context_type(), format(),
-                                    plane, usage() & SHARED_IMAGE_USAGE_MIPMAP);
+    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
+        context_state_->gr_context_type(), format(), plane,
+        /*is_yuv_plane=*/false, mipmapped);
     auto sk_size = gfx::SizeToSkISize(format().GetPlaneSize(plane, size()));
     auto texture = recorder()->createBackendTexture(sk_size, texture_info);
     if (!texture.isValid()) {
@@ -142,7 +142,6 @@ bool WrappedGraphiteTextureBacking::Initialize() {
     }
     graphite_textures_[plane] = std::move(texture);
   }
-
   return true;
 }
 

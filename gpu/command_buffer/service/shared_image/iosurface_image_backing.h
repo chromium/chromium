@@ -184,7 +184,8 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker,
                               WGPUDevice device,
-                              base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+                              gfx::ScopedIOSurface io_surface,
+                              const gfx::Size& io_surface_size,
                               WGPUTextureFormat wgpu_format,
                               std::vector<WGPUTextureFormat> view_formats);
   ~DawnIOSurfaceRepresentation() override;
@@ -193,11 +194,13 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
   void EndAccess() final;
 
  private:
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
-  WGPUDevice device_;
+  const WGPUDevice device_;
+  const gfx::ScopedIOSurface io_surface_;
+  const gfx::Size io_surface_size_;
+  const WGPUTextureFormat wgpu_format_;
+  const std::vector<WGPUTextureFormat> view_formats_;
+
   WGPUTexture texture_ = nullptr;
-  WGPUTextureFormat wgpu_format_;
-  std::vector<WGPUTextureFormat> view_formats_;
 
   // TODO(cwallez@chromium.org): Load procs only once when the factory is
   // created and pass a pointer to them around?
@@ -316,8 +319,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   bool IsPassthrough() const { return true; }
 
-  gfx::ScopedIOSurface io_surface_;
+  const gfx::ScopedIOSurface io_surface_;
   const uint32_t io_surface_plane_;
+  const gfx::Size io_surface_size_;
+  const uint32_t io_surface_format_;
   const gfx::GenericSharedMemoryId io_surface_id_;
 
   const GLenum gl_target_;

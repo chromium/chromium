@@ -473,9 +473,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     // purpose of creating Graphite TextureInfo i.e. it will have CopySrc and
     // CopyDst usage. So don't treat it like a root surface which generally
     // won't have or support those usages.
-    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
-        dependency_->gr_context_type(), format_, /*plane_index=*/0,
-        /*mipmapped=*/false);
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format_);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {
@@ -547,7 +546,8 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
   if (graphite_recorder_) {
     for (auto* context : contexts) {
       // NOTE: We don't have promises for individual planes, but still need
-      // texture info for fallback.
+      // texture info for fallback. Fallback textures are not considered YUV
+      // planes since they are allocated separately and need write usage.
       context->SetImage(
           nullptr, {gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(),
                                                 context->format())});
@@ -557,7 +557,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     auto y_format = y_context->format();
     skgpu::graphite::TextureInfo texture_info =
         gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), y_format,
-                                    /*plane_index=*/0, /*mipmapped=*/false);
+                                    /*plane_index=*/0, /*is_yuv_plane=*/true);
     SkColorType color_type = ToClosestSkColorType(/*gpu_compositing=*/true,
                                                   y_format, /*plane_index=*/0);
     SkColorInfo color_info(color_type, y_context->alpha_type(),
@@ -611,7 +611,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
       ToClosestSkColorType(/*gpu_compositing=*/true, format);
   if (graphite_recorder_) {
     skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
-        dependency_->gr_context_type(), format, /*plane_index=*/0, mipmap);
+        dependency_->gr_context_type(), format, /*plane_index=*/0,
+        /*is_yuv_plane=*/false, mipmap);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->color_space());
     auto image = SkImages::PromiseTextureFrom(
@@ -654,7 +655,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     // supported by Skia.
     skgpu::graphite::TextureInfo texture_info =
         gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format,
-                                    /*plane_index=*/0, /*mipmapped=*/false);
+                                    /*plane_index=*/0, /*is_yuv_plane=*/true);
     SkColorType color_type = ToClosestSkColorType(/*gpu_compositing=*/true,
                                                   format, /*plane_index=*/0);
     SkColorInfo color_info(color_type, image_context->alpha_type(),

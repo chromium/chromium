@@ -458,8 +458,10 @@ D3DImageBacking::D3DImageBacking(
       !!(usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
   CHECK(has_webgpu_usage || has_video_decode_usage ||
         !gl_texture_holders_.empty());
-  if (d3d11_texture_)
+  if (d3d11_texture_) {
     d3d11_texture_->GetDevice(&d3d11_device_);
+    d3d11_texture_->GetDesc(&d3d11_texture_desc_);
+  }
 }
 
 D3DImageBacking::~D3DImageBacking() {
@@ -479,17 +481,10 @@ D3DImageBacking::~D3DImageBacking() {
 
 ID3D11Texture2D* D3DImageBacking::GetOrCreateStagingTexture() {
   if (!staging_texture_) {
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
-    DCHECK(d3d11_texture_);
-    d3d11_texture_->GetDevice(&d3d11_device);
-
-    D3D11_TEXTURE2D_DESC texture_desc;
-    d3d11_texture_->GetDesc(&texture_desc);
-
     D3D11_TEXTURE2D_DESC staging_desc = {};
-    staging_desc.Width = texture_desc.Width;
-    staging_desc.Height = texture_desc.Height;
-    staging_desc.Format = texture_desc.Format;
+    staging_desc.Width = d3d11_texture_desc_.Width;
+    staging_desc.Height = d3d11_texture_desc_.Height;
+    staging_desc.Format = d3d11_texture_desc_.Format;
     staging_desc.MipLevels = 1;
     staging_desc.ArraySize = 1;
     staging_desc.SampleDesc.Count = 1;
@@ -497,8 +492,9 @@ ID3D11Texture2D* D3DImageBacking::GetOrCreateStagingTexture() {
     staging_desc.CPUAccessFlags =
         D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 
-    HRESULT hr = d3d11_device->CreateTexture2D(&staging_desc, nullptr,
-                                               &staging_texture_);
+    CHECK(d3d11_device_);
+    HRESULT hr = d3d11_device_->CreateTexture2D(&staging_desc, nullptr,
+                                                &staging_texture_);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to create staging texture. hr=" << std::hex << hr;
       return nullptr;
@@ -525,22 +521,16 @@ void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), static_cast<size_t>(format().NumberOfPlanes()));
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
-  DCHECK(d3d11_texture_);
-  d3d11_texture_->GetDevice(&d3d11_device);
-
+  CHECK(d3d11_device_);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
-  d3d11_device->GetImmediateContext(&device_context);
+  d3d11_device_->GetImmediateContext(&device_context);
 
-  D3D11_TEXTURE2D_DESC texture_desc;
-  d3d11_texture_->GetDesc(&texture_desc);
-
-  if (texture_desc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) {
+  if (d3d11_texture_desc_.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) {
     // D3D doesn't support mappable+default YUV textures.
     DCHECK(format().is_single_plane());
 
     Microsoft::WRL::ComPtr<ID3D11Device3> device3;
-    HRESULT hr = d3d11_device.As(&device3);
+    HRESULT hr = d3d11_device_.As(&device3);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
       return false;
@@ -598,22 +588,16 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 }
 
 bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
-  DCHECK(d3d11_texture_);
-  d3d11_texture_->GetDevice(&d3d11_device);
-
+  CHECK(d3d11_device_);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
-  d3d11_device->GetImmediateContext(&device_context);
+  d3d11_device_->GetImmediateContext(&device_context);
 
-  D3D11_TEXTURE2D_DESC texture_desc;
-  d3d11_texture_->GetDesc(&texture_desc);
-
-  if (texture_desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) {
+  if (d3d11_texture_desc_.CPUAccessFlags & D3D11_CPU_ACCESS_READ) {
     // D3D doesn't support mappable+default YUV textures.
     DCHECK(format().is_single_plane());
 
     Microsoft::WRL::ComPtr<ID3D11Device3> device3;
-    HRESULT hr = d3d11_device.As(&device3);
+    HRESULT hr = d3d11_device_.As(&device3);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
       return false;
@@ -736,11 +720,11 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         device);
   }
 #endif
-  D3D11_TEXTURE2D_DESC desc;
-  d3d11_texture_->GetDesc(&desc);
-  const WGPUTextureFormat wgpu_format = DXGIToWGPUFormat(desc.Format);
+  const WGPUTextureFormat wgpu_format =
+      DXGIToWGPUFormat(d3d11_texture_desc_.Format);
   if (wgpu_format == WGPUTextureFormat_Undefined) {
-    LOG(ERROR) << "Unsupported DXGI_FORMAT found: " << desc.Format;
+    LOG(ERROR) << "Unsupported DXGI_FORMAT found: "
+               << d3d11_texture_desc_.Format;
     return nullptr;
   }
 
@@ -1129,12 +1113,14 @@ D3DImageBacking::ProduceSkiaGraphite(
   auto dawn_representation = ProduceDawn(
       manager, tracker, device.Get(),
       static_cast<WGPUBackendType>(adapter_properties.backendType), {});
+  const bool is_yuv_plane =
+      format().is_single_plane() && NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      static_cast<int>(plane_index_));
+      plane_index_, is_yuv_plane);
 #else
-  return nullptr;
+  NOTREACHED_NORETURN();
 #endif
 }
 

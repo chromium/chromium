@@ -540,16 +540,18 @@ DawnIOSurfaceRepresentation::DawnIOSurfaceRepresentation(
     MemoryTypeTracker* tracker,
     WGPUDevice device,
     base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+    const gfx::Size& io_surface_size,
     WGPUTextureFormat wgpu_format,
     std::vector<WGPUTextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
-      io_surface_(std::move(io_surface)),
       device_(device),
+      io_surface_(std::move(io_surface)),
+      io_surface_size_(io_surface_size),
       wgpu_format_(wgpu_format),
       view_formats_(std::move(view_formats)),
       dawn_procs_(dawn::native::GetProcs()) {
-  DCHECK(device_);
-  DCHECK(io_surface_);
+  CHECK(device_);
+  CHECK(io_surface_);
 
   // Keep a reference to the device so that it stays valid (it might become
   // lost in which case operations will be noops).
@@ -571,8 +573,9 @@ WGPUTexture DawnIOSurfaceRepresentation::BeginAccess(
   texture_descriptor.format = wgpu_format_;
   texture_descriptor.usage = wgpu_texture_usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
-  texture_descriptor.size = {static_cast<uint32_t>(size().width()),
-                             static_cast<uint32_t>(size().height()), 1};
+  texture_descriptor.size = {static_cast<uint32_t>(io_surface_size_.width()),
+                             static_cast<uint32_t>(io_surface_size_.height()),
+                             1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
   texture_descriptor.viewFormatCount =
@@ -738,6 +741,9 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          /*is_thread_safe=*/false),
       io_surface_(std::move(io_surface)),
       io_surface_plane_(io_surface_plane),
+      io_surface_size_(IOSurfaceGetWidth(io_surface_),
+                       IOSurfaceGetHeight(io_surface_)),
+      io_surface_format_(IOSurfaceGetPixelFormat(io_surface_)),
       io_surface_id_(io_surface_id),
       gl_target_(gl_target),
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
@@ -931,40 +937,27 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     WGPUBackendType backend_type,
     std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
+  WGPUTextureFormat wgpu_format = ToWGPUFormat(format());
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
   // RGBA versus BGRA when using Skia Ganesh GL backend or ANGLE.
-  viz::SharedImageFormat actual_format = format();
-  const uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface_);
-  if (io_surface_format == 'BGRA') {
-    actual_format = viz::SinglePlaneFormat::kBGRA_8888;
+  if (io_surface_format_ == 'BGRA') {
+    wgpu_format = WGPUTextureFormat_BGRA8Unorm;
   }
-
   // TODO(crbug.com/1293514): Remove this if condition after using single
-  // multiplanar mailbox and actual_format could report multiplanar format
-  // correctly.
-  if (io_surface_format == '420v') {
-    actual_format = viz::LegacyMultiPlaneFormat::kNV12;
+  // multiplanar mailbox for which wgpu_format should already be correct.
+  if (io_surface_format_ == '420v') {
+    wgpu_format = WGPUTextureFormat_R8BG8Biplanar420Unorm;
   }
-
-  absl::optional<WGPUTextureFormat> wgpu_format = ToWGPUFormat(actual_format);
-  if (wgpu_format.value() == WGPUTextureFormat_Undefined) {
+  if (wgpu_format == WGPUTextureFormat_Undefined) {
+    LOG(ERROR) << "Unsupported format for Dawn: " << format().ToString();
     return nullptr;
   }
-
   return std::make_unique<DawnIOSurfaceRepresentation>(
-      manager, this, tracker, device, io_surface_, wgpu_format.value(),
-      std::move(view_formats));
-#else   // BUILDFLAG(USE_DAWN)
-  if (!factory()) {
-    DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
-    return nullptr;
-  }
-
-  return GLTextureImageBackingHelper::ProduceDawnCommon(
-      factory(), manager, tracker, device, backend_type,
-      std::move(view_formats), this,
-      /*use_passthrough=*/true);
-#endif  // BUILDFLAG(USE_DAWN)
+      manager, this, tracker, device, io_surface_, io_surface_size_,
+      wgpu_format, std::move(view_formats));
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -1023,12 +1016,14 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
       LOG(ERROR) << "Could not create Dawn Representation";
       return nullptr;
     }
+    const bool is_yuv_plane =
+        format().is_single_plane() && (io_surface_format_ == '420v');
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
     return SkiaGraphiteDawnImageRepresentation::Create(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-        static_cast<int>(io_surface_plane_));
+        static_cast<int>(io_surface_plane_), is_yuv_plane);
 #endif
   } else {
     CHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteMetal);

@@ -295,6 +295,9 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // TODO(sunnyps): Support multiple D3D11 devices.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 
+  // D3D11 texture descriptor for |d3d11_texture_|.
+  D3D11_TEXTURE2D_DESC d3d11_texture_desc_;
+
   // Whether the backing is being used for exclusive read-write access.
   bool in_write_access_ = false;
 

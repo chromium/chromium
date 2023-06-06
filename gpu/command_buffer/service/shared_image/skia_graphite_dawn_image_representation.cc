@@ -42,10 +42,11 @@ SkiaGraphiteDawnImageRepresentation::Create(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    int plane_index) {
+    int plane_index,
+    bool is_yuv_plane) {
   return base::WrapUnique(new SkiaGraphiteDawnImageRepresentation(
       std::move(dawn_representation), recorder, std::move(context_state),
-      manager, backing, tracker, plane_index));
+      manager, backing, tracker, plane_index, is_yuv_plane));
 }
 
 SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
@@ -55,12 +56,14 @@ SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    int plane_index)
+    int plane_index,
+    bool is_yuv_plane)
     : SkiaGraphiteImageRepresentation(manager, backing, tracker),
       dawn_representation_(std::move(dawn_representation)),
       context_state_(std::move(context_state)),
       recorder_(recorder),
-      plane_index_(plane_index) {
+      plane_index_(plane_index),
+      is_yuv_plane_(is_yuv_plane) {
   CHECK(dawn_representation_);
 }
 
@@ -135,7 +138,8 @@ SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK(!dawn_scoped_access_);
 
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedWGPUTextureUsage(format()), AllowUnclearedAccess::kNo);
+      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
+      AllowUnclearedAccess::kNo);
 
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
@@ -160,13 +164,12 @@ SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
       backend_textures.emplace_back(plane_size, plane_info, plane_view.Get());
       plane_views_.push_back(std::move(plane_view));
     }
-  } else if (texture.GetFormat() ==
-             wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
+  } else if (is_yuv_plane_) {
     // Legacy multi-planar NV12 - format() is either R8 or RG8.
     wgpu::TextureView plane_view = CreatePlaneView(texture, plane_index_);
     SkISize plane_size = gfx::SizeToSkISize(size());
     skgpu::graphite::DawnTextureInfo plane_info =
-        GetGraphiteDawnTextureInfo(format());
+        GetGraphiteDawnTextureInfo(format(), /*plane_index=*/0, is_yuv_plane_);
     backend_textures = {skgpu::graphite::BackendTexture(plane_size, plane_info,
                                                         plane_view.Get())};
     plane_views_ = {std::move(plane_view)};

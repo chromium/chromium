@@ -94,20 +94,30 @@ GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
 
 // Following functions return the appropriate WebGPU/Dawn format for a
 // SharedImageFormat.
-// Returns wgpu::TextureFormat format for given `format`.
+// Returns wgpu::TextureFormat format for given `format`. Note that this will
+// return a multi-planar Dawn format for multi-planar SharedImageFormat.
+GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
+    viz::SharedImageFormat format);
+// Returns wgpu::TextureFormat format for given `format` and `plane_index`. Note
+// that this returns a single plane Dawn format and not a multi-planar format.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
-                                                  int plane_index = 0);
+                                                  int plane_index);
 // Same as ToDawnFormat, except it casts from wgpu::TextureFormat to
 // WGPUTextureFormat instead.
+GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
 GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format,
-                                                int plane_index = 0);
+                                                int plane_index);
 
-// Returns the supported Dawn texture usage for the given `format`.
-wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format);
+// Returns the supported Dawn texture usage for the given `format`. For single
+// plane formats i.e. `plane_index` = 0, `is_yuv_plane` indicates if the texture
+// corresponds to a plane of a multi-planar image.
+wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
+                                                bool is_yuv_plane = false);
 
 // Same as GetSupportedDawnTextureUsage, except it casts from wgpu::TextureUsage
-// to WGPUTextureFormat instead.
-WGPUTextureUsage GetSupportedWGPUTextureUsage(viz::SharedImageFormat format);
+// to WGPUTextureUsage instead.
+WGPUTextureUsage GetSupportedWGPUTextureUsage(viz::SharedImageFormat format,
+                                              bool is_yuv_plane = false);
 
 // Following function return the appropriate Metal format for a
 // SharedImageFormat.
@@ -117,17 +127,22 @@ GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
                                                int plane_index = 0);
 #endif
 
-// Returns the graphite::TextureInfo for a given `format`.
+// Returns the graphite::TextureInfo for a given `format` and `plane_index`. For
+// single plane formats i.e. `plane_index` = 0, `is_yuv_plane` indicates if the
+// texture corresponds to a plane of a multi-planar image. `mipmapped` indicates
+// if the texture has mipmaps.
 GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index = 0,
+    bool is_yuv_plane = false,
     bool mipmapped = false);
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
     viz::SharedImageFormat format,
     int plane_index = 0,
+    bool is_yuv_plane = false,
     bool mipmapped = false);
 #endif
 
@@ -135,6 +150,7 @@ GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
 GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
     viz::SharedImageFormat format,
     int plane_index = 0,
+    bool is_yuv_plane = false,
     bool mipmapped = false);
 #endif
 

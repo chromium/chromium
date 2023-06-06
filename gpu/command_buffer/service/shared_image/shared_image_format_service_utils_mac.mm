@@ -74,6 +74,7 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
 skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
     viz::SharedImageFormat format,
     int plane_index,
+    bool is_yuv_plane,
     bool mipmapped) {
   MTLPixelFormat mtl_pixel_format =
       static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
@@ -83,8 +84,11 @@ skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
   skgpu::graphite::MtlTextureInfo mtl_texture_info;
   mtl_texture_info.fSampleCount = 1;
   mtl_texture_info.fFormat = mtl_pixel_format;
-  mtl_texture_info.fUsage =
-      MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+  mtl_texture_info.fUsage = MTLTextureUsageShaderRead;
+  if (format.is_single_plane() && !format.IsLegacyMultiplanar() &&
+      !is_yuv_plane) {
+    mtl_texture_info.fUsage |= MTLTextureUsageRenderTarget;
+  }
 #if BUILDFLAG(IS_IOS)
   mtl_texture_info.fStorageMode = MTLStorageModeShared;
 #else
