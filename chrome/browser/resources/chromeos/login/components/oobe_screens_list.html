@@ -21,23 +21,42 @@
   }
 
   .screen-title {
+    color: var(--cros-text-color-primary);
+    font-weight: var(--oobe-header-font-weight);
+  }
+
+  :root.jelly-enabled .screen-title {
     color: var(--cros-sys-on_surface);
     font: var(--cros-body-1-font);
   }
 
   .screen-subtitle {
+    color: var(--cros-text-color-secondary);
+    font-weight: var(--oobe-default-font-weight);
+  }
+
+  :root.jelly-enabled .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
     font: var(--cros-body-2-font);
   }
 
   .screen-item {
-    background-color: var(--cros-sys-base_elevated);
     border-radius: 16px;
+    border-width: 0;
+    box-shadow: var(--cr-elevation-1);
     height: 80px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
+    margin-top: 8px;
     padding: 0;
     transition: color 250ms linear, background-color 250ms linear;
-    width: 100%;
+    width: calc(100% - 8px);
+    --cros-sys-on_secondary: var(--cros-sys-primary);
+  }
+
+  :root.jelly-enabled .screen-item {
+    background-color: var(--cros-sys-base_elevated);
   }
 
   .screen-icon  {
@@ -51,25 +70,37 @@
   }
 
   .text-container {
-    display: block;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     margin-inline-end: 16px;
   }
 
   .screen-item:focus {
+    border: 2px solid var(--cros-focus-ring-color);
+  }
+
+  :root.jelly-enabled .screen-item:focus {
     border: 2px solid var(--cros-sys-focus_ring);
   }
 
   .screen-item[checked=true] {
+    background-color: var(--cros-button-background-color-secondary-hover);
+  }
+
+  :root.jelly-enabled .screen-item[checked=true] {
     background-color: var(--cros-sys-primary_container);
   }
 
-  .screen-item[checked=true] .screen-title {
-    color: var(--cros-sys-on_surface);
+  .screen-item[checked=true] .screen-title,
+  .screen-item[checked=true] .screen-subtitle {
+    color: var(--cros-color-prominent);
   }
 
-  .screen-item[checked=true] .screen-subtitle {
+  :root.jelly-enabled .screen-item[checked=true] .screen-title {
+    color: var(--cros-sys-on_surface);
+  }
+  :root.jelly-enabled .screen-item[checked=true] .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
   }
 
@@ -80,8 +111,9 @@
   }
 
   .screen-item[visited] {
-    --cros-sys-inverse_primary : var(--cros-color-secondary-light);
-    --cros-sys-primary : var(--cros-color-secondary-light);
+    --cros-sys-inverse_primary : var(--cros-color-secondary);
+    --cros-sys-primary : var(--cros-color-secondary);
+    --cros-sys-on_secondary: var(--cros-color-primary-inverted);
     background-color: var(--cros-button-background-color-primary-disabled);
   }
 
@@ -92,16 +124,24 @@
   }
 
   .screen-item[visited] .screen-title {
+    color: var(--cros-text-color-primary);
+  }
+
+  :root.jelly-enabled .screen-item[visited] .screen-title {
     color: var(--cros-sys-on_surface);
   }
 
   .screen-item[visited] .screen-subtitle {
+    color: var(--cros-text-color-secondary);
+  }
+
+  :root.jelly-enabled .screen-item[visited] .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
   }
 
   .screen-item[disabled] {
-    --cros-sys-inverse_primary : var(--cros-sys-disabled);
-    --cros-sys-primary : var(--cros-sys-disabled);
+    --cros-sys-inverse_primary : var(--cros-color-disabled);
+    --cros-sys-primary : var(--cros-color-disabled);
     background-color: var(--disabled-bg-action);
   }
 
@@ -111,12 +151,14 @@
     background-color: var(--cros-sys-disabled_container);
   }
 
-  .screen-item[disabled] .screen-title {
-    color: var(--cros-sys-disabled);
+  .screen-item[disabled] .screen-title,
+  .screen-item[disabled] .screen-subtitle {
+    color: var(--cros-color-disabled);
   }
 
-  .screen-item[disabled] .screen-subtitle {
-    color:  var(--cros-sys-disabled);
+  :root.jelly-enabled .screen-item[disabled] .screen-title,
+  :root.jelly-enabled .screen-item[disabled] .screen-subtitle {
+    color: var(--cros-sys-disabled);
   }
 
 </style>
