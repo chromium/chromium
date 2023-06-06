@@ -6100,35 +6100,35 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_INSTALLER_APP_NAME" desc="Name of a utility which is used to install the Steam application (Steam is a video game distribution service)">
     Steam installer
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="Title for installer for Steam (noun, name of app).">
-    Welcome to Steam on Chromebook
+  <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="Title of the installer for 'Steam for Chromebook'. 'Steam for Chromebook' is the name of the piece of software used to run 'Steam' (a software distribution platform) on Chromebooks.">
+    Welcome to Steam for Chromebook
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_MESSAGE" desc="Body for installer for Steam (noun, name of app).">
-    Let’s get started
+  <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_MESSAGE" desc="Body text shown in the installer for 'Steam for Chromebook'.">
+    This is a beta program. You can now use Steam to play some games on your Chromebook.
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_INSTALL_BUTTON" desc="Button on installer to install Steam (noun, name of app).">
+  <message name="IDS_BOREALIS_INSTALLER_INSTALL_BUTTON" desc="Button on installer to install 'Steam for Chromebook'.">
     Install
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_TITLE" desc="Title for installer while Steam (noun, name of app) is installing.">
-    Setting up Steam on Chromebook
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_TITLE" desc="Title for installer while 'Steam for Chromebook' is installing.">
+    Setting up Steam for Chromebook
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE" desc="Body for Steam (noun, name of app) installer while Steam is installing.">
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE" desc="Body text shown in the installer while 'Steam for Chromebook' is installing.">
     This may take a few minutes
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_PERCENTAGE" desc="Message containing the progress percentage of the ongoing Steam (noun, name of app) installation.">
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_PERCENTAGE" desc="Message containing the progress percentage of the ongoing 'Steam for Chromebook' installation.">
     <ph name="PERCENTAGE_COMPLETE">$1<ex>42</ex></ph>% completed
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_ONGOING_INACTIVE" desc="Message shown while the steam installer is initializing.">
-    Starting installation
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_INITIAL" desc="Message shown while the 'Steam for Chromebook' installer is calculating how much longer it will need to complete.">
+    estimating time
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_FINISHED_TITLE" desc="Title for installer when installation for Steam (noun, name of app) completes succesfully.">
-    You’re all set!
+  <message name="IDS_BOREALIS_INSTALLER_FINISHED_TITLE" desc="Title for installer when installation for 'Steam for Chromebook' completes succesfully.">
+    Let’s get gaming
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_FINISHED_MESSAGE" desc="Title for Steam (noun, name of app) installer when installation suceeded.">
-    Enjoy gaming on your Chromebook
+  <message name="IDS_BOREALIS_INSTALLER_FINISHED_MESSAGE" desc="Body text shown in the installer when 'Steam for Chromebook' installation suceeded.">
+    You can now use Steam for Chromebook (Beta)
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_LAUNCH_BUTTON" desc="Button in Steam (noun, name of app) installer to launch Steam.">
-    Launch Steam
+  <message name="IDS_BOREALIS_INSTALLER_LAUNCH_BUTTON" desc="Button in the installer for 'Steam for Chromebook' to launch Steam.">
+    Open Steam
   </message>
   <message name="IDS_BOREALIS_INSTALLER_ERROR_TITLE" desc="Title for installer when Steam (noun, name of app) fails to install.">
     There was a problem setting up Steam on Chromebook

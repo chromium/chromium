@@ -126,7 +126,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
               l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_LAUNCH_BUTTON));
     EXPECT_TRUE(HasCancelButton());
     EXPECT_EQ(view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL),
-              l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+              l10n_util::GetStringUTF16(IDS_APP_CANCEL));
     EXPECT_EQ(view_->GetPrimaryMessage(),
               l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_FINISHED_TITLE));
   }
