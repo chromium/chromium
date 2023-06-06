@@ -464,7 +464,7 @@ void TabGroupHeader::VisualsChanged() {
 
     // Set the radius such that the chip nestles snugly against the tab corner
     // radius, taking into account the group underline stroke.
-    const int corner_radius = TabGroupStyle::GetChipCornerRadius();
+    const int corner_radius = group_style_->GetChipCornerRadius();
 
     // TODO(crbug.com/1416895): The math of the layout in this function is done
     // arithmetically and can be hard to understand. This should instead be done
