@@ -1377,7 +1377,8 @@ class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
          {blink::features::kPrivateAggregationApi, {}},
          // This feature allows `runAdAuction()`'s promise to resolve to a
          // `FencedFrameConfig` object upon developer request.
-         {blink::features::kFencedFramesAPIChanges, {}}},
+         {blink::features::kFencedFramesAPIChanges, {}},
+         {blink::features::kFencedFramesDefaultMode, {}}},
         /*disabled_features=*/{});
   }
 

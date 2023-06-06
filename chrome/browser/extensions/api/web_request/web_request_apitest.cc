@@ -5357,6 +5357,7 @@ class ExtensionWebRequestApiFencedFrameTest
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {}},
          {blink::features::kFencedFramesAPIChanges, {}},
+         {blink::features::kFencedFramesDefaultMode, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
     // Fenced frames are only allowed in secure contexts.

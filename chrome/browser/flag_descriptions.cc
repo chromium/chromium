@@ -1091,6 +1091,13 @@ const char kEnableFencedFramesDescription[] =
     "#privacy-sandbox-ads-apis to also be enabled. See "
     "https://github.com/shivanigithub/fenced-frame";
 
+const char kEnableFencedFramesDeveloperModeName[] =
+    "Enable the `FencedFrameConfig` constructor.";
+const char kEnableFencedFramesDeveloperModeDescription[] =
+    "The `FencedFrameConfig` constructor allows you to test the <fencedframe> "
+    "element without running an ad auction, as you can manually supply a URL "
+    "to navigate the fenced frame to.";
+
 const char kEnableGamepadButtonAxisEventsName[] =
     "Gamepad Button and Axis Events";
 const char kEnableGamepadButtonAxisEventsDescription[] =

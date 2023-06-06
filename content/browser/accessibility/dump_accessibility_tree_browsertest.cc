@@ -2039,10 +2039,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 class DumpAccessibilityTreeFencedFrameTest : public DumpAccessibilityTreeTest {
  protected:
   DumpAccessibilityTreeFencedFrameTest() {
-    feature_list_.InitWithFeatures({{blink::features::kFencedFrames},
-                                    {features::kPrivacySandboxAdsAPIsOverride},
-                                    {blink::features::kFencedFramesAPIChanges}},
-                                   {/* disabled_features */});
+    feature_list_.InitWithFeatures(
+        {{blink::features::kFencedFrames},
+         {features::kPrivacySandboxAdsAPIsOverride},
+         {blink::features::kFencedFramesAPIChanges},
+         {blink::features::kFencedFramesDefaultMode}},
+        {/* disabled_features */});
 
     UseHttpsTestServer();
   }

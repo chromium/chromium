@@ -65803,6 +65803,7 @@ from previous Chrome versions.
   <int value="1614596813" label="CloseButtonsInactiveTabs:disabled"/>
   <int value="1615515373" label="ScreenAI:disabled"/>
   <int value="1615988672" label="GrantNotificationsToDSE:enabled"/>
+  <int value="1616398626" label="FencedFramesDefaultMode:enabled"/>
   <int value="1616418306" label="AssistAutoCorrect:disabled"/>
   <int value="1616782064" label="shelf-dense-clamshell"/>
   <int value="1616938915"
@@ -66034,6 +66035,7 @@ from previous Chrome versions.
   <int value="1724706885" label="EnableEdgeDetection:disabled"/>
   <int value="1724800383" label="AsmJsToWebAssembly:disabled"/>
   <int value="1725438666" label="NewStyleNotifications:enabled"/>
+  <int value="1726197412" label="FencedFramesDefaultMode:disabled"/>
   <int value="1729369067" label="StartSurfaceDisabledFeedImprovement:disabled"/>
   <int value="1730094138" label="enable-md-storage-manager"/>
   <int value="1730236697" label="force-device-scale-factor"/>

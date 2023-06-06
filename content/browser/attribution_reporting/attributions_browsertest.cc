@@ -1353,7 +1353,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
                               {features::kPrivacySandboxAdsAPIsOverride, {}},
                               {features::kAttributionFencedFrameReportingBeacon,
                                {}},
-                              {blink::features::kFencedFramesAPIChanges, {}}},
+                              {blink::features::kFencedFramesAPIChanges, {}},
+                              {blink::features::kFencedFramesDefaultMode, {}}},
         /*disabled_features=*/{});
   }
 

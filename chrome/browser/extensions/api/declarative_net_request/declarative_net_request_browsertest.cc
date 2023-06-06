@@ -196,6 +196,7 @@ class DeclarativeNetRequestBrowserTest
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFencedFrames,
          blink::features::kFencedFramesAPIChanges,
+         blink::features::kFencedFramesDefaultMode,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
         {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid

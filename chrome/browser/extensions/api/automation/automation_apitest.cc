@@ -433,7 +433,8 @@ class AutomationApiFencedFrameTest : public AutomationApiTest {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kFencedFrames, {}},
                               {features::kPrivacySandboxAdsAPIsOverride, {}},
-                              {blink::features::kFencedFramesAPIChanges, {}}},
+                              {blink::features::kFencedFramesAPIChanges, {}},
+                              {blink::features::kFencedFramesDefaultMode, {}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
   }
 

@@ -1288,6 +1288,7 @@ class FencedFrameReduceAcceptLanguageBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {}},
          {blink::features::kFencedFramesAPIChanges, {}},
+         {blink::features::kFencedFramesDefaultMode, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {network::features::kReduceAcceptLanguage, {}}},
         {/* disabled_features */});
