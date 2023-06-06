@@ -3416,6 +3416,10 @@
       base_feature: "none",
     },
     {
+      name: "SvgMapLocalToAncestorFix",
+      status: "stable",
+    },
+    {
       name: "SvgRasterOptimizations",
       status: "experimental",
     },

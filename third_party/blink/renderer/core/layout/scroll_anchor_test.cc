@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -1267,5 +1269,37 @@ TEST_F(MAYBE_ScrollAnchorFindInPageTest, FocusedUnderStickyIsSkipped) {
   // The y coordinate of #check should change since #target is not a valid
   // anchor, so we should have selected one of the spacers as the anchor.
   EXPECT_NE(old_bounds->y(), new_bounds->y());
+}
+
+class ScrollAnchorPageTest : public RenderingTest {};
+
+// crbug.com/1443633
+TEST_F(ScrollAnchorPageTest, SvgRelativeBoundsCrashAfterClearLayoutResults) {
+  USE_NON_OVERLAY_SCROLLBARS();
+  SetBodyInnerHTML(R"HTML(
+<style>body { font-size: 18px; }</style>
+<div style="overflow:auto; columns:1; column-fill:auto; width:300px; height:350px;">
+  <svg viewbox="0 0 100 100">
+    <foreignObject style="width:100px; height:2px;">
+      <span id="target"><br>foo</span>
+    </foreignObject>
+  </svg>
+  <div id="scrollbarSummoner" style="display:none;">
+    <div style="height:200px;"></div>
+  </div>
+</div>)HTML");
+  Document& doc = GetDocument();
+  doc.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  doc.getElementById("target")->scrollIntoView();
+  doc.getElementById("scrollbarSummoner")
+      ->setAttribute(html_names::kStyleAttr,
+                     "display:block; contain:size; height:0");
+
+  // During the following layout, ClearLayoutResults() for the first <div> was
+  // called, then ScrollAnchor::NotifyBeforeLayout() for <foreignObject> was
+  // called. It accessed the geometry of the first <div>.
+  doc.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  // Pass if no crashes.
 }
 }

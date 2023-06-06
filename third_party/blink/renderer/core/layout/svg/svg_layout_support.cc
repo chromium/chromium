@@ -191,6 +191,10 @@ void SVGLayoutSupport::MapLocalToAncestor(const LayoutObject* object,
                                           const LayoutBoxModelObject* ancestor,
                                           TransformState& transform_state,
                                           MapCoordinatesFlags flags) {
+  if (RuntimeEnabledFeatures::SvgMapLocalToAncestorFixEnabled() &&
+      object == ancestor) {
+    return;
+  }
   transform_state.ApplyTransform(object->LocalToSVGParentTransform());
 
   LayoutObject* parent = object->Parent();
