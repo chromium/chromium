@@ -326,6 +326,75 @@ public class MainActivity
         mEditUrl.setOnClickListener(v -> mEditUrl.showDropDown());
     }
 
+    private void updateUrlsList() {
+        String url = mEditUrl.getText().toString();
+        HashSet<String> savedUrlSet;
+        SharedPreferences.Editor editor = mSharedPref.edit();
+        if (mSharedPref.getStringSet(SHARED_PREF_SITES, null) != null) {
+            savedUrlSet = (HashSet<String>) mSharedPref.getStringSet(SHARED_PREF_SITES, null);
+            boolean duplicate = false;
+            int duplicatePos = -1;
+            for (String s : savedUrlSet) {
+                if (s.substring(1).equals(url)) {
+                    duplicate = true;
+                    duplicatePos = Integer.parseInt(s.substring(0, 1));
+                }
+            }
+            if (!duplicate) {
+                String[] savedUrlArr = savedUrlSet.toArray(new String[5]);
+                if (!TextUtils.isEmpty(url)) {
+                    // Populate new entry into array - 3 steps:
+                    //  1. Found empty spot in array, just add new url and STOP
+                    //  2. Array full, replace oldest entry with newest
+                    //  3. Increment position of other entries
+                    for (int i = 0; i < savedUrlArr.length; i++) {
+                        if (savedUrlArr[i] == null) {
+                            savedUrlArr[i] = "1" + url;
+                            break;
+                        } else if (savedUrlArr[i].substring(0, 1).equals("5")) {
+                            savedUrlArr[i] = "1" + url;
+                        } else {
+                            int position = Integer.parseInt(savedUrlArr[i].substring(0, 1));
+                            savedUrlArr[i] = (position + 1) + savedUrlArr[i].substring(1);
+                        }
+                    }
+                    savedUrlSet.clear();
+                    for (String entry : savedUrlArr) {
+                        if (entry != null) savedUrlSet.add(entry);
+                    }
+                    editor.remove(SHARED_PREF_SITES);
+                    editor.apply();
+                    editor.putStringSet(SHARED_PREF_SITES, savedUrlSet);
+                    editor.apply();
+                }
+            } else if (duplicatePos > 1) {
+                String previousMainUrl = "";
+                savedUrlSet.remove(duplicatePos + url);
+                for (String s : savedUrlSet) {
+                    if (s.charAt(0) == '1') {
+                        previousMainUrl = s;
+                        break;
+                    }
+                }
+                savedUrlSet.remove(previousMainUrl);
+                savedUrlSet.add(duplicatePos + previousMainUrl.substring(1));
+                savedUrlSet.add("1" + url);
+                editor.remove(SHARED_PREF_SITES);
+                editor.apply();
+                editor.putStringSet(SHARED_PREF_SITES, savedUrlSet);
+                editor.apply();
+            }
+        } else {
+            // TODO(1369795) Refactor the way ordering is stored so it's not mixed with URLs
+            savedUrlSet = new HashSet<String>();
+            if (!TextUtils.isEmpty(url)) {
+                savedUrlSet.add("1" + url);
+                editor.putStringSet(SHARED_PREF_SITES, savedUrlSet);
+                editor.apply();
+            }
+        }
+    }
+
     private void initializePackageSpinner() {
         Spinner packageSpinner = findViewById(R.id.package_spinner);
         List<Pair<String, String>> packagesSupportingCustomTabs =
@@ -698,7 +767,6 @@ public class MainActivity
     }
 
     private void unbindCustomTabsService() {
-        initializeUrlEditTextView();
         if (mConnection == null) return;
 
         unbindService(mConnection);
@@ -712,57 +780,12 @@ public class MainActivity
     @Override
     public void onClick(View v) {
         String url = mEditUrl.getText().toString();
-        HashSet<String> savedUrlSet;
 
         int viewId = v.getId();
         SharedPreferences.Editor editor = mSharedPref.edit();
 
         if (viewId == R.id.connect_button) {
-            if (mSharedPref.getStringSet(SHARED_PREF_SITES, null) != null) {
-                savedUrlSet = (HashSet<String>) mSharedPref.getStringSet(SHARED_PREF_SITES, null);
-                boolean duplicate = false;
-                for (String s : savedUrlSet) {
-                    if (s.substring(1).equals(url)) {
-                        duplicate = true;
-                    }
-                }
-                if (!duplicate) {
-                    String[] savedUrlArr = savedUrlSet.toArray(new String[5]);
-                    if (!TextUtils.isEmpty(url)) {
-                        // Populate new entry into array - 3 steps:
-                        //  1. Found empty spot in array, just add new url and STOP
-                        //  2. Array full, replace oldest entry with newest
-                        //  3. Increment position of other entries
-                        for (int i = 0; i < savedUrlArr.length; i++) {
-                            if (savedUrlArr[i] == null) {
-                                savedUrlArr[i] = "1" + url;
-                                break;
-                            } else if (savedUrlArr[i].substring(0, 1).equals("5")) {
-                                savedUrlArr[i] = "1" + url;
-                            } else {
-                                int position = Integer.parseInt(savedUrlArr[i].substring(0, 1));
-                                savedUrlArr[i] = (position + 1) + savedUrlArr[i].substring(1);
-                            }
-                        }
-                        savedUrlSet.clear();
-                        for (String entry : savedUrlArr) {
-                            if (entry != null) savedUrlSet.add(entry);
-                        }
-                        editor.remove(SHARED_PREF_SITES);
-                        editor.apply();
-                        editor.putStringSet(SHARED_PREF_SITES, savedUrlSet);
-                        editor.apply();
-                    }
-                }
-            } else {
-                // TODO(1369795) Refactor the way ordering is stored so it's not mixed with URLs
-                savedUrlSet = new HashSet<String>();
-                if (!TextUtils.isEmpty(url)) {
-                    savedUrlSet.add("1" + url);
-                    editor.putStringSet(SHARED_PREF_SITES, savedUrlSet);
-                    editor.apply();
-                }
-            }
+            updateUrlsList();
             bindCustomTabsService();
         } else if (viewId == R.id.disconnect_button) {
             unbindCustomTabsService();
@@ -779,6 +802,7 @@ public class MainActivity
             launchCct(url, editor);
             new Handler().postDelayed(() -> launchCct("https://abc.xyz", editor), 5000);
         } else if (viewId == R.id.launch_button) {
+            updateUrlsList();
             launchCct(url, editor);
         }
     }
