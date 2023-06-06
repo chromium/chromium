@@ -105,8 +105,7 @@ class TokenPreloadScanner {
   TokenPreloadScanner(const KURL& document_url,
                       std::unique_ptr<CachedDocumentParameters>,
                       const MediaValuesCached::MediaValuesCachedData&,
-                      const ScannerType,
-                      bool priority_hints_origin_trial_enabled);
+                      const ScannerType);
   TokenPreloadScanner(const TokenPreloadScanner&) = delete;
   TokenPreloadScanner& operator=(const TokenPreloadScanner&) = delete;
   ~TokenPreloadScanner();
@@ -161,12 +160,6 @@ class TokenPreloadScanner {
   std::unique_ptr<CachedDocumentParameters> document_parameters_;
   CrossThreadPersistent<MediaValuesCached> media_values_;
   ScannerType scanner_type_;
-  // TODO(domfarolino): Remove this once Priority Hints is no longer in Origin
-  // Trial (see https://crbug.com/821464). This member exists because
-  // HTMLPreloadScanner has no access to an ExecutionContext*, and therefore
-  // cannot determine an Origin Trial's status, so we accept this information in
-  // the constructor and set this flag accordingly.
-  bool priority_hints_origin_trial_enabled_;
 };
 
 class CORE_EXPORT HTMLPreloadScanner
@@ -199,7 +192,6 @@ class CORE_EXPORT HTMLPreloadScanner
       TakePreloadFn take_preload);
 
   HTMLPreloadScanner(std::unique_ptr<HTMLTokenizer>,
-                     bool priority_hints_origin_trial_enabled,
                      const KURL& document_url,
                      std::unique_ptr<CachedDocumentParameters>,
                      const MediaValuesCached::MediaValuesCachedData&,

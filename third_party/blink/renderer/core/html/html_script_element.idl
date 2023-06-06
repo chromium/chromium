@@ -31,7 +31,7 @@
     [CEReactions, Reflect, ReflectOnly=("anonymous","use-credentials"), ReflectEmpty="anonymous", ReflectInvalid="anonymous"] attribute DOMString? crossOrigin;
     [CEReactions] attribute ScriptString text;
     [CEReactions, Reflect, ReflectOnly=("", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString? referrerPolicy;
-    [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString fetchPriority;
+    [CEReactions, MeasureAs=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString fetchPriority;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLScriptElement-partial

@@ -347,9 +347,7 @@ void HTMLImageElement::ParseAttribute(
         (loading == LoadingAttributeValue::kAuto)) {
       GetImageLoader().LoadDeferredImage();
     }
-  } else if (name == html_names::kFetchpriorityAttr &&
-             RuntimeEnabledFeatures::PriorityHintsEnabled(
-                 GetExecutionContext())) {
+  } else if (name == html_names::kFetchpriorityAttr) {
     // We only need to keep track of usage here, as the communication of the
     // |fetchPriority| attribute to the loading pipeline takes place in
     // ImageLoader.

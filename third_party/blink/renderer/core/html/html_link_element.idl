@@ -37,7 +37,7 @@
     [Reflect, ReflectOnly=("script","style","image", "track", "font", "fetch")] attribute DOMString as;
     [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
     [PutForwards=value] readonly attribute DOMTokenList sizes;
-    [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString fetchPriority;
+    [CEReactions, MeasureAs=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString fetchPriority;
     [CEReactions, Reflect] attribute DOMString imageSrcset;
     [CEReactions, Reflect] attribute DOMString imageSizes;
 

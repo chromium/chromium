@@ -124,9 +124,7 @@ void HTMLLinkElement::ParseAttribute(
     Process(LinkLoadParameters::Reason::kMediaChange);
   } else if (name == html_names::kIntegrityAttr) {
     integrity_ = value;
-  } else if (name == html_names::kFetchpriorityAttr &&
-             RuntimeEnabledFeatures::PriorityHintsEnabled(
-                 GetExecutionContext())) {
+  } else if (name == html_names::kFetchpriorityAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
     fetch_priority_hint_ = value;
   } else if (name == html_names::kDisabledAttr) {

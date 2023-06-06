@@ -322,7 +322,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
                                                           kPreloadEnabled);
     GetFrame().DomWindow()->SetReferrerPolicy(document_referrer_policy);
     scanner_ = std::make_unique<HTMLPreloadScanner>(
-        std::make_unique<HTMLTokenizer>(options), false, document_url,
+        std::make_unique<HTMLTokenizer>(options), document_url,
         std::make_unique<CachedDocumentParameters>(&GetDocument()),
         CreateMediaValuesData(),
         TokenPreloadScanner::ScannerType::kMainDocument, nullptr);

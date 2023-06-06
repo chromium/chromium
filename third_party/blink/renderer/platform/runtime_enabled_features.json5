@@ -2786,11 +2786,6 @@
       status: "stable",
       base_feature: "none",
     },
-    {
-      name: "PriorityHints",
-      status: "stable",
-      base_feature: "none",
-    },
     // The RTE feature encompasses multiple APIs, including: Attribution
     // Reporting, FLEDGE, Topics and Fenced Frames.
     {

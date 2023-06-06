@@ -172,14 +172,11 @@ class TokenPreloadScanner::StartTagScanner {
                   MediaValuesCached* media_values,
                   SubresourceIntegrity::IntegrityFeatures features,
                   TokenPreloadScanner::ScannerType scanner_type,
-                  bool priority_hints_origin_trial_enabled,
                   const HashSet<String>* disabled_image_types)
       : tag_impl_(tag_impl),
         media_values_(media_values),
         integrity_features_(features),
         scanner_type_(scanner_type),
-        priority_hints_origin_trial_enabled_(
-            priority_hints_origin_trial_enabled),
         disabled_image_types_(disabled_image_types) {
     if (Match(tag_impl_, html_names::kImgTag) ||
         Match(tag_impl_, html_names::kSourceTag) ||
@@ -385,8 +382,7 @@ class TokenPreloadScanner::StartTagScanner {
       SetReferrerPolicy(attribute_value,
                         kDoNotSupportReferrerPolicyLegacyKeywords);
     } else if (!fetch_priority_hint_set_ &&
-               Match(attribute_name, html_names::kFetchpriorityAttr) &&
-               priority_hints_origin_trial_enabled_) {
+               Match(attribute_name, html_names::kFetchpriorityAttr)) {
       SetFetchPriorityHint(attribute_value);
     } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
                Match(attribute_name, html_names::kBlockingAttr)) {
@@ -413,8 +409,7 @@ class TokenPreloadScanner::StartTagScanner {
                !attribute_value.IsNull()) {
       SetReferrerPolicy(attribute_value, kSupportReferrerPolicyLegacyKeywords);
     } else if (!fetch_priority_hint_set_ &&
-               Match(attribute_name, html_names::kFetchpriorityAttr) &&
-               priority_hints_origin_trial_enabled_) {
+               Match(attribute_name, html_names::kFetchpriorityAttr)) {
       SetFetchPriorityHint(attribute_value);
     } else if (Match(attribute_name, html_names::kWidthAttr)) {
       HTMLDimension dimension;
@@ -498,8 +493,7 @@ class TokenPreloadScanner::StartTagScanner {
                !source_size_set_) {
       ParseSourceSize(attribute_value);
     } else if (!fetch_priority_hint_set_ &&
-               Match(attribute_name, html_names::kFetchpriorityAttr) &&
-               priority_hints_origin_trial_enabled_) {
+               Match(attribute_name, html_names::kFetchpriorityAttr)) {
       SetFetchPriorityHint(attribute_value);
     } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
                Match(attribute_name, html_names::kBlockingAttr)) {
@@ -723,7 +717,6 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   void SetFetchPriorityHint(const String& fetch_priority_hint) {
-    DCHECK(priority_hints_origin_trial_enabled_);
     fetch_priority_hint_set_ = true;
     fetch_priority_hint_ = GetFetchPriorityAttributeValue(fetch_priority_hint);
   }
@@ -772,7 +765,6 @@ class TokenPreloadScanner::StartTagScanner {
   LoadingAttributeValue loading_attr_value_ = LoadingAttributeValue::kAuto;
   TokenPreloadScanner::ScannerType scanner_type_;
   // For explanation, see TokenPreloadScanner's declaration.
-  bool priority_hints_origin_trial_enabled_;
   const HashSet<String>* disabled_image_types_;
   bool attributionsrc_attr_set_ = false;
   absl::optional<float> resource_width_;
@@ -783,8 +775,7 @@ TokenPreloadScanner::TokenPreloadScanner(
     const KURL& document_url,
     std::unique_ptr<CachedDocumentParameters> document_parameters,
     const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
-    const ScannerType scanner_type,
-    bool priority_hints_origin_trial_enabled)
+    const ScannerType scanner_type)
     : document_url_(document_url),
       in_style_(false),
       in_picture_(false),
@@ -796,9 +787,7 @@ TokenPreloadScanner::TokenPreloadScanner(
       document_parameters_(std::move(document_parameters)),
       media_values_(
           MakeGarbageCollected<MediaValuesCached>(media_values_cached_data)),
-      scanner_type_(scanner_type),
-      priority_hints_origin_trial_enabled_(
-          priority_hints_origin_trial_enabled) {
+      scanner_type_(scanner_type) {
   DCHECK(document_parameters_.get());
   DCHECK(media_values_.Get());
   DCHECK(document_url.IsValid());
@@ -1038,8 +1027,7 @@ void TokenPreloadScanner::ScanCommon(
 
       StartTagScanner scanner(
           tag_impl, media_values_, document_parameters_->integrity_features,
-          scanner_type_, priority_hints_origin_trial_enabled_,
-          &document_parameters_->disabled_image_types);
+          scanner_type_, &document_parameters_->disabled_image_types);
       scanner.ProcessAttributes(token.Attributes());
 
       if (in_picture_ && media_values_->Width())
@@ -1079,8 +1067,7 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
     HTMLParserOptions options,
     TokenPreloadScanner::ScannerType scanner_type) {
   return std::make_unique<HTMLPreloadScanner>(
-      std::make_unique<HTMLTokenizer>(options),
-      options.priority_hints_origin_trial_enabled, document.Url(),
+      std::make_unique<HTMLTokenizer>(options), document.Url(),
       std::make_unique<CachedDocumentParameters>(&document),
       MediaValuesCached::MediaValuesCachedData(document), scanner_type,
       nullptr);
@@ -1095,8 +1082,7 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
   auto* document = parser->GetDocument();
   return BackgroundPtr(
       new HTMLPreloadScanner(
-          std::make_unique<HTMLTokenizer>(options),
-          options.priority_hints_origin_trial_enabled, document->Url(),
+          std::make_unique<HTMLTokenizer>(options), document->Url(),
           std::make_unique<CachedDocumentParameters>(document),
           MediaValuesCached::MediaValuesCachedData(*document),
           TokenPreloadScanner::ScannerType::kMainDocument,
@@ -1107,7 +1093,6 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
 
 HTMLPreloadScanner::HTMLPreloadScanner(
     std::unique_ptr<HTMLTokenizer> tokenizer,
-    bool priority_hints_origin_trial_enabled,
     const KURL& document_url,
     std::unique_ptr<CachedDocumentParameters> document_parameters,
     const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
@@ -1118,8 +1103,7 @@ HTMLPreloadScanner::HTMLPreloadScanner(
     : scanner_(document_url,
                std::move(document_parameters),
                media_values_cached_data,
-               scanner_type,
-               priority_hints_origin_trial_enabled),
+               scanner_type),
       tokenizer_(std::move(tokenizer)),
       script_token_scanner_(std::move(script_token_scanner)),
       take_preload_(std::move(take_preload)) {}

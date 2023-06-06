@@ -351,13 +351,10 @@ static void ConfigureRequest(
         element.GetExecutionContext()->GetSecurityOrigin(), cross_origin);
   }
 
-  if (RuntimeEnabledFeatures::PriorityHintsEnabled(
-          element.GetExecutionContext())) {
-    mojom::blink::FetchPriorityHint fetch_priority_hint =
-        GetFetchPriorityAttributeValue(
-            element.FastGetAttribute(html_names::kFetchpriorityAttr));
-    params.SetFetchPriorityHint(fetch_priority_hint);
-  }
+  mojom::blink::FetchPriorityHint fetch_priority_hint =
+      GetFetchPriorityAttributeValue(
+          element.FastGetAttribute(html_names::kFetchpriorityAttr));
+  params.SetFetchPriorityHint(fetch_priority_hint);
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(element);
   if ((client_hints_preferences.ShouldSend(

@@ -40,8 +40,6 @@ HTMLParserOptions::HTMLParserOptions(Document* document) {
   scripting_flag = (document->GetSettings()->GetParserScriptingFlagPolicy() ==
                     ParserScriptingFlagPolicy::kEnabled) ||
                    window->CanExecuteScripts(kNotAboutToExecuteScript);
-  priority_hints_origin_trial_enabled =
-      RuntimeEnabledFeatures::PriorityHintsEnabled(window);
 }
 
 }  // namespace blink

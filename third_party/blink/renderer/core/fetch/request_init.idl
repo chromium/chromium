@@ -21,7 +21,7 @@ dictionary RequestInit {
     RequestRedirect redirect;
     DOMString integrity;
     boolean keepalive;
-    [RuntimeEnabled=PriorityHints] FetchPriority priority;
+    FetchPriority priority;
     [RuntimeEnabled=TopicsAPI, Exposed=Window] boolean browsingTopics;
     [RuntimeEnabled=FledgeBiddingAndAuctionServer, Exposed=Window] boolean adAuctionHeaders;
     [RuntimeEnabled=SharedStorageAPI, Exposed=Window] boolean sharedStorageWritable;
