@@ -211,6 +211,10 @@ class MockCustomizeChromeFeaturePromoHelper
               CloseCustomizeChromeFeaturePromo,
               (content::WebContents*),
               (override));
+  MOCK_METHOD(bool,
+              IsSigninModalDialogOpen,
+              (content::WebContents*),
+              (override));
 
   ~MockCustomizeChromeFeaturePromoHelper() override = default;
 };
@@ -1136,6 +1140,9 @@ TEST_F(NewTabPageHandlerTest, IncrementCustomizeChromeButtonOpenCount) {
 }
 
 TEST_F(NewTabPageHandlerTest, MaybeShowCustomizeChromeFeaturePromo) {
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              IsSigninModalDialogOpen)
+      .WillRepeatedly(testing::Return(false));
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(
                 prefs::kNtpCustomizeChromeButtonOpenCount),
             0);
@@ -1149,6 +1156,23 @@ TEST_F(NewTabPageHandlerTest, MaybeShowCustomizeChromeFeaturePromo) {
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(
                 prefs::kNtpCustomizeChromeButtonOpenCount),
             1);
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              MaybeShowCustomizeChromeFeaturePromo)
+      .Times(0);
+
+  handler_->MaybeShowCustomizeChromeFeaturePromo();
+
+  mock_page_.FlushForTesting();
+}
+
+TEST_F(NewTabPageHandlerTest,
+       DontShowCustomizeChromeFeaturePromoWhenModalDialogIsOpen) {
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              IsSigninModalDialogOpen)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount),
+            0);
   EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
               MaybeShowCustomizeChromeFeaturePromo)
       .Times(0);

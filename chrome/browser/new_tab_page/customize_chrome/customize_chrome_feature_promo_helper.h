@@ -15,6 +15,7 @@ class CustomizeChromeFeaturePromoHelper {
       content::WebContents* web_contents);
   virtual void CloseCustomizeChromeFeaturePromo(
       content::WebContents* web_contents);
+  virtual bool IsSigninModalDialogOpen(content::WebContents* web_contents);
 
   virtual ~CustomizeChromeFeaturePromoHelper() = default;
 };
