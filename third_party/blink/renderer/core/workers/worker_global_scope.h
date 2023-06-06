@@ -222,8 +222,6 @@ class CORE_EXPORT WorkerGlobalScope
     return nullptr;
   }
 
-  // TODO(fserb): This can be removed once we WorkerGlobalScope implements
-  // FontFaceSource on the IDL.
   FontFaceSet* fonts();
 
   // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin

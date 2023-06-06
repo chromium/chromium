@@ -437,8 +437,6 @@ blink_core_sources_css = [
   "font_face_set_load_event.h",
   "font_face_set_worker.cc",
   "font_face_set_worker.h",
-  "font_face_source.cc",
-  "font_face_source.h",
   "font_size_functions.cc",
   "font_size_functions.h",
   "hash_tools.h",

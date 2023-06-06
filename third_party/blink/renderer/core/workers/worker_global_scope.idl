@@ -65,15 +65,9 @@
     [Replaceable] readonly attribute DOMString origin;
     void queueMicrotask(VoidFunction callback);
 
-    // FontFaceSource
-    // https://drafts.csswg.org/css-font-loading-3/#font-face-source
-    // TODO(fserb): temporarly until we can enable the interface below.
-    readonly attribute FontFaceSet fonts;
-
     // TrustedTypes API: http://github.com/w3c/trusted-types
     readonly attribute TrustedTypePolicyFactory trustedTypes;
 };
 
 WorkerGlobalScope includes WindowOrWorkerGlobalScope;
-// TODO(fserb): this needs to be enabled once we get out of RuntimeEnabled.
-//WorkerGlobalScope includes FontFaceSource;
+WorkerGlobalScope includes FontFaceSource;

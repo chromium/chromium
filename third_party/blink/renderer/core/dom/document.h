@@ -169,6 +169,7 @@ class EventListener;
 template <typename EventType>
 class EventWithHitTestResults;
 class ExceptionState;
+class FontFaceSet;
 class FontMatchingMetrics;
 class FocusedElementChangeObserver;
 class FormController;
@@ -1720,6 +1721,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void captureEvents() {}
   void releaseEvents() {}
+
+  FontFaceSet* fonts();
 
   ukm::UkmRecorder* UkmRecorder();
   ukm::SourceId UkmSourceID() const;

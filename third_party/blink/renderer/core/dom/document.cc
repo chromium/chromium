@@ -8672,6 +8672,10 @@ void Document::setVlinkColor(const AtomicString& value) {
     SetBodyAttribute(html_names::kVlinkAttr, value);
 }
 
+FontFaceSet* Document::fonts() {
+  return FontFaceSetDocument::From(*this);
+}
+
 template <unsigned type>
 bool ShouldInvalidateNodeListCachesForAttr(
     const LiveNodeListRegistry& node_lists,
