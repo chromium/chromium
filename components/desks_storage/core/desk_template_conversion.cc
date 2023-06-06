@@ -2158,6 +2158,7 @@ base::Value SerializeDeskTemplateAsBaseValue(
   desk_dict.Set(kCreatedTime, base::TimeToValue(desk->created_time()));
   desk_dict.Set(kUpdatedTime, base::TimeToValue(desk->GetLastUpdatedTime()));
   desk_dict.Set(kDeskType, SerializeDeskTypeAsString(desk->type()));
+  desk_dict.Set(kAutoLaunchOnStartup, desk->should_launch_on_startup());
 
   desk_dict.Set(
       kDesk, ConvertRestoreDataToValue(desk->desk_restore_data(), app_cache));

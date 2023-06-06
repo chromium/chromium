@@ -572,6 +572,7 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
   expected_desk_value.Set("apps", std::move(expected_app_list));
 
   base::Value::Dict expected_value;
+  expected_value.Set("auto_launch_on_startup", false);
   expected_value.Set("version", base::Value(1));
   expected_value.Set("uuid", base::Value(kTestUuidBrowser));
   expected_value.Set("name", base::Value(kBrowserTemplateName));

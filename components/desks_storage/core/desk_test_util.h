@@ -20,7 +20,9 @@ inline constexpr char kTestChromeAppId1[] = "test_chrome_app_1";
 inline constexpr char kTestPwaAppId1[] = "test_pwa_app_1";
 
 inline constexpr char kValidPolicyTemplateBrowser[] =
-    "{\"version\":1,\"uuid\":\"040b6112-67f2-4d3c-8ba8-53a117272eba\",\"name\":"
+    "{\"auto_launch_on_startup\": "
+    "false,\"version\":1,\"uuid\":\"040b6112-67f2-4d3c-8ba8-53a117272eba\","
+    "\"name\":"
     "\"BrowserTest\",\"created_time_usec\":\"1633535632\",\"updated_time_"
     "usec\": "
     "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
@@ -35,7 +37,9 @@ inline constexpr char kValidPolicyTemplateBrowser[] =
     "\"display_id\":\"100\",\"event_flag\":0}]}}";
 
 inline constexpr char kValidPolicyTemplateBrowserMinimized[] =
-    "{\"version\":1,\"uuid\":\"040b6112-67f2-4d3c-8ba8-53a117272eba\",\"name\":"
+    "{\"auto_launch_on_startup\": "
+    "false,\"version\":1,\"uuid\":\"040b6112-67f2-4d3c-8ba8-53a117272eba\","
+    "\"name\":"
     "\"BrowserTest\",\"created_time_usec\":\"1633535632\",\"updated_time_"
     "usec\": "
     "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
@@ -51,7 +55,9 @@ inline constexpr char kValidPolicyTemplateBrowserMinimized[] =
     "\"NORMAL\"}]}}";
 
 inline constexpr char kValidPolicyTemplateChromeAndProgressive[] =
-    "{\"version\":1,\"uuid\":\"7f4b7ff0-970a-41bb-aa91-f6c3e2724207\",\"name\":"
+    "{\"auto_launch_on_startup\": "
+    "false,\"version\":1,\"uuid\":\"7f4b7ff0-970a-41bb-aa91-f6c3e2724207\","
+    "\"name\":"
     "\"ChromeAppTest\",\"created_time_usec\":\"1633535632000\",\"updated_time_"
     "usec\": "
     "\"1633535632\",\"desk_type\":\"SAVE_AND_RECALL\",\"desk\":{\"apps\":[{"
@@ -68,7 +74,9 @@ inline constexpr char kValidPolicyTemplateChromeAndProgressive[] =
     "0}]}}";
 
 inline constexpr char kValidPolicyTemplateChromeForFloatingWorkspace[] =
-    "{\"version\":1,\"uuid\":\"7f4b7ff0-970a-41bb-aa91-f6c3e2724207\",\"name\":"
+    "{\"auto_launch_on_startup\": "
+    "false,\"version\":1,\"uuid\":\"7f4b7ff0-970a-41bb-aa91-f6c3e2724207\","
+    "\"name\":"
     "\"FloatingWorkspaceChromeAppTest\",\"created_time_usec\":"
     "\"1633535632000\",\"updated_time_"
     "usec\": "
@@ -86,7 +94,9 @@ inline constexpr char kValidPolicyTemplateChromeForFloatingWorkspace[] =
     "0}]}}";
 
 inline constexpr char kPolicyTemplateWithoutType[] =
-    "{\"version\":1,\"uuid\":\"040b6112-67f2-4d3c-8ba8-53a117272eba\",\"name\":"
+    "{\"auto_launch_on_startup\": "
+    "false,\"version\":1,\"uuid\":\"040b6112-67f2-4d3c-8ba8-53a117272eba\","
+    "\"name\":"
     "\"BrowserTest\",\"created_time_usec\":\"1633535632\",\"updated_time_"
     "usec\": "
     "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
