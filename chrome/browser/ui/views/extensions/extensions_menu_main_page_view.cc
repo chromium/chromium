@@ -409,6 +409,22 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                /*adjust_height_for_width =*/true)
           .WithWeight(1);
 
+  ChromeLayoutProvider* const chrome_layout_provider =
+      ChromeLayoutProvider::Get();
+  const int vertical_spacing = chrome_layout_provider->GetDistanceMetric(
+      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
+  const int horizontal_spacing = chrome_layout_provider->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+  // This value must be the same as the `HoverButton` vertical margin.
+  const int hover_button_vertical_spacing =
+      chrome_layout_provider->GetDistanceMetric(
+          DISTANCE_CONTROL_LIST_VERTICAL) /
+      2;
+
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  const gfx::Insets dialog_insets =
+      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
+
   views::Builder<ExtensionsMenuMainPageView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
@@ -418,6 +434,13 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
           // Subheader section.
           views::Builder<views::FlexLayoutView>()
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+              // Add top dialog margins, since its the first element, and
+              // horizontal dialog margins. Bottom margin will be added by the
+              // next view (in general, vertical margins should be added by the
+              // bottom view).
+              .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
+                                                   dialog_insets.left(), 0,
+                                                   dialog_insets.right()))
               .SetProperty(views::kFlexBehaviorKey, stretch_specification)
               .SetVisible(true)
               .AddChildren(
@@ -467,6 +490,9 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               },
                               browser_),
                           vector_icons::kSettingsIcon))
+                      .SetProperty(
+                          views::kMarginsKey,
+                          gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
                       .SetAccessibleName(
                           l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS))
                       .CustomConfigure(
@@ -477,6 +503,9 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                   // Toggle site settings button.
                   views::Builder<views::ToggleButton>()
                       .CopyAddressTo(&site_settings_toggle_)
+                      .SetProperty(
+                          views::kMarginsKey,
+                          gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
                       .SetCallback(base::BindRepeating(
                           [](views::ToggleButton* toggle_button,
                              base::RepeatingCallback<void(bool)> callback) {
@@ -488,7 +517,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   OnSiteSettingsToggleButtonPressed,
                               base::Unretained(menu_handler))))),
           // Contents.
-          views::Builder<views::Separator>(),
+          views::Builder<views::Separator>().SetProperty(
+              views::kMarginsKey, gfx::Insets::VH(vertical_spacing, 0)),
           views::Builder<views::ScrollView>()
               .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
               .SetDrawOverflowIndicator(false)
@@ -497,6 +527,11 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetContents(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                      // Horizontal dialog margins are added inside the scroll
+                      // view contents to have the scroll bar by the dialog
+                      // border.
+                      .SetInsideBorderInsets(
+                          gfx::Insets::VH(0, dialog_insets.left()))
                       .AddChildren(
                           // Message section.
                           views::Builder<MessageSection>(
@@ -517,6 +552,15 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           // Menu items section.
                           views::Builder<views::BoxLayoutView>()
                               .CopyAddressTo(&menu_items_)
+                              // Add bottom dialog margins since it's the last
+                              // element.
+                              .SetProperty(
+                                  views::kMarginsKey,
+                                  gfx::Insets::TLBR(
+                                      0, 0,
+                                      dialog_insets.bottom() -
+                                          hover_button_vertical_spacing,
+                                      0))
                               .SetOrientation(
                                   views::BoxLayout::Orientation::kVertical))))
 

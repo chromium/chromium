@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -71,17 +73,25 @@ void ExtensionsMenuButton::UpdateState() {
   SetTooltipText(controller_->GetTooltip(GetCurrentWebContents()));
   SetEnabled(controller_->IsEnabled(GetCurrentWebContents()));
 
-  // The vertical insets need to take into account the icon spacing, since this
-  // button's icon is larger, to align with others buttons heights.
-  const int vertical_inset =
-      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN) -
-      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
-  // The horizontal insets reasonably align the extension icons with text inside
-  // the dialog with the default button margin.
-  const int horizontal_inset =
-      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_inset, horizontal_inset)));
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    // Remove the button's border since we are adding margins in between menu
+    // items.
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(0)));
+  } else {
+    // The vertical insets need to take into account the icon spacing, since
+    // this
+    // button's icon is larger, to align with others buttons heights.
+    const int vertical_inset =
+        provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN) -
+        provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
+    // The horizontal insets reasonably align the extension icons with text
+    // inside the dialog with the default button margin.
+    const int horizontal_inset =
+        provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(vertical_inset, horizontal_inset)));
+  }
 }
 
 void ExtensionsMenuButton::ShowContextMenuAsFallback() {
