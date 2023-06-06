@@ -636,16 +636,20 @@ std::u16string GetDisplayNameForLocale(const std::string& locale,
   // Internally, we use the language code of zh-CN and zh-TW, but we want the
   // display names to be Chinese (Simplified) and Chinese (Traditional) instead
   // of Chinese (China) and Chinese (Taiwan).
-  // Translate uses "tl" (Tagalog) to mean "fil" (Filipino) until Google
-  // translate is changed to understand "fil". Make "tl" alias to "fil".
-  if (locale_code == "zh-CN")
-    locale_code = "zh-Hans";
-  else if (locale_code == "zh-TW")
-    locale_code = "zh-Hant";
-  else if (locale_code == "tl")
-    locale_code = "fil";
-  else if (locale_code == "mo")
+  // Translate uses "tl" (Tagalog) to mean "fil" (Filipino). Until Google
+  // translate is changed to understand "fil", make "tl" alias to "fil".
+  // Translate also uses "gom" (Goan Konkani) for "kok" (Konkani).
+  if (locale_code == "gom") {
+    locale_code = "kok";
+  } else if (locale_code == "mo") {
     locale_code = "ro-MD";
+  } else if (locale_code == "tl") {
+    locale_code = "fil";
+  } else if (locale_code == "zh-CN") {
+    locale_code = "zh-Hans";
+  } else if (locale_code == "zh-TW") {
+    locale_code = "zh-Hant";
+  }
 
   std::u16string display_name;
 

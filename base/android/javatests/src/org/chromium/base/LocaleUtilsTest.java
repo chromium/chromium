@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.util.Locale;
@@ -24,6 +25,7 @@ import java.util.Locale;
  * Tests for the LocaleUtils class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class LocaleUtilsTest {
     // This is also a part of test for toLanguageTag when API level is lower than 24
     @Test
@@ -48,6 +50,10 @@ public class LocaleUtilsTest {
         language = "tl";
         updatedLanguage = LocaleUtils.getUpdatedLanguageForChromium(language);
         Assert.assertEquals("fil", updatedLanguage);
+
+        language = "gom";
+        updatedLanguage = LocaleUtils.getUpdatedLanguageForChromium(language);
+        Assert.assertEquals("kok", updatedLanguage);
     }
 
     // This is also a part of test for toLanguageTags when API level is 24 or higher

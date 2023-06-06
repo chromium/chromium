@@ -31,25 +31,27 @@ public class LocaleUtils {
     /**
      * Java keeps deprecated language codes for Hebrew, Yiddish and Indonesian but Chromium uses
      * updated ones. Similarly, Android uses "tl" while Chromium uses "fil" for Tagalog/Filipino.
-     * So apply a mapping here.
-     * See http://developer.android.com/reference/java/util/Locale.html
+     * The Translate settings use "gom", but Chrome uses "kok". Apply a mapping here. See
+     * http://developer.android.com/reference/java/util/Locale.html
      * @return a updated language code for Chromium with given language string.
      */
     public static String getUpdatedLanguageForChromium(String language) {
-        // IMPORTANT: Keep in sync with the mapping found in:
-        // build/android/gyp/util/resource_utils.py (Yiddish and Javanese are not possible Android
-        // languages but are possible Chromium languages, they do not need to be kept in sync).
+        // IMPORTANT: If adding a new Chrome UI language, update the mapping found in:
+        // build/android/gyp/util/resource_utils.py (Languages that are accept languages, but not
+        // Chrome Android UI languages do not need to be kept in sync).
         switch (language) {
+            case "gom":
+                return "kok"; // Konkani
+            case "in":
+                return "id"; // Indonesian
             case "iw":
                 return "he"; // Hebrew
             case "ji":
                 return "yi"; // Yiddish
-            case "in":
-                return "id"; // Indonesian
-            case "tl":
-                return "fil"; // Filipino
             case "jw":
                 return "jv"; // Javanese
+            case "tl":
+                return "fil"; // Filipino
             default:
                 return language;
         }
