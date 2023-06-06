@@ -16,6 +16,7 @@ import './tab_search_search_field.js';
 import './title_item.js';
 import './strings.m.js';
 
+import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporter, MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
@@ -144,6 +145,7 @@ export class TabSearchAppElement extends PolymerElement {
 
   constructor() {
     super();
+    startColorChangeUpdater();
 
     this.visibilityChangedListener_ = () => {
       // Refresh Tab Search's tab data when transitioning into a visible state.
