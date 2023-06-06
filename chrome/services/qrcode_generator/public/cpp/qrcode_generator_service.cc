@@ -8,6 +8,8 @@
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "chrome/services/qrcode_generator/qrcode_generator_service_impl.h"
+#include "components/qr_code_generator/features.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -34,8 +36,11 @@ void MeasureDurationAndForwardToOriginalCallback(
 
 }  // namespace
 
-QRImageGenerator::QRImageGenerator()
-    : mojo_service_(LaunchQRCodeGeneratorService()), weak_ptr_factory_(this) {}
+QRImageGenerator::QRImageGenerator() : weak_ptr_factory_(this) {
+  if (!IsRustyQrCodeGeneratorFeatureEnabled()) {
+    mojo_service_ = LaunchQRCodeGeneratorService();
+  }
+}
 
 QRImageGenerator::~QRImageGenerator() = default;
 
@@ -51,17 +56,24 @@ void QRImageGenerator::GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
       base::BindOnce(&QRImageGenerator::ForwardResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(timed_callback));
 
-  // Call `callback` even after a mojo connection error.
-  mojom::GenerateQRCodeResponsePtr connection_error_response =
-      mojom::GenerateQRCodeResponse::New();
-  connection_error_response->error_code =
-      mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
-  ResponseCallback mojo_error_immune_callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(weak_callback), std::move(connection_error_response));
+  // Execute either a mojo call or an in-process C++ call depending on whether
+  // the "RustyQrCodeGenerator" feature has been enabled.
+  if (IsRustyQrCodeGeneratorFeatureEnabled()) {
+    QRCodeGeneratorServiceImpl().GenerateQRCode(std::move(request),
+                                                std::move(weak_callback));
+  } else {
+    // Call the callback even after a mojo connection error.
+    mojom::GenerateQRCodeResponsePtr connection_error_response =
+        mojom::GenerateQRCodeResponse::New();
+    connection_error_response->error_code =
+        mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
+    ResponseCallback mojo_error_immune_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(weak_callback), std::move(connection_error_response));
 
-  mojo_service_->GenerateQRCode(std::move(request),
-                                std::move(mojo_error_immune_callback));
+    mojo_service_->GenerateQRCode(std::move(request),
+                                  std::move(mojo_error_immune_callback));
+  }
 }
 
 void QRImageGenerator::ForwardResponse(

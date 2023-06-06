@@ -32,6 +32,10 @@ static const int kDinoTileSizePixels = 4;
 // Size of a QR locator, in modules.
 static const int kLocatorSizeModules = 7;
 
+QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl() : receiver_(this) {
+  InitializeDinoBitmap();
+}
+
 QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl(
     mojo::PendingReceiver<mojom::QRCodeGeneratorService> receiver)
     : receiver_(this, std::move(receiver)) {

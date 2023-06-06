@@ -11,7 +11,9 @@ source_set("cpp") {
   deps = [
     "//base",
     "//chrome:strings",
+    "//chrome/services/qrcode_generator",
     "//chrome/services/qrcode_generator/public/mojom",
+    "//components/qr_code_generator:qr_code_generator_features",
     "//content/public/browser",
     "//skia",
   ]
