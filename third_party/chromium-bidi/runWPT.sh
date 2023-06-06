@@ -17,7 +17,11 @@ if [[ $# -gt 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
 fi
 
 # The path to the browser binary.
-readonly BROWSER_BIN="${BROWSER_BIN:-/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev}"
+if [[ "$(uname -s)" == "Linux" ]]; then
+  readonly BROWSER_BIN="${BROWSER_BIN:-/usr/bin/google-chrome-unstable}"
+elif [[ "$(uname -s)" == "Darwin" ]]; then
+  readonly BROWSER_BIN="${BROWSER_BIN:-/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev}"
+fi
 
 # Whether to use Chromedriver with mapper.
 readonly CHROMEDRIVER="${CHROMEDRIVER:-false}"
