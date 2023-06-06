@@ -10,14 +10,23 @@
 #     name of the extension target to package; the extension
 #     bundle name must be derived from the target name
 #
+#   extension_name:
+#     (optional) name of the extension appex file; derived from
+#     the target name if omitted
+#
 template("extension_bundle_data") {
   assert(defined(invoker.extension_target),
          "extension_target must be defined for $target_name")
 
+  _extension_name = get_label_info(invoker.extension_target, "name") + ".appex"
+  if (defined(invoker.extension_name)) {
+    _extension_name = invoker.extension_name
+  }
+
   bundle_data(target_name) {
     public_deps = [ invoker.extension_target ]
     outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
-    sources = [ get_label_info(invoker.extension_target, "root_out_dir") + "/" +
-                get_label_info(invoker.extension_target, "name") + ".appex" ]
+    sources = [ get_label_info(invoker.extension_target, "root_out_dir") +
+                "/$_extension_name" ]
   }
 }

@@ -2,51 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/apple/compile_entitlements.gni")
-import("//build/apple/tweak_info_plist.gni")
-import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
-import("//ios/build/config.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//tools/grit/repack.gni")
-
-assert(ios_deployment_target == "13.4",
-       "search_widget_extension must target iOS 13.4")
 
 assert(
     ios_enable_search_widget_extension,
     "ios_enable_search_widget_extension must be true to depend on //ios/chrome/search_widget_extension")
-
-tweak_info_plist("tweak_info_plist") {
-  info_plist = "Info.plist"
-}
-
-compile_entitlements("entitlements") {
-  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-  output_name = "$target_gen_dir/search_widget_extension.appex.entitlements"
-  entitlements_templates =
-      [ "entitlements/external/search_widget_extension.appex.entitlements" ]
-}
-
-ios_appex_bundle("search_widget_extension") {
-  deps = [
-    ":search_widget",
-    ":system_strings",
-    "resources:quick_action_incognito",
-  ]
-
-  assert_no_deps = ios_extension_assert_no_deps
-
-  extra_substitutions = [
-    "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
-    "CHROMIUM_SHORT_NAME=$chromium_short_name",
-  ]
-
-  entitlements_target = ":entitlements"
-  info_plist_target = ":tweak_info_plist"
-  bundle_identifier = "$chromium_bundle_id.TodayExtension"
-}
 
 source_set("search_widget") {
   sources = [
@@ -100,7 +63,7 @@ repack_locales("packed_resources") {
 }
 
 generate_localizable_strings("system_strings") {
-  visibility = [ ":*" ]
+  visibility = [ "//ios/chrome/search_widget_extension/*" ]
   _packed_resources_target = ":packed_resources"
   config_file = "search_widget_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
@@ -110,11 +73,10 @@ generate_localizable_strings("system_strings") {
     "Localizable.strings",
   ]
   deps = [
-    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_chromium_strings",
-
     # Depends on both branding strings target to ensure the proper .h exists
     # (the .plist configuration can only reference one of them, and their
     # content is identical).
+    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_chromium_strings",
     "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_google_chrome_strings",
     _packed_resources_target,
   ]

@@ -2,15 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/apple/compile_entitlements.gni")
-import("//build/apple/tweak_info_plist.gni")
-import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
-import("//ios/build/config.gni")
 import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
-import("//ios/public/provider/chrome/browser/build_config.gni")
 
 assert(
     ios_enable_share_extension,
@@ -26,18 +21,8 @@ extension_repack_all_locales("packed_resources") {
   output_locales = locales_as_apple_outputs
 }
 
-tweak_info_plist("tweak_info_plist") {
-  info_plist = "Info.plist"
-}
-
-compile_entitlements("entitlements") {
-  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-  output_name = "$target_gen_dir/share_extension.appex.entitlements"
-  entitlements_templates =
-      [ "entitlements/external/share_extension.appex.entitlements" ]
-}
-
-ios_appex_bundle("share_extension") {
+source_set("share") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "share_extension_view.h",
     "share_extension_view.mm",
@@ -46,8 +31,6 @@ ios_appex_bundle("share_extension") {
     "ui_util.h",
     "ui_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":system_strings",
@@ -59,9 +42,6 @@ ios_appex_bundle("share_extension") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
-  bundle_deps_filter = [ "//third_party/icu:icudata" ]
-
-  assert_no_deps = ios_extension_assert_no_deps
 
   frameworks = [
     "Foundation.framework",
@@ -71,19 +51,10 @@ ios_appex_bundle("share_extension") {
     "UIKit.framework",
     "UniformTypeIdentifiers.framework",
   ]
-
-  extra_substitutions = [
-    "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
-    "CHROMIUM_SHORT_NAME=$chromium_short_name",
-  ]
-
-  entitlements_target = ":entitlements"
-  info_plist_target = ":tweak_info_plist"
-  bundle_identifier = "$chromium_bundle_id.ShareExtension"
 }
 
 generate_localizable_strings("system_strings") {
-  visibility = [ ":*" ]
+  visibility = [ "//ios/chrome/share_extension/*" ]
   _packed_resources_target = ":packed_resources"
   config_file = "share_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")

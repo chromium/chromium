@@ -2,16 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/apple/compile_entitlements.gni")
-import("//build/apple/tweak_info_plist.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
-import("//ios/build/config.gni")
 import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
-import("//ios/public/provider/chrome/browser/build_config.gni")
 
 assert(
     ios_enable_credential_provider_extension,
@@ -27,32 +22,12 @@ extension_repack_all_locales("packed_resources") {
   output_locales = locales_as_apple_outputs
 }
 
-tweak_info_plist("tweak_info_plist") {
-  info_plist = "Info.plist"
-}
-
-compile_entitlements("entitlements") {
-  substitutions = [
-    "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
-  ]
-  output_name =
-      "$target_gen_dir/credential_provider_extension.appex.entitlements"
-  entitlements_templates = [
-    "entitlements/external/credential_provider_extension.appex.entitlements",
-  ]
-  if (ios_chrome_cpe_entitlements_additions != []) {
-    entitlements_templates += ios_chrome_cpe_entitlements_additions
-  }
-}
-
-ios_appex_bundle("credential_provider_extension") {
+source_set("credential_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "credential_provider_view_controller.h",
     "credential_provider_view_controller.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":account_verification_provider",
@@ -73,30 +48,17 @@ ios_appex_bundle("credential_provider_extension") {
     "//ios/chrome/credential_provider_extension/ui",
     "//ios/chrome/credential_provider_extension/ui:feature_flags",
   ]
-  bundle_deps_filter = [ "//third_party/icu:icudata" ]
-
-  assert_no_deps = ios_extension_assert_no_deps
 
   frameworks = [
     "AuthenticationServices.framework",
     "Foundation.framework",
     "UIKit.framework",
   ]
-
-  extra_substitutions = [
-    "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
-    "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
-  ]
-
-  entitlements_target = ":entitlements"
-  info_plist_target = ":tweak_info_plist"
-  bundle_identifier = "$chromium_bundle_id.CredentialProviderExtension"
 }
 
 generate_localizable_strings("system_strings") {
   visibility = [
-    ":*",
+    "//ios/chrome/credential_provider_extension/*",
     "//ios/showcase:*",
   ]
   _packed_resources_target = ":packed_resources"
