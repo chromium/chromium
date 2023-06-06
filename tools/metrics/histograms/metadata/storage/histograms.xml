@@ -314,6 +314,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
+    expires_after="2023-12-01">
+  <owner>asully@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    SQLite result code from attempting to recover a database with
+    sql::BuiltInRecovery. Note that kNoError does not necessarily indicate that
+    recovery succeeded (see Sql.Recovery.Result for that information), since not
+    all recoveries fail due to SQLite errors (e.g. if a version number could not
+    be read from the meta table).
+  </summary>
+</histogram>
+
 <histogram name="Storage.BlacklistedImportantSites.Reason"
     enum="ClearDataSiteBlacklistCrossedReason" expires_after="2023-08-01">
   <owner>ayui@chromium.org</owner>

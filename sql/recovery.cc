@@ -157,6 +157,8 @@ BuiltInRecovery::~BuiltInRecovery() {
   CHECK_NE(result_, Result::kUnknown);
 
   base::UmaHistogramEnumeration("Sql.Recovery.Result", result_);
+  UmaHistogramSqliteResult("Sql.Recovery.ResultCode",
+                           static_cast<int>(sqlite_result_code_));
 
   if (db_) {
     if (result_ == Result::kSuccess) {
@@ -185,7 +187,8 @@ void BuiltInRecovery::SetRecoverySucceeded() {
   result_ = Result::kSuccess;
 }
 
-void BuiltInRecovery::SetRecoveryFailed(Result failure_result) {
+void BuiltInRecovery::SetRecoveryFailed(Result failure_result,
+                                        SqliteResultCode result_code) {
   // Recovery result must only be set once.
   CHECK_EQ(result_, Result::kUnknown);
 
@@ -206,6 +209,7 @@ void BuiltInRecovery::SetRecoveryFailed(Result failure_result) {
   }
 
   result_ = failure_result;
+  sqlite_result_code_ = result_code;
 }
 
 SqliteResultCode BuiltInRecovery::RecoverAndReplaceDatabase() {
@@ -221,7 +225,8 @@ SqliteResultCode BuiltInRecovery::RecoverAndReplaceDatabase() {
     // TODO(https://crbug.com/1385500): It's unfortunate to give up now, after
     // we've successfully recovered the database to a backup. Consider falling
     // back to base::Move().
-    SetRecoveryFailed(Result::kFailedToOpenRecoveredDatabase);
+    SetRecoveryFailed(Result::kFailedToOpenRecoveredDatabase,
+                      ToSqliteResultCode(recover_db_.GetErrorCode()));
     return SqliteResultCode::kError;
   }
 
@@ -276,7 +281,7 @@ SqliteResultCode BuiltInRecovery::AttemptToRecoverDatabaseToBackup() {
     // TODO(https://crbug.com/1385500): This is likely a transient issue, so we
     // could consider keeping the database intact in case the caller wants to
     // try again later. For now, we'll always raze.
-    SetRecoveryFailed(Result::kFailedRecoveryInit);
+    SetRecoveryFailed(Result::kFailedRecoveryInit, sqlite_result_code);
 
     DVLOG(1) << "recovery config error: " << sqlite_result_code
              << sqlite3_recover_errcode(recover);
@@ -297,7 +302,7 @@ SqliteResultCode BuiltInRecovery::AttemptToRecoverDatabaseToBackup() {
 
   if (sqlite_result_code != SqliteResultCode::kOk) {
     // Could not recover the database.
-    SetRecoveryFailed(Result::kFailedRecoveryRun);
+    SetRecoveryFailed(Result::kFailedRecoveryRun, sqlite_result_code);
 
     DVLOG(1) << "recovery error: " << sqlite_result_code
              << sqlite3_recover_errmsg(recover);
@@ -326,7 +331,7 @@ SqliteResultCode BuiltInRecovery::ReplaceOriginalWithRecoveredDb() {
     // TODO(https://crbug.com/1385500): It's unfortunate to give up now, after
     // we've successfully recovered the database. Consider falling back to
     // base::Move().
-    SetRecoveryFailed(Result::kFailedBackupInit);
+    SetRecoveryFailed(Result::kFailedBackupInit, result_code);
     return result_code;
   }
 
@@ -363,7 +368,7 @@ SqliteResultCode BuiltInRecovery::ReplaceOriginalWithRecoveredDb() {
 
     DVLOG(1) << "sqlite3_backup_step() failed: "
              << sqlite3_errmsg(db_->db(InternalApiToken()));
-    SetRecoveryFailed(Result::kFailedBackupRun);
+    SetRecoveryFailed(Result::kFailedBackupRun, sqlite_result_code);
     return sqlite_result_code;
   }
 
@@ -379,7 +384,8 @@ bool BuiltInRecovery::RecoveredDbHasValidMetaTable() {
 
   if (!MetaTable::DoesTableExist(&recover_db_)) {
     DVLOG(1) << "Meta table does not exist in recovery database.";
-    SetRecoveryFailed(Result::kFailedMetaTableDoesNotExist);
+    SetRecoveryFailed(Result::kFailedMetaTableDoesNotExist,
+                      ToSqliteResultCode(recover_db_.GetErrorCode()));
     return false;
   }
 
@@ -387,13 +393,15 @@ bool BuiltInRecovery::RecoveredDbHasValidMetaTable() {
   sql::MetaTable meta_table;
   if (!meta_table.Init(&recover_db_, /*version=*/1,
                        /*compatible_version=*/1)) {
-    SetRecoveryFailed(Result::kFailedMetaTableInit);
+    SetRecoveryFailed(Result::kFailedMetaTableInit,
+                      ToSqliteResultCode(recover_db_.GetErrorCode()));
     return false;
   }
 
   // Confirm that we can read a valid version number from the recovered table.
   if (meta_table.GetVersionNumber() <= 0) {
-    SetRecoveryFailed(Result::kFailedMetaTableVersionWasInvalid);
+    SetRecoveryFailed(Result::kFailedMetaTableVersionWasInvalid,
+                      ToSqliteResultCode(recover_db_.GetErrorCode()));
     return false;
   }
 
