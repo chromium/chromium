@@ -36,6 +36,7 @@ test("services_unittests") {
   if (use_blink) {
     deps += [
       "//services/audio:tests",
+      "//services/data_decoder:tests",
       "//services/device:tests",
       "//services/image_annotation:tests",
       "//services/image_annotation/public/cpp:tests",
@@ -54,10 +55,7 @@ test("services_unittests") {
   }
 
   if (!is_ios) {
-    deps += [
-      "//services/data_decoder:tests",
-      "//services/tracing:tests",
-    ]
+    deps += [ "//services/tracing:tests" ]
     if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
       deps += [ "//base:base_profiler_test_support_library" ]
     }

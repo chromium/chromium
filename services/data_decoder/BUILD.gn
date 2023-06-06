@@ -92,7 +92,11 @@ source_set("tests") {
     "//ui/gfx",
   ]
 
-  data = [ "//components/test/data/web_package/" ]
+  if (is_ios) {
+    deps += [ "//components/test:web_package_test_bundle_data" ]
+  } else {
+    data = [ "//components/test/data/web_package/" ]
+  }
 
   if (use_blink) {
     sources += [ "image_decoder_impl_unittest.cc" ]
