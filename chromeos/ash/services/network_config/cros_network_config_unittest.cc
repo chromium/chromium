@@ -3630,6 +3630,22 @@ TEST_F(CrosNetworkConfigTest, ESimManagedPropertiesNameComesFromHermes) {
   EXPECT_EQ(kTestProfileNickname, properties->name->active_value);
 }
 
+// Tests that the Passpoint identifier of a Wi-Fi network is reflected to its
+// network state.
+TEST_F(CrosNetworkConfigTest, NetworkStateHasPasspointId) {
+  const char kWifiGuid[] = "wifi_pp_guid";
+  const char kPasspointId[] = "passpoint_id";
+  helper()->ConfigureService(base::StringPrintf(
+      R"({"GUID": "%s", "Type": "wifi", "State": "idle",
+          "Strength": 90, "AutoConnect": true, "Connectable": true,
+          "Passpoint.ID": "%s"})",
+      kWifiGuid, kPasspointId));
+  mojom::NetworkStatePropertiesPtr network = GetNetworkState(kWifiGuid);
+  ASSERT_TRUE(network);
+  EXPECT_EQ(mojom::NetworkType::kWiFi, network->type);
+  EXPECT_EQ(kPasspointId, network->type_state->get_wifi()->passpoint_id);
+}
+
 TEST_F(CrosNetworkConfigTest, GetAlwaysOnVpn) {
   mojom::AlwaysOnVpnPropertiesPtr properties;
 

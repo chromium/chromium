@@ -637,6 +637,7 @@ export class OncMojo {
           security: SecurityType.kNone,
           signalStrength: 0,
           ssid: '',
+          passpointId: '',
         };
         break;
       default:

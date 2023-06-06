@@ -260,6 +260,9 @@ struct WiFiStateProperties {
   string ssid;
   // Whether the AP has a hidden SSID.
   bool hidden_ssid;
+  // Identifier of the set of Passpoint credentials that populated this Wi-Fi
+  // network.
+  string passpoint_id;
 };
 
 union NetworkTypeStateProperties {

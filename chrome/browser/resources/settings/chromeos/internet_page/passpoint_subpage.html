@@ -42,6 +42,21 @@
     [[certificateAuthorityName_]]
   </div>
 </div>
+<template is="dom-if" if="[[hasNetworks_(networks_)]]">
+  <div class="settings-box settings-box-text">
+    $i18n{passpointAssociatedWifiNetworks}
+  </div>
+  <div id="passpointNetworksList" class="list-frame vertical-list">
+    <template is="dom-repeat" items="[[networks_]]">
+      <div class="list-item">
+        <cr-link-row embedded label="[[getNetworkDisplayName_(item)]]"
+            on-click="onAssociatedNetworkClicked_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </div>
+    </template>
+  </div>
+</template>
 <cr-expand-button aria-label="$i18n{passpointDomainsA11yLabel}"
     class="settings-box" expanded="{{domainsExpanded_}}">
   $i18n{passpointDomainsLabel}

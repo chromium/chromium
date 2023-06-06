@@ -1008,6 +1008,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"passpointSourceLabel", IDS_SETTINGS_INTERNET_PASSPOINT_SOURCE},
       {"passpointTrustedCALabel", IDS_SETTINGS_INTERNET_PASSPOINT_TRUSTED_CA},
       {"passpointSystemCALabel", IDS_SETTINGS_INTERNET_PASSPOINT_SYSTEM_CA},
+      {"passpointAssociatedWifiNetworks",
+       IDS_SETTINGS_INTERNET_PASSPOINT_ASSOCIATED_WIFI_NETWORKS},
       {"passpointDomainsLabel", IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS},
       {"passpointDomainsA11yLabel",
        IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS_A11Y_LABEL},

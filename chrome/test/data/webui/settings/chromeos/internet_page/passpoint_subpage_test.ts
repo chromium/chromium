@@ -10,14 +10,18 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CertificateType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {FakePageHandler} from '../app_management/fake_page_handler.js';
 import {setupFakeHandler} from '../app_management/test_util.js';
@@ -60,11 +64,11 @@ suite('PasspointSubpage', () => {
     return flushAsync();
   }
 
-  function getDomainsListItems() {
-    const domains = passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(
-        '#passpointDomainsList');
-    assertTrue(!!domains);
-    return domains!.querySelectorAll('div.list-item');
+  function getListItems(id: string) {
+    const div =
+        passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(`#${id}`);
+    assertTrue(!!div);
+    return div!.querySelectorAll('div.list-item');
   }
 
   function getExpirationDateItem(): HTMLDivElement|null {
@@ -143,7 +147,7 @@ suite('PasspointSubpage', () => {
     // No app registered, package name should be displayed.
     assertEquals(sub.provisioningSource, getSourceText());
     // Only one domain in the list.
-    const list = getDomainsListItems();
+    const list = getListItems('passpointDomainsList');
     assertEquals(1, list.length);
     // No expiration time.
     const item = getExpirationDateItem();
@@ -171,7 +175,7 @@ suite('PasspointSubpage', () => {
         // No app registered, package name should be displayed.
         assertEquals(sub.provisioningSource, getSourceText());
         // Only one domain in the list.
-        const list = getDomainsListItems();
+        const list = getListItems('passpointDomainsList');
         assertEquals(2, list.length);
         // Expiration time is displayed.
         const item = getExpirationDateItem();
@@ -214,7 +218,7 @@ suite('PasspointSubpage', () => {
     await init(sub);
 
     // Only one domain in the list.
-    const list = getDomainsListItems();
+    const list = getListItems('passpointDomainsList');
     assertEquals(1, list.length);
     // No expiration time.
     const item = getExpirationDateItem();
@@ -266,5 +270,57 @@ suite('PasspointSubpage', () => {
     assertEquals(null, dialog);
     const resp = await passpointServiceApi_!.getPasspointSubscription(subId);
     assertEquals(null, resp.result);
+  });
+
+  test('Subscription with no associated networks', async () => {
+    const subId = 'sub-id';
+    const sub = {
+      id: subId,
+      domains: ['passpoint.example.com'],
+      friendlyName: 'Passpoint Example Ltd.',
+      provisioningSource: 'app.passpoint.example.com',
+      trustedCa: CA_PEM,
+      expirationEpochMs: 0n,
+    };
+    networkConfigApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+    const wifi = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
+    networkConfigApi_.addNetworksForTest([wifi]);
+    await init(sub);
+
+    const elem = passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(
+        '#passpointNetworksList');
+    assertNull(elem);
+  });
+
+  test('Subscription with multiple associated networks', async () => {
+    const subId = 'sub-id';
+    const sub = {
+      id: subId,
+      domains: ['passpoint.example.com'],
+      friendlyName: 'Passpoint Example Ltd.',
+      provisioningSource: 'app.passpoint.example.com',
+      trustedCa: CA_PEM,
+      expirationEpochMs: 0n,
+    };
+    networkConfigApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+    const wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
+    wifi1.typeState!.wifi!.passpointId = subId;
+    const wifi2 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi2');
+    wifi2.typeState!.wifi!.passpointId = subId;
+    networkConfigApi_.addNetworksForTest([
+      wifi1,
+      wifi2,
+    ]);
+    await init(sub);
+
+    const list = getListItems('passpointNetworksList');
+    assertEquals(2, list.length);
+    const row = list[0]!.querySelector<CrLinkRowElement>('cr-link-row');
+    assertTrue(!!row);
+
+    const showDetailPromise = eventToPromise('show-detail', window);
+    row!.click();
+    const showDetailEvent = await showDetailPromise;
+    assertEquals('wifi1_guid', showDetailEvent.detail.guid);
   });
 });

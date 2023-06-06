@@ -3904,6 +3904,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SYSTEM_CA" desc="Text displayed when the subscription relies on system CA certificates for server authentication.">
     System CAs
   </message>
+  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_ASSOCIATED_WIFI_NETWORKS" desc="Label for the list of Wi-Fi networks connected using the Passpoint subscription.">
+    Associated Wi-Fi networks
+  </message>
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_DOMAINS" desc="Label for the list of domains included in the Passpoint subscription.">
     Domains
   </message>
