@@ -16,8 +16,8 @@
 namespace autofill {
 
 // Following the implicit conventions in //components/translate, a LanguageCode
-// is a lowercase alphabetic string of length up to 3, or "zh-CN", or "zh-TW". A
-// non-exhaustive list of common values is
+// is a lowercase alphabetic string of length up to 3, with the exception of
+// "zh-CN", "zh-TW", and "mni-Mtei". A non-exhaustive list of common values is
 // translate::kDefaultSupportedLanguages.
 // C++ small string optimization keeps these objects lightweight so that copying
 // should not be a worry.
@@ -35,7 +35,7 @@ class LanguageCode
  private:
   void Check() {
     DCHECK(((*this)->size() <= 3 && base::ranges::all_of(value(), &islower)) ||
-           value() == "zh-CN" || value() == "zh-TW")
+           value() == "zh-CN" || value() == "zh-TW" || value() == "mni-Mtei")
         << "Unexpected language code '" << value() << "'";
   }
 };

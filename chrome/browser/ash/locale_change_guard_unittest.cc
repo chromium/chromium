@@ -100,6 +100,7 @@ const char* const kShowNotificationLanguages[] = {
     "mk",   // Macedonian
     "ml",   // Malayalam
     "mn",   // Mongolian
+    "mni",  // Manipuri (Meitei Mayek)
     "mo",   // Moldavian
     "mr",   // Marathi
     "ms",   // Malay

@@ -108,144 +108,145 @@ static const char* const kAcceptLanguageList[] = {
     "en-ZA",  // English (South Africa)
     "eo",     // Esperanto
     "es",     // Spanish
-    "es-419",  // Spanish (Latin America)
-    "es-AR",   // Spanish (Argentina)
-    "es-CL",   // Spanish (Chile)
-    "es-CO",   // Spanish (Colombia)
-    "es-CR",   // Spanish (Costa Rica)
-    "es-ES",   // Spanish (Spain)
-    "es-HN",   // Spanish (Honduras)
-    "es-MX",   // Spanish (Mexico)
-    "es-PE",   // Spanish (Peru)
-    "es-US",   // Spanish (US)
-    "es-UY",   // Spanish (Uruguay)
-    "es-VE",   // Spanish (Venezuela)
-    "et",      // Estonian
-    "eu",      // Basque
-    "fa",      // Persian
-    "fi",      // Finnish
-    "fil",     // Filipino
-    "fo",      // Faroese
-    "fr",      // French
-    "fr-CA",   // French (Canada)
-    "fr-CH",   // French (Switzerland)
-    "fr-FR",   // French (France)
-    "fy",      // Frisian
-    "ga",      // Irish
-    "gd",      // Scots Gaelic
-    "gl",      // Galician
-    "gn",      // Guarani
-    "gu",      // Gujarati
-    "ha",      // Hausa
-    "haw",     // Hawaiian
-    "he",      // Hebrew
-    "hi",      // Hindi
-    "hmn",     // Hmong
-    "hr",      // Croatian
-    "ht",      // Haitian Creole
-    "hu",      // Hungarian
-    "hy",      // Armenian
-    "ia",      // Interlingua
-    "id",      // Indonesian
-    "ig",      // Igbo
-    "ilo",     // Ilocano
-    "is",      // Icelandic
-    "it",      // Italian
-    "it-CH",   // Italian (Switzerland)
-    "it-IT",   // Italian (Italy)
-    "ja",      // Japanese
-    "jv",      // Javanese
-    "ka",      // Georgian
-    "kk",      // Kazakh
-    "km",      // Cambodian
-    "kn",      // Kannada
-    "ko",      // Korean
-    "kok",     // Konkani
-    "kri",     // Krio
-    "ku",      // Kurdish
-    "ky",      // Kyrgyz
-    "la",      // Latin
-    "lb",      // Luxembourgish
-    "lg",      // Luganda
-    "ln",      // Lingala
-    "lo",      // Laothian
-    "lt",      // Lithuanian
-    "lus",     // Mizo
-    "lv",      // Latvian
-    "mai",     // Maithili
-    "mg",      // Malagasy
-    "mi",      // Maori
-    "mk",      // Macedonian
-    "ml",      // Malayalam
-    "mn",      // Mongolian
-    "mo",      // Moldavian
-    "mr",      // Marathi
-    "ms",      // Malay
-    "mt",      // Maltese
-    "my",      // Burmese
-    "nb",      // Norwegian (Bokmal)
-    "ne",      // Nepali
-    "nl",      // Dutch
-    "nn",      // Norwegian (Nynorsk)
-    "no",      // Norwegian
-    "nso",     // Sepedi
-    "ny",      // Nyanja
-    "oc",      // Occitan
-    "om",      // Oromo
-    "or",      // Odia (Oriya)
-    "pa",      // Punjabi
-    "pl",      // Polish
-    "ps",      // Pashto
-    "pt",      // Portuguese
-    "pt-BR",   // Portuguese (Brazil)
-    "pt-PT",   // Portuguese (Portugal)
-    "qu",      // Quechua
-    "rm",      // Romansh
-    "ro",      // Romanian
-    "ru",      // Russian
-    "rw",      // Kinyarwanda
-    "sa",      // Sanskrit
-    "sd",      // Sindhi
-    "sh",      // Serbo-Croatian
-    "si",      // Sinhalese
-    "sk",      // Slovak
-    "sl",      // Slovenian
-    "sm",      // Samoan
-    "sn",      // Shona
-    "so",      // Somali
-    "sq",      // Albanian
-    "sr",      // Serbian
-    "st",      // Sesotho
-    "su",      // Sundanese
-    "sv",      // Swedish
-    "sw",      // Swahili
-    "ta",      // Tamil
-    "te",      // Telugu
-    "tg",      // Tajik
-    "th",      // Thai
-    "ti",      // Tigrinya
-    "tk",      // Turkmen
-    "tn",      // Tswana
-    "to",      // Tonga
-    "tr",      // Turkish
-    "ts",      // Tsonga
-    "tt",      // Tatar
-    "tw",      // Twi
-    "ug",      // Uyghur
-    "uk",      // Ukrainian
-    "ur",      // Urdu
-    "uz",      // Uzbek
-    "vi",      // Vietnamese
-    "wa",      // Walloon
-    "wo",      // Wolof
-    "xh",      // Xhosa
-    "yi",      // Yiddish
-    "yo",      // Yoruba
-    "zh",      // Chinese
-    "zh-CN",   // Chinese (China)
-    "zh-HK",   // Chinese (Hong Kong)
-    "zh-TW",   // Chinese (Taiwan)
-    "zu",      // Zulu
+    "es-419",    // Spanish (Latin America)
+    "es-AR",     // Spanish (Argentina)
+    "es-CL",     // Spanish (Chile)
+    "es-CO",     // Spanish (Colombia)
+    "es-CR",     // Spanish (Costa Rica)
+    "es-ES",     // Spanish (Spain)
+    "es-HN",     // Spanish (Honduras)
+    "es-MX",     // Spanish (Mexico)
+    "es-PE",     // Spanish (Peru)
+    "es-US",     // Spanish (US)
+    "es-UY",     // Spanish (Uruguay)
+    "es-VE",     // Spanish (Venezuela)
+    "et",        // Estonian
+    "eu",        // Basque
+    "fa",        // Persian
+    "fi",        // Finnish
+    "fil",       // Filipino
+    "fo",        // Faroese
+    "fr",        // French
+    "fr-CA",     // French (Canada)
+    "fr-CH",     // French (Switzerland)
+    "fr-FR",     // French (France)
+    "fy",        // Frisian
+    "ga",        // Irish
+    "gd",        // Scots Gaelic
+    "gl",        // Galician
+    "gn",        // Guarani
+    "gu",        // Gujarati
+    "ha",        // Hausa
+    "haw",       // Hawaiian
+    "he",        // Hebrew
+    "hi",        // Hindi
+    "hmn",       // Hmong
+    "hr",        // Croatian
+    "ht",        // Haitian Creole
+    "hu",        // Hungarian
+    "hy",        // Armenian
+    "ia",        // Interlingua
+    "id",        // Indonesian
+    "ig",        // Igbo
+    "ilo",       // Ilocano
+    "is",        // Icelandic
+    "it",        // Italian
+    "it-CH",     // Italian (Switzerland)
+    "it-IT",     // Italian (Italy)
+    "ja",        // Japanese
+    "jv",        // Javanese
+    "ka",        // Georgian
+    "kk",        // Kazakh
+    "km",        // Cambodian
+    "kn",        // Kannada
+    "ko",        // Korean
+    "kok",       // Konkani
+    "kri",       // Krio
+    "ku",        // Kurdish
+    "ky",        // Kyrgyz
+    "la",        // Latin
+    "lb",        // Luxembourgish
+    "lg",        // Luganda
+    "ln",        // Lingala
+    "lo",        // Laothian
+    "lt",        // Lithuanian
+    "lus",       // Mizo
+    "lv",        // Latvian
+    "mai",       // Maithili
+    "mg",        // Malagasy
+    "mi",        // Maori
+    "mk",        // Macedonian
+    "ml",        // Malayalam
+    "mn",        // Mongolian
+    "mni-Mtei",  // Manipuri (Meitei Mayek)
+    "mo",        // Moldavian
+    "mr",        // Marathi
+    "ms",        // Malay
+    "mt",        // Maltese
+    "my",        // Burmese
+    "nb",        // Norwegian (Bokmal)
+    "ne",        // Nepali
+    "nl",        // Dutch
+    "nn",        // Norwegian (Nynorsk)
+    "no",        // Norwegian
+    "nso",       // Sepedi
+    "ny",        // Nyanja
+    "oc",        // Occitan
+    "om",        // Oromo
+    "or",        // Odia (Oriya)
+    "pa",        // Punjabi
+    "pl",        // Polish
+    "ps",        // Pashto
+    "pt",        // Portuguese
+    "pt-BR",     // Portuguese (Brazil)
+    "pt-PT",     // Portuguese (Portugal)
+    "qu",        // Quechua
+    "rm",        // Romansh
+    "ro",        // Romanian
+    "ru",        // Russian
+    "rw",        // Kinyarwanda
+    "sa",        // Sanskrit
+    "sd",        // Sindhi
+    "sh",        // Serbo-Croatian
+    "si",        // Sinhalese
+    "sk",        // Slovak
+    "sl",        // Slovenian
+    "sm",        // Samoan
+    "sn",        // Shona
+    "so",        // Somali
+    "sq",        // Albanian
+    "sr",        // Serbian
+    "st",        // Sesotho
+    "su",        // Sundanese
+    "sv",        // Swedish
+    "sw",        // Swahili
+    "ta",        // Tamil
+    "te",        // Telugu
+    "tg",        // Tajik
+    "th",        // Thai
+    "ti",        // Tigrinya
+    "tk",        // Turkmen
+    "tn",        // Tswana
+    "to",        // Tonga
+    "tr",        // Turkish
+    "ts",        // Tsonga
+    "tt",        // Tatar
+    "tw",        // Twi
+    "ug",        // Uyghur
+    "uk",        // Ukrainian
+    "ur",        // Urdu
+    "uz",        // Uzbek
+    "vi",        // Vietnamese
+    "wa",        // Walloon
+    "wo",        // Wolof
+    "xh",        // Xhosa
+    "yi",        // Yiddish
+    "yo",        // Yoruba
+    "zh",        // Chinese
+    "zh-CN",     // Chinese (China)
+    "zh-HK",     // Chinese (Hong Kong)
+    "zh-TW",     // Chinese (Taiwan)
+    "zu",        // Zulu
 };
 
 // The list of locales that expected on the current platform, generated from the

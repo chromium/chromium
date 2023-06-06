@@ -789,6 +789,12 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       // necessary as a language code for the Translate server.
       return true;
     }
+
+    if (language.code === 'mni-Mtei') {
+      // Translate uses the Meitei Mayek script for Manipuri
+      return true;
+    }
+
     const baseLanguage = this.getBaseLanguage(language.code);
     if (baseLanguage === 'nb') {
       // Norwegian Bokmål (nb) is listed as supporting translate but the

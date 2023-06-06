@@ -85,6 +85,11 @@ void ToTranslateLanguageSynonym(std::string* language) {
     return;
   }
 
+  if (main_part == "mni") {
+    // "mni-Mtei" does not have any mapping and as such we leave it as is.
+    return;
+  }
+
   if (main_part == "zh") {
     // Chinese is a special case, there can be two base languages: traditional
     // and simplified. The kLanguageCodeChineseCompatiblePairs list contains the
