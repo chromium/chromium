@@ -58,7 +58,7 @@
 <translation id="2840766858109427815">Avançar para a próxima página</translation>
 <translation id="2872353916818027657">Trocar monitor primário</translation>
 <translation id="2914313326123580426">Mostrar ou ocultar o painel Ferramentas para desenvolvedores</translation>
-<translation id="292495055542441795">Alternar para tela cheia</translation>
+<translation id="292495055542441795">Mudar para tela cheia</translation>
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3084301071537457911">Destacar o próximo item na estante</translation>
 <translation id="309173601632226815">Destacar o botão de tela de início na estante</translation>
@@ -78,7 +78,7 @@
 <translation id="3655154169297074232">Guias e janelas</translation>
 <translation id="3668361878347172356">Refazer a última ação</translation>
 <translation id="3710784500737332588">Abrir a Central de Ajuda</translation>
-<translation id="3720939646656082033">Abrir o link em uma nova guia e alternar para lá</translation>
+<translation id="3720939646656082033">Abrir o link em uma nova guia e mudar para lá</translation>
 <translation id="3725795051337497754">Fechar a guia atual</translation>
 <translation id="3751033133896282964">Desfazer a última ação</translation>
 <translation id="3792178297143798024">Abrir o item destacado na estante</translation>
@@ -161,7 +161,7 @@
 <translation id="671928215901716392">Bloquear tela</translation>
 <translation id="6727005317916125192">Painel anterior</translation>
 <translation id="6740781404993465795">Selecionar a próxima palavra ou letra</translation>
-<translation id="6755851152783057058">Alternar para o último método de entrada usado</translation>
+<translation id="6755851152783057058">Mudar para o último método de entrada usado</translation>
 <translation id="6760706756348334449">Diminuir volume</translation>
 <translation id="6941333068993625698">Enviar feedback</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
@@ -171,7 +171,7 @@
 <translation id="7077383985738259936">Colocar o foco na barra de favoritos ou destacá-la (se mostrada)</translation>
 <translation id="7237562915163138771">Digite um endereço da Web na barra de endereço e pressione <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" /></translation>
 <translation id="7254764037241667478">Colocar o dispositivo em modo de espera (suspender)</translation>
-<translation id="7422707470576323858">Alternar para o próximo método de entrada disponível</translation>
+<translation id="7422707470576323858">Mudar para o próximo método de entrada disponível</translation>
 <translation id="743754632698445141">Liberar um app</translation>
 <translation id="7439718573248533901">Excluir a próxima letra (excluir para frente)</translation>
 <translation id="7500368597227394048">hífen</translation>
@@ -203,14 +203,14 @@
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 a 8</translation>
 <translation id="8881584919399569791">Mover a janela ativa para o espaço de trabalho à esquerda</translation>
 <translation id="88986195241502842">Página para baixo</translation>
-<translation id="8924883688469390268">Alternar para o usuário anterior</translation>
+<translation id="8924883688469390268">Mudar para o usuário anterior</translation>
 <translation id="8941626538514548667">Focar em conteúdo da Web no navegador</translation>
 <translation id="8977648847395357314">Selecionar o conteúdo na barra de endereço</translation>
 <translation id="8982190978301344584">Mostrar o menu exibindo uma lista de IMEs (editores de método de entrada, na sigla em inglês) disponíveis</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 a 8</translation>
 <translation id="9005984960510803406">Abrir janela Crosh</translation>
 <translation id="9041599225465145264">Colar conteúdo da área de transferência</translation>
-<translation id="9052808072970550123">Alternar para o próximo usuário</translation>
+<translation id="9052808072970550123">Mudar para o próximo usuário</translation>
 <translation id="906458777597946297">Maximizar janela</translation>
 <translation id="9072882242928138086"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> e depois <ph name="LEFT" />, <ph name="RIGHT" />, <ph name="UP" /> ou <ph name="DOWN" /></translation>
 <translation id="9091855755813503076">Ir para o início da linha</translation>

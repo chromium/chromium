@@ -1060,7 +1060,7 @@ Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang t
 <translation id="1962273523772270623">Mengizinkan pengumpulan log aktivitas WebRTC dari layanan Google</translation>
 <translation id="1962864958436828230">Menyetel batas ukuran minimal untuk batasan papan klip pencegahan kebocoran data</translation>
 <translation id="1964634611280150550">Mode samaran dinonaktifkan</translation>
-<translation id="1964802606569741174">Kebijakan ini tidak memengaruhi aplikasi YouTube Android. Jika Mode Perlindungan di YouTube harus diterapkan, pemasangan aplikasi YouTube Android harus dilarang.</translation>
+<translation id="1964802606569741174">Kebijakan ini tidak memengaruhi aplikasi YouTube Android. Jika Mode Perlindungan di YouTube harus diterapkan, penginstalan aplikasi YouTube Android harus dilarang.</translation>
 <translation id="1964985353230379667">Menentukan konfigurasi <ph name="KRB5_CONFIG" /> yang disarankan untuk tiket baru yang dibuat secara manual.
 
       Jika kebijakan 'KerberosUseCustomPrefilledConfig' disetel ke aktif, nilai kebijakan akan diterapkan sebagai konfigurasi yang disarankan dan akan ditampilkan di bagian "Lanjutan" pada dialog autentikasi Kerberos. Jika kebijakan ini disetel ke string kosong atau tidak disetel, konfigurasi <ph name="PRODUCT_OS_NAME" /> yang direkomendasikan akan dihapus.
@@ -7236,7 +7236,7 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 
       Jika kebijakan tidak disetel atau disetel ke Benar (True), peringatan akan ditampilkan untuk mengingatkan pengguna agar keluar dari layar penuh sebelum memasukkan sandi. Jika kebijakan disetel ke Salah (False), tidak ada peringatan yang akan ditampilkan.</translation>
 <translation id="7531630046107845550">Mengizinkan koneksi SSH klien keluar di Terminal System App</translation>
-<translation id="7534199150025803530">Kebijakan ini tidak memengaruhi aplikasi Google Drive Android. Jika ingin mencegah penggunaan Google Drive melalui sambungan seluler, sebaiknya Anda tidak mengizinkan pemasangan aplikasi Google Drive Android.</translation>
+<translation id="7534199150025803530">Kebijakan ini tidak memengaruhi aplikasi Google Drive Android. Jika ingin mencegah penggunaan Google Drive melalui sambungan seluler, sebaiknya Anda tidak mengizinkan penginstalan aplikasi Google Drive Android.</translation>
 <translation id="7538583957913002726">Kebijakan ini disetel ke Aktif secara default. Kebijakan mengontrol perangkat terdaftar agar melaporkan nama model, arsitektur, dan kecepatan clock maksimum CPU (serta penggunaan dan suhu CPU untuk M96 dan yang lebih baru).
 
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan melaporkan informasi CPU apa pun.
@@ -7914,7 +7914,7 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_S
       Kebijakan ini dihapus di Chrome 88 dan akan diabaikan jika disetel.
 
       Buka https://www.chromestatus.com/feature/5989473649164288.</translation>
-<translation id="8141795997560411818">Kebijakan ini tidak mencegah pengguna menggunakan aplikasi Google Drive Android. Jika ingin mencegah akses ke Google Drive, sebaiknya Anda tidak mengizinkan pemasangan aplikasi Google Drive Android.</translation>
+<translation id="8141795997560411818">Kebijakan ini tidak mencegah pengguna menggunakan aplikasi Google Drive Android. Jika ingin mencegah akses ke Google Drive, sebaiknya Anda tidak mengizinkan penginstalan aplikasi Google Drive Android.</translation>
 <translation id="8142894094385450823">Menetapkan lokal yang direkomendasikan untuk sesi terkelola</translation>
 <translation id="8147132931626030921">Menetapkan status fitur layar privasi di layar login.
 

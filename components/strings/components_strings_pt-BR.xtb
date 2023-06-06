@@ -1008,7 +1008,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3461824795358126837">Marcador</translation>
 <translation id="3462200631372590220">Ocultar detalhes</translation>
 <translation id="346601286295919445">Química</translation>
-<translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> está aberta. Pressione Tab e depois Enter para alternar para a guia aberta</translation>
+<translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> está aberta. Pressione Tab e depois Enter para mudar para a guia aberta</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para fechar todas as janelas anônimas abertas</translation>
 <translation id="3477679029130949506">Listas de filmes e horários de apresentações de teatro</translation>
 <translation id="3479552764303398839">Não agora</translation>
@@ -1554,7 +1554,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}one{# pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
 <translation id="4780366598804516005">Caixa de e-mails 1</translation>
 <translation id="4785376858512657294">Gerenciar Conta do Google</translation>
-<translation id="4785689107224900852">Alternar para esta guia</translation>
+<translation id="4785689107224900852">Mudar para esta guia</translation>
 <translation id="4786804728079074733">Vôlei</translation>
 <translation id="4789704664580239421">Os alertas de redução no preço vão aparecer nas suas guias abertas</translation>
 <translation id="4791134497475588553">Apps Linux instalados e quando eles foram usados pela última vez</translation>
@@ -1622,7 +1622,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4940163644868678279">Navegação anônima no Chrome</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4943933359574417591">Mensagens instantâneas e de texto</translation>
-<translation id="4950898438188848926">Botão de alternância de guia. Pressione Enter para alternar para a guia aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="4950898438188848926">Botão de alternância de guia. Pressione Enter para mudar para a guia aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
@@ -3343,7 +3343,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9173995187295789444">Procurando dispositivos Bluetooth…</translation>
 <translation id="917450738466192189">O certificado do servidor é inválido.</translation>
 <translation id="9174623988242579721">Veículos personalizados e de desempenho</translation>
-<translation id="9174917557437862841">Botão de alternância de guia. Pressione Enter para alternar para esta guia</translation>
+<translation id="9174917557437862841">Botão de alternância de guia. Pressione Enter para mudar para esta guia</translation>
 <translation id="9179703756951298733">Gerencie seus pagamentos e suas informações de cartão de crédito nas configurações do Chrome</translation>
 <translation id="9179907736442194268">Receba alertas por e-mail se houver uma redução no preço em algum site</translation>
 <translation id="9183302530794969518">Documentos Google</translation>

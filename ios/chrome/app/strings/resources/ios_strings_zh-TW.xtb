@@ -132,7 +132,7 @@
 <translation id="1813414402673211292">清除瀏覽資料</translation>
 <translation id="1815941218935345331">密碼</translation>
 <translation id="1820259098641718022">已加入閱讀清單</translation>
-<translation id="1829392566394960110">{COUNT,plural, =0{密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{沒有任何密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="1830634592642484976">這個地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用這項資訊，請儲存到你的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1836891464494477513">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{書籤已儲存至 Google 帳戶 ({email})}}</translation>
@@ -235,7 +235,7 @@
 <translation id="2576499762020411840">將密碼儲存到 Google 帳戶並自動填入</translation>
 <translation id="2578571896248130439">傳送網頁</translation>
 <translation id="2584132361465095047">新增帳戶…</translation>
-<translation id="2587010742985678408">{count,plural, =0{沒有任何遭外洩的密碼}=1{有 {count} 組遭外洩的密碼}other{有 {count} 組遭外洩的密碼}}</translation>
+<translation id="2587010742985678408">{count,plural, =0{沒有任何密碼外洩}=1{有 {count} 組密碼外洩}other{{count} 組密碼外洩}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{如果開啟的分頁已 1 天以上未使用，這些分頁就會轉成閒置狀態，方便你將注意力放在常用的分頁上。你隨時可以前往設定進行變更。}other{如果開啟的分頁已 {COUNT} 天以上未使用，這些分頁就會轉成閒置狀態，方便你將注意力放在常用的分頁上。你隨時可以前往設定進行變更。}}</translation>
 <translation id="2600682495497606169">清除網站 Cookie</translation>
 <translation id="2609008503159898744">要關閉所有分頁嗎？</translation>
@@ -1067,7 +1067,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼...</translation>
 <translation id="794799177247607889">停止記錄</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{沒有任何密碼外洩}=1{有 {COUNT} 組密碼外洩}other{有 {COUNT} 組密碼外洩}}</translation>
+<translation id="7953440832920792856">{COUNT,plural, =0{沒有任何密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="7959441099968534758">前往「動態饋給」</translation>
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7966516440812255683">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
@@ -1171,7 +1171,7 @@
 <translation id="8620640915598389714">編輯</translation>
 <translation id="8626393685701737946">如要將預設的網站檢視畫面變更為電腦模式，請依序前往「設定」&gt;「內容設定」</translation>
 <translation id="8636825310635137004">如要存取您在其他裝置上開啟的分頁，請開啟同步處理功能。</translation>
-<translation id="8638151046944329622">{COUNT,plural, =0{沒有任何遭外洩的密碼}=1{有 {COUNT} 組遭外洩的密碼}other{有 {COUNT} 組遭外洩的密碼}}</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{沒有任何密碼外洩}=1{有 {COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8663764600409216912">目前使用的密碼不容易讓人猜中</translation>
 <translation id="8668210798914567634">此網頁內容已儲存至你的閱讀清單。</translation>

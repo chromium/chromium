@@ -6513,7 +6513,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
     Ako je detetu <ph name="SUPERVISED_USER_NAME" /> potrebna pomoć sa čitanjem, neka ponavlja za vama. Šapućite dalje od mikrofona da bi Pomoćnik naučio detetov, a ne vaš glas.</translation>
 <translation id="6690659332373509948">Nije moguće raščlaniti datoteku: <ph name="FILE_NAME" /></translation>
 <translation id="6691541770654083180">Zemlja</translation>
-<translation id="6691936601825168937">&amp;Prosledi</translation>
+<translation id="6691936601825168937">Napre&amp;d</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 stranica}one{{COUNT} stranica}few{{COUNT} stranice}other{{COUNT} stranica}}</translation>
 <translation id="6693820805264897502">zamenite postojeće lozinke</translation>
 <translation id="6697172646384837537">Izaberite gde želite da uvezete lozinke</translation>

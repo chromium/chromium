@@ -151,7 +151,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
       Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
 <translation id="1147732569915511430">SHA-256-Hash des Avatarbilds.</translation>
 <translation id="1148415065145333943">Modus „Intelligente Akkuladung“ deaktivieren</translation>
-<translation id="1149841949061115313">Langzeitsupportkandidat-Kanal</translation>
+<translation id="1149841949061115313">„Kandidat für Langzeitsupport“-Kanal</translation>
 <translation id="1150742937785306405">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1151353063931113432">Bilder auf diesen Websites zulassen</translation>
 <translation id="1151987132434751822">Authentifizierungsschemas, für die die Anmeldedaten in der Richtlinie angewendet werden können. Mögliche Werte:
@@ -986,7 +986,7 @@ Wenn die Richtlinie auf <ph name="DISABLE_UNPUBLISHED" /> (1) gesetzt ist, sind 
         Mit |BLOCK| kann der Nutzer nicht mehr auf die App zugreifen. Wenn zusammen mit der |BLOCK|-Beschränkung ein |daily_limit_mins| angegeben ist, wird das |daily_limit_mins| ignoriert.
         |TIME_LIMITS| geben ein tägliches Nutzungslimit vor. Ist das Limit erreicht, ist die App an diesem Tag nicht mehr verfügbar. Das Nutzungslimit ist in |daily_limit_mins| angegeben. Das Limit wird täglich zur unter |reset_at| angegebenen UTC-Zeit zurückgesetzt.
         Diese Richtlinie wird nur für minderjährige Nutzer angewendet.
-        Diese Richtlinie ergänzt "UsageTimeLimit". In "UsageTimeLimit" angegebene Beschränkungen wie Gerätenutzungsdauer und Schlafenszeit werden unabhängig von den "PerAppTimeLimits" erzwungen.</translation>
+        Diese Richtlinie ergänzt "UsageTimeLimit". In "UsageTimeLimit" angegebene Beschränkungen wie Bildschirmzeit und Schlafenszeit werden unabhängig von den "PerAppTimeLimits" erzwungen.</translation>
 <translation id="1913629775420987861">Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
 <translation id="1916266055944569995">Wenn diese Richtlinie konfiguriert ist, kannst du den Rückgabewert der Managed Configuration API für einen bestimmten Ursprung definieren.
 

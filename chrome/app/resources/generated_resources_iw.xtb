@@ -1785,7 +1785,7 @@
 <translation id="2468205691404969808">‏שימוש בקובצי cookie כדי לשמור את ההעדפות שלך, גם אם לא נכנסת אל הדפים האלה</translation>
 <translation id="2468247643665097563">סדר</translation>
 <translation id="2468402215065996499">טמגוצ'י</translation>
-<translation id="2468470085922875120">נעשה שימוש בסיסמאות שקשה לנחש</translation>
+<translation id="2468470085922875120">בחרת סיסמאות שקשה לנחש</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – כרטיסייה אחת}one{<ph name="GROUP_TITLE" /> – # כרטיסיות}two{<ph name="GROUP_TITLE" /> – # כרטיסיות}other{<ph name="GROUP_TITLE" /> – # כרטיסיות}}</translation>
 <translation id="2469141124738294431">‏סטטוס ה-VM</translation>
 <translation id="2469259292033957819">אין לך מדפסות שמורות.</translation>
@@ -8294,7 +8294,7 @@
 <translation id="8208188204689616705">האתרים האלה שייכים לקבוצה שהוגדרה על ידי <ph name="FPS_OWNER" />. לאתרים ששייכים לקבוצה יש הרשאה לראות את הפעילות שלך בקבוצה.</translation>
 <translation id="8208216423136871611">אל תשמור</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{התראה חדשה}one{# התראות חדשות}two{# התראות חדשות}other{# התראות חדשות}}</translation>
-<translation id="821119981794423735">‏צריך לבחור קובץ CSV כדי לייבא סיסמאות למנהל הסיסמאות של Google בחשבון <ph name="USER_EMAIL" /></translation>
+<translation id="821119981794423735">‏כדי לייבא סיסמאות למנהל הסיסמאות של Google בחשבון <ph name="USER_EMAIL" />, צריך לבחור קובץ CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{הורדה מתבצעת}one{הורדות מתבצעות}two{הורדות מתבצעות}other{הורדות מתבצעות}}</translation>
 <translation id="8212601853154459483">הפרופיל הזה מנוהל על ידי <ph name="PROFILE_MANAGER" />, ועליך ליצור פרופיל נפרד לחשבון <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8214489666383623925">פתיחת קובץ...</translation>

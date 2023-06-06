@@ -1337,7 +1337,7 @@ Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou d
 
 A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
 <translation id="2195032660890227692">Esta política foi removida no <ph name="PRODUCT_NAME" /> 68 e substituída por <ph name="ARC_BR_POLICY_NAME" />.</translation>
-<translation id="2197625019569762163">Se esta política for definida como verdadeira, o teclado numérico será exibido por padrão para inserir a senha na tela de login. Os usuários ainda podem alternar para o teclado normal.
+<translation id="2197625019569762163">Se esta política for definida como verdadeira, o teclado numérico será exibido por padrão para inserir a senha na tela de login. Os usuários ainda podem mudar para o teclado normal.
 
       Se você definir a política, os usuários não poderão mudá-la. Se não for definida ou for definida como falsa, não terá efeito.</translation>
 <translation id="2200698565850397198">Configurar a lista de bloqueio de mensagens nativas</translation>

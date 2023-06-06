@@ -269,7 +269,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2224075387478458881">A gravação de tela não é permitida quando conteúdo protegido está visível</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
-<translation id="2248634276911611268">Abrir link em uma nova guia e alternar para ela</translation>
+<translation id="2248634276911611268">Abrir link em uma nova guia e mudar para ela</translation>
 <translation id="225680501294068881">Procurando dispositivos...</translation>
 <translation id="225716114209817872">Máximo</translation>
 <translation id="2257486738914982088">Algo deu errado no download do arquivo <ph name="FILENAME" /></translation>
@@ -978,7 +978,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="553675580533261935">Saindo da sessão</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5546397813406633847">Recuperar usuário</translation>
-<translation id="554893713779400387">Alternar para o ditado</translation>
+<translation id="554893713779400387">Mudar para o ditado</translation>
 <translation id="5551456515017410630">Abrir/fechar agenda</translation>
 <translation id="5551974246223970793">Acessar o próximo resultado ao pesquisar em uma página</translation>
 <translation id="5558091555391176027">Alternar a alta visibilidade do Compartilhar por proximidade</translation>
@@ -1097,7 +1097,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6043994281159824495">Sair agora</translation>
 <translation id="6045629311476491587">Usados por <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
-<translation id="6047696787498798094">O compartilhamento de tela será interrompido quando você alternar para outro usuário. Quer continuar?</translation>
+<translation id="6047696787498798094">O compartilhamento de tela será interrompido quando você mudar para outro usuário. Quer continuar?</translation>
 <translation id="6052614013050385269">Clicar com o botão direito do mouse em um link</translation>
 <translation id="6054305421211936131">Fazer login com cartão inteligente</translation>
 <translation id="6059276912018042191">Guias recentes do Chrome</translation>

@@ -708,7 +708,7 @@
 <translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
 <translation id="6838167112108853532">Não é possível desativar ou remover este APN. Desative ou remova os APNs em anexo.</translation>
 <translation id="6853312040151791195">Taxa de descarregamento</translation>
-<translation id="6889786074662672253">Durante a reinicialização deste dispositivo externo, não o desconecte nem desligue o computador. Você pode minimizar esta janela. Isso pode levar alguns minutos, e o dispositivo externo pode não funcionar nesse período.</translation>
+<translation id="6889786074662672253">Durante a reinicialização deste dispositivo externo, não o desconecte nem desligue o computador. Você pode minimizar esta janela. Pode levar alguns minutos., e o dispositivo externo pode não funcionar nesse período.</translation>
 <translation id="6900701049656042631">Esse álbum não tem fotos. Para adicionar, acesse <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Voltar para <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tampa do scanner está aberta. Feche-a e tente novamente.</translation>

@@ -413,7 +413,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1347512539447549782">Linux-Speicher</translation>
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1348966090521113558">Einstellungen für Bedienungshilfen (Maus)</translation>
-<translation id="1353275871123211385">Wenn du Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Gerätenutzungsdauer verwenden möchtest, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Du kannst später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
+<translation id="1353275871123211385">Wenn du Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Bildschirmzeit verwenden möchtest, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Du kannst später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
 <translation id="135389172849514421">Funktioniert im Offlinemodus</translation>
 <translation id="1353980523955420967">PPD kann nicht gefunden werden. Vergewissere dich, dass dein Chromebook online ist und versuche es noch einmal.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
@@ -2727,7 +2727,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3319306431415395200">Text im Bild mit <ph name="VISUAL_SEARCH_PROVIDER" /> übersetzen</translation>
 <translation id="3320630259304269485">Safe Browsing (Schutz vor schädlichen Websites) und andere Sicherheitseinstellungen</translation>
 <translation id="3321460131042519426">Zeilenumbruch aktivieren</translation>
-<translation id="3323521181261657960">Bonus! Gerätenutzungsdauer verlängert</translation>
+<translation id="3323521181261657960">Bonus! Bildschirmzeit verlängert</translation>
 <translation id="3323577066981719144">Änderungen, die du hier vornimmst, werden nur auf den Chrome-Browser angewendet. Wenn du die Einstellungen des Lacros Chrome-Browsers ändern möchtest, öffne den Lacros Chrome-Browser und rufe die Einstellungen auf.</translation>
 <translation id="3325804108816646710">Es wird nach verfügbaren Profilen gesucht…</translation>
 <translation id="3325910708063135066">Kamera und Mikrofon wurden in den Mac-Systemeinstellungen ausgeschaltet</translation>
@@ -2989,7 +2989,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3554493885489666172">Dein Gerät wird von <ph name="PROFILE_NAME" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="3555812735919707620">Erweiterung entfernen</translation>
 <translation id="3556000484321257665">Deine Suchmaschine wurde in <ph name="URL" /> geändert.</translation>
-<translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Gerätenutzungsdauer begrenzen</translation>
+<translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Bildschirmzeit begrenzen</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen des ChromeOS-Geräts deines Kindes aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559262020195162408">Fehler beim Installieren der Richtlinie auf dem Gerät.</translation>

@@ -436,7 +436,7 @@
 <translation id="1376771218494401509">命名視窗...(&amp;W)</translation>
 <translation id="1377600615067678409">暫時略過</translation>
 <translation id="1378613616312864539">這項設定目前受「<ph name="NAME" />」控制</translation>
-<translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有任何密碼遭外洩}=1{有 1 組密碼遭外洩}other{有 {NUM_COMPROMISED} 組密碼遭外洩}}</translation>
+<translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有任何密碼外洩}=1{1 組密碼外洩}other{{NUM_COMPROMISED} 組密碼外洩}}</translation>
 <translation id="1380028686461971526">自動連線至網路</translation>
 <translation id="1381567580865186407">系統會將<ph name="LANGUAGE" />語音內容傳送給 Google 處理</translation>
 <translation id="1383381142702995121">管理這項擴充功能</translation>
@@ -6987,7 +6987,7 @@
 <translation id="7098447629416471489">你所儲存的其他搜尋引擎會顯示在這裡</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
 <translation id="7099337801055912064">無法載入大型 PPD。大小上限為 250 KB。</translation>
-<translation id="7099739618316136113">{COUNT,plural, =0{沒有任何密碼遭外洩}=1{{COUNT} 組遭外洩的密碼}other{{COUNT} 組遭外洩的密碼}}</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{沒有任何密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="710640343305609397">開啟網路設定</translation>
 <translation id="7107609441453408294">透過所有揚聲器播放相同的音訊</translation>
@@ -8198,7 +8198,7 @@
 <translation id="8154790740888707867">沒有檔案</translation>
 <translation id="8154912474061769055">許多網站的功能可能無法運作</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與你的管理員聯絡。</translation>
-<translation id="8155676038687609779">{COUNT,plural, =0{未發現任何外洩密碼}=1{有 {COUNT} 個密碼遭外洩}other{有 {COUNT} 個密碼遭外洩}}</translation>
+<translation id="8155676038687609779">{COUNT,plural, =0{沒有任何密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="8157248655669507702">如要安裝 eSIM 卡設定檔，請啟用行動數據</translation>
 <translation id="8157704005178149728">正在設定監督功能</translation>
 <translation id="8158117992543756526">這部裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟體和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -8269,7 +8269,7 @@
 <translation id="8208188204689616705">這些網站屬於由 <ph name="FPS_OWNER" /> 定義的群組，群組中的網站可以查看你在該群組的活動。</translation>
 <translation id="8208216423136871611">不要儲存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
-<translation id="821119981794423735">如要將密碼匯入到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具，請選取 CSV 檔案</translation>
+<translation id="821119981794423735">如要將密碼匯入 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具，請選取 CSV 檔案</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
 <translation id="8212601853154459483">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，你必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立個別的設定檔</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>

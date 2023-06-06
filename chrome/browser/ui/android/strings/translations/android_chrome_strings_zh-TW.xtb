@@ -652,7 +652,7 @@
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4637420359569396807">透過廣告評估，網站和應用程式間可分享特定類型的資料，以評估廣告成效，例如在一天中向使用者放送廣告的時段。</translation>
-<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 組密碼遭外洩}other{有 # 組密碼遭外洩}}</translation>
+<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
 <translation id="4650364565596261010">系統預設</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可協助你防範詐騙網站。如果停用這項功能，在瀏覽網站時請提高警覺，尤其在輸入密碼前請特別留意。</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
@@ -949,7 +949,7 @@
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定，即可從這部裝置匯出你的密碼</translation>
 <translation id="6159729262978459665">清除所有同步裝置上的記錄。</translation>
 <translation id="6162892189396105610">預先載入 Chrome 認為你可能造訪的網頁。</translation>
-<translation id="6186394685773237175">未發現任何外洩密碼</translation>
+<translation id="6186394685773237175">沒有任何密碼外洩</translation>
 <translation id="6192907950379606605">取得圖片說明</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6196315980958524839">密碼會儲存至這部裝置上的 Google 密碼管理工具</translation>

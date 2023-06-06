@@ -275,7 +275,7 @@
 <translation id="6273793429163604305">En sus marcas…</translation>
 <translation id="6291089322031436445">Apps de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome ya está instalado para todos los usuarios en tu computadora.</translation>
-<translation id="6326175484149238433">Eliminar de Chrome</translation>
+<translation id="6326175484149238433">Quitar de Chrome</translation>
 <translation id="6327105987658262776">No hay actualizaciones disponibles.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{El administrador borra los datos de navegación automáticamente si no los usas durante 1 minuto. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}other{El administrador borra los datos de navegación automáticamente si no los usas durante # minutos. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}}</translation>
 <translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>

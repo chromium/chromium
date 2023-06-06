@@ -6513,7 +6513,7 @@
     Ако је детету <ph name="SUPERVISED_USER_NAME" /> потребна помоћ са читањем, нека понавља за вама. Шапућите даље од микрофона да би Помоћник научио дететов, а не ваш глас.</translation>
 <translation id="6690659332373509948">Није могуће рашчланити датотеку: <ph name="FILE_NAME" /></translation>
 <translation id="6691541770654083180">Земља</translation>
-<translation id="6691936601825168937">&amp;Проследи</translation>
+<translation id="6691936601825168937">Напре&amp;д</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}one{{COUNT} страница}few{{COUNT} странице}other{{COUNT} страница}}</translation>
 <translation id="6693820805264897502">замените постојеће лозинке</translation>
 <translation id="6697172646384837537">Изаберите где желите да увезете лозинке</translation>
