@@ -38,8 +38,9 @@ NetworkHealthHelper::~NetworkHealthHelper() = default;
 
 void NetworkHealthHelper::OnConnectionStateChanged(const std::string& guid,
                                                    mojom::NetworkState state) {
-  if (default_network_ && default_network_->guid == guid)
+  if (default_network_ && default_network_->guid == guid) {
     default_network_->state = state;
+  }
 }
 
 void NetworkHealthHelper::OnSignalStrengthChanged(
@@ -79,19 +80,15 @@ void NetworkHealthHelper::RequestNetworks() {
       &NetworkHealthHelper::NetworkListReceived, base::Unretained(this)));
 }
 
-bool NetworkHealthHelper::IsWiFiPortalState() {
-  if (!default_network_) {
-    return false;
-  }
-  if (default_network_->type !=
-      chromeos::network_config::mojom::NetworkType::kWiFi) {
-    return false;
-  }
+chromeos::network_config::mojom::PortalState
+NetworkHealthHelper::WiFiPortalState() {
   using PortalState = chromeos::network_config::mojom::PortalState;
-  auto portal_state = default_network_->portal_state;
-  return portal_state == PortalState::kPortal ||
-         portal_state == PortalState::kPortalSuspected ||
-         portal_state == PortalState::kProxyAuthRequired;
+  if (!default_network_ ||
+      default_network_->type !=
+          chromeos::network_config::mojom::NetworkType::kWiFi) {
+    return PortalState::kUnknown;
+  }
+  return default_network_->portal_state;
 }
 
 void NetworkHealthHelper::NetworkListReceived(
