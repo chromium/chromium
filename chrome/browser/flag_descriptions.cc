@@ -4491,11 +4491,6 @@ const char kHideIncognitoMediaMetadataDescription[] =
     "When enabled, media metadata will be hidden from your OS' media player "
     "if you are in an Incognito session.";
 
-extern const char kHighEfficiencyModeTimeBeforeDiscardName[] =
-    "Configure discard timer for Memory Saver";
-extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[] =
-    "When set, this controls the time before memory saver discards a tab.";
-
 extern const char kHighEfficiencyMultistateModeAvailableName[] =
     "Enable the multi-state option for Memory Saver Mode.";
 extern const char kHighEfficiencyMultistateModeAvailableDescription[] =

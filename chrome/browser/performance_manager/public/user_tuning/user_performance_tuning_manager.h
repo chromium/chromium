@@ -42,9 +42,6 @@ class UserPerformanceTuningManager {
   // would be `20` for 20%.
   static const uint64_t kLowBatteryThresholdPercent;
 
-  // Command line switch for setting the discard time.
-  static const char kTimeBeforeDiscardInMinutesSwitch[];
-
   class FrameThrottlingDelegate {
    public:
     virtual void StartThrottlingAllFrameSinks() = 0;
@@ -215,10 +212,6 @@ class UserPerformanceTuningManager {
 
   // Enables high efficiency mode and sets the relevant prefs accordingly.
   void SetHighEfficiencyModeEnabled(bool enabled);
-
-  // Sets the default value of the discard time pref using the command line
-  // switch, if the pref is in the default state.
-  static void SetDefaultTimeBeforeDiscardFromSwitch(PrefService* local_state);
 
   // Discards the given WebContents with the same mechanism as one that is
   // discarded through a natural timeout

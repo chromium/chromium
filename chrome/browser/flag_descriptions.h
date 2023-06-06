@@ -2569,9 +2569,6 @@ extern const char kHeuristicMemorySaverDescription[];
 extern const char kHideIncognitoMediaMetadataName[];
 extern const char kHideIncognitoMediaMetadataDescription[];
 
-extern const char kHighEfficiencyModeTimeBeforeDiscardName[];
-extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[];
-
 extern const char kHighEfficiencyMultistateModeAvailableName[];
 extern const char kHighEfficiencyMultistateModeAvailableDescription[];
 

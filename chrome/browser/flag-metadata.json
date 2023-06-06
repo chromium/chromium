@@ -4387,11 +4387,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "high-efficiency-mode-time-before-discard",
-    "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "history-journeys",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 120

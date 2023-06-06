@@ -290,20 +290,6 @@ TEST_F(UserPerformanceTuningManagerTest, InvalidPrefInStore) {
   EXPECT_FALSE(throttling_enabled());
 }
 
-TEST_F(UserPerformanceTuningManagerTest, SetDefaultTimeBeforeDiscardPref) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          kTimeBeforeDiscardInMinutesSwitch,
-      "5");
-  StartManager();
-
-  EXPECT_EQ(5, local_state_.GetInteger(
-                   performance_manager::user_tuning::prefs::
-                       kHighEfficiencyModeTimeBeforeDiscardInMinutes));
-  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastTimeBeforeDiscard(),
-              Optional(base::Minutes(5)));
-}
-
 TEST_F(UserPerformanceTuningManagerTest, EnabledOnBatteryPower) {
   StartManager();
   EXPECT_FALSE(manager()->IsBatterySaverActive());

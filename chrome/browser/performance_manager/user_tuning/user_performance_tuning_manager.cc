@@ -423,9 +423,6 @@ class ChromeOSBatterySaverProvider
 
 const uint64_t UserPerformanceTuningManager::kLowBatteryThresholdPercent = 20;
 
-const char UserPerformanceTuningManager::kTimeBeforeDiscardInMinutesSwitch[] =
-    "time-before-discard-in-minutes";
-
 const char UserPerformanceTuningManager::kForceDeviceHasBatterySwitch[] =
     "force-device-has-battery";
 
@@ -551,33 +548,6 @@ int UserPerformanceTuningManager::SampledBatteryPercentage() const {
              : -1;
 }
 
-// static
-void UserPerformanceTuningManager::SetDefaultTimeBeforeDiscardFromSwitch(
-    PrefService* local_state) {
-  // TODO(https://crbug.com/1424220): remove this function after multistate
-  // memory saver UI is available as the discard time pref will be configurable
-  // by the user
-  const PrefService::Preference* time_before_discard_pref =
-      local_state->FindPreference(
-          performance_manager::user_tuning::prefs::
-              kHighEfficiencyModeTimeBeforeDiscardInMinutes);
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (time_before_discard_pref->IsDefaultValue() &&
-      command_line->HasSwitch(kTimeBeforeDiscardInMinutesSwitch)) {
-    int time_before_discard_in_minutes;
-    std::string time_before_discard_in_minutes_string =
-        command_line->GetSwitchValueASCII(kTimeBeforeDiscardInMinutesSwitch);
-    if (base::StringToInt(time_before_discard_in_minutes_string,
-                          &time_before_discard_in_minutes) &&
-        time_before_discard_in_minutes > 0) {
-      local_state->SetDefaultPrefValue(
-          performance_manager::user_tuning::prefs::
-              kHighEfficiencyModeTimeBeforeDiscardInMinutes,
-          base::Value(time_before_discard_in_minutes));
-    }
-  }
-}
-
 UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
     ~UserPerformanceTuningReceiverImpl() = default;
 
@@ -685,8 +655,6 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
 
   performance_manager::user_tuning::prefs::MigrateHighEfficiencyModePref(
       local_state);
-
-  SetDefaultTimeBeforeDiscardFromSwitch(local_state);
 
   pref_change_registrar_.Init(local_state);
 }
