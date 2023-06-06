@@ -1142,6 +1142,8 @@ component("base") {
       sources += [
         "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
         "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h",
+        "allocator/partition_allocator/shim/nonscannable_allocator.cc",
+        "allocator/partition_allocator/shim/nonscannable_allocator.h",
       ]
     }
     if (is_android) {

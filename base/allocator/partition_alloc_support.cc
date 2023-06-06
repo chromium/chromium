@@ -54,12 +54,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_STARSCAN)
+#include "base/allocator/partition_allocator/shim/nonscannable_allocator.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
-#include "base/memory/nonscannable_memory.h"
 #endif  // BUILDFLAG(USE_STARSCAN)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1302,7 +1302,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // partition. At the same time, thread cache on the main(malloc) partition
   // must be disabled, because only one partition can have it on.
   if (scan_enabled && process_type == switches::kRendererProcess) {
-    base::internal::NonQuarantinableAllocator::Instance()
+    allocator_shim::NonQuarantinableAllocator::Instance()
         .root()
         ->EnableThreadCacheIfSupported();
   } else

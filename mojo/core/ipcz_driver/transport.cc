@@ -11,6 +11,7 @@
 #include "base/containers/stack_container.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"

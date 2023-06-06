@@ -26,7 +26,7 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
-#include "base/memory/nonscannable_memory.h"
+#include "base/allocator/partition_allocator/shim/nonscannable_allocator.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -703,8 +703,8 @@ void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
         AlignedAllocator());
   }
 
-  base::internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
-  base::internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
+  allocator_shim::NonScannableAllocator::Instance().NotifyPCScanEnabled();
+  allocator_shim::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
 }
 #endif  // BUILDFLAG(USE_STARSCAN)
 }  // namespace allocator_shim
@@ -778,14 +778,14 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
 
   // Dump stats for nonscannable and nonquarantinable allocators.
   auto& nonscannable_allocator =
-      base::internal::NonScannableAllocator::Instance();
+      allocator_shim::NonScannableAllocator::Instance();
   partition_alloc::SimplePartitionStatsDumper nonscannable_allocator_dumper;
   if (auto* nonscannable_root = nonscannable_allocator.root()) {
     nonscannable_root->DumpStats("malloc", true,
                                  &nonscannable_allocator_dumper);
   }
   auto& nonquarantinable_allocator =
-      base::internal::NonQuarantinableAllocator::Instance();
+      allocator_shim::NonQuarantinableAllocator::Instance();
   partition_alloc::SimplePartitionStatsDumper nonquarantinable_allocator_dumper;
   if (auto* nonquarantinable_root = nonquarantinable_allocator.root()) {
     nonquarantinable_root->DumpStats("malloc", true,
