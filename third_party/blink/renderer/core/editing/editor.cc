@@ -624,6 +624,12 @@ void Editor::CopyImage(const HitTestResult& result) {
                             result.AltDisplayString());
 }
 
+void Editor::CopyImage(const HitTestResult& result,
+                       const scoped_refptr<Image>& image) {
+  WriteImageToClipboard(*frame_->GetSystemClipboard(), image, KURL(),
+                        result.AltDisplayString());
+}
+
 bool Editor::CanUndo() {
   return undo_stack_->CanUndo();
 }

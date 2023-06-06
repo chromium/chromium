@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -496,15 +497,22 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (IsA<HTMLVideoElement>(*media_element)) {
       // A video element should be presented as an audio element when it has an
       // audio track but no video track.
-      if (media_element->HasAudio() && !media_element->HasVideo())
+      if (media_element->HasAudio() && !media_element->HasVideo()) {
         data.media_type = mojom::blink::ContextMenuDataMediaType::kAudio;
-      else
+      } else {
         data.media_type = mojom::blink::ContextMenuDataMediaType::kVideo;
+      }
+
       if (media_element->SupportsPictureInPicture()) {
         data.media_flags |= ContextMenuData::kMediaCanPictureInPicture;
         if (PictureInPictureController::IsElementInPictureInPicture(
                 media_element))
           data.media_flags |= ContextMenuData::kMediaPictureInPicture;
+      }
+
+      auto* video_element = To<HTMLVideoElement>(media_element);
+      if (video_element->HasAvailableVideoFrame()) {
+        data.media_flags |= ContextMenuData::kMediaHasAvailableVideoFrame;
       }
     } else if (IsA<HTMLAudioElement>(*media_element)) {
       data.media_type = mojom::blink::ContextMenuDataMediaType::kAudio;
@@ -525,6 +533,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data.media_flags |= ContextMenuData::kMediaCanSave;
     if (media_element->HasAudio())
       data.media_flags |= ContextMenuData::kMediaHasAudio;
+    if (media_element->HasVideo()) {
+      data.media_flags |= ContextMenuData::kMediaHasVideo;
+    }
+
     // Media controls can be toggled only for video player. If we toggle
     // controls for audio then the player disappears, and there is no way to
     // return it back. Don't set this bit for fullscreen video, since

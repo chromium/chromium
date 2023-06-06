@@ -81,6 +81,8 @@ struct ContextMenuData {
     kMediaCanPictureInPicture = 0x400,
     kMediaPictureInPicture = 0x800,
     kMediaCanLoop = 0x1000,
+    kMediaHasVideo = 0x2000,
+    kMediaHasAvailableVideoFrame = 0x4000,
   };
 
   // Extra attributes describing media elements.

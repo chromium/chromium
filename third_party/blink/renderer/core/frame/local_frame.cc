@@ -3149,6 +3149,16 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
     case mojom::blink::MediaPlayerActionType::kControls:
       media_element->SetUserWantsControlsVisible(enable);
       break;
+    case mojom::blink::MediaPlayerActionType::kCopyVideoFrame:
+      DCHECK(IsA<HTMLVideoElement>(media_element));
+      {
+        auto* video_element = To<HTMLVideoElement>(media_element);
+        auto image = video_element->CreateStaticBitmapImage();
+        if (image) {
+          GetEditor().CopyImage(result, image);
+        }
+      }
+      break;
     case mojom::blink::MediaPlayerActionType::kPictureInPicture:
       DCHECK(IsA<HTMLVideoElement>(media_element));
       if (enable) {

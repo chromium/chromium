@@ -350,6 +350,7 @@ class RenderViewContextMenu
   void ExecMute();
   void ExecLoop();
   void ExecControls();
+  void ExecCopyVideoFrame();
   void ExecLiveCaption();
   void ExecRotateCW();
   void ExecRotateCCW();

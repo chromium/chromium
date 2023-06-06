@@ -89,6 +89,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
 
   static void CountEvent(ExecutionContext*, const Event&);
   void CopyImage(const HitTestResult&);
+  void CopyImage(const HitTestResult& result,
+                 const scoped_refptr<Image>& image);
 
   void RespondToChangedContents(const Position&);
 

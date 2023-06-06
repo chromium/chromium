@@ -10,6 +10,7 @@ enum MediaPlayerActionType {
   kMute,
   kLoop,
   kControls,
+  kCopyVideoFrame,
   kPictureInPicture,
   kDefaultActionType = kPictureInPicture
 };
