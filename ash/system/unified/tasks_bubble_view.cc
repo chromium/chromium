@@ -51,7 +51,7 @@ void TasksBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 gfx::Size TasksBubbleView::CalculatePreferredSize() const {
   // TODO(b:277268122): Scale height based on task_items_list_view_ contents.
   return gfx::Size(kRevampedTrayMenuWidth - 2 * kGlanceablesLeftRightMargin,
-                   kTasksGlanceableMinHeight - 2 * kGlanceablesVerticalMargin);
+                   kGlanceableMinHeight - 2 * kGlanceablesVerticalMargin);
 }
 
 void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {

@@ -34,7 +34,7 @@ constexpr int kRevampedTrayMenuWidth = 400;
 // Horizontal margins between the glanceable bubble and individual glanceables.
 constexpr int kGlanceablesLeftRightMargin = 25;
 constexpr int kGlanceablesVerticalMargin = 10;
-constexpr int kTasksGlanceableMinHeight = 200;
+constexpr int kGlanceableMinHeight = 200;
 
 constexpr int kTrayPopupAutoCloseDelayInSeconds = 2;
 constexpr int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;

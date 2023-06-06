@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
@@ -52,7 +53,7 @@ namespace ash {
 // | +----------------------------------------------------------- + |
 // +----------------------------------------------------------------+
 
-class ASH_EXPORT TasksBubbleView : public views::FlexLayoutView {
+class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
  public:
   METADATA_HEADER(TasksBubbleView);
 

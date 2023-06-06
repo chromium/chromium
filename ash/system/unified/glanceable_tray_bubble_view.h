@@ -12,9 +12,12 @@ class Label;
 }
 
 namespace ash {
+class ClassroomBubbleView;
 class TasksBubbleView;
 class Shelf;
 
+// The bubble associated with the `GlanceableTrayBubble`. This bubble is the
+// container for the child `tasks` and `classroom` glanceables.
 class GlanceableTrayBubbleView : public TrayBubbleView {
  public:
   GlanceableTrayBubbleView(const InitParams& init_params, Shelf* shelf);
@@ -39,8 +42,12 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   // TODO(b:277268122): Remove and replace with actual glanceable content.
   raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
 
-  // Bubble view for the tasks glanceable. Owned by bubble_view_.
+  // Child bubble view for the tasks glanceable. Owned by bubble_view_.
   raw_ptr<TasksBubbleView, ExperimentalAsh> tasks_bubble_view_ = nullptr;
+
+  // Child bubble view for the classrooms glanceable. Owned by bubble_view_.
+  raw_ptr<ClassroomBubbleView, ExperimentalAsh> classroom_bubble_view_ =
+      nullptr;
 };
 
 }  // namespace ash

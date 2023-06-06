@@ -8,6 +8,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/system/unified/classroom_bubble_view.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "ui/views/controls/label.h"
 
@@ -24,6 +25,13 @@ void GlanceableTrayBubbleView::UpdateBubble() {
     tasks_bubble_view_ = AddChildView(std::make_unique<TasksBubbleView>());
   }
 
+  // TODO(b:283370562): only add teacher/student classroom glanceables when
+  // the user is enrolled in courses.
+  if (!classroom_bubble_view_) {
+    classroom_bubble_view_ =
+        AddChildView(std::make_unique<ClassroomBubbleView>());
+  }
+
   int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
   ChangeAnchorAlignment(shelf_->alignment());
@@ -36,7 +44,7 @@ bool GlanceableTrayBubbleView::CanActivate() const {
 
 gfx::Size GlanceableTrayBubbleView::CalculatePreferredSize() const {
   // TODO(b:277268122): Scale height based on task_items_list_view_ contents.
-  return gfx::Size(kRevampedTrayMenuWidth, kTasksGlanceableMinHeight);
+  return gfx::Size(kRevampedTrayMenuWidth, kGlanceableMinHeight);
 }
 
 }  // namespace ash
