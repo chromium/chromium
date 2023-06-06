@@ -1985,29 +1985,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.D3D11.DecoderLifetimeProgression"
-    enum="D3D11LifetimeProgression" expires_after="2022-09-11">
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <summary>
-    This enum allows us to count D3D11VideoDecoder specific crashes and
-    initialization failures. This is recorded whenever the decoder is
-    initialized or destroyed.
-  </summary>
-</histogram>
-
-<histogram name="Media.D3D11.NotifyErrorStatus" enum="MediaStatusCode"
-    expires_after="2022-08-28">
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <summary>
-    This records the media::StatusCode that was sent to NotifyError. kOk is not
-    recorded here. It is recorded when D3D11VideoDecoder reports an error to the
-    client. For decoder failures, an additional status code may be logged by the
-    accelerator -- see Media.D3D11{H264,VP9}Status for that.
-  </summary>
-</histogram>
-
 <histogram name="Media.D3D11.UnusedPictureBufferCount.MultiTexture"
     units="instances" expires_after="2022-11-01">
   <owner>liberato@chromium.org</owner>

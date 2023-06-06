@@ -24967,18 +24967,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="14" label="D3D11CreateDevice returned DXGI_ERROR_DEVICE_HUNG"/>
 </enum>
 
-<enum name="D3D11LifetimeProgression">
-  <int value="0" label="kInitializeStarted">
-    A decoder has started the initialization step.
-  </int>
-  <int value="1" label="kInitializeSucceeded">
-    A decoder has completed the initialization step successfully.
-  </int>
-  <int value="2" label="kPlaybackSucceeded">
-    A decoder has finished playing without crashing.
-  </int>
-</enum>
-
 <enum name="D3D11VideoNotSupportedReason">
   <int value="0" label="kVideoIsSupported">
     Video is not disqualified from potential playback.

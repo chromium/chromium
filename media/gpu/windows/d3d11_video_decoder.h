@@ -174,20 +174,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   std::unique_ptr<D3D11VideoDecoderWrapper> CreateD3D11VideoDecoderWrapper(
       ComD3D11VideoDecoder video_decoder);
 
-  enum class D3D11LifetimeProgression {
-    kInitializeStarted = 0,
-    kInitializeSucceeded = 1,
-    kPlaybackSucceeded = 2,
-
-    // For UMA. Must be the last entry. It should be initialized to the
-    // numerically largest value above; if you add more entries, then please
-    // update this to the last one.
-    kMaxValue = kPlaybackSucceeded
-  };
-
-  // Log UMA progression state.
-  void AddLifetimeProgressionStage(D3D11LifetimeProgression stage);
-
   std::unique_ptr<MediaLog> media_log_;
 
   enum class State {

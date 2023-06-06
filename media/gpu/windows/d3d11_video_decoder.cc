@@ -153,9 +153,6 @@ D3D11VideoDecoder::~D3D11VideoDecoder() {
 
   // Explicitly destroy the decoder, since it can reference picture buffers.
   accelerated_video_decoder_.reset();
-
-  if (already_initialized_)
-    AddLifetimeProgressionStage(D3D11LifetimeProgression::kPlaybackSucceeded);
 }
 
 VideoDecoderType D3D11VideoDecoder::GetDecoderType() const {
@@ -363,9 +360,6 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
                                    const OutputCB& output_cb,
                                    const WaitingCB& /* waiting_cb */) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::Initialize");
-  if (already_initialized_)
-    AddLifetimeProgressionStage(D3D11LifetimeProgression::kPlaybackSucceeded);
-  AddLifetimeProgressionStage(D3D11LifetimeProgression::kInitializeStarted);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_cb);
@@ -460,8 +454,6 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
       base::BindRepeating(&D3D11VideoDecoder::ReceivePictureBufferFromClient,
                           weak_factory_.GetWeakPtr());
 
-  AddLifetimeProgressionStage(D3D11LifetimeProgression::kInitializeSucceeded);
-
   // Initialize the gpu side.  It would be nice if we could ask SB<> to elide
   // the post if we're already on that thread, but it can't.
   // Bind our own init / output cb that hop to this thread, so we don't call
@@ -470,14 +462,6 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // const ref.
   impl_.AsyncCall(&D3D11VideoDecoderImpl::Initialize)
       .WithArgs(base::BindPostTaskToCurrentDefault(std::move(impl_init_cb)));
-}
-
-void D3D11VideoDecoder::AddLifetimeProgressionStage(
-    D3D11LifetimeProgression stage) {
-  already_initialized_ =
-      (stage == D3D11LifetimeProgression::kInitializeSucceeded);
-  const std::string uma_name("Media.D3D11.DecoderLifetimeProgression");
-  base::UmaHistogramEnumeration(uma_name, stage);
 }
 
 void D3D11VideoDecoder::ReceivePictureBufferFromClient(
@@ -1015,9 +999,6 @@ void D3D11VideoDecoder::SetDecoderWrapperCB(
 void D3D11VideoDecoder::NotifyError(D3D11Status reason,
                                     DecoderStatus::Codes opt_decoder_code) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::NotifyError");
-
-  base::UmaHistogramSparse("Media.D3D11.NotifyErrorStatus",
-                           static_cast<int>(reason.code()));
 
   PostDecoderStatus(
       DecoderStatus(opt_decoder_code).AddCause(std::move(reason)));
