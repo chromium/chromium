@@ -134,7 +134,10 @@ class TaskSchedulerV2 final : public TaskScheduler {
                   bool use_task_subfolders)
       : scope_(scope), use_task_subfolders_(use_task_subfolders) {
     task_service_ = GetTaskService();
-    VLOG_IF(2, !task_service_) << "Can't get the task service.";
+    if (!task_service_) {
+      VLOG(2) << "Can't get the task service.";
+      return;
+    }
     task_folder_ = GetUpdaterTaskFolder();
     VLOG_IF(2, !task_folder_) << "Can't get the task scheduler folder.";
   }
