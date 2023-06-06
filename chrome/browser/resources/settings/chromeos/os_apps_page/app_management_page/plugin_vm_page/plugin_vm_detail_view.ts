@@ -28,7 +28,7 @@ import {getTemplate} from './plugin_vm_detail_view.html.js';
 const AppManagementPluginVmDetailViewElementBase =
     AppManagementStoreMixin(WebUiListenerMixin(PolymerElement));
 
-class AppManagementPluginVmDetailViewElement extends
+export class AppManagementPluginVmDetailViewElement extends
     AppManagementPluginVmDetailViewElementBase {
   static get is() {
     return 'app-management-plugin-vm-detail-view';

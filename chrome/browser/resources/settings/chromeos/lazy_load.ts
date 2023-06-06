@@ -77,6 +77,7 @@ import './os_apps_page/app_management_page/arc_detail_view.js';
 import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 import './os_apps_page/app_management_page/chrome_app_detail_view.js';
 import './os_apps_page/app_management_page/pin_to_shelf_item.js';
+import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 import './os_apps_page/app_management_page/pwa_detail_view.js';
 import './os_apps_page/app_management_page/sub_apps_item.js';
 import './os_files_page/google_drive_subpage.js';
@@ -159,6 +160,7 @@ export {AppManagementBorealisDetailViewElement} from './os_apps_page/app_managem
 export {AppManagementChromeAppDetailViewElement} from './os_apps_page/app_management_page/chrome_app_detail_view.js';
 export {AppManagementMainViewElement} from './os_apps_page/app_management_page/main_view.js';
 export {AppManagementPinToShelfItemElement} from './os_apps_page/app_management_page/pin_to_shelf_item.js';
+export {AppManagementPluginVmDetailViewElement} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 export {AppManagementPwaDetailViewElement} from './os_apps_page/app_management_page/pwa_detail_view.js';
 export {AppManagementSubAppsItemElement} from './os_apps_page/app_management_page/sub_apps_item.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
