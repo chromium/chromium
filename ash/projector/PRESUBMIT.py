@@ -10,7 +10,7 @@ def CheckMetricsChangeHasTrackerUpdatedMessage(input_api, output_api):
     """Reminder to update metrics tracker and verify in CL description."""
     description = input_api.change.DescriptionText()
     metrics_tracker_re = input_api.re.compile(
-        r'PROJECTOR_METRICS_TRACKER_UPDATED|NO_METRICS_CHANGED')
+        r'.*(PROJECTOR_METRICS_TRACKER_UPDATED|NO_METRICS_CHANGED)')
     metrics_file_re = input_api.re.compile(
         r'.*chromium\/src\/ash\/projector\/projector_metrics\.cc')
     error_message = ("If this CL adds, changes, or deletes a metric, please\n"
