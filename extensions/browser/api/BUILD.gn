@@ -21,22 +21,6 @@ group("api") {
   ]
 }
 
-source_set("async_api_function") {
-  sources = [
-    "async_api_function.cc",
-    "async_api_function.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  public_deps = [
-    "//base",
-    "//extensions/browser:browser_sources",
-  ]
-
-  deps = [ "//content/public/browser" ]
-}
-
 # The collection of API implementations.
 group("api_implementations") {
   public_deps = [

@@ -15,7 +15,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/api/async_api_function.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -250,7 +249,7 @@ void MDnsAPI::WriteToConsole(const std::string& service_type,
   }
 }
 
-AsyncApiFunction::ResponseAction MdnsForceDiscoveryFunction::Run() {
+ExtensionFunction::ResponseAction MdnsForceDiscoveryFunction::Run() {
   MDnsAPI* api = MDnsAPI::Get(browser_context());
   if (!api) {
     return RespondNow(Error("Unknown error."));

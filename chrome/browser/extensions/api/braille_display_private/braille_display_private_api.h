@@ -9,9 +9,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/common/extensions/api/braille_display_private.h"
-#include "extensions/browser/api/async_api_function.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_function.h"
 
 class Profile;
 
