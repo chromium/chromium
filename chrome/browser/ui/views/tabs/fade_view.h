@@ -83,6 +83,8 @@ class FadeView : public views::View {
                            HoverCardFooterUpdates);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
                            HoverCardFooterShowsDiscardStatus);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+                           HoverCardFooterShowsMemoryUsage);
   raw_ptr<T> primary_view_ = nullptr;
   raw_ptr<U> fade_out_view_ = nullptr;
   double percent_ = 1.0;

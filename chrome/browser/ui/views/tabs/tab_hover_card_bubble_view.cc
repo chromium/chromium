@@ -503,7 +503,6 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 
   std::u16string title;
   absl::optional<TabAlertState> old_alert_state = alert_state_;
-  bool old_show_discard_status = show_discard_status_;
   TabRendererData tab_data = tab->data();
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
@@ -519,7 +518,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
     title = tab_data.title;
     alert_state_ = Tab::GetAlertStateToShow(tab_data.alert_state);
   }
-  show_discard_status_ = tab_data.should_show_discard_status;
+
   std::u16string domain;
   bool is_filename = false;
   if (domain_url.SchemeIsFile()) {
@@ -559,22 +558,27 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   const bool alternate_layout = UseAlternateHoverCardFormat();
   bool show_header_or_footer = alert_state_.has_value();
   if (base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardedTabTreatment)) {
-    if ((alert_state_ != old_alert_state) ||
-        (show_discard_status_ != old_show_discard_status)) {
-      show_header_or_footer = show_header_or_footer || show_discard_status_;
-      absl::optional<ui::ColorId> icon_color =
-          alert_state_.has_value()
-              ? absl::make_optional<SkColor>(
-                    tab->GetAlertIndicatorColor(alert_state_.value()))
-              : absl::nullopt;
-      int hover_card_width = views::View::GetContentsBounds().width();
-      footer_view_->GetAlertRow()->SetData(
-          {alert_state_, icon_color, hover_card_width});
-      footer_view_->GetPerformanceRow()->SetData(
-          {show_discard_status_, tab_data.discarded_memory_savings_in_bytes,
-           hover_card_width});
-    }
+          performance_manager::features::kDiscardedTabTreatment) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kMemoryUsageInHovercards)) {
+    const bool show_discard_status = tab_data.should_show_discard_status;
+    const uint64_t tab_memory_usage_in_bytes =
+        tab_data.tab_resource_usage
+            ? tab_data.tab_resource_usage->memory_usage_in_bytes()
+            : 0;
+    show_header_or_footer = show_header_or_footer || show_discard_status ||
+                            tab_memory_usage_in_bytes > 0;
+    absl::optional<ui::ColorId> icon_color =
+        alert_state_.has_value()
+            ? absl::make_optional<SkColor>(
+                  tab->GetAlertIndicatorColor(alert_state_.value()))
+            : absl::nullopt;
+    const int hover_card_width = views::View::GetContentsBounds().width();
+    footer_view_->GetAlertRow()->SetData(
+        {alert_state_, icon_color, hover_card_width});
+    footer_view_->GetPerformanceRow()->SetData(
+        {show_discard_status, tab_data.discarded_memory_savings_in_bytes,
+         tab_memory_usage_in_bytes, hover_card_width});
   } else {
     if (alert_state_ != old_alert_state) {
       std::unique_ptr<views::Label> alert_label =

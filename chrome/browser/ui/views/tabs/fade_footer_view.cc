@@ -7,6 +7,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/performance_manager/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -127,6 +128,21 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
       performance_label->SetText(
           l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB));
     }
+    performance_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kHighEfficiencyIcon, ui::kColorMenuIcon, gfx::kFaviconSize));
+    UpdateIconAndLabelLayout(data.footer_row_width);
+  } else if (data.memory_usage_in_bytes > 0) {
+    const std::u16string formatted_memory_usage =
+        ui::FormatBytes(data.memory_usage_in_bytes);
+    const std::u16string memory_usage_with_placeholder =
+        data.memory_usage_in_bytes >
+                static_cast<uint64_t>(
+                    performance_manager::features::
+                        kMemoryUsageInHovercardsHighThresholdBytes.Get())
+            ? l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE)
+            : l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_MEMORY_USAGE);
+    performance_label->SetText(l10n_util::FormatString(
+        memory_usage_with_placeholder, {formatted_memory_usage}, nullptr));
     performance_icon->SetImage(ui::ImageModel::FromVectorIcon(
         kHighEfficiencyIcon, ui::kColorMenuIcon, gfx::kFaviconSize));
     UpdateIconAndLabelLayout(data.footer_row_width);

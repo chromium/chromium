@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/performance_manager/public/features.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -274,6 +275,9 @@ TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
         base::BindRepeating(&TabHoverCardController::OnMemoryPressureChanged,
                             base::Unretained(this)));
   }
+
+  hover_card_tab_memory_usage_enabled_ = base::FeatureList::IsEnabled(
+      performance_manager::features::kMemoryUsageInHovercards);
 }
 
 TabHoverCardController::~TabHoverCardController() = default;
@@ -485,6 +489,11 @@ void TabHoverCardController::HideHoverCard() {
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
+    if (hover_card_tab_memory_usage_enabled_) {
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          GetInstance()
+              ->RemoveObserver(this);
+    }
     delayed_show_timer_.Stop();
     hover_card_observation_.Reset();
     event_sniffer_.reset();
@@ -522,6 +531,13 @@ void TabHoverCardController::OnViewVisibilityChanged(
     OnViewIsDeleting(observed_view);
 }
 
+void TabHoverCardController::OnMemoryMetricsRefreshed() {
+  if (hover_card_ != nullptr && target_tab_ != nullptr) {
+    UpdateHoverCard(target_tab_,
+                    TabSlotController::HoverCardUpdateType::kTabDataChanged);
+  }
+}
+
 bool TabHoverCardController::ArePreviewsEnabled() const {
   return static_cast<bool>(thumbnail_observer_);
 }
@@ -550,6 +566,12 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
     thumbnail_subscription_ = thumbnail_observer_->AddCallback(
         base::BindRepeating(&TabHoverCardController::OnPreviewImageAvailable,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (hover_card_tab_memory_usage_enabled_) {
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->AddObserver(this);
   }
 }
 

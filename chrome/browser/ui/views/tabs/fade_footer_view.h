@@ -31,6 +31,7 @@ struct AlertFooterRowData {
 struct PerformanceRowData {
   bool should_show_discard_status = false;
   uint64_t memory_savings_in_bytes = 0;
+  uint64_t memory_usage_in_bytes = 0;
   int footer_row_width = 0;
 };
 
@@ -58,6 +59,8 @@ class FooterRow : public FadeWrapper<views::View, T> {
                            HoverCardFooterUpdates);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
                            HoverCardFooterShowsDiscardStatus);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+                           HoverCardFooterShowsMemoryUsage);
   raw_ptr<views::Label> footer_label_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
 };

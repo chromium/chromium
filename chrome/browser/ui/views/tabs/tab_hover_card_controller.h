@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/events/event.h"
@@ -33,7 +34,9 @@ class Tab;
 class TabStrip;
 
 // Controls how hover cards are shown and hidden for tabs.
-class TabHoverCardController : public views::ViewObserver {
+class TabHoverCardController
+    : public views::ViewObserver,
+      performance_manager::user_tuning::UserPerformanceTuningManager::Observer {
  public:
   explicit TabHoverCardController(TabStrip* tab_strip);
   ~TabHoverCardController() override;
@@ -68,6 +71,8 @@ class TabHoverCardController : public views::ViewObserver {
                            SetPreviewWithNoHoverCardDoesntCrash);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowPreviewsForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, DisablePreviewsForTab);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+                           HoverCardFooterShowsMemoryUsage);
   class EventSniffer;
 
   enum ThumbnailWaitState {
@@ -80,6 +85,9 @@ class TabHoverCardController : public views::ViewObserver {
   void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
+
+  // UserPerformanceTuningManager::Observer:
+  void OnMemoryMetricsRefreshed() override;
 
   bool ArePreviewsEnabled() const;
 
@@ -170,6 +178,8 @@ class TabHoverCardController : public views::ViewObserver {
   // Tracks changes to the hover card image previews preferences
   PrefChangeRegistrar pref_change_registrar_;
   bool hover_card_image_previews_enabled_ = false;
+
+  bool hover_card_tab_memory_usage_enabled_ = false;
 
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;
