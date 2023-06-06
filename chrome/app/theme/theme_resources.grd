@@ -367,6 +367,11 @@
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED" file="common/tailored_security_unconsented.png" />
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED_UPDATED" file="common/safer_with_google_shield.png" />
       </if>
+      <if expr="_google_chrome">
+        <if expr="not is_android">
+          <structure type="chrome_scaled_image" name="IDR_SUCCESS_GREEN_CHECKMARK" file="google_chrome/success_green_checkmark.png" />
+        </if>
+      </if>
     </structures>
   </release>
 </grit>

@@ -5688,6 +5688,13 @@ static_library("ui") {
 
     allow_circular_includes_from += [ "//chrome/browser/ui/views" ]
 
+    if (is_chrome_branded && !is_android) {
+      sources += [
+        "views/promos/ios_promo_password_bubble.cc",
+        "views/promos/ios_promo_password_bubble.h",
+      ]
+    }
+
     if (is_linux || is_chromeos_lacros) {
       sources += [
         "views/chrome_views_delegate_linux.cc",
