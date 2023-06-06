@@ -7,6 +7,7 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chrome/browser/ui/views/frame/browser_view.h"')
 GEN('#include "ui/views/widget/widget.h"')
