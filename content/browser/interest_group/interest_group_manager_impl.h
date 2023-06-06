@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -351,13 +352,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     AdAuctionDataLoaderState();
     ~AdAuctionDataLoaderState();
     AdAuctionDataLoaderState(AdAuctionDataLoaderState&& state);
-    base::Time start_time;
-    url::Origin seller;
-    url::Origin top_level_origin;
-    // List of Interest group owners (string) and their interest groups
-    // (vector).
-    std::vector<std::pair<std::string, std::vector<StorageInterestGroup>>>
-        accumulated_groups;
+    BiddingAndAuctionSerializer serializer;
     base::OnceCallback<void(std::vector<uint8_t>)> callback;
   };
 

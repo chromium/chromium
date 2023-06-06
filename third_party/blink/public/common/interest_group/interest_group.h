@@ -168,7 +168,7 @@ See crrev.com/c/3517534 for an example (adding the priority field), and also
 remember to update bidder_worklet.cc too.
 
 If the new field should be sent to the B&A server for server-side auctions then
-SerializeInterestGroup() in interest_group_manager_impl.cc needs modified to
+SerializeInterestGroup() in bidding_and_auction_serializer.cc needs modified to
 support the new field.
 )");
 };
