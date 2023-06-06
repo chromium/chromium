@@ -269,8 +269,10 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabLoadNoThemeChange) {
       app_browser_->tab_strip_model()->GetActiveWebContents();
   content::ThemeChangeWaiter theme_waiter(web_contents);
   EXPECT_TRUE(content::ExecJs(web_contents, R"(
-      document.documentElement.innerHTML =
-          '<meta name="theme-color" content="yellow">';
+      const el = document.createElement("meta");
+      el.setAttribute("name", "theme-color");
+      el.setAttribute("content", "yellow");
+      document.documentElement.appendChild(el);
   )",
                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                               /*world_id=*/1));
