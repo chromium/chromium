@@ -22,7 +22,10 @@ if (enable_rust) {
       "rust_gtest_interop.cc",
       "rust_gtest_interop.h",
     ]
-    deps = [ "//testing/gtest" ]
+    deps = [
+      "//base",
+      "//testing/gtest",
+    ]
   }
 
   rust_static_library("rust_gtest_interop_rust") {
