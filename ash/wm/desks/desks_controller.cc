@@ -271,6 +271,13 @@ void ReportNumberOfZombieWindows(
                               window_tracker->windows().size());
 }
 
+AccountId GetPrimaryUserAccountId() {
+  return Shell::Get()
+      ->session_controller()
+      ->GetPrimaryUserSession()
+      ->user_info.account_id;
+}
+
 }  // namespace
 
 // Class that can hold the data for a removed desk while it waits for a user
@@ -495,10 +502,7 @@ DesksController::GetVisibleOnAllDesksWindowsOnRoot(
 void DesksController::RestorePrimaryUserActiveDeskIndex(int active_desk_index) {
   DCHECK_GE(active_desk_index, 0);
   DCHECK_LT(active_desk_index, static_cast<int>(desks_.size()));
-  user_to_active_desk_index_[Shell::Get()
-                                 ->session_controller()
-                                 ->GetPrimaryUserSession()
-                                 ->user_info.account_id] = active_desk_index;
+  user_to_active_desk_index_[GetPrimaryUserAccountId()] = active_desk_index;
   // Following |OnActiveUserSessionChanged| approach, restoring uses
   // DesksSwitchSource::kUserSwitch as a desk switch source.
   // TODO(crbug.com/1145404): consider adding an UMA metric for desks
@@ -688,8 +692,8 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
   // two positions shift left (-1), otherwiser shift right (+1).
   const int offset = new_index > old_index ? -1 : 1;
 
-  for (auto& iter : user_to_active_desk_index_) {
-    const int old_active_index = iter.second;
+  for (auto& [account_id, desk_index] : user_to_active_desk_index_) {
+    const int old_active_index = desk_index;
     if (old_active_index < starting_affected_index ||
         old_active_index > ending_affected_index) {
       // Skip unaffected desk index.
@@ -697,16 +701,13 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
     }
     // The moving desk changes from old_index to new_index, while other desks
     // between the two positions shift by one position.
-    iter.second =
+    desk_index =
         old_active_index == old_index ? new_index : old_active_index + offset;
   }
 
   // 3. For primary user's active desks restore, update the active desk index.
   desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
-      user_to_active_desk_index_[Shell::Get()
-                                     ->session_controller()
-                                     ->GetPrimaryUserSession()
-                                     ->user_info.account_id]);
+      user_to_active_desk_index_[GetPrimaryUserAccountId()]);
 
   // 4. For restoring windows to the right desks, update workspaces of all
   // windows in the affected desks for all simultaneously logged-in users.
@@ -1526,7 +1527,7 @@ void DesksController::OnWindowActivated(ActivationReason reason,
                                         aura::Window* lost_active) {}
 
 void DesksController::OnActiveUserSessionChanged(const AccountId& account_id) {
-  // TODO(afakhry): Remove this when multi-profile support goes away.
+  // TODO(b/284482035): Remove this when multi-profile support goes away.
   DCHECK(current_account_id_.is_valid());
   if (current_account_id_ == account_id) {
     return;
@@ -1676,10 +1677,12 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 
   NotifyFullScreenStateChangedAcrossDesksIfNeeded(old_active);
 
+  const int active_desk_index = GetActiveDeskIndex();
+  user_to_active_desk_index_[current_account_id_] = active_desk_index;
+
   // Only update active desk prefs when a primary user switches a desk.
   if (shell->session_controller()->IsUserPrimary()) {
-    desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
-        GetDeskIndex(active_desk_));
+    desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(active_desk_index);
   }
 }
 
@@ -1707,6 +1710,18 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
       window->SetProperty(aura::client::kWindowWorkspaceKey, i - 1);
     }
   }
+
+  // If the removed desk is before the active desk (or the active desk) of any
+  // logged in user, it needs to be adjusted.
+  for (auto& [account_id, desk_index] : user_to_active_desk_index_) {
+    if (removed_desk_index <= desk_index && desk_index > 0) {
+      --desk_index;
+    }
+  }
+  // Update the prefs for the primary user, since it may have been affected by
+  // the desk removal.
+  desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
+      user_to_active_desk_index_[GetPrimaryUserAccountId()]);
 
   // Keep the removed desk's data alive until at least the end of this function.
   // `MaybeCommitPendingDeskRemoval` at this point should have cleared
@@ -1895,9 +1910,20 @@ void DesksController::UndoDeskRemoval() {
   base::UmaHistogramBoolean(kCloseAllUndoHistogramName, true);
   Desk* readded_desk_ptr = temporary_removed_desk_->desk();
   auto readded_desk_data = std::move(temporary_removed_desk_);
-  desks_.insert(desks_.begin() + readded_desk_data->index(),
+  const int readded_desk_index = readded_desk_data->index();
+  desks_.insert(desks_.begin() + readded_desk_index,
                 readded_desk_data->AcquireDesk());
   readded_desk_ptr->set_is_desk_being_removed(false);
+
+  // If the re-added desk is before the active desk of any logged in user, it
+  // needs to be adjusted.
+  for (auto& [account_id, desk_index] : user_to_active_desk_index_) {
+    if (readded_desk_index <= desk_index) {
+      ++desk_index;
+    }
+  }
+  desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
+      user_to_active_desk_index_[GetPrimaryUserAccountId()]);
 
   for (auto& observer : observers_)
     observer.OnDeskAdded(readded_desk_ptr);

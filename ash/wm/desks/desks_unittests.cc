@@ -155,6 +155,7 @@ namespace ash {
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::ValuesIn;
 
 void NewDesk() {
@@ -2888,18 +2889,16 @@ PrefService* GetPrimaryUserPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
-// Verifies that the desks restore prefs in the given |user_prefs| matches the
-// given list of |desks_names|.
-void VerifyDesksRestoreData(PrefService* user_prefs,
-                            const std::vector<std::string>& desks_names) {
-  const base::Value::List& desks_restore_names =
+// Returns the desk names in the given `user_prefs`.
+std::vector<std::string> GetDeskRestoreNames(PrefService* user_prefs) {
+  const base::Value::List& desk_restore_names =
       user_prefs->GetList(prefs::kDesksNamesList);
-  ASSERT_EQ(desks_names.size(), desks_restore_names.size());
 
-  size_t index = 0;
-  for (const auto& value : desks_restore_names) {
-    EXPECT_EQ(desks_names[index++], value.GetString());
+  std::vector<std::string> names;
+  for (const auto& value : desk_restore_names) {
+    names.push_back(value.GetString());
   }
+  return names;
 }
 
 // Returns the GUIDs in the given `user_prefs`.
@@ -2909,8 +2908,7 @@ std::vector<base::Uuid> GetDeskRestoreGuids(PrefService* user_prefs) {
 
   std::vector<base::Uuid> guids;
   for (const base::Value& value : desks_restore_guids) {
-    const base::Uuid guid = base::Uuid::ParseLowercase(value.GetString());
-    guids.emplace_back(guid);
+    guids.emplace_back(base::Uuid::ParseLowercase(value.GetString()));
   }
   return guids;
 }
@@ -2979,8 +2977,8 @@ TEST_P(DesksEditableNamesTest, DefaultNameChangeAborted) {
   EXPECT_FALSE(desk_2->is_name_set_by_user());
 
   // Desks restore data should reflect two default-named desks.
-  VerifyDesksRestoreData(GetPrimaryUserPrefService(),
-                         {std::string(), std::string()});
+  EXPECT_THAT(GetDeskRestoreNames(GetPrimaryUserPrefService()),
+              ElementsAre("", ""));
 }
 
 TEST_P(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
@@ -3015,8 +3013,8 @@ TEST_P(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
 
   // Renaming desks via the mini views trigger an update to the desks restore
   // prefs.
-  VerifyDesksRestoreData(GetPrimaryUserPrefService(),
-                         {std::string("code"), std::string()});
+  EXPECT_THAT(GetDeskRestoreNames(GetPrimaryUserPrefService()),
+              ElementsAre("code", ""));
 
   // Add a third desk and remove the second. Both operations should not affect
   // the user-modified desk names.
@@ -3028,16 +3026,16 @@ TEST_P(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
   EXPECT_FALSE(desk_3->is_name_set_by_user());
 
   // Adding a desk triggers an update to the restore prefs.
-  VerifyDesksRestoreData(GetPrimaryUserPrefService(),
-                         {std::string("code"), std::string(), std::string()});
+  EXPECT_THAT(GetDeskRestoreNames(GetPrimaryUserPrefService()),
+              ElementsAre("code", "", ""));
 
   RemoveDesk(desk_2);
   EXPECT_TRUE(desk_1->is_name_set_by_user());
   EXPECT_FALSE(desk_3->is_name_set_by_user());
   // Desk 3 will now be renamed to "Desk 2".
   EXPECT_EQ(u"Desk 2", desk_3->name());
-  VerifyDesksRestoreData(GetPrimaryUserPrefService(),
-                         {std::string("code"), std::string()});
+  EXPECT_THAT(GetDeskRestoreNames(GetPrimaryUserPrefService()),
+              ElementsAre("code", ""));
 
   ExitOverview();
   EnterOverview();
@@ -3063,8 +3061,8 @@ TEST_P(DesksEditableNamesTest, DontAllowEmptyNames) {
   EXPECT_FALSE(desk_1->name().empty());
   EXPECT_FALSE(desk_1->is_name_set_by_user());
   EXPECT_EQ(u"Desk 1", desk_1->name());
-  VerifyDesksRestoreData(GetPrimaryUserPrefService(),
-                         {std::string(), std::string()});
+  EXPECT_THAT(GetDeskRestoreNames(GetPrimaryUserPrefService()),
+              ElementsAre("", ""));
 }
 
 TEST_P(DesksEditableNamesTest, RevertDeskNameOnEscape) {
@@ -5160,32 +5158,40 @@ TEST_F(DesksRestoreMultiUserTest,
        ChangesMadeBySecondaryUserAffectsOnlyPrimaryUserPrefs) {
   InitPrefsWithDesksRestoreData(user_1_prefs());
   SimulateUserLogin(GetUser1AccountId());
-  // Switch to user 2 (secondary) and make some desks changes. Those changes
-  // should be persisted to user 1's prefs only.
-  SwitchActiveUser(GetUser2AccountId());
 
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
   ASSERT_EQ(3u, desks.size());
 
+  // Activate the last desk and verify that this is reflected in prefs.
+  ActivateDesk(controller->desks().back().get());
+  EXPECT_EQ(user_1_prefs()->GetInteger(prefs::kDesksActiveDesk), 2);
+
+  // Switch to user 2 (secondary) and make some desks changes. Those changes
+  // should be persisted to user 1's prefs only.
+  SwitchActiveUser(GetUser2AccountId());
+
   // Create a fourth desk.
   NewDesk();
-  VerifyDesksRestoreData(user_1_prefs(), {std::string(), std::string(),
-                                          std::string("code"), std::string()});
+  EXPECT_THAT(GetDeskRestoreNames(user_1_prefs()),
+              ElementsAre("", "", "code", ""));
+
   // User 2's prefs are unaffected (empty list of desks).
-  VerifyDesksRestoreData(user_2_prefs(), {});
+  EXPECT_THAT(GetDeskRestoreNames(user_2_prefs()), ElementsAre());
 
   // Delete the second desk.
   RemoveDesk(desks[1].get());
-  VerifyDesksRestoreData(user_1_prefs(),
-                         {std::string(), std::string("code"), std::string()});
-  VerifyDesksRestoreData(user_2_prefs(), {});
+  EXPECT_THAT(GetDeskRestoreNames(user_1_prefs()), ElementsAre("", "code", ""));
+  EXPECT_THAT(GetDeskRestoreNames(user_2_prefs()), ElementsAre());
+  // This should adjust the active desk prefs for the primary user.
+  EXPECT_EQ(user_1_prefs()->GetInteger(prefs::kDesksActiveDesk), 1);
 
   // Move the third desk to the second to test desks reordering.
   controller->ReorderDesk(/*old_index=*/2, /*new_index=*/1);
-  VerifyDesksRestoreData(user_1_prefs(),
-                         {std::string(), std::string(), std::string("code")});
-  VerifyDesksRestoreData(user_2_prefs(), {});
+  EXPECT_THAT(GetDeskRestoreNames(user_1_prefs()), ElementsAre("", "", "code"));
+  EXPECT_THAT(GetDeskRestoreNames(user_2_prefs()), ElementsAre());
+  // This should again adjust the active desk prefs for the primary user.
+  EXPECT_EQ(user_1_prefs()->GetInteger(prefs::kDesksActiveDesk), 2);
 }
 
 // Tests that desks reordering updates workspaces of all windows in affected
@@ -5257,9 +5263,9 @@ TEST_F(DesksRestoreMultiUserTest,
   user_1_active_desk_index = 1;
   user_2_active_desk_index = 3;
   check_window_workspaces(std::vector<int>{0, 3, 1, 2});
-  VerifyDesksRestoreData(user_1_prefs(),
-                         std::vector<std::string>{"0", "3", "1", "2"});
-  VerifyDesksRestoreData(user_2_prefs(), {});
+  EXPECT_THAT(GetDeskRestoreNames(user_1_prefs()),
+              ElementsAre("0", "3", "1", "2"));
+  EXPECT_THAT(GetDeskRestoreNames(user_2_prefs()), ElementsAre());
   EXPECT_EQ(user_1_active_desk_index,
             user_1_prefs()->GetInteger(prefs::kDesksActiveDesk));
   EXPECT_EQ(desks[user_2_active_desk_index]->container_id(),
@@ -5277,9 +5283,9 @@ TEST_F(DesksRestoreMultiUserTest,
   user_1_active_desk_index = 0;
   user_2_active_desk_index = 2;
   check_window_workspaces(std::vector<int>{3, 1, 2, 0});
-  VerifyDesksRestoreData(user_1_prefs(),
-                         std::vector<std::string>{"3", "1", "2", "0"});
-  VerifyDesksRestoreData(user_2_prefs(), {});
+  EXPECT_THAT(GetDeskRestoreNames(user_1_prefs()),
+              ElementsAre("3", "1", "2", "0"));
+  EXPECT_THAT(GetDeskRestoreNames(user_2_prefs()), ElementsAre());
   EXPECT_EQ(user_1_active_desk_index,
             user_1_prefs()->GetInteger(prefs::kDesksActiveDesk));
   EXPECT_EQ(desks[user_1_active_desk_index]->container_id(),
@@ -7096,7 +7102,7 @@ TEST_P(DesksTest, ReorderDesksByMouse) {
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "1", "2"));
 
   // Dragging the desk preview will trigger drag & drop.
   StartDragDeskPreview(mini_view_1, event_generator);
@@ -7117,7 +7123,7 @@ TEST_P(DesksTest, ReorderDesksByMouse) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "2", "1"));
 
   // Swap the positions of the second desk and the first desk.
   gfx::Point desk_center_0 =
@@ -7128,7 +7134,7 @@ TEST_P(DesksTest, ReorderDesksByMouse) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "0", "2"));
 
   event_generator->ReleaseLeftButton();
 }
@@ -7165,7 +7171,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "1", "2"));
 
   // If long press on the second desk preview, drag & drop will be triggered.
   // Perform by gesture:
@@ -7199,7 +7205,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "2", "1"));
 
   // Swap the positions of the second desk and the first desk.
   gfx::Point desk_center_0 =
@@ -7210,7 +7216,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "0", "2"));
 
   event_generator->ReleaseTouch();
 }
@@ -7250,7 +7256,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "1", "2"));
 
   // Highlight the second desk.
   overview_controller->overview_session()
@@ -7265,7 +7271,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "2", "1"));
 
   // Keep pressing -> won't swap desks.
   event_generator->PressKey(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
@@ -7274,7 +7280,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "2", "1"));
 
   // Press Ctrl + <- twice will swap the positions of the second and first desk.
   event_generator->PressKey(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
@@ -7284,7 +7290,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "0", "2"));
 
   // Keep pressing <- won't swap desks.
   event_generator->PressKey(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
@@ -7293,7 +7299,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "0", "2"));
 }
 
 // Test reordering desks in RTL mode.
@@ -7336,7 +7342,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "1", "2"));
 
   // Swap the positions of the |desk_1| and the |desk_2| by mouse.
   StartDragDeskPreview(mini_view_1, event_generator);
@@ -7350,7 +7356,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "2", "1"));
   event_generator->ReleaseLeftButton();
 
   // Swap the positions of the |desk_1| and the |desk_0| by gesture.
@@ -7370,7 +7376,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "0", "2"));
   event_generator->ReleaseTouch();
 
   // Swap the positions of the |desk_0| and the |desk_2| by keyboard.
@@ -7386,7 +7392,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_0));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "2", "0"});
+  EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "2", "0"));
 
   // Recover to default RTL mode.
   base::i18n::SetRTLForTesting(default_rtl);
@@ -8277,6 +8283,8 @@ TEST_P(DesksCloseAllTest, ClearStoredDeskWhenClosingAnotherDesk) {
     ASSERT_EQ(2u, controller->desks().size());
     ASSERT_TRUE(desk_2->is_active());
     ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+    EXPECT_EQ(GetPrimaryUserPrefService()->GetInteger(prefs::kDesksActiveDesk),
+              0);
 
     RemoveDesk(desk_2, test_case.desk_close_type);
     EXPECT_EQ(1u, controller->desks().size());
@@ -8340,6 +8348,8 @@ TEST_P(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
     ASSERT_TRUE(desk_2->is_active());
     ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
     ASSERT_TRUE(window.is_valid());
+    EXPECT_EQ(GetPrimaryUserPrefService()->GetInteger(prefs::kDesksActiveDesk),
+              0);
 
     if (test_case.restore_desk) {
       // When `desk_1` is restored it should be back in its original position
@@ -8351,6 +8361,8 @@ TEST_P(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
       EXPECT_EQ(desk_1, controller->desks()[0].get());
       EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
       EXPECT_TRUE(window.is_valid());
+      EXPECT_EQ(
+          GetPrimaryUserPrefService()->GetInteger(prefs::kDesksActiveDesk), 0);
     } else {
       // Because undo toasts persist on hover, we need to move the cursor
       // outside of the undo toast to start the countdown for its expiration.
@@ -9441,7 +9453,8 @@ TEST_P(DeskBarBasicTest, DeskBarReorderDesk) {
     }
     auto* prefs =
         Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-    VerifyDesksRestoreData(prefs, desk_names);
+    EXPECT_THAT(GetDeskRestoreNames(prefs),
+                ::testing::ElementsAreArray(desk_names));
   };
 
   auto drag_desk = [&](int from, int to) {

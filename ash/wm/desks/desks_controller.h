@@ -498,6 +498,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   AccountId current_account_id_;
 
   // Stores the per-user last active desk index.
+  // TODO(b/284482035): Clean this up.
   base::flat_map<AccountId, int> user_to_active_desk_index_;
 
   // Stores visible on all desks windows, that is normal type windows with
