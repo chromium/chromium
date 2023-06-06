@@ -665,11 +665,6 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   Collect3DContextInformation(gl_info, gpu_channel_host->gpu_info());
 
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = -1;
-  attributes.depth_size = 0;
-  attributes.stencil_size = 0;
-  attributes.samples = 0;
-  attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
   attributes.enable_oop_rasterization =

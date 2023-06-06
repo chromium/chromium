@@ -90,7 +90,6 @@ struct GPU_EXPORT Capabilities {
   int max_viewport_height = 0;
   int num_compressed_texture_formats = 0;
   int num_shader_binary_formats = 0;
-  int num_stencil_bits = 0;  // For the default framebuffer.
   int bind_generates_resource_chromium = 0;
 
   int max_3d_texture_size = 0;

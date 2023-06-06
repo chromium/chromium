@@ -108,15 +108,6 @@ ContextProviderCommandBuffer::GetCommandBufferProxy() {
   return command_buffer_.get();
 }
 
-uint32_t ContextProviderCommandBuffer::GetCopyTextureInternalFormat() {
-  if (attributes_.alpha_size > 0)
-    return GL_RGBA;
-  DCHECK_NE(attributes_.red_size, 0);
-  DCHECK_NE(attributes_.green_size, 0);
-  DCHECK_NE(attributes_.blue_size, 0);
-  return GL_RGB;
-}
-
 void ContextProviderCommandBuffer::AddRef() const {
   base::RefCountedThreadSafe<ContextProviderCommandBuffer>::AddRef();
 }

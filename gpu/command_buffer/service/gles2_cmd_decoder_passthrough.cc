@@ -1245,18 +1245,12 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       std::min(max_2d_texture_size, max_renderbuffer_size_);
 
   if (offscreen_) {
-    const bool multisampled_framebuffers_supported =
-        feature_info_->feature_flags().chromium_framebuffer_multisample;
-    if (attrib_helper.samples > 0 && attrib_helper.sample_buffers > 0 &&
-        multisampled_framebuffers_supported && !attrib_helper.single_buffer) {
-      GLint max_sample_count = 0;
-      api()->glGetIntegervFn(GL_MAX_SAMPLES_EXT, &max_sample_count);
-      emulated_default_framebuffer_format_.samples =
-          std::min(attrib_helper.samples, max_sample_count);
-    }
-
     const bool rgb8_supported = feature_info_->feature_flags().oes_rgb8_rgba8;
+#if BUILDFLAG(IS_ANDROID)
     const bool alpha_channel_requested = attrib_helper.alpha_size > 0;
+#else
+    const bool alpha_channel_requested = false;
+#endif
     // The only available default render buffer formats in GLES2 have very
     // little precision.  Don't enable multisampling unless 8-bit render
     // buffer formats are available--instead fall back to 8-bit textures.
@@ -1272,25 +1266,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     emulated_default_framebuffer_format_.color_texture_format =
         emulated_default_framebuffer_format_.color_texture_internal_format;
     emulated_default_framebuffer_format_.color_texture_type = GL_UNSIGNED_BYTE;
-
-    const bool depth24_stencil8_supported =
-        feature_info_->feature_flags().packed_depth24_stencil8;
-    if ((attrib_helper.depth_size > 0 || attrib_helper.stencil_size > 0) &&
-        depth24_stencil8_supported) {
-      emulated_default_framebuffer_format_.depth_stencil_internal_format =
-          GL_DEPTH24_STENCIL8;
-    } else {
-      // It may be the case that this depth/stencil combination is not
-      // supported, but this will be checked later by CheckFramebufferStatus.
-      if (attrib_helper.depth_size > 0) {
-        emulated_default_framebuffer_format_.depth_internal_format =
-            GL_DEPTH_COMPONENT16;
-      }
-      if (attrib_helper.stencil_size > 0) {
-        emulated_default_framebuffer_format_.stencil_internal_format =
-            GL_STENCIL_INDEX8;
-      }
-    }
 
     CheckErrorCallbackState();
     emulated_back_buffer_ = std::make_unique<EmulatedDefaultFramebuffer>(this);

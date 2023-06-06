@@ -85,9 +85,6 @@ class ContextProviderCommandBuffer
 
   // Virtual for testing.
   virtual gpu::CommandBufferProxyImpl* GetCommandBufferProxy();
-  // Gives the GL internal format that should be used for calling CopyTexImage2D
-  // on the default framebuffer.
-  uint32_t GetCopyTextureInternalFormat();
 
   // ContextProvider / RasterContextProvider implementation.
   void AddRef() const override;

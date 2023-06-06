@@ -54,20 +54,13 @@ struct ContextCreationAttribs {
   gl.mojom.GpuPreference gpu_preference = kLowPower;
 
   // -1 if invalid or unspecified.
-  int32 alpha_size = -1;
-  int32 blue_size = -1;
-  int32 green_size = -1;
-  int32 red_size = -1;
-  int32 depth_size = -1;
-  int32 stencil_size = -1;
-  int32 samples = -1;
-  int32 sample_buffers = -1;
-  bool buffer_preserved = true;
+  [EnableIf=is_android] int32 alpha_size = -1;
+  [EnableIf=is_android] int32 blue_size = -1;
+  [EnableIf=is_android] int32 green_size = -1;
+  [EnableIf=is_android] int32 red_size = -1;
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;
-  bool should_use_native_gmb_for_backbuffer = false;
-  bool single_buffer = false;
   bool enable_gles2_interface = true;
   bool enable_grcontext = false;
   bool enable_raster_interface = false;

@@ -287,7 +287,6 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
   CHECK_EQ(stencil_size, 0);
 
   gpu::ContextCreationAttribs helper;
-  helper.buffer_preserved = false;
   helper.bind_generates_resource = kBindGeneratesResources;
   helper.fail_if_major_perf_caveat = false;
   helper.lose_context_when_out_of_memory = kLoseContextWhenOutOfMemory;

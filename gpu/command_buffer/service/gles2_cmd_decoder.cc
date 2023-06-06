@@ -3606,16 +3606,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   }
   CHECK_GL_ERROR();
 
-  should_use_native_gmb_for_backbuffer_ =
-      attrib_helper.should_use_native_gmb_for_backbuffer;
-
-#if !BUILDFLAG(IS_OZONE)
-  if (should_use_native_gmb_for_backbuffer_) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "native gmb format not supported";
-    return gpu::ContextResult::kFatalFailure;
-  }
-#endif
+  should_use_native_gmb_for_backbuffer_ = false;
 
   // In theory |needs_emulation| needs to be true on Desktop GL 4.1 or lower.
   // However, we set it to true everywhere, not to trust drivers to handle
@@ -3738,20 +3729,12 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   GLint alpha_bits = 0;
 
   if (offscreen) {
+#if BUILDFLAG(IS_ANDROID)
     offscreen_buffer_should_have_alpha_ = attrib_helper.alpha_size > 0;
-
-    if (attrib_helper.samples > 0 && attrib_helper.sample_buffers > 0 &&
-        features().chromium_framebuffer_multisample) {
-      // Per ext_framebuffer_multisample spec, need max bound on sample count.
-      // max_sample_count must be initialized to a sane value.  If
-      // glGetIntegerv() throws a GL error, it leaves its argument unchanged.
-      GLint max_sample_count = 0;
-      api()->glGetIntegervFn(GL_MAX_SAMPLES_EXT, &max_sample_count);
-      offscreen_target_samples_ = std::min(attrib_helper.samples,
-                                           max_sample_count);
-    } else {
-      offscreen_target_samples_ = 0;
-    }
+#else
+    offscreen_buffer_should_have_alpha_ = false;
+#endif
+    offscreen_target_samples_ = 0;
 
     if (gl_version_info().is_es) {
       const bool rgb8_supported = features().oes_rgb8_rgba8;
@@ -3776,18 +3759,9 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
           feature_info_->feature_flags().packed_depth24_stencil8;
       VLOG(1) << "GL_OES_packed_depth_stencil "
               << (depth24_stencil8_supported ? "" : "not ") << "supported.";
-      if ((attrib_helper.depth_size > 0 || attrib_helper.stencil_size > 0) &&
-          depth24_stencil8_supported) {
-        offscreen_target_depth_format_ = GL_DEPTH24_STENCIL8;
-        offscreen_target_stencil_format_ = 0;
-      } else {
-        // It may be the case that this depth/stencil combination is not
-        // supported, but this will be checked later by CheckFramebufferStatus.
-        offscreen_target_depth_format_ = attrib_helper.depth_size > 0 ?
-            GL_DEPTH_COMPONENT16 : 0;
-        offscreen_target_stencil_format_ = attrib_helper.stencil_size > 0 ?
-            GL_STENCIL_INDEX8 : 0;
-      }
+
+      offscreen_target_depth_format_ = 0;
+      offscreen_target_stencil_format_ = 0;
     } else {
       offscreen_target_color_format_ =
           offscreen_buffer_should_have_alpha_ ||
@@ -3803,16 +3777,8 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
       VLOG(1) << "GL_EXT_packed_depth_stencil "
               << (depth24_stencil8_supported ? "" : "not ") << "supported.";
 
-      if ((attrib_helper.depth_size > 0 || attrib_helper.stencil_size > 0) &&
-          depth24_stencil8_supported) {
-        offscreen_target_depth_format_ = GL_DEPTH24_STENCIL8;
-        offscreen_target_stencil_format_ = 0;
-      } else {
-        offscreen_target_depth_format_ = attrib_helper.depth_size > 0 ?
-            GL_DEPTH_COMPONENT : 0;
-        offscreen_target_stencil_format_ = attrib_helper.stencil_size > 0 ?
-            GL_STENCIL_INDEX : 0;
-      }
+      offscreen_target_depth_format_ = 0;
+      offscreen_target_stencil_format_ = 0;
     }
 
     offscreen_saved_color_format_ = offscreen_buffer_should_have_alpha_ ||
@@ -3874,7 +3840,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
       back_buffer_has_stencil_ = stencil_bits > 0;
       num_stencil_bits_ = stencil_bits;
     } else {
-      num_stencil_bits_ = attrib_helper.stencil_size;
+      num_stencil_bits_ = 0;
     }
 
     state_.viewport_width = surface->GetSize().width();
@@ -3959,14 +3925,12 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
         std::make_unique<BackRenderbuffer>(this);
     offscreen_target_stencil_render_buffer_->Create();
 
-    if (!attrib_helper.single_buffer) {
-      // Create the saved offscreen texture. The target frame buffer is copied
-      // here when SwapBuffers is called.
-      offscreen_saved_frame_buffer_ = std::make_unique<BackFramebuffer>(this);
-      offscreen_saved_frame_buffer_->Create();
-      offscreen_saved_color_texture_ = std::make_unique<BackTexture>(this);
-      offscreen_saved_color_texture_->Create();
-    }
+    // Create the saved offscreen texture. The target frame buffer is copied
+    // here when SwapBuffers is called.
+    offscreen_saved_frame_buffer_ = std::make_unique<BackFramebuffer>(this);
+    offscreen_saved_frame_buffer_->Create();
+    offscreen_saved_color_texture_ = std::make_unique<BackTexture>(this);
+    offscreen_saved_color_texture_->Create();
 
     // Allocate the render buffers at their initial size and check the status
     // of the frame buffers is okay.
@@ -3976,25 +3940,24 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
                     "Could not allocate offscreen buffer storage.";
       return gpu::ContextResult::kFatalFailure;
     }
-    if (!attrib_helper.single_buffer) {
-      // Allocate the offscreen saved color texture.
-      DCHECK(offscreen_saved_color_format_);
-      // Use 64x64 instead of 1x1 to handle minimum framebuffer size
-      // requirement on some platforms: b/151774454
-      offscreen_saved_color_texture_->AllocateStorage(
-          gfx::Size(64, 64), offscreen_saved_color_format_, true);
 
-      offscreen_saved_frame_buffer_->AttachRenderTexture(
-          offscreen_saved_color_texture_.get());
-      if (offscreen_saved_frame_buffer_->CheckStatus() !=
-          GL_FRAMEBUFFER_COMPLETE) {
-        bool was_lost = CheckResetStatus();
-        LOG(ERROR) << (was_lost ? "ContextResult::kTransientFailure: "
-                                : "ContextResult::kFatalFailure: ")
-                   << "Offscreen saved FBO was incomplete.";
-        return was_lost ? gpu::ContextResult::kTransientFailure
-                        : gpu::ContextResult::kFatalFailure;
-      }
+    // Allocate the offscreen saved color texture.
+    DCHECK(offscreen_saved_color_format_);
+    // Use 64x64 instead of 1x1 to handle minimum framebuffer size
+    // requirement on some platforms: b/151774454
+    offscreen_saved_color_texture_->AllocateStorage(
+        gfx::Size(64, 64), offscreen_saved_color_format_, true);
+
+    offscreen_saved_frame_buffer_->AttachRenderTexture(
+        offscreen_saved_color_texture_.get());
+    if (offscreen_saved_frame_buffer_->CheckStatus() !=
+        GL_FRAMEBUFFER_COMPLETE) {
+      bool was_lost = CheckResetStatus();
+      LOG(ERROR) << (was_lost ? "ContextResult::kTransientFailure: "
+                              : "ContextResult::kFatalFailure: ")
+                 << "Offscreen saved FBO was incomplete.";
+      return was_lost ? gpu::ContextResult::kTransientFailure
+                      : gpu::ContextResult::kFatalFailure;
     }
   }
 
@@ -4188,8 +4151,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->IsWebGL2OrES3Context()) {
     caps.max_samples = ComputeMaxSamples();
   }
-
-  caps.num_stencil_bits = num_stencil_bits_;
 
   caps.egl_image_external =
       feature_info_->feature_flags().oes_egl_image_external;

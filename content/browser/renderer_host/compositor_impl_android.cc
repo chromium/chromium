@@ -116,10 +116,6 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes(
   // background.
   gpu::ContextCreationAttribs attributes;
   attributes.alpha_size = -1;
-  attributes.stencil_size = 0;
-  attributes.depth_size = 0;
-  attributes.samples = 0;
-  attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.color_space = gpu::COLOR_SPACE_SRGB;
 
