@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -66,13 +67,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Matcher for the SetUpList.
 id<GREYMatcher> SetUpList() {
-  return grey_allOf(grey_accessibilityID(@"kSetUpListAccessibilityID"),
+  return grey_allOf(grey_accessibilityID(set_up_list::kAccessibilityID),
                     grey_sufficientlyVisible(), nil);
 }
 
 // Returns matcher for the secondary action button.
 id<GREYMatcher> SetUpListAllSet() {
-  return grey_accessibilityID(@"kSetUpListAllSetID");
+  return grey_accessibilityID(set_up_list::kAllSetID);
 }
 
 // Scrolls to the SetUpList, if it is off-screen.
@@ -117,7 +118,7 @@ void TapSecondaryActionButton() {
 // Tap the SetUpList button to expand the list.
 void TapSetUpListExpand() {
   id<GREYMatcher> expandButton =
-      grey_accessibilityID(@"kSetUpListExpandButtonID");
+      grey_accessibilityID(set_up_list::kExpandButtonID);
   [[EarlGrey selectElementWithMatcher:expandButton]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:expandButton] performAction:grey_tap()];
@@ -318,11 +319,11 @@ void TapMoreButtonIfVisible() {
 - (void)testSetUpListExpands {
   [self prepareToTestSetUpList];
 
-  id<GREYMatcher> signinItem = grey_accessibilityID(@"kSetUpListItemSignInID");
+  id<GREYMatcher> signinItem = grey_accessibilityID(set_up_list::kSignInItemID);
   id<GREYMatcher> defaultBrowserItem =
-      grey_accessibilityID(@"kSetUpListItemDefaultBrowserID");
+      grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
   id<GREYMatcher> autofillItem =
-      grey_accessibilityID(@"kSetUpListItemAutofillID");
+      grey_accessibilityID(set_up_list::kAutofillItemID);
   [[EarlGrey selectElementWithMatcher:signinItem]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:defaultBrowserItem]
@@ -351,7 +352,7 @@ void TapMoreButtonIfVisible() {
   [self prepareToTestSetUpList];
 
   // Tap the signin item.
-  TapView(@"kSetUpListItemSignInID");
+  TapView(set_up_list::kSignInItemID);
   // Verify the signin screen appears and touch "Don't Sign In".
   id<GREYMatcher> signinView = grey_accessibilityID(
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);
@@ -364,7 +365,7 @@ void TapMoreButtonIfVisible() {
                  @"SetUpList item SignIn not completed.");
 
   // Tap the default browser item.
-  TapView(@"kSetUpListItemDefaultBrowserID");
+  TapView(set_up_list::kDefaultBrowserItemID);
   // Ensure the Default Browser Promo is displayed.
   id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
       first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
@@ -380,7 +381,7 @@ void TapMoreButtonIfVisible() {
   ScrollToSetUpList();
 
   // Tap the autofill item.
-  TapView(@"kSetUpListItemAutofillID");
+  TapView(set_up_list::kAutofillItemID);
   // TODO - verify the CPE promo is displayed.
   id<GREYMatcher> CPEPromoView =
       grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
@@ -417,7 +418,7 @@ void TapMoreButtonIfVisible() {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Tap the signin item.
-  TapView(@"kSetUpListItemSignInID");
+  TapView(set_up_list::kSignInItemID);
   // Verify the signin screen appears and touch "Continue as ...".
   id<GREYMatcher> signinView = grey_accessibilityID(
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);

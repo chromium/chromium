@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+private.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -40,15 +41,6 @@ constexpr base::TimeDelta kAnimationSparkleDuration = kAnimationDuration * 2;
 
 // The delay between the crossfade animation and the start of the "sparkle".
 constexpr base::TimeDelta kAnimationSparkleDelay = kAnimationDuration * 0.5;
-
-// Accessibility IDs used for various UI items.
-constexpr NSString* const kSetUpListItemSignInID = @"kSetUpListItemSignInID";
-constexpr NSString* const kSetUpListItemDefaultBrowserID =
-    @"kSetUpListItemDefaultBrowserID";
-constexpr NSString* const kSetUpListItemAutofillID =
-    @"kSetUpListItemAutofillID";
-constexpr NSString* const kSetUpListItemAllSetID = @"kSetUpListItemAllSetID";
-constexpr NSString* const kSetUpListItemFollowID = @"kSetUpListItemFollowID";
 
 // Returns an NSAttributedString with strikethrough.
 NSAttributedString* Strikethrough(NSString* text) {
@@ -290,15 +282,15 @@ struct ViewConfig {
 - (NSString*)itemAccessibilityIdentifier {
   switch (_type) {
     case SetUpListItemType::kSignInSync:
-      return kSetUpListItemSignInID;
+      return set_up_list::kSignInItemID;
     case SetUpListItemType::kDefaultBrowser:
-      return kSetUpListItemDefaultBrowserID;
+      return set_up_list::kDefaultBrowserItemID;
     case SetUpListItemType::kAutofill:
-      return kSetUpListItemAutofillID;
+      return set_up_list::kAutofillItemID;
     case SetUpListItemType::kAllSet:
-      return kSetUpListItemAllSetID;
+      return set_up_list::kAllSetItemID;
     case SetUpListItemType::kFollow:
-      return kSetUpListItemFollowID;
+      return set_up_list::kFollowItemID;
   }
 }
 

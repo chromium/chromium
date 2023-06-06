@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
@@ -44,7 +45,7 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
 // Returns the SetUpListView, if present.
 SetUpListView* GetSetUpListView() {
   return base::mac::ObjCCast<SetUpListView>(SubviewWithAccessibilityIdentifier(
-      @"kSetUpListAccessibilityID", GetAnyKeyWindow()));
+      set_up_list::kAccessibilityID, GetAnyKeyWindow()));
 }
 
 }  // namespace

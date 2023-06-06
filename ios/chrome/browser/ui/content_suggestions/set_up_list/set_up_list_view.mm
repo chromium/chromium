@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -52,14 +53,6 @@ constexpr base::TimeDelta kAllSetAnimationDuration = base::Seconds(0.5);
 // The names of images used on the left and right sides of the "All Set" view.
 constexpr NSString* const kAllSetLeft = @"set_up_list_all_set_left";
 constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
-
-// The accessibility IDs used for various UI items.
-constexpr NSString* const kSetUpListAccessibilityID =
-    @"kSetUpListAccessibilityID";
-constexpr NSString* const kSetUpListExpandButtonID =
-    @"kSetUpListExpandButtonID";
-constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
-constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
 
 }  //  namespace
 
@@ -216,7 +209,7 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   }
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
-  self.accessibilityIdentifier = kSetUpListAccessibilityID;
+  self.accessibilityIdentifier = set_up_list::kAccessibilityID;
 
   UILabel* listTitle = [self createListTitle];
   _items = [self createItems];
@@ -321,7 +314,7 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   [button setImage:icon forState:UIControlStateNormal];
   button.tintColor = [UIColor colorNamed:kGrey600Color];
 
-  button.accessibilityIdentifier = kSetUpListMenuButtonID;
+  button.accessibilityIdentifier = set_up_list::kMenuButtonID;
   button.isAccessibilityElement = YES;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_MENU);
 
@@ -341,7 +334,7 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   [button setImage:icon forState:UIControlStateNormal];
   button.tintColor = [UIColor colorNamed:kGrey600Color];
 
-  button.accessibilityIdentifier = kSetUpListExpandButtonID;
+  button.accessibilityIdentifier = set_up_list::kExpandButtonID;
   button.isAccessibilityElement = YES;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_EXPAND);
@@ -373,7 +366,7 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
 
   UIStackView* stack =
       [[UIStackView alloc] initWithArrangedSubviews:@[ title, description ]];
-  stack.accessibilityIdentifier = kSetUpListAllSetID;
+  stack.accessibilityIdentifier = set_up_list::kAllSetID;
   stack.axis = UILayoutConstraintAxisVertical;
   stack.alignment = UIStackViewAlignmentCenter;
   stack.translatesAutoresizingMaskIntoConstraints = NO;

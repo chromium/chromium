@@ -16,6 +16,7 @@ source_set("set_up_list") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
@@ -53,6 +54,15 @@ source_set("default_browser_promo") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [ "//base" ]
+}
+
 source_set("utils") {
   sources = [
     "utils.h",
@@ -74,6 +84,7 @@ source_set("unit_tests") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":constants",
     ":default_browser_promo",
     ":set_up_list",
     "//base",

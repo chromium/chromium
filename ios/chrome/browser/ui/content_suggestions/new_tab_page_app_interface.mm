@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_test_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "net/base/mac/url_conversions.h"
@@ -66,19 +67,19 @@ using set_up_list_prefs::SetUpListItemState;
 
 + (BOOL)setUpListItemSignInSyncIsComplete {
   return ntp_home::SetUpListItemViewWithAccessibilityId(
-             @"kSetUpListItemSignInID")
+             set_up_list::kSignInItemID)
       .complete;
 }
 
 + (BOOL)setUpListItemDefaultBrowserIsComplete {
   return ntp_home::SetUpListItemViewWithAccessibilityId(
-             @"kSetUpListItemDefaultBrowserID")
+             set_up_list::kDefaultBrowserItemID)
       .complete;
 }
 
 + (BOOL)setUpListItemAutofillIsComplete {
   return ntp_home::SetUpListItemViewWithAccessibilityId(
-             @"kSetUpListItemAutofillID")
+             set_up_list::kAutofillItemID)
       .complete;
 }
 
