@@ -270,7 +270,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   base::scoped_nsobject<HistoryMenuCocoaController> controller_;  // strong
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;                         // weak
+  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;                   // weak
   raw_ptr<history::HistoryService> history_service_ = nullptr;          // weak
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;  // weak
   base::FilePath profile_dir_;  // Remembered after OnProfileWillBeDestroyed().

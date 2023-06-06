@@ -132,7 +132,7 @@ class ScopedObservation {
   const raw_ptr<Observer, DanglingUntriaged> observer_;
 
   // The observed source, if any.
-  raw_ptr<Source, DanglingUntriaged> source_ = nullptr;
+  raw_ptr<Source, LeakedDanglingUntriaged> source_ = nullptr;
 };
 
 }  // namespace base

@@ -239,7 +239,7 @@ class WebRtcLoggingController
 
   // A pointer to the log uploader that's shared for all browser contexts.
   // Ownership lies with the browser process.
-  const raw_ptr<WebRtcLogUploader, DanglingUntriaged> log_uploader_;
+  const raw_ptr<WebRtcLogUploader, LeakedDanglingUntriaged> log_uploader_;
 
   // Web app id used for statistics. Created as the hash of the value of a
   // "client" meta data key, if exists. 0 means undefined, and is the hash of

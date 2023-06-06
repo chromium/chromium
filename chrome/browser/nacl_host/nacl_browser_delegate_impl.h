@@ -52,7 +52,7 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
   std::vector<URLPattern> debug_patterns_;
 #endif
 
-  raw_ptr<ProfileManager, DanglingUntriaged> profile_manager_;
+  raw_ptr<ProfileManager, LeakedDanglingUntriaged> profile_manager_;
   bool inverse_debug_patterns_;
 };
 

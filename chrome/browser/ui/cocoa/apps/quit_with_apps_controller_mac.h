@@ -48,7 +48,7 @@ class QuitWithAppsController : public message_center::NotificationDelegate {
   // the instance here because when we want to cancel the notification we need
   // to provide the profile which was used to add the notification previously.
   // Not owned by this class.
-  raw_ptr<Profile, DanglingUntriaged> notification_profile_ = nullptr;
+  raw_ptr<Profile, LeakedDanglingUntriaged> notification_profile_ = nullptr;
 
   // Whether to suppress showing the notification for the rest of the session.
   bool suppress_for_session_ = false;

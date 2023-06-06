@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(LINUX_UI) StatusIconLinux {
   Delegate* delegate() { return delegate_; }
 
  protected:
-  raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<Delegate, LeakedDanglingUntriaged> delegate_ = nullptr;
 };
 
 }  // namespace ui

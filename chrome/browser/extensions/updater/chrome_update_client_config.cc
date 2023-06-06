@@ -80,7 +80,7 @@ class ExtensionActivityDataService final
  private:
   // This member is not owned by this class, it's owned by a profile keyed
   // service.
-  raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_;
+  raw_ptr<ExtensionPrefs, LeakedDanglingUntriaged> extension_prefs_;
 };
 
 // Calculates the value to use for the ping days parameter.

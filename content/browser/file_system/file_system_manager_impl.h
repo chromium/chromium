@@ -299,7 +299,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
 
   const int process_id_;
   const scoped_refptr<storage::FileSystemContext> context_;
-  const raw_ptr<ChildProcessSecurityPolicyImpl, DanglingUntriaged>
+  const raw_ptr<ChildProcessSecurityPolicyImpl, LeakedDanglingUntriaged>
       security_policy_;
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::FileSystemOperationRunner> operation_runner_;

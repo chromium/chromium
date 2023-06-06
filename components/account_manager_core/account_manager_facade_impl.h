@@ -215,7 +215,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
 
   base::ObserverList<Observer> observer_list_;
 
-  raw_ptr<AccountManager, DanglingUntriaged> account_manager_for_tests_ =
+  raw_ptr<AccountManager, LeakedDanglingUntriaged> account_manager_for_tests_ =
       nullptr;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
