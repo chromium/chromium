@@ -19,7 +19,7 @@ class FastCheckoutTestUtils {
                 /* companyName= */ "", /* streetAddress= */ streetAddress,
                 /* region= */ "", /* locality= */ "", /* dependentLocality= */ "",
                 /* postalCode= */ postalCode, /* sortingCode= */ "",
-                /* countryCode= */ "", /* countryName= */ "", /* phoneNumber= */ "", email,
+                /* countryCode= */ "", /* countryName= */ "", phoneNumber, email,
                 /* languageCode= */ "en-US");
     }
 

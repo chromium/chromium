@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordi
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -68,16 +67,16 @@ public class FastCheckoutProperties {
             new WritableObjectPropertyKey<>("selected_profile");
 
     /** The models corresponding to all autofill profile options. */
-    public static final ReadableObjectPropertyKey<ModelList> PROFILE_MODEL_LIST =
-            new ReadableObjectPropertyKey("profile_model_list");
+    public static final WritableObjectPropertyKey<ModelList> PROFILE_MODEL_LIST =
+            new WritableObjectPropertyKey("profile_model_list");
 
     /** The chosen credit card option. */
     public static final WritableObjectPropertyKey<FastCheckoutCreditCard> SELECTED_CREDIT_CARD =
             new WritableObjectPropertyKey<>("selected_credit_card");
 
     /** The models corresponding to all credit card options. */
-    public static final ReadableObjectPropertyKey<ModelList> CREDIT_CARD_MODEL_LIST =
-            new ReadableObjectPropertyKey("credit_card_model_list");
+    public static final WritableObjectPropertyKey<ModelList> CREDIT_CARD_MODEL_LIST =
+            new WritableObjectPropertyKey("credit_card_model_list");
 
     /** The delegate that handles actions on the home screen. */
     public static final WritableObjectPropertyKey<HomeScreenCoordinator.Delegate>

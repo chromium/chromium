@@ -206,6 +206,64 @@ public class FastCheckoutIntegrationTest {
         verify(mMockBridge, never()).onOptionsSelected(any(), any());
     }
 
+    @Test
+    @MediumTest
+    public void testOpenProfilesAndDismissBottomSheetCallsCallback() {
+        runOnUiThreadBlocking(() -> { mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS); });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The first Autofill profile should be displayed.
+        onView(withText(DUMMY_PROFILES[0].getFullName())).check(matches(isDisplayed()));
+
+        // Clicking on it opens the Autofill profile selection sheet.
+        onView(withText(DUMMY_PROFILES[0].getFullName())).perform(click());
+        onView(withText(mActivityTestRule.getActivity().getString(
+                       R.string.fast_checkout_autofill_profile_sheet_title)))
+                .check(matches(isDisplayed()));
+
+        // Hide the bottom sheet.
+        runOnUiThreadBlocking(
+                () -> mTestSupport.setSheetState(BottomSheetController.SheetState.HIDDEN, false));
+
+        waitForEvent(mMockBridge).onDismissed();
+        verify(mMockBridge, never()).onOptionsSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testOpenProfilesAndUpdateProfilesList() {
+        runOnUiThreadBlocking(() -> { mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS); });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The first Autofill profile should be displayed.
+        onView(withText(DUMMY_PROFILES[0].getFullName())).check(matches(isDisplayed()));
+
+        // Clicking on it opens the Autofill profile selection sheet.
+        onView(withText(DUMMY_PROFILES[0].getFullName())).perform(click());
+        onView(withText(mActivityTestRule.getActivity().getString(
+                       R.string.fast_checkout_autofill_profile_sheet_title)))
+                .check(matches(isDisplayed()));
+
+        FastCheckoutAutofillProfile[] updatedProfiles = {
+                FastCheckoutTestUtils.createDetailedProfile(
+                        /*guid=*/"3978", /*name=*/"Palolo Lacau",
+                        /*streetAddress=*/"Park Avenue 234", /*city=*/"Munich",
+                        /*postalCode=*/"12345", /*email=*/"foo@gmail.com",
+                        /*phoneNumber=*/"+1-111-111-111"),
+                FastCheckoutTestUtils.createDetailedProfile(
+                        /*guid=*/"9999", /*name=*/"Bacalau Lee",
+                        /*streetAddress=*/"Park Avenue 99", /*city=*/"Berlin",
+                        /*postalCode=*/"12345", /*email=*/"example@gmail.com",
+                        /*phoneNumber=*/"+1-456-123-113")};
+
+        runOnUiThreadBlocking(() -> { mFastCheckout.showOptions(updatedProfiles, DUMMY_CARDS); });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The first Autofill profile should be displayed.
+        onView(withText(updatedProfiles[1].getFullName())).check(matches(isDisplayed()));
+        onView(withText(updatedProfiles[1].getPhoneNumber())).check(matches(isDisplayed()));
+    }
+
     @DisabledTest(message = "Disabled because it's flaky. "
                     + "Investigation will be tracked in crbug.com/1418362.")
     @Test
