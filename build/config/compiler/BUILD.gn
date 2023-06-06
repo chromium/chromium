@@ -1567,12 +1567,17 @@ config("compiler_arm") {
 config("compiler_builtins") {
   visibility = [ ":runtime_library" ]
 
+  _supported = true
   _dir = ""
   _libname = "builtins"
   _prefix = "lib"
   _suffix = ""
   _ext = "a"
-  if (is_win) {
+  if (!toolchain_has_rust) {
+    # Since there's no Rust in the toolchain, there's no concern that we'll use
+    # the Rust stdlib's intrinsics here.
+    _supported = false
+  } else if (is_win) {
     _dir = "windows"
     _prefix = ""
     _ext = "lib"
@@ -1631,12 +1636,22 @@ config("compiler_builtins") {
       assert(false)  # Unhandled cpu type
     }
   } else {
-    assert(!toolchain_has_rust)  # Unhandled target platform
+    assert(false)  # Unhandled target platform
   }
 
-  _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
-  _lib_file = "${_prefix}clang_rt.${_libname}${_suffix}.${_ext}"
-  libs = [ "$_clang_lib_dir/$_dir/$_lib_file" ]
+  if (_supported) {
+    _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
+    _lib_file = "${_prefix}clang_rt.${_libname}${_suffix}.${_ext}"
+    libs = [ "$_clang_lib_dir/$_dir/$_lib_file" ]
+  } else {
+    not_needed([
+                 "_dir",
+                 "_libname",
+                 "_prefix",
+                 "_suffix",
+                 "_ext",
+               ])
+  }
 }
 
 # runtime_library -------------------------------------------------------------
