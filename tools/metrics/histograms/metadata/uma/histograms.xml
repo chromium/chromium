@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.IndependentLog.{Provider}.FinalizeTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-12-01">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -330,6 +330,7 @@ chromium-metrics-reviews@google.com.
     are successfully closed.
   </summary>
   <token key="Provider">
+    <variant name="AwBackgroundTracingMetricsProvider"/>
     <variant name="BackgroundTracingMetricsProvider"/>
     <variant name="FileMetricsProvider"/>
     <variant name="StructuredMetricsProvider"/>

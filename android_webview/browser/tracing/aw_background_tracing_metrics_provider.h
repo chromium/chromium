@@ -34,16 +34,20 @@ class AwBackgroundTracingMetricsProvider
  private:
   // BackgroundTracingMetricsProvider:
   void ProvideEmbedderMetrics(
-      metrics::ChromeUserMetricsExtension& uma_proto,
+      metrics::ChromeUserMetricsExtension* uma_proto,
       std::string&& serialized_trace,
-      metrics::TraceLog& log,
+      metrics::TraceLog* log,
       base::HistogramSnapshotManager* snapshot_manager,
       base::OnceCallback<void(bool)> done_callback) override;
 
-  void OnTraceCompressed(metrics::ChromeUserMetricsExtension& uma_proto,
-                         metrics::TraceLog& log,
-                         base::OnceCallback<void(bool)> done_callback,
-                         absl::optional<std::string> serialized_trace);
+  // Compresses |serialized_trace|. If the compressed trace does not fit into
+  // the upload limit or if there are zlib errors, returns false. Otherwise,
+  // writes the result to |log| and returns true.
+  // TODO(b/247824653): consider truncating the trace so that we have at least
+  // some data.
+  static bool Compress(std::string&& serialized_trace,
+                       metrics::ChromeUserMetricsExtension* uma_proto,
+                       metrics::TraceLog* log);
 
   base::WeakPtrFactory<AwBackgroundTracingMetricsProvider> weak_factory_{this};
 };

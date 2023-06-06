@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "components/metrics/field_trials_provider.h"
@@ -17,25 +18,21 @@ namespace tracing {
 
 namespace {
 
-// Compresses |serialized_trace| and returns the result. If the compressed trace
-// does not fit into the upload limit or if there are zlib errors, returns
-// nullopt.
-// TODO(b/247824653): consider truncating the trace so that we have at least
-// some data.
-absl::optional<std::string> Compress(std::string&& serialized_trace) {
-  std::string deflated;
-  deflated.resize(kCompressedUploadLimitBytes);
-  size_t compressed_size;
-
-  if (compression::GzipCompress(serialized_trace,
-                                reinterpret_cast<char*>(deflated.data()),
-                                kCompressedUploadLimitBytes, &compressed_size,
-                                /* malloc_fn= */ nullptr,
-                                /* free_fn= */ nullptr)) {
-    deflated.resize(compressed_size);
-    return deflated;
-  } else {
-    return absl::nullopt;
+void OnProvideEmbedderMetrics(base::OnceCallback<void(bool)> done_callback,
+                              bool success) {
+  // TODO(crbug/1052796): Remove the UMA timer code, which is currently used to
+  // determine if it is worth to finalize independent logs in the background
+  // by measuring the time it takes to execute the callback
+  // MetricsService::PrepareProviderMetricsLogDone().
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  std::move(done_callback).Run(success);
+  if (success) {
+    // We don't use the SCOPED_UMA_HISTOGRAM_TIMER macro because we want to
+    // measure the time it takes to finalize an independent log, and that only
+    // happens when |success| is true.
+    base::UmaHistogramTimes(
+        "UMA.IndependentLog.AwBackgroundTracingMetricsProvider.FinalizeTime",
+        base::TimeTicks::Now() - start_time);
   }
 }
 
@@ -60,37 +57,46 @@ void AwBackgroundTracingMetricsProvider::Init() {
 }
 
 void AwBackgroundTracingMetricsProvider::ProvideEmbedderMetrics(
-    metrics::ChromeUserMetricsExtension& uma_proto,
+    metrics::ChromeUserMetricsExtension* uma_proto,
     std::string&& serialized_trace,
-    metrics::TraceLog& log,
+    metrics::TraceLog* log,
     base::HistogramSnapshotManager* snapshot_manager,
     base::OnceCallback<void(bool)> done_callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&Compress, std::move(serialized_trace)),
-      base::BindOnce(&AwBackgroundTracingMetricsProvider::OnTraceCompressed,
-                     weak_factory_.GetWeakPtr(), std::ref(uma_proto),
-                     std::ref(log), std::move(done_callback)));
+      base::BindOnce(&AwBackgroundTracingMetricsProvider::Compress,
+                     std::move(serialized_trace), uma_proto, log),
+      base::BindOnce(&OnProvideEmbedderMetrics, std::move(done_callback)));
 }
 
-void AwBackgroundTracingMetricsProvider::OnTraceCompressed(
-    metrics::ChromeUserMetricsExtension& uma_proto,
-    metrics::TraceLog& log,
-    base::OnceCallback<void(bool)> done_callback,
-    absl::optional<std::string> compressed_trace) {
-  if (!compressed_trace) {
-    std::move(done_callback).Run(false);
-    return;
+// static
+bool AwBackgroundTracingMetricsProvider::Compress(
+    std::string&& serialized_trace,
+    metrics::ChromeUserMetricsExtension* uma_proto,
+    metrics::TraceLog* log) {
+  std::string deflated;
+  deflated.resize(kCompressedUploadLimitBytes);
+  size_t compressed_size;
+
+  if (!compression::GzipCompress(serialized_trace,
+                                 reinterpret_cast<char*>(deflated.data()),
+                                 kCompressedUploadLimitBytes, &compressed_size,
+                                 /* malloc_fn= */ nullptr,
+                                 /* free_fn= */ nullptr)) {
+    return false;
   }
 
-  SetTrace(log, std::move(*compressed_trace));
-  log.set_compression_type(metrics::TraceLog::COMPRESSION_TYPE_ZLIB);
+  deflated.resize(compressed_size);
+
+  SetTrace(log, std::move(deflated));
+  log->set_compression_type(metrics::TraceLog::COMPRESSION_TYPE_ZLIB);
 
   // Remove the package name according to the privacy requirements.
   // See go/public-webview-trace-collection.
-  auto* system_profile = uma_proto.mutable_system_profile();
+  auto* system_profile = uma_proto->mutable_system_profile();
   system_profile->clear_app_package_name();
-  std::move(done_callback).Run(true);
+
+  return true;
 }
 
 }  // namespace tracing
