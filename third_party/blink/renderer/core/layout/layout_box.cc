@@ -2781,37 +2781,6 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForContent(
   return cb->AvailableLogicalHeight(height_type);
 }
 
-LayoutUnit LayoutBox::PerpendicularContainingBlockLogicalHeight() const {
-  NOT_DESTROYED();
-  if (HasOverrideContainingBlockContentLogicalHeight())
-    return OverrideContainingBlockContentLogicalHeight();
-
-  LayoutBlock* cb = ContainingBlock();
-  if (cb->HasOverrideLogicalHeight())
-    return cb->OverrideContentLogicalHeight();
-
-  const ComputedStyle& containing_block_style = cb->StyleRef();
-  const Length& logical_height_length = containing_block_style.LogicalHeight();
-
-  // FIXME: For now just support fixed heights.  Eventually should support
-  // percentage heights as well.
-  if (!logical_height_length.IsFixed()) {
-    LayoutUnit fill_fallback_extent =
-        LayoutUnit(containing_block_style.IsHorizontalWritingMode()
-                       ? View()->GetFrameView()->Size().height()
-                       : View()->GetFrameView()->Size().width());
-    LayoutUnit fill_available_extent =
-        ContainingBlock()->AvailableLogicalHeight(kExcludeMarginBorderPadding);
-    if (fill_available_extent == -1)
-      return fill_fallback_extent;
-    return std::min(fill_available_extent, fill_fallback_extent);
-  }
-
-  // Use the content box logical height as specified by the style.
-  return cb->AdjustContentBoxLogicalHeightForBoxSizing(
-      LayoutUnit(logical_height_length.Value()));
-}
-
 PhysicalOffset LayoutBox::OffsetFromContainerInternal(
     const LayoutObject* o,
     bool ignore_scroll_offset) const {
@@ -4155,91 +4124,6 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
   height_result -=
       (containing_block->BorderBefore() + containing_block->BorderAfter());
   return height_result;
-}
-
-static LayoutUnit AccumulateStaticOffsetForFlowThread(
-    LayoutBox& layout_box,
-    LayoutUnit inline_position,
-    LayoutUnit& block_position) {
-  block_position += layout_box.LogicalTop();
-  if (!layout_box.IsLayoutFlowThread())
-    return LayoutUnit();
-  LayoutUnit previous_inline_position = inline_position;
-  // We're walking out of a flowthread here. This flow thread is not in the
-  // containing block chain, so we need to convert the position from the
-  // coordinate space of this flowthread to the containing coordinate space.
-  To<LayoutFlowThread>(layout_box)
-      .FlowThreadToContainingCoordinateSpace(block_position, inline_position);
-  return inline_position - previous_inline_position;
-}
-
-void LayoutBox::ComputeInlineStaticDistance(
-    Length& logical_left,
-    Length& logical_right,
-    const LayoutBox* child,
-    const LayoutBoxModelObject* container_block,
-    LayoutUnit container_logical_width,
-    const NGBoxFragmentBuilder* fragment_builder) {
-  if (!logical_left.IsAuto() || !logical_right.IsAuto())
-    return;
-
-  LayoutObject* parent = child->Parent();
-  TextDirection parent_direction = parent->StyleRef().Direction();
-
-  // For multicol we also need to keep track of the block position, since that
-  // determines which column we're in and thus affects the inline position.
-  LayoutUnit static_block_position = child->Layer()->StaticBlockPosition();
-
-  // FIXME: The static distance computation has not been patched for mixed
-  // writing modes yet.
-  if (parent_direction == TextDirection::kLtr) {
-    LayoutUnit static_position = child->Layer()->StaticInlinePosition() -
-                                 container_block->BorderLogicalLeft();
-    for (LayoutObject* curr = child->Parent(); curr && curr != container_block;
-         curr = curr->Container()) {
-      if (auto* box = DynamicTo<LayoutBox>(curr)) {
-        static_position +=
-            (fragment_builder &&
-             fragment_builder->GetLayoutObject() == curr->Parent())
-                ? fragment_builder->GetChildOffset(curr).inline_offset
-                : box->LogicalLeft();
-        if (curr->IsInsideFlowThread()) {
-          static_position += AccumulateStaticOffsetForFlowThread(
-              *box, static_position, static_block_position);
-        }
-      }
-    }
-    logical_left = Length::Fixed(static_position);
-  } else {
-    LayoutBox* enclosing_box = child->Parent()->EnclosingBox();
-    LayoutUnit static_position = child->Layer()->StaticInlinePosition() +
-                                 container_logical_width +
-                                 container_block->BorderLogicalLeft();
-    if (container_block->IsBox()) {
-      static_position +=
-          To<LayoutBox>(container_block)->LogicalLeftScrollbarWidth();
-    }
-    for (LayoutObject* curr = child->Parent(); curr; curr = curr->Container()) {
-      if (auto* box = DynamicTo<LayoutBox>(curr)) {
-        if (curr == enclosing_box)
-          static_position -= enclosing_box->LogicalWidth();
-        if (curr != container_block) {
-          static_position -=
-              (fragment_builder &&
-               fragment_builder->GetLayoutObject() == curr->Parent())
-                  ? fragment_builder->GetChildOffset(curr).inline_offset
-                  : box->LogicalLeft();
-          if (curr->IsInsideFlowThread()) {
-            static_position -= AccumulateStaticOffsetForFlowThread(
-                *box, static_position, static_block_position);
-          }
-        }
-      }
-      if (curr == container_block)
-        break;
-    }
-    logical_right = Length::Fixed(static_position);
-  }
 }
 
 void LayoutBox::ComputeBlockStaticDistance(

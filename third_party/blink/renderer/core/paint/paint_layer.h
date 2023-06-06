@@ -277,12 +277,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                const PhysicalRect& hit_test_area);
 
   // Static position is set in parent's coordinate space.
-  LayoutUnit StaticInlinePosition() const { return static_inline_position_; }
   LayoutUnit StaticBlockPosition() const { return static_block_position_; }
 
-  void SetStaticInlinePosition(LayoutUnit position) {
-    static_inline_position_ = position;
-  }
   void SetStaticBlockPosition(LayoutUnit position) {
     static_block_position_ = position;
   }

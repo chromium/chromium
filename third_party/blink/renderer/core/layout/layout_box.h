@@ -699,16 +699,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool UsesOverlayScrollbars() const;
 
-  // Clamps the left scrollbar size so it is not wider than the content box.
-  DISABLE_CFI_PERF LayoutUnit LogicalLeftScrollbarWidth() const {
-    NOT_DESTROYED();
-    if (CanSkipComputeScrollbars())
-      return LayoutUnit();
-    else if (StyleRef().IsHorizontalWritingMode())
-      return ComputeScrollbarsInternal(kClampToContentBox).left;
-    else
-      return ComputeScrollbarsInternal(kClampToContentBox).top;
-  }
   DISABLE_CFI_PERF LayoutUnit LogicalTopScrollbarHeight() const {
     NOT_DESTROYED();
     if (CanSkipComputeScrollbars())
@@ -752,10 +742,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   DISABLE_CFI_PERF LayoutUnit ClientLogicalHeight() const {
     NOT_DESTROYED();
     return IsHorizontalWritingMode() ? ClientHeight() : ClientWidth();
-  }
-  DISABLE_CFI_PERF LayoutUnit ClientLogicalBottom() const {
-    NOT_DESTROYED();
-    return BorderBefore() + LogicalTopScrollbarHeight() + ClientLogicalHeight();
   }
 
   // TODO(crbug.com/962299): This is incorrect in some cases.
@@ -1119,8 +1105,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ContainingBlockLogicalWidthForContent() const override;
   LayoutUnit ContainingBlockLogicalHeightForContent(
       AvailableLogicalHeightType) const;
-
-  LayoutUnit PerpendicularContainingBlockLogicalHeight() const;
 
   virtual void ComputeLogicalHeight(LayoutUnit logical_height,
                                     LayoutUnit logical_top,
@@ -1781,13 +1765,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const LayoutBox* child,
       const LayoutBoxModelObject* container_block,
       const NGBoxFragmentBuilder* = nullptr);
-  static void ComputeInlineStaticDistance(
-      Length& logical_left,
-      Length& logical_right,
-      const LayoutBox* child,
-      const LayoutBoxModelObject* container_block,
-      LayoutUnit container_logical_width,
-      const NGBoxFragmentBuilder* = nullptr);
   static void ComputeLogicalTopPositionedOffset(
       LayoutUnit& logical_top_pos,
       const LayoutBox* child,
@@ -1847,18 +1824,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool StretchesToViewportInQuirksMode() const;
 
   virtual void ComputePositionedLogicalHeight(
-      LogicalExtentComputedValues&) const;
-  void ComputePositionedLogicalWidthUsing(
-      SizeType,
-      const Length& logical_width,
-      const LayoutBoxModelObject* container_block,
-      TextDirection container_direction,
-      LayoutUnit container_logical_width,
-      LayoutUnit borders_plus_padding,
-      const Length& logical_left,
-      const Length& logical_right,
-      const Length& margin_logical_left,
-      const Length& margin_logical_right,
       LogicalExtentComputedValues&) const;
   void ComputePositionedLogicalHeightUsing(
       SizeType,
