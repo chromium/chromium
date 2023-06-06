@@ -11,8 +11,9 @@ FakeChromeFeatureFlagsInstance::FakeChromeFeatureFlagsInstance() = default;
 
 FakeChromeFeatureFlagsInstance::~FakeChromeFeatureFlagsInstance() = default;
 
-void FakeChromeFeatureFlagsInstance::NotifyQsRevamp(bool enabled) {
-  qs_revamp_called_value_ = enabled;
+void FakeChromeFeatureFlagsInstance::NotifyFeatureFlags(
+    mojom::FeatureFlagsPtr flags) {
+  flags_called_value_ = std::move(flags);
 }
 
 }  // namespace arc

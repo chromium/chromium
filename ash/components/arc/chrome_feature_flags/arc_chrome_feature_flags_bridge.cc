@@ -9,6 +9,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/memory/singleton.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace arc {
 
@@ -61,18 +62,21 @@ ArcChromeFeatureFlagsBridge::~ArcChromeFeatureFlagsBridge() {
 }
 
 void ArcChromeFeatureFlagsBridge::OnConnectionReady() {
-  NotifyQsRevamp();
+  NotifyFeatureFlags();
 }
 
-void ArcChromeFeatureFlagsBridge::NotifyQsRevamp() {
+void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   mojom::ChromeFeatureFlagsInstance* chrome_feature_flags_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->chrome_feature_flags(),
-                                  NotifyQsRevamp);
+                                  NotifyFeatureFlags);
   if (!chrome_feature_flags_instance) {
     return;
   }
-  chrome_feature_flags_instance->NotifyQsRevamp(
-      ash::features::IsQsRevampEnabled());
+  mojom::FeatureFlagsPtr flags = mojom::FeatureFlags::New();
+  flags->qs_revamp = ash::features::IsQsRevampEnabled();
+  flags->jelly_colors = chromeos::features::IsJellyEnabled();
+
+  chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }
 
 // static

@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,13 +67,25 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, ConstructDestruct) {
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(ash::features::kQsRevamp);
   Connect();
-  EXPECT_TRUE(instance()->qs_revamp_called_value().value());
+  EXPECT_TRUE(instance()->flags_called_value()->qs_revamp);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(ash::features::kQsRevamp);
   Connect();
-  EXPECT_FALSE(instance()->qs_revamp_called_value().value());
+  EXPECT_FALSE(instance()->flags_called_value()->qs_revamp);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(chromeos::features::kJelly);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->jelly_colors);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(chromeos::features::kJelly);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->jelly_colors);
 }
 
 }  // namespace

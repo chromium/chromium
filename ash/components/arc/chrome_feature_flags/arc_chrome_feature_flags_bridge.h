@@ -48,7 +48,7 @@ class ArcChromeFeatureFlagsBridge
  private:
   THREAD_CHECKER(thread_checker_);
 
-  void NotifyQsRevamp();
+  void NotifyFeatureFlags();
 
   const raw_ptr<ArcBridgeService, ExperimentalAsh>
       arc_bridge_service_;  // Owned by ArcServiceManager.
