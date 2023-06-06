@@ -3366,6 +3366,12 @@ const FeatureEntry::FeatureParam kMemorySavingsReportingInfrequent[] = {
     {"expanded_high_efficiency_chip_frequency", "1d"},
     {"expanded_high_efficiency_chip_discarded_duration", "6h"}};
 
+const FeatureEntry::FeatureParam kMemorySavingsReportingVeryFrequent[] = {
+    // 100 * 1024 * 1024
+    {"expanded_high_efficiency_chip_threshold_bytes", "104857600"},
+    {"expanded_high_efficiency_chip_frequency", "5m"},
+    {"expanded_high_efficiency_chip_discarded_duration", "5m"}};
+
 const FeatureEntry::FeatureVariation
     kHighEfficiencyMemorySavingsReportingVariations[] = {
         {"With Frequent Memory Savings Reporting",
@@ -3374,6 +3380,9 @@ const FeatureEntry::FeatureVariation
         {"With Infrequent Memory Savings Reporting",
          kMemorySavingsReportingInfrequent,
          std::size(kMemorySavingsReportingInfrequent), nullptr},
+        {"With Very Frequent Memory Savings Reporting",
+         kMemorySavingsReportingVeryFrequent,
+         std::size(kMemorySavingsReportingVeryFrequent), nullptr},
 };
 
 #endif  // !BUILDFLAG(IS_ANDROID)
