@@ -86,6 +86,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
@@ -777,7 +778,13 @@ enum class ToolbarKind {
   _toolbarAccessoryPresenter.toolbarLayoutGuide =
       [_layoutGuideCenter makeLayoutGuideNamed:kPrimaryToolbarGuide];
 
-  _sideSwipeMediator = [[SideSwipeMediator alloc] initWithBrowser:self.browser];
+  SnapshotBrowserAgent* snapshotBrowserAgent =
+      SnapshotBrowserAgent::FromBrowser(self.browser);
+  _sideSwipeMediator = [[SideSwipeMediator alloc]
+           initWithBrowser:self.browser
+      fullscreenController:_fullscreenController
+      snapshotBrowserAgent:snapshotBrowserAgent
+              webStateList:self.browser->GetWebStateList()];
   [_sideSwipeMediator setSnapshotDelegate:self];
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.primaryToolbarSnapshotProvider =

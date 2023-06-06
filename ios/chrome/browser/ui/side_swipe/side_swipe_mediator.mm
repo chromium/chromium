@@ -107,14 +107,15 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
   // The animated disabler displays the toolbar when a side swipe navigation
   // gesture is being recognized.
   std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+
+  // Used to add or remove the snapshot's gray cache.
+  SnapshotBrowserAgent* _snapshotBrowserAgent;
 }
 
 // Browser passed on the initializer.
 @property(nonatomic, assign) Browser* browser;
 // The current active WebState.
 @property(nonatomic, readonly) web::WebState* activeWebState;
-// The browser state owning the current browser.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
 // The webStateList owned by the current browser.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
@@ -169,30 +170,41 @@ class SideSwipeMediatorBrowserRemover : public BrowserObserver {
 @synthesize snapshotDelegate = _snapshotDelegate;
 @synthesize tabStripDelegate = _tabStripDelegate;
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowser:(Browser*)browser
+           fullscreenController:(FullscreenController*)fullscreenController
+           snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
+                   webStateList:(WebStateList*)webStateList {
   DCHECK(browser);
   self = [super init];
   if (self) {
     _browser = browser;
+    _webStateList = webStateList;
     _browserRemover = std::make_unique<SideSwipeMediatorBrowserRemover>(self);
     _browser->AddObserver(_browserRemover.get());
 
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-    _browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
+    _webStateList->AddObserver(_webStateListObserver.get());
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _scopedWebStateObservation = std::make_unique<
         base::ScopedObservation<web::WebState, web::WebStateObserver>>(
         _webStateObserverBridge.get());
-    _fullscreenController = FullscreenController::FromBrowser(self.browser);
+    _fullscreenController = fullscreenController;
     if (self.activeWebState) {
       _scopedWebStateObservation->Observe(self.activeWebState);
     }
+    _snapshotBrowserAgent = snapshotBrowserAgent;
   }
   return self;
 }
 
 - (void)dealloc {
+  [self browserDestroyed];
+  _fullscreenController = nullptr;
+  _snapshotBrowserAgent = nullptr;
+}
+
+- (void)browserDestroyed {
   if (self.webStateList) {
     self.webStateList->RemoveObserver(_webStateListObserver.get());
   }
@@ -204,14 +216,6 @@ class SideSwipeMediatorBrowserRemover : public BrowserObserver {
 
   _scopedWebStateObservation.reset();
   _webStateObserverBridge.reset();
-}
-
-- (void)browserDestroyed {
-  self.webStateList->RemoveObserver(_webStateListObserver.get());
-  _scopedWebStateObservation.reset();
-  _webStateObserverBridge.reset();
-  self.browser->RemoveObserver(_browserRemover.get());
-  self.browser = nullptr;
 }
 
 - (void)addHorizontalGesturesToView:(UIView*)view {
@@ -236,20 +240,6 @@ class SideSwipeMediatorBrowserRemover : public BrowserObserver {
 
 - (web::WebState*)activeWebState {
   return self.webStateList ? self.webStateList->GetActiveWebState() : nullptr;
-}
-
-- (ChromeBrowserState*)browserState {
-  if (!_browser) {
-    return nullptr;
-  }
-  return _browser->GetBrowserState();
-}
-
-- (WebStateList*)webStateList {
-  if (!_browser) {
-    return nullptr;
-  }
-  return _browser->GetWebStateList();
 }
 
 - (void)setEnabled:(BOOL)enabled {
@@ -285,13 +275,11 @@ class SideSwipeMediatorBrowserRemover : public BrowserObserver {
     }
     index = index + dx;
   }
-  [SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_cache()
-      createGreyCache:sessionIDs];
+  [_snapshotBrowserAgent->snapshot_cache() createGreyCache:sessionIDs];
 }
 
 - (void)deleteGreyCache {
-  [SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_cache()
-      removeGreyCache];
+  [_snapshotBrowserAgent->snapshot_cache() removeGreyCache];
 }
 
 - (void)handlePan:(SideSwipeGestureRecognizer*)gesture {

@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -245,13 +246,17 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     legacy_tab_strip_coordinator_ =
         [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
 
+    fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
+    SnapshotBrowserAgent* snapshot_browser_agent =
+        SnapshotBrowserAgent::FromBrowser(browser_.get());
     side_swipe_mediator_ =
-        [[SideSwipeMediator alloc] initWithBrowser:browser_.get()];
+        [[SideSwipeMediator alloc] initWithBrowser:browser_.get()
+                              fullscreenController:fullscreen_controller_
+                              snapshotBrowserAgent:snapshot_browser_agent
+                                      webStateList:browser_->GetWebStateList()];
 
     bookmarks_coordinator_ =
         [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];
-
-    fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
 
     url_loading_notifier_browser_agent_ =
         UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
