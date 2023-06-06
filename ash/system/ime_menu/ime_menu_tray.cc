@@ -71,7 +71,8 @@ const int kSettingsButtonId = 2;
 const int kVoiceButtonId = 3;
 
 // Insets for the title view (dp).
-constexpr auto kTitleViewPadding = gfx::Insets::TLBR(0, 0, 0, 16);
+constexpr auto kTitleViewPadding =
+    gfx::Insets::VH(0, kMenuEdgeEffectivePadding);
 
 // Insets for the bubble view to fix the overlapping
 // between the floating menu and the IME tray in kiosk session (dp).
@@ -175,8 +176,8 @@ class ImeTitleView : public views::BoxLayoutView {
 
     auto* title_label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME)));
-    title_label->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, kMenuEdgeEffectivePadding, 1, 0)));
+    title_label->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 1, 0)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetEnabledColorId(kColorAshTextColorPrimary);
     TrayPopupUtils::SetLabelFontList(title_label,
