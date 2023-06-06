@@ -253,8 +253,19 @@ message OmniboxEventProto {
     HISTORY_CLUSTER = 20;
     // Suggestions from history derived from input with automatic corrections.
     HISTORY_FUZZY = 21;
-    // URLs amongst the user's currently open tabs.
+    // URLs amongst the user's currently open tabs. These are not separately
+    // attached TAB_SWITCH actions; they're full dedicated suggestions produced
+    // by the OpenTabProvider (used by @tabs keyword scope and CrOS launcher).
     OPEN_TAB = 22;
+    // Tab switch actions that attach to matches when the URL is equivalent
+    // to a URL in another open tab. Note this is distinct from OPEN_TAB above.
+    // This is a pseudo-provider for a TabSwitchAction attached to a suggestion
+    // when AutocompleteResult::ConvertOpenTabMatches finds matching open tabs.
+    TAB_SWITCH = 23;
+    // Omnibox Pedals: specialized actions that may be attached to matches.
+    // This is a pseudo-provider for actions produced by OmniboxPedalProvider
+    // and attached to suggestions by AutocompleteResult::AttachPedalsToMatches.
+    PEDALS = 24;
   }
 
   // The result set displayed on the completion popup
@@ -338,8 +349,12 @@ message OmniboxEventProto {
                                    // might not also match the title or URL of
                                    // this page).
       OPEN_TAB = 32;      // A currently open tab whose URL contains the input.
+                          // Note: This is for dedicated matches produced by
+                          // OpenTabProvider, not a general TAB_SWITCH action.
       STARTER_PACK = 33;  // A built-in URL suggestion specifically created for
                           // the starter pack keyword mode chip to attach to.
+      TAB_SWITCH = 34;    // A tab-switch action (distinct from OPEN_TAB).
+      PEDAL = 35;         // A pedal action.
     }
     optional ResultType result_type = 2;
 
