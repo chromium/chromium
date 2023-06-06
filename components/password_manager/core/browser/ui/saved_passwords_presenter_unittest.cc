@@ -947,29 +947,41 @@ TEST_P(SavedPasswordsPresenterTest, DeletePasskey) {
   }
   sync_pb::WebauthnCredentialSpecifics passkey = CreateTestPasskey();
   passkey_store().AddNewPasskeyForTesting(passkey);
-
-  // TODO(crbug.com/1432717): we need to build a new presenter after injecting
-  // the passkey because there is no observer interface for passkeys. Remove
-  // once that is built.
-  FakeAffiliationService affiliation_service;
-  SavedPasswordsPresenter presenter{&affiliation_service, &store(),
-                                    /*account_store=*/nullptr,
-                                    &passkey_store()};
-  presenter.Init();
   RunUntilIdle();
 
-  std::vector<CredentialUIEntry> passkeys = presenter.GetSavedCredentials();
+  std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
   ASSERT_EQ(passkeys.size(), 1u);
   ASSERT_TRUE(passkeys.at(0).is_passkey);
 
   MockSavedPasswordsPresenterObserver observer;
-  presenter.AddObserver(&observer);
+  presenter().AddObserver(&observer);
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
-  presenter.RemoveCredential(passkeys.at(0));
+  presenter().RemoveCredential(passkeys.at(0));
   RunUntilIdle();
 
-  EXPECT_TRUE(presenter.GetSavedCredentials().empty());
-  presenter.RemoveObserver(&observer);
+  EXPECT_TRUE(presenter().GetSavedCredentials().empty());
+  presenter().RemoveObserver(&observer);
+}
+
+TEST_P(SavedPasswordsPresenterTest, NotifyPasskeyAdded) {
+  // Password grouping is required for passkey support.
+  if (!IsGroupingEnabled()) {
+    return;
+  }
+  RunUntilIdle();
+
+  std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
+  ASSERT_TRUE(passkeys.empty());
+
+  MockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+  EXPECT_CALL(observer, OnSavedPasswordsChanged);
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateTestPasskey();
+  passkey_store().AddNewPasskeyForTesting(passkey);
+  RunUntilIdle();
+
+  EXPECT_EQ(presenter().GetSavedCredentials().size(), 1u);
+  presenter().RemoveObserver(&observer);
 }
 
 #endif

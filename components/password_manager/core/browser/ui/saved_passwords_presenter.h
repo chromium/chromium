@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -42,6 +43,7 @@ class PasswordsGrouper;
 // (such as visiting a change password form and then updating the password in
 // Chrome) should not trigger a check.
 class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
+                                public PasskeyModel::Observer,
                                 public PasswordStoreConsumer {
  public:
   // Observer interface. Clients can implement this to get notified about
@@ -194,12 +196,15 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void RemoveObserver(Observer* observer);
 
  private:
-  // PasswordStoreInterface::Observer
+  // PasswordStoreInterface::Observer:
   void OnLoginsChanged(PasswordStoreInterface* store,
                        const PasswordStoreChangeList& changes) override;
   void OnLoginsRetained(
       PasswordStoreInterface* store,
       const std::vector<PasswordForm>& retained_passwords) override;
+
+  // PasskeyModel::Observer:
+  void OnPasskeysChanged() override;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
@@ -211,8 +216,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Notify observers about changes in the compromised credentials.
   void NotifyEdited(const CredentialUIEntry& password);
   void NotifySavedPasswordsChanged(const PasswordStoreChangeList& changes);
-
-  void RemoveObservers();
 
   // Returns the expected result for adding |credential|, looks for
   // missing/invalid fields and checks if the credential already exists in the
@@ -232,6 +235,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void RemoveForms(const std::vector<PasswordForm>& forms);
   void AddForms(const std::vector<PasswordForm>& forms,
                 base::OnceClosure completion);
+
+  // Collects credentials and groups them if there are no pending store updates.
+  void MaybeGroupCredentials(base::OnceClosure completion);
 
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStoreInterface> profile_store_;
@@ -254,6 +260,15 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   DuplicatePasswordsMap sort_key_to_password_forms_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
+
+  base::ScopedObservation<PasswordStoreInterface,
+                          PasswordStoreInterface::Observer>
+      profile_store_observation_{this};
+  base::ScopedObservation<PasswordStoreInterface,
+                          PasswordStoreInterface::Observer>
+      account_store_observation_{this};
+  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer>
+      passkey_store_observation_{this};
 
   base::WeakPtrFactory<SavedPasswordsPresenter> weak_ptr_factory_{this};
 };
