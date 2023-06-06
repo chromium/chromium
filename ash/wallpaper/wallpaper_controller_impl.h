@@ -567,11 +567,10 @@ class ASH_EXPORT WallpaperControllerImpl
                               const gfx::ImageSkia& image,
                               bool show_wallpaper);
 
-  // Decodes |account_id|'s wallpaper. Shows the decoded wallpaper if
-  // |show_wallpaper| is true.
+  // Loads the `account_id`'s wallpaper by using `info.location`.
+  // Guaranteed to work offline.
   void SetWallpaperFromInfo(const AccountId& account_id,
-                            const WallpaperInfo& info,
-                            bool show_wallpaper);
+                            const WallpaperInfo& info);
 
   // Used as the callback of default wallpaper decoding. Sets default wallpaper
   // to be the decoded image, and shows the wallpaper now if |show_wallpaper|

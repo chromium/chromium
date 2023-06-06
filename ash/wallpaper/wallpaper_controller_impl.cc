@@ -1360,11 +1360,11 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     return;
   }
 
-  if (info.type != WallpaperType::kCustomized &&
-      info.type != WallpaperType::kPolicy &&
-      info.type != WallpaperType::kDevice) {
+  if (IsOnlineWallpaper(info.type) ||
+      info.type == WallpaperType::kOnceGooglePhotos ||
+      info.type == WallpaperType::kDailyGooglePhotos) {
     // Load wallpaper according to WallpaperInfo.
-    SetWallpaperFromInfo(account_id, info, /*show_wallpaper=*/true);
+    SetWallpaperFromInfo(account_id, info);
     return;
   }
 
@@ -2475,38 +2475,20 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaperAndUpdateCache(
 }
 
 void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
-                                                   const WallpaperInfo& info,
-                                                   bool show_wallpaper) {
-  if (info.type != WallpaperType::kOnline &&
-      info.type != WallpaperType::kDaily &&
-      info.type != WallpaperType::kOnceGooglePhotos &&
-      info.type != WallpaperType::kDailyGooglePhotos &&
-      info.type != WallpaperType::kDefault) {
-    // This method is meant to be used for `WallpaperType::kOnline` and
-    // `WallpaperType::kDefault` types. In unexpected cases, revert to default
-    // wallpaper to fail safely. See crosbug.com/38429.
-    LOG(ERROR) << "Wallpaper reverts to default unexpected.";
-    wallpaper_cache_map_.erase(account_id);
-    SetDefaultWallpaperImpl(GetUserType(account_id), show_wallpaper,
+                                                   const WallpaperInfo& info) {
+  if (info.type == WallpaperType::kDefault) {
+    // Only used by WallpaperControllerTestApi.
+    LOG(WARNING) << "Setting a default wallpaper from info for user: "
+                 << account_id.Serialize()
+                 << " .This should only happen in test.";
+    SetDefaultWallpaperImpl(GetUserType(account_id), /*show_wallpaper=*/true,
                             base::DoNothing());
     return;
   }
 
-  // Do a sanity check that the file path is not empty.
-  if (info.location.empty()) {
-    // File name might be empty on debug configurations when stub users
-    // were created directly in local state (for testing). Ignore such
-    // errors i.e. allow such type of debug configurations on the desktop.
-    LOG(WARNING) << "User wallpaper info is empty: " << account_id.Serialize();
-    wallpaper_cache_map_.erase(account_id);
-    SetDefaultWallpaperImpl(GetUserType(account_id), show_wallpaper,
-                            base::DoNothing());
-    return;
-  }
-
-  base::FilePath wallpaper_path;
+  DCHECK(!info.location.empty()) << " location should not be empty";
   if (IsOnlineWallpaper(info.type)) {
-    wallpaper_path =
+    auto wallpaper_path =
         GetOnlineWallpaperPath(info.location, GetAppropriateResolution());
 
     // If the wallpaper exists and it already contains the correct image we
@@ -2519,7 +2501,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
     ReadAndDecodeWallpaper(
         base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
                        weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
-                       info, show_wallpaper),
+                       info, /*show_wallpaper=*/true),
         wallpaper_path);
   } else if (info.type == WallpaperType::kOnceGooglePhotos ||
              info.type == WallpaperType::kDailyGooglePhotos) {
@@ -2532,19 +2514,11 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
         path);
     return;
   } else {
-    // Default wallpapers are migrated from M21 user profiles. A code
-    // refactor overlooked that case and caused these wallpapers not being
-    // loaded at all. On some slow devices, it caused login webui not
-    // visible after upgrade to M26 from M21. See crosbug.com/38429 for
-    // details.
-    DCHECK(!GlobalUserDataDir().empty());
-    wallpaper_path = GlobalUserDataDir().Append(info.location);
-
-    ReadAndDecodeWallpaper(
-        base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
-                       weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
-                       info, show_wallpaper),
-        wallpaper_path);
+    LOG(ERROR) << "Wallpaper reverts to default unexpected.";
+    wallpaper_cache_map_.erase(account_id);
+    SetDefaultWallpaperImpl(GetUserType(account_id), /*show_wallpaper=*/true,
+                            base::DoNothing());
+    return;
   }
 }
 

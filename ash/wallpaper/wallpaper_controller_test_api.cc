@@ -42,11 +42,10 @@ WallpaperControllerTestApi::~WallpaperControllerTestApi() = default;
 void WallpaperControllerTestApi::StartWallpaperPreview() {
   // Preview mode is considered active when the two callbacks have non-empty
   // values. Their specific values don't matter for testing purpose.
-  controller_->confirm_preview_wallpaper_callback_ =
-      base::BindOnce(&WallpaperControllerImpl::SetWallpaperFromInfo,
-                     controller_->weak_factory_.GetWeakPtr(),
-                     AccountId::FromUserEmail("user@test.com"),
-                     kTestWallpaperInfo, /*show_wallpaper=*/true);
+  controller_->confirm_preview_wallpaper_callback_ = base::BindOnce(
+      &WallpaperControllerImpl::SetWallpaperFromInfo,
+      controller_->weak_factory_.GetWeakPtr(),
+      AccountId::FromUserEmail("user@test.com"), kTestWallpaperInfo);
   controller_->reload_preview_wallpaper_callback_ = base::BindRepeating(
       &WallpaperControllerImpl::ShowWallpaperImage,
       controller_->weak_factory_.GetWeakPtr(),
