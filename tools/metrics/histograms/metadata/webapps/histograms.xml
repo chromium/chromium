@@ -1069,7 +1069,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.AppDuplicationFixApplied" units="apps"
-    expires_after="2023-12-01">
+    expires_after="2023-06-01">
+  <obsolete>
+    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
+    has been sitting at low numbers for months: go/nejyv
+  </obsolete>
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1200,7 +1204,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppAbsent"
-    units="apps" expires_after="2023-12-01">
+    units="apps" expires_after="2023-06-01">
+  <obsolete>
+    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
+    has been sitting at low numbers for months: go/nejyv
+  </obsolete>
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1211,7 +1219,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppPresent"
-    units="apps" expires_after="2023-12-01">
+    units="apps" expires_after="2023-06-01">
+  <obsolete>
+    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
+    has been sitting at low numbers for months: go/nejyv
+  </obsolete>
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1222,7 +1234,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppAbsent"
-    units="apps" expires_after="2023-12-01">
+    units="apps" expires_after="2023-06-01">
+  <obsolete>
+    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
+    has been sitting at low numbers for months: go/nejyv
+  </obsolete>
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1233,7 +1249,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppPresent"
-    units="apps" expires_after="2023-12-01">
+    units="apps" expires_after="2023-06-01">
+  <obsolete>
+    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
+    has been sitting at low numbers for months: go/nejyv
+  </obsolete>
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

@@ -888,10 +888,7 @@ source_set("web_applications_browser_tests") {
 group("browser_tests") {
   testonly = true
 
-  deps = [
-    ":web_applications_browser_tests",
-    "adjustments:adjustments_browser_tests",
-  ]
+  deps = [ ":web_applications_browser_tests" ]
 }
 
 # On Lacros, these browser tests require Ash to be running.

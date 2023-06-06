@@ -20,11 +20,6 @@ namespace web_app {
 // --------------------------------
 
 WebAppAdjustments::WebAppAdjustments(Profile* profile) {
-  if (base::FeatureList::IsEnabled(
-          features::kPreinstalledWebAppDuplicationFixer)) {
-    preinstalled_web_app_duplication_fixer_ =
-        std::make_unique<PreinstalledWebAppDuplicationFixer>(*profile);
-  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(web_app::kWebAppCalculatorAppErasureFixer)) {
     calculator_app_erasure_fixer_ =
