@@ -1238,10 +1238,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
                                         /*last_accessed=*/now,
                                         /*last_modified=*/now, statement);
   QuotaErrorOr<BucketInfo> result = BucketInfoFromSqlStatement(statement);
-  const bool done = !statement.Step();
-  DCHECK(done);
 
   if (result.has_value()) {
+    CHECK(!statement.Step());
     // Commit immediately so that we persist the bucket metadata to disk before
     // we inform other services / web apps (via the Buckets API) that we did so.
     // Once informed, that promise should persist across power failures.
