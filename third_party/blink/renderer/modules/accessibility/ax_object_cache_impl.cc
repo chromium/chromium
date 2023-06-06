@@ -2468,12 +2468,14 @@ void AXObjectCacheImpl::UpdateTreeIfNeeded() {
   if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
     return;
   }
-  UpdateTreeIfNeededOnce();
+  if (Root()->HasDirtyDescendants()) {
+    UpdateTreeIfNeededOnce();
+  }
   // Update a second time because image maps or AX relations may invalidate
   // ancestors. See AXNodeObject::AddImageMapChildren or
   // AXRelationCache::UpdateRelatedText.
   // TODO(chrishtr): find a way to do this without two tree walks.
-  if (Root()->HasDirtyDescendants() || Root()->NeedsToUpdateChildren()) {
+  if (Root()->HasDirtyDescendants()) {
     UpdateTreeIfNeededOnce();
   }
 

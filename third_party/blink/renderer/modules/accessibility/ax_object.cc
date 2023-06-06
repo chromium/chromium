@@ -693,6 +693,18 @@ void AXObject::Init(AXObject* parent) {
 
   DCHECK(GetDocument()) << "All AXObjects must have a document: "
                         << ToString(true, true);
+
+  // Set the dirty bit for the root AX object when created. For all other
+  // objects, this is set by a descendant needing to be updated, and
+  // AXObjectCacheImpl::UpdateTreeIfNeeded will therefore process an object
+  // if its parent has has_dirty_descendants_ set. The root, however, has no
+  // parent, so there is no parent to mark in order to cause the root to update
+  // itself. Therefore this bit serves a second purpose of determining
+  // whether AXObjectCacheImpl::UpdateTreeIfNeeded needs to update the root
+  // object.
+  if (IsRoot()) {
+    has_dirty_descendants_ = true;
+  }
 }
 
 void AXObject::Detach() {
