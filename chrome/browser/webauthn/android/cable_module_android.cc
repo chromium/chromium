@@ -433,7 +433,6 @@ absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
     return absl::nullopt;
   }
   memcpy(&pairing_id, info.pairing_id->data(), sizeof(pairing_id));
-  pairing_id = base::ByteSwap(pairing_id);
 
   memcpy(secret.data(), info.secret->data(), secret.size());
   memcpy(peer_public_key_x962.data(), info.peer_public_key_x962->data(),
