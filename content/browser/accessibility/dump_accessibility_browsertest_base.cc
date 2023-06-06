@@ -504,8 +504,8 @@ std::map<std::string, unsigned> DumpAccessibilityTestBase::CollectAllFrameUrls(
     // WebContents as the node doesn't have a url set.
 
     std::string url = node->current_url().spec();
-    if (url != url::kAboutBlankURL && !url.empty() &&
-        !SkipUrlMatch(skip_urls, url) &&
+    if (url != url::kAboutBlankURL && url != url::kAboutSrcdocURL &&
+        !url.empty() && !SkipUrlMatch(skip_urls, url) &&
         node->frame_owner_element_type() !=
             blink::FrameOwnerElementType::kPortal) {
       all_frame_urls[url] += 1;

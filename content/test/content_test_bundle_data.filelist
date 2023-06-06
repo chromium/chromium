@@ -1705,6 +1705,8 @@ data/accessibility/css/head-style-script-content-visibility-hidden-expected-blin
 data/accessibility/css/head-style-script-content-visibility-hidden.html
 data/accessibility/css/head-style-script-display-block-expected-blink.txt
 data/accessibility/css/head-style-script-display-block.html
+data/accessibility/css/iframe-hidden-expected-blink.txt
+data/accessibility/css/iframe-hidden.html
 data/accessibility/css/inline-position-relative-expected-blink.txt
 data/accessibility/css/inline-position-relative.html
 data/accessibility/css/language-expected-android-external.txt

@@ -1485,6 +1485,11 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
     return;
   }
 
+  // Do not attach hidden child trees.
+  if (!IsVisible()) {
+    return;
+  }
+
   auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
 
   Frame* child_frame = html_frame_owner_element->ContentFrame();
@@ -3636,8 +3641,11 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // Allow the browser side ax tree to access "aria-hidden" nodes.
     // This is useful for APIs that return the node referenced by
     // aria-labeledby and aria-describedby.
-    if (IsAriaHidden())
-      return true;
+    // Exception: iframes, in order to stop exposing aria-hidden iframes, where
+    // there is no possibility for the content within to know it's aria-hidden.
+    if (IsAriaHidden()) {
+      return !IsChildTreeOwner();
+    }
   }
 
   if (const Element* owner = node->OwnerShadowHost()) {
@@ -4822,6 +4830,9 @@ const AtomicString& AXObject::LiveRegionRelevant() const {
 bool AXObject::IsDisabled() const {
   // <embed> or <object> with unsupported plugin, or more iframes than allowed.
   if (IsChildTreeOwner()) {
+    if (IsAriaHidden()) {
+      return true;
+    }
     auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
     return !html_frame_owner_element->ContentFrame();
   }
