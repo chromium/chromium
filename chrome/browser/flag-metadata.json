@@ -3894,7 +3894,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira"
     ],
-    "expiry_milestone": 117
+    "expiry_milestone": 125
   },
   {
     "name": "fast-pair-low-power",
