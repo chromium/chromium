@@ -104,14 +104,14 @@ class CONTENT_EXPORT FileSystemManagerImpl
   void ReadDirectorySync(const GURL& path,
                          ReadDirectorySyncCallback callback) override;
   void Write(const GURL& file_path,
-             const std::string& blob_uuid,
+             mojo::PendingRemote<blink::mojom::Blob> blob,
              int64_t position,
              mojo::PendingReceiver<blink::mojom::FileSystemCancellableOperation>
                  op_receiver,
              mojo::PendingRemote<blink::mojom::FileSystemOperationListener>
                  pending_listener) override;
   void WriteSync(const GURL& file_path,
-                 const std::string& blob_uuid,
+                 mojo::PendingRemote<blink::mojom::Blob> blob,
                  int64_t position,
                  WriteSyncCallback callback) override;
   void Truncate(
@@ -182,19 +182,22 @@ class CONTENT_EXPORT FileSystemManagerImpl
   void ContinueReadDirectorySync(const storage::FileSystemURL& url,
                                  ReadDirectorySyncCallback callback,
                                  bool security_check_success);
+  void ResolveBlobForWrite(
+      mojo::PendingRemote<blink::mojom::Blob> blob,
+      base::OnceCallback<void(std::unique_ptr<storage::BlobDataHandle>)>
+          callback,
+      bool security_check_success);
   void ContinueWrite(
       const storage::FileSystemURL& url,
-      const std::string& blob_uuid,
       int64_t position,
       mojo::PendingReceiver<blink::mojom::FileSystemCancellableOperation>
           op_receiver,
       mojo::Remote<blink::mojom::FileSystemOperationListener> listener,
-      bool security_check_success);
+      std::unique_ptr<storage::BlobDataHandle> blob);
   void ContinueWriteSync(const storage::FileSystemURL& url,
-                         const std::string& blob_uuid,
                          int64_t position,
                          WriteSyncCallback callback,
-                         bool security_check_success);
+                         std::unique_ptr<storage::BlobDataHandle> blob);
   void ContinueTruncate(
       const storage::FileSystemURL& url,
       int64_t length,

@@ -114,14 +114,14 @@ class MockFileSystemManager : public mojom::blink::FileSystemManager {
   void ReadDirectorySync(const KURL& path,
                          ReadDirectorySyncCallback callback) override {}
   void Write(const KURL& file_path,
-             const String& blob_uuid,
+             mojo::PendingRemote<mojom::blink::Blob> blob,
              int64_t position,
              mojo::PendingReceiver<mojom::blink::FileSystemCancellableOperation>
                  op_receiver,
              mojo::PendingRemote<mojom::blink::FileSystemOperationListener>
                  pending_listener) override {}
   void WriteSync(const KURL& file_path,
-                 const String& blob_uuid,
+                 mojo::PendingRemote<mojom::blink::Blob> blob,
                  int64_t position,
                  WriteSyncCallback callback) override {}
   void Truncate(

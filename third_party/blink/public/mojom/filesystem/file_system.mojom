@@ -12,6 +12,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
+import "third_party/blink/public/mojom/blob/blob.mojom";
 
 enum FileSystemType {
   kTemporary,
@@ -149,17 +150,17 @@ interface FileSystemManager {
     (array<filesystem.mojom.DirectoryEntry> entries,
      mojo_base.mojom.FileError error_code);
 
-  // Write data (indicated by |blob_uuid|) to the given file at |file_path|,
+  // Write data (indicated by |blob|) to the given file at |file_path|,
   // at |position|. Calls DidWrite on |listener| to provide progress updates on
   // the write, and |ErrorOccurred| if the operation fails. The operation can
   // also be cancelled using the remote associated with |op_receiver|.
   Write(url.mojom.Url file_path,
-        string blob_uuid,
+        pending_remote<blink.mojom.Blob> blob,
         int64 position,
         pending_receiver<FileSystemCancellableOperation> op_receiver,
         pending_remote<FileSystemOperationListener> listener);
   [Sync]
-  WriteSync(url.mojom.Url file_path, string blob_uuid, int64 position) =>
+  WriteSync(url.mojom.Url file_path, pending_remote<blink.mojom.Blob> blob, int64 position) =>
       (int64 byte_count, mojo_base.mojom.FileError error_code);
 
   // Changes the file length of the file at |file_path| to the |length|

@@ -74,9 +74,7 @@ class FileWriter final : public EventTargetWithInlineData,
   void DidTruncateImpl() override;
   void DidFailImpl(base::File::Error error) override;
   void DoTruncate(const KURL& path, int64_t offset) override;
-  void DoWrite(const KURL& path,
-               const String& blob_id,
-               int64_t offset) override;
+  void DoWrite(const KURL& path, const Blob& blob, int64_t offset) override;
   void DoCancel() override;
 
   // ExecutionContextLifecycleObserver

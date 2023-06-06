@@ -3575,9 +3575,9 @@ void PwnMessageHelper::FileSystemWrite(RenderProcessHost* process,
       &waiter, listener.InitWithNewPipeAndPassReceiver());
   mojo::Remote<blink::mojom::FileSystemCancellableOperation> op;
 
-  file_system_manager->Write(file_path, blob_uuid, position,
-                             op.BindNewPipeAndPassReceiver(),
-                             std::move(listener));
+  file_system_manager->Write(
+      file_path, process->GetBrowserContext()->GetBlobRemote(blob_uuid),
+      position, op.BindNewPipeAndPassReceiver(), std::move(listener));
   waiter.WaitForOperationToFinish();
 }
 
