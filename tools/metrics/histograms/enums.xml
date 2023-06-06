@@ -86858,7 +86858,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="6" label="Attestation failed"/>
 </enum>
 
-<enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus">
+<enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">
   <int value="0" label="Valid"/>
   <int value="1" label="Valid but empty; no budget data stored"/>
   <int value="2"
@@ -86868,20 +86868,21 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4"
       label="Contains a value with a value that exceeds the budget limit"/>
   <int value="5"
-      label="Contains an entry with a timestamp that is not rounded to an
-             hour"/>
+      label="Contains an entry with a timestamp that is not rounded to a
+             minute"/>
   <int value="6" label="Contains budget data that spans more than a day"/>
   <int value="7" label="Contains an entry with a nonpositive budget value"/>
 </enum>
 
-<enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult">
+<enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult2">
   <int value="0" label="Approved"/>
-  <int value="1" label="Insufficient budget"/>
-  <int value="2" label="Requested more than total budget"/>
-  <int value="3" label="Too many pending calls"/>
-  <int value="4" label="Invalid request"/>
-  <int value="5" label="Storage initialization failed"/>
-  <int value="6" label="Bad values on disk"/>
+  <int value="1" label="Insufficient budget left in 10-min scope"/>
+  <int value="2" label="Insufficient budget left in daily scope"/>
+  <int value="3" label="Requested more than total budget"/>
+  <int value="4" label="Too many pending calls"/>
+  <int value="5" label="Invalid request"/>
+  <int value="6" label="Storage initialization failed"/>
+  <int value="7" label="Bad values on disk"/>
 </enum>
 
 <enum name="PrivacySandboxPrivateAggregationBudgetStorageInitStatus">

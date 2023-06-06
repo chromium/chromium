@@ -685,9 +685,9 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus"
-    enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus"
-    expires_after="2023-10-08">
+    name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2"
+    enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2"
+    expires_after="2023-11-23">
   <owner>anthonygarant@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -701,9 +701,24 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult"
-    enum="PrivacySandboxPrivateAggregationBudgeterRequestResult"
-    expires_after="2023-11-12">
+<histogram
+    name="PrivacySandbox.PrivateAggregation.Budgeter.NumReportingOriginsStoredPerSite"
+    units="counts" expires_after="2023-11-22">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of reporting origins stored per site in budget storage.
+    Recorded once every time that budget is attempted to be consumed to reflect
+    the state of stored budget data for the requested site and API. Not recorded
+    in the case of certain errors that fail before the storage is actually
+    queried.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2"
+    enum="PrivacySandboxPrivateAggregationBudgeterRequestResult2"
+    expires_after="2023-11-24">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

@@ -295,11 +295,6 @@ constexpr base::FeatureParam<bool>
                                                   "fledge_extensions_enabled",
                                                   /*default_value=*/true};
 
-// Maximum budget allowed to be claimed per-origin per-day per-API. See
-// `content::PrivateAggregationBudgeter` for more detail.
-constexpr base::FeatureParam<int> kPrivateAggregationApiMaxBudgetPerScope{
-    &kPrivateAggregationApi, "max_budget_per_scope", /*default_value=*/65536};
-
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be
 // enabled by the runtime enabled feature, for origin trials.
