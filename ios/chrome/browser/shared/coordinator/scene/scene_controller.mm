@@ -152,6 +152,7 @@
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
@@ -935,6 +936,11 @@ void InjectNTP(Browser* browser) {
   if (IsWhatsNewEnabled()) {
     [self.sceneState addAgent:[[WhatsNewSceneAgent alloc]
                                   initWithPromosManager:promosManager]];
+  }
+
+  if (ios::provider::IsChoiceEnabled()) {
+    [self.sceneState
+        addAgent:ios::provider::CreateChoiceSceneAgent(promosManager)];
   }
 
   // Do not gate by feature flag so it can run for enabled -> disabled

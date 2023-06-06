@@ -164,6 +164,7 @@ source_set("scene") {
     "//ios/chrome/browser/window_activities",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/third_party/material_components_ios",
