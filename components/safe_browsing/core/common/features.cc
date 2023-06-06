@@ -53,6 +53,10 @@ BASE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist,
              "SafeBrowsingComponentUpdaterAndroidProtegoAllowlist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeepScanningUpdatedUX,
+             "SafeBrowsingDeepScanningUpdatedUX",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDelayedWarnings,
              "SafeBrowsingDelayedWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);

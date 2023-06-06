@@ -537,8 +537,13 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
 
   EXPECT_CALL(item(), GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE));
-  EXPECT_EQ("2 B \xE2\x80\xA2 Scan is done",
-            base::UTF16ToUTF8(model().GetStatusText()));
+  if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
+    EXPECT_EQ("2 B \xE2\x80\xA2 Scan is done",
+              base::UTF16ToUTF8(model().GetStatusText()));
+  } else {
+    EXPECT_EQ("2 B \xE2\x80\xA2 Done, no issues found",
+              base::UTF16ToUTF8(model().GetStatusText()));
+  }
 
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ("Show in Finder", base::UTF16ToUTF8(model().GetShowInFolderText()));

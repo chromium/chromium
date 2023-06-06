@@ -1608,9 +1608,15 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
     std::u16string delta_str;
     if (model_->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
-      // "2 B • Done, no issues found"
-      delta_str = l10n_util::GetStringUTF16(
-          IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE);
+      if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
+        // "2 B • Scan is done"
+        delta_str = l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE_UPDATED);
+      } else {
+        // "2 B • Done, no issues found"
+        delta_str = l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE);
+      }
     } else {
       base::TimeDelta time_elapsed = base::Time::Now() - model_->GetEndTime();
       // If less than 1 minute has passed since download completed: "2 B • Done"
