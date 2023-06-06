@@ -1768,14 +1768,8 @@ class ComputedStyle : public ComputedStyleBase,
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone;
   }
 
-  bool IsContainerForStickyContainerQueries() const {
-    return IsStickyContainer() && StyleType() == kPseudoIdNone;
-  }
-
   bool DependsOnContainerQueries() const {
-    return DependsOnSizeContainerQueries() ||
-           DependsOnStyleContainerQueries() ||
-           DependsOnStickyContainerQueries();
+    return DependsOnSizeContainerQueries() || DependsOnStyleContainerQueries();
   }
 
   static bool IsContentVisibilityVisible(
@@ -2558,9 +2552,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool IsSizeContainer() const {
     return (ContainerType() & kContainerTypeSize) == kContainerTypeSize;
-  }
-  bool IsStickyContainer() const {
-    return ContainerType() & kContainerTypeSticky;
   }
 
   static bool IsDisplayBlockContainer(EDisplay display) {

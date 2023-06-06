@@ -30,30 +30,25 @@ class CORE_EXPORT StyleRecalcChange {
     // Recalc size container query dependent elements within this container,
     // and also in nested containers.
     kRecalcDescendantSizeContainers = 1 << 1,
+    // If set, need to reattach layout tree.
     // Recalc size container query dependent elements within this container,
     // but not in nested containers.
     kRecalcStyleContainerChildren = 1 << 2,
     // Recalc size container query dependent elements within this container,
     // and also in nested containers.
     kRecalcStyleContainerDescendants = 1 << 3,
-    // Recalc sticky container query dependent elements within this container,
-    // but not in nested containers.
-    kRecalcStickyContainer = 1 << 4,
-    // Recalc sticky container query dependent elements within this container,
-    // and also in nested containers.
-    kRecalcDescendantStickyContainers = 1 << 5,
     // If set, need to reattach layout tree.
-    kReattach = 1 << 6,
+    kReattach = 1 << 4,
     // If set, will prevent style recalc for the node passed to
     // ShouldRecalcStyleFor. This flag is lost when ForChildren is called.
-    kSuppressRecalc = 1 << 7,
+    kSuppressRecalc = 1 << 5,
     // If set, and kReattach is also set, the element should be explicitly
     // marked for re-attachment even if its style doesn't change. Used for query
     // container children to resume re-attachment that was blocked when style
     // recalc for container children was skipped.
-    kMarkReattach = 1 << 8,
+    kMarkReattach = 1 << 6,
   };
-  using Flags = uint16_t;
+  using Flags = uint8_t;
 
   static const Flags kRecalcSizeContainerFlags =
       kRecalcSizeContainer | kRecalcDescendantSizeContainers;
@@ -61,12 +56,8 @@ class CORE_EXPORT StyleRecalcChange {
   static const Flags kRecalcStyleContainerFlags =
       kRecalcStyleContainerChildren | kRecalcStyleContainerDescendants;
 
-  static const Flags kRecalcStickyContainerFlags =
-      kRecalcStickyContainer | kRecalcDescendantStickyContainers;
-
-  static const Flags kRecalcContainerFlags = kRecalcSizeContainerFlags |
-                                             kRecalcStyleContainerFlags |
-                                             kRecalcStickyContainerFlags;
+  static const Flags kRecalcContainerFlags =
+      kRecalcSizeContainerFlags | kRecalcStyleContainerFlags;
 
  public:
   enum Propagate {
@@ -131,13 +122,6 @@ class CORE_EXPORT StyleRecalcChange {
     return {propagate_,
             static_cast<Flags>(flags_ | kRecalcStyleContainerDescendants)};
   }
-  StyleRecalcChange ForceRecalcStickyContainer() const {
-    return {propagate_, static_cast<Flags>(flags_ | kRecalcStickyContainer)};
-  }
-  StyleRecalcChange ForceRecalcDescendantStickyContainers() const {
-    return {propagate_,
-            static_cast<Flags>(flags_ | kRecalcDescendantStickyContainers)};
-  }
   StyleRecalcChange SuppressRecalc() const {
     return {propagate_, static_cast<Flags>(flags_ | kSuppressRecalc)};
   }
@@ -199,9 +183,6 @@ class CORE_EXPORT StyleRecalcChange {
   }
   bool RecalcStyleContainerQueryDependent() const {
     return flags_ & kRecalcStyleContainerFlags;
-  }
-  bool RecalcStickyContainerQueryDependent() const {
-    return flags_ & kRecalcStickyContainerFlags;
   }
   bool RecalcContainerQueryDependent() const {
     return flags_ & kRecalcContainerFlags;
