@@ -1510,6 +1510,7 @@ group("js_files_for_form_controls_web_tests") {
 source_set("perf_tests") {
   testonly = true
   sources = [
+    "css/parser/css_parser_fast_paths_perftest.cc",
     "css/style_perftest.cc",
     "html/html_perftest.cc",
     "layout/svg/svg_hit_test_perftest.cc",
