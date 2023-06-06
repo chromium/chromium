@@ -31,6 +31,9 @@ class FakeNotificationsInstance : public mojom::NotificationsInstance {
   void SendNotificationEventToAndroid(
       const std::string& key,
       mojom::ArcNotificationEvent event) override;
+  void SendNotificationButtonClickToAndroid(const std::string& key,
+                                            uint32_t button_index,
+                                            const std::string& input) override;
   void CreateNotificationWindow(const std::string& key) override;
   void CloseNotificationWindow(const std::string& key) override;
   void OpenNotificationSettings(const std::string& key) override;

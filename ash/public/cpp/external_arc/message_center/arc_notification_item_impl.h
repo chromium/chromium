@@ -40,6 +40,7 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
                             const std::string& app_id) override;
   void Close(bool by_user) override;
   void Click() override;
+  void ClickButton(const int button_index, const std::string& input) override;
   void OpenSettings() override;
   void OpenSnooze() override;
   void ToggleExpansion() override;

@@ -241,6 +241,12 @@ void ArcNotificationItemImpl::OpenSnooze() {
   manager_->OpenNotificationSnoozeSettings(notification_key_);
 }
 
+void ArcNotificationItemImpl::ClickButton(const int button_index,
+                                          const std::string& input) {
+  manager_->SendNotificationButtonClickedOnChrome(notification_key_,
+                                                  button_index, input);
+}
+
 void ArcNotificationItemImpl::ToggleExpansion() {
   switch (expand_state_) {
     case ArcNotificationExpandState::EXPANDED:

@@ -45,7 +45,10 @@ class ArcNotificationItem {
   // Called when the notification is clicked by user. This is called from
   // ArcNotificationDelegate.
   virtual void Click() = 0;
-
+  // Called when the notification button is clicked by user. This is called
+  // from ArcNotificationDelegate.
+  virtual void ClickButton(const int button_index,
+                           const std::string& input) = 0;
   // Called when the user wants to open an intrinsic setting of notification.
   // This is called from ArcNotificationContentView.
   virtual void OpenSettings() = 0;
