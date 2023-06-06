@@ -110170,6 +110170,7 @@ others/histograms.xml -->
   <int value="24" label="OEM apps installed by the App Preload Service"/>
   <int value="25" label="Via Microsoft 365 setup dialog"/>
   <int value="26" label="Profile menu view in the app."/>
+  <int value="27" label="Installation dialog triggered via ML"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">

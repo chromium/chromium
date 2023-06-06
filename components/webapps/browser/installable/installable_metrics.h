@@ -127,6 +127,9 @@ enum class WebappInstallSource {
   // WebUIs).
   PROFILE_MENU = 26,
 
+  // Installation promotion was triggered via ML model.
+  ML_PROMOTION = 27,
+
   // Add any new values above this one.
   COUNT,
 };

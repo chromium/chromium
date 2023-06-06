@@ -43,6 +43,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::MENU_CREATE_SHORTCUT:
     case WebappInstallSource::MENU_CUSTOM_TAB:
     case WebappInstallSource::MICROSOFT_365_SETUP:
+    case WebappInstallSource::ML_PROMOTION:
     case WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case WebappInstallSource::PRELOADED_OEM:
     case WebappInstallSource::PROFILE_MENU:

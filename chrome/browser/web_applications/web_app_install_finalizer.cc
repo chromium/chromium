@@ -77,6 +77,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::RICH_INSTALL_UI_WEBLAYER:
     case InstallSource::ARC:
     case InstallSource::CHROME_SERVICE:
+    case InstallSource::ML_PROMOTION:
     case InstallSource::OMNIBOX_INSTALL_ICON:
     case InstallSource::MENU_CREATE_SHORTCUT:
     case InstallSource::PROFILE_MENU:
