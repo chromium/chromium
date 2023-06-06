@@ -38,7 +38,7 @@ class ConsentThrottle : public UrlKeyedDataCollectionConsentHelper::Observer {
       base::TimeDelta timeout = base::Seconds(5));
   ConsentThrottle(const ConsentThrottle&) = delete;
   ConsentThrottle& operator=(const ConsentThrottle&) = delete;
-  ~ConsentThrottle();
+  virtual ~ConsentThrottle();
 
   // UrlKeyedDataCollectionConsentHelper::Observer:
   void OnUrlKeyedDataCollectionConsentStateChanged(

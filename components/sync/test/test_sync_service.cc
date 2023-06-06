@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/progress_marker_map.h"
@@ -133,6 +134,14 @@ void TestSyncService::SetTrustedVaultRecoverabilityDegraded(bool degraded) {
 
 void TestSyncService::SetIsUsingExplicitPassphrase(bool enabled) {
   user_settings_.SetIsUsingExplicitPassphrase(enabled);
+}
+
+void TestSyncService::SetDownloadStatusFor(
+    const ModelTypeSet& types,
+    ModelTypeDownloadStatus download_status) {
+  for (const auto type : types) {
+    download_statuses_[type] = download_status;
+  }
 }
 
 void TestSyncService::FireStateChanged() {
@@ -309,6 +318,9 @@ void TestSyncService::GetAllNodesForDebugging(
 
 SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
     ModelType type) const {
+  if (base::Contains(download_statuses_, type)) {
+    return download_statuses_.at(type);
+  }
   return ModelTypeDownloadStatus::kUpToDate;
 }
 

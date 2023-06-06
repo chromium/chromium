@@ -148,9 +148,10 @@ TEST_F(ImageServiceTest, DoesNotRegisterForNavigationRelatedMetadata) {
 }
 
 TEST_F(ImageServiceTest, GetConsentToFetchImage) {
-  test_sync_service_->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet());
+  test_sync_service_->SetDownloadStatusFor(
+      {syncer::ModelType::BOOKMARKS,
+       syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
   test_sync_service_->FireStateChanged();
 
   EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
@@ -160,14 +161,15 @@ TEST_F(ImageServiceTest, GetConsentToFetchImage) {
   EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
   EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
 
-  test_sync_service_->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kHistory});
+  test_sync_service_->SetDownloadStatusFor(
+      {syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
   test_sync_service_->FireStateChanged();
 
   EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
   EXPECT_TRUE(
       GetConsentToFetchImageAwaitResult(mojom::ClientId::JourneysSidePanel));
+  // NTP Realbox still false as it does not have an approved privacy model yet.
   EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpRealbox));
   EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
   EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
@@ -175,11 +177,10 @@ TEST_F(ImageServiceTest, GetConsentToFetchImage) {
 
 TEST_F(ImageServiceTest, SyncInitialization) {
   // Put Sync into the initializing state.
-  test_sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::INITIALIZING);
-  test_sync_service_->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kHistory});
+  test_sync_service_->SetDownloadStatusFor(
+      {syncer::ModelType::BOOKMARKS,
+       syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
   test_sync_service_->FireStateChanged();
 
   mojom::Options options;
@@ -210,8 +211,10 @@ TEST_F(ImageServiceTest, SyncInitialization) {
   EXPECT_EQ(test_opt_guide_->requests_received_, 0U) << "Still throttled.";
 
   // Now set the test sync service to active.
-  test_sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_->SetDownloadStatusFor(
+      {syncer::ModelType::BOOKMARKS,
+       syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
   test_sync_service_->FireStateChanged();
   task_environment.FastForwardBy(kOptimizationGuideBatchingTimeout);
   EXPECT_EQ(test_opt_guide_->requests_received_, 1U)

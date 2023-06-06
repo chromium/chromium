@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_TEST_TEST_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_TEST_TEST_SYNC_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -63,6 +64,8 @@ class TestSyncService : public SyncService {
   void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
+  void SetDownloadStatusFor(const ModelTypeSet& types,
+                            ModelTypeDownloadStatus download_status);
 
   void FireStateChanged();
   void FireSyncCycleCompleted();
@@ -147,6 +150,8 @@ class TestSyncService : public SyncService {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ModelTypeSet failed_data_types_;
+
+  std::map<ModelType, ModelTypeDownloadStatus> download_statuses_;
 
   bool detailed_sync_status_engine_available_ = false;
   SyncStatus detailed_sync_status_;

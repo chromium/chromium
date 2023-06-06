@@ -21,11 +21,11 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
 #include "components/page_image_service/features.h"
+#include "components/page_image_service/image_service_consent_helper.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -175,13 +175,12 @@ ImageService::ImageService(
         autocomplete_scheme_classifier)
     : template_url_service_(template_url_service),
       remote_suggestions_service_(remote_suggestions_service),
-      history_consent_throttle_(
-          unified_consent::UrlKeyedDataCollectionConsentHelper::
-              NewPersonalizedDataCollectionConsentHelper(sync_service)),
-      bookmarks_consent_throttle_(
-          unified_consent::UrlKeyedDataCollectionConsentHelper::
-              NewPersonalizedBookmarksDataCollectionConsentHelper(
-                  sync_service)),
+      history_consent_helper_(std::make_unique<ImageServiceConsentHelper>(
+          sync_service,
+          syncer::ModelType::HISTORY_DELETE_DIRECTIVES)),
+      bookmarks_consent_helper_(std::make_unique<ImageServiceConsentHelper>(
+          sync_service,
+          syncer::ModelType::BOOKMARKS)),
       autocomplete_scheme_classifier_(
           std::move(autocomplete_scheme_classifier)) {
   if (opt_guide && base::FeatureList::IsEnabled(
@@ -224,13 +223,13 @@ void ImageService::GetConsentToFetchImage(
     case mojom::ClientId::Journeys:
     case mojom::ClientId::JourneysSidePanel:
     case mojom::ClientId::NtpQuests: {
-      return history_consent_throttle_.EnqueueRequest(std::move(callback));
+      return history_consent_helper_->EnqueueRequest(std::move(callback));
     }
     case mojom::ClientId::NtpRealbox:
       // TODO(b/244507194): Figure out consent story for NTP realbox case.
       return std::move(callback).Run(false);
     case mojom::ClientId::Bookmarks: {
-      return bookmarks_consent_throttle_.EnqueueRequest(std::move(callback));
+      return bookmarks_consent_helper_->EnqueueRequest(std::move(callback));
     }
   }
 }
