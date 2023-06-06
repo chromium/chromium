@@ -67,9 +67,13 @@ void RasterScaleController::PushRasterScale(aura::Window* window,
     windows_observation_.AddObservation(window);
   }
 
+  const auto previous_scale = GetRasterScaleForWindow(window);
   window_scales_[window].push_back(raster_scale);
-  window->SetProperty(aura::client::kRasterScale,
-                      GetRasterScaleForWindow(window));
+
+  const auto current_scale = GetRasterScaleForWindow(window);
+  if (current_scale != previous_scale) {
+    window->SetProperty(aura::client::kRasterScale, current_scale);
+  }
 }
 
 void RasterScaleController::PopRasterScale(aura::Window* window,
@@ -83,6 +87,7 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
 
   auto& scales = iter->second;
 
+  const auto previous_scale = GetRasterScaleForWindow(window);
   DCHECK(base::Contains(scales, raster_scale));
   base::Erase(scales, raster_scale);
 
@@ -91,8 +96,10 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
     windows_observation_.RemoveObservation(window);
   }
 
-  window->SetProperty(aura::client::kRasterScale,
-                      GetRasterScaleForWindow(window));
+  const auto current_scale = GetRasterScaleForWindow(window);
+  if (current_scale != previous_scale) {
+    window->SetProperty(aura::client::kRasterScale, current_scale);
+  }
 }
 
 float RasterScaleController::GetRasterScaleForWindow(aura::Window* window) {

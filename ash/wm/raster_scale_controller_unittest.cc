@@ -1,0 +1,46 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/wm/raster_scale_controller.h"
+
+#include <vector>
+
+#include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/test/raster_scale_change_tracker.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/test_windows.h"
+
+namespace ash {
+
+using RasterScaleControllerTest = AshTestBase;
+
+TEST_F(RasterScaleControllerTest, RasterScaleOnlyUpdatesIfChanges) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
+  auto tracker = RasterScaleChangeTracker(window.get());
+
+  EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
+  EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
+
+  {
+    ScopedSetRasterScale scoped1(window.get(), 2.0f);
+    EXPECT_EQ(2.0f, window->GetProperty(aura::client::kRasterScale));
+    EXPECT_EQ(std::vector<float>{2.0f}, tracker.TakeRasterScaleChanges());
+
+    {
+      ScopedSetRasterScale scoped2(window.get(), 2.0f);
+
+      // The raster scale didn't change, so expect no raster scale changes to be
+      // sent.
+      EXPECT_EQ(2.0f, window->GetProperty(aura::client::kRasterScale));
+      EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
+    }
+  }
+  EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
+  EXPECT_EQ(std::vector<float>{1.0f}, tracker.TakeRasterScaleChanges());
+}
+
+}  // namespace ash
