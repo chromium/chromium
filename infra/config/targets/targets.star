@@ -4,11 +4,6 @@
 
 load("//lib/targets.star", "targets")
 
-targets.compile_target(
-    name = "All_syzygy",
-    label = "//:All_syzygy",
-)
-
 targets.console_test_launcher(
     name = "absl_hardening_tests",
     label = "//third_party/abseil-cpp:absl_hardening_tests",

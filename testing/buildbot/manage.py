@@ -70,7 +70,6 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'remoting/host:host',
 
     # These targets are listed only in build-side recipes.
-    'All_syzygy',
     'blink_tests',
     'captured_sites_interactive_tests',
     'cast_shell',

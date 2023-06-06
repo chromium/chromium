@@ -5,10 +5,6 @@
 # 3. Run //infra/config/scripts/sync-isolate-map.py
 
 {
-  "All_syzygy": {
-    "label": "//:All_syzygy",
-    "type": "additional_compile_target",
-  },
   "absl_hardening_tests": {
     "label": "//third_party/abseil-cpp:absl_hardening_tests",
     "type": "console_test_launcher",
