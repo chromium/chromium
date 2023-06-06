@@ -115,18 +115,6 @@ Object: {
 	tid: number
 	ts: number
 }
-Got a V8.Execute event
-Object: {
-	args: {
-	}
-	cat: string
-	dur: number
-	name: string
-	ph: string
-	pid: number
-	tid: number
-	ts: number
-}
 Got a Profile event
 Object: {
 	args: {
