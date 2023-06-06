@@ -203,6 +203,77 @@ void GetMultiProfilePolicy(const user_manager::User* user,
   *out_policy = MultiProfileUserController::UserBehaviorStringToEnum(policy);
 }
 
+// Determines if user auth status requires online sign in.
+proximity_auth::mojom::AuthType GetInitialUserAuthType(
+    const user_manager::User* user) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSkipForceOnlineSignInForTesting)) {
+    return proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD;
+  }
+
+  // Public sessions are always allowed to log in offline.
+  // Deprecated supervised users are always allowed to log in offline.
+  // For all other users, force online sign in if:
+  // * The flag to force online sign-in is set for the user.
+  // * The user's OAuth token is invalid or unknown.
+  if (user->is_logged_in()) {
+    return proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+  }
+
+  const user_manager::User::OAuthTokenStatus token_status =
+      user->oauth_token_status();
+  const bool is_public_session =
+      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  const bool has_gaia_account = user->HasGaiaAccount();
+
+  if (is_public_session) {
+    return proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+  }
+
+  // At this point the reason for invalid token should be already set. If not,
+  // this might be a leftover from an old version.
+  if (has_gaia_account &&
+      token_status == user_manager::User::OAUTH2_TOKEN_STATUS_INVALID) {
+    RecordReauthReason(user->GetAccountId(), ReauthReason::kOther);
+  }
+
+  // We need to force an online signin if the user is marked as requiring it or
+  // if there's an invalid OAUTH token that needs to be refreshed.
+  if (user->force_online_signin()) {
+    VLOG(1) << "Online login forced by user flag";
+    return proximity_auth::mojom::AuthType::ONLINE_SIGN_IN;
+  }
+
+  if (has_gaia_account &&
+      (token_status == user_manager::User::OAUTH2_TOKEN_STATUS_INVALID ||
+       token_status == user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN)) {
+    VLOG(1) << "Online login forced due to invalid OAuth2 token status: "
+            << token_status;
+    return proximity_auth::mojom::AuthType::ONLINE_SIGN_IN;
+  }
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const absl::optional<base::TimeDelta> offline_signin_time_limit =
+      known_user.GetOfflineSigninLimit(user->GetAccountId());
+  if (!offline_signin_time_limit) {
+    return proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+  }
+
+  const base::Time last_gaia_signin_time =
+      known_user.GetLastOnlineSignin(user->GetAccountId());
+  if (last_gaia_signin_time == base::Time()) {
+    return proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+  }
+  const base::Time now = base::DefaultClock::GetInstance()->Now();
+  const base::TimeDelta time_since_last_gaia_signin =
+      now - last_gaia_signin_time;
+  if (time_since_last_gaia_signin >= offline_signin_time_limit) {
+    return proximity_auth::mojom::AuthType::ONLINE_SIGN_IN;
+  }
+
+  return proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+}
+
 }  // namespace
 
 // Helper class to call cryptohome to check whether a user needs dircrypto
@@ -439,71 +510,6 @@ void UserSelectionScreen::SetTpmLockedState(bool is_locked,
   for (user_manager::User* user : users_) {
     view_->SetTpmLockedState(user->GetAccountId(), is_locked, time_left);
   }
-}
-
-// static
-bool UserSelectionScreen::ShouldForceOnlineSignIn(
-    const user_manager::User* user) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSkipForceOnlineSignInForTesting)) {
-    return false;
-  }
-
-  // Public sessions are always allowed to log in offline.
-  // Deprecated supervised users are always allowed to log in offline.
-  // For all other users, force online sign in if:
-  // * The flag to force online sign-in is set for the user.
-  // * The user's OAuth token is invalid or unknown.
-  if (user->is_logged_in())
-    return false;
-
-  const user_manager::User::OAuthTokenStatus token_status =
-      user->oauth_token_status();
-  const bool is_public_session =
-      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-  const bool has_gaia_account = user->HasGaiaAccount();
-
-  if (is_public_session)
-    return false;
-
-  // At this point the reason for invalid token should be already set. If not,
-  // this might be a leftover from an old version.
-  if (has_gaia_account &&
-      token_status == user_manager::User::OAUTH2_TOKEN_STATUS_INVALID)
-    RecordReauthReason(user->GetAccountId(), ReauthReason::kOther);
-
-  // We need to force an online signin if the user is marked as requiring it or
-  // if there's an invalid OAUTH token that needs to be refreshed.
-  if (user->force_online_signin()) {
-    VLOG(1) << "Online login forced by user flag";
-    return true;
-  }
-
-  if (has_gaia_account &&
-      (token_status == user_manager::User::OAUTH2_TOKEN_STATUS_INVALID ||
-       token_status == user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN)) {
-    VLOG(1) << "Online login forced due to invalid OAuth2 token status: "
-            << token_status;
-    return true;
-  }
-
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  const absl::optional<base::TimeDelta> offline_signin_time_limit =
-      known_user.GetOfflineSigninLimit(user->GetAccountId());
-  if (!offline_signin_time_limit)
-    return false;
-
-  const base::Time last_gaia_signin_time =
-      known_user.GetLastOnlineSignin(user->GetAccountId());
-  if (last_gaia_signin_time == base::Time())
-    return false;
-  const base::Time now = base::DefaultClock::GetInstance()->Now();
-  const base::TimeDelta time_since_last_gaia_signin =
-      now - last_gaia_signin_time;
-  if (time_since_last_gaia_signin >= offline_signin_time_limit)
-    return true;
-
-  return false;
 }
 
 // static
@@ -833,9 +839,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     const proximity_auth::mojom::AuthType initial_auth_type =
         is_public_account
             ? proximity_auth::mojom::AuthType::EXPAND_THEN_USER_CLICK
-            : (ShouldForceOnlineSignIn(user)
-                   ? proximity_auth::mojom::AuthType::ONLINE_SIGN_IN
-                   : proximity_auth::mojom::AuthType::OFFLINE_PASSWORD);
+            : GetInitialUserAuthType(user);
     user_auth_type_map_[account_id] = initial_auth_type;
 
     LoginUserInfo user_info;

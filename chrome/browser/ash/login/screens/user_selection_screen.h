@@ -101,9 +101,6 @@ class UserSelectionScreen
   // UserOnlineSigninNotifier::Observer
   void OnOnlineSigninEnforced(const AccountId& account_id) override;
 
-  // Determines if user auth status requires online sign in.
-  static bool ShouldForceOnlineSignIn(const user_manager::User* user);
-
   // Builds a `UserAvatar` instance which contains the current image for `user`.
   static UserAvatar BuildAshUserAvatarForUser(const user_manager::User& user);
 
