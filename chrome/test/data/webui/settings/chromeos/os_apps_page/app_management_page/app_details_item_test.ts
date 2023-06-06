@@ -146,15 +146,24 @@ suite('<app-management-app-details-item>', () => {
     assertEquals('System App', typeAndSource.textContent!.trim());
   });
 
-  test('System install source', async () => {
+  test('System install source', async function() {
     await addApp({
       installSource: InstallSource.kSystem,
     });
 
-    const typeAndSource =
-        appDetailsItem.shadowRoot!.querySelector('#typeAndSource');
-    assertTrue(!!typeAndSource);
-    assertEquals('ChromeOS System App', typeAndSource.textContent!.trim());
+    const typeAndSourceText =
+        appDetailsItem.shadowRoot!.querySelector('#typeAndSourceText');
+    assertTrue(!!typeAndSourceText);
+    assertEquals('ChromeOS System App', typeAndSourceText.textContent!.trim());
+
+    const infoIconTooltip =
+        appDetailsItem.shadowRoot!.querySelector('#infoIconTooltip');
+    assertTrue(!!infoIconTooltip);
+    const tooltipText = infoIconTooltip.querySelector('#tooltipText');
+    assertTrue(!!tooltipText);
+    assertEquals(
+        'This system app is preinstalled on your device',
+        tooltipText.textContent!.trim());
   });
 
   test('Chrome app version', async () => {
