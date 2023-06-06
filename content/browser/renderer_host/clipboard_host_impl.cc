@@ -568,8 +568,7 @@ bool ClipboardHostImpl::IsUnsanitizedCustomFormatContentAllowed() {
     mojo::ReportBadMessage("Custom format read/write is not enabled.");
     return false;
   }
-
-  return render_frame_host().HasTransientUserActivation();
+  return true;
 }
 
 void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(

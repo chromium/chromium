@@ -586,18 +586,6 @@ void ClipboardPromise::RequestPermission(
       LocalFrame::HasTransientUserActivation(GetLocalFrame());
   base::UmaHistogramBoolean("Blink.Clipboard.HasTransientUserActivation",
                             has_transient_user_activation);
-  // `will_be_sanitized` is false only when we are trying to read/write
-  // web custom formats.
-  // TODO(ansollan): Remove this block as custom formats don't need both a user
-  // gesture and a permission grant to use custom clipboard.
-  if (!will_be_sanitized &&
-      RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
-      !has_transient_user_activation) {
-    script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kSecurityError,
-        "Must be handling a user gesture to use custom clipboard"));
-    return;
-  }
 
   if (!GetPermissionService()) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
