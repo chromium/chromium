@@ -49,10 +49,16 @@ source_set("connections") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
+    ":service_controller_router",
+    ":v3_types",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  # core.cc uses dynamic_cast.
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
 }
 source_set("connections_types") {
   public_configs = [
@@ -124,7 +130,6 @@ source_set("connections_implementation") {
     "src/connections/implementation/p2p_star_pcp_handler.cc",
     "src/connections/implementation/payload_manager.cc",
     "src/connections/implementation/pcp_manager.cc",
-    "src/connections/implementation/service_controller_router.cc",
     "src/connections/implementation/webrtc_bwu_handler.cc",
     "src/connections/implementation/webrtc_endpoint_channel.cc",
     "src/connections/implementation/wifi_direct_bwu_handler.cc",
@@ -167,7 +172,6 @@ source_set("connections_implementation") {
     "src/connections/implementation/pcp_handler.h",
     "src/connections/implementation/pcp_manager.h",
     "src/connections/implementation/service_controller.h",
-    "src/connections/implementation/service_controller_router.h",
     "src/connections/implementation/webrtc_bwu_handler.h",
     "src/connections/implementation/webrtc_endpoint_channel.h",
     "src/connections/implementation/wifi_direct_bwu_handler.h",
@@ -185,6 +189,7 @@ source_set("connections_implementation") {
     ":connections_implementation_mediums",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
+    ":interop_device",
     ":offline_wire_formats_proto",
     ":platform_base",
     ":platform_base_cancellation_flag",
@@ -194,6 +199,7 @@ source_set("connections_implementation") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
+    ":v3_types",
     "//third_party/abseil-cpp:absl",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/ukey2",
@@ -201,6 +207,24 @@ source_set("connections_implementation") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
+# TODO(b/286101242): Reintroduce this into |connections_implementation|.
+source_set("service_controller_router") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [ "src/connections/implementation/service_controller_router.cc" ]
+  public = [ "src/connections/implementation/service_controller_router.h" ]
+  deps = [ ":connections_implementation" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  # service_controller_router.cc uses dynamic_cast.
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+}
+
 source_set("connections_test_util") {
   testonly = true
   public_configs = [
@@ -210,6 +234,7 @@ source_set("connections_test_util") {
   public = [ "src/connections/implementation/mock_service_controller_router.h" ]
   deps = [
     ":connections_implementation",
+    ":service_controller_router",
     "//third_party/googletest:gmock",
   ]
 }
@@ -400,6 +425,34 @@ source_set("connections_implementation_mediums_webrtc") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+# src/connections/v3
+source_set("v3_types") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [
+    "src/connections/v3/bandwidth_info.h",
+    "src/connections/v3/connection_listening_options.h",
+    "src/connections/v3/connection_result.h",
+    "src/connections/v3/connections_device.h",
+    "src/connections/v3/connections_device_provider.h",
+    "src/connections/v3/listeners.h",
+    "src/connections/v3/params.h",
+  ]
+  public_deps = [
+    ":connections_enums_proto",
+    ":connections_types",
+    ":interop_device",
+    ":platform_base_connection_info",
+    ":platform_public_types",
+    "//crypto:crypto",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 ###############################################################################
 # src/internal
 ###############################################################################
@@ -429,6 +482,25 @@ source_set("flags") {
   ]
   public_deps = [
     ":platform_public_types",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+# src/internal/interop
+source_set("interop_device") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [
+    "src/internal/interop/device.h",
+    "src/internal/interop/device_provider.h",
+  ]
+  public_deps = [
+    ":platform_api_types",
+    ":platform_base_connection_info",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -594,11 +666,13 @@ source_set("platform_base_util") {
   sources = [
     "src/internal/platform/base_input_stream.cc",
     "src/internal/platform/base_pipe.cc",
+    "src/internal/platform/byte_utils.cc",
   ]
   public = [
     "src/internal/platform/base_input_stream.h",
     "src/internal/platform/base_mutex_lock.h",
     "src/internal/platform/base_pipe.h",
+    "src/internal/platform/byte_utils.h",
   ]
   public_deps = [
     ":platform_api_types",
@@ -848,6 +922,7 @@ source_set("presence_types") {
   public_deps = [
     ":connections_credential_proto",
     ":connections_metadata_proto",
+    ":interop_device",
     ":platform_base",
     ":platform_base_connection_info",
     ":platform_public_logging",
