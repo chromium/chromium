@@ -121,7 +121,7 @@ build_webui_tests("build") {
     "app_management/test_plugin_vm_browser_proxy.js",
     "app_management/test_store.js",
     "app_management/test_util.js",
-    "app_management/toggle_row_test.js",
+    "app_management/toggle_row_test.ts",
 
     "date_time_page/timezone_selector_test.ts",
     "date_time_page/timezone_subpage_test.ts",

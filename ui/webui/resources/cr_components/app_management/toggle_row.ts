@@ -34,6 +34,12 @@ export class AppManagementToggleRowElement extends PolymerElement {
     };
   }
 
+  icon: string;
+  label: string;
+  managed: boolean;
+  value: boolean;
+  description: string;
+
   override ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
@@ -50,6 +56,12 @@ export class AppManagementToggleRowElement extends PolymerElement {
   private onClick_(event: Event) {
     event.stopPropagation();
     this.$.toggle.click();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-toggle-row': AppManagementToggleRowElement;
   }
 }
 
