@@ -88,12 +88,12 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
     ]
+    srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/ToolbarManagerTestHelper.java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("test_support_jni_headers") {

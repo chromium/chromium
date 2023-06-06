@@ -15,6 +15,7 @@ android_library("java") {
 
   srcjar_deps = [
     ":account_capabilities_constants_javagen",
+    ":jni_headers",
     ":tribool_javagen",
     "//components/signin/public/base:consent_level_enum_javagen",
     "//components/signin/public/base:signin_metrics_enum_javagen",
@@ -53,8 +54,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
     "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegate.java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.

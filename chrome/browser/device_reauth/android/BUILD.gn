@@ -17,14 +17,15 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  srcjar_deps = [ ":device_reauth_java_enums_srcjar" ]
+  srcjar_deps = [
+    ":device_reauth_java_enums_srcjar",
+    ":jni_headers",
+  ]
 
   sources = [
     "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/device_reauth/ReauthenticatorBridge.java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   resources_package = "org.chromium.chrome.browser.device_reauth"
 }

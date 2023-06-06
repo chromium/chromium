@@ -100,10 +100,12 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ "//chrome:download_enum_javagen" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//chrome:download_enum_javagen",
+  ]
 
   resources_package = "org.chromium.chrome.browser.download"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library_factory("factory_java") {

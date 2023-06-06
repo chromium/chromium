@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifier.java",
     "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierFactory.java",
@@ -29,7 +30,6 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

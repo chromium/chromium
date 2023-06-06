@@ -18,6 +18,8 @@ android_library("java") {
     "//components/signin/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  srcjar_deps = [ "//components/consent_auditor:consent_auditor_java" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/consent_auditor:consent_auditor_java",
+  ]
 }

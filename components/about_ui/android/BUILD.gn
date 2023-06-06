@@ -8,10 +8,10 @@ generate_jni("about_ui_jni_headers") {
 }
 
 android_library("aboutui_java") {
+  srcjar_deps = [ ":about_ui_jni_headers" ]
   sources = [ "java/src/org/chromium/components/aboutui/CreditUtils.java" ]
   deps = [
     "//base:jni_java",
     "//build/android:build_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

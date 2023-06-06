@@ -38,8 +38,11 @@ android_library("java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
   ]
-  srcjar_deps = [ ":preload_pages_state_generated_enum" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [
+    ":jni_headers",
+    ":preload_pages_state_generated_enum",
+  ]
+
   resources_package = "org.chromium.chrome.browser.prefetch.settings"
 }
 

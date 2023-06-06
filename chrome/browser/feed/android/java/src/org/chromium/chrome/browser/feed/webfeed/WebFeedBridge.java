@@ -284,7 +284,7 @@ public class WebFeedBridge {
         }
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         void followWebFeed(WebFeedPageInformation pageInfo, int webFeedChangeReason,

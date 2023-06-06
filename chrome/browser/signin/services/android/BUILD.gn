@@ -46,9 +46,11 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
   ]
-  srcjar_deps = [ "//chrome/browser/profiles:profile_metrics_enum_java" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//chrome/browser/profiles:profile_metrics_enum_java",
+  ]
   resources_package = "org.chromium.chrome.browser.signin.services"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_resources("java_resources") {

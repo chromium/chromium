@@ -32,6 +32,7 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":split_jni_headers" ]
   sources = []
   if (enable_gvr_services) {
     sources += [
@@ -47,7 +48,8 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/vr/VrWindowAndroid.java",
     ]
   } else {
-    sources += [ "dummy/java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java" ]
+    sources +=
+        [ "dummy/java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java" ]
   }
 
   deps = [
@@ -90,7 +92,6 @@ android_library("java") {
     deps += [ "//device/vr:java" ]
   }
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.vr"
 }
 

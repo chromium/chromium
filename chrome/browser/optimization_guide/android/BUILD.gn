@@ -30,10 +30,9 @@ android_library("java") {
   ]
 
   srcjar_deps = [
+    ":jni_headers",
     "//components/optimization_guide/core:optimization_guide_generated_enums",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("native_j_unittests_jni_headers") {

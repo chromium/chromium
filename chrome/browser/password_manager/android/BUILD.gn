@@ -137,6 +137,7 @@ android_library("java") {
     ":password_manager_resource_provider_java",
   ]
 
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialog.java",
@@ -159,15 +160,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
   resources_package = "org.chromium.chrome.browser.password_manager"
 }
 
 generate_jni("jni_headers") {
   visibility = [
-    ":backend",
-    ":test_support",
+    ":*",
     "//chrome/browser",
   ]
   sources = [
@@ -341,6 +339,7 @@ static_library("test_support") {
 
 android_library("test_support_java") {
   testonly = true
+  srcjar_deps = [ ":test_support_jni_headers" ]
   sources = [
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakeCredentialManagerLauncher.java",
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakeCredentialManagerLauncherFactoryImpl.java",
@@ -368,8 +367,6 @@ android_library("test_support_java") {
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("password_manager_resource_provider_java") {

@@ -34,7 +34,7 @@ public class PaymentFeatureMap extends FeatureMap {
         return PaymentFeatureMapJni.get().getNativeMap();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         long getNativeMap();

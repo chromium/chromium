@@ -1341,7 +1341,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         return passwordCredentialOption;
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         String createOptionsToJson(ByteBuffer serializedOptions);

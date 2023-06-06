@@ -49,9 +49,9 @@ android_library("java") {
   ]
   srcjar_deps = [
     ":webapps_java_enums_srcjar",
+    ":webapps_jni_headers",
     "//components/webapps/browser/android/webapk:enums_srcjar",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("webapps_jni_headers") {

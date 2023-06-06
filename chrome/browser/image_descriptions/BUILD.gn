@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsController.java",
     "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsControllerDelegate.java",
@@ -32,8 +33,6 @@ android_library("java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_full_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   resources_package = "org.chromium.chrome.browser.image_descriptions"
 }

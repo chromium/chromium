@@ -494,6 +494,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_java",
     ]
+    srcjar_deps = [ ":printing_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/printing/PrintDocumentAdapterWrapper.java",
       "android/java/src/org/chromium/printing/PrintManagerDelegate.java",
@@ -503,6 +504,5 @@ if (is_android) {
       "android/java/src/org/chromium/printing/PrintingController.java",
       "android/java/src/org/chromium/printing/PrintingControllerImpl.java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

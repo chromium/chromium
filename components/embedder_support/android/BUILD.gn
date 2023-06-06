@@ -53,6 +53,7 @@ android_library("application_java") {
 }
 
 android_library("util_java") {
+  srcjar_deps = [ ":util_jni_headers" ]
   sources = [
     "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
     "java/src/org/chromium/components/embedder_support/util/Origin.java",
@@ -60,7 +61,7 @@ android_library("util_java") {
     "java/src/org/chromium/components/embedder_support/util/UrlUtilities.java",
     "java/src/org/chromium/components/embedder_support/util/WebResourceResponseInfo.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   deps = [
     "//base:base_java",
     "//base:jni_java",
@@ -153,7 +154,8 @@ android_library("view_java") {
     "//content/public/android:content_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ ":view_jni_headers" ]
   sources = [ "java/src/org/chromium/components/embedder_support/view/ContentViewRenderView.java" ]
 }
 
@@ -221,7 +223,8 @@ android_library("web_contents_delegate_java") {
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.embedder_support.delegate"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ ":web_contents_delegate_jni_headers" ]
   sources = [
     "java/src/org/chromium/components/embedder_support/delegate/ColorChooserAndroid.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerAdvanced.java",
@@ -270,7 +273,8 @@ android_library("context_menu_java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ ":context_menu_jni_headers" ]
   sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]
 }
 
@@ -281,9 +285,8 @@ android_library("native_java_unittests_java") {
     "//base:jni_java",
     "//third_party/junit",
   ]
+  srcjar_deps = [ ":native_j_unittests_jni_headers" ]
   sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 # See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we

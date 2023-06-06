@@ -29,6 +29,7 @@ static_library("internal") {
 }
 
 android_library("internal_java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/thinwebview/internal/CompositorViewImpl.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewImpl.java",
@@ -44,7 +45,6 @@ android_library("internal_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

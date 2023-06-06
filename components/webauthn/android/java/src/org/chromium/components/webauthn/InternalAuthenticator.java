@@ -153,7 +153,7 @@ public class InternalAuthenticator {
         mAuthenticator.cancel();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         void invokeMakeCredentialResponse(

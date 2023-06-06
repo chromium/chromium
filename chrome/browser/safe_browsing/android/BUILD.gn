@@ -72,8 +72,11 @@ android_library("java") {
     "//ui/android:ui_full_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  srcjar_deps = [ ":safe_browsing_enums" ]
+
+  srcjar_deps = [
+    ":jni_headers",
+    ":safe_browsing_enums",
+  ]
   resources_package = "org.chromium.chrome.browser.safe_browsing.settings"
 }
 

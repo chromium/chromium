@@ -1424,7 +1424,7 @@ public class FeedStream implements Stream {
     }
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long init(FeedStream caller, @StreamKind int streamKind,
                 long nativeFeedReliabilityLoggingBridge);

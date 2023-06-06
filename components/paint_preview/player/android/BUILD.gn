@@ -55,7 +55,6 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.paintpreview.player"
 
   sources = [
@@ -87,7 +86,10 @@ android_library("java") {
     "java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameViewport.java",
   ]
 
-  srcjar_deps = [ ":compositor_status_generated_enum" ]
+  srcjar_deps = [
+    ":compositor_status_generated_enum",
+    ":jni_headers",
+  ]
 
   deps = [
     "//base:base_java",
@@ -108,8 +110,8 @@ android_library("java") {
 
 android_library("player_java_test_support") {
   testonly = true
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+  srcjar_deps = [ ":javatests_jni_headers" ]
   sources = [
     "javatests/src/org/chromium/components/paintpreview/player/FrameData.java",
     "javatests/src/org/chromium/components/paintpreview/player/PaintPreviewTestRule.java",

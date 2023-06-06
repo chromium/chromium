@@ -102,7 +102,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsiteRowPreference.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.components.browser_ui.site_settings"
   deps = [
     ":java_resources",
@@ -139,8 +139,10 @@ android_library("java") {
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
-  srcjar_deps =
-      [ "//components/content_settings/android:java_pref_names_srcjar" ]
+  srcjar_deps = [
+    ":site_settings_jni_headers",
+    "//components/content_settings/android:java_pref_names_srcjar",
+  ]
 }
 
 android_library("javatests") {

@@ -157,6 +157,7 @@ if (is_android) {
   }
 
   android_library("geolocation_java") {
+    srcjar_deps = [ ":geolocation_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/device/geolocation/LocationProviderAdapter.java",
       "android/java/src/org/chromium/device/geolocation/LocationProviderAndroid.java",
@@ -178,7 +179,6 @@ if (is_android) {
       "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }
 

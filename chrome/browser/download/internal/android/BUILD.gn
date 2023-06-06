@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerFactory.java",
     "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerImpl.java",
@@ -142,7 +143,6 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.download.internal"
 }
 

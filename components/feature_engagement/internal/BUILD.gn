@@ -130,6 +130,7 @@ if (is_android) {
   android_library("internal_java") {
     visibility = [ "//components/feature_engagement:feature_engagement_java" ]
 
+    srcjar_deps = [ ":jni_headers" ]
     sources = [ "android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java" ]
 
     deps = [
@@ -140,7 +141,6 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {

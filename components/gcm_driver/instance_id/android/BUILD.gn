@@ -22,10 +22,11 @@ android_library("instance_id_driver_java") {
     "//components/gcm_driver/android:gcm_driver_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  srcjar_deps =
-      [ "//components/gcm_driver/instance_id:instance_id_java_enums_srcjar" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/gcm_driver/instance_id:instance_id_java_enums_srcjar",
+  ]
 
   sources = [
     "java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java",

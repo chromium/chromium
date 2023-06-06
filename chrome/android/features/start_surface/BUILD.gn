@@ -26,6 +26,7 @@ android_resources("java_resources") {
 }
 
 android_library("public_java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/features/start_surface/ReturnToStartSurfaceUtil.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
@@ -62,7 +63,7 @@ android_library("public_java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.start_surface"
 }
 

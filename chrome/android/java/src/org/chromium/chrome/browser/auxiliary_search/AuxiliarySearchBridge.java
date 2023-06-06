@@ -52,7 +52,7 @@ public class AuxiliarySearchBridge {
     }
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long getForProfile(Profile profile);
         byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);

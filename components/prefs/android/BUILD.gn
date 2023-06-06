@@ -9,13 +9,13 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "java/src/org/chromium/components/prefs/PrefService.java" ]
   deps = [
     "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 robolectric_library("junit") {

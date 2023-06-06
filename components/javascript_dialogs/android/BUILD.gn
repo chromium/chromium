@@ -7,6 +7,7 @@ import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/javascript_dialogs/JavascriptAppModalDialog.java",
     "java/src/org/chromium/components/javascript_dialogs/JavascriptDialogCustomView.java",
@@ -14,7 +15,6 @@ android_library("java") {
     "java/src/org/chromium/components/javascript_dialogs/JavascriptTabModalDialog.java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.javascript_dialogs"
 
   deps = [

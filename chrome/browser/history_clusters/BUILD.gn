@@ -25,6 +25,7 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/history_clusters/ClusterVisit.java",
     "java/src/org/chromium/chrome/browser/history_clusters/DividerView.java",
@@ -78,7 +79,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.history_clusters"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

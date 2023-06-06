@@ -21,6 +21,7 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/messages/infobar/SimpleConfirmInfoBarBuilder.java",
     "java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java",
@@ -52,7 +53,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.ui.messages"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

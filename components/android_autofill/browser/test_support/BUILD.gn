@@ -8,7 +8,7 @@ import("//build/config/android/rules.gni")
 testonly = true
 
 android_library("java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/autofill/AutofillHintsServiceTestHelper.java",
     "java/src/org/chromium/components/autofill/AutofillProviderTestHelper.java",

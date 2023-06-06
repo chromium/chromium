@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/feature_engagement/ScreenshotMonitor.java",
     "java/src/org/chromium/chrome/browser/feature_engagement/ScreenshotMonitorDelegate.java",
@@ -27,7 +28,6 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_full_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

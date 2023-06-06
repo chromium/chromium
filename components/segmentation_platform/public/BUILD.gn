@@ -115,9 +115,10 @@ if (is_android) {
       "//url:gurl_java",
     ]
 
-    srcjar_deps = [ ":processed_value_enums_java" ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    srcjar_deps = [
+      ":jni_headers",
+      ":processed_value_enums_java",
+    ]
 
     public_deps = [ "//components/segmentation_platform/public/proto:segmentation_platform_proto_java" ]
   }

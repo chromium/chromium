@@ -75,9 +75,10 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":autofill_generated_enums" ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [
+    ":autofill_generated_enums",
+    ":jni_headers",
+  ]
 }
 
 android_library("bottom_sheet_utils_java") {

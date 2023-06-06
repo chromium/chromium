@@ -14,11 +14,11 @@ android_library("java") {
     "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/endpoint_fetcher/EndpointFetcher.java",
     "java/src/org/chromium/chrome/browser/endpoint_fetcher/EndpointResponse.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

@@ -90,6 +90,7 @@ if (is_android) {
   }
 
   android_library("public_java") {
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/components/query_tiles/QueryTileConstants.java",
       "android/java/src/org/chromium/components/query_tiles/TileProvider.java",
@@ -108,8 +109,6 @@ if (is_android) {
       "//ui/android:ui_java",
       "//url:gurl_java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {

@@ -98,13 +98,12 @@ android_library("content_shell_java") {
     "//ui/base/cursor/mojom:cursor_type_java",
     "//url:gurl_java",
   ]
+  srcjar_deps = [ ":content_shell_jni_headers" ]
   sources = [
     "java/src/org/chromium/content_shell/Shell.java",
     "java/src/org/chromium/content_shell/ShellManager.java",
     "java/src/org/chromium/content_shell/ShellViewAndroidDelegate.java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 jinja_template("content_shell_manifest") {

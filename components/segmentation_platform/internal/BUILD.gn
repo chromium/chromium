@@ -382,6 +382,7 @@ bundle_data("unit_tests_bundle_data") {
 if (is_android) {
   android_library("internal_java") {
     visibility = [ "//chrome/android:chrome_all_java" ]
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java",
       "android/java/src/org/chromium/components/segmentation_platform/execution/processing/CustomDeviceUtils.java",
@@ -394,7 +395,6 @@ if (is_android) {
       "//components/optimization_guide/proto:optimization_guide_proto_java",
       "//components/segmentation_platform/public:public_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {

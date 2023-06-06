@@ -470,6 +470,7 @@ if (is_android) {
   }
 
   android_library("ax_base_java") {
+    srcjar_deps = [ ":ax_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/ui/accessibility/AccessibilityState.java",
     ]
@@ -479,7 +480,6 @@ if (is_android) {
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_jvm_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }
 

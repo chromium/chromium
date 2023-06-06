@@ -55,6 +55,7 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/page_info/CertificateChainHelper.java",
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
@@ -116,7 +117,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.components.page_info"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

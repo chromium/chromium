@@ -59,6 +59,7 @@ source_set("share") {
 
 if (is_android) {
   android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/share/ChromeShareExtras.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
@@ -66,8 +67,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeOptionShareCallback.java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     deps = [
       ":jni_headers",

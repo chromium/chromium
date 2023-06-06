@@ -15,15 +15,17 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/sync/SyncService.java",
     "java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
-  visibility = [ "//chrome/browser" ]
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
   sources = [ "java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java" ]
 }

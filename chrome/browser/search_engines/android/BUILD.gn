@@ -20,7 +20,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
   ]
 
-  srcjar_deps = [ "//components/search_engines:search_engine_type_java" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/search_engines:search_engine_type_java",
+  ]
 
   deps = [
     ":java_resources",
@@ -46,7 +49,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//ui/android:ui_full_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.search_engines"
 }
 

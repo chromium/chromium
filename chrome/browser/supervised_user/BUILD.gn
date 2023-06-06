@@ -94,9 +94,11 @@ if (is_android) {
       "//url:gurl_java",
     ]
 
-    srcjar_deps = [ ":local_web_approval_outcome_java_enum_srcjar" ]
+    srcjar_deps = [
+      ":jni_headers",
+      ":local_web_approval_outcome_java_enum_srcjar",
+    ]
 
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegateProvider.java",
       "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java",
@@ -120,6 +122,7 @@ if (is_android) {
 
   android_library("test_support_java") {
     testonly = true
+    srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsBridge.java" ]
     deps = [
       ":test_support_jni_headers",
@@ -130,7 +133,6 @@ if (is_android) {
       "//components/browser_ui/bottomsheet/android/test:java",
       "//content/public/test/android:content_java_test_support",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("javatests") {

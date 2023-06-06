@@ -84,9 +84,11 @@ if (is_android) {
       "//base:jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-    srcjar_deps = [ ":public_java_enums_srcjar" ]
+    srcjar_deps = [
+      ":jni_headers",
+      ":public_java_enums_srcjar",
+    ]
   }
 
   java_cpp_enum("public_java_enums_srcjar") {

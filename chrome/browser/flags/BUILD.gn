@@ -37,8 +37,8 @@ android_library("java") {
   srcjar_deps = [
     ":chrome_android_java_switches_srcjar",
     ":chrome_browser_flags_enums_srcjar",
+    ":jni_headers",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

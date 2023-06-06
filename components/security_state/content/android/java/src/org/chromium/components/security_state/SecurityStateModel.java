@@ -33,7 +33,7 @@ public class SecurityStateModel {
     private SecurityStateModel() {}
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         int getSecurityLevelForWebContents(WebContents webContents);
     }

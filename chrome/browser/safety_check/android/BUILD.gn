@@ -62,9 +62,10 @@ android_library("java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_full_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   srcjar_deps = [
     ":bulk_leak_check_service_enums",
+    ":jni_headers",
     ":safety_check_enums",
   ]
   resources_package = "org.chromium.chrome.browser.safety_check"

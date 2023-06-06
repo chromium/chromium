@@ -15,13 +15,12 @@ source_set("android") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/installedapp/InstalledAppProviderImpl.java",
     "java/src/org/chromium/components/installedapp/PackageHash.java",
     "java/src/org/chromium/components/installedapp/PackageManagerDelegate.java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   deps = [
     "//base:base_java",

@@ -19,7 +19,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessagesMetrics.java",
   ]
   resources_package = "org.chromium.components.messages"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -34,7 +34,10 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
 
-  srcjar_deps = [ ":message_enums_java" ]
+  srcjar_deps = [
+    ":jni_headers",
+    ":message_enums_java",
+  ]
 }
 
 android_library("unit_device_javatests") {

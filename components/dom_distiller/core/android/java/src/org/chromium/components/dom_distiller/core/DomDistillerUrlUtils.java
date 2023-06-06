@@ -79,7 +79,7 @@ public final class DomDistillerUrlUtils {
     }
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         String getDistillerViewUrlFromUrl(String scheme, String url, String title);
         GURL getOriginalUrlFromDistillerUrl(String viewerUrl);

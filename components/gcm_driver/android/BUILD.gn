@@ -16,8 +16,8 @@ android_library("gcm_driver_java") {
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/gcm_driver/GCMDriver.java",
     "java/src/org/chromium/components/gcm_driver/GCMMessage.java",

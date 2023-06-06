@@ -95,7 +95,7 @@ public class WebContentsStateBridge {
     }
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         WebContents restoreContentsFromByteBuffer(ByteBuffer buffer, int savedStateVersion,
                 boolean initiallyHidden, boolean noRenderer);

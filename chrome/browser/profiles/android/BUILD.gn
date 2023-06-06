@@ -19,7 +19,8 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/cookies/CanonicalCookie.java",
     "java/src/org/chromium/chrome/browser/cookies/CookiesFetcher.java",

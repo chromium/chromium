@@ -222,7 +222,7 @@ public class NetworkFetcherTask {
     }
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         void callProgressCallback(long weakPtr, long taskRunner, long current);
         void callResponseStartedCallback(

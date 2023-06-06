@@ -19,15 +19,13 @@ source_set("utils") {
 
 generate_jni("jni_headers") {
   visibility = [
-    ":utils",
+    ":*",
     "//chrome/browser",
   ]
   sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningBridge.java" ]
 }
 
 android_library("java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -44,6 +42,7 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
 
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningBridge.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",

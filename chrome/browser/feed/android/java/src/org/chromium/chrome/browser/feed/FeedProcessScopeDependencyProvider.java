@@ -230,7 +230,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         sEnableAppFlowDebugging = enable;
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         int[] getExperimentIds();

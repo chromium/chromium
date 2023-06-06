@@ -671,7 +671,8 @@ if (is_android) {
       "//build/android:build_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+    srcjar_deps = [ ":service_jni_headers" ]
     sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
       "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",

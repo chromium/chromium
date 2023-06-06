@@ -9,6 +9,7 @@ if (is_android) {
 
 if (is_android) {
   android_library("factory_java") {
+    srcjar_deps = [ ":jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/segmentation_platform/SegmentationPlatformServiceFactory.java" ]
 
     deps = [
@@ -18,8 +19,6 @@ if (is_android) {
       "//components/segmentation_platform/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {

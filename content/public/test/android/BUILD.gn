@@ -17,7 +17,7 @@ android_library("android_test_message_pump_support_java") {
 
 android_library("content_java_test_support") {
   testonly = true
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   deps = [
     ":android_test_message_pump_support_java",
     "//base:base_java",
@@ -42,6 +42,7 @@ android_library("content_java_test_support") {
     "//url:gurl_java",
     "//url:origin_java",
   ]
+  srcjar_deps = [ ":content_test_jni" ]
   sources = [
     "javatests/src/org/chromium/content_public/browser/test/ChildProcessAllocatorSettings.java",
     "javatests/src/org/chromium/content_public/browser/test/ChildProcessAllocatorSettingsHook.java",

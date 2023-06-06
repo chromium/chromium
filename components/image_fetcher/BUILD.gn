@@ -24,8 +24,11 @@ android_library("java") {
     "//third_party/gif_player:gif_player_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  srcjar_deps = [ "//components/image_fetcher/core:java_enums_srcjar" ]
+
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/image_fetcher/core:java_enums_srcjar",
+  ]
 }
 
 generate_jni("jni_headers") {

@@ -186,9 +186,11 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ "//chrome/browser/ui:adaptive_toolbar_enums_java" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//chrome/browser/ui:adaptive_toolbar_enums_java",
+  ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.toolbar"
 }
 

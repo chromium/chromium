@@ -79,7 +79,7 @@ public class SigninMetricsUtils {
                 "Signin.AddAccountState", state, State.NUM_STATES);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         void logProfileAccountManagementMenu(int metric, int gaiaServiceType);

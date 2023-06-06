@@ -53,6 +53,7 @@ static_library("android") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/infobars/ConfirmInfoBar.java",
     "java/src/org/chromium/components/infobars/InfoBar.java",
@@ -81,7 +82,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.components.infobars"
 }
 

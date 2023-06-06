@@ -30,7 +30,7 @@ public class PaintPreviewCompositorUtils {
     }
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         void warmupCompositor();
         boolean stopWarmCompositor();

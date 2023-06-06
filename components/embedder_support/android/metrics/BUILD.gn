@@ -66,8 +66,8 @@ android_library("java") {
   srcjar_deps = [
     ":java_enum_srcjar",
     ":java_features_srcjar",
+    ":jni",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni") {

@@ -10,6 +10,7 @@ android_library("java") {
     ":*",
     "//chrome/android:chrome_all_java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorOptionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialog.java",
@@ -36,7 +37,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
 }
 

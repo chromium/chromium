@@ -37,7 +37,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerCategoryView.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerVideoPlayer.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.components.browser_ui.photo_picker"
   deps = [
     ":java_resources",
@@ -57,7 +57,10 @@ android_library("java") {
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
   ]
-  srcjar_deps = [ ":photo_picker_aidl" ]
+  srcjar_deps = [
+    ":photo_picker_aidl",
+    ":photo_picker_jni_headers",
+  ]
 }
 
 generate_jni("photo_picker_jni_headers") {

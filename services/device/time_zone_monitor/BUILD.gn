@@ -74,7 +74,7 @@ source_set("time_zone_monitor") {
 
 if (is_android) {
   generate_jni("time_zone_monitor_jni_headers") {
-    visibility = [ ":time_zone_monitor" ]
+    visibility = [ ":*" ]
     sources = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
   }
 
@@ -83,12 +83,12 @@ if (is_android) {
     # However, various generated targets also need to see this target as a
     # result of //services/device:java depending on it.
     visibility = [ "//services/device:*" ]
+    srcjar_deps = [ ":time_zone_monitor_jni_headers" ]
     sources = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
     deps = [
       "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

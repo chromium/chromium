@@ -16,6 +16,7 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "java/src/org/chromium/components/browser_ui/client_certificate/SSLClientCertificateRequest.java" ]
   deps = [
     ":java_resources",
@@ -28,7 +29,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//ui/android:ui_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.components.browser_ui.client_certificate"
 }
 

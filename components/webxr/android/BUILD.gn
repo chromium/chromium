@@ -152,7 +152,10 @@ android_library("xr_java") {
     public_deps +=
         [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java" ]
 
-    srcjar_deps = [ ":webxr_ar_android_enums" ]
+    srcjar_deps = [
+      ":webxr_ar_android_enums",
+      ":xr_jni_headers",
+    ]
   } else if (enable_cardboard || enable_openxr) {
     # These stub classes are needed for the general Xr infrastructure code, but
     # are not needed for the more broad always-available code. So we check that
@@ -180,7 +183,6 @@ android_library("xr_java") {
     sources += [ "//components/webxr/android/stubs/java/src/org/chromium/components/webxr/CardboardClassProvider.java" ]
   }
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.webxr"
 }
 

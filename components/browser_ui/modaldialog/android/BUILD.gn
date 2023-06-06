@@ -21,6 +21,7 @@ source_set("android") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":modaldialog_jni_headers" ]
   sources = [
     "java/src/org/chromium/components/browser_ui/modaldialog/AppModalPresenter.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogFeatureList.java",
@@ -28,7 +29,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogViewBinder.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/TabModalPresenter.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   deps = [
     ":java_resources",

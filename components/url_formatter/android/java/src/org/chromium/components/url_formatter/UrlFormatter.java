@@ -232,7 +232,7 @@ public final class UrlFormatter {
         return UrlFormatterJni.get().formatStringUrlForSecurityDisplay(uri, schemeDisplay);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         GURL fixupUrl(String url);

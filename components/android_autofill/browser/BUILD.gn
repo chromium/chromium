@@ -15,7 +15,10 @@ android_aidl("autofill_aidl") {
 }
 
 android_library("java") {
-  srcjar_deps = [ ":autofill_aidl" ]
+  srcjar_deps = [
+    ":autofill_aidl",
+    ":jni_headers",
+  ]
   deps = [
     ":features_java",
     "//base:base_java",
@@ -28,7 +31,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   sources = [
     "java/src/org/chromium/components/autofill/AutofillHintsService.java",
     "java/src/org/chromium/components/autofill/AutofillManagerWrapper.java",
@@ -51,10 +54,11 @@ generate_jni("jni_headers") {
 }
 
 android_library("features_java") {
+  srcjar_deps = [ ":jni_headers_features" ]
   sources = [
     "java/src/org/chromium/components/autofill/AndroidAutofillFeatures.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   deps = [
     ":features",
     "//base:base_java",
