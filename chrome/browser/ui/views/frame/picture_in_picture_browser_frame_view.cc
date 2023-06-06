@@ -587,6 +587,12 @@ bool PictureInPictureBrowserFrameView::GetURL(GURL* url) const {
   return false;
 }
 
+bool PictureInPictureBrowserFrameView::ShouldPreventElision() {
+  // We should never allow the full URL to show, as the PiP window only cares
+  // about the origin of the opener.
+  return false;
+}
+
 bool PictureInPictureBrowserFrameView::ShouldTrimDisplayUrlAfterHostName()
     const {
   // We need to set the window title URL to be eTLD+1.
