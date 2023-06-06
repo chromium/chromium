@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SETUP_TEST_UTILS_H_
-#define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SETUP_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_TEST_UTILS_H_
+#define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_TEST_UTILS_H_
 
 #include <string>
 
@@ -45,4 +45,4 @@ void LockDemoDeviceInstallAttributes();
 }  // namespace test
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SETUP_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_TEST_UTILS_H_
