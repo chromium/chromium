@@ -1771,11 +1771,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "enable-16-desks",
-    "owners": [ "dandersson", "janetmac" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "enable-accessibility-accelerators-notifications-timeout",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 120

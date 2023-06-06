@@ -3056,9 +3056,6 @@ extern const char kCrosWebAppShortcutUiUpdateDescription[];
 extern const char kDeskButtonName[];
 extern const char kDeskButtonDescription[];
 
-extern const char kDesks16Name[];
-extern const char kDesks16Description[];
-
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 
