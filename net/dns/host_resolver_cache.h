@@ -5,6 +5,7 @@
 #ifndef NET_DNS_HOST_RESOLVER_CACHE_H_
 #define NET_DNS_HOST_RESOLVER_CACHE_H_
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <string>
@@ -52,6 +53,7 @@ class NET_EXPORT HostResolverCache final {
   };
 
   explicit HostResolverCache(
+      size_t max_results,
       const base::Clock& clock = *base::DefaultClock::GetInstance(),
       const base::TickClock& tick_clock =
           *base::DefaultTickClock::GetInstance());
@@ -181,7 +183,10 @@ class NET_EXPORT HostResolverCache final {
       HostResolverSource source,
       absl::optional<bool> secure) const;
 
+  void EvictEntries();
+
   EntryMap entries_;
+  size_t max_entries_;
 
   // Number of times MakeAllEntriesStale() has been called.
   int staleness_generation_ = 0;

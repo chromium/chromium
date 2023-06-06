@@ -79,12 +79,14 @@ MATCHER_P3(IsStale,
 
 class HostResolverCacheTest : public ::testing::Test {
  protected:
+  const size_t kMaxResults = 10;
+
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
 };
 
 TEST_F(HostResolverCacheTest, CacheAResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -158,7 +160,7 @@ TEST_F(HostResolverCacheTest, CacheAResult) {
 }
 
 TEST_F(HostResolverCacheTest, CacheAaaaResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -235,7 +237,7 @@ TEST_F(HostResolverCacheTest, CacheAaaaResult) {
 }
 
 TEST_F(HostResolverCacheTest, CacheHttpsResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -317,7 +319,7 @@ TEST_F(HostResolverCacheTest, CacheHttpsResult) {
 // because such things were handled differently in a previous version of the
 // cache.
 TEST_F(HostResolverCacheTest, RespectsSchemeAndPortInName) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kNameWithScheme = "_411._https.foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -365,7 +367,7 @@ TEST_F(HostResolverCacheTest, RespectsSchemeAndPortInName) {
 }
 
 TEST_F(HostResolverCacheTest, CacheHttpsAliasResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -407,7 +409,7 @@ TEST_F(HostResolverCacheTest, CacheHttpsAliasResult) {
 }
 
 TEST_F(HostResolverCacheTest, CacheCnameAliasResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -455,7 +457,7 @@ TEST_F(HostResolverCacheTest, CacheCnameAliasResult) {
 }
 
 TEST_F(HostResolverCacheTest, CacheWildcardAlias) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::string kAliasTarget = "target.test";
@@ -486,7 +488,7 @@ TEST_F(HostResolverCacheTest, CacheWildcardAlias) {
 }
 
 TEST_F(HostResolverCacheTest, CacheErrorResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -528,7 +530,7 @@ TEST_F(HostResolverCacheTest, CacheErrorResult) {
 }
 
 TEST_F(HostResolverCacheTest, ResultsCanBeUpdated) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -595,7 +597,7 @@ TEST_F(HostResolverCacheTest, ResultsCanBeUpdated) {
 }
 
 TEST_F(HostResolverCacheTest, UpdateCanReplaceWildcard) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::string kAliasTarget1 = "target1.test";
@@ -635,7 +637,7 @@ TEST_F(HostResolverCacheTest, UpdateCanReplaceWildcard) {
 }
 
 TEST_F(HostResolverCacheTest, WildcardUpdateCanReplaceSpecifics) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::string kAliasTarget1 = "target1.test";
@@ -701,7 +703,7 @@ TEST_F(HostResolverCacheTest, WildcardUpdateCanReplaceSpecifics) {
 }
 
 TEST_F(HostResolverCacheTest, LookupNameIsCanonicalized) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "fOO.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -722,7 +724,7 @@ TEST_F(HostResolverCacheTest, LookupNameIsCanonicalized) {
 }
 
 TEST_F(HostResolverCacheTest, LookupIgnoresExpiredResults) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName1 = "foo.test";
   const base::TimeDelta kTtl1 = base::Minutes(2);
@@ -831,7 +833,7 @@ TEST_F(HostResolverCacheTest, LookupIgnoresExpiredResults) {
 }
 
 TEST_F(HostResolverCacheTest, ExpiredResultsCanBeUpdated) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kEndpoints = {
@@ -879,7 +881,7 @@ TEST_F(HostResolverCacheTest, ExpiredResultsCanBeUpdated) {
 }
 
 TEST_F(HostResolverCacheTest, LookupIgnoresResultsMarkedStale) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName1 = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -956,7 +958,7 @@ TEST_F(HostResolverCacheTest, LookupIgnoresResultsMarkedStale) {
 }
 
 TEST_F(HostResolverCacheTest, MarkedStaleResultsCanBeUpdated) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(6);
@@ -993,7 +995,7 @@ TEST_F(HostResolverCacheTest, MarkedStaleResultsCanBeUpdated) {
 }
 
 TEST_F(HostResolverCacheTest, RespectsNetworkAnonymizationKey) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(5);
@@ -1064,7 +1066,7 @@ TEST_F(HostResolverCacheTest, RespectsNetworkAnonymizationKey) {
 // information, so if an unexpired entry is updated with an expired entry, the
 // entry should now be expired.
 TEST_F(HostResolverCacheTest, UpdateToStale) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kEndpoints = {
@@ -1106,7 +1108,7 @@ TEST_F(HostResolverCacheTest, UpdateToStale) {
 // If a wildcard lookup matches multiple result entries, all insecure, expect
 // lookup to return the most recently set result.
 TEST_F(HostResolverCacheTest, PreferMoreRecentInsecureResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -1158,7 +1160,7 @@ TEST_F(HostResolverCacheTest, PreferMoreRecentInsecureResult) {
 // If a wildcard lookup matches multiple result entries, all secure, expect
 // lookup to return the most recently set result.
 TEST_F(HostResolverCacheTest, PreferMoreRecentSecureResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -1210,7 +1212,7 @@ TEST_F(HostResolverCacheTest, PreferMoreRecentSecureResult) {
 // If a wildcard lookup matches multiple result entries of mixed secureness,
 // expect lookup to return the most recently set secure result.
 TEST_F(HostResolverCacheTest, PreferMoreSecureResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const base::TimeDelta kTtl = base::Minutes(2);
@@ -1285,7 +1287,7 @@ TEST_F(HostResolverCacheTest, PreferMoreSecureResult) {
 // matches multiple result entries, expect the lookup to prefer a non-stale
 // result.
 TEST_F(HostResolverCacheTest, LookupStalePrefersNonStaleResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kStaleEndpoints = {
@@ -1342,7 +1344,7 @@ TEST_F(HostResolverCacheTest, LookupStalePrefersNonStaleResult) {
 // exercises slightly different logic because, if no secure results exist, no
 // other results need to be considered once a non-stale result is found
 TEST_F(HostResolverCacheTest, InsecureLookupStalePrefersNonStaleResult) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kStaleEndpoints = {
@@ -1382,7 +1384,7 @@ TEST_F(HostResolverCacheTest, InsecureLookupStalePrefersNonStaleResult) {
 }
 
 TEST_F(HostResolverCacheTest, LookupStalePrefersLeastStaleByGeneration) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kMoreStaleEndpoints = {
@@ -1439,7 +1441,7 @@ TEST_F(HostResolverCacheTest, LookupStalePrefersLeastStaleByGeneration) {
 }
 
 TEST_F(HostResolverCacheTest, LookupStalePrefersLeastStaleByExpiration) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kLessStaleEndpoints = {
@@ -1493,7 +1495,7 @@ TEST_F(HostResolverCacheTest, LookupStalePrefersLeastStaleByExpiration) {
 }
 
 TEST_F(HostResolverCacheTest, LookupStalePrefersMostSecure) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kSecureEndpoints = {
@@ -1551,7 +1553,7 @@ TEST_F(HostResolverCacheTest, LookupStalePrefersMostSecure) {
 // different logic because no other results need to be considered once a
 // non-stale secure result is found.
 TEST_F(HostResolverCacheTest, LookupStalePrefersMostSecureNonStale) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kInsecureEndpoints = {
@@ -1591,7 +1593,7 @@ TEST_F(HostResolverCacheTest, LookupStalePrefersMostSecureNonStale) {
 }
 
 TEST_F(HostResolverCacheTest, LookupStalePrefersMoreRecent) {
-  HostResolverCache cache(clock_, tick_clock_);
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
 
   const std::string kName = "foo.test";
   const std::vector<IPEndPoint> kOldEndpoints = {
@@ -1639,6 +1641,287 @@ TEST_F(HostResolverCacheTest, LookupStalePrefersMoreRecent) {
                            HostResolverInternalResult::Source::kDns,
                            Ne(absl::nullopt), Ne(absl::nullopt), kOldEndpoints),
                        Ne(absl::nullopt), false)));
+}
+
+TEST_F(HostResolverCacheTest, EvictStaleResults) {
+  HostResolverCache cache(/*max_results=*/2, clock_, tick_clock_);
+
+  const std::string kName1 = "foo1.test";
+  const std::vector<IPEndPoint> kEndpoints1 = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  auto result1 = std::make_unique<HostResolverInternalDataResult>(
+      kName1, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(11),
+      clock_.Now() + base::Minutes(11),
+      HostResolverInternalResult::Source::kDns, kEndpoints1,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result1), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+  cache.MakeAllResultsStale();
+
+  const std::string kName2 = "foo2.test";
+  const std::vector<IPEndPoint> kEndpoints2 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::4").value(),
+                 /*port=*/0)};
+  auto result2 = std::make_unique<HostResolverInternalDataResult>(
+      kName2, DnsQueryType::AAAA, tick_clock_.NowTicks() - base::Minutes(4),
+      clock_.Now() - base::Minutes(4), HostResolverInternalResult::Source::kDns,
+      kEndpoints2,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result2), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect `result1` to be stale via generation and `result2` to be stale via
+  // expiration.
+  EXPECT_THAT(cache.LookupStale(kName1, anonymization_key),
+              Optional(IsStale(absl::nullopt, true)));
+  EXPECT_THAT(cache.LookupStale(kName2, anonymization_key),
+              Optional(IsStale(Ne(absl::nullopt), false)));
+
+  const std::string kName3 = "foo3.test";
+  const std::vector<IPEndPoint> kEndpoints3 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::5").value(),
+                 /*port=*/0)};
+  auto result3 = std::make_unique<HostResolverInternalDataResult>(
+      kName3, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(8),
+      clock_.Now() + base::Minutes(8), HostResolverInternalResult::Source::kDns,
+      kEndpoints3,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result3), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect `result1` and `result2` to be evicted and `result3` to still be
+  // active.
+  EXPECT_EQ(cache.LookupStale(kName1, anonymization_key), absl::nullopt);
+  EXPECT_EQ(cache.LookupStale(kName2, anonymization_key), absl::nullopt);
+  EXPECT_NE(cache.Lookup(kName3, anonymization_key), nullptr);
+}
+
+TEST_F(HostResolverCacheTest, EvictSoonestToExpireResult) {
+  HostResolverCache cache(/*max_results=*/2, clock_, tick_clock_);
+
+  const std::string kName1 = "foo1.test";
+  const std::vector<IPEndPoint> kEndpoints1 = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  auto result1 = std::make_unique<HostResolverInternalDataResult>(
+      kName1, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(11),
+      clock_.Now() + base::Minutes(11),
+      HostResolverInternalResult::Source::kDns, kEndpoints1,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result1), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  const std::string kName2 = "foo2.test";
+  const std::vector<IPEndPoint> kEndpoints2 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::4").value(),
+                 /*port=*/0)};
+  auto result2 = std::make_unique<HostResolverInternalDataResult>(
+      kName2, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(4),
+      clock_.Now() + base::Minutes(4), HostResolverInternalResult::Source::kDns,
+      kEndpoints2,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result2), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect both results to be active.
+  EXPECT_NE(cache.Lookup(kName1, anonymization_key), nullptr);
+  EXPECT_NE(cache.Lookup(kName2, anonymization_key), nullptr);
+
+  const std::string kName3 = "foo3.test";
+  const std::vector<IPEndPoint> kEndpoints3 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::5").value(),
+                 /*port=*/0)};
+  auto result3 = std::make_unique<HostResolverInternalDataResult>(
+      kName3, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(8),
+      clock_.Now() + base::Minutes(8), HostResolverInternalResult::Source::kDns,
+      kEndpoints3,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result3), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect `result2` to be evicted because it expires soonest.
+  EXPECT_NE(cache.Lookup(kName1, anonymization_key), nullptr);
+  EXPECT_EQ(cache.LookupStale(kName2, anonymization_key), absl::nullopt);
+  EXPECT_NE(cache.Lookup(kName3, anonymization_key), nullptr);
+}
+
+// If multiple results are equally soon-to-expire, expect least secure option to
+// be evicted.
+TEST_F(HostResolverCacheTest, EvictLeastSecureResult) {
+  HostResolverCache cache(/*max_results=*/2, clock_, tick_clock_);
+
+  const std::string kName1 = "foo1.test";
+  const base::TimeDelta kTtl = base::Minutes(2);
+  const std::vector<IPEndPoint> kEndpoints1 = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  auto result1 = std::make_unique<HostResolverInternalDataResult>(
+      kName1, DnsQueryType::AAAA, tick_clock_.NowTicks() + kTtl,
+      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
+      kEndpoints1,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result1), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/true);
+
+  const std::string kName2 = "foo2.test";
+  const std::vector<IPEndPoint> kEndpoints2 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::4").value(),
+                 /*port=*/0)};
+  auto result2 = std::make_unique<HostResolverInternalDataResult>(
+      kName2, DnsQueryType::AAAA, tick_clock_.NowTicks() + kTtl,
+      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
+      kEndpoints2,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result2), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect both results to be active.
+  EXPECT_NE(cache.Lookup(kName1, anonymization_key), nullptr);
+  EXPECT_NE(cache.Lookup(kName2, anonymization_key), nullptr);
+
+  const std::string kName3 = "foo3.test";
+  const std::vector<IPEndPoint> kEndpoints3 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::5").value(),
+                 /*port=*/0)};
+  auto result3 = std::make_unique<HostResolverInternalDataResult>(
+      kName3, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(8),
+      clock_.Now() + base::Minutes(8), HostResolverInternalResult::Source::kDns,
+      kEndpoints3,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result3), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect `result2` to be evicted because, while it will expire at the same
+  // time as `result1`, it is less secure.
+  EXPECT_NE(cache.Lookup(kName1, anonymization_key), nullptr);
+  EXPECT_EQ(cache.LookupStale(kName2, anonymization_key), absl::nullopt);
+  EXPECT_NE(cache.Lookup(kName3, anonymization_key), nullptr);
+}
+
+// If multiple results are equally soon-to-expire and equally (in)secure, expect
+// oldest option to be evicted.
+TEST_F(HostResolverCacheTest, EvictOldestResult) {
+  HostResolverCache cache(/*max_results=*/2, clock_, tick_clock_);
+
+  const std::string kName1 = "foo1.test";
+  const base::TimeDelta kTtl = base::Minutes(2);
+  const std::vector<IPEndPoint> kEndpoints1 = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  auto result1 = std::make_unique<HostResolverInternalDataResult>(
+      kName1, DnsQueryType::AAAA, tick_clock_.NowTicks() + kTtl,
+      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
+      kEndpoints1,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result1), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  const std::string kName2 = "foo2.test";
+  const std::vector<IPEndPoint> kEndpoints2 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::4").value(),
+                 /*port=*/0)};
+  auto result2 = std::make_unique<HostResolverInternalDataResult>(
+      kName2, DnsQueryType::AAAA, tick_clock_.NowTicks() + kTtl,
+      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
+      kEndpoints2,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result2), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect both results to be active.
+  EXPECT_NE(cache.Lookup(kName1, anonymization_key), nullptr);
+  EXPECT_NE(cache.Lookup(kName2, anonymization_key), nullptr);
+
+  const std::string kName3 = "foo3.test";
+  const std::vector<IPEndPoint> kEndpoints3 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::5").value(),
+                 /*port=*/0)};
+  auto result3 = std::make_unique<HostResolverInternalDataResult>(
+      kName3, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(8),
+      clock_.Now() + base::Minutes(8), HostResolverInternalResult::Source::kDns,
+      kEndpoints3,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result3), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect `result1` to be evicted because, while it will expire at the same
+  // time as `result2` and both are insecure, it is older.
+  EXPECT_EQ(cache.LookupStale(kName1, anonymization_key), absl::nullopt);
+  EXPECT_NE(cache.Lookup(kName2, anonymization_key), nullptr);
+  EXPECT_NE(cache.Lookup(kName3, anonymization_key), nullptr);
+}
+
+// Even newly-added results that trigger eviction are themselves eligible for
+// eviction if best candidate.
+TEST_F(HostResolverCacheTest, EvictLatestResult) {
+  HostResolverCache cache(/*max_results=*/2, clock_, tick_clock_);
+
+  const std::string kName1 = "foo1.test";
+  const base::TimeDelta kTtl = base::Minutes(2);
+  const std::vector<IPEndPoint> kEndpoints1 = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  auto result1 = std::make_unique<HostResolverInternalDataResult>(
+      kName1, DnsQueryType::AAAA, tick_clock_.NowTicks() + kTtl,
+      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
+      kEndpoints1,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result1), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  const std::string kName2 = "foo2.test";
+  const std::vector<IPEndPoint> kEndpoints2 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::4").value(),
+                 /*port=*/0)};
+  auto result2 = std::make_unique<HostResolverInternalDataResult>(
+      kName2, DnsQueryType::AAAA, tick_clock_.NowTicks() + kTtl,
+      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
+      kEndpoints2,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result2), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect both results to be active.
+  EXPECT_NE(cache.Lookup(kName1, anonymization_key), nullptr);
+  EXPECT_NE(cache.Lookup(kName2, anonymization_key), nullptr);
+
+  const std::string kName3 = "foo3.test";
+  const std::vector<IPEndPoint> kEndpoints3 = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::5").value(),
+                 /*port=*/0)};
+  auto result3 = std::make_unique<HostResolverInternalDataResult>(
+      kName3, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Minutes(1),
+      clock_.Now() + base::Minutes(8), HostResolverInternalResult::Source::kDns,
+      kEndpoints3,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  cache.Set(std::move(result3), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  // Expect `result3` to be evicted because it is soonest to expire.
+  EXPECT_NE(cache.Lookup(kName1, anonymization_key), nullptr);
+  EXPECT_NE(cache.Lookup(kName2, anonymization_key), nullptr);
+  EXPECT_EQ(cache.LookupStale(kName3, anonymization_key), absl::nullopt);
 }
 
 }  // namespace

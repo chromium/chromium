@@ -4,11 +4,13 @@
 
 #include "net/dns/host_resolver_cache.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -31,9 +33,12 @@ HostResolverCache::StaleLookupResult::StaleLookupResult(
       expired_by(expired_by),
       stale_by_generation(stale_by_generation) {}
 
-HostResolverCache::HostResolverCache(const base::Clock& clock,
+HostResolverCache::HostResolverCache(size_t max_results,
+                                     const base::Clock& clock,
                                      const base::TickClock& tick_clock)
-    : clock_(clock), tick_clock_(tick_clock) {}
+    : max_entries_(max_results), clock_(clock), tick_clock_(tick_clock) {
+  DCHECK_GT(max_entries_, 0u);
+}
 
 HostResolverCache::~HostResolverCache() = default;
 
@@ -140,6 +145,7 @@ void HostResolverCache::Set(
     const NetworkAnonymizationKey& network_anonymization_key,
     HostResolverSource source,
     bool secure) {
+  DCHECK(result);
   // Result must have at least a timed expiration to be a cacheable result.
   DCHECK(result->timed_expiration().has_value());
 
@@ -155,6 +161,10 @@ void HostResolverCache::Set(
   entries_.emplace(
       Key(std::move(domain_name), network_anonymization_key),
       Entry(std::move(result), source, secure, staleness_generation_));
+
+  if (entries_.size() > max_entries_) {
+    EvictEntries();
+  }
 }
 
 void HostResolverCache::MakeAllResultsStale() {
@@ -228,7 +238,8 @@ HostResolverCache::LookupInternal(
 
   auto range = entries_.equal_range(
       KeyRef{lookup_name, raw_ref(network_anonymization_key)});
-  if (range.first == entries_.cend() || range.second == entries_.cbegin()) {
+  if (range.first == entries_.cend() || range.second == entries_.cbegin() ||
+      range.first == range.second) {
     return matches;
   }
 
@@ -250,6 +261,45 @@ HostResolverCache::LookupInternal(
   }
 
   return matches;
+}
+
+// Remove all stale entries, or if none stale, the soonest-to-expire,
+// least-secure entry.
+void HostResolverCache::EvictEntries() {
+  base::TimeTicks now_ticks = tick_clock_->NowTicks();
+  base::Time now = clock_->Now();
+
+  bool stale_found = false;
+  base::TimeDelta soonest_time_till_expriation = base::TimeDelta::Max();
+  absl::optional<EntryMap::const_iterator> best_for_removal;
+
+  auto it = entries_.cbegin();
+  while (it != entries_.cend()) {
+    if (it->second.IsStale(now, now_ticks, staleness_generation_)) {
+      stale_found = true;
+      it = entries_.erase(it);
+    } else {
+      base::TimeDelta time_till_expiration =
+          it->second.TimeUntilExpiration(now, now_ticks);
+
+      if (!best_for_removal.has_value() ||
+          time_till_expiration < soonest_time_till_expriation ||
+          (time_till_expiration == soonest_time_till_expriation &&
+           best_for_removal.value()->second.secure && !it->second.secure)) {
+        soonest_time_till_expriation = time_till_expiration;
+        best_for_removal = it;
+      }
+
+      ++it;
+    }
+  }
+
+  if (!stale_found) {
+    CHECK(best_for_removal.has_value());
+    entries_.erase(best_for_removal.value());
+  }
+
+  CHECK_LE(entries_.size(), max_entries_);
 }
 
 }  // namespace net
