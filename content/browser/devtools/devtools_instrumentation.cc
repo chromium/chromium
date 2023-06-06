@@ -446,12 +446,14 @@ void WillInitiatePrerender(FrameTree& frame_tree) {
     host->WillInitiatePrerender(frame_tree.root());
 }
 
-void DidActivatePrerender(
-    const NavigationRequest& nav_request,
-    const base::UnguessableToken& initiator_devtools_navigation_token) {
+void DidActivatePrerender(const NavigationRequest& nav_request,
+                          const absl::optional<base::UnguessableToken>&
+                              initiator_devtools_navigation_token) {
   FrameTreeNode* ftn = nav_request.frame_tree_node();
-  DispatchToAgents(ftn, &protocol::PreloadHandler::DidActivatePrerender,
-                   initiator_devtools_navigation_token, nav_request);
+  if (initiator_devtools_navigation_token.has_value()) {
+    DispatchToAgents(ftn, &protocol::PreloadHandler::DidActivatePrerender,
+                     initiator_devtools_navigation_token.value(), nav_request);
+  }
   UpdateChildFrameTrees(ftn, /* update_target_info= */ true);
 }
 

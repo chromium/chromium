@@ -193,9 +193,9 @@ void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 
 bool IsPrerenderAllowed(FrameTree& frame_tree);
 void WillInitiatePrerender(FrameTree& frame_tree);
-void DidActivatePrerender(
-    const NavigationRequest& nav_request,
-    const base::UnguessableToken& initiator_devtools_navigation_token);
+void DidActivatePrerender(const NavigationRequest& nav_request,
+                          const absl::optional<base::UnguessableToken>&
+                              initiator_devtools_navigation_token);
 // This function reports cancellation status to DevTools with the
 // `disallowed_api_method`, which is used to give users more information about
 // the cancellation details if the prerendering uses disallowed API method, and
