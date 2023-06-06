@@ -2286,10 +2286,8 @@ TEST_F(SearchProviderTest, DontCacheCalculatorSuggestions) {
   // answer fields on Desktop. See https://crbug.com/1325124#c1.
   // As a result of the field flip, the Calculator answer is only permitted
   // to be the default suggestion on the Desktop.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
-    cases[0].async_matches[1].contents = "1+2";
-    cases[0].async_matches[1].allowed_to_be_default_match = true;
-  }
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP)
+    cases[0].async_matches[1].contents = "1+2 = 3";
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     // First, send the query "1+2" and receive the JSON response |first_json|.
