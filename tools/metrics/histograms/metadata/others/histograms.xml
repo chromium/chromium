@@ -7982,45 +7982,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mojo.Channel.Linux.SharedMemWriteBytes" units="bytes"
-    expires_after="2021-11-01">
-  <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
-  <summary>
-    The size in bytes of individual messages written into shared memory.
-  </summary>
-</histogram>
-
-<histogram name="Mojo.Channel.Linux.SharedMemWriteBytes_Fail_NoLock"
-    units="bytes" expires_after="2021-11-01">
-  <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
-  <summary>
-    The size in bytes of individual messages that could not be written due to
-    lock contention.
-  </summary>
-</histogram>
-
-<histogram name="Mojo.Channel.Linux.SharedMemWriteBytes_Fail_NoSpace"
-    units="bytes" expires_after="2022-05-08">
-  <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
-  <summary>
-    The size in bytes of individual messages that could not be written due to
-    shared memory buffer exhaustion.
-  </summary>
-</histogram>
-
-<histogram name="Mojo.Channel.Linux.SharedMemWriteBytes_Fail_TooLarge"
-    units="bytes" expires_after="2022-05-08">
-  <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
-  <summary>
-    The size in bytes of individual messages that could not be written due to
-    message being larger than the shared buffer size.
-  </summary>
-</histogram>
-
 <histogram name="Mojo.Channel.WriteMessageHandles" units="count"
     expires_after="2021-11-07">
   <owner>amistry@chromium.org</owner>

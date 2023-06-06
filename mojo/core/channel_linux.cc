@@ -399,14 +399,10 @@ class ChannelLinux::SharedBuffer {
     DCHECK(len);
 
     if (len > usable_len()) {
-      UMA_HISTOGRAM_COUNTS_100000(
-          "Mojo.Channel.Linux.SharedMemWriteBytes_Fail_TooLarge", len);
       return Error::kGeneralError;
     }
 
     if (!TryLockForWriting()) {
-      UMA_HISTOGRAM_COUNTS_100000(
-          "Mojo.Channel.Linux.SharedMemWriteBytes_Fail_NoLock", len);
       return Error::kGeneralError;
     }
 
@@ -426,8 +422,6 @@ class ChannelLinux::SharedBuffer {
 
     if (space_available <= len) {
       UnlockForWriting();
-      UMA_HISTOGRAM_COUNTS_100000(
-          "Mojo.Channel.Linux.SharedMemWriteBytes_Fail_NoSpace", len);
 
       return Error::kGeneralError;
     }
