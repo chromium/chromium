@@ -662,13 +662,12 @@ suite('WallpaperSelectedTest', function() {
     wallpaperSelectedElement = initElement(
         WallpaperSelected,
         {
-          path: Paths.GOOGLE_PHOTOS_COLLECTION,
+          path: Paths.COLLECTIONS,
         },
     );
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertEquals(
-        null,
+    assertNull(
         wallpaperSelectedElement.shadowRoot!.getElementById(
             descriptionOptionsId),
         'no description options present');
@@ -687,6 +686,87 @@ suite('WallpaperSelectedTest', function() {
         'description options present');
   });
 
+  test('hides description options when viewing Google Photos', async () => {
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
+    personalizationStore.data.wallpaper.currentSelected = {
+      attribution: ['testing'],
+      descriptionContent: '',
+      descriptionTitle: '',
+      key: 'key',
+      layout: WallpaperLayout.kStretch,
+      type: WallpaperType.kDefault,
+    };
+    personalizationStore.data.wallpaper.loading.selected = false;
+
+    wallpaperSelectedElement = initElement(
+        WallpaperSelected,
+        {
+          path: Paths.GOOGLE_PHOTOS_COLLECTION,
+        },
+    );
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    assertNull(
+        wallpaperSelectedElement.shadowRoot!.getElementById(
+            descriptionOptionsId),
+        'no description options present');
+
+    personalizationStore.data.wallpaper.currentSelected = {
+      ...personalizationStore.data.wallpaper.currentSelected,
+      descriptionContent: 'content',
+      descriptionTitle: 'title',
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    assertNull(
+        wallpaperSelectedElement.shadowRoot!.getElementById(
+            descriptionOptionsId),
+        'no description options present when viewing Google Photos');
+  });
+
+  test(
+      'hides description options when viewing a different collection',
+      async () => {
+        loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
+        personalizationStore.data.wallpaper.currentSelected = {
+          attribution: ['testing'],
+          descriptionContent: '',
+          descriptionTitle: '',
+          key: 'key',
+          layout: WallpaperLayout.kStretch,
+          type: WallpaperType.kDefault,
+        };
+        personalizationStore.data.wallpaper.backdrop.images = {};
+        personalizationStore.data.wallpaper.loading.selected = false;
+
+        wallpaperSelectedElement = initElement(
+            WallpaperSelected,
+            {
+              path: Paths.COLLECTION_IMAGES,
+            },
+        );
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        assertNull(
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                descriptionOptionsId),
+            'no description options present');
+
+        personalizationStore.data.wallpaper.currentSelected = {
+          ...personalizationStore.data.wallpaper.currentSelected,
+          descriptionContent: 'content',
+          descriptionTitle: 'title',
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        assertNull(
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                descriptionOptionsId),
+            'no description options present when viewing a different collection');
+      });
+
   test('clicking description options opens dialog', async () => {
     loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
     personalizationStore.data.wallpaper.currentSelected = {
@@ -702,13 +782,12 @@ suite('WallpaperSelectedTest', function() {
     wallpaperSelectedElement = initElement(
         WallpaperSelected,
         {
-          path: Paths.GOOGLE_PHOTOS_COLLECTION,
+          path: Paths.COLLECTIONS,
         },
     );
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertEquals(
-        null,
+    assertNull(
         wallpaperSelectedElement.shadowRoot!.getElementById(
             descriptionDialogId),
         'no description dialog until button clicked');
@@ -734,8 +813,7 @@ suite('WallpaperSelectedTest', function() {
                                             'dialogCloseButton')!.click();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertEquals(
-        null,
+    assertNull(
         wallpaperSelectedElement.shadowRoot!.getElementById(
             descriptionDialogId),
         'no description dialog after close button clicked');

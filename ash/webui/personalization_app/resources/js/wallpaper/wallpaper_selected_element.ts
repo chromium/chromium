@@ -19,7 +19,7 @@ import './google_photos_shared_album_dialog_element.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CurrentWallpaper, GooglePhotosPhoto, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosSharedAlbumsEnabled, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -66,6 +66,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
        */
       path: String,
 
+      imagesByCollectionId_: Object,
+
       photosByAlbumId_: Object,
 
       image_: {
@@ -107,7 +109,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
       showDescriptionButton_: {
         type: Boolean,
-        computed: 'computeShowDescriptionButton_(image_)',
+        computed:
+            'computeShowDescriptionButton_(image_,path,collectionId,imagesByCollectionId_)',
       },
 
       showDescriptionDialog_: Boolean,
@@ -186,6 +189,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private centerIcon_: string;
   private error_: string;
   private googlePhotosSharedAlbumsEnabled_: boolean;
+  private imagesByCollectionId_:
+      Record<WallpaperCollection['id'], WallpaperImage[]|null>|undefined;
   private photosByAlbumId_: Record<string, GooglePhotosPhoto[]|null|undefined>|
       undefined;
 
@@ -200,6 +205,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
             state.wallpaper.loading.selected ||
             state.wallpaper.loading.refreshWallpaper);
     this.watch('dailyRefreshState_', state => state.wallpaper.dailyRefresh);
+    this.watch(
+        'imagesByCollectionId_', state => state.wallpaper.backdrop.images);
     this.watch(
         'photosByAlbumId_',
         state => state.wallpaper.googlePhotos.photosByAlbumId);
@@ -266,10 +273,30 @@ export class WallpaperSelected extends WithPersonalizationStore {
            path === Paths.GOOGLE_PHOTOS_COLLECTION && !googlePhotosAlbumId)));
   }
 
-  private computeShowDescriptionButton_(image: CurrentWallpaper|null) {
+  private computeShowDescriptionButton_(
+      image: CurrentWallpaper|null, path: string, collectionId: string,
+      imagesByCollectionId:
+          Record<WallpaperCollection['id'], WallpaperImage[]|null>) {
     // Only show the description dialog if title and content exist.
-    return isPersonalizationJellyEnabled() && image?.descriptionContent &&
-        image?.descriptionTitle;
+    if (!isPersonalizationJellyEnabled() || !image?.descriptionContent ||
+        !image?.descriptionTitle) {
+      return false;
+    }
+    switch (path) {
+      // Hide button when viewing a different collection.
+      case Paths.COLLECTION_IMAGES:
+        if (!imagesByCollectionId![collectionId!]) {
+          return false;
+        }
+        const imageIsInCollection = imagesByCollectionId[collectionId]?.find(
+            (wallpaper) => wallpaper.unitId.toString() === image.key);
+        return !!imageIsInCollection;
+      // Hide button when viewing Google Photos.
+      case Paths.GOOGLE_PHOTOS_COLLECTION:
+        return false;
+      default:
+        return true;
+    }
   }
 
   private computeShowDailyRefreshButton_(
