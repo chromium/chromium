@@ -128,7 +128,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
         mPaintBorder = new Paint();
         mPaintBorder.setStyle(Paint.Style.STROKE);
         mPaintBorder.setStrokeWidth(mBorderSize);
-        mPaintBorder.setColor(res.getColor(R.color.baseline_neutral_variant_100_alpha_20));
+        mPaintBorder.setColor(res.getColor(R.color.drag_shadow_outline_color));
         mTransformMatrix = new Matrix();
     }
 

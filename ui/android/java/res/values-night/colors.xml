@@ -104,4 +104,5 @@ found in the LICENSE file.
     <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_dark</color>
     <color name="price_drop_annotation_text_green">@color/price_drop_annotation_text_green_dark</color>
     <color name="signed_out_avatar_color">@color/signed_out_avatar_color_dark</color>
+    <color name="drag_shadow_outline_color">@color/baseline_neutral_variant_700_alpha_20</color>
 </resources>

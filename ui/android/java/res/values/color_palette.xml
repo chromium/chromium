@@ -76,6 +76,7 @@ found in the LICENSE file.
     <color name="baseline_neutral_variant_400">#8E918F</color>
     <color name="baseline_neutral_variant_500">#747775</color>
     <color name="baseline_neutral_variant_700">#444746</color>
+    <color name="baseline_neutral_variant_700_alpha_20">#33444746</color>
     <color name="baseline_secondary_100">#C2E7FF</color>
     <color name="baseline_secondary_100_with_neutral_900_alpha_8">#B3D7EF</color>
     <color name="baseline_secondary_100_with_neutral_900_alpha_24">#94B7CF</color>
