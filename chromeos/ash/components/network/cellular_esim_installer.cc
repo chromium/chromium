@@ -226,8 +226,8 @@ void CellularESimInstaller::ConfigureESimService(
     const dbus::ObjectPath& profile_path,
     ConfigureESimServiceCallback callback) {
   const NetworkProfile* profile =
-      network_profile_handler_->GetProfileForUserhash(
-          /*userhash=*/std::string());
+      cellular_utils::GetCellularProfile(network_profile_handler_);
+
   if (!profile) {
     NET_LOG(ERROR)
         << "Error configuring eSIM profile. Default profile not initialized.";

@@ -168,6 +168,10 @@ void CellularPolicyHandler::ScheduleRetry(
 
   request->retry_backoff.InformOfRequest(/*succeeded=*/false);
 
+  // Force a delay of |kInstallRetryDelay| when we fail for any reason other
+  // than an internal failure, e.g. failure to inhibit, to reduce frequent
+  // retries due to errors that are unlikely to be resolved quickly, e.g. an
+  // invalid activation code.
   if (reason == InstallRetryReason::kOther) {
     request->retry_backoff.SetCustomReleaseTime(base::TimeTicks::Now() +
                                                 kInstallRetryDelay);
@@ -197,8 +201,7 @@ void CellularPolicyHandler::PopRequest() {
   is_installing_ = false;
   if (remaining_install_requests_.empty()) {
     const NetworkProfile* profile =
-        network_profile_handler_->GetProfileForUserhash(
-            /*userhash=*/std::string());
+        cellular_utils::GetCellularProfile(network_profile_handler_);
     DCHECK(profile);
 
     managed_network_configuration_handler_->OnCellularPoliciesApplied(*profile);
@@ -246,10 +249,11 @@ void CellularPolicyHandler::AttemptInstallESim() {
     return;
   }
 
-  SetupESim(*euicc_path);
+  PerformInstallESim(*euicc_path);
 }
 
-void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
+void CellularPolicyHandler::PerformInstallESim(
+    const dbus::ObjectPath& euicc_path) {
   base::Value::Dict new_shill_properties = GetNewShillProperties();
   absl::optional<dbus::ObjectPath> profile_path =
       FindExistingMatchingESimProfile();
@@ -300,7 +304,7 @@ void CellularPolicyHandler::OnRefreshProfileList(
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Failed to refresh the profile list due to an inhibit "
                    << "error, path: " << euicc_path.value();
-    SetupESim(euicc_path);
+    PerformInstallESim(euicc_path);
     return;
   }
 
@@ -308,7 +312,7 @@ void CellularPolicyHandler::OnRefreshProfileList(
   // Reset the inhibit_lock so that the device will be uninhibited
   // automatically.
   inhibit_lock.reset();
-  SetupESim(euicc_path);
+  PerformInstallESim(euicc_path);
 }
 
 void CellularPolicyHandler::OnConfigureESimService(
@@ -395,8 +399,9 @@ void CellularPolicyHandler::OnWaitTimeout() {
 
 base::Value::Dict CellularPolicyHandler::GetNewShillProperties() {
   const NetworkProfile* profile =
-      network_profile_handler_->GetProfileForUserhash(
-          /*userhash=*/std::string());
+      cellular_utils::GetCellularProfile(network_profile_handler_);
+  DCHECK(profile);
+
   const std::string* guid =
       remaining_install_requests_.front()->onc_config.FindString(
           ::onc::network_config::kGUID);
