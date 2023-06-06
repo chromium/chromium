@@ -41,6 +41,7 @@ source_set("unit_tests") {
   sources = [
     "cvc_header_item_unittest.mm",
     "expiration_date_edit_item_unittest.mm",
+    "target_account_item_unittest.mm",
   ]
 
   deps = [
