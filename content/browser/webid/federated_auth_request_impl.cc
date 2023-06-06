@@ -740,12 +740,14 @@ void FederatedAuthRequestImpl::RequestUserInfo(
   auto user_info_request = FederatedAuthUserInfoRequest::Create(
       std::move(network_manager), permission_delegate_.get(),
       &render_frame_host(), fedcm_metrics_.get(), std::move(provider));
-  user_info_request->SetCallbackAndStart(
+  FederatedAuthUserInfoRequest* user_info_request_ptr = user_info_request.get();
+  user_info_requests_.insert(std::move(user_info_request));
+
+  user_info_request_ptr->SetCallbackAndStart(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteUserInfoRequest,
-                     weak_ptr_factory_.GetWeakPtr(), user_info_request.get(),
+                     weak_ptr_factory_.GetWeakPtr(), user_info_request_ptr,
                      std::move(callback)),
       api_permission_delegate_.get());
-  user_info_requests_.insert(std::move(user_info_request));
 }
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {

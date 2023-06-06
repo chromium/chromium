@@ -4282,4 +4282,52 @@ TEST_F(FederatedAuthRequestImplNewTabTest, SuccessfulFlow) {
               kConfigurationValid);
 }
 
+class UserInfoCallbackHelper {
+ public:
+  UserInfoCallbackHelper() = default;
+  ~UserInfoCallbackHelper() = default;
+
+  // This can only be called once per lifetime of this object.
+  blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback() {
+    return base::BindOnce(&UserInfoCallbackHelper::Complete,
+                          base::Unretained(this));
+  }
+
+  // Returns when callback() is called, which can be immediately if it has
+  // already been called.
+  void WaitForCallback() {
+    if (was_called_) {
+      return;
+    }
+    wait_for_callback_loop_.Run();
+  }
+
+  void Complete(blink::mojom::RequestUserInfoStatus user_info_status,
+                absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>>
+                    user_info) {
+    CHECK(!was_called_);
+    was_called_ = true;
+    wait_for_callback_loop_.Quit();
+  }
+
+ private:
+  bool was_called_{false};
+  base::RunLoop wait_for_callback_loop_;
+};
+
+TEST_F(FederatedAuthRequestImplTest, RequestUserInfoFailure) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUserInfo);
+  blink::mojom::IdentityProviderConfigPtr config =
+      blink::mojom::IdentityProviderConfig::New();
+  config->config_url = GURL(kIdpUrl);
+  UserInfoCallbackHelper callback_helper;
+  // This request will fail right away (not from IDP origin).
+  federated_auth_request_impl_->RequestUserInfo(
+      std::move(config), base::BindOnce(&UserInfoCallbackHelper::Complete,
+                                        base::Unretained(&callback_helper)));
+  // This is a regression test and it passes if the test does not crash.
+  callback_helper.WaitForCallback();
+}
+
 }  // namespace content
