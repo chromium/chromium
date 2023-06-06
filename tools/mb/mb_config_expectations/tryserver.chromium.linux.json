@@ -329,6 +329,17 @@
       "use_remoteexec": true
     }
   },
+  "linux-exp-msan-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "fail_on_san_warnings": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_msan": true,
+      "msan_track_origins": 2,
+      "use_remoteexec": true
+    }
+  },
   "linux-exp-tsan-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": false,
