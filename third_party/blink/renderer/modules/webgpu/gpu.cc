@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -345,6 +347,17 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
 
 ScriptPromise GPU::requestAdapter(ScriptState* script_state,
                                   const GPURequestAdapterOptions* options) {
+  // Remind developers when they are using WebGPU on unsupported platforms.
+  if (!base::FeatureList::IsEnabled(features::kWebGPUService)) {
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kInfo,
+            "WebGPU is experimental on this platform. See "
+            "https://github.com/gpuweb/gpuweb/wiki/"
+            "Implementation-Status#implementation-status"));
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   RequestAdapterImpl(script_state, options, resolver);
