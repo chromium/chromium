@@ -4,16 +4,25 @@
 
 #include "chrome/browser/ui/views/borealis/borealis_installer_disallowed_dialog.h"
 #include <memory>
+#include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/functional/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -32,60 +41,125 @@ namespace {
 
 using AllowStatus = ::borealis::BorealisFeatures::AllowStatus;
 
+using MaybeAction =
+    absl::optional<std::pair<std::u16string, base::OnceClosure>>;
+
 // Views uses tricks like this to ensure singleton-ness of dialogs.
 static Widget* g_instance_ = nullptr;
 
-static std::pair<std::u16string, absl::optional<GURL>> GetMessageForStatus(
-    AllowStatus status) {
-  // TODO(b/256699588): Replace the below direct URLs with p-links.
-  switch (status) {
-    case AllowStatus::kAllowed:
-      DCHECK(false);
-      // Unreachable in practice. Show "failed" message just in case.
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FAILED),
-              absl::nullopt};
-    case AllowStatus::kFeatureDisabled:
-    case AllowStatus::kUnsupportedModel:
-    case AllowStatus::kHardwareChecksFailed:
-    case AllowStatus::kIncorrectToken:
-      // TODO(b/256699588): Replace this with an actual help-center link when
-      // one is created.
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_DISABLED),
-              GURL("https://www.chromium.org/chromium-os/steam-on-chromeos/"
-                   "#supported-devices")};
-    case AllowStatus::kFailedToDetermine:
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FAILED),
-              absl::nullopt};
-    case AllowStatus::kBlockedOnIrregularProfile:
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_IRREGULAR),
-              absl::nullopt};
-    case AllowStatus::kBlockedOnNonPrimaryProfile:
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_PRIMARY),
-              absl::nullopt};
-    case AllowStatus::kBlockedOnChildAccount:
-      // TODO(b/256699588): Add a help-center link for child-accounts.
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHILD),
-              absl::nullopt};
-    case AllowStatus::kVmPolicyBlocked:
-    case AllowStatus::kUserPrefBlocked:
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_ADMIN),
-              absl::nullopt};
-    case AllowStatus::kBlockedByFlag:
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG),
-              absl::nullopt};
-  }
-}
-
-class BorealisInstallerDisallowedDialog : public DialogDelegate {
+class BehaviourProvider {
  public:
-  explicit BorealisInstallerDisallowedDialog(AllowStatus status) {
+  virtual ~BehaviourProvider() = default;
+
+  virtual std::u16string GetMessage() const = 0;
+
+  // Get a label and callback for the "call to action" button, if present.
+  virtual MaybeAction GetAction() const { return absl::nullopt; }
+
+  virtual std::vector<std::pair<std::u16string, GURL>> GetLinks() const {
+    return {};
+  }
+};
+
+class DisallowedHardware : public BehaviourProvider {
+ public:
+  std::u16string GetMessage() const override {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_HARDWARE);
+  }
+  std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
+    // TODO(b/256699588): Replace this with an actual help-center link when
+    // one is created.
+    return {{l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+             GURL("https://www.chromium.org/chromium-os/steam-on-chromeos/"
+                  "#supported-devices")}};
+  }
+};
+
+class DisallowedFailure : public BehaviourProvider {
+ public:
+  std::u16string GetMessage() const override {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FAILED);
+  }
+};
+
+class DisallowedIrregular : public BehaviourProvider {
+  std::u16string GetMessage() const override {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_IRREGULAR);
+  }
+};
+
+class DisallowedPrimary : public BehaviourProvider {
+  std::u16string GetMessage() const override {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_PRIMARY);
+  }
+  std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
+    // TODO(b/256699588): Replace this with a p-link.
+    return {{l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+             GURL("https://support.google.com/chromebook/answer/6088201")}};
+  }
+};
+
+class DisallowedChild : public BehaviourProvider {
+  std::u16string GetMessage() const override {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHILD);
+  }
+};
+
+class DisallowedPolicy : public BehaviourProvider {
+  std::u16string GetMessage() const override {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_ADMIN);
+  }
+  std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
+    // As of 2023q2 directly-linking to chromeenterprise is common, so we shall
+    // do it too.
+    return {
+        {base::UTF8ToUTF16(policy::key::kUserBorealisAllowed),
+         GURL("https://chromeenterprise.google/policies/#UserBorealisAllowed")},
+        {base::UTF8ToUTF16(policy::key::kVirtualMachinesAllowed),
+         GURL("https://chromeenterprise.google/policies/"
+              "#VirtualMachinesAllowed")},
+    };
+  }
+};
+
+class DisallowedFlag : public BehaviourProvider {
+  std::u16string GetMessage() const override {
+    return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG);
+  }
+  MaybeAction GetAction() const override {
+    return {{l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG_BUTTON),
+             base::BindOnce([]() {
+               ash::SystemAppLaunchParams params;
+               params.url = GURL{std::string(chrome::kChromeUIOsFlagsAppURL) +
+                                 "#borealis-enabled"};
+               ash::LaunchSystemWebAppAsync(
+                   ProfileManager::GetPrimaryUserProfile(),
+                   ash::SystemWebAppType::OS_FLAGS, params);
+             })}};
+  }
+};
+
+class BorealisDisallowedDialog : public DialogDelegate {
+ public:
+  explicit BorealisDisallowedDialog(
+      std::unique_ptr<BehaviourProvider> behaviour) {
     DCHECK(!g_instance_);
 
     set_internal_name("BorealisDisallowedDialog");
-    SetButtons(ui::DIALOG_BUTTON_OK);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                   l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_BUTTON));
-    InitializeView(status);
+    MaybeAction second_action = behaviour->GetAction();
+    if (second_action.has_value()) {
+      SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                     l10n_util::GetStringUTF16(IDS_CLOSE));
+      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                     std::move(second_action.value().first));
+      SetAcceptCallback(std::move(second_action.value().second));
+    } else {
+      SetButtons(ui::DIALOG_BUTTON_OK);
+      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                     l10n_util::GetStringUTF16(IDS_CLOSE));
+    }
+    InitializeView(*behaviour);
     SetModalType(ui::MODAL_TYPE_NONE);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
@@ -93,13 +167,13 @@ class BorealisInstallerDisallowedDialog : public DialogDelegate {
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   }
 
-  ~BorealisInstallerDisallowedDialog() override {
+  ~BorealisDisallowedDialog() override {
     DCHECK(g_instance_);
     g_instance_ = nullptr;
   }
 
  private:
-  void InitializeView(AllowStatus status) {
+  void InitializeView(const BehaviourProvider& behaviour) {
     auto view = std::make_unique<views::View>();
 
     views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -115,30 +189,54 @@ class BorealisInstallerDisallowedDialog : public DialogDelegate {
     title_label->SetMultiLine(true);
     view->AddChildView(title_label);
 
-    std::pair<std::u16string, absl::optional<GURL>> message_link =
-        GetMessageForStatus(status);
-    views::Label* message_label = new views::Label(message_link.first);
+    views::Label* message_label = new views::Label(behaviour.GetMessage());
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     view->AddChildView(message_label);
 
-    if (message_link.second.has_value()) {
-      views::Link* learn_more_link =
-          new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-      learn_more_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      learn_more_link->SetCallback(base::BindRepeating(
+    for (const std::pair<std::u16string, GURL>& link : behaviour.GetLinks()) {
+      views::Link* link_label =
+          view->AddChildView(std::make_unique<views::Link>(link.first));
+      link_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      link_label->SetCallback(base::BindRepeating(
           [](GURL url) {
             ash::NewWindowDelegate::GetPrimary()->OpenUrl(
                 url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                 ash::NewWindowDelegate::Disposition::kNewForegroundTab);
           },
-          message_link.second.value()));
-      view->AddChildView(learn_more_link);
+          link.second));
     }
 
     SetContentsView(std::move(view));
   }
 };
+
+std::unique_ptr<BehaviourProvider> StatusBehaviour(AllowStatus status) {
+  switch (status) {
+    case AllowStatus::kAllowed:
+      DCHECK(false);
+      // Unreachable in practice. Show "failed" message just in case.
+      return std::make_unique<DisallowedFailure>();
+    case AllowStatus::kFeatureDisabled:
+    case AllowStatus::kUnsupportedModel:
+    case AllowStatus::kHardwareChecksFailed:
+    case AllowStatus::kIncorrectToken:
+      return std::make_unique<DisallowedHardware>();
+    case AllowStatus::kFailedToDetermine:
+      return std::make_unique<DisallowedFailure>();
+    case AllowStatus::kBlockedOnIrregularProfile:
+      return std::make_unique<DisallowedIrregular>();
+    case AllowStatus::kBlockedOnNonPrimaryProfile:
+      return std::make_unique<DisallowedPrimary>();
+    case AllowStatus::kBlockedOnChildAccount:
+      return std::make_unique<DisallowedChild>();
+    case AllowStatus::kVmPolicyBlocked:
+    case AllowStatus::kUserPrefBlocked:
+      return std::make_unique<DisallowedPolicy>();
+    case AllowStatus::kBlockedByFlag:
+      return std::make_unique<DisallowedFlag>();
+  }
+}
 
 }  // namespace
 
@@ -151,7 +249,8 @@ void ShowInstallerDisallowedDialog(AllowStatus status) {
     g_instance_->CloseNow();
   }
 
-  auto delegate = std::make_unique<BorealisInstallerDisallowedDialog>(status);
+  auto delegate =
+      std::make_unique<BorealisDisallowedDialog>(StatusBehaviour(status));
   g_instance_ = views::DialogDelegate::CreateDialogWidget(std::move(delegate),
                                                           nullptr, nullptr);
   g_instance_->GetNativeWindow()->SetProperty(

@@ -6070,32 +6070,32 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_CREDITS_PLACEHOLDER" desc="Shown to users who navigate to about://borealis-credits when the real credits file can't be shown (e.g. because borealis is not running)" translateable="false">
     Steam is either not installed or not running. Please run Steam to view credits.
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_TITLE" desc="Title of the dialog shown to users who are unable to install Steam on Chromebook (Steam is a video game distribution service)">
-    Steam cannot be installed
+  <message name="IDS_BOREALIS_DISALLOWED_TITLE" desc="Title of the dialog shown to users who are unable to install 'Steam for Chromebook' (Steam is a video game distribution service)">
+    Can't install Steam
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_DISABLED" desc="Message shown to the user when Steam on Chromebook is disabled on their device">
-    This device does not currently support Steam on Chromebook
+  <message name="IDS_BOREALIS_DISALLOWED_HARDWARE" desc="Message shown to the user when 'Steam for Chromebook' is disabled on their device">
+    Steam for Chromebook (beta) is not available on your Chromebook.
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_FAILED" desc="Message shown to the user when Steam on Chromebook failed to determine whether it should be allowed">
-    Please restart your device and try again
+  <message name="IDS_BOREALIS_DISALLOWED_FAILED" desc="Message shown to the user when 'Steam for Chromebook' failed to determine whether it should be allowed">
+    Restart your Chromebook and try again
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_IRREGULAR" desc="Message shown to users when they try to install Steam on Chromebook on an irregular (incognito, kiosk, etc) profile">
-    Please sign in to a user account and try again
+  <message name="IDS_BOREALIS_DISALLOWED_IRREGULAR" desc="Message shown to users when they try to install 'Steam for Chromebook' on an irregular (incognito, kiosk, etc) profile">
+    You need to be signed-in to a Google Account to use Steam for Chromebook (Beta). Sign in and try again.
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_PRIMARY" desc="Message shown to users when they try to install Steam on Chromebook on a secondary profile">
-    Please install using your primary profile
+  <message name="IDS_BOREALIS_DISALLOWED_PRIMARY" desc="Message shown to users when they try to install 'Steam for Chromebook' on a secondary profile">
+    Steam for Chromebook (Beta) is only available for the account that signed in first on this Chromebook.
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_CHILD" desc="Message shown to the users when they try to install Steam on Chromebook on a child account">
-    Accounts managed by Family Link are not yet supported
+  <message name="IDS_BOREALIS_DISALLOWED_CHILD" desc="Message shown to the users when they try to install 'Steam for Chromebook' on a child account">
+    Steam for Chromebook (Beta) is not available for child Google Accounts
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_ADMIN" desc="Message shown to the user when Steam on Chromebook is blocked by their admin">
-    Please contact your administrator
+  <message name="IDS_BOREALIS_DISALLOWED_ADMIN" desc="Message shown to the user when 'Steam for Chromebook' is blocked by their admin. The placeholders are the names of policy settings.">
+    Steam for Chromebook (Beta) is blocked by your administrator. Your administrator needs to turn on these policies:
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_FLAG" desc="Message shown to the user when Steam on Chromebook doesn't have the correct chrome://flags setting enabled">
-    #borealis-enabled must be enabled in chrome://flags
+  <message name="IDS_BOREALIS_DISALLOWED_FLAG" desc="Message shown to the user when 'Steam for Chromebook' doesn't have the correct chrome://flags setting enabled">
+    You need to turn on the “Borealis Enabled” flag
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_BUTTON" desc="Button label used to dismiss the Steam on Chromebook disallowed dialog">
-    Got it
+  <message name="IDS_BOREALIS_DISALLOWED_FLAG_BUTTON" desc="Button label used to bring up the user's chrome://flags settings. Shown when users try to install borealis but are unable to due to their flags.">
+    ChromeOS flags
   </message>
   <message name="IDS_BOREALIS_INSTALLER_APP_NAME" desc="Name of a utility which is used to install the Steam application (Steam is a video game distribution service)">
     Steam installer
