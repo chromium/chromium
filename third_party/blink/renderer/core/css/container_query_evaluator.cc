@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
+#include "third_party/blink/renderer/core/css/container_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
@@ -243,6 +244,14 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   }
   if (!depends_on_sticky_) {
     depends_on_sticky_ = query.Selector().SelectsStickyContainers();
+    if (depends_on_sticky_ && !snapshot_) {
+      CHECK(media_query_evaluator_);
+      Element* container_element =
+          media_query_evaluator_->GetMediaValues().ContainerElement();
+      CHECK(container_element);
+      snapshot_ = MakeGarbageCollected<ContainerQueryScrollSnapshot>(
+          *container_element);
+    }
   }
   unit_flags_ |= result.unit_flags;
 
@@ -266,6 +275,14 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
   }
 
   return change;
+}
+
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollSnapshot() {
+  if (snapshot_) {
+    return StickyContainerChanged(snapshot_->StuckHorizontal(),
+                                  snapshot_->StuckVertical());
+  }
+  return ContainerQueryEvaluator::Change::kNone;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::StickyContainerChanged(
@@ -303,6 +320,7 @@ ContainerQueryEvaluator::StyleContainerChanged() {
 void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(media_query_evaluator_);
   visitor->Trace(results_);
+  visitor->Trace(snapshot_);
 }
 
 void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,

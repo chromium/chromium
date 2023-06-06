@@ -21,6 +21,7 @@ namespace blink {
 
 class ComputedStyle;
 class ContainerQuery;
+class ContainerQueryScrollSnapshot;
 class Element;
 class MatchResult;
 class StyleRecalcContext;
@@ -74,6 +75,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   // Re-evaluate the cached results and clear any results which are affected.
   Change StyleContainerChanged();
+
+  // Update the ContainerValues for the evaluator if necessary based on the
+  // latest snapshot.
+  Change ApplyScrollSnapshot();
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the ContainerStuckPhysical changes.
@@ -144,6 +149,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
+  Member<ContainerQueryScrollSnapshot> snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
   // ContainerQueryEvaluator.
   unsigned unit_flags_ = 0;

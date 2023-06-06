@@ -3432,7 +3432,8 @@ static bool NeedsContainerQueryEvaluator(
     const ContainerQueryEvaluator& evaluator,
     const ComputedStyle& new_style) {
   return evaluator.DependsOnStyle() ||
-         new_style.IsContainerForSizeContainerQueries();
+         new_style.IsContainerForSizeContainerQueries() ||
+         new_style.IsContainerForStickyContainerQueries();
 }
 
 static const StyleRecalcChange ApplyComputedStyleDiff(
@@ -3735,6 +3736,19 @@ StyleRecalcChange Element::RecalcOwnStyle(
             .SetContainerQueryEvaluator(nullptr);
       } else if (old_style) {
         evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
+        if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {
+          switch (evaluator->ApplyScrollSnapshot()) {
+            case ContainerQueryEvaluator::Change::kNone:
+              break;
+            case ContainerQueryEvaluator::Change::kNearestContainer:
+              child_change = child_change.ForceRecalcStickyContainer();
+              break;
+            case ContainerQueryEvaluator::Change::kDescendantContainers:
+              child_change =
+                  child_change.ForceRecalcDescendantStickyContainers();
+              break;
+          }
+        }
         if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled()) {
           if (diff != ComputedStyle::Difference::kEqual &&
               (!base::ValuesEquivalent(old_style->InheritedVariables(),
