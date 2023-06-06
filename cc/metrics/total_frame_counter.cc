@@ -66,7 +66,14 @@ size_t TotalFrameCounter::ComputeTotalVisibleFrames(
     return total_frames_;
   }
 
-  DCHECK_GE(until, last_shown_timestamp_);
+  // We have two sources for timestamps. Show/Hide uses the Renderer time
+  // source. While viz::BeginFrameArgs will be either timestamps from the
+  // physical GPU, or fallbacks in the GPU/Viz process. This could be the cause
+  // of a drift. We don't error on these edgecases, we just return the
+  // `total_frames_` which reflects the latest OnBeginFrame.
+  if (until < last_shown_timestamp_) {
+    return total_frames_;
+  }
   auto frames_since =
       std::ceil((until - last_shown_timestamp_) / latest_interval_);
   return total_frames_ + frames_since;
