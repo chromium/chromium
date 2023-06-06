@@ -68,6 +68,9 @@ constexpr char kPrepareForUpdateRandomSessionIdKey[] = "random_session_id";
 constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
 
+constexpr base::TimeDelta kNearbyConnectionsAdvertisementAfterUpdateTimeout =
+    base::Seconds(30);
+
 // The display name must:
 // - Be a variable-length string of utf-8 bytes
 // - Be at most 18 bytes
@@ -461,6 +464,15 @@ void TargetDeviceConnectionBrokerImpl::OnStartNearbyConnectionsAdvertising(
                << status;
   bool success =
       status == NearbyConnectionsManager::ConnectionsStatus::kSuccess;
+
+  if (success && is_resume_after_update_) {
+    nearby_connections_advertisement_after_update_timeout_timer_.Start(
+        FROM_HERE, kNearbyConnectionsAdvertisementAfterUpdateTimeout,
+        base::BindOnce(&TargetDeviceConnectionBrokerImpl::
+                           OnNearbyConnectionsAdvertisementAfterUpdateTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   std::move(callback).Run(success);
 }
 
@@ -507,6 +519,13 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info,
     NearbyConnection* nearby_connection) {
+  // Nearby Connections advertisement succeeded when connection is accepted so
+  // stop timer when running.
+  if (nearby_connections_advertisement_after_update_timeout_timer_
+          .IsRunning()) {
+    nearby_connections_advertisement_after_update_timeout_timer_.Stop();
+  }
+
   QS_LOG(INFO) << "Incoming Nearby Connection Accepted: endpoint_id="
                << endpoint_id;
 
@@ -556,4 +575,16 @@ TargetDeviceConnectionBrokerImpl::BuildConnectionSessionContext() const {
   return context;
 }
 
+void TargetDeviceConnectionBrokerImpl::
+    OnNearbyConnectionsAdvertisementAfterUpdateTimeout() {
+  is_resume_after_update_ = false;
+  QS_LOG(ERROR) << "The Nearby Connections advertisement timed out during "
+                   "attempt to automatically resume after an update. Will now "
+                   "attempt to stop Nearby Connections advertising and "
+                   "fallback to Fast Pair advertising.";
+  auto start_fast_pair_advertising = base::BindOnce(
+      &TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising,
+      weak_ptr_factory_.GetWeakPtr(), base::DoNothing());
+  StopNearbyConnectionsAdvertising(std::move(start_fast_pair_advertising));
+}
 }  // namespace ash::quick_start

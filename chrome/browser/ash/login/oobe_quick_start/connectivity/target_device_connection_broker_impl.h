@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
@@ -108,6 +109,11 @@ class TargetDeviceConnectionBrokerImpl
       NearbyConnectionsManager::ConnectionsStatus status);
   const Connection::SessionContext BuildConnectionSessionContext() const;
 
+  // When resuming after an update and Nearby Connections advertisement
+  // times out before an accepted connection is established, mimic the
+  // initial connection flow.
+  void OnNearbyConnectionsAdvertisementAfterUpdateTimeout();
+
   void OnHandshakeCompleted(bool success);
 
   // A 4-digit decimal pin code derived from the connection's authentication
@@ -130,6 +136,9 @@ class TargetDeviceConnectionBrokerImpl
 
   mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder_;
   bool is_resume_after_update_;
+
+  base::OneShotTimer
+      nearby_connections_advertisement_after_update_timeout_timer_;
 
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImpl> weak_ptr_factory_{
       this};
