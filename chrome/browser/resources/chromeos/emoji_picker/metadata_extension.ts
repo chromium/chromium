@@ -10,7 +10,7 @@
  */
 
 
-import {CategoryData, CategoryEnum, GifSubcategoryData, SubcategoryData} from './types.js';
+import {CategoryEnum, GifSubcategoryData, SubcategoryData} from './types.js';
 
 const RECENTLY_USED_NAME = 'Recently used';
 
@@ -67,7 +67,8 @@ function makeGroupTabs(
   return groupTabs;
 }
 
-export const CATEGORY_METADATA: CategoryData[] = [
+export const CATEGORY_METADATA:
+    Array<{name: CategoryEnum, icon: string, active: boolean}> = [
       {
         name: CategoryEnum.EMOJI,
         icon: 'emoji_picker_v2:emoji_emojis_outlined',
@@ -85,7 +86,8 @@ export const CATEGORY_METADATA: CategoryData[] = [
       },
     ];
 
-export const GIF_CATEGORY_METADATA: CategoryData[] = [
+export const GIF_CATEGORY_METADATA:
+    Array<{name: CategoryEnum, icon: string, active: boolean}> = [
       ...CATEGORY_METADATA,
       {
         name: CategoryEnum.GIF,

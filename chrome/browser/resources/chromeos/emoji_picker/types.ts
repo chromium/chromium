@@ -6,7 +6,7 @@ import {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 export interface CategoryData {
-  name: CategoryEnum;
+  name: string;
   icon: string;
   active: boolean;
 }
