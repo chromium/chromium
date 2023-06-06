@@ -16,6 +16,9 @@
 // Sets the favicon's background color. Can be nil to reset to original value.
 - (void)setFaviconBackgroundColor:(UIColor*)color;
 
+// Sets the favicon view border color. Can be nil to reset to original value.
+- (void)setFaviconBorderColor:(UIColor*)color;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_FAVICON_FAVICON_CONTAINER_VIEW_H_

@@ -96,6 +96,9 @@
 // Sets the background color for the favicon container view.
 - (void)setFaviconContainerBackgroundColor:(UIColor*)backgroundColor;
 
+// Sets the border color for the favicon container view.
+- (void)setFaviconContainerBorderColor:(UIColor*)borderColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_URL_ITEM_H_

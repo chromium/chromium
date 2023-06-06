@@ -23,13 +23,23 @@ const CGFloat kFaviconBorderWidth = 1.5;
 const CGFloat kFaviconContainerWidth = 30;
 }  // namespace
 
+@interface FaviconContainerView ()
+
+// Store custom background color.
+@property(nonatomic, strong) UIColor* customBackgroundColor;
+
+// Store custom border color.
+@property(nonatomic, strong) UIColor* customBorderColor;
+
+@end
+
 @implementation FaviconContainerView
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     [self.traitCollection performAsCurrentTraitCollection:^{
-      [self resetBackgroundColor];
+      [self resetColor];
     }];
     self.layer.borderWidth = kFaviconBorderWidth;
     self.layer.cornerRadius = kFaviconCornerRadius;
@@ -57,10 +67,20 @@ const CGFloat kFaviconContainerWidth = 30;
 }
 
 - (void)setFaviconBackgroundColor:(UIColor*)color {
+  self.customBackgroundColor = color;
   if (color) {
     self.backgroundColor = color;
   } else {
-    [self resetBackgroundColor];
+    [self resetColor];
+  }
+}
+
+- (void)setFaviconBorderColor:(UIColor*)color {
+  self.customBorderColor = color;
+  if (color) {
+    self.layer.borderColor = color.CGColor;
+  } else {
+    [self resetColor];
   }
 }
 
@@ -69,16 +89,22 @@ const CGFloat kFaviconContainerWidth = 30;
   if ([self.traitCollection
           hasDifferentColorAppearanceComparedToTraitCollection:
               previousTraitCollection]) {
-    [self resetBackgroundColor];
+    [self resetColor];
   }
 }
 
-- (void)resetBackgroundColor {
-  self.backgroundColor =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-          ? [UIColor colorNamed:kSeparatorColor]
-          : UIColor.clearColor;
-  self.layer.borderColor = [UIColor colorNamed:kSeparatorColor].CGColor;
+- (void)resetColor {
+  if (self.customBackgroundColor) {
+    self.backgroundColor = self.customBackgroundColor;
+  } else {
+    self.backgroundColor =
+        self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
+            ? [UIColor colorNamed:kSeparatorColor]
+            : UIColor.clearColor;
+  }
+  self.layer.borderColor = self.customBorderColor
+                               ? self.customBorderColor.CGColor
+                               : [UIColor colorNamed:kSeparatorColor].CGColor;
 }
 
 @end
