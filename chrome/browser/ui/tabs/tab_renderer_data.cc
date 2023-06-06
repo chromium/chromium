@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser.h"
@@ -117,6 +116,13 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
         high_efficiency::GetDiscardedMemorySavingsInBytes(contents);
   }
 
+  const auto* const resource_tab_helper =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          ResourceUsageTabHelper::FromWebContents(contents);
+  if (resource_tab_helper) {
+    data.tab_resource_usage = resource_tab_helper->resource_usage();
+  }
+
   return data;
 }
 
@@ -144,7 +150,8 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          is_tab_discarded == other.is_tab_discarded &&
          should_show_discard_status == other.should_show_discard_status &&
          discarded_memory_savings_in_bytes ==
-             other.discarded_memory_savings_in_bytes;
+             other.discarded_memory_savings_in_bytes &&
+         tab_resource_usage == other.tab_resource_usage;
 }
 
 bool TabRendererData::IsCrashed() const {

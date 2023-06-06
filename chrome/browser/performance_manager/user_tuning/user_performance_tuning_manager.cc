@@ -439,13 +439,14 @@ void UserPerformanceTuningManager::ResourceUsageTabHelper::PrimaryPageChanged(
     content::Page&) {
   // Reset memory usage count when we navigate to another site since the
   // memory usage reported will be outdated.
-  memory_usage_bytes_ = 0;
+  resource_usage_->set_memory_usage_in_bytes(0);
 }
 
 UserPerformanceTuningManager::ResourceUsageTabHelper::ResourceUsageTabHelper(
     content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      content::WebContentsUserData<ResourceUsageTabHelper>(*contents) {}
+      content::WebContentsUserData<ResourceUsageTabHelper>(*contents),
+      resource_usage_(base::MakeRefCounted<TabResourceUsage>()) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
     UserPerformanceTuningManager::PreDiscardResourceUsage);
