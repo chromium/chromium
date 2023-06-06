@@ -1006,6 +1006,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::InternetConfigDialogUI, ash::InternetDetailDialogUI, ash::SetTimeUI,
       ash::BluetoothPairingDialogUI, nearby_share::NearbyShareDialogUI,
       ash::cloud_upload::CloudUploadUI, ash::office_fallback::OfficeFallbackUI,
+      ash::multidevice_setup::MultiDeviceSetupDialogUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI>(map);

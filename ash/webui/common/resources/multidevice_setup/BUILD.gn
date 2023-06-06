@@ -46,6 +46,8 @@ js_library("mojo_api") {
 }
 
 js_library("multidevice_setup") {
+  extra_deps =
+      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   deps = [
     ":button_bar",
     ":fake_mojo_service",

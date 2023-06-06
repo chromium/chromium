@@ -27,12 +27,14 @@
 #include "chrome/grit/multidevice_setup_resources_map.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash::multidevice_setup {
@@ -117,6 +119,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 
   AddLocalizedStrings(source);
   source->UseStringsJs();
+  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
 
   webui::SetupWebUIDataSource(
       source,
@@ -137,6 +140,12 @@ void MultiDeviceSetupDialogUI::BindInterface(
           Profile::FromWebUI(web_ui()));
   if (service)
     service->BindMultiDeviceSetup(std::move(receiver));
+}
+
+void MultiDeviceSetupDialogUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MultiDeviceSetupDialogUI)
