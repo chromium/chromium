@@ -697,7 +697,6 @@ fast/canvas/canvas-transform-nan.html
 fast/canvas/canvas-transform-skewed.html
 fast/canvas/canvas-transforms-fillRect-shadow.html
 fast/canvas/canvas-unbalanced-save.html
-fast/canvas/canvas-zero-length-lineCap.html
 fast/canvas/color-space/ImageData-fidelity.html
 fast/canvas/color-space/canvas-getImageData-rec2020.html
 fast/canvas/color-space/transferFromImageBitmap.html

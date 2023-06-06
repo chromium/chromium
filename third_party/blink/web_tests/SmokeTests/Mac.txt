@@ -1510,7 +1510,6 @@ virtual/oopr-canvas2d/fast/canvas/canvas-imageSmoothingEnabled-patterns.html
 virtual/oopr-canvas2d/fast/canvas/canvas-largedraws.html
 virtual/oopr-canvas2d/fast/canvas/canvas-pattern-no-repeat-with-transformations.html
 virtual/oopr-canvas2d/fast/canvas/canvas-text-baseline.html
-virtual/oopr-canvas2d/fast/canvas/canvas-zero-length-lineCap.html
 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html
 virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml
 virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html
