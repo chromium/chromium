@@ -5,17 +5,8 @@
 #ifndef UI_GL_GL_IMAGE_H_
 #define UI_GL_GL_IMAGE_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gl/gl_export.h"
-
-namespace gpu {
-class D3DImageBacking;
-class D3DImageBackingFactoryTest;
-class GLTexturePassthroughD3DImageRepresentation;
-FORWARD_DECLARE_TEST(D3DImageBackingFactoryTestSwapChain,
-                     CreateAndPresentSwapChain);
-}  // namespace gpu
 
 namespace gpu::gles2 {
 class GLES2DecoderImpl;
@@ -23,8 +14,6 @@ class GLES2DecoderPassthroughImpl;
 }  // namespace gpu::gles2
 
 namespace gl {
-
-class GLImageD3D;
 
 // Encapsulates an image that can be bound and/or copied to a texture, hiding
 // platform specific management.
@@ -43,23 +32,9 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
 
   virtual ~GLImage() = default;
 
- protected:
-  // An identifier for subclasses. Necessary for safe downcasting.
-  enum class Type { NONE, EGL_STREAM, D3D, PBUFFER };
-  virtual Type GetType() const;
-
  private:
-  // Safe downcasts. All functions return nullptr if |image| does not exist or
-  // does not have the specified type.
-  static GLImageD3D* ToGLImageD3D(GLImage* image);
-
-  friend class gpu::D3DImageBacking;
-  friend class gpu::D3DImageBackingFactoryTest;
-  friend class gpu::GLTexturePassthroughD3DImageRepresentation;
   friend class gpu::gles2::GLES2DecoderImpl;
   friend class gpu::gles2::GLES2DecoderPassthroughImpl;
-  FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTestSwapChain,
-                           CreateAndPresentSwapChain);
 
   friend class base::RefCounted<GLImage>;
 };

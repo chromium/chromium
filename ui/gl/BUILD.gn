@@ -149,10 +149,7 @@ component("gl") {
   }
 
   if (!is_android) {
-    sources += [
-      "gl_image.cc",
-      "gl_image.h",
-    ]
+    sources += [ "gl_image.h" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
