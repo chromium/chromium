@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 
 @class SideSwipeGestureRecognizer;
 @protocol SideSwipeToolbarSnapshotProviding;
@@ -15,7 +15,7 @@ class WebStateList;
 
 @interface CardSideSwipeView : UIView
 
-@property(nonatomic, weak) id<SideSwipeControllerDelegate> delegate;
+@property(nonatomic, weak) id<SideSwipeMediatorDelegate> delegate;
 // Snapshot provider for the top toolbar.
 @property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
     topToolbarSnapshotProvider;

@@ -159,7 +159,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
@@ -448,7 +448,7 @@ enum class ToolbarKind {
   ToolbarCoordinator* _toolbarCoordinator;
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
-  SideSwipeController* _sideSwipeController;
+  SideSwipeMediator* _sideSwipeMediator;
   FullscreenController* _fullscreenController;
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
@@ -777,13 +777,12 @@ enum class ToolbarKind {
   _toolbarAccessoryPresenter.toolbarLayoutGuide =
       [_layoutGuideCenter makeLayoutGuideNamed:kPrimaryToolbarGuide];
 
-  _sideSwipeController =
-      [[SideSwipeController alloc] initWithBrowser:self.browser];
-  [_sideSwipeController setSnapshotDelegate:self];
-  _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinator;
-  _sideSwipeController.primaryToolbarSnapshotProvider =
-      _toolbarCoordinator.primaryToolbarSnapshotProvider;
-  _sideSwipeController.secondaryToolbarSnapshotProvider =
+  _sideSwipeMediator = [[SideSwipeMediator alloc] initWithBrowser:self.browser];
+  [_sideSwipeMediator setSnapshotDelegate:self];
+  _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
+  _sideSwipeMediator.primaryToolbarSnapshotProvider =
+      _toolbarCoordinator.primaryToolbarSnapshotProvider;;
+  _sideSwipeMediator.secondaryToolbarSnapshotProvider =
       _toolbarCoordinator.secondaryToolbarSnapshotProvider;
 
   _bookmarksCoordinator =
@@ -824,7 +823,7 @@ enum class ToolbarKind {
       _legacyTabStripCoordinator.animationWaitDuration =
           kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
 
-      [_sideSwipeController setTabStripDelegate:_legacyTabStripCoordinator];
+      [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];
     }
   }
 
@@ -851,7 +850,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.tabStripCoordinator = _tabStripCoordinator;
   _viewControllerDependencies.legacyTabStripCoordinator =
       _legacyTabStripCoordinator;
-  _viewControllerDependencies.sideSwipeController = _sideSwipeController;
+  _viewControllerDependencies.sideSwipeMediator = _sideSwipeMediator;
   _viewControllerDependencies.bookmarksCoordinator = _bookmarksCoordinator;
   _viewControllerDependencies.fullscreenController = _fullscreenController;
   _viewControllerDependencies.textZoomHandler =
@@ -933,7 +932,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.toolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
   _viewControllerDependencies.legacyTabStripCoordinator = nil;
-  _viewControllerDependencies.sideSwipeController = nil;
+  _viewControllerDependencies.sideSwipeMediator = nil;
   _viewControllerDependencies.bookmarksCoordinator = nil;
   _viewControllerDependencies.fullscreenController = nil;
   _viewControllerDependencies.textZoomHandler = nil;
@@ -952,7 +951,7 @@ enum class ToolbarKind {
 
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
-  _sideSwipeController = nil;
+  _sideSwipeMediator = nil;
   _toolbarCoordinator = nil;
   _loadQueryCommandsHandler = nil;
   _omniboxCommandsHandler = nil;

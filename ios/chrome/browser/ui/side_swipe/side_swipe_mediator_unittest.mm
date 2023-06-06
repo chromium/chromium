@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller+private.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+private.h"
 
 #import <WebKit/WebKit.h>
 
@@ -33,9 +33,9 @@
 
 namespace {
 
-class SideSwipeControllerTest : public PlatformTest {
+class SideSwipeMediatorTest : public PlatformTest {
  public:
-  SideSwipeControllerTest()
+  SideSwipeMediatorTest()
       : web_view_([[WKWebView alloc]
             initWithFrame:scoped_window_.Get().bounds
             configuration:[[WKWebViewConfiguration alloc] init]]),
@@ -60,30 +60,30 @@ class SideSwipeControllerTest : public PlatformTest {
         0, std::move(original_web_state), WebStateList::INSERT_NO_FLAGS,
         WebStateOpener());
 
-    side_swipe_controller_ =
-        [[SideSwipeController alloc] initWithBrowser:browser_.get()];
+    side_swipe_mediator_ =
+        [[SideSwipeMediator alloc] initWithBrowser:browser_.get()];
 
     view_ = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
 
-    [side_swipe_controller_ addHorizontalGesturesToView:view_];
+    [side_swipe_mediator_ addHorizontalGesturesToView:view_];
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   UIView* view_;
-  SideSwipeController* side_swipe_controller_;
+  SideSwipeMediator* side_swipe_mediator_;
   ScopedKeyWindow scoped_window_;
   WKWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
 };
 
-TEST_F(SideSwipeControllerTest, TestConstructor) {
-  EXPECT_TRUE(side_swipe_controller_);
+TEST_F(SideSwipeMediatorTest, TestConstructor) {
+  EXPECT_TRUE(side_swipe_mediator_);
 }
 
 // Tests that pages that need to use Chromium native swipe
-TEST_F(SideSwipeControllerTest, TestEdgeNavigationEnabled) {
+TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabled) {
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
@@ -92,54 +92,54 @@ TEST_F(SideSwipeControllerTest, TestEdgeNavigationEnabled) {
 
   // The NTP and chrome://crash should use native swipe.
   item->SetURL(GURL(kChromeUINewTabURL));
-  [side_swipe_controller_
+  [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://crash"));
-  [side_swipe_controller_
+  [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("http://wwww.test.com"));
-  [side_swipe_controller_
+  [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://foo"));
-  [side_swipe_controller_
+  [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://version"));
-  [side_swipe_controller_
+  [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
   // Tests that when webstate is nil calling
   // updateNavigationEdgeSwipeForWebState doesn't change the edge navigation
   // state.
   item->SetURL(GURL("http://wwww.test.com"));
-  [side_swipe_controller_ updateNavigationEdgeSwipeForWebState:nil];
-  EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
-  side_swipe_controller_.leadingEdgeNavigationEnabled = YES;
-  side_swipe_controller_.trailingEdgeNavigationEnabled = YES;
-  [side_swipe_controller_ updateNavigationEdgeSwipeForWebState:nil];
-  EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  [side_swipe_mediator_ updateNavigationEdgeSwipeForWebState:nil];
+  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  side_swipe_mediator_.leadingEdgeNavigationEnabled = YES;
+  side_swipe_mediator_.trailingEdgeNavigationEnabled = YES;
+  [side_swipe_mediator_ updateNavigationEdgeSwipeForWebState:nil];
+  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 }
 
 // Tests that when the active webState is changed or when the active webState
 // finishes navigation, the edge state will be updated accordingly.
-TEST_F(SideSwipeControllerTest, ObserversTriggerStateUpdate) {
-  ASSERT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  ASSERT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
+  ASSERT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  ASSERT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   fake_web_state->SetView(content_view_);
@@ -164,17 +164,17 @@ TEST_F(SideSwipeControllerTest, ObserversTriggerStateUpdate) {
   browser_->GetWebStateList()->InsertWebState(1, std::move(fake_web_state),
                                               WebStateList::INSERT_ACTIVATE,
                                               WebStateOpener());
-  EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
-  // Non native URL should have shouldn't be handled by SideSwipeController.
+  // Non native URL should have shouldn't be handled by SideSwipeMediator.
   item->SetURL(GURL("http://wwww.test.test"));
   web::FakeNavigationContext context;
   context.SetHasCommitted(true);
   // Navigation finish should also update the edge navigation state.
   fake_web_state_ptr->OnNavigationFinished(&context);
-  EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 }
 
 }  // anonymous namespace

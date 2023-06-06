@@ -63,7 +63,7 @@
 #import "ios/chrome/browser/ui/main_content/web_scroll_view_main_content_ui_forwarder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
@@ -194,15 +194,15 @@ enum HeaderBehaviour {
 @interface BrowserViewController () <LensPresentationDelegate,
                                      FullscreenUIElement,
                                      MainContentUI,
-                                     SideSwipeControllerDelegate,
+                                     SideSwipeMediatorDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
                                      ViewRevealingAnimatee> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
 
-  // Controller for edge swipe gestures for page and tab navigation.
-  SideSwipeController* _sideSwipeController;
+  // Mediator for edge swipe gestures for page and tab navigation.
+  SideSwipeMediator* _sideSwipeMediator;
 
   // Keyboard commands provider.  It offloads most of the keyboard commands
   // management off of the BVC.
@@ -428,8 +428,8 @@ enum HeaderBehaviour {
   if (self) {
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
-    _sideSwipeController = dependencies.sideSwipeController;
-    [_sideSwipeController setSwipeDelegate:self];
+    _sideSwipeMediator = dependencies.sideSwipeMediator;
+    [_sideSwipeMediator setSwipeDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
     self.bubblePresenter = dependencies.bubblePresenter;
     self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
@@ -904,7 +904,7 @@ enum HeaderBehaviour {
 
   [self.toolbarCoordinator stop];
   self.toolbarCoordinator = nil;
-  _sideSwipeController = nil;
+  _sideSwipeMediator = nil;
   [_voiceSearchController disconnect];
   _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -994,7 +994,7 @@ enum HeaderBehaviour {
   [self setUpViewLayout:YES];
   [self addConstraintsToToolbar];
 
-  [_sideSwipeController addHorizontalGesturesToView:self.view];
+  [_sideSwipeMediator addHorizontalGesturesToView:self.view];
 
   // Add a tap gesture recognizer to save the last tap location for the source
   // location of the new tab animation.
@@ -1102,7 +1102,7 @@ enum HeaderBehaviour {
       self.legacyTabStripCoordinator = nil;
       self.tabStripView = nil;
     }
-    _sideSwipeController = nil;
+    _sideSwipeMediator = nil;
   }
 }
 
@@ -1326,7 +1326,7 @@ enum HeaderBehaviour {
       };
     }
   }
-  [_sideSwipeController resetContentView];
+  [_sideSwipeMediator resetContentView];
 
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
@@ -1352,7 +1352,7 @@ enum HeaderBehaviour {
       self.presentedViewController.beingDismissed) {
     // Don't rotate while a presentation or dismissal animation is occurring.
     return NO;
-  } else if (_sideSwipeController && ![_sideSwipeController shouldAutorotate]) {
+  } else if (_sideSwipeMediator && ![_sideSwipeMediator shouldAutorotate]) {
     // Don't auto rotate if side swipe controller view says not to.
     return NO;
   } else {
@@ -2522,7 +2522,7 @@ enum HeaderBehaviour {
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     [self.ntpCoordinator locationBarDidBecomeFirstResponder];
   }
-  [_sideSwipeController setEnabled:NO];
+  [_sideSwipeMediator setEnabled:NO];
 
   if (!IsVisibleURLNewTabPage(self.currentWebState)) {
     // Tapping on web content area should dismiss the keyboard. Tapping on NTP
@@ -2541,7 +2541,7 @@ enum HeaderBehaviour {
 }
 
 - (void)omniboxDidResignFirstResponder {
-  [_sideSwipeController setEnabled:YES];
+  [_sideSwipeMediator setEnabled:YES];
 
   [self.ntpCoordinator locationBarDidResignFirstResponder];
 
@@ -2906,18 +2906,18 @@ enum HeaderBehaviour {
 }
 
 // TODO(crbug.com/1329105): Factor this delegate into a mediator or other helper
-#pragma mark - SideSwipeControllerDelegate
+#pragma mark - SideSwipeMediatorDelegate
 
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView {
   DCHECK(!IsRegularXRegularSizeClass(self));
   // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform this
-  // update. Longer-term, make SideSwipeControllerDelegate observable instead of
+  // update. Longer-term, make SideSwipeMediatorDelegate observable instead of
   // delegating.
   [self.toolbarCoordinator.primaryToolbarCoordinator updateToolbar];
 
   // Reset horizontal stack view.
   [sideSwipeView removeFromSuperview];
-  [_sideSwipeController setInSwipe:NO];
+  [_sideSwipeMediator setInSwipe:NO];
 }
 
 - (UIView*)sideSwipeContentView {
@@ -2950,7 +2950,7 @@ enum HeaderBehaviour {
 - (void)updateAccessoryViewsForSideSwipeWithVisibility:(BOOL)visible {
   if (visible) {
     // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform
-    // this update. Longer-term, make SideSwipeControllerDelegate observable
+    // this update. Longer-term, make SideSwipeMediatorDelegate observable
     // instead of delegating.
     [self.toolbarCoordinator.primaryToolbarCoordinator updateToolbar];
   } else {

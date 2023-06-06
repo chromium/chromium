@@ -7,11 +7,11 @@ source_set("side_swipe") {
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",
-    "side_swipe_controller+private.h",
-    "side_swipe_controller.h",
-    "side_swipe_controller.mm",
     "side_swipe_gesture_recognizer.h",
     "side_swipe_gesture_recognizer.mm",
+    "side_swipe_mediator+private.h",
+    "side_swipe_mediator.h",
+    "side_swipe_mediator.mm",
     "side_swipe_navigation_view.h",
     "side_swipe_navigation_view.mm",
     "side_swipe_util.h",
@@ -56,7 +56,7 @@ source_set("side_swipe") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "side_swipe_controller_unittest.mm" ]
+  sources = [ "side_swipe_mediator_unittest.mm" ]
   deps = [
     ":side_swipe",
     "//base",

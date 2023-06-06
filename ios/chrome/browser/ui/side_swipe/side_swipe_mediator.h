@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -20,7 +20,7 @@ extern NSString* const kSideSwipeWillStartNotification;
 // Notification sent when the user finishes a side swipe (on tablet).
 extern NSString* const kSideSwipeDidStopNotification;
 
-@protocol SideSwipeControllerDelegate
+@protocol SideSwipeMediatorDelegate
 @required
 // Called when the horizontal stack view is done and should be removed.
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView;
@@ -45,13 +45,13 @@ extern NSString* const kSideSwipeDidStopNotification;
 
 // Controls how an edge gesture is processed, either as tab change or a page
 // change.  For tab changes two full screen CardSideSwipeView views are dragged
-// across the screen. For page changes the SideSwipeControllerDelegate
+// across the screen. For page changes the SideSwipeMediatorDelegate
 // `contentView` is moved across the screen and a SideSwipeNavigationView is
 // shown in the remaining space.
-@interface SideSwipeController : NSObject <UIGestureRecognizerDelegate>
+@interface SideSwipeMediator : NSObject <UIGestureRecognizerDelegate>
 
 @property(nonatomic, assign) BOOL inSwipe;
-@property(nonatomic, weak) id<SideSwipeControllerDelegate> swipeDelegate;
+@property(nonatomic, weak) id<SideSwipeMediatorDelegate> swipeDelegate;
 @property(nonatomic, weak) id<SideSwipeToolbarInteracting>
     toolbarInteractionHandler;
 // Handler for the interaction with the primary toolbar, including providing
@@ -85,4 +85,4 @@ extern NSString* const kSideSwipeDidStopNotification;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_MEDIATOR_H_

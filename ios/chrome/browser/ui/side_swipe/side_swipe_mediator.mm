@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller+private.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+private.h"
 
 #import <memory>
 
@@ -43,7 +43,7 @@ NSString* const kSideSwipeWillStartNotification =
 NSString* const kSideSwipeDidStopNotification =
     @"kSideSwipeDidStopNotification";
 
-class SideSwipeControllerBrowserRemover;
+class SideSwipeMediatorBrowserRemover;
 
 namespace {
 
@@ -57,15 +57,15 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
 // Number of tabs to keep in the grey image cache.
 const NSUInteger kIpadGreySwipeTabCount = 8;
-}
+}  // namespace
 
-@interface SideSwipeController () <CRWWebStateObserver,
-                                   UIGestureRecognizerDelegate,
-                                   WebStateListObserving> {
+@interface SideSwipeMediator () <CRWWebStateObserver,
+                                 UIGestureRecognizerDelegate,
+                                 WebStateListObserving> {
  @private
 
   // Zeroes out `_browser` when it is destroyed.
-  std::unique_ptr<SideSwipeControllerBrowserRemover> _browserRemover;
+  std::unique_ptr<SideSwipeMediatorBrowserRemover> _browserRemover;
 
   // Side swipe view for tab navigation.
   CardSideSwipeView* _tabSideSwipeView;
@@ -143,22 +143,22 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 - (void)browserDestroyed;
 @end
 
-// A browser observer that nullifies SideSwipeController's pointer to browser
+// A browser observer that nullifies SideSwipeMediator's pointer to browser
 // when the browser is destroyed.
-class SideSwipeControllerBrowserRemover : public BrowserObserver {
+class SideSwipeMediatorBrowserRemover : public BrowserObserver {
  public:
-  SideSwipeControllerBrowserRemover(SideSwipeController* controller)
-      : side_swipe_controller_(controller) {}
+  SideSwipeMediatorBrowserRemover(SideSwipeMediator* controller)
+      : side_swipe_mediator_(controller) {}
 
   void BrowserDestroyed(Browser* browser) override {
-    [side_swipe_controller_ browserDestroyed];
+    [side_swipe_mediator_ browserDestroyed];
   }
 
  private:
-  __weak SideSwipeController* side_swipe_controller_;
+  __weak SideSwipeMediator* side_swipe_mediator_;
 };
 
-@implementation SideSwipeController
+@implementation SideSwipeMediator
 
 @synthesize inSwipe = _inSwipe;
 @synthesize swipeDelegate = _swipeDelegate;
@@ -174,7 +174,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   self = [super init];
   if (self) {
     _browser = browser;
-    _browserRemover = std::make_unique<SideSwipeControllerBrowserRemover>(self);
+    _browserRemover = std::make_unique<SideSwipeMediatorBrowserRemover>(self);
     _browser->AddObserver(_browserRemover.get());
 
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -185,8 +185,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
         base::ScopedObservation<web::WebState, web::WebStateObserver>>(
         _webStateObserverBridge.get());
     _fullscreenController = FullscreenController::FromBrowser(self.browser);
-    if (self.activeWebState)
+    if (self.activeWebState) {
       _scopedWebStateObservation->Observe(self.activeWebState);
+    }
   }
   return self;
 }
@@ -266,14 +267,16 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
       [NSMutableArray arrayWithCapacity:kIpadGreySwipeTabCount];
   for (NSUInteger count = 0; count < kIpadGreySwipeTabCount; count++) {
     // Wrap around edges.
-    if (index >= self.webStateList->count())
+    if (index >= self.webStateList->count()) {
       index = 0;
-    else if (index < 0)
+    } else if (index < 0) {
       index = self.webStateList->count() - 1;
+    }
 
     // Don't wrap past the starting index.
-    if (index == (NSInteger)_startingTabIndex)
+    if (index == (NSInteger)_startingTabIndex) {
       break;
+    }
 
     web::WebState* webState = self.webStateList->GetWebStateAt(index);
     if (webState && PagePlaceholderTabHelper::FromWebState(webState)
@@ -325,8 +328,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 
   // Don't handle swipe when there are no tabs.
   int count = self.webStateList->count();
-  if (count == 0)
+  if (count == 0) {
     return;
+  }
 
   if (gesture.state == UIGestureRecognizerStateBegan) {
     // Disable fullscreen while the side swipe gesture is occurring.
@@ -356,8 +360,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     // Don't wrap past the first tab.
     if (indexDelta < count) {
       // Flip delta when swiping forward.
-      if (IsSwipingForward(gesture.direction))
+      if (IsSwipingForward(gesture.direction)) {
         indexDelta = 0 - indexDelta;
+      }
 
       web::WebState* currentWebState = self.activeWebState;
       int currentIndex = self.webStateList->GetIndexOfWebState(currentWebState);
@@ -366,8 +371,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
       int newIndex = (int)(_startingTabIndex + indexDelta) % count;
 
       // C99 defines the modulo result as negative if our offset is negative.
-      if (newIndex < 0)
+      if (newIndex < 0) {
         newIndex += count;
+      }
 
       if (newIndex != currentIndex) {
         web::WebState* webState = self.webStateList->GetWebStateAt(newIndex);
@@ -406,8 +412,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 }
 
 - (BOOL)canNavigate:(BOOL)goBack {
-  if (!self.activeWebState)
+  if (!self.activeWebState) {
     return NO;
+  }
   if (goBack && self.activeWebState->GetNavigationManager()->CanGoBack()) {
     return YES;
   }
@@ -455,7 +462,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     _animatedFullscreenDisabler = nullptr;
   }
 
-  __weak SideSwipeController* weakSelf = self;
+  __weak SideSwipeMediator* weakSelf = self;
   [_pageSideSwipeView handleHorizontalPan:gesture
       onOverThresholdCompletion:^{
         [weakSelf handleOverThresholdCompletion:gesture];
@@ -475,7 +482,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
       web_navigation_util::GoForward(webState);
     }
   }
-  __weak SideSwipeController* weakSelf = self;
+  __weak SideSwipeMediator* weakSelf = self;
   // Checking -IsLoading() is likely incorrect, but to narrow the scope of
   // fixes for slim navigation manager, only ignore this state when
   // slim is disabled.  With slim navigation enabled, this false when
@@ -507,7 +514,6 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   }
 
   if (gesture.state == UIGestureRecognizerStateBegan) {
-
     _inSwipe = YES;
 
     CGRect frame = [[_swipeDelegate sideSwipeContentView] frame];
@@ -584,20 +590,22 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 }
 
 - (void)dismissCurtain {
-  if (!_inSwipe)
+  if (!_inSwipe) {
     return;
-  __weak SideSwipeController* weakSelf = self;
+  }
+  __weak SideSwipeMediator* weakSelf = self;
   [self dismissCurtainWithCompletionHandler:^{
     [weakSelf handleCurtainCompletion];
   }];
 }
 
 - (void)updateNavigationEdgeSwipeForWebState:(web::WebState*)webState {
-  if (!webState)
+  if (!webState) {
     return;
+  }
 
-  // With slim nav enabled, disable SideSwipeController's edge swipe for a
-  // typical navigation.  Continue to use SideSwipeController when on, before,
+  // With slim nav enabled, disable SideSwipeMediator's edge swipe for a
+  // typical navigation.  Continue to use SideSwipeMediator when on, before,
   // or after a native page.
   self.leadingEdgeNavigationEnabled = NO;
   self.trailingEdgeNavigationEnabled = NO;
@@ -612,14 +620,16 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   // If the previous page is an NTP, enable leading edge swipe.
   std::vector<web::NavigationItem*> backItems =
       webState->GetNavigationManager()->GetBackwardItems();
-  if (backItems.size() > 0 && UseNativeSwipe(backItems[0]))
+  if (backItems.size() > 0 && UseNativeSwipe(backItems[0])) {
     self.leadingEdgeNavigationEnabled = YES;
+  }
 
   // If the next page is an NTP, enable trailing edge swipe.
   std::vector<web::NavigationItem*> forwardItems =
       webState->GetNavigationManager()->GetForwardItems();
-  if (forwardItems.size() > 0 && UseNativeSwipe(forwardItems[0]))
+  if (forwardItems.size() > 0 && UseNativeSwipe(forwardItems[0])) {
     self.trailingEdgeNavigationEnabled = YES;
+  }
 }
 
 #pragma mark - CRWWebStateObserver Methods
@@ -725,10 +735,12 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   [_swipeGestureRecognizer setEnabled:YES];
   // Track the new active WebState for navigation events. Also remove the old if
   // there was one.
-  if (oldWebState)
+  if (oldWebState) {
     _scopedWebStateObservation->Reset();
-  if (newWebState)
+  }
+  if (newWebState) {
     _scopedWebStateObservation->Observe(newWebState);
+  }
 
   [self updateNavigationEdgeSwipeForWebState:newWebState];
 }

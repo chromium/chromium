@@ -58,7 +58,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
@@ -245,8 +245,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     legacy_tab_strip_coordinator_ =
         [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
 
-    side_swipe_controller_ =
-        [[SideSwipeController alloc] initWithBrowser:browser_.get()];
+    side_swipe_mediator_ =
+        [[SideSwipeMediator alloc] initWithBrowser:browser_.get()];
 
     bookmarks_coordinator_ =
         [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];
@@ -269,7 +269,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.toolbarCoordinator = toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
-    dependencies.sideSwipeController = side_swipe_controller_;
+    dependencies.sideSwipeMediator = side_swipe_mediator_;
     dependencies.bookmarksCoordinator = bookmarks_coordinator_;
     dependencies.fullscreenController = fullscreen_controller_;
     dependencies.urlLoadingNotifierBrowserAgent =
@@ -379,7 +379,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   ToolbarCoordinator* toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
-  SideSwipeController* side_swipe_controller_;
+  SideSwipeMediator* side_swipe_mediator_;
   BookmarksCoordinator* bookmarks_coordinator_;
   FullscreenController* fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;

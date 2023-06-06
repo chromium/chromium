@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/browser_view/common_tab_helper_delegate.h"
 
 @class DownloadManagerCoordinator;
-@class SideSwipeController;
+@class SideSwipeMediator;
 
 // Category on BrowserViewController that that exposes some internal controllers
 // and coordinators that are used to set up tab helper delegates. This category
@@ -20,7 +20,7 @@
 // to remove properties and protocols from it (and from the BVC).
 @interface BrowserViewController (Delegates) <CommonTabHelperDelegate>
 
-@property(nonatomic, strong, readonly) SideSwipeController* sideSwipeController;
+@property(nonatomic, strong, readonly) SideSwipeMediator* sideSwipeMediator;
 
 @end
 
