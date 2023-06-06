@@ -47,11 +47,9 @@ public class BuildCompat {
      * @param buildCodename the value of {@link Build.VERSION#CODENAME}
      *
      * @return {@code true} if APIs from the requested codename are available in the build.
-     *
-     * @hide
      */
     @VisibleForTesting
-    protected static boolean isAtLeastPreReleaseCodename(@NonNull String codename,
+    static boolean isAtLeastPreReleaseCodename(@NonNull String codename,
             @NonNull String buildCodename) {
 
         // Special case "REL", which means the build is not a pre-release build.
