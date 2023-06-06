@@ -26695,6 +26695,9 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="8" label="Padding"/>
   <int value="9" label="Position"/>
   <int value="10" label="ZIndex"/>
+  <int value="11" label="Sizing"/>
+  <int value="12" label="FlexOrGridItem"/>
+  <int value="13" label="FontVariationSettings"/>
 </enum>
 
 <enum name="DevToolsCSSPropertyDocumentation">
