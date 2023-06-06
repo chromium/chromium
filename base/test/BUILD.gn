@@ -221,10 +221,6 @@ static_library("test_support") {
     public_deps += [ "//third_party/test_fonts/fontconfig:test_support" ]
   }
 
-  if (is_apple) {
-    public_deps += [ "//base:base_arc" ]
-  }
-
   if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [
