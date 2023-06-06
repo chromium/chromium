@@ -226,6 +226,7 @@ class KeyboardAccessoryMediator
             case AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY:
                 return BarItem.Type.ACTION_BUTTON;
             case AccessoryAction.MANAGE_PASSWORDS: // Intentional fallthrough - no view defined.
+            case AccessoryAction.CROSS_DEVICE_PASSKEY:
             case AccessoryAction.COUNT:
                 throw new IllegalArgumentException("No view defined for :" + accessoryAction);
         }

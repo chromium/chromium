@@ -39,12 +39,14 @@
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -142,6 +144,11 @@ class MockPasswordManagerClient
               (),
               (override));
 
+  MOCK_METHOD(password_manager::WebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegateForDriver,
+              (password_manager::PasswordManagerDriver*),
+              (override));
+
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override {
     return password_store_;
@@ -194,6 +201,11 @@ std::u16string generate_password_str() {
       IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE);
 }
 
+std::u16string cross_device_passkeys_str() {
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
+}
+
 // Creates a AccessorySheetDataBuilder object with a "Manage passwords..."
 // footer.
 AccessorySheetData::Builder PasswordAccessorySheetDataBuilder(
@@ -235,6 +247,13 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     mock_pwd_manager_client_ = std::make_unique<MockPasswordManagerClient>(
         CreateInternalPasswordStore());
     NavigateAndCommit(GURL(kExampleSite));
+
+    webauthn_credentials_delegate_ =
+        std::make_unique<password_manager::MockWebAuthnCredentialsDelegate>();
+    ON_CALL(*password_client(), GetWebAuthnCredentialsDelegateForDriver)
+        .WillByDefault(Return(webauthn_credentials_delegate()));
+    ON_CALL(*webauthn_credentials_delegate(), IsAndroidHybridAvailable)
+        .WillByDefault(Return(false));
   }
 
   WebAuthnCredManDelegate* cred_man_delegate() {
@@ -265,6 +284,11 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   MockPasswordManagerDriver* driver() { return &mock_driver_; }
 
+  password_manager::MockWebAuthnCredentialsDelegate*
+  webauthn_credentials_delegate() {
+    return webauthn_credentials_delegate_.get();
+  }
+
  protected:
   virtual PasswordStoreInterface* CreateInternalPasswordStore() {
     mock_password_store_ = base::MakeRefCounted<MockPasswordStoreInterface>();
@@ -287,6 +311,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   password_manager::CredentialCache credential_cache_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_;
   MockPasswordManagerDriver mock_driver_;
+  std::unique_ptr<password_manager::MockWebAuthnCredentialsDelegate>
+      webauthn_credentials_delegate_;
 };
 
 TEST_F(PasswordAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
@@ -1098,6 +1124,59 @@ TEST_F(PasswordAccessoryControllerTest, OnCredManConditionalUiRequested) {
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+}
+
+// Verify that when WebAuthnCredentialsDelegate::IsAndroidHybridAvailable
+// returns true, the hybrid passkey option shows on the sheet, and selecting
+// it triggers hybrid passkey sign-in invocation.
+TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
+  ON_CALL(*webauthn_credentials_delegate(), IsAndroidHybridAvailable)
+      .WillByDefault(Return(true));
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                  passwords_empty_str(kExampleDomain))
+          .AppendFooterCommand(manage_passwords_str(),
+                               autofill::AccessoryAction::MANAGE_PASSWORDS)
+          .AppendFooterCommand(cross_device_passkeys_str(),
+                               autofill::AccessoryAction::CROSS_DEVICE_PASSKEY)
+          .Build());
+
+  EXPECT_CALL(*webauthn_credentials_delegate(), ShowAndroidHybridSignIn);
+
+  controller()->OnOptionSelected(
+      autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
+}
+
+// Verify that when WebAuthnCredentialsDelegate::IsAndroidHybridAvailable
+// returns false, the hybrid passkey option is not shown on the sheet.
+TEST_F(PasswordAccessoryControllerTest,
+       HybridPasskeyOptionNotShownWhenUnavailable) {
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                  passwords_empty_str(kExampleDomain))
+          .AppendFooterCommand(manage_passwords_str(),
+                               autofill::AccessoryAction::MANAGE_PASSWORDS)
+          .Build());
 }
 
 class PasswordAccessoryControllerWithTestStoreTest

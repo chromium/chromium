@@ -1093,6 +1093,7 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Save passwords toggle"/>
   <int value="7" label="'Show other passwords' link"/>
   <int value="8" label="Show Passkeys again"/>
+  <int value="9" label="'Use passkey on a different device' link"/>
 </enum>
 
 <enum name="AccessoryBarContents">
