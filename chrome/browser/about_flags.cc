@@ -9781,6 +9781,13 @@ const FeatureEntry kFeatureEntries[] = {
          kDiscardedTabTreatmentVariations,
          "DiscardedTabTreatment")},
 
+    {"memory-saver-memory-usage-in-hovercards",
+     flag_descriptions::kHighEfficiencyMemoryUsageInHovercardsName,
+     flag_descriptions::kHighEfficiencyMemoryUsageInHovercardsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kMemoryUsageInHovercards)},
+
     {"memory-saver-discard-exceptions-improvements",
      flag_descriptions::kHighEfficiencyDiscardExceptionsImprovementsName,
      flag_descriptions::kHighEfficiencyDiscardExceptionsImprovementsDescription,

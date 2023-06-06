@@ -59802,6 +59802,7 @@ from previous Chrome versions.
       label="EnableWebHidOnExtensionServiceWorker:enabled"/>
   <int value="-1639534120" label="VaapiVp9kSVCHWEncoding:enabled"/>
   <int value="-1639522154" label="GoogleOneOfferFilesBanner:enabled"/>
+  <int value="-1639301011" label="MemoryUsageInHovercards:disabled"/>
   <int value="-1639211162" label="CodeBasedRBD:enabled"/>
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
@@ -60913,6 +60914,7 @@ from previous Chrome versions.
   <int value="-1080300455" label="ProductivityLauncherImageSearch:disabled"/>
   <int value="-1080220553" label="PrinterSettingsRevamp:enabled"/>
   <int value="-1078892725" label="ReduceAcceptLanguage:enabled"/>
+  <int value="-1078746384" label="MemoryUsageInHovercards:enabled"/>
   <int value="-1078093206" label="ash-debug-shortcuts"/>
   <int value="-1077752943" label="enable-password-generation"/>
   <int value="-1077534880" label="OmniboxDynamicMaxAutocomplete:enabled"/>

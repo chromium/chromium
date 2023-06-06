@@ -2582,6 +2582,9 @@ extern const char kHighEfficiencyMultistateModeAvailableDescription[];
 extern const char kHighEfficiencyDiscardedTabTreatmentName[];
 extern const char kHighEfficiencyDiscardedTabTreatmentDescription[];
 
+extern const char kHighEfficiencyMemoryUsageInHovercardsName[];
+extern const char kHighEfficiencyMemoryUsageInHovercardsDescription[];
+
 extern const char kHighEfficiencyDiscardExceptionsImprovementsName[];
 extern const char kHighEfficiencyDiscardExceptionsImprovementsDescription[];
 

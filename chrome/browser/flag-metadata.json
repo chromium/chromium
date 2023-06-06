@@ -5083,6 +5083,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "memory-saver-memory-usage-in-hovercards",
+    "owners": [ "chrome-performance-ui-team@google.com" ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "memory-saver-multi-state-mode",
     "owners": [ "chrome-performance-ui-team@google.com" ],
     "expiry_milestone": 117
