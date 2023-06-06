@@ -80,6 +80,7 @@
 }
 
 .cr-nav-menu-item iron-icon {
+  flex-shrink: 0;
   margin-inline-end: 20px;
   pointer-events: none;
   vertical-align: top;
