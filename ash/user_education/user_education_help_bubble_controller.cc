@@ -113,4 +113,38 @@ absl::optional<HelpBubbleId> UserEducationHelpBubbleController::GetHelpBubbleId(
   return absl::nullopt;
 }
 
+base::CallbackListSubscription
+UserEducationHelpBubbleController::AddHelpBubbleAnchorBoundsChangedCallback(
+    base::RepeatingClosure callback) {
+  return help_bubble_anchor_bounds_changed_subscribers_.Add(
+      std::move(callback));
+}
+
+base::CallbackListSubscription
+UserEducationHelpBubbleController::AddHelpBubbleClosedCallback(
+    base::RepeatingClosure callback) {
+  return help_bubble_closed_subscribers_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+UserEducationHelpBubbleController::AddHelpBubbleShownCallback(
+    base::RepeatingClosure callback) {
+  return help_bubble_shown_subscribers_.Add(std::move(callback));
+}
+
+void UserEducationHelpBubbleController::NotifyHelpBubbleAnchorBoundsChanged(
+    base::PassKey<HelpBubbleViewAsh>) {
+  help_bubble_anchor_bounds_changed_subscribers_.Notify();
+}
+
+void UserEducationHelpBubbleController::NotifyHelpBubbleClosed(
+    base::PassKey<HelpBubbleViewAsh>) {
+  help_bubble_closed_subscribers_.Notify();
+}
+
+void UserEducationHelpBubbleController::NotifyHelpBubbleShown(
+    base::PassKey<HelpBubbleViewAsh>) {
+  help_bubble_shown_subscribers_.Notify();
+}
+
 }  // namespace ash

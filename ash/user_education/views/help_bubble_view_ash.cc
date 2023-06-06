@@ -14,6 +14,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/functional/bind.h"
@@ -21,6 +22,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
@@ -646,15 +648,26 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   UpdateRoundedCorners();
 
   widget->ShowInactive();
+
   auto* const anchor_bubble =
       anchor.view->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
   if (anchor_bubble) {
     anchor_pin_ = anchor_bubble->PreventCloseOnDeactivate();
   }
   MaybeStartAutoCloseTimer();
+
+  // NOTE: `controller` may be `nullptr` in testing.
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    controller->NotifyHelpBubbleShown(base::PassKey<HelpBubbleViewAsh>());
+  }
 }
 
-HelpBubbleViewAsh::~HelpBubbleViewAsh() = default;
+HelpBubbleViewAsh::~HelpBubbleViewAsh() {
+  // NOTE: `controller` may be `nullptr` in testing.
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    controller->NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>());
+  }
+}
 
 void HelpBubbleViewAsh::MaybeStartAutoCloseTimer() {
   if (timeout_.is_zero()) {
@@ -682,6 +695,12 @@ HelpBubbleViewAsh::CreateNonClientFrameView(views::Widget* widget) {
 void HelpBubbleViewAsh::OnAnchorBoundsChanged() {
   views::BubbleDialogDelegateView::OnAnchorBoundsChanged();
   UpdateRoundedCorners();
+
+  // NOTE: `controller` may be `nullptr` in testing.
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    controller->NotifyHelpBubbleAnchorBoundsChanged(
+        base::PassKey<HelpBubbleViewAsh>());
+  }
 }
 
 std::u16string HelpBubbleViewAsh::GetAccessibleWindowTitle() const {
