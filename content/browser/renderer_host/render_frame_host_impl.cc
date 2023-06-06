@@ -6041,13 +6041,10 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
     if (!process_lock.is_locked_to_site() ||
         !base::Contains(URLDataManagerBackend::GetWebUISchemes(),
                         process_lock.lock_url().scheme())) {
-      // TODO(nasko): Convert this to CHECK once it has had enough time to
-      // ensure this branch is not hit in production.
       SCOPED_CRASH_KEY_STRING256("AllowBindings", "process_lock",
                                  process_lock.ToString());
-      NOTREACHED() << "Calling AllowBindings for a process not locked to WebUI:"
+      CHECK(false) << "Calling AllowBindings for a process not locked to WebUI:"
                    << process_lock;
-      base::debug::DumpWithoutCrashing();
     }
   }
 
