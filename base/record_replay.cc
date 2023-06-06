@@ -36,7 +36,8 @@ namespace recordreplay {
   Macro(V8RecordReplayIdPointer, (int id), (id), void*, nullptr)        \
   Macro(V8RecordReplayFeatureEnabled,                                   \
         (const char* feature, const char* subfeature),                  \
-        (feature, subfeature), bool, false)                             \
+        (feature, subfeature), bool, true)                              \
+  Macro(V8RecordReplayHasDisabledFeatures, (), (), bool, false)         \
   Macro(V8IsMainThread, (), (), bool, false)                            \
   Macro(V8RecordReplayHadMismatch, (), (), bool, false)
 
@@ -344,6 +345,10 @@ void EndPassThroughEvents() {
 
 bool FeatureEnabled(const char* feature, const char* subfeature) {
   return V8RecordReplayFeatureEnabled(feature, subfeature);
+}
+
+bool HasDisabledFeatures() {
+  return V8RecordReplayHasDisabledFeatures();
 }
 
 void GetCurrentJSStack(std::string* stackTrace) {

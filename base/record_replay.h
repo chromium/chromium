@@ -71,6 +71,7 @@ void EndDisallowEvents();
 bool AreEventsDisallowed(const char* why = nullptr);
 
 bool FeatureEnabled(const char* feature, const char* subfeature = nullptr);
+bool HasDisabledFeatures();
 
 /**
  * Get the current JS stack, if there is any.

@@ -152,7 +152,7 @@ struct MemberHashRecordReplayId
   // Member. Prefer compressing raw pointers instead of decompressing Members,
   // assuming the former is cheaper.
   static unsigned GetHash(const T* key) {
-    if (recordreplay::IsRecordingOrReplaying()) {
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       int id = key->RecordReplayId();
       // Ids are allowed to be zero if we've diverged from the recording.
       if (recordreplay::HasDivergedFromRecording()) {
@@ -175,7 +175,7 @@ struct MemberHashRecordReplayId
   template <typename Member,
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
-    if (recordreplay::IsRecordingOrReplaying()) {
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       int id = m.Get()->RecordReplayId();
       // Ids are allowed to be zero if we've diverged from the recording.
       if (recordreplay::HasDivergedFromRecording()) {

@@ -61,6 +61,7 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
   // strong references on the observers when replaying so none of the observers
   // we need to notify should already be collected.
   if (recordreplay::IsRecordingOrReplaying("values", "ContextLifecycleNotifier::NotifyContextDestroyed") &&
+      recordreplay::FeatureEnabled("pointer-ids") &&
       !recordreplay::AreEventsDisallowed()) {
     size_t num_observers = recordreplay::RecordReplayValue("NotifyContextDestroyed NumObservers", observers.size());
     int* observer_ids = new int[num_observers];

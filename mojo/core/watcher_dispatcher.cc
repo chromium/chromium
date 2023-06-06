@@ -23,9 +23,14 @@ WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
   recordreplay::RegisterPointer("WatcherDispatcher", this);
 
   // https://linear.app/replay/issue/RUN-999
-  CHECK(!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording());
-  if (recordreplay::IsRecordingOrReplaying("pointer-ids"))
-    CHECK(recordreplay::PointerId(this) || recordreplay::HasDivergedFromRecording());
+  CHECK(!recordreplay::AreEventsDisallowed() ||
+        recordreplay::HasDivergedFromRecording() ||
+        recordreplay::HasDisabledFeatures());
+  if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+    CHECK(recordreplay::PointerId(this) ||
+          recordreplay::HasDivergedFromRecording() ||
+          recordreplay::HasDisabledFeatures());
+  }
 }
 
 void WatcherDispatcher::NotifyHandleState(Dispatcher* dispatcher,
