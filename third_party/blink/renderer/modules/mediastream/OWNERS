@@ -1,8 +1,6 @@
-eladalon@chromium.org
-guidou@chromium.org
+file://third_party/blink/common/mediastream/COMMON_OWNERS
 hbos@chromium.org
 tommi@chromium.org
-toprice@chromium.org
 
 per-file *audio*=olka@chromium.org
 per-file low_latency_video*=kron@chromium.org
