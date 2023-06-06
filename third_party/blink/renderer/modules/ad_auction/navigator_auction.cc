@@ -468,6 +468,30 @@ scoped_refptr<const SecurityOrigin> ParseOrigin(const String& origin_string) {
 
 // joinAdInterestGroup() copy functions.
 
+// TODO(crbug.com/1451034): Remove method when old expiration is removed.
+bool CopyLifetimeIdlToMojo(ExceptionState& exception_state,
+                           absl::optional<double> lifetime_seconds,
+                           const AuctionAdInterestGroup& input,
+                           mojom::blink::InterestGroup& output) {
+  absl::optional<base::TimeDelta> lifetime_old =
+      lifetime_seconds
+          ? absl::optional<base::TimeDelta>(base::Seconds(*lifetime_seconds))
+          : absl::nullopt;
+  absl::optional<base::TimeDelta> lifetime_new =
+      input.hasLifetimeMs() ? absl::optional<base::TimeDelta>(
+                                  base::Milliseconds(input.lifetimeMs()))
+                            : absl::nullopt;
+  if (lifetime_old && !lifetime_new) {
+    lifetime_new = lifetime_old;
+  }
+  if (!lifetime_new) {
+    exception_state.ThrowTypeError(ErrorMissingRequired("lifetimeMs"));
+    return false;
+  }
+  output.expiry = base::Time::Now() + *lifetime_new;
+  return true;
+}
+
 bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
                             ExceptionState& exception_state,
                             const AuctionAdInterestGroup& input,
@@ -2235,6 +2259,40 @@ bool HandleOldDictNamesRun(AuctionAdConfig* config,
   return true;
 }
 
+// TODO(crbug.com/1451034): Remove indirection method
+// JoinAdInterestGroupInternal() when old expiration is removed.
+ScriptPromise JoinAdInterestGroupInternal(
+    ScriptState* script_state,
+    Navigator& navigator,
+    AuctionAdInterestGroup* group,
+    absl::optional<double> duration_seconds,
+    ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
+  RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return ScriptPromise();
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
+      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
+    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
+                               "joinAdInterestGroup");
+  }
+
+  return NavigatorAuction::From(ExecutionContext::From(script_state), navigator)
+      .joinAdInterestGroup(script_state, group, duration_seconds,
+                           exception_state);
+}
+
 }  // namespace
 
 NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
@@ -2548,7 +2606,7 @@ const char NavigatorAuction::kSupplementName[] = "NavigatorAuction";
 ScriptPromise NavigatorAuction::joinAdInterestGroup(
     ScriptState* script_state,
     AuctionAdInterestGroup* mutable_group,
-    double duration_seconds,
+    absl::optional<double> lifetime_seconds,
     ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
 
@@ -2559,7 +2617,10 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
   const AuctionAdInterestGroup* group = mutable_group;
 
   auto mojo_group = mojom::blink::InterestGroup::New();
-  mojo_group->expiry = base::Time::Now() + base::Seconds(duration_seconds);
+  if (!CopyLifetimeIdlToMojo(exception_state, lifetime_seconds, *group,
+                             *mojo_group)) {
+    return ScriptPromise();
+  }
   if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
     return ScriptPromise();
   mojo_group->name = group->name();
@@ -2663,30 +2724,19 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
     AuctionAdInterestGroup* group,
     double duration_seconds,
     ExceptionState& exception_state) {
-  if (!navigator.DomWindow()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "The document has no window associated.");
-    return ScriptPromise();
-  }
-  RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
-  const ExecutionContext* context = ExecutionContext::From(script_state);
-  if (!context->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Feature join-ad-interest-group is not enabled by Permissions Policy");
-    return ScriptPromise();
-  }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
-      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
-                               "joinAdInterestGroup");
-  }
+  return JoinAdInterestGroupInternal(script_state, navigator, group,
+                                     duration_seconds, exception_state);
+}
 
-  return From(ExecutionContext::From(script_state), navigator)
-      .joinAdInterestGroup(script_state, group, duration_seconds,
-                           exception_state);
+/* static */
+ScriptPromise NavigatorAuction::joinAdInterestGroup(
+    ScriptState* script_state,
+    Navigator& navigator,
+    AuctionAdInterestGroup* group,
+    ExceptionState& exception_state) {
+  return JoinAdInterestGroupInternal(script_state, navigator, group,
+                                     /*duration_seconds=*/absl::nullopt,
+                                     exception_state);
 }
 
 ScriptPromise NavigatorAuction::leaveAdInterestGroup(

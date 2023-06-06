@@ -51,12 +51,16 @@ class MODULES_EXPORT NavigatorAuction final
   // TODO(crbug.com/1441988): Make `const AuctionAdInterestGroup*` after rename.
   ScriptPromise joinAdInterestGroup(ScriptState*,
                                     AuctionAdInterestGroup*,
-                                    double,
+                                    absl::optional<double>,
                                     ExceptionState&);
   static ScriptPromise joinAdInterestGroup(ScriptState*,
                                            Navigator&,
                                            AuctionAdInterestGroup*,
                                            double,
+                                           ExceptionState&);
+  static ScriptPromise joinAdInterestGroup(ScriptState*,
+                                           Navigator&,
+                                           AuctionAdInterestGroup*,
                                            ExceptionState&);
   ScriptPromise leaveAdInterestGroup(ScriptState*,
                                      const AuctionAdInterestGroupKey*,

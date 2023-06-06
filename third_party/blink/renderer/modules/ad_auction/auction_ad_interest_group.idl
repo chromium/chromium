@@ -26,6 +26,10 @@ dictionary AuctionAdInterestGroup {
   required USVString owner;
   required USVString name;
 
+  // TODO(crbug.com/1451034): Make required once support for old
+  // joinAdInterestGroup() duration parameter can be removed.
+  double lifetimeMs;
+
   double priority;
   boolean enableBiddingSignalsPrioritization;
   record<DOMString, double> priorityVector;
