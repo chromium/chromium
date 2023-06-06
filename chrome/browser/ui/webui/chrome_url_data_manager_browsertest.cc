@@ -39,7 +39,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
 #else
 #include "chrome/browser/signin/signin_features.h"
 #endif
@@ -160,6 +163,10 @@ IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, LargeResourceScale) {
   EXPECT_NE(net::OK, observer.net_error());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PrefService;
+#endif
+
 class ChromeURLDataManagerWebUITrustedTypesTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<const char*> {
@@ -233,6 +240,19 @@ class ChromeURLDataManagerWebUITrustedTypesTest
         name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
     return name;
   }
+
+ protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(ash::switches::kSamlPasswordChangeUrl,
+                                    "http://password-change.example");
+  }
+
+  void SetUpOnMainThread() override {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        ash::prefs::kSamlInSessionPasswordChangeEnabled, true);
+  }
+#endif
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -381,6 +401,9 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://add-supervision/",
     "chrome://app-disabled",
     "chrome://certificate-manager/",
+    // Crashes because message handler is not registered outside of the dialog
+    // for confirm password change UI.
+    // "chrome://confirm-password-change",
     "chrome://cloud-upload",
     "chrome://cryptohome",
     "chrome://drive-internals",
@@ -396,6 +419,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://network",
     "chrome://office-fallback/",
     "chrome://parent-access",
+    "chrome://password-change",
     "chrome://power",
     "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
@@ -403,6 +427,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://slow",
     "chrome://smb-credentials-dialog/",
     "chrome://smb-share-dialog/",
+    "chrome://urgent-password-expiry-notification/",
     "chrome://sys-internals",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
