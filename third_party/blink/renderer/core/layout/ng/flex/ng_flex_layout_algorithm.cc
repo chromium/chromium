@@ -2497,14 +2497,15 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
     container_sizes += main_axis_margins;
   }
 
+  const LayoutUnit gap_inline_size =
+      (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
   if (algorithm_.IsMultiline()) {
     container_sizes.min_size = largest_outer_min_content_contribution;
+    container_sizes.max_size += gap_inline_size;
   } else {
     DCHECK_EQ(largest_outer_min_content_contribution, LayoutUnit())
         << "largest_outer_min_content_contribution is not filled in for "
            "singleline containers.";
-    const LayoutUnit gap_inline_size =
-        (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
     container_sizes += gap_inline_size;
   }
 
