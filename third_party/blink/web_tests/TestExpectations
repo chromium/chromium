@@ -5671,7 +5671,6 @@ crbug.com/1066772 http/tests/devtools/elements/shadow/shadow-slot-assignment.js 
 crbug.com/1338536 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
 # Sheriff 2022-06-24
 crbug.com/1339211 [ Mac10.13 Release ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
-crbug.com/1339291 [ Mac12-arm64 Release ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
 crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Pass ]
 crbug.com/webrtc/14228 external/wpt/webrtc/protocol/h264-profile-levels.https.html [ Failure Pass ]
@@ -6698,3 +6697,4 @@ crbug.com/1451711 [ Mac10.15 ] http/tests/inspector-protocol/tracing/prerender.j
 
 # Sheriff 2023-06-06
 crbug.com/1451810 [ Linux ] wpt_internal/css/css-contain/container-queries/state-initially-stuck.html [ Failure ]
+crbug.com/1339291 [ Mac12-arm64 Release ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure ]
