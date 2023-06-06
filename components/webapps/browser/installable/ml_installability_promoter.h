@@ -53,30 +53,25 @@ class MLInstallabilityPromoter
   MLInstallabilityPromoter& operator=(const MLInstallabilityPromoter&) = delete;
 
   // ------ Testing functionalities, only to be called from tests -----
-  void SetAwaitSiteResourcesLoadCallbackForTesting(
-      base::OnceClosure await_site_resources_load_callback_for_testing);
+  void SetAwaitTimeoutTaskPendingCallbackForTesting(
+      base::OnceClosure await_timeout_task_pending_callback_for_testing);
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-  const blink::mojom::ManifestPtr& GetManifestForTesting();
-  const SiteQualityMetrics& GetSiteQualityMetricsForTesting();
-  const SiteInstallMetrics& GetSiteInstallMetricsForTesting();
-
-  // This is technically where the UKMs will be measured.
-  void StartGatheringMetricsForSiteUrl();
 
  private:
   // TODO(b/280455638):Add new states based on design.
   enum class MLPipelineState {
     kInactive = 0,
     kRunningMetricTasks = 1,
-    kComplete = 2,
-    kMaxValue = kComplete,
+    kUKMCollectionComplete = 2,
+    kMaxValue = kUKMCollectionComplete,
   };
 
   explicit MLInstallabilityPromoter(content::WebContents* web_contents);
   friend class content::WebContentsUserData<MLInstallabilityPromoter>;
 
+  // Functions to start gathering metrics for the site URL.
+  void StartGatheringMetricsForSiteUrl();
   void OnDidCollectSiteQualityMetrics(
       const SiteQualityMetrics& site_quality_metrics);
   void OnDidGetManifestForCurrentURL(blink::mojom::ManifestPtr manifest);
@@ -85,6 +80,13 @@ class MLInstallabilityPromoter
   // specific amount of seconds for changes in the web contents to modify data
   // required for training the ML model.
   void OnDidWaitForObserversToFire();
+
+  // This proceeds the ML pipeline only if:
+  // 1. All metric tasks are complete and data is obtained.
+  // 2. We have waited for kTimeToWaitForWebContentsObservers for all web
+  // contents changes to be properly measured.
+  void MaybeCompleteMetricsCollection();
+  void EmitUKMs();
 
   // contents::WebContentsObserver overrides
   void DidFinishNavigation(content::NavigationHandle* handle) override;
@@ -102,13 +104,7 @@ class MLInstallabilityPromoter
                             const GURL& scope) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
-  // This proceeds the ML pipeline only if:
-  // 1. All metric tasks are complete and data is obtained.
-  // 2. We have waited for kTimeToWaitForWebContentsObservers for all web
-  // contents changes to be properly measured.
-  void MaybeCompleteMetricsCollection();
-  void Reset();
-
+  void ResetRunningStagesAndTasks();
   bool IsTimeoutTaskOnlyPending();
 
   // Tasks that are responsible for collecting data to be used for ML promotion.
@@ -125,7 +121,7 @@ class MLInstallabilityPromoter
   bool is_timeout_complete_ = false;
   GURL site_url_;
 
-  base::OnceClosure await_site_resources_load_callback_for_testing_;
+  base::OnceClosure await_timeout_task_pending_callback_for_testing_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   raw_ptr<content::StoragePartition> storage_partition_;

@@ -67857,6 +67857,13 @@ from previous Chrome versions.
   <int value="3" label="Feature is disabled"/>
 </enum>
 
+<enum name="ManifestUrlValidity">
+  <int value="-1" label="Manifest does not exist"/>
+  <int value="0" label="URL is empty"/>
+  <int value="1" label="Invalid URL"/>
+  <int value="2" label="Valid URL"/>
+</enum>
+
 <enum name="MappedAndResidentPagesDumpState">
   <int value="0" label="kAccessPagemapDenied"/>
   <int value="1" label="kFailure"/>
@@ -110062,6 +110069,7 @@ others/histograms.xml -->
   <summary>
     The display mode of a web app (as defined in the Web App Manifest spec).
   </summary>
+  <int value="-1" label="Manifest does not exist"/>
   <int value="0" label="Undefined"/>
   <int value="1" label="Browser"/>
   <int value="2" label="Minimal UI"/>

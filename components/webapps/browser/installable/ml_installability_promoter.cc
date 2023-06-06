@@ -20,11 +20,28 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace webapps {
+
+namespace {
+
+enum class ManifestUrlInvalid {
+  kEmpty = 0,
+  kInvalid = 1,
+  kValid = 2,
+  kMaxValue = kValid
+};
+
+}  // namespace
 
 MLInstallabilityPromoter::~MLInstallabilityPromoter() {
   if (service_worker_context_) {
@@ -32,10 +49,10 @@ MLInstallabilityPromoter::~MLInstallabilityPromoter() {
   }
 }
 
-void MLInstallabilityPromoter::SetAwaitSiteResourcesLoadCallbackForTesting(
+void MLInstallabilityPromoter::SetAwaitTimeoutTaskPendingCallbackForTesting(
     base::OnceClosure await_site_resources_load_callback_for_testing) {
   CHECK_IS_TEST();
-  await_site_resources_load_callback_for_testing_ =
+  await_timeout_task_pending_callback_for_testing_ =
       std::move(await_site_resources_load_callback_for_testing);
 }
 
@@ -43,24 +60,6 @@ void MLInstallabilityPromoter::SetTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   CHECK_IS_TEST();
   sequenced_task_runner_ = task_runner;
-}
-
-const blink::mojom::ManifestPtr&
-MLInstallabilityPromoter::GetManifestForTesting() {
-  CHECK_IS_TEST();
-  return manifest_;
-}
-
-const SiteQualityMetrics&
-MLInstallabilityPromoter::GetSiteQualityMetricsForTesting() {
-  CHECK_IS_TEST();
-  return site_quality_metrics_;
-}
-
-const SiteInstallMetrics&
-MLInstallabilityPromoter::GetSiteInstallMetricsForTesting() {
-  CHECK_IS_TEST();
-  return site_install_metrics_;
 }
 
 void MLInstallabilityPromoter::StartGatheringMetricsForSiteUrl() {
@@ -76,6 +75,10 @@ void MLInstallabilityPromoter::StartGatheringMetricsForSiteUrl() {
   }
 
   site_url_ = site_url;
+
+  if (state_ != MLPipelineState::kInactive) {
+    ResetRunningStagesAndTasks();
+  }
 
   CHECK(state_ == MLPipelineState::kInactive);
   state_ = MLPipelineState::kRunningMetricTasks;
@@ -140,6 +143,108 @@ void MLInstallabilityPromoter::OnDidWaitForObserversToFire() {
   MaybeCompleteMetricsCollection();
 }
 
+void MLInstallabilityPromoter::MaybeCompleteMetricsCollection() {
+  if (site_manifest_metrics_task_ || site_quality_metrics_task_ ||
+      !is_timeout_complete_) {
+    // This allows us to reach a state in tests where both the site quality and
+    // site metrics tasks have run but the timeout task has not, allowing
+    // effective testing of update logic.
+    if (IsTimeoutTaskOnlyPending()) {
+      if (await_timeout_task_pending_callback_for_testing_) {
+        CHECK_IS_TEST();
+        std::move(await_timeout_task_pending_callback_for_testing_).Run();
+      }
+    }
+    return;
+  }
+
+  ResetRunningStagesAndTasks();
+  EmitUKMs();
+}
+
+void MLInstallabilityPromoter::EmitUKMs() {
+  ukm::SourceId source_id =
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+
+  // Record Site.Quality event data.
+  ukm::builders::Site_Quality(source_id)
+      .SetCacheStorageSize(ukm::GetExponentialBucketMinForBytes(
+          site_quality_metrics_.cache_storage_size))
+      .SetHasFavicons(site_quality_metrics_.favicons_count > 0)
+      .SetHasFetchHandler(site_quality_metrics_.has_fetch_handler)
+      .SetServiceWorkerScriptSize(ukm::GetExponentialBucketMinForBytes(
+          site_quality_metrics_.service_worker_script_size))
+      .Record(ukm_recorder->Get());
+
+  // Record Site.Install Event data.
+  ukm::builders::Site_Install(source_id)
+      .SetIsFullyInstalled(site_install_metrics_.is_fully_installed)
+      .SetIsPartiallyInstalled(site_install_metrics_.is_partially_installed)
+      .Record(ukm_recorder->Get());
+
+  // Record Site.Manifest Event data.
+  ukm::builders::Site_Manifest manifest_builder(source_id);
+  if (blink::IsEmptyManifest(manifest_)) {
+    // See NullableBoolean in enums.xml for more information.
+    manifest_builder
+        .SetDisplayMode(
+            -1)  // Denotes that it is empty because the manifest is missing.
+        .SetHasBackgroundColor(/*NullableBoolean::Null=*/2)
+        .SetHasIconsAny(/*NullableBoolean::Null=*/2)
+        .SetHasIconsMaskable(/*NullableBoolean::Null=*/2)
+        .SetHasName(/*NullableBoolean::Null=*/2)
+        .SetHasScreenshots(/*NullableBoolean::Null=*/2)
+        .SetHasStartUrl(
+            -1)  // See ManifestUrlValidity in enums.xml for more information.
+        .SetHasThemeColor(/*NullableBoolean::Null=*/2);
+  } else {
+    manifest_builder.SetDisplayMode(static_cast<int>(manifest_->display))
+        .SetHasBackgroundColor(manifest_->has_background_color)
+        .SetHasName(manifest_->name.has_value())
+        .SetHasScreenshots(!manifest_->screenshots.empty())
+        .SetHasThemeColor(manifest_->has_theme_color);
+
+    // Set icon data in the UKM.
+    bool has_manifest_icons_any = false;
+    bool has_manifest_icons_maskable = false;
+    for (const auto& icon : manifest_->icons) {
+      for (const auto manifest_purpose : icon.purpose) {
+        if (manifest_purpose ==
+            blink::mojom::ManifestImageResource_Purpose::ANY) {
+          has_manifest_icons_any = true;
+        }
+        if (manifest_purpose ==
+            blink::mojom::ManifestImageResource_Purpose::MASKABLE) {
+          has_manifest_icons_maskable = true;
+        }
+      }
+      if (has_manifest_icons_any && has_manifest_icons_maskable) {
+        break;
+      }
+    }
+    manifest_builder.SetHasIconsAny(has_manifest_icons_any)
+        .SetHasIconsMaskable(has_manifest_icons_maskable);
+
+    // Set Manifest start URL data in UKM.
+    if (manifest_->start_url.is_empty()) {
+      manifest_builder.SetHasStartUrl(
+          static_cast<int>(ManifestUrlInvalid::kEmpty));
+    } else if (manifest_->start_url.is_valid()) {
+      manifest_builder.SetHasStartUrl(
+          static_cast<int>(ManifestUrlInvalid::kValid));
+    } else {
+      manifest_builder.SetHasStartUrl(
+          static_cast<int>(ManifestUrlInvalid::kInvalid));
+    }
+  }
+  manifest_builder.Record(ukm_recorder->Get());
+
+  state_ = MLPipelineState::kUKMCollectionComplete;
+  // TODO(b/283998203): Trigger the ML Model to start generating
+  // insights based on the UKMs.
+}
+
 void MLInstallabilityPromoter::DidFinishNavigation(
     content::NavigationHandle* handle) {
   if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
@@ -148,7 +253,7 @@ void MLInstallabilityPromoter::DidFinishNavigation(
   }
 
   if (handle->IsServedFromBackForwardCache()) {
-    Reset();
+    ResetRunningStagesAndTasks();
     StartGatheringMetricsForSiteUrl();
   }
 }
@@ -156,14 +261,14 @@ void MLInstallabilityPromoter::DidFinishNavigation(
 void MLInstallabilityPromoter::DidFinishLoad(
     content::RenderFrameHost* /*render_frame_host*/,
     const GURL& /*validated_url*/ url) {
-  Reset();
+  ResetRunningStagesAndTasks();
   StartGatheringMetricsForSiteUrl();
 }
 
 // Stop collecting data if the web contents have been destroyed.
 void MLInstallabilityPromoter::WebContentsDestroyed() {
   Observe(nullptr);
-  Reset();
+  ResetRunningStagesAndTasks();
 }
 
 void MLInstallabilityPromoter::DidUpdateWebManifestURL(
@@ -223,27 +328,7 @@ void MLInstallabilityPromoter::OnDestruct(
   service_worker_context_ = nullptr;
 }
 
-void MLInstallabilityPromoter::MaybeCompleteMetricsCollection() {
-  if (site_manifest_metrics_task_ || site_quality_metrics_task_ ||
-      !is_timeout_complete_) {
-    // This allows us to reach a state in tests where both the site quality and
-    // site metrics tasks have run but the timeout task has not, allowing
-    // effective testing of update logic.
-    if (IsTimeoutTaskOnlyPending()) {
-      if (await_site_resources_load_callback_for_testing_) {
-        CHECK_IS_TEST();
-        std::move(await_site_resources_load_callback_for_testing_).Run();
-      }
-    }
-    return;
-  }
-
-  Reset();
-  state_ = MLPipelineState::kComplete;
-  // TODO(b/284157768): Start measuring UKMs from here.
-}
-
-void MLInstallabilityPromoter::Reset() {
+void MLInstallabilityPromoter::ResetRunningStagesAndTasks() {
   state_ = MLPipelineState::kInactive;
   site_manifest_metrics_task_.reset();
   site_quality_metrics_task_.reset();

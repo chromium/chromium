@@ -22304,6 +22304,114 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Site.Install">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records various metrics about whether a particular site has been installed
+    as a PWA or not.
+  </summary>
+  <metric name="IsFullyInstalled" enum="Boolean">
+    <summary>
+      Measured if the site matches the scope of any installed PWAs present in
+      the profile.
+    </summary>
+  </metric>
+  <metric name="IsPartiallyInstalled" enum="Boolean">
+    <summary>
+      Measured if the app is partially installed via sync. This means that the
+      user has installed the app on another device, and it exists in their sync
+      profile, but it is not 'fully' installed on this device. This is expected
+      to be a strong signal that the user will want to install the app fully on
+      this device, as they already have it installed elsewhere.
+    </summary>
+  </metric>
+</event>
+
+<event name="Site.Manifest">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records various signals regarding the fields present inside a manifest. If
+    the DisplayMode is undefined, HasStartUrl is kEmpty, and all the other
+    fields are false, then that denotes a site that has no manifest. For all
+    other use-cases, the existence of a manifest is confirmed.
+  </summary>
+  <metric name="DisplayMode" enum="WebAppDisplayMode">
+    <summary>
+      Records the display mode populated inside the manifest as per the manifest
+      specifications. If it does not exist, this is measured as Undefined.
+    </summary>
+  </metric>
+  <metric name="HasBackgroundColor" enum="NullableBoolean">
+    <summary>
+      Records whether the manifest has the background_color field populated.
+    </summary>
+  </metric>
+  <metric name="HasIconsAny" enum="NullableBoolean">
+    <summary>
+      Records whether the manifest has icons of purpose ANY.
+    </summary>
+  </metric>
+  <metric name="HasIconsMaskable" enum="NullableBoolean">
+    <summary>
+      Records whether the manifest has maskable icons.
+    </summary>
+  </metric>
+  <metric name="HasName" enum="NullableBoolean">
+    <summary>
+      Records whether the manifest has the name field populated.
+    </summary>
+  </metric>
+  <metric name="HasScreenshots" enum="NullableBoolean">
+    <summary>
+      Records whether the manifest has valid screenshots specified.
+    </summary>
+  </metric>
+  <metric name="HasStartUrl" enum="ManifestUrlValidity">
+    <summary>
+      Records whether the manifest has a valid URL in the start_url field.
+    </summary>
+  </metric>
+  <metric name="HasThemeColor" enum="NullableBoolean">
+    <summary>
+      Records whether the manifest has the theme_color field populated.
+    </summary>
+  </metric>
+</event>
+
+<event name="Site.Quality">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records various signals about a site that boost its chances of being
+    installed as a web app, like valid fetch handlers (boosting offline
+    capabilities), service worker data usage and whether the site has favicons.
+  </summary>
+  <metric name="CacheStorageSize">
+    <summary>
+      Measures the service worker cache storage size as determined by the Quota
+      system for a site in bytes.
+    </summary>
+  </metric>
+  <metric name="HasFavicons" enum="Boolean">
+    <summary>
+      Records whether the site has favicons or not.
+    </summary>
+  </metric>
+  <metric name="HasFetchHandler" enum="Boolean">
+    <summary>
+      Records if the service worker exists and has a valid fetch handler.
+    </summary>
+  </metric>
+  <metric name="ServiceWorkerScriptSize">
+    <summary>
+      Measured the size of the service worker script in bytes. If the service
+      worker does not exist, then a script size of 0 is measured.
+    </summary>
+  </metric>
+</event>
+
 <event name="SiteIsolation.XSD.Browser.Blocked">
   <obsolete>
     Removed in June 2019 / M77. Some old data has been saved in a
