@@ -4716,7 +4716,11 @@
     # Rust tests run on all targets.
     'rust_common_gtests': {
       'base_unittests': {},
-      'components_unittests': {},  # For go/rusty-qr-code-generator
+      'components_unittests': {  # For go/rusty-qr-code-generator
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/rust.components_unittests.filter',
+        ],
+      },
       'mojo_rust_integration_unittests': {},
       'mojo_rust_unittests': {},
       'rust_gtest_interop_unittests': {},
