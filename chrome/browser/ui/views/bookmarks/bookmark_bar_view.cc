@@ -1717,34 +1717,13 @@ size_t BookmarkBarView::GetFirstHiddenNodeIndex() const {
 }
 
 std::unique_ptr<MenuButton> BookmarkBarView::CreateOtherBookmarksButton() {
-  std::unique_ptr<MenuButton> button;
-  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    // Title is set in Loaded.
-    button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
-        [](Browser* browser, const ui::Event& event) {
-          SidePanelUI* side_panel_ui =
-              SidePanelUI::GetSidePanelUIForBrowser(browser);
-          if (side_panel_ui->GetCurrentEntryId() ==
-              SidePanelEntry::Id::kBookmarks) {
-            side_panel_ui->Close();
-          } else {
-            side_panel_ui->Show(
-                SidePanelEntry::Id::kBookmarks,
-                SidePanelUtil::SidePanelOpenTrigger::kBookmarkBar);
-          }
-        },
-        browser_));
-  } else {
-    // Title is set in Loaded.
-    button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
-        [](BookmarkBarView* bar, const ui::Event& event) {
-          bar->OnMenuButtonPressed(bar->bookmark_model_->other_node(), event);
-        },
-        base::Unretained(this)));
-
-    button->set_context_menu_controller(this);
-  }
+  auto button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
+      [](BookmarkBarView* bar, const ui::Event& event) {
+        bar->OnMenuButtonPressed(bar->bookmark_model_->other_node(), event);
+      },
+      base::Unretained(this)));
   button->SetID(VIEW_ID_OTHER_BOOKMARKS);
+  button->set_context_menu_controller(this);
   return button;
 }
 

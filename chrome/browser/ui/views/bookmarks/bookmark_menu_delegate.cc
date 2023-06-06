@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -20,7 +21,9 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -233,6 +236,11 @@ bool BookmarkMenuDelegate::IsTriggerableEvent(views::MenuItemView* menu,
 }
 
 void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
+  if (id == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
+    browser_->command_controller()->ExecuteCommand(id);
+    return;
+  }
+
   DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
 
   std::vector<const BookmarkNode*> selection = {menu_id_to_node_map_[id]};
@@ -247,6 +255,9 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
     int id,
     const ui::Event& event) {
+  if (id == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
+    return false;
+  }
   if (ui::DispositionFromEventFlags(event.flags()) ==
       WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
@@ -273,9 +284,12 @@ bool BookmarkMenuDelegate::AreDropTypesRequired(MenuItemView* menu) {
 
 bool BookmarkMenuDelegate::CanDrop(MenuItemView* menu,
                                    const ui::OSExchangeData& data) {
+  if (menu->GetCommand() == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
+    return false;
+  }
+
   // Only accept drops of 1 node, which is the case for all data dragged from
   // bookmark bar and menus.
-
   if (!drop_data_.Read(data) || drop_data_.size() != 1 ||
       !profile_->GetPrefs()->GetBoolean(
           bookmarks::prefs::kEditBookmarksEnabled))
@@ -312,11 +326,15 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
     views::MenuDelegate::DropPosition* position) {
   // Should only get here if we have drop data.
   DCHECK(drop_data_.is_valid());
+  BookmarkModel* const model = GetBookmarkModel();
+
+  if (item->GetCommand() == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
+    return ui::mojom::DragOperation::kNone;
+  }
 
   const BookmarkNode* node = menu_id_to_node_map_[item->GetCommand()];
   const BookmarkNode* drop_parent = node->parent();
   size_t index_to_drop_at = drop_parent->GetIndexOf(node).value();
-  BookmarkModel* model = GetBookmarkModel();
   switch (*position) {
     case views::MenuDelegate::DropPosition::kAfter:
       if (node == model->other_node() || node == model->mobile_node()) {
@@ -410,6 +428,9 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
 }
 
 bool BookmarkMenuDelegate::CanDrag(MenuItemView* menu) {
+  if (menu->GetCommand() == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
+    return false;
+  }
   const BookmarkNode* node = menu_id_to_node_map_[menu->GetCommand()];
   // Don't let users drag the other folder.
   return node->parent() != GetBookmarkModel()->root_node();
@@ -623,6 +644,13 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
           id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
     }
     AddMenuToMaps(child_menu_item, node);
+  }
+  if (parent == GetBookmarkModel()->other_node() &&
+      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    menu->AppendSeparator();
+    menu->AppendMenuItem(
+        IDC_SHOW_BOOKMARK_SIDE_PANEL,
+        l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL));
   }
 }
 
