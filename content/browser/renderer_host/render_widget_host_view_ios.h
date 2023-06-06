@@ -113,11 +113,6 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void DidNavigate() override;
   bool RequestRepaintForTesting() override;
   void Destroy() override;
-  bool IsSurfaceAvailableForCopy() override;
-  void CopyFromSurface(
-      const gfx::Rect& src_rect,
-      const gfx::Size& dst_size,
-      base::OnceCallback<void(const SkBitmap&)> callback) override;
   ui::Compositor* GetCompositor() override;
 
   BrowserCompositorIOS* BrowserCompositor() const {

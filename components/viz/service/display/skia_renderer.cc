@@ -3817,10 +3817,6 @@ DelegatedInkPointRendererBase* SkiaRenderer::GetDelegatedInkPointRenderer(
   return delegated_ink_handler_->GetInkRenderer();
 }
 
-bool SkiaRenderer::SupportsBGRA() const {
-  return skia_output_surface_->SupportsBGRA();
-}
-
 void SkiaRenderer::SetDelegatedInkMetadata(
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   if (!delegated_ink_handler_) {
