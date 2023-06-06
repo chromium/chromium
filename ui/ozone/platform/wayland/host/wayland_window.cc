@@ -655,7 +655,11 @@ void WaylandWindow::OnDragLeave() {
 }
 
 void WaylandWindow::OnDragSessionClose(DragOperation operation) {
-  DCHECK(drag_finished_callback_);
+  if (!drag_finished_callback_) {
+    // WaylandWindow::PrepareForShutdown() is already called. This window
+    // is about to shut down. Do nothing and return.
+    return;
+  }
   std::move(drag_finished_callback_).Run(operation);
   connection()->event_source()->ResetPointerFlags();
   std::move(drag_loop_quit_closure_).Run();

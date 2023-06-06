@@ -340,6 +340,12 @@ class WaylandWindowTest : public WaylandTest {
   MouseEvent test_mouse_event_;
 };
 
+// Regression test for crbug.com/1433175
+TEST_P(WaylandWindowTest, Shutdown) {
+  window_->PrepareForShutdown();
+  window_->OnDragSessionClose(mojom::DragOperation::kNone);
+}
+
 TEST_P(WaylandWindowTest, SetTitle) {
   window_->SetTitle(u"hello");
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
