@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
+#include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/attribute.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_list.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 
 #include <memory>
@@ -29,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -171,17 +177,19 @@ v8::Local<v8::String> ValueStringKey(v8::Isolate* isolate_) {
 }
 
 v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
-                                              v8::Isolate* isolate_,
-                                              int max_depth) {
+                                              v8::Isolate* isolate_) {
   static const char kAttributes[] = "attributes";
   static const char kBackendNodeId[] = "backendNodeId";
-  static const char kChildren[] = "children";
   static const char kChildNodeCount[] = "childNodeCount";
   static const char kLocalName[] = "localName";
   static const char kNamespaceURI[] = "namespaceURI";
   static const char kNode[] = "node";
   static const char kNodeType[] = "nodeType";
   static const char kNodeValue[] = "nodeValue";
+  static const char kShadowRoot[] = "shadowRoot";
+  static const char kShadowRootMode[] = "mode";
+  static const char kShadowRootOpen[] = "open";
+  static const char kShadowRootClosed[] = "closed";
 
   Vector<v8::Local<v8::Name>> serialized_value_keys;
   Vector<v8::Local<v8::Value>> serialized_value_values;
@@ -194,12 +202,39 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
     serialized_value_values.push_back(V8String(isolate_, node->nodeValue()));
   }
 
+  serialized_value_keys.push_back(V8String(isolate_, kChildNodeCount));
+  serialized_value_values.push_back(
+      v8::Number::New(isolate_, node->CountChildren()));
+
   DOMNodeId backend_node_id = DOMNodeIds::IdForNode(node);
   serialized_value_keys.push_back(V8String(isolate_, kBackendNodeId));
   serialized_value_values.push_back(v8::Number::New(isolate_, backend_node_id));
 
+  if (node->IsAttributeNode()) {
+    Attr* attribute = To<Attr>(node);
+
+    serialized_value_keys.push_back(V8String(isolate_, kLocalName));
+    serialized_value_values.push_back(
+        V8String(isolate_, attribute->localName()));
+
+    serialized_value_keys.push_back(V8String(isolate_, kNamespaceURI));
+    serialized_value_values.push_back(
+        V8String(isolate_, attribute->namespaceURI()));
+  }
+
   if (node->IsElementNode()) {
     Element* element = To<Element>(node);
+
+    if (ShadowRoot* shadow_root = node->GetShadowRoot()) {
+      v8::Local<v8::Object> serialized_shadow =
+          SerializeNodeToV8Object(shadow_root, isolate_);
+
+      serialized_value_keys.push_back(V8String(isolate_, kShadowRoot));
+      serialized_value_values.push_back(serialized_shadow);
+    } else {
+      serialized_value_keys.push_back(V8String(isolate_, kShadowRoot));
+      serialized_value_values.push_back(v8::Null(isolate_));
+    }
 
     serialized_value_keys.push_back(V8String(isolate_, kLocalName));
     serialized_value_values.push_back(V8String(isolate_, element->localName()));
@@ -207,10 +242,6 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
     serialized_value_keys.push_back(V8String(isolate_, kNamespaceURI));
     serialized_value_values.push_back(
         V8String(isolate_, element->namespaceURI()));
-
-    serialized_value_keys.push_back(V8String(isolate_, kChildNodeCount));
-    serialized_value_values.push_back(
-        v8::Number::New(isolate_, node->CountChildren()));
 
     Vector<v8::Local<v8::Name>> node_attributes_keys;
     Vector<v8::Local<v8::Value>> node_attributes_values;
@@ -230,24 +261,14 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
     serialized_value_values.push_back(node_attributes);
   }
 
-  if (max_depth > 0) {
-    NodeList* child_nodes = node->childNodes();
+  if (node->IsShadowRoot()) {
+    ShadowRoot* shadow_root = To<ShadowRoot>(node);
 
-    v8::Local<v8::Array> children =
-        v8::Array::New(isolate_, child_nodes->length());
-
-    for (unsigned int i = 0; i < child_nodes->length(); i++) {
-      Node* child_node = child_nodes->item(i);
-      v8::Local<v8::Object> serialized_child_node =
-          SerializeNodeToV8Object(child_node, isolate_, max_depth - 1);
-
-      children
-          ->CreateDataProperty(isolate_->GetCurrentContext(), i,
-                               serialized_child_node)
-          .Check();
-    }
-    serialized_value_keys.push_back(V8String(isolate_, kChildren));
-    serialized_value_values.push_back(children);
+    serialized_value_keys.push_back(V8String(isolate_, kShadowRootMode));
+    serialized_value_values.push_back(
+        V8String(isolate_, shadow_root->GetType() == ShadowRootType::kOpen
+                               ? kShadowRootOpen
+                               : kShadowRootClosed));
   }
 
   DCHECK(serialized_value_values.size() == serialized_value_keys.size());
@@ -269,12 +290,63 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
                          result_values.data(), result_keys.size());
 }
 
-std::unique_ptr<v8_inspector::WebDriverValue> SerializeNodeToWebDriverValue(
-    Node* node,
+std::unique_ptr<v8_inspector::WebDriverValue> DeepSerializeHtmlCollection(
+    HTMLCollection* html_collection,
     v8::Isolate* isolate_,
     int max_depth) {
+  static const char kHtmlCollection[] = "htmlcollection";
+  if (max_depth > 0) {
+    v8::Local<v8::Array> children =
+        v8::Array::New(isolate_, html_collection->length());
+
+    for (unsigned int i = 0; i < html_collection->length(); i++) {
+      Node* child_node = html_collection->item(i);
+      v8::Local<v8::Object> serialized_child_node =
+          SerializeNodeToV8Object(child_node, isolate_);
+      children
+          ->CreateDataProperty(isolate_->GetCurrentContext(), i,
+                               serialized_child_node)
+          .Check();
+    }
+    return std::make_unique<v8_inspector::WebDriverValue>(
+        ToV8InspectorStringBuffer(kHtmlCollection), children);
+  }
+
+  return std::make_unique<v8_inspector::WebDriverValue>(
+      ToV8InspectorStringBuffer(kHtmlCollection));
+}
+
+std::unique_ptr<v8_inspector::WebDriverValue> DeepSerializeNodeList(
+    NodeList* node_list,
+    v8::Isolate* isolate_,
+    int max_depth) {
+  static const char kNodeList[] = "nodelist";
+  if (max_depth > 0) {
+    v8::Local<v8::Array> children =
+        v8::Array::New(isolate_, node_list->length());
+
+    for (unsigned int i = 0; i < node_list->length(); i++) {
+      Node* child_node = node_list->item(i);
+      v8::Local<v8::Object> serialized_child_node =
+          SerializeNodeToV8Object(child_node, isolate_);
+      children
+          ->CreateDataProperty(isolate_->GetCurrentContext(), i,
+                               serialized_child_node)
+          .Check();
+    }
+    return std::make_unique<v8_inspector::WebDriverValue>(
+        ToV8InspectorStringBuffer(kNodeList), children);
+  }
+
+  return std::make_unique<v8_inspector::WebDriverValue>(
+      ToV8InspectorStringBuffer(kNodeList));
+}
+
+std::unique_ptr<v8_inspector::WebDriverValue> DeepSerializeNode(
+    Node* node,
+    v8::Isolate* isolate_) {
   v8::Local<v8::Object> node_v8_object =
-      SerializeNodeToV8Object(node, isolate_, max_depth);
+      SerializeNodeToV8Object(node, isolate_);
 
   v8::Local<v8::Value> value_v8_object =
       node_v8_object
@@ -304,7 +376,18 @@ ThreadDebuggerCommonImpl::serializeToWebDriverValue(
     int max_depth) {
   // Serialize according to https://w3c.github.io/webdriver-bidi.
   if (Node* node = V8Node::ToWrappable(isolate_, v8_value)) {
-    return SerializeNodeToWebDriverValue(node, isolate_, max_depth);
+    return DeepSerializeNode(node, isolate_);
+  }
+
+  // Serialize as a regular array
+  if (HTMLCollection* html_collection =
+          V8HTMLCollection::ToWrappable(isolate_, v8_value)) {
+    return DeepSerializeHtmlCollection(html_collection, isolate_, max_depth);
+  }
+
+  // Serialize as a regular array
+  if (NodeList* node_list = V8NodeList::ToWrappable(isolate_, v8_value)) {
+    return DeepSerializeNodeList(node_list, isolate_, max_depth);
   }
 
   if (V8Window::HasInstance(isolate_, v8_value)) {

@@ -1,7 +1,7 @@
 (async function (testRunner) {
   const { dp, session } = await testRunner.startHTML(
     '<div some_attr_name="some_attr_value">some text<h2>some another text</h2></div>',
-    'Tests `generateWebDriverValue` provides proper `webDriverValue` format');
+    'Tests `serialization` options.');
 
   await dp.Runtime.enable();
 
@@ -41,13 +41,12 @@
   await testExpression("document.body")
   await testExpression("window")
   await testExpression("document.querySelector('body > div')")
+  await testExpression("document.querySelector('body > div').attributes[0]")
   await testExpression("new URL('http://example.com')")
 
   testRunner.completeTest();
 
   async function testExpression(expression) {
-    testRunner.log(`\nTesting '${expression}':`);
-
     await test(expression, {
       serialization: "deep"
     });
@@ -66,7 +65,7 @@
   }
 
   async function test(expression, serializationOptions) {
-    testRunner.log(`Testing ${expression} with ${JSON.stringify(serializationOptions)}`);
+    testRunner.log(`Testing '${expression}' with ${JSON.stringify(serializationOptions)}`);
 
     const evalResult = await dp.Runtime.evaluate({
       expression,

@@ -1,0 +1,77 @@
+Tests DOM objects serialization
+Testing 'document.querySelector('body > div')' with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep"}
+{
+    type : nodelist
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep"}
+{
+    type : htmlcollection
+}
+Testing 'window' with {"serialization":"deep"}
+{
+    type : window
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep"}
+{
+    type : platformobject
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+

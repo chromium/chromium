@@ -271,6 +271,7 @@ Testing 'document.body':
         localName : body
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
+        shadowRoot : null
     }
 }
 
@@ -291,6 +292,7 @@ Testing 'document.querySelector('body > div')':
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
+        shadowRoot : null
     }
 }
 
