@@ -254,9 +254,10 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
 
     from blinkpy.common.host import Host
     port_factory = Host().port_factory
+    port = port_factory.get(port_factory.all_port_names()[0])
+    port.set_option_default('include_expired', True)
     known_virtual_suites = [
-        suite.full_prefix[8:-1] for suite in port_factory.get(
-            port_factory.all_port_names()[0]).virtual_test_suites()
+        suite.full_prefix[8:-1] for suite in port.virtual_test_suites()
     ]
 
     results = []
