@@ -680,15 +680,9 @@ absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
     return absl::nullopt;
   }
 
-  base::FilePath goopdate_dir =
-      goopdate_base_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-          .AppendASCII("Update");
-  if (!base::CreateDirectory(goopdate_dir)) {
-    LOG(ERROR) << "Can't create GoogleUpdate directory: " << goopdate_dir;
-    return absl::nullopt;
-  }
-
-  return goopdate_dir.AppendASCII(base::WideToASCII(kLegacyExeName));
+  return goopdate_base_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+      .AppendASCII("Update")
+      .Append(kLegacyExeName);
 }
 
 HRESULT DisableCOMExceptionHandling() {

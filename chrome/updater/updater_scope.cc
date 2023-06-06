@@ -5,6 +5,7 @@
 #include "chrome/updater/updater_scope.h"
 
 #include "base/command_line.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/util.h"
@@ -59,6 +60,18 @@ UpdaterScope GetUpdaterScopeForCommandLine(
                    ? UpdaterScope::kUser
                    : UpdaterScope::kSystem;
     }
+  }
+
+  // The legacy updater could launch the shim without specifying the scope
+  // explicitly. This includes command line switches: '/healthcheck', '/regsvc',
+  // '/regserver', and '/ping'. In this case, choose system scope if this
+  // program is run as a system shim.
+  absl::optional<base::FilePath> system_shim_path =
+      GetGoogleUpdateExePath(UpdaterScope::kSystem);
+  base::FilePath exe_path;
+  if (system_shim_path && base::PathService::Get(base::FILE_EXE, &exe_path) &&
+      system_shim_path->DirName().IsParent(exe_path)) {
+    return UpdaterScope::kSystem;
   }
   return UpdaterScope::kUser;
 #else
