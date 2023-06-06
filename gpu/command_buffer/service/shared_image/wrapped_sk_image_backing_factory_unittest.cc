@@ -38,48 +38,26 @@ constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
 constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
                             SHARED_IMAGE_USAGE_RASTER |
                             SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+// TODO(crbug.com/1442381): Add appropriate graphite unittests here.
 class WrappedSkImageBackingFactoryTest
     : public SharedImageTestBase,
-      public testing::WithParamInterface<
-          std::tuple<viz::SharedImageFormat, GrContextType>> {
+      public testing::WithParamInterface<viz::SharedImageFormat> {
  public:
   WrappedSkImageBackingFactoryTest() = default;
   ~WrappedSkImageBackingFactoryTest() override = default;
 
-  viz::SharedImageFormat GetFormat() { return std::get<0>(GetParam()); }
-  GrContextType GetGrContextType() { return std::get<1>(GetParam()); }
+  viz::SharedImageFormat GetFormat() { return GetParam(); }
 
   void SetUp() override {
-    auto gr_context_type = GetGrContextType();
-    if (gr_context_type == GrContextType::kGraphiteDawn) {
-      // TODO(crbug.com/1442381): Enable these tests for Windows once
-      // DawnMultiPlanarFormats is supported on D3D11.
-#if !BUILDFLAG(IS_MAC)
-      GTEST_SKIP();
-#endif
-    }
-    ASSERT_NO_FATAL_FAILURE(InitializeContext(gr_context_type));
-
-    auto format = GetFormat();
-    // We don't use WrappedSkImageBacking with ALPHA8 if it's GL context.
-    if (format == viz::SinglePlaneFormat::kALPHA_8 &&
-        gr_context_type == GrContextType::kGL) {
+    // We don't use WrappedSkImage with ALPHA8 if it's GL context.
+    // Note, that `gr_context_type` is not wired right now and is always GL.
+    if (GetFormat() == viz::SinglePlaneFormat::kALPHA_8 &&
+        gpu_preferences_.gr_context_type == GrContextType::kGL) {
       GTEST_SKIP();
     }
 
-    // We don't support RGBA_4444 and RGB_565 formats with
-    // WrappedGraphiteTextureBacking.
-    if (gr_context_type == GrContextType::kGraphiteDawn) {
-      // Formats not supported with Dawn for now.
-      if (format == viz::SinglePlaneFormat::kRGBA_4444 ||
-          format == viz::SinglePlaneFormat::kRGB_565) {
-        GTEST_SKIP();
-      }
-      // TODO(crbug.com/1442381): Remove early return once YUV support is added.
-      if (format.is_multi_plane()) {
-        GTEST_SKIP();
-      }
-    }
+    ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
     backing_factory_ =
         std::make_unique<WrappedSkImageBackingFactory>(context_state_);
@@ -94,7 +72,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
 
   bool supported = backing_factory_->CanCreateSharedImage(
       kUsage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
-      gr_context_type(), {});
+      GrContextType::kGL, {});
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(
@@ -142,27 +120,15 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
   EXPECT_TRUE(begin_semaphores.empty());
   EXPECT_TRUE(end_semaphores.empty());
 
-  if (gr_context()) {
-    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-      auto* promise_texture = scoped_read_access->promise_image_texture(plane);
-      ASSERT_TRUE(promise_texture);
-      GrBackendTexture backend_texture = promise_texture->backendTexture();
-      EXPECT_TRUE(backend_texture.isValid());
+  for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+    auto* promise_texture = scoped_read_access->promise_image_texture(plane);
+    ASSERT_TRUE(promise_texture);
+    GrBackendTexture backend_texture = promise_texture->backendTexture();
+    EXPECT_TRUE(backend_texture.isValid());
 
-      auto plane_size = format.GetPlaneSize(plane, size);
-      EXPECT_EQ(plane_size.width(), backend_texture.width());
-      EXPECT_EQ(plane_size.height(), backend_texture.height());
-    }
-  } else {
-    ASSERT_TRUE(context_state_->graphite_context());
-    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-      auto graphite_texture = scoped_read_access->graphite_texture(plane);
-      EXPECT_TRUE(graphite_texture.isValid());
-
-      auto plane_size = format.GetPlaneSize(plane, size);
-      EXPECT_EQ(plane_size.width(), graphite_texture.dimensions().width());
-      EXPECT_EQ(plane_size.height(), graphite_texture.dimensions().height());
-    }
+    auto plane_size = format.GetPlaneSize(plane, size);
+    EXPECT_EQ(plane_size.width(), backend_texture.width());
+    EXPECT_EQ(plane_size.height(), backend_texture.height());
   }
 
   scoped_read_access.reset();
@@ -190,22 +156,12 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
-  if (gr_context()) {
-    VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
-  } else {
-    ASSERT_TRUE(context_state_->graphite_context());
-    VerifyPixelsWithReadbackGraphite(mailbox, bitmaps);
-  }
+  VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
 }
 
 std::string TestParamToString(
-    const testing::TestParamInfo<
-        std::tuple<viz::SharedImageFormat, GrContextType>>& param_info) {
-  std::string format = std::get<0>(param_info.param).ToTestParamString();
-  std::string context_type =
-      (std::get<1>(param_info.param) == GrContextType::kGL) ? "GL"
-                                                            : "GraphiteDawn";
-  return context_type + "_" + format;
+    const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
+  return param_info.param.ToTestParamString();
 }
 
 // BGRA_1010102 fails to create backing. BGRX_8888 and BGR_565 "work" but Skia
@@ -223,13 +179,10 @@ const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
                                         viz::MultiPlaneFormat::kNV12,
                                         viz::MultiPlaneFormat::kYV12);
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    WrappedSkImageBackingFactoryTest,
-    testing::Combine(kFormats,
-                     testing::Values(GrContextType::kGL,
-                                     GrContextType::kGraphiteDawn)),
-    TestParamToString);
+INSTANTIATE_TEST_SUITE_P(,
+                         WrappedSkImageBackingFactoryTest,
+                         kFormats,
+                         TestParamToString);
 
 }  // namespace
 }  // namespace gpu
