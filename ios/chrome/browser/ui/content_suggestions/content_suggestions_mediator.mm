@@ -215,10 +215,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count] && ![self shouldHideMVTForTileAblation]) {
+  if ([self.mostVisitedItems count] && ![self shouldHideMVTTiles]) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
-  if (![self shouldHideShortcutsForTileAblation]) {
+  if (![self shouldHideShortcuts]) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsMagicStackEnabled()) {
@@ -424,7 +424,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  if ([self shouldHideMVTForTileAblation]) {
+  if ([self shouldHideMVTTiles]) {
     return;
   }
 
@@ -491,7 +491,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if ([self shouldHideMVTForTileAblation]) {
+  if ([self shouldHideMVTTiles]) {
     return;
   }
   self.mostVisitedItems = self.freshMostVisitedItems;
@@ -622,9 +622,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return NO;
 }
 
-// Returns whether the shortcut tiles should be hidden for the tile ablation
-// experiment.
-- (BOOL)shouldHideShortcutsForTileAblation {
+// Returns whether the shortcut tiles should be hidden.
+- (BOOL)shouldHideShortcuts {
+  if (ShoudHideShortcuts()) {
+    return YES;
+  }
   if ([self isTileAblationComplete]) {
     return NO;
   }
@@ -634,9 +636,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
          ntp_tiles::NewTabPageRetentionExperimentBehavior::kTileAblationHideAll;
 }
 
-// Returns whether the MVT tiles should be hidden for the tile ablation
-// experiment.
-- (BOOL)shouldHideMVTForTileAblation {
+// Returns whether the MVT tiles should be hidden.
+- (BOOL)shouldHideMVTTiles {
+  if (ShouldHideMVT()) {
+    return YES;
+  }
   if ([self isTileAblationComplete]) {
     return NO;
   }

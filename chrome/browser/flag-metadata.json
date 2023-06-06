@@ -4375,6 +4375,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "hide-content-suggestions-tiles",
+    "owners": [ "adamta@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "hide-non-displayable-account-email",
     "owners": [ "ddac", "chrome-kids-eng@google.com" ],
     "expiry_milestone": 118

@@ -354,6 +354,28 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
+const FeatureEntry::FeatureParam kHideAllContentSuggestionsTilesAll[] = {
+    {kHideContentSuggestionsTilesParamMostVisited, "true"},
+    {kHideContentSuggestionsTilesParamShortcuts, "true"},
+};
+const FeatureEntry::FeatureParam kHideAllContentSuggestionsTilesMVT[] = {
+    {kHideContentSuggestionsTilesParamMostVisited, "true"},
+    {kHideContentSuggestionsTilesParamShortcuts, "false"},
+};
+const FeatureEntry::FeatureParam kHideAllContentSuggestionsTilesShortcuts[] = {
+    {kHideContentSuggestionsTilesParamMostVisited, "false"},
+    {kHideContentSuggestionsTilesParamShortcuts, "true"},
+};
+
+const FeatureEntry::FeatureVariation kHideContentSuggestionTilesVariations[]{
+    {"Hide all tiles", kHideAllContentSuggestionsTilesAll,
+     std::size(kHideAllContentSuggestionsTilesAll), nullptr},
+    {"Hide Most Visited tiles", kHideAllContentSuggestionsTilesMVT,
+     std::size(kHideAllContentSuggestionsTilesMVT), nullptr},
+    {"Hide Shortcuts tiles", kHideAllContentSuggestionsTilesShortcuts,
+     std::size(kHideAllContentSuggestionsTilesShortcuts), nullptr},
+};
+
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params.
 const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
@@ -1513,6 +1535,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSEditMenuHideSearchWebName,
      flag_descriptions::kIOSEditMenuHideSearchWebDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSEditMenuHideSearchWeb)},
+    {"hide-content-suggestions-tiles",
+     flag_descriptions::kHideContentSuggestionTilesName,
+     flag_descriptions::kHideContentSuggestionTilesDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kHideContentSuggestionsTiles,
+         kHideContentSuggestionTilesVariations,
+         flag_descriptions::kHideContentSuggestionTilesName)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -423,6 +423,11 @@ extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
+// Title and description for the flag that hides the content suggestion tiles
+// from the NTP.
+extern const char kHideContentSuggestionTilesName[];
+extern const char kHideContentSuggestionTilesDescription[];
+
 // Title and description for the flag to enable HTTPS-Only Mode setting.
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];

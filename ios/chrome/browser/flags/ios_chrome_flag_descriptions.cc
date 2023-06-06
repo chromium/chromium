@@ -495,6 +495,11 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
+extern const char kHideContentSuggestionTilesName[] =
+    "Hide content suggestions tiles";
+extern const char kHideContentSuggestionTilesDescription[] =
+    "Hides content suggestions tiles from the new tab page.";
+
 const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";
 const char kHttpsOnlyModeDescription[] = "Enables the HTTPS-Only Mode setting";
 

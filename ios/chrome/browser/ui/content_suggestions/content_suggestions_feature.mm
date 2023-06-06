@@ -24,9 +24,16 @@ BASE_FEATURE(kSingleNtp, "SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature disabled by default.
 BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHideContentSuggestionsTiles,
+             "HideContentSuggestionsTiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
+
+const char kHideContentSuggestionsTilesParamMostVisited[] = "HideMostVisited";
+const char kHideContentSuggestionsTilesParamShortcuts[] = "HideShortcuts";
 
 bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
@@ -34,4 +41,16 @@ bool IsDiscoverFeedEnabled() {
 
 bool IsMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kMagicStack);
+}
+
+bool ShouldHideMVT() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kHideContentSuggestionsTiles,
+      kHideContentSuggestionsTilesParamMostVisited, false);
+}
+
+bool ShoudHideShortcuts() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kHideContentSuggestionsTiles, kHideContentSuggestionsTilesParamShortcuts,
+      false);
 }
