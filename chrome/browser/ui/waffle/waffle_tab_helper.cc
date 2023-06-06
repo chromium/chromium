@@ -19,6 +19,12 @@ WaffleTabHelper::WaffleTabHelper(content::WebContents* web_contents)
 
 void WaffleTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Only valid top frame navigations are considered.
+  if (!navigation_handle || !navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   if (auto* browser = chrome::FindBrowserWithWebContents(
           navigation_handle->GetWebContents())) {
     ShowWaffleDialog(*browser);
