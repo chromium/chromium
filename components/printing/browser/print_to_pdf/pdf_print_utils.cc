@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/printing/browser/print_manager_utils.h"
+#include "components/printing/common/print_params.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
@@ -173,6 +174,10 @@ GetPrintPagesParams(const GURL& page_url,
       base::UTF8ToUTF16(footer_template.value_or(""));
   print_pages_params->params->prefer_css_page_size =
       prefer_css_page_size.value_or(false);
+
+  if (!printing::PrintMsgPrintParamsIsValid(*print_pages_params->params)) {
+    return "invalid print parameters";
+  }
 
   return print_pages_params;
 }

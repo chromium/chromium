@@ -376,6 +376,32 @@ class HeadlessPDFOOPIFBrowserTest : public HeadlessPDFBrowserTestBase {
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFOOPIFBrowserTest);
 
+class HeadlessPDFTinyPageBrowserTest : public HeadlessPDFBrowserTestBase {
+ public:
+  const char* GetUrl() override { return "/hello.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    base::Value::Dict params;
+    params.Set("paperHeight", 0.1);
+    params.Set("paperWidth", 0.1);
+
+    return params;
+  }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_TRUE(false);
+  }
+
+  void OnPDFFailure(int code, const std::string& message) override {
+    EXPECT_THAT(
+        code,
+        testing::Eq(static_cast<int>(crdtp::DispatchCode::INVALID_PARAMS)));
+    EXPECT_THAT(message, testing::Eq("invalid print parameters"));
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFTinyPageBrowserTest);
+
 class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
  public:
   const char* GetUrl() override { return "/page_with_lazy_image.html"; }
