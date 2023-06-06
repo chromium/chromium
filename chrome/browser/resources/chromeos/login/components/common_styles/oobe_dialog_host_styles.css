@@ -66,3 +66,8 @@
         :host-context([orientation=vertical]) .portrait-horizontal-centered {
           margin: 0 auto;
         }
+
+        .illustration-jelly {
+          width: 100%;
+          height: 100%;
+        }
