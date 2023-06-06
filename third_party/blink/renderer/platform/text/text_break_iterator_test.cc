@@ -24,7 +24,7 @@ class TextBreakIteratorTest : public testing::Test {
   void MatchLineBreaks(
       LineBreakType line_break_type,
       const Vector<int> expected_break_positions,
-      BreakSpaceType break_space = BreakSpaceType::kBeforeEverySpace) {
+      BreakSpaceType break_space = BreakSpaceType::kAfterSpaceRun) {
     if (test_string_.Is8Bit()) {
       test_string_ = String::Make16BitFrom8BitSource(test_string_.Characters8(),
                                                      test_string_.length());
@@ -106,39 +106,27 @@ TEST_P(BreakTypeTest, EmptyNullString) {
   EXPECT_TRUE(iterator.IsBreakable(0));
 }
 
-TEST_P(BreakTypeTest, EmptyDefaultConstructor) {
-  LazyLineBreakIterator iterator;
-  iterator.SetBreakType(GetParam());
-  EXPECT_TRUE(iterator.IsBreakable(0));
-}
-
 TEST_F(TextBreakIteratorTest, Basic) {
   SetTestString("a b  c");
-  MatchLineBreaks(LineBreakType::kNormal, {1, 3, 4, 6});
-  MatchLineBreaks(LineBreakType::kNormal, {1, 3, 6},
-                  BreakSpaceType::kBeforeSpaceRun);
+  MatchLineBreaks(LineBreakType::kNormal, {2, 5, 6});
 }
 
 TEST_F(TextBreakIteratorTest, Newline) {
   SetTestString("a\nb\n\nc\n d");
-  MatchLineBreaks(LineBreakType::kNormal, {1, 3, 4, 6, 7, 9});
-  MatchLineBreaks(LineBreakType::kNormal, {1, 3, 6, 9},
-                  BreakSpaceType::kBeforeSpaceRun);
+  MatchLineBreaks(LineBreakType::kNormal, {2, 5, 8, 9});
 }
 
 TEST_F(TextBreakIteratorTest, Tab) {
   SetTestString("a\tb\t\tc");
-  MatchLineBreaks(LineBreakType::kNormal, {1, 3, 4, 6});
-  MatchLineBreaks(LineBreakType::kNormal, {1, 3, 6},
-                  BreakSpaceType::kBeforeSpaceRun);
+  MatchLineBreaks(LineBreakType::kNormal, {2, 5, 6});
 }
 
 TEST_F(TextBreakIteratorTest, LatinPunctuation) {
   SetTestString("(ab) cd.");
-  MatchLineBreaks(LineBreakType::kNormal, {4, 8});
-  MatchLineBreaks(LineBreakType::kBreakAll, {2, 4, 6, 8});
+  MatchLineBreaks(LineBreakType::kNormal, {5, 8});
+  MatchLineBreaks(LineBreakType::kBreakAll, {2, 5, 6, 8});
   MatchLineBreaks(LineBreakType::kBreakCharacter, {1, 2, 3, 4, 5, 6, 7, 8});
-  MatchLineBreaks(LineBreakType::kKeepAll, {4, 8});
+  MatchLineBreaks(LineBreakType::kKeepAll, {5, 8});
 }
 
 TEST_F(TextBreakIteratorTest, Chinese) {
@@ -160,13 +148,11 @@ TEST_F(TextBreakIteratorTest, ChineseMixed) {
 
 TEST_F(TextBreakIteratorTest, ChineseSpaces) {
   SetTestString("標  萬  a  國");
-  MatchLineBreaks(LineBreakType::kNormal, {1, 2, 4, 5, 7, 8, 10});
-  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 4, 5, 7, 8, 10});
+  MatchLineBreaks(LineBreakType::kNormal, {3, 6, 9, 10});
+  MatchLineBreaks(LineBreakType::kBreakAll, {3, 6, 9, 10});
   MatchLineBreaks(LineBreakType::kBreakCharacter,
                   {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-  MatchLineBreaks(LineBreakType::kKeepAll, {1, 2, 4, 5, 7, 8, 10});
-  MatchLineBreaks(LineBreakType::kNormal, {1, 4, 7, 10},
-                  BreakSpaceType::kBeforeSpaceRun);
+  MatchLineBreaks(LineBreakType::kKeepAll, {3, 6, 9, 10});
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiZWJFamilyIsolate) {
@@ -188,20 +174,20 @@ TEST_F(TextBreakIteratorTest, KeepEmojiModifierSequenceIsolate) {
 TEST_F(TextBreakIteratorTest, KeepEmojiZWJSequence) {
   SetTestString(
       "abc \U0001F469\u200D\U0001F469\u200D\U0001F467\u200D\U0001F467 def");
-  MatchLineBreaks(LineBreakType::kNormal, {3, 15, 19});
-  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 3, 15, 17, 18, 19});
+  MatchLineBreaks(LineBreakType::kNormal, {4, 16, 19});
+  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 4, 16, 17, 18, 19});
   MatchLineBreaks(LineBreakType::kBreakCharacter,
                   {1, 2, 3, 4, 15, 16, 17, 18, 19});
-  MatchLineBreaks(LineBreakType::kKeepAll, {3, 15, 19});
+  MatchLineBreaks(LineBreakType::kKeepAll, {4, 16, 19});
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiModifierSequence) {
   SetTestString("abc \u261D\U0001F3FB def");
-  MatchLineBreaks(LineBreakType::kNormal, {3, 7, 11});
-  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 3, 7, 9, 10, 11});
+  MatchLineBreaks(LineBreakType::kNormal, {4, 8, 11});
+  MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 4, 8, 9, 10, 11});
   MatchLineBreaks(LineBreakType::kBreakCharacter,
                   {1, 2, 3, 4, 7, 8, 9, 10, 11});
-  MatchLineBreaks(LineBreakType::kKeepAll, {3, 7, 11});
+  MatchLineBreaks(LineBreakType::kKeepAll, {4, 8, 11});
 }
 
 TEST_F(TextBreakIteratorTest, NextBreakOpportunityAtEnd) {

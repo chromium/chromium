@@ -94,27 +94,8 @@ enum class LineBreakType {
 // Determines break opportunities around collapsible space characters (space,
 // newline, and tabulation characters.)
 enum class BreakSpaceType {
-  // Break before every collapsible space character.
-  // This is a specialized optimization for CSS, where leading/trailing spaces
-  // in each line are removed, and thus breaking before spaces can save
-  // computing hanging spaces.
-  // Callers are expected to handle spaces by themselves. Because a run of
-  // spaces can include different types of spaces, break opportunity is given
-  // for every space character.
-  // Pre-LayoutNG line breaker uses this type.
-  kBeforeEverySpace,
-
-  // Break before a run of white space characters.
-  // This is for CSS line breaking as in |kBeforeEverySpace|, but when
-  // whitespace collapsing is already applied to the target string. In this
-  // case, a run of white spaces are preserved spaces. There should not be break
-  // opportunities between white spaces.
-  // LayoutNG line breaker uses this type.
-  kBeforeSpaceRun,
-
   // Break after a run of white space characters.
-  // This mode enables the LazyLineBreakIterator to completely rely on
-  // ICU for determining the breaking opportunities.
+  // This is the default mode, matching the ICU behavior.
   kAfterSpaceRun,
 
   // white-spaces:break-spaces allows breaking after any preserved white-space,
@@ -130,12 +111,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   STACK_ALLOCATED();
 
  public:
-  LazyLineBreakIterator()
-      : iterator_(nullptr),
-        break_type_(LineBreakType::kNormal) {
-    ResetPriorContext();
-  }
-
   LazyLineBreakIterator(String string,
                         const AtomicString& locale = AtomicString(),
                         LineBreakType break_type = LineBreakType::kNormal)
@@ -144,6 +119,14 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
         iterator_(nullptr),
         break_type_(break_type) {
     ResetPriorContext();
+  }
+
+  // Create an instance with the same settings as `other`, except `string`.
+  LazyLineBreakIterator(const LazyLineBreakIterator& other, String string)
+      : LazyLineBreakIterator(std::move(string),
+                              other.Locale(),
+                              other.BreakType()) {
+    SetBreakSpace(other.BreakSpace());
   }
 
   ~LazyLineBreakIterator() {
@@ -347,7 +330,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   mutable PriorContext cached_prior_context_;
   unsigned start_offset_ = 0;
   LineBreakType break_type_;
-  BreakSpaceType break_space_ = BreakSpaceType::kBeforeEverySpace;
+  BreakSpaceType break_space_ = BreakSpaceType::kAfterSpaceRun;
   bool disable_soft_hyphen_ = false;
 };
 

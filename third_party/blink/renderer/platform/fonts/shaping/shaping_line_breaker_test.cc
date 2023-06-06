@@ -261,13 +261,13 @@ TEST_F(ShapingLineBreakerTest, ShapeLineZeroAvailableWidth) {
   line = ShapeLine(&breaker, 0, zero, &break_offset);
   EXPECT_EQ(7u, break_offset);
 
-  line = ShapeLine(&breaker, 7, zero, &break_offset);
+  line = ShapeLine(&breaker, 8, zero, &break_offset);
   EXPECT_EQ(16u, break_offset);
 
-  line = ShapeLine(&breaker, 16, zero, &break_offset);
+  line = ShapeLine(&breaker, 17, zero, &break_offset);
   EXPECT_EQ(21u, break_offset);
 
-  line = ShapeLine(&breaker, 21, zero, &break_offset);
+  line = ShapeLine(&breaker, 22, zero, &break_offset);
   EXPECT_EQ(28u, break_offset);
 }
 
@@ -386,7 +386,7 @@ class BreakOpportunityTest
 INSTANTIATE_TEST_SUITE_P(
     ShapingLineBreakerTest,
     BreakOpportunityTest,
-    testing::Values(BreakOpportunityTestData{u"x y z", {1, 3, 5}},
+    testing::Values(BreakOpportunityTestData{u"x y z", {2, 4, 5}},
                     BreakOpportunityTestData{u"y\xADz", {2, 3}, {3}},
                     BreakOpportunityTestData{u"\xADz", {1, 2}, {2}},
                     BreakOpportunityTestData{u"y\xAD", {2}, {2}},

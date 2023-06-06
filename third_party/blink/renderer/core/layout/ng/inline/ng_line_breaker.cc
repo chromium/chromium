@@ -383,7 +383,6 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       handled_leading_floats_index_(handled_leading_floats_index),
       base_direction_(node_.BaseDirection()) {
   UpdateAvailableWidth();
-  break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
   if (is_svg_text_) {
     const auto& char_data_list = node_.SvgCharacterDataList();
     if (node_.SvgTextPathRangeList().empty() &&
@@ -927,10 +926,8 @@ bool NGLineBreaker::CanBreakAfterAtomicInline(const NGInlineItem& item) const {
   }
 
   DCHECK_EQ(Text(), break_iterator_.GetString());
-  LazyLineBreakIterator break_iterator(text_content.ReleaseString(),
-                                       break_iterator_.Locale(),
-                                       break_iterator_.BreakType());
-  break_iterator.SetBreakSpace(break_iterator_.BreakSpace());
+  LazyLineBreakIterator break_iterator(break_iterator_,
+                                       text_content.ReleaseString());
   return break_iterator.IsBreakable(text_combine_end_offset);
 }
 
@@ -984,10 +981,8 @@ bool NGLineBreaker::CanBreakAfter(const NGInlineItem& item) const {
   text_content.Append(text_combine->GetTextContent());
 
   DCHECK_EQ(Text(), break_iterator_.GetString());
-  LazyLineBreakIterator break_iterator(text_content.ReleaseString(),
-                                       break_iterator_.Locale(),
-                                       break_iterator_.BreakType());
-  break_iterator.SetBreakSpace(break_iterator_.BreakSpace());
+  LazyLineBreakIterator break_iterator(break_iterator_,
+                                       text_content.ReleaseString());
   return break_iterator.IsBreakable(item_end_offset);
 }
 
@@ -3447,6 +3442,8 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
     if (style.ShouldBreakSpaces()) {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterEverySpace);
       disable_score_line_break_ = true;
+    } else {
+      break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
     }
 
     break_iterator_.SetLocale(style.LocaleForLineBreakIterator());
