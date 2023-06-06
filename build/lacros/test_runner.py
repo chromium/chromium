@@ -543,6 +543,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     # Starts Ash-Chrome.
     tmp_xdg_dir_name = tempfile.mkdtemp()
     tmp_ash_data_dir_name = tempfile.mkdtemp()
+    tmp_unique_ash_dir_name = tempfile.mkdtemp()
 
     # Please refer to below file for how mojo connection is set up in testing.
     # //chrome/browser/ash/crosapi/test_mojo_connection_manager.h
@@ -585,6 +586,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       logging.info('Running ash with "ASH_WRAPPER": %s', ash_wrapper)
       ash_cmd = list(ash_wrapper.split()) + ash_cmd
 
+    ash_process = None
     ash_process_has_started = False
     total_tries = 3
     num_tries = 0
@@ -678,6 +680,8 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       forward_args.append(lacros_mojo_socket_arg)
 
     forward_args.append('--ash-chrome-path=' + ash_chrome_file)
+    forward_args.append('--unique-ash-dir=' + tmp_unique_ash_dir_name)
+
     test_env = os.environ.copy()
     test_env['WAYLAND_DISPLAY'] = ash_wayland_socket_name
     test_env['EGL_PLATFORM'] = 'surfaceless'
@@ -707,6 +711,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
 
     shutil.rmtree(tmp_xdg_dir_name, ignore_errors=True)
     shutil.rmtree(tmp_ash_data_dir_name, ignore_errors=True)
+    shutil.rmtree(tmp_unique_ash_dir_name, ignore_errors=True)
 
 
 def _RunTestDirectly(args, forward_args):
