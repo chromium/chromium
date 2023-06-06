@@ -21,16 +21,6 @@ TEST(DisabledSitesTest, AllPaths) {
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://youtube.com/somepage")));
 }
 
-TEST(DisabledSitesTest, AllowedPaths) {
-  base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures({kSharedHighlightingRefinedBlocklist}, {});
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.youtube.com/community")));
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.youtube.com/about")));
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.instagram.com/p/")));
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.reddit.com/comments/")));
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.twitter.com/status/")));
-}
-
 TEST(DisabledSitesTest, SpecificPages) {
   base::test::ScopedFeatureList feature;
   feature.InitAndDisableFeature(kSharedHighlightingAmp);

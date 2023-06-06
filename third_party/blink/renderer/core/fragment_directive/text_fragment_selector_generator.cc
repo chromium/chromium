@@ -126,15 +126,7 @@ absl::optional<int> g_exactTextMaxCharsOverride;
 
 TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
     LocalFrame* main_frame)
-    : frame_(main_frame) {
-  if (base::FeatureList::IsEnabled(
-          shared_highlighting::kSharedHighlightingRefinedMaxContextWords)) {
-    max_context_words_ =
-        shared_highlighting::kSharedHighlightingMaxContextWords.Get();
-  } else {
-    max_context_words_ = kMaxContextWords;
-  }
-}
+    : frame_(main_frame) {}
 
 void TextFragmentSelectorGenerator::Generate(const RangeInFlatTree& range,
                                              GenerateCallback callback) {
@@ -580,7 +572,7 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   DCHECK(selector_);
 
   // Give up if context is already too long.
-  if (num_context_words_ >= max_context_words_) {
+  if (num_context_words_ >= kMaxContextWords) {
     state_ = kFailure;
     error_ = LinkGenerationError::kContextLimitReached;
     return;

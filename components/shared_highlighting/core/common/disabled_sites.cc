@@ -33,14 +33,6 @@ bool ShouldOfferLinkToText(const GURL& url) {
            {"web.whatsapp.com", ".*"},
            {"youtube.com", ".*"}});
 
-  static constexpr auto kAllowlist =
-      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
-          {{"facebook.com", "about"},
-           {"instagram.com", "/p/"},
-           {"reddit.com", "comments"},
-           {"twitter.com", "status"},
-           {"youtube.com", "(about|community)"}});
-
   std::string domain = url.host();
   if (domain.compare(0, 4, "www.") == 0) {
     domain = domain.substr(4);
@@ -58,13 +50,6 @@ bool ShouldOfferLinkToText(const GURL& url) {
   auto* block_list_it = kBlocklist.find(domain);
   if (block_list_it != kBlocklist.end()) {
     if (re2::RE2::FullMatch(url.path(), block_list_it->second.data())) {
-      if (base::FeatureList::IsEnabled(kSharedHighlightingRefinedBlocklist)) {
-        auto* allow_list_it = kAllowlist.find(domain);
-        if (allow_list_it != kAllowlist.end()) {
-          return re2::RE2::PartialMatch(url.path(),
-                                        allow_list_it->second.data());
-        }
-      }
       return false;
     }
   }

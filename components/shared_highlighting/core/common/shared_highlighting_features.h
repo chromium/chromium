@@ -24,15 +24,6 @@ BASE_DECLARE_FEATURE(kSharedHighlightingManager);
 // Feature flag that enable Shared Highlighting V2 in iOS.
 BASE_DECLARE_FEATURE(kIOSSharedHighlightingV2);
 
-// Feature flag that enables a narrower blocklist.
-BASE_DECLARE_FEATURE(kSharedHighlightingRefinedBlocklist);
-
-// Feature flag that allows to experiment with different Max Context Words.
-BASE_DECLARE_FEATURE(kSharedHighlightingRefinedMaxContextWords);
-// Feature name and parameter to capture the different maxContextWords values.
-extern const char kSharedHighlightingRefinedMaxContextWordsName[];
-extern const base::FeatureParam<int> kSharedHighlightingMaxContextWords;
-
 // Returns the pre-emptive link generation timeout length.
 int GetPreemptiveLinkGenTimeoutLengthMs();
 

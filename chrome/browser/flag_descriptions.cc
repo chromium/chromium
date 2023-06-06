@@ -3498,16 +3498,6 @@ const char kSharedHighlightingManagerName[] = "Refactoring Shared Highlighting";
 const char kSharedHighlightingManagerDescription[] =
     "Refactors Shared Highlighting by centralizing the IPC calls in a Manager.";
 
-const char kSharedHighlightingRefinedBlocklistName[] =
-    "Shared Highlighting Blocklist Refinement";
-const char kSharedHighlightingRefinedBlocklistDescription[] =
-    "Narrow the Blocklist for enabling Shared Highlighting.";
-
-const char kSharedHighlightingRefinedMaxContextWordsName[] =
-    "Shared Highlighting Max Context Words Refinement";
-const char kSharedHighlightingRefinedMaxContextWordsDescription[] =
-    "Experiment with different Max Context Words for Shared Highlighting.";
-
 const char kDraw1PredictedPoint12Ms[] = "1 point 12ms ahead.";
 const char kDraw2PredictedPoints6Ms[] = "2 points, each 6ms ahead.";
 const char kDraw1PredictedPoint6Ms[] = "1 point 6ms ahead.";
