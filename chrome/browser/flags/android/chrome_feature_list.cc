@@ -1023,7 +1023,7 @@ BASE_FEATURE(kToolbarScrollAblationAndroid,
 
 BASE_FEATURE(kTrustedWebActivityPostMessage,
              "TrustedWebActivityPostMessage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kResizeOnlyActiveTab,
              "ResizeOnlyActiveTab",
