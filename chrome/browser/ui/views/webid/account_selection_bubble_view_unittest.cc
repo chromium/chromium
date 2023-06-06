@@ -368,18 +368,43 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         kIdpETLDPlusOne, content::IdentityProviderMetadata());
 
     const std::vector<views::View*> children = dialog()->children();
-    ASSERT_EQ(children.size(), 2u);
+    ASSERT_EQ(children.size(), 3u);
 
     PerformHeaderChecks(children[0], expected_title, expected_subtitle,
                         expect_idp_brand_icon_in_header);
 
+    const views::View* failure_dialog = children[2];
+    const std::vector<views::View*> failure_dialog_children =
+        failure_dialog->children();
+    ASSERT_EQ(failure_dialog_children.size(), 2u);
+
+    const views::View* text_column = failure_dialog_children[0];
+    const std::vector<views::View*> text_column_children =
+        text_column->children();
+    ASSERT_EQ(text_column_children.size(), 2u);
+
+    // Check the body shown.
+    views::Label* body = static_cast<views::Label*>(text_column_children[0]);
+    ASSERT_TRUE(body);
+    EXPECT_EQ(body->GetText(),
+              u"Use your idp-example.com account to sign in to "
+              u"top-frame-example.com");
+
+    // Check the description shown.
+    views::Label* description =
+        static_cast<views::Label*>(text_column_children[1]);
+    ASSERT_TRUE(description);
+    EXPECT_EQ(description->GetText(),
+              l10n_util::GetStringUTF16(
+                  IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_DESCRIPTION));
+
     // Check the "Continue" button.
     views::MdTextButton* button =
-        static_cast<views::MdTextButton*>(children[1]->children()[0]);
+        static_cast<views::MdTextButton*>(failure_dialog_children[1]);
     ASSERT_TRUE(button);
     EXPECT_EQ(button->GetText(),
               l10n_util::GetStringUTF16(
-                  IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_CONTINUE));
+                  IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE));
   }
 
   // Checks the account rows starting at `accounts[accounts_index]`. Updates
@@ -619,10 +644,9 @@ TEST_F(AccountSelectionBubbleViewTest, AutoReauthnCheckboxDisplayed) {
 }
 
 TEST_F(AccountSelectionBubbleViewTest, Failure) {
-  TestFailureDialog(
-      u"Failed signing in to top-frame-example.com with idp-example.com",
-      /*expected_subtitle=*/absl::nullopt,
-      /*expect_idp_brand_icon_in_header=*/true);
+  TestFailureDialog(u"Sign in to top-frame-example.com with idp-example.com",
+                    /*expected_subtitle=*/absl::nullopt,
+                    /*expect_idp_brand_icon_in_header=*/true);
 }
 
 // Tests that when an iframe URL is provided, it is appropriately added to the
@@ -646,10 +670,9 @@ TEST_F(AccountSelectionBubbleViewTest, SuccessIframeSubtitleInHeader) {
 // Tests that when an iframe URL is provided, it is appropriately added to the
 // header of a failure dialog.
 TEST_F(AccountSelectionBubbleViewTest, FailureIframeSubtitleInHeader) {
-  TestFailureDialog(
-      u"Failed signing in to iframe-example.com with idp-example.com",
-      u"on top-frame-example.com",
-      /*expect_idp_brand_icon_in_header=*/true);
+  TestFailureDialog(u"Sign in to iframe-example.com with idp-example.com",
+                    u"on top-frame-example.com",
+                    /*expect_idp_brand_icon_in_header=*/true);
 }
 
 class MultipleIdpAccountSelectionBubbleViewTest

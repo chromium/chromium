@@ -572,35 +572,56 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     const absl::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  int subtitleLeftPadding = 2 * kLeftRightPadding;
-  if (header_icon_view_) {
-    ConfigureIdpBrandImageView(header_icon_view_, idp_metadata);
-    subtitleLeftPadding += kDesiredIdpIconSize;
-  }
+  constexpr int kLineHeight = 5;
 
-  std::u16string frame_in_title =
-      iframe_for_display.value_or(top_frame_for_display);
-  const std::u16string title =
-      l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_TITLE,
-                                 frame_in_title, idp_for_display);
-  title_label_->SetText(title);
-
-  if (subtitle_label_) {
-    subtitle_label_->SetText(subtitle_);
-    subtitle_label_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(-kTopBottomPadding, subtitleLeftPadding,
-                          kTopBottomPadding, kLeftRightPadding)));
-  }
+  std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
+                                  idp_for_display, rp_context_);
+  UpdateHeader(idp_metadata, title, subtitle_,
+               /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
+  AddChildView(std::make_unique<views::Separator>());
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+
+  // Add column for text.
+  views::View* const text_column =
+      row->AddChildView(std::make_unique<views::View>());
+  text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::VH(kTopBottomPadding, 0)));
+
+  // Add body for mismatch dialog.
+  views::Label* const body =
+      text_column->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY,
+                                     idp_for_display, top_frame_for_display),
+          views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  body->SetMultiLine(true);
+  body->SetFontList(
+      gfx::FontList().Derive(5, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  body->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  body->SetLineHeight(kLineHeight);
+
+  // Add description for signing in.
+  views::Label* const description =
+      text_column->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(
+              IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_DESCRIPTION),
+          views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+  description->SetMultiLine(true);
+  description->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  description->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(10, 0)));
+  description->SetLineHeight(kLineHeight);
+
+  // Add continue button.
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&Observer::OnSigninToIdP,
                           base::Unretained(observer_)),
-      l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_CONTINUE),
+      l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
       this, idp_metadata);
   signin_to_idp_button_ = row->AddChildView(std::move(button));
   AddChildView(std::move(row));
