@@ -217,6 +217,12 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
         case PP_GRAPHICS3DATTRIB_SINGLE_BUFFER:
           attrib_helper.single_buffer = !!value;
           break;
+        // These attributes are valid, but ignored.
+        case PP_GRAPHICS3DATTRIB_RED_SIZE:
+        case PP_GRAPHICS3DATTRIB_BLUE_SIZE:
+        case PP_GRAPHICS3DATTRIB_GREEN_SIZE:
+        case PP_GRAPHICS3DATTRIB_GPU_PREFERENCE:
+          break;
         default:
           DLOG(ERROR) << "Invalid context creation attribute: " << attr[0];
           return 0;
