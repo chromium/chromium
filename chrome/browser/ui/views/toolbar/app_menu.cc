@@ -25,7 +25,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -57,6 +61,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
@@ -76,6 +81,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -1238,11 +1244,92 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
     switch (model->GetCommandIdAt(i)) {
       case IDC_PROFILE_MENU_IN_APP_MENU: {
         if (features::IsChromeRefresh2023()) {
+          constexpr int profile_chip_corner_radii = 100;
+          constexpr int background_horizontal_margin = 12;
+          constexpr int background_corner_radii = 12;
           // Profile row margins are different from the menu config item
           // margins.
           int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
               DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
           item->SetMargins(vertical_margin, vertical_margin);
+          item->SetMenuItemBackground(MenuItemView::MenuItemBackground(
+              0, background_horizontal_margin,
+              ui::kColorAppMenuProfileRowBackground, background_corner_radii));
+          item->SetSelectedColorId(
+              ui::kColorAppMenuProfileRowBackgroundHovered);
+          ProfileAttributesEntry* profile_attributes =
+              g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage()
+                  .GetProfileAttributesWithPath(browser_->profile()->GetPath());
+          views::Label* profile_chip_label;
+          views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+          const MenuConfig& config = MenuConfig::instance();
+          // Truncate in the same way that app_menu_model does for the menu
+          // title.
+          if (profile_attributes &&
+              !profile_attributes->GetLocalProfileName().empty() &&
+              !browser_->profile()->IsIncognitoProfile()) {
+            std::u16string local_name =
+                ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+                    profile_attributes->GetLocalProfileName(),
+                    GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+                    gfx::CHARACTER_BREAK));
+            // We need to have the label of the profile chip within a
+            // BoxLayoutView and inside border insets because MenuItemView will
+            // layout the child items to the full height of the menu item in
+            // MenuItemView::Layout().
+            auto profile_chip =
+                views::Builder<views::BoxLayoutView>()
+                    .SetInsideBorderInsets(
+                        gfx::Insets::VH(config.item_top_margin, 0))
+                    .AddChildren(
+                        views::Builder<views::Label>()
+                            .SetText(local_name)
+                            .CopyAddressTo(&profile_chip_label)
+                            .SetBackground(views::CreateThemedRoundedRectBackground(
+                                item->IsSelected()
+                                    ? ui::kColorAppMenuProfileRowChipHovered
+                                    : ui::kColorAppMenuProfileRowChipBackground,
+                                profile_chip_corner_radii))
+                            // Add additional horizontal padding. Vertical
+                            // padding depends on menu margins to get alignment
+                            // with other items in the menu.
+                            .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+                                0, layout_provider
+                                       ->GetInsetsMetric(
+                                           views::INSETS_LABEL_BUTTON)
+                                       .left()))))
+                    .Build();
+
+            // MenuItemView has specific layout logic for child views in
+            // MenuItemView::Layout() which does not work very well with more
+            // custom menu items. We use this view to add the correct spacing
+            // between the profile chip and the edge of the menu.
+            auto profile_chip_edge_spacing_view =
+                views::Builder<views::View>()
+                    .SetPreferredSize(gfx::Size(
+                        config.arrow_to_edge_padding + config.arrow_width +
+                            layout_provider->GetDistanceMetric(
+                                views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
+                        0))
+                    .Build();
+
+            profile_menu_item_selected_subscription_ =
+                item->AddSelectedChangedCallback(base::BindRepeating(
+                    [](MenuItemView* menu_item_view, View* child_view,
+                       int corner_radius) {
+                      child_view->SetBackground(
+                          views::CreateThemedRoundedRectBackground(
+                              menu_item_view->IsSelected()
+                                  ? ui::kColorAppMenuProfileRowChipHovered
+                                  : ui::kColorAppMenuProfileRowChipBackground,
+                              corner_radius));
+                    },
+                    item, profile_chip_label, profile_chip_corner_radii));
+            item->AddChildView(std::move(profile_chip));
+            item->AddChildView(std::move(profile_chip_edge_spacing_view));
+            item->SetHighlightWhenSelectedWithChildViews(true);
+          }
         }
         break;
       }

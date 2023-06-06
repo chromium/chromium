@@ -1050,6 +1050,20 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
 void MenuItemView::PaintBackground(gfx::Canvas* canvas,
                                    PaintMode mode,
                                    bool paint_as_selected) {
+  if (menu_item_background_.has_value()) {
+    MenuItemBackground background_info = menu_item_background_.value();
+    gfx::Rect bounds = GetLocalBounds();
+    bounds.set_width(bounds.width() - background_info.horizontal_margin * 2);
+    bounds.set_x(bounds.x() + background_info.horizontal_margin);
+    bounds.set_height(bounds.height() - background_info.vertical_margin * 2);
+    bounds.set_y(bounds.y() + background_info.vertical_margin);
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(
+        GetColorProvider()->GetColor(background_info.background_color_id));
+    canvas->DrawRoundRect(bounds, background_info.corner_radius, flags);
+  }
   if (type_ == Type::kHighlighted || is_alerted_ ||
       (paint_as_selected && selected_color_id_.has_value())) {
     SkColor color = gfx::kPlaceholderColor;
@@ -1530,7 +1544,8 @@ bool MenuItemView::ShouldPaintAsSelected(PaintMode mode) const {
 
   return (parent_menu_item_ && mode == PaintMode::kNormal && IsSelected() &&
           parent_menu_item_->GetSubmenu()->GetShowSelection(this) &&
-          (NonIconChildViewsCount() == 0));
+          (NonIconChildViewsCount() == 0 ||
+           highlight_when_selected_with_child_views_));
 }
 
 bool MenuItemView::IsScheduledForDeletion() const {

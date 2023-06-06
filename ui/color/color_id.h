@@ -224,6 +224,10 @@
   E_CPONLY(kColorTextSelectionForeground) \
   \
   /* Further UI element colors */ \
+  E_CPONLY(kColorAppMenuProfileRowBackground) \
+  E_CPONLY(kColorAppMenuProfileRowBackgroundHovered) \
+  E_CPONLY(kColorAppMenuProfileRowChipBackground) \
+  E_CPONLY(kColorAppMenuProfileRowChipHovered) \
   E_CPONLY(kColorAvatarHeaderArt) \
   E_CPONLY(kColorAvatarIconGuest) \
   E_CPONLY(kColorAvatarIconIncognito) \

@@ -19,6 +19,8 @@ int GetLayoutConstant(LayoutConstant constant) {
   switch (constant) {
     case APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE:
       return 24;
+    case APP_MENU_MAXIMUM_CHARACTER_LENGTH:
+      return 30;
     case BOOKMARK_BAR_HEIGHT: {
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.

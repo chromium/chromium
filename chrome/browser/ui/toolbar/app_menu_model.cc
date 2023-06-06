@@ -202,8 +202,10 @@ std::u16string GetOpenPWALabel(const Browser* browser) {
   const std::u16string short_name =
       base::UTF8ToUTF16(provider->registrar_unsafe().GetAppShortName(*app_id));
   return l10n_util::GetStringFUTF16(
-      IDS_OPEN_IN_APP_WINDOW, ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-                                  short_name, 30, gfx::CHARACTER_BREAK)));
+      IDS_OPEN_IN_APP_WINDOW,
+      ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+          short_name, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+          gfx::CHARACTER_BREAK)));
 }
 
 bool IsPasswordManagerPage(const GURL& url) {
@@ -283,7 +285,15 @@ ProfileSubMenuModel::ProfileSubMenuModel(
                 avatar_image, avatar_icon_size, avatar_icon_size,
                 profiles::SHAPE_CIRCLE));
       }
-      profile_name_ = profile_attributes->GetName();
+      // Don't use ProfileAttributesEntry::GetName() to prevent both the GAIA
+      // name and local name from being displayed
+      profile_name_ = profile_attributes->GetGAIANameToDisplay();
+      if (profile_name_.empty()) {
+        profile_name_ = profile_attributes->GetLocalProfileName();
+      }
+      profile_name_ = ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+          profile_name_, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+          gfx::CHARACTER_BREAK));
     }
   }
 }
@@ -1156,6 +1166,7 @@ void AppMenuModel::Build() {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsChromeRefresh2023()) {
     sub_menus_.push_back(
         std::make_unique<ProfileSubMenuModel>(this, browser()->profile()));
@@ -1166,6 +1177,7 @@ void AppMenuModel::Build() {
     SetIcon(GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
             profile_submenu_model->avatar_image_model());
   }
+#endif
 
   if (!browser_->profile()->IsGuestSession() &&
       features::IsChromeRefresh2023() &&

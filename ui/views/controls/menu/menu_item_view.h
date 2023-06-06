@@ -114,6 +114,24 @@ class VIEWS_EXPORT MenuItemView : public View {
     int height = 0;
   };
 
+  // The data structure which is used to paint a background on the menu item.
+  struct MenuItemBackground {
+    MenuItemBackground(int vertical_margin,
+                       int horizontal_margin,
+                       ui::ColorId background_color_id,
+                       int corner_radius)
+        : vertical_margin(vertical_margin),
+          horizontal_margin(horizontal_margin),
+          background_color_id(background_color_id),
+          corner_radius(corner_radius) {}
+    // Vertical margin between background and edge of MenuItemView.
+    int vertical_margin = 0;
+    // Horizontal margin between background and edge of MenuItemView.
+    int horizontal_margin = 0;
+    ui::ColorId background_color_id;
+    int corner_radius = 0;
+  };
+
   // Constructor for use with the top level menu item. This menu is never
   // shown to the user, rather its use as the parent for all menu items.
   explicit MenuItemView(MenuDelegate* delegate = nullptr);
@@ -162,6 +180,29 @@ class VIEWS_EXPORT MenuItemView : public View {
       absl::optional<ui::ColorId> submenu_background_color = absl::nullopt,
       absl::optional<ui::ColorId> foreground_color = absl::nullopt,
       absl::optional<ui::ColorId> selected_color_id = absl::nullopt);
+
+  void SetMenuItemBackground(
+      absl::optional<MenuItemBackground> menu_item_background) {
+    menu_item_background_ = menu_item_background;
+  }
+
+  absl::optional<MenuItemBackground> GetMenuItemBackground() {
+    return menu_item_background_;
+  }
+
+  void SetSelectedColorId(absl::optional<ui::ColorId> selected_color_id) {
+    selected_color_id_ = selected_color_id;
+  }
+
+  absl::optional<ui::ColorId> GetSelectedColorId() {
+    return selected_color_id_;
+  }
+
+  void SetHighlightWhenSelectedWithChildViews(
+      bool highlight_when_selected_with_child_views) {
+    highlight_when_selected_with_child_views_ =
+        highlight_when_selected_with_child_views;
+  }
 
   // Remove the specified item from the menu. |item| will be deleted when
   // ChildrenChanged() is invoked.
@@ -556,10 +597,6 @@ class VIEWS_EXPORT MenuItemView : public View {
     foreground_color_id_ = foreground_color_id;
   }
 
-  void SetSelectedColorId(absl::optional<ui::ColorId> selected_color_id) {
-    selected_color_id_ = selected_color_id;
-  }
-
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
@@ -674,6 +711,12 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;
 
+  // Legacy implementation for menu items is that if a MenuItemView has a child
+  // view then the item will not be highlighted when selected. This new boolean
+  // will control whether or not the MenuItemView is highlighted when there are
+  // child views.
+  bool highlight_when_selected_with_child_views_ = false;
+
   // If true, ViewHierarchyChanged() will call
   // UpdateSelectionBasedStateIfChanged().
   // UpdateSelectionBasedStateIfChanged() calls to NonIconChildViewsCount().
@@ -692,6 +735,7 @@ class VIEWS_EXPORT MenuItemView : public View {
                                       : IDS_NEW_BADGE);
 
   absl::optional<ui::ColorId> foreground_color_id_;
+  absl::optional<MenuItemBackground> menu_item_background_;
   absl::optional<ui::ColorId> selected_color_id_;
 };
 
