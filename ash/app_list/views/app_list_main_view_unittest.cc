@@ -22,9 +22,7 @@
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -192,30 +190,6 @@ class AppListMainViewTest : public AshTestBase,
     return item_view;
   }
 
-  void MaybeRunDragAndDropSequence(std::list<base::OnceClosure>* tasks) {
-    if (!is_drag_drop_refactor_enabled_) {
-      while (!tasks->empty()) {
-        std::move(tasks->front()).Run();
-        tasks->pop_front();
-      }
-      return;
-    }
-
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        base::BindLambdaForTesting([&]() {
-          auto task = std::move(tasks->front());
-          tasks->pop_front();
-          std::move(task).Run();
-        }),
-        base::DoNothing());
-    tasks->push_front(base::BindLambdaForTesting([&]() {
-      // Generate OnDragEnter() event for the host view.
-      GetEventGenerator()->MoveMouseBy(10, 10);
-    }));
-    // Start Drag and Drop Sequence by moving the mouse.
-    GetEventGenerator()->MoveMouseBy(10, 10);
-  }
-
   void RunInitialReparentChecks() {
     EXPECT_TRUE(GetRootGridView()->GetVisible());
     EXPECT_TRUE(GetFolderView()->GetVisible());
@@ -323,7 +297,7 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   }));
   tasks.push_back(
       base::BindLambdaForTesting([&]() { generator->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The folder should not be destroyed.
   EXPECT_EQ(kNumApps + 1, GetRootViewModel()->view_size());
@@ -359,7 +333,7 @@ TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
       GetEventGenerator()->ReleaseLeftButton();
     }));
   }
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // Additional mouse move operations should be ignored.
   gfx::Point point(1, 1);
@@ -397,7 +371,7 @@ TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   }));
   tasks.push_back(
       base::BindLambdaForTesting([&]() { generator->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The app list model should remain unchanged.
   EXPECT_EQ(2u, GetRootViewModel()->view_size());

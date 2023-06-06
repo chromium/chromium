@@ -18,9 +18,12 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/unified_mouse_warp_controller.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -43,6 +46,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
@@ -575,6 +579,39 @@ void AshTestBase::WaitForShelfAnimation() {
     ShelfViewTestAPI(root_window_controller->shelf()->GetShelfViewForTesting())
         .RunMessageLoopUntilAnimationsDone();
   }
+}
+
+void AshTestBase::MaybeRunDragAndDropSequenceForAppList(
+    std::list<base::OnceClosure>* tasks,
+    bool is_touch) {
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    while (!tasks->empty()) {
+      std::move(tasks->front()).Run();
+      tasks->pop_front();
+    }
+    return;
+  }
+
+  ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        std::move(tasks->front()).Run();
+        tasks->pop_front();
+      }),
+      base::DoNothing());
+  tasks->push_front(base::BindLambdaForTesting([&]() {
+    // Generate OnDragEnter() event for the host view.
+    if (is_touch) {
+      GetEventGenerator()->MoveTouchBy(10, 10);
+      return;
+    }
+    GetEventGenerator()->MoveMouseBy(10, 10);
+  }));
+  // Start Drag and Drop Sequence by moving the pointer.
+  if (is_touch) {
+    GetEventGenerator()->MoveTouchBy(10, 10);
+    return;
+  }
+  GetEventGenerator()->MoveMouseBy(10, 10);
 }
 
 void AshTestBase::SwapPrimaryDisplay() {

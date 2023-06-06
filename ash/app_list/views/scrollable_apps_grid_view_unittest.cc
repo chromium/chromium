@@ -23,12 +23,10 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
-#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
@@ -114,30 +112,6 @@ class ScrollableAppsGridViewTest : public AshTestBase,
 
     apps_grid_view_ = GetAppListTestHelper()->GetScrollableAppsGridView();
     scroll_view_ = apps_grid_view_->scroll_view_for_test();
-  }
-
-  void MaybeRunDragAndDropSequence(std::list<base::OnceClosure>* tasks) {
-    if (!GetParam()) {
-      while (!tasks->empty()) {
-        std::move(tasks->front()).Run();
-        tasks->pop_front();
-      }
-      return;
-    }
-
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        base::BindLambdaForTesting([&]() {
-          auto task = std::move(tasks->front());
-          tasks->pop_front();
-          std::move(task).Run();
-        }),
-        base::DoNothing());
-    tasks->push_front(base::BindLambdaForTesting([&]() {
-      // Generate OnDragEnter() event for the host view.
-      GetEventGenerator()->MoveMouseBy(10, 10);
-    }));
-    // Start Drag and Drop Sequence by moving the mouse.
-    GetEventGenerator()->MoveMouseBy(10, 10);
   }
 
   AppListItemView* StartDragOnView(AppListItemView* item) {
@@ -227,7 +201,7 @@ TEST_P(ScrollableAppsGridViewTest, DragApp) {
   }));
   tasks.push_back(base::BindLambdaForTesting(
       [&]() { GetEventGenerator()->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   generator->ReleaseLeftButton();
 
@@ -258,7 +232,7 @@ TEST_P(ScrollableAppsGridViewTest, SearchBoxHasFocusAfterDrag) {
       [&]() { GetEventGenerator()->MoveMouseBy(250, 0); }));
   tasks.push_back(base::BindLambdaForTesting(
       [&]() { GetEventGenerator()->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The item does not have focus, but it might be selected.
   EXPECT_FALSE(item->HasFocus());
@@ -300,7 +274,7 @@ TEST_P(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   }));
   tasks.push_back(
       base::BindLambdaForTesting([&]() { generator->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The last 2 items were reordered.
   EXPECT_EQ("bbb", item_list->item_at(20)->id()) << item_list->ToString();
@@ -351,7 +325,7 @@ TEST_P(ScrollableAppsGridViewTest, AutoScrollDown) {
     EXPECT_TRUE(apps_grid_view_->reorder_timer_for_test()->IsRunning());
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollUpWhenAtTop) {
@@ -374,7 +348,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollUpWhenAtTop) {
     EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollDownWhenAtBottom) {
@@ -404,7 +378,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollDownWhenAtBottom) {
     EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
@@ -430,7 +404,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
     EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenAboveWidget) {
@@ -461,7 +435,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenAboveWidget) {
     EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
@@ -487,7 +461,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
     EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 // Regression test for https://crbug.com/1258954
@@ -513,7 +487,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
     generator->MoveMouseBy(0, tile_size.height());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The first item was reordered to the end.
   AppListItemList* item_list =
@@ -587,7 +561,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
     generator->MoveMouseBy(0, tile_size.height());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The item is now reordered in the folder and the reordering is recorded.
   EXPECT_EQ(3u, folder_item->ChildItemCount());
@@ -615,7 +589,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemIntoFolderRecordsHistogram) {
         apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The dragged app is now in the folder and the reordering is recorded.
   EXPECT_EQ(4u, folder_item->ChildItemCount());
@@ -648,7 +622,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
         gfx::Vector2d(20, 0));
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // The folder view should be closed and invisible after releasing the drag.
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
@@ -689,7 +663,7 @@ TEST_P(ScrollableAppsGridViewTest,
         apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // No folder view is showing now.
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
@@ -746,7 +720,7 @@ TEST_P(ScrollableAppsGridViewTest, ReparentDragToNewRow) {
   }));
   tasks.push_back(
       base::BindLambdaForTesting([&]() { generator->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   AppListItemView* last_item = apps_grid_view_->GetItemViewAt(kInitialItems);
   ASSERT_TRUE(last_item);
@@ -796,7 +770,7 @@ TEST_P(ScrollableAppsGridViewTest, CanceledReparentDragToNewRow) {
         gfx::Vector2d(0, 50));
     generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   EXPECT_EQ(initial_preferred_size, apps_grid_view_->GetPreferredSize());
   AppListItemView* last_item = apps_grid_view_->GetItemViewAt(kInitialItems);
