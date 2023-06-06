@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -100,7 +99,6 @@ public class StartupPaintPreviewTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1444246")
     public void testSnackbarShow() throws ExecutionException, InterruptedException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         StartupPaintPreview startupPaintPreview = TestThreadUtils.runOnUiThreadBlocking(
