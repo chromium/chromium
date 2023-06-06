@@ -206,7 +206,13 @@ export async function initMetrics(): Promise<void> {
 
   await (await getGAHelper())
       .initGA(
-          {gaId: GA_ID, ga4Id: GA4_ID, clientId, ga4ApiSecret: GA4_API_SECRET},
+          {
+            gaId: GA_ID,
+            ga4Id: GA4_ID,
+            clientId,
+            ga4ApiSecret: GA4_API_SECRET,
+            ga4SessionId: String(Date.now()),
+          },
           Comlink.proxy(setClientId),
       );
   ready.signal();

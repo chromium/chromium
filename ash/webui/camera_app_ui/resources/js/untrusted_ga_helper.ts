@@ -36,6 +36,7 @@ interface InitGAIdParams {
   ga4Id: string;
   clientId: string;
   ga4ApiSecret: string;
+  ga4SessionId: string;
 }
 
 /**
@@ -82,7 +83,7 @@ function initGA(
   assert(m.parentNode !== null);
   m.parentNode.insertBefore(a, m);
 
-  const {gaId, ga4Id, clientId, ga4ApiSecret} = idParams;
+  const {gaId, ga4Id, clientId, ga4ApiSecret, ga4SessionId} = idParams;
   window.ga('create', gaId, {
     storage: 'none',
     clientId: clientId,
@@ -97,6 +98,7 @@ function initGA(
       gaId,
       clientId,
       ga4ApiSecret,
+      ga4SessionId,
     }));
   });
 
@@ -114,18 +116,28 @@ function initGA(
   window.ga('set', 'anonymizeIp', true);
 }
 
-function genSendGA4Event({gaId, ga4Id, clientId, ga4ApiSecret}: InitGAIdParams):
-    SendGA4Event {
+function genSendGA4Event({gaId, ga4Id, clientId, ga4ApiSecret, ga4SessionId}:
+                             InitGAIdParams): SendGA4Event {
   return (event: UniversalAnalytics.FieldsObject,
           dimensions: Record<string, string>) => {
     if (window[`ga-disable-${gaId}`]) {
       return;
     }
     // TODO(b/267265966): Use gtag.js instead of measurement protocol when
-    // gtag.js supports sending events under non-http/https protocols.
-    const params: Record<string, unknown> = {};
+    // gtag.js supports sending events under non-http/https protocols. GA4 uses
+    // `engagement_time_msec` and `session_id` to calculate user activity.
+    // Remove these parameters as they are sent automatically by gtag.js.
+    /* eslint-disable @typescript-eslint/naming-convention */
+    const params: Record<string, unknown> = {
+      ...dimensions,
+      // Set '1' here as it's enough for GA4 to generate the metrics for n-day
+      // active users and we don't want to reimplement how gtag.js calculate the
+      // engagement time for each event.
+      engagement_time_msec: '1',
+      session_id: ga4SessionId,
+    };
     if (event.eventLabel !== undefined) {
-      params[`event_label`] = event.eventLabel;
+      params['event_label'] = event.eventLabel;
     }
     if (event.eventCategory !== undefined) {
       params['event_category'] = event.eventCategory;
@@ -133,10 +145,6 @@ function genSendGA4Event({gaId, ga4Id, clientId, ga4ApiSecret}: InitGAIdParams):
     if (event.eventValue !== undefined) {
       params['value'] = event.eventValue;
     }
-    for (const [key, value] of Object.entries(dimensions)) {
-      params[key] = value;
-    }
-    /* eslint-disable @typescript-eslint/naming-convention */
     void fetch(
         `https://www.google-analytics.com/mp/collect?measurement_id=${
             ga4Id}&api_secret=${ga4ApiSecret}`,
