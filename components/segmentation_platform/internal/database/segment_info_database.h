@@ -84,6 +84,7 @@ class SegmentInfoDatabase {
   // The database will be updated asynchronously after.
   // TODO(shaktisahu): How does the client know if a segment is to be deleted?
   virtual void UpdateSegment(SegmentId segment_id,
+                             ModelSource model_source,
                              absl::optional<proto::SegmentInfo> segment_info,
                              SuccessCallback callback);
 
@@ -93,7 +94,7 @@ class SegmentInfoDatabase {
   // segment ids to be deleted from the database.
   virtual void UpdateMultipleSegments(
       const SegmentInfoList& segments_to_update,
-      const std::vector<SegmentId>& segments_to_delete,
+      const std::vector<std::pair<SegmentId, ModelSource>>& segments_to_delete,
       SuccessCallback callback);
 
   // Called to write the model execution results for a given segment. It will

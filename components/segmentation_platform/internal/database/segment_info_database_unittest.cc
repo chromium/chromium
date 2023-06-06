@@ -238,19 +238,20 @@ TEST_F(SegmentInfoDatabaseTest, Update) {
   db_->LoadCallback(true);
 
   // Delete a segment.
-  segment_db_->UpdateSegment(kSegmentId, absl::nullopt, base::DoNothing());
+  segment_db_->UpdateSegment(kSegmentId, kServerModelSource, absl::nullopt,
+                             base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({});
 
   // Insert a segment and verify.
-  segment_db_->UpdateSegment(kSegmentId,
+  segment_db_->UpdateSegment(kSegmentId, kServerModelSource,
                              CreateSegment(kSegmentId, kServerModelSource),
                              base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({std::make_pair(kSegmentId, kServerModelSource)});
 
   // Insert another segment and verify.
-  segment_db_->UpdateSegment(kSegmentId2,
+  segment_db_->UpdateSegment(kSegmentId2, kServerModelSource,
                              CreateSegment(kSegmentId2, kServerModelSource),
                              base::DoNothing());
   db_->UpdateCallback(true);
@@ -278,13 +279,14 @@ TEST_F(SegmentInfoDatabaseTest, UpdateWithModelSource) {
 
   // Insert a segment and verify.
   segment_db_->UpdateSegment(
-      kSegmentId, CreateSegment(kSegmentId, ModelSource::UNKNOWN_MODEL_SOURCE),
+      kSegmentId, ModelSource::UNKNOWN_MODEL_SOURCE,
+      CreateSegment(kSegmentId, ModelSource::UNKNOWN_MODEL_SOURCE),
       base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({std::make_pair(kSegmentId, ModelSource::UNKNOWN_MODEL_SOURCE)});
 
   // Insert another segment and verify.
-  segment_db_->UpdateSegment(kSegmentId2,
+  segment_db_->UpdateSegment(kSegmentId2, kDefaultModelSource,
                              CreateSegment(kSegmentId2, kDefaultModelSource),
                              base::DoNothing());
   db_->UpdateCallback(true);
@@ -310,8 +312,11 @@ TEST_F(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
   db_->LoadCallback(true);
 
   // Delete both segments.
-  segment_db_->UpdateMultipleSegments({}, {kSegmentId, kSegmentId2},
-                                      base::DoNothing());
+  segment_db_->UpdateMultipleSegments(
+      {},
+      {std::make_pair(kSegmentId, kServerModelSource),
+       std::make_pair(kSegmentId2, kServerModelSource)},
+      base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({});
 

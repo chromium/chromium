@@ -259,8 +259,8 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
 
   segment_db_->UpdateSegment(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, *info,
-      base::DoNothing());
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      ModelSource::SERVER_MODEL_SOURCE, *info, base::DoNothing());
 
   auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
   MockModelExecutionScheduler* scheduler = scheduler_moved.get();

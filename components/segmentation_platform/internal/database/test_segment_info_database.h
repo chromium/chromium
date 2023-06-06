@@ -35,6 +35,7 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
       SegmentId segment_id,
       ModelSource model_source) override;
   void UpdateSegment(SegmentId segment_id,
+                     ModelSource model_score,
                      absl::optional<proto::SegmentInfo> segment_info,
                      SuccessCallback callback) override;
   void SaveSegmentResult(SegmentId segment_id,

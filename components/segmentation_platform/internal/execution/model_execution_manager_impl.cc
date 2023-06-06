@@ -153,7 +153,8 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // Now that we've merged the old and the new SegmentInfo, we want to store
   // the new version in the database.
   segment_database_->UpdateSegment(
-      segment_id, absl::make_optional(new_segment_info),
+      segment_id, new_segment_info.model_source(),
+      absl::make_optional(new_segment_info),
       base::BindOnce(&ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored,
                      weak_ptr_factory_.GetWeakPtr(), new_segment_info));
 }

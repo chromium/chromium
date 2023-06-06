@@ -65,6 +65,7 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
   MOCK_METHOD(void,
               UpdateSegment,
               (SegmentId segment_id,
+               ModelSource model_source,
                absl::optional<proto::SegmentInfo> segment_info,
                SuccessCallback callback),
               (override));
