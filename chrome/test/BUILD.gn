@@ -8826,6 +8826,7 @@ test("unit_tests") {
       "//chrome/common/safe_browsing:binary_feature_extractor",
       "//chrome/common/safe_browsing:download_type_util",
       "//chrome/services/file_util/public/cpp:unit_tests",
+      "//components/file_access:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
       "//ipc:protobuf_support",

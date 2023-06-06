@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
@@ -33,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -585,6 +587,32 @@ TEST_F(FilesRequestHandlerTest, FileDataNegativeMalwareVerdict) {
 }
 
 TEST_F(FilesRequestHandlerTest, FileDataPositiveDlpVerdict) {
+  SetScanPolicies(/*dlp=*/true, /*malware=*/false);
+  GURL url(kTestUrl);
+
+  std::vector<base::FilePath> paths = CreateFilesForTest(
+      {FILE_PATH_LITERAL("good.doc"), FILE_PATH_LITERAL("good2.doc")});
+
+  auto results = ScanUpload(paths);
+  ASSERT_TRUE(results.has_value());
+  EXPECT_EQ(2u, results->size());
+
+  EXPECT_THAT((*results)[0],
+              MatchesRequestHandlerResult(
+                  true, FinalContentAnalysisResult::SUCCESS, ""));
+
+  EXPECT_THAT((*results)[1],
+              MatchesRequestHandlerResult(
+                  true, FinalContentAnalysisResult::SUCCESS, ""));
+}
+
+TEST_F(FilesRequestHandlerTest, FileDataPositiveDlpVerdictDataControls) {
+  file_access::MockScopedFileAccessDelegate scoped_files_access_delegate;
+
+  EXPECT_CALL(scoped_files_access_delegate, RequestFilesAccessForSystem)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Allowed()));
+
   SetScanPolicies(/*dlp=*/true, /*malware=*/false);
   GURL url(kTestUrl);
 

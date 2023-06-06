@@ -13,7 +13,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -285,6 +287,53 @@ TEST_P(MultipartUploadDataPipeRequestTest, MAYBE_Retries) {
     task_environment_.FastForwardUntilNoTasksRemain();
     run_loop.Run();
   }
+}
+
+TEST_P(MultipartUploadDataPipeRequestTest, DataControls) {
+  std::string expected_body =
+      "--boundary\r\n"
+      "Content-Type: application/octet-stream\r\n"
+      "\r\n"
+      "metadata\r\n"
+      "--boundary\r\n"
+      "Content-Type: application/octet-stream\r\n"
+      "\r\n"
+      "file content\r\n"
+      "--boundary--\r\n";
+  file_access::MockScopedFileAccessDelegate scoped_files_access_delegate;
+
+  if (is_file_request()) {
+    EXPECT_CALL(scoped_files_access_delegate, RequestFilesAccessForSystem)
+        .WillOnce(base::test::RunOnceCallback<1>(
+            file_access::ScopedFileAccess::Allowed()));
+  } else {
+    EXPECT_CALL(scoped_files_access_delegate, RequestFilesAccessForSystem)
+        .Times(0);
+  }
+
+  base::RunLoop run_loop;
+  std::unique_ptr<MockMultipartUploadDataPipeRequest> mock_request =
+      CreateRequest("file content",
+                    base::BindLambdaForTesting(
+                        [&run_loop](bool success, int http_status,
+                                    const std::string& response_data) {
+                          EXPECT_TRUE(success);
+                          EXPECT_EQ(net::HTTP_OK, http_status);
+                          EXPECT_EQ("response", response_data);
+                          run_loop.Quit();
+                        }));
+  mock_request->set_boundary("boundary");
+
+  EXPECT_CALL(*mock_request, CompleteSendRequest(_))
+      .WillOnce([&mock_request, &expected_body](
+                    std::unique_ptr<network::ResourceRequest> request) {
+        EXPECT_EQ(expected_body, mock_request->GetBodyFromFileOrPageRequest());
+        mock_request->RetryOrFinish(net::OK, net::HTTP_OK,
+                                    std::make_unique<std::string>("response"));
+      });
+  mock_request->Start();
+  task_environment_.FastForwardUntilNoTasksRemain();
+  run_loop.Run();
 }
 
 TEST_P(MultipartUploadDataPipeRequestTest, EquivalentToStringRequest) {

@@ -14,6 +14,8 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -168,12 +170,13 @@ void FileAnalysisRequest::GetRequestData(DataCallback callback) {
   }
 
   if (!delay_opening_file_) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&GetFileDataBlocking, path_,
-                       cached_data_.mime_type.empty()),
-        base::BindOnce(&FileAnalysisRequest::OnGotFileData,
-                       weakptr_factory_.GetWeakPtr()));
+    if (file_access::ScopedFileAccessDelegate::HasInstance()) {
+      file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
+          {path_}, base::BindOnce(&FileAnalysisRequest::GetData,
+                                  weakptr_factory_.GetWeakPtr()));
+    } else {
+      GetData(file_access::ScopedFileAccess::Allowed());
+    }
   }
 }
 
@@ -203,6 +206,7 @@ bool FileAnalysisRequest::HasMalwareRequest() const {
 
 void FileAnalysisRequest::OnGotFileData(
     std::pair<BinaryUploadService::Result, Data> result_and_data) {
+  scoped_file_access_.reset();
   if (result_and_data.first != BinaryUploadService::Result::SUCCESS) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
@@ -278,6 +282,17 @@ void FileAnalysisRequest::RunCallback() {
 
     std::move(data_callback_).Run(cached_result_, std::move(data));
   }
+}
+
+void FileAnalysisRequest::GetData(file_access::ScopedFileAccess file_access) {
+  scoped_file_access_ =
+      std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&GetFileDataBlocking, path_,
+                     cached_data_.mime_type.empty()),
+      base::BindOnce(&FileAnalysisRequest::OnGotFileData,
+                     weakptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace safe_browsing

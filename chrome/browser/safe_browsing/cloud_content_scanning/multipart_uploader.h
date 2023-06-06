@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_data_pipe_getter.h"
+#include "components/file_access/scoped_file_access.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -129,6 +130,7 @@ class MultipartUploadRequest {
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest,
                            EmitsRetriesNeededHistogram);
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, Retries);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, DataControls);
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest,
                            EquivalentToStringRequest);
 
@@ -162,6 +164,9 @@ class MultipartUploadRequest {
   // is known to be initialized to a correct state.
   virtual void CompleteSendRequest(
       std::unique_ptr<network::ResourceRequest> request);
+
+  void CreateDatapipe(std::unique_ptr<network::ResourceRequest> request,
+                      file_access::ScopedFileAccess file_access);
 
   static MultipartUploadRequestFactory* factory_;
 
@@ -200,6 +205,8 @@ class MultipartUploadRequest {
   base::Time start_time_;
 
   std::string access_token_;
+
+  std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access_;
 
   base::WeakPtrFactory<MultipartUploadRequest> weak_factory_{this};
 };

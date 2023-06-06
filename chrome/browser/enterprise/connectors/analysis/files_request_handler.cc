@@ -6,6 +6,8 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -14,6 +16,8 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 
 namespace enterprise_connectors {
@@ -173,8 +177,15 @@ bool FilesRequestHandler::UploadDataImpl() {
     for (size_t i = 0; i < paths_.size(); ++i)
       tasks[i].request = PrepareFileRequest(i);
 
-    file_opening_job_ =
-        std::make_unique<safe_browsing::FileOpeningJob>(std::move(tasks));
+    if (file_access::ScopedFileAccessDelegate::HasInstance()) {
+      file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
+          paths_,
+          base::BindOnce(&FilesRequestHandler::CreateFileOpeningJob,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(tasks)));
+    } else {
+      file_opening_job_ =
+          std::make_unique<safe_browsing::FileOpeningJob>(std::move(tasks));
+    }
     return true;
   }
 
@@ -324,8 +335,18 @@ void FilesRequestHandler::MaybeCompleteScanRequest() {
   if (file_result_count_ < paths_.size()) {
     return;
   }
+  scoped_file_access_.reset();
   DCHECK(!callback_.is_null());
   std::move(callback_).Run(std::move(results_));
+}
+
+void FilesRequestHandler::CreateFileOpeningJob(
+    std::vector<safe_browsing::FileOpeningJob::FileOpeningTask> tasks,
+    file_access::ScopedFileAccess file_access) {
+  scoped_file_access_ =
+      std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
+  file_opening_job_ =
+      std::make_unique<safe_browsing::FileOpeningJob>(std::move(tasks));
 }
 
 }  // namespace enterprise_connectors

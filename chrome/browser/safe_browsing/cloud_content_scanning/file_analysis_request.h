@@ -13,6 +13,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
+#include "components/file_access/scoped_file_access.h"
 
 namespace safe_browsing {
 
@@ -59,6 +60,8 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   // Runs |data_callback_|.
   void RunCallback();
 
+  void GetData(file_access::ScopedFileAccess file_access);
+
   bool has_cached_result_;
   BinaryUploadService::Result cached_result_;
   Data cached_data_;
@@ -86,6 +89,8 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
       zip_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
   std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>
       rar_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+
+  std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access_;
 
   base::WeakPtrFactory<FileAnalysisRequest> weakptr_factory_{this};
 };
