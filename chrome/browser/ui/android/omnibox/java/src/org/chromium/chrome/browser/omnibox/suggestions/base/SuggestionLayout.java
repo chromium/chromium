@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;

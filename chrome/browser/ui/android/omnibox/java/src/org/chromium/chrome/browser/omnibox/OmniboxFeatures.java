@@ -105,24 +105,18 @@ public class OmniboxFeatures {
     /**
      * Returns whether smaller vertical and horizontal margins should be used in the visual update.
      */
-    public static boolean shouldShowSmallerMargins() {
-        return MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.getValue();
+    public static boolean shouldShowSmallerMargins(Context context) {
+        return shouldShowModernizeVisualUpdate(context)
+                && MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.getValue();
     }
 
     /**
      * Returns whether even smaller vertical and horizontal margins should be used in the visual
      * update.
      */
-    public static boolean shouldShowSmallestMargins() {
-        return MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.getValue();
-    }
-
-    /**
-     * Returns whether the clipboard suggestion should be grouped with other zero suggest items on
-     * the NTP or start surface in the visual update.
-     * */
-    public static boolean shouldMergeClipboardOnNtp() {
-        return MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP.getValue();
+    public static boolean shouldShowSmallestMargins(Context context) {
+        return shouldShowModernizeVisualUpdate(context)
+                && MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.getValue();
     }
 
     /** Returns whether the omnibox should directly consume IME (keyboard) insets. */

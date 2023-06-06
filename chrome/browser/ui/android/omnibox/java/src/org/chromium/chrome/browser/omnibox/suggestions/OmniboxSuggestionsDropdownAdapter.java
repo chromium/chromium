@@ -37,7 +37,7 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         super.onAttachedToRecyclerView(view);
         mLayoutManager = view.getLayoutManager();
         mSelectedItem = RecyclerView.NO_POSITION;
-        if (OmniboxFeatures.shouldShowSmallestMargins()) {
+        if (OmniboxFeatures.shouldShowSmallestMargins(view.getContext())) {
             view.addItemDecoration(new SuggestionHorizontalDivider(view.getContext()));
         }
     }

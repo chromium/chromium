@@ -302,18 +302,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
         mShouldShowModernizeVisualUpdate = OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
-        final int edgePaddingRes = mShouldShowModernizeVisualUpdate
-                ? OmniboxResourceProvider.selectMarginDimen(R.dimen.toolbar_edge_padding_modern,
-                        R.dimen.toolbar_edge_padding_modern_smaller, R.dimen.toolbar_edge_padding)
-                : R.dimen.toolbar_edge_padding;
-        mToolbarSidePadding = getResources().getDimensionPixelOffset(edgePaddingRes);
-
-        mBackgroundHeightIncreaseWhenFocus = mShouldShowModernizeVisualUpdate
-                ? getResources().getDimensionPixelSize(
-                        OmniboxFeatures.shouldShowActiveColorOnOmnibox()
-                                ? R.dimen.toolbar_url_focus_height_increase_active_color
-                                : R.dimen.toolbar_url_focus_height_increase_no_active_color)
-                : 0;
+        mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
+        mBackgroundHeightIncreaseWhenFocus =
+                OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(context);
     }
 
     @Override
