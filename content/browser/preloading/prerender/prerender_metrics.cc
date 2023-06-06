@@ -441,4 +441,14 @@ void RecordPrerenderBackNavigationEligibility(
   }
 }
 
+void RecordPrerenderActivationCommitDeferTime(
+    base::TimeDelta time_delta,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  base::UmaHistogramTimes(
+      GenerateHistogramName("Navigation.Prerender.ActivationCommitDeferTime",
+                            trigger_type, embedder_histogram_suffix),
+      time_delta);
+}
+
 }  // namespace content

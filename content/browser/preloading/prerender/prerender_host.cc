@@ -120,6 +120,13 @@ PrerenderHost* PrerenderHost::GetPrerenderHostFromFrameTreeNode(
   }
 }
 
+// static
+PrerenderHost& PrerenderHost::GetFromFrameTreeNode(
+    FrameTreeNode& frame_tree_node) {
+  CHECK(frame_tree_node.frame_tree().is_prerendering());
+  return *static_cast<PrerenderHost*>(frame_tree_node.frame_tree().delegate());
+}
+
 PrerenderHost::PrerenderHost(
     const PrerenderAttributes& attributes,
     WebContentsImpl& web_contents,
