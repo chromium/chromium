@@ -1433,10 +1433,6 @@
     "label": "//chrome/browser/metrics/perf:profile_provider_unittest",
     "type": "console_test_launcher",
   },
-  "pthreadpool_unittests": {
-    "label": "//third_party/pthreadpool:pthreadpool_unittests",
-    "type": "console_test_launcher",
-  },
   "push_apps_to_background_apk": {
     "label": "//tools/android/push_apps_to_background:push_apps_to_background_apk",
     "type": "additional_compile_target",
