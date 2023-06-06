@@ -68,6 +68,7 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
@@ -137,6 +138,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -396,6 +398,13 @@ public class AwContents implements SmartClipProvider {
     private boolean mIsContentVisible;
     private boolean mIsUpdateVisibilityTaskPending;
     private Runnable mUpdateVisibilityRunnable;
+
+    @VisibleForTesting
+    public static final long FUNCTOR_RECLAIM_DELAY_MS = 10000;
+    private static final long CURRENTLY_VISIBLE = -1;
+    private long mLastWindowVisibleTime = -1;
+    private boolean mHasPendingReclaimTask;
+    private BiFunction<Runnable, Long, Void> mPostDelayedTaskForTesting;
 
     private @RendererPriority int mRendererPriority;
     private boolean mRendererPriorityWaivedWhenNotVisible;
@@ -824,17 +833,7 @@ public class AwContents implements SmartClipProvider {
     private class AwComponentCallbacks implements ComponentCallbacks2 {
         @Override
         public void onTrimMemory(final int level) {
-            boolean visibleRectEmpty = getGlobalVisibleRect().isEmpty();
-            final boolean visible = mIsViewVisible && mIsWindowVisible && !visibleRectEmpty;
-            ThreadUtils.runOnUiThreadBlocking(() -> {
-                if (isDestroyed(NO_WARN)) return;
-                if (level >= TRIM_MEMORY_MODERATE) {
-                    if (mDrawFunctor != null) {
-                        mDrawFunctor.trimMemory();
-                    }
-                }
-                AwContentsJni.get().trimMemory(mNativeAwContents, level, visible);
-            });
+            AwContents.this.onTrimMemory(level);
         }
 
         @Override
@@ -3301,7 +3300,63 @@ public class AwContents implements SmartClipProvider {
         if (!isDestroyed(NO_WARN)) {
             AwContentsJni.get().setWindowVisibility(mNativeAwContents, mIsWindowVisible);
         }
+        // Using TimeUtils to allow it being overridden in tests.
+        mLastWindowVisibleTime = visible ? CURRENTLY_VISIBLE : TimeUtils.uptimeMillis();
+        if (!visible) afterWindowHiddenTask();
         postUpdateWebContentsVisibility();
+    }
+
+    private void afterWindowHiddenTask() {
+        try (TraceEvent e = TraceEvent.scoped("afterWindowHiddenTask")) {
+            if (!AwFeatureMap.getInstance().isEnabled(
+                        AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND)) {
+                return;
+            }
+
+            if (isDestroyed(NO_WARN)) return;
+            if (mLastWindowVisibleTime == CURRENTLY_VISIBLE) return;
+
+            long timeNotVisibleMs = TimeUtils.uptimeMillis() - mLastWindowVisibleTime;
+            // Not in background for long enough.
+            if (timeNotVisibleMs < FUNCTOR_RECLAIM_DELAY_MS) {
+                // A task has been posted. If it's not far enough into the future, it will
+                // reschedule itself, nothing to do.
+                if (mHasPendingReclaimTask) return;
+                mHasPendingReclaimTask = true;
+
+                // We may have any number of fg <-> bg transitions happen in the meantime. Make
+                // sure that we only reclaim memory when we've spent enough continuous time in
+                // background.
+                Runnable task = () -> {
+                    mHasPendingReclaimTask = false;
+                    afterWindowHiddenTask();
+                };
+                long delayMs = FUNCTOR_RECLAIM_DELAY_MS - timeNotVisibleMs;
+                if (mPostDelayedTaskForTesting != null) {
+                    mPostDelayedTaskForTesting.apply(task, delayMs);
+                } else {
+                    PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, task, delayMs);
+                }
+                return;
+            }
+
+            // Clear the functor. This causes native-side resources to be freed. The functor will be
+            // re-created at the next draw.
+            setFunctor(null);
+            // Since we discarded the functor, it is a good time to reclaim resources as well.
+            AwContentsJni.get().trimMemory(
+                    mNativeAwContents, ComponentCallbacks2.TRIM_MEMORY_COMPLETE, false);
+        }
+    }
+
+    @VisibleForTesting
+    public boolean hasDrawFunctor() {
+        return mDrawFunctor != null;
+    }
+
+    @VisibleForTesting
+    public void setPostDelayedTaskForTesting(BiFunction<Runnable, Long, Void> fn) {
+        mPostDelayedTaskForTesting = fn;
     }
 
     private void postUpdateWebContentsVisibility() {
@@ -3963,6 +4018,29 @@ public class AwContents implements SmartClipProvider {
             }
         }
         return false;
+    }
+
+    @VisibleForTesting
+    public void onTrimMemory(final int level) {
+        try (TraceEvent e = TraceEvent.scoped("onTrimMemory", String.valueOf(level))) {
+            boolean visibleRectEmpty = getGlobalVisibleRect().isEmpty();
+            final boolean visible = mIsViewVisible && mIsWindowVisible && !visibleRectEmpty;
+
+            boolean clearFunctor = AwFeatureMap.getInstance().isEnabled(
+                    AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND);
+            int trimThreshold = clearFunctor ? ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
+                                             : ComponentCallbacks2.TRIM_MEMORY_MODERATE;
+            ThreadUtils.runOnUiThreadBlocking(() -> {
+                if (isDestroyed(NO_WARN)) return;
+                if (level >= trimThreshold) {
+                    if (mDrawFunctor != null) {
+                        mDrawFunctor.trimMemory();
+                        if (clearFunctor) setFunctor(null);
+                    }
+                }
+                AwContentsJni.get().trimMemory(mNativeAwContents, level, visible);
+            });
+        }
     }
 
     // --------------------------------------------------------------------------------------------
