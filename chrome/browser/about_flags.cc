@@ -7873,6 +7873,10 @@ const FeatureEntry kFeatureEntries[] = {
          page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs)},
 #endif
 
+    {"user-bypass-ui", flag_descriptions::kUserBypassUIName,
+     flag_descriptions::kUserBypassUIDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(content_settings::features::kUserBypassUI)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kClipboardHistoryLongpressInternalName,
      flag_descriptions::kClipboardHistoryLongpressName,

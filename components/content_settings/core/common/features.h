@@ -62,6 +62,10 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold;
 
+// Feature to enable the User Bypass UI.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kUserBypassUI);
+
 }  // namespace features
 }  // namespace content_settings
 

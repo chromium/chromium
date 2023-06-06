@@ -61635,6 +61635,7 @@ from previous Chrome versions.
   <int value="-686617279" label="WebAppEnableLaunchHandler:enabled"/>
   <int value="-685107150" label="FilesConflictDialog:enabled"/>
   <int value="-684900739" label="disable-merge-key-char-events"/>
+  <int value="-684568243" label="UserBypassUI:enabled"/>
   <int value="-684503292"
       label="OmniboxTabSwitchSuggestionsDedicatedRow:enabled"/>
   <int value="-684336980" label="IsolatedWebAppDevMode:enabled"/>
@@ -62065,6 +62066,7 @@ from previous Chrome versions.
   <int value="-460062351" label="VariationsGoogleGroupFiltering:disabled"/>
   <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
+  <int value="-458406186" label="UserBypassUI:disabled"/>
   <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
   <int value="-458090289" label="CrOSLateBootMissiveStorage:disabled"/>
   <int value="-457584339" label="TemporaryHoldingSpace:enabled"/>

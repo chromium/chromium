@@ -7558,6 +7558,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "user-bypass-ui",
+    "owners": [ "olesiamarukhno@google.com", "kartoffel-core-eng@google.com" ],
+    "expiry_milestone": 119
+  },
+  {
     "name": "user-notes-side-panel",
     "owners": [ "corising", "chrome-desktop-ui-sea" ],
     "expiry_milestone": 118
