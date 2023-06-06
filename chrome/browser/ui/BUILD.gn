@@ -1621,6 +1621,8 @@ static_library("ui") {
       "webui/commerce/shopping_list_context_menu_controller.h",
       "webui/commerce/shopping_ui_handler_delegate.cc",
       "webui/commerce/shopping_ui_handler_delegate.h",
+      "webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.cc",
+      "webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h",
       "webui/cr_components/history_clusters/history_clusters_util.cc",
       "webui/cr_components/history_clusters/history_clusters_util.h",
       "webui/cr_components/most_visited/most_visited_handler.cc",

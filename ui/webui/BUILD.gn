@@ -35,6 +35,7 @@ static_library("webui") {
   if (!is_android && !is_ios) {
     public_deps += [
       "//ui/webui/resources/cr_components/color_change_listener:mojom",
+      "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
       "//ui/webui/resources/cr_components/customize_themes:mojom",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/most_visited:mojom",

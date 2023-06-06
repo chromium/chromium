@@ -1,0 +1,33 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module customize_color_scheme_mode.mojom;
+
+enum ColorSchemeMode {
+  kSystem = 0,
+  kLight = 1,
+  kDark = 2,
+};
+
+// Used by the component to bootstrap bidirectional communication.
+interface CustomizeColorSchemeModeHandlerFactory {
+  // The component calls this method when it is first initialized.
+  CreateCustomizeColorSchemeModeHandler(
+           pending_remote<CustomizeColorSchemeModeClient> pending_client,
+           pending_receiver<CustomizeColorSchemeModeHandler> pending_handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface CustomizeColorSchemeModeHandler {
+  // Sets the current color mode.
+  SetColorSchemeMode(ColorSchemeMode colorSchemeMode);
+  // Gets the current color mode.
+  InitializeColorSchemeMode();
+};
+
+// WebUI-side handler for requests from the browser.
+interface CustomizeColorSchemeModeClient {
+  // Sets the current color mode.
+  SetColorSchemeMode(ColorSchemeMode colorSchemeMode);
+};
