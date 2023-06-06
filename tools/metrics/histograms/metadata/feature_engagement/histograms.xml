@@ -85,6 +85,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_CompanionSidePanel"
       summary="prompting users to view the companion feature in the side
                panel"/>
+  <variant name="IPH_CompanionSidePanelRegionSearch"
+      summary="prompting users to use the region search feature in the
+               companion side panel"/>
   <variant name="IPH_ContextualPageActions_PriceTracking"
       summary="contextual page price tracking action in the top toolbar"/>
   <variant name="IPH_ContextualPageActions_PriceTrackingActionChip"

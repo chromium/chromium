@@ -128,6 +128,10 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(GURL page_url) {
   promo_state->set_exps_promo_shown_count(
       pref_service_->GetInteger(kExpsPromoShownCountPref));
 
+  // Set region search IPH state.
+  promo_state->set_should_show_region_search_iph(
+      signin_delegate_->ShouldShowRegionSearchIPH());
+
   std::string base64_encoded_proto;
   base::Base64Encode(url_params.SerializeAsString(), &base64_encoded_proto);
   return base64_encoded_proto;

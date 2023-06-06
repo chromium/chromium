@@ -41,6 +41,8 @@ void PromoHandler::OnPromoAction(PromoType promo_type,
     case PromoType::kExps:
       OnExpsPromo(promo_action, exps_promo_url);
       return;
+    default:
+      return;
   }
 }
 

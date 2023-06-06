@@ -34,6 +34,9 @@ class SigninDelegate {
 
   // Loads URL in the browser in a new tab.
   virtual void LoadUrlInNewTab(const GURL& url) = 0;
+
+  // Returns whether region search IPH should be shown.
+  virtual bool ShouldShowRegionSearchIPH() = 0;
 };
 
 }  // namespace companion

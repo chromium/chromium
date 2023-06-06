@@ -59,6 +59,9 @@ enum PromoType {
 
   // Promo to opt into experience api.
   kExps = 3,
+
+  // IPH about region search capability.
+  kRegionSearchIPH = 4,
 };
 
 // User actions taken on a promo.

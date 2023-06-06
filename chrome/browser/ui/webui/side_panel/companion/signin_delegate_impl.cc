@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate_impl.h"
 
 #include "base/functional/callback.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -12,6 +13,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -73,6 +77,13 @@ void SigninDelegateImpl::LoadUrlInNewTab(const GURL& url) {
                                 /*is_renderer_initiated*/ false);
   auto* browser = companion::GetBrowserForWebContents(webui_contents_);
   browser->OpenURL(params);
+}
+
+bool SigninDelegateImpl::ShouldShowRegionSearchIPH() {
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+  return tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHCompanionSidePanelRegionSearchFeature);
 }
 
 Profile* SigninDelegateImpl::GetProfile() {

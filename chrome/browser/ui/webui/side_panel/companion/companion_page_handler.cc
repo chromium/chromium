@@ -12,6 +12,7 @@
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -25,6 +26,9 @@
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate_impl.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/lens/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
@@ -198,6 +202,16 @@ void CompanionPageHandler::OnPromoAction(
     side_panel::mojom::PromoType promo_type,
     side_panel::mojom::PromoAction promo_action,
     const absl::optional<GURL>& exps_promo_url) {
+  if (promo_type == side_panel::mojom::PromoType::kRegionSearchIPH) {
+    if (promo_action == side_panel::mojom::PromoAction::kRejected) {
+      auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+          GetProfile());
+      tracker->Dismissed(
+          feature_engagement::kIPHCompanionSidePanelRegionSearchFeature);
+    }
+    return;
+  }
+
   promo_handler_->OnPromoAction(promo_type, promo_action, exps_promo_url);
   metrics_logger_->OnPromoAction(promo_type, promo_action);
 }
@@ -208,6 +222,8 @@ void CompanionPageHandler::OnRegionSearchClicked() {
   helper->StartRegionSearch(web_contents(), /*use_fullscreen_capture=*/false);
   metrics_logger_->RecordUiSurfaceClicked(
       side_panel::mojom::UiSurface::kRegionSearch, kInvalidPosition);
+  feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile())
+      ->NotifyEvent("companion_side_panel_region_search_button_clicked");
 }
 
 void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
