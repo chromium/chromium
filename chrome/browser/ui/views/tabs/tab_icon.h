@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -172,9 +173,11 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // it will be drawn off the bottom.
   double hiding_fraction_ = 0.0;
 
-  // Animation used when the favicon fades in after being shown inside the
-  // loading-state spinner.
-  gfx::LinearAnimation favicon_fade_in_animation_;
+  // Animation used when the favicon grows or shrinks in size. `Show` will
+  // represent the favicon growing to full size, while `Hide` will represent the
+  // favicon shrinking which happens when the loading spinner or discard
+  // indicator is present.
+  gfx::SlideAnimation favicon_size_animation_;
 
   // Animation used when a tab is discarded so the favicon will partially
   // fade out
