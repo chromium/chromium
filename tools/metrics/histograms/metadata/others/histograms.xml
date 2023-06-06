@@ -7982,14 +7982,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mojo.Channel.WriteMessageHandles" units="count"
-    expires_after="2021-11-07">
-  <owner>amistry@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
-  <summary>The number of handles sent with a channel message.</summary>
-</histogram>
-
 <histogram name="Mojo.Channel.WriteMessageLatency" units="ms"
     expires_after="2023-10-08">
   <owner>amistry@chromium.org</owner>
@@ -8050,14 +8042,6 @@ chromium-metrics-reviews@google.com.
     Records the number of sent Mojo IPCs, split per process. Emitted each time a
     mojo IPC is sent.
   </summary>
-</histogram>
-
-<histogram name="Mojo.Channel.WritevBatchedMessages" units="messages"
-    expires_after="2022-05-15">
-  <owner>amistry@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
-  <summary>The number of messages batched into a single writev call.</summary>
 </histogram>
 
 <histogram name="Mojo.Connector.MaxUnreadMessageQuotaUsed" units="messages"
