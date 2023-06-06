@@ -601,16 +601,16 @@ def _boot_device_ffx(target_id: Optional[str], serial_num: Optional[str],
         raise NotImplementedError(f'BootMode {mode} not supported')
 
     logging.debug('FFX reboot with command [%s]', ' '.join(cmd))
+    # TODO(crbug.com/1432405): We need to wait for the state transition or kill
+    # the process if it fails.
     if current_state == TargetState.FASTBOOT:
-        run_ffx_command(cmd=cmd,
-                        target_id=serial_num,
-                        configs=['product.reboot.use_dm=true'],
-                        check=False)
+        run_continuous_ffx_command(cmd=cmd,
+                                   target_id=serial_num,
+                                   configs=['product.reboot.use_dm=true'])
     else:
-        run_ffx_command(cmd=cmd,
-                        target_id=target_id,
-                        configs=['product.reboot.use_dm=true'],
-                        check=False)
+        run_continuous_ffx_command(cmd=cmd,
+                                   target_id=target_id,
+                                   configs=['product.reboot.use_dm=true'])
 
 
 def _boot_device_dm(target_id: Optional[str], serial_num: Optional[str],
@@ -621,6 +621,9 @@ def _boot_device_dm(target_id: Optional[str], serial_num: Optional[str],
             raise StateTransitionError('Cannot boot to Regular via DM - '
                                        'FFX already failed to do so.')
         # Boot to regular.
+        # TODO(crbug.com/1432405): After changing to run_continuous_ffx_command,
+        # this behavior becomes invalid, we need to wait for the state
+        # transition.
         _boot_device_ffx(target_id, serial_num, current_state,
                          BootMode.REGULAR)
 
