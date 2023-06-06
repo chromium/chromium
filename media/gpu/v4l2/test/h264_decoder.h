@@ -64,10 +64,8 @@ class H264Decoder : public VideoDecoder {
   // Sends IOCTL call to device with the frame's SPS, PPS, and Scaling Matrix
   // data which indicates the beginning of a new frame. Additionally
   // this initializes the decode parameter's dpb parameter from the DPB.
-  VideoDecoder::Result StartNewFrame(
-      bool is_OUTPUT_queue_new,
-      H264SliceMetadata* slice_metadata,
-      v4l2_ctrl_h264_decode_params* v4l2_decode_params);
+  VideoDecoder::Result StartNewFrame(bool is_OUTPUT_queue_new,
+                                     H264SliceMetadata* slice_metadata);
 
   // Finishes frame processing for the current decoded frame. Performs decoded
   // ref picture marking process as defined in section 8.2.5. Finally, using
