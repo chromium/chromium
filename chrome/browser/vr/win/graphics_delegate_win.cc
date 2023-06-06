@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/win/graphics_delegate_win.h"
 
 #include "base/numerics/math_constants.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -176,8 +177,10 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
       access_done_sync_token_.Clear();
     }
 
+    gfx::Size buffer_size = gfx::Size(width, height);
+    viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
     gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-        gfx::Size(width, height), gfx::BufferFormat::RGBA_8888,
+        buffer_size, SinglePlaneSharedImageFormatToBufferFormat(format),
         gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
     if (!gpu_memory_buffer_)
       return false;
@@ -186,11 +189,11 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
     last_height_ = height;
 
     mailbox_ = sii_->CreateSharedImage(
-        gpu_memory_buffer_.get(), gpu_memory_buffer_manager_, gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 |
             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-        "VRGraphicsDelegate");
+        "VRGraphicsDelegate", gpu_memory_buffer_->CloneHandle());
 
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
