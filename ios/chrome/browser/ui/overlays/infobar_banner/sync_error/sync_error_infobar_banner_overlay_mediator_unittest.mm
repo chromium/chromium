@@ -10,7 +10,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/sync_error_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/sync/utils/test/mock_sync_error_infobar_delegate.h"
@@ -52,13 +53,14 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
             kButtonLabelText,
             /*use_icon_background_tint=*/true);
     // Create an InfoBarIOS with a MockSyncErrorInfoBarDelegate.
+    delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSyncError,
                                             std::move(delegate));
     // Package the infobar into an OverlayRequest, then create a mediator that
     // uses this request in order to set up a fake consumer.
-    request_ = OverlayRequest::CreateWithConfig<
-        sync_error_infobar_overlays::SyncErrorBannerRequestConfig>(
-        infobar_.get());
+    request_ =
+        OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+            infobar_.get(), InfobarOverlayType::kBanner);
     mediator_ = [[SyncErrorInfobarBannerOverlayMediator alloc]
         initWithRequest:request_.get()];
     consumer_mock_ = OCMProtocolMock(@protocol(InfobarBannerConsumer));
@@ -73,6 +75,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
+  MockSyncErrorInfoBarDelegate* delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<InfoBarIOS> infobar_;
@@ -104,4 +107,13 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
   OCMExpect([consumer_mock_
       setIconBackgroundColor:[UIColor colorNamed:kRed500Color]]);
   OCMExpect([consumer_mock_ setUseIconBackgroundTint:true]);
+}
+
+// Tests that when the main button is pressed it calls 'Accept()'.
+TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, MainAction) {
+  mediator_.consumer = consumer_mock_;
+
+  // Verify that the 'Accept()' method is called.
+  EXPECT_CALL(*delegate_, Accept());
+  [mediator_ bannerInfobarButtonWasPressed:nil];
 }

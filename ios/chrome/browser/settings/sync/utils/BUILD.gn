@@ -28,10 +28,7 @@ source_set("utils") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/common/ui/colors",
     "//ui/base",
-    "//ui/gfx",
   ]
   frameworks = [ "Foundation.framework" ]
 }

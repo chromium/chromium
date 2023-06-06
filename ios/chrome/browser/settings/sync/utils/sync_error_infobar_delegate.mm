@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/settings/sync/utils/sync_error_infobar_delegate.h"
 
-#import <UIKit/UIKit.h>
-
 #import <utility>
 
 #import "base/check.h"
@@ -22,38 +20,11 @@
 #import "ios/chrome/browser/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ui/base/models/image_model.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// IconConfigs is the container for all configurations of the sync error infobar
-// icon
-struct IconConfigs {
-  bool use_icon_background_tint;
-  UIColor* background_color;
-  UIColor* image_tint_color;
-  UIImage* icon_image;
-};
-
-const IconConfigs& GetIconConfigs() {
-  static const IconConfigs kSymbols = {
-      true,
-      [UIColor colorNamed:kRed500Color],
-      [UIColor colorNamed:kPrimaryBackgroundColor],
-      DefaultSymbolTemplateWithPointSize(kSyncErrorSymbol,
-                                         kInfobarSymbolPointSize),
-  };
-  return kSymbols;
-}
-
-}  // namespace
 
 // static
 bool SyncErrorInfoBarDelegate::Create(infobars::InfoBarManager* infobar_manager,
@@ -72,7 +43,6 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
     id<SyncPresenter> presenter)
     : browser_state_(browser_state), presenter_(presenter) {
   DCHECK(!browser_state->IsOffTheRecord());
-  icon_ = gfx::Image(GetIconConfigs().icon_image);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state_);
   DCHECK(sync_service);
@@ -116,22 +86,6 @@ std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK(button == BUTTON_OK);
   return button_text_;
-}
-
-ui::ImageModel SyncErrorInfoBarDelegate::GetIcon() const {
-  return ui::ImageModel::FromImage(icon_);
-}
-
-bool SyncErrorInfoBarDelegate::UseIconBackgroundTint() const {
-  return GetIconConfigs().use_icon_background_tint;
-}
-
-UIColor* SyncErrorInfoBarDelegate::GetIconImageTintColor() const {
-  return GetIconConfigs().image_tint_color;
-}
-
-UIColor* SyncErrorInfoBarDelegate::GetIconBackgroundColor() const {
-  return GetIconConfigs().background_color;
 }
 
 bool SyncErrorInfoBarDelegate::Accept() {

@@ -51,23 +51,6 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 };
 
-// Tests that the delegate's icon configurations is correct when UseSymbol is
-// enabled.
-TEST_F(SyncErrorInfobarDelegateTest, IconConfigsUseSymbol) {
-  id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
-
-  EXPECT_TRUE(delegate->UseIconBackgroundTint());
-  EXPECT_NSEQ([UIColor colorNamed:kPrimaryBackgroundColor],
-              delegate -> GetIconImageTintColor());
-  EXPECT_NSEQ([UIColor colorNamed:kRed500Color],
-              delegate -> GetIconBackgroundColor());
-  EXPECT_NSEQ(DefaultSymbolTemplateWithPointSize(kSyncErrorSymbol,
-                                                 kInfobarSymbolPointSize),
-              delegate->GetIcon().GetImage().ToUIImage());
-}
-
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
   ON_CALL(*mock_sync_service(), GetUserActionableError())
       .WillByDefault(

@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/confirm/confirm_infobar_banner_interaction_handler.h"
-#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/sync_error/sync_error_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_modal_interaction_handler.h"
 
@@ -33,8 +32,15 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
       InfobarType::kInfobarTypePasswordSave);
   browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
       InfobarType::kInfobarTypePasswordUpdate);
+
+  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType::kInfobarTypePermissions);
+
   browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
       InfobarType::kInfobarTypeSaveCard);
+
+  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType::kInfobarTypeSyncError);
 
   browser_agent->AddInfobarInteractionHandler(
       std::make_unique<InfobarInteractionHandler>(
@@ -51,11 +57,4 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       std::make_unique<SaveAddressProfileInfobarBannerInteractionHandler>(),
       std::make_unique<SaveAddressProfileInfobarModalInteractionHandler>()));
-  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
-      InfobarType::kInfobarTypePermissions);
-  browser_agent->AddInfobarInteractionHandler(
-      std::make_unique<InfobarInteractionHandler>(
-          InfobarType::kInfobarTypeSyncError,
-          std::make_unique<SyncErrorInfobarBannerInteractionHandler>(),
-          /*modal_handler=*/nullptr));
 }

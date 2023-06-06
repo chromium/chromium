@@ -5,21 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_SYNC_ERROR_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_SYNC_ERROR_INFOBAR_DELEGATE_H_
 
-#import <UIKit/UIKit.h>
 #include <memory>
 #include <string>
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
-#include "ui/gfx/image/image.h"
 
 class ChromeBrowserState;
 @protocol SyncPresenter;
-
-namespace gfx {
-class Image;
-}
 
 namespace infobars {
 class InfoBarManager;
@@ -44,25 +38,18 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // InfoBarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
-  ui::ImageModel GetIcon() const override;
 
   // ConfirmInfoBarDelegate implementation.
   std::u16string GetMessageText() const override;
   std::u16string GetTitleText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
-  bool UseIconBackgroundTint() const override;
   bool Accept() override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Properties specific to Sync Error Infobar.
-  UIColor* GetIconImageTintColor() const;
-  UIColor* GetIconBackgroundColor() const;
-
  private:
-  gfx::Image icon_;
   ChromeBrowserState* browser_state_;
   syncer::SyncService::UserActionableError error_state_;
   std::u16string title_;

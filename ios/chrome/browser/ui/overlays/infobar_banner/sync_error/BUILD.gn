@@ -12,10 +12,16 @@ source_set("sync_error") {
 
   deps = [
     "//base",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/settings/sync/utils",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
+    "//ios/chrome/common/ui/colors",
   ]
 }
 
@@ -31,8 +37,10 @@ source_set("unit_tests") {
     "//components/infobars/core",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/settings/sync/utils",

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/sync_error_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
@@ -30,6 +29,7 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
     case InfobarType::kInfobarTypePasswordUpdate:
     case InfobarType::kInfobarTypePermissions:
     case InfobarType::kInfobarTypeSaveCard:
+    case InfobarType::kInfobarTypeSyncError:
       return OverlayRequest::CreateWithConfig<
           DefaultInfobarOverlayRequestConfig>(infobar_ios, overlay_type);
     case InfobarType::kInfobarTypeTranslate:
@@ -78,13 +78,6 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
           return nullptr;
       }
 
-    case InfobarType::kInfobarTypeSyncError:
-      if (overlay_type == InfobarOverlayType::kBanner) {
-        return OverlayRequest::CreateWithConfig<
-            sync_error_infobar_overlays::SyncErrorBannerRequestConfig>(
-            infobar_ios);
-      }
-      return nullptr;
     default:
       return nullptr;
   }

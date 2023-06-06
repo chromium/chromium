@@ -14,8 +14,6 @@ source_set("infobar_banner") {
     "infobar_banner_placeholder_request_config.mm",
     "save_address_profile_infobar_banner_overlay_request_config.h",
     "save_address_profile_infobar_banner_overlay_request_config.mm",
-    "sync_error_infobar_banner_overlay_request_config.h",
-    "sync_error_infobar_banner_overlay_request_config.mm",
     "translate_infobar_banner_overlay_request_config.h",
     "translate_infobar_banner_overlay_request_config.mm",
   ]
@@ -49,10 +47,7 @@ source_set("infobar_banner") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "confirm_infobar_banner_overlay_request_config_unittest.mm",
-    "sync_error_infobar_banner_overlay_request_config_unittest.mm",
-  ]
+  sources = [ "confirm_infobar_banner_overlay_request_config_unittest.mm" ]
   deps = [
     ":infobar_banner",
     "//base/test:test_support",
