@@ -125,12 +125,12 @@ bool AutofillBottomSheetTabHelper::HasReachedDismissLimit() {
   PrefService* const pref_service =
       ChromeBrowserState ::FromBrowserState(web_state_->GetBrowserState())
           ->GetPrefs();
-  bool dimissLimitReached =
+  bool dismissLimitReached =
       pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
       kPasswordBottomSheetMaxDismissCount;
   base::UmaHistogramBoolean("IOS.IsEnabled.Password.BottomSheet",
-                            !dimissLimitReached);
-  return dimissLimitReached;
+                            !dismissLimitReached);
+  return dismissLimitReached;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AutofillBottomSheetTabHelper)
