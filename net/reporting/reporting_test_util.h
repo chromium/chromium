@@ -162,7 +162,7 @@ class TestReportingContext : public ReportingContext {
   TestReportingContext(const TestReportingContext&) = delete;
   TestReportingContext& operator=(const TestReportingContext&) = delete;
 
-  ~TestReportingContext();
+  ~TestReportingContext() override;
 
   base::MockOneShotTimer* test_delivery_timer() { return delivery_timer_; }
   base::MockOneShotTimer* test_garbage_collection_timer() {
@@ -179,9 +179,8 @@ class TestReportingContext : public ReportingContext {
   // Owned by the DeliveryAgent and GarbageCollector, respectively, but
   // referenced here to preserve type:
 
-  raw_ptr<base::MockOneShotTimer, LeakedDanglingUntriaged> delivery_timer_;
-  raw_ptr<base::MockOneShotTimer, LeakedDanglingUntriaged>
-      garbage_collection_timer_;
+  raw_ptr<base::MockOneShotTimer> delivery_timer_;
+  raw_ptr<base::MockOneShotTimer> garbage_collection_timer_;
 };
 
 // A unit test base class that provides a TestReportingContext and shorthand
