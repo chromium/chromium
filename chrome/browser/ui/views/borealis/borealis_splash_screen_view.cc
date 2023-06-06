@@ -60,7 +60,7 @@ void BorealisSplashScreenView::Show(Profile* profile) {
                                               nullptr);
     g_delegate->UpdateColors();
     g_delegate->GetWidget()->GetNativeWindow()->SetProperty(
-        ash::kShelfIDKey, ash::ShelfID(borealis::kInstallerAppId).Serialize());
+        ash::kShelfIDKey, ash::ShelfID(borealis::kClientAppId).Serialize());
     // Override the widget to be dark-mode permanently.
     // This UI has custom colors to match Steam's and those are close to ash's
     // dark mode.
