@@ -19,6 +19,7 @@ namespace switches {
 CONTENT_EXPORT extern const char kAllowFileAccessFromFiles[];
 CONTENT_EXPORT extern const char kAllowInsecureLocalhost[];
 CONTENT_EXPORT extern const char kAllowLoopbackInPeerConnection[];
+CONTENT_EXPORT extern const char kAllowCommandLinePlugins[];
 CONTENT_EXPORT extern const char kAllowSyncXHRInPageDismissal[];
 CONTENT_EXPORT extern const char kAttributionReportingDebugMode[];
 CONTENT_EXPORT extern const char kAutoAcceptCameraAndMicrophoneCapture[];

@@ -58,6 +58,7 @@ bool RegisterPlugins(base::CommandLine* command_line,
     args += plugin.mime_type;
   }
   command_line->AppendSwitchNative(switches::kRegisterPepperPlugins, args);
+  command_line->AppendSwitch(switches::kAllowCommandLinePlugins);
   return true;
 }
 

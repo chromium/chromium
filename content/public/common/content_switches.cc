@@ -22,6 +22,9 @@ const char kAllowInsecureLocalhost[] = "allow-insecure-localhost";
 const char kAllowLoopbackInPeerConnection[] =
     "allow-loopback-in-peer-connection";
 
+// Allows plugins to be loaded in the command line for testing.
+const char kAllowCommandLinePlugins[] = "allow-command-line-plugins";
+
 // Causes the Attribution Report API to run without delays or noise.
 const char kAttributionReportingDebugMode[] =
     "attribution-reporting-debug-mode";

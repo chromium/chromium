@@ -305,6 +305,7 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
   // Append any switches from the browser process that need to be forwarded on
   // to the zygote/renderers.
   static const char* const kForwardSwitches[] = {
+    switches::kAllowCommandLinePlugins,
     switches::kClearKeyCdmPathForTesting,
     switches::kEnableLogging,  // Support, e.g., --enable-logging=stderr.
     // Need to tell the zygote that it is headless so that we don't try to use

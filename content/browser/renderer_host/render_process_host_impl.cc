@@ -3513,6 +3513,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     // Allow this to be set when invoking the browser and relayed along.
     sandbox::policy::switches::kEnableSandboxLogging,
 #endif
+    switches::kAllowCommandLinePlugins,
     switches::kAllowLoopbackInPeerConnection,
     switches::kAudioBufferSize,
     switches::kAutoplayPolicy,
