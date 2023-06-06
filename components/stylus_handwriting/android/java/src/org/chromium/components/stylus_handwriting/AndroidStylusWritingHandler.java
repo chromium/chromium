@@ -48,7 +48,7 @@ public class AndroidStylusWritingHandler
         int value = -1;
         if (BuildCompat.isAtLeastU()) {
             value = Settings.Secure.getInt(
-                    context.getContentResolver(), "stylus_handwriting_enabled", -1);
+                    context.getContentResolver(), "stylus_handwriting_enabled", 1);
         } else {
             value = Settings.Global.getInt(
                     context.getContentResolver(), "stylus_handwriting_enabled", -1);
