@@ -2290,6 +2290,7 @@ fyi_ios_builder(
             short_name = "sdk17",
         ),
     ],
+    xcode = xcode.x15betabots,
 )
 
 fyi_ios_builder(

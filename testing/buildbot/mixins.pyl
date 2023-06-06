@@ -689,6 +689,18 @@
       },
     },
   },
+  'ios_runtime_cache_17_0': {
+    '$mixin_append': {
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'runtime_ios_17_0',
+            'path': 'Runtime-ios-17.0',
+          },
+        ],
+      },
+    },
+  },
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
@@ -1575,6 +1587,22 @@
       'args': [
         '--readline-timeout',
         '600',
+      ],
+    },
+  },
+  'xcode_15_beta': {
+    '$mixin_append': {
+      'args': [
+        '--xcode-build-version',
+        '15a5160n'
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_15a5160n',
+          'path': 'Xcode.app',
+        },
       ],
     },
   },

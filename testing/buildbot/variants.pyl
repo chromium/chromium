@@ -150,6 +150,18 @@
       'ios_runtime_cache_16_4',
     ],
   },
+  'SIM_IPAD_AIR_5TH_GEN_17_0': {
+    'args': [
+      '--platform',
+      'iPad Air (5th generation)',
+      '--version',
+      '17.0'
+    ],
+    'identifier': 'iPad Air (5th generation) 17.0',
+    'mixins': [
+      'ios_runtime_cache_17_0',
+    ],
+  },
   # In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
   # "platform" arg.
   'SIM_IPAD_PRO_3RD_GEN_16_2': {
@@ -293,6 +305,18 @@
       'ios_runtime_cache_16_2',
     ],
   },
+  'SIM_IPHONE_14_17_0': {
+    'args': [
+      '--platform',
+      'iPhone 14',
+      '--version',
+      '17.0',
+    ],
+    'identifier': 'iPhone 14 17.0',
+    'mixins': [
+      'ios_runtime_cache_17_0',
+    ],
+  },
   'SIM_IPHONE_SE_1ST_GEN_15_5': {
     'args': [
       '--platform',
@@ -327,6 +351,18 @@
     'identifier': 'iPhone SE (3rd generation) 16.4',
     'mixins': [
       'ios_runtime_cache_16_4',
+    ],
+  },
+  'SIM_IPHONE_SE_3RD_GEN_17_0': {
+    'args': [
+      '--platform',
+      'iPhone SE (3rd generation)',
+      '--version',
+      '17.0',
+    ],
+    'identifier': 'iPhone SE (3rd generation) 17.0',
+    'mixins': [
+      'ios_runtime_cache_17_0',
     ],
   },
   'SIM_IPHONE_X_15_5': {

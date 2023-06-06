@@ -577,6 +577,7 @@ ios_builder(
     mirrors = ["ci/ios17-sdk-simulator"],
     os = os.MAC_13,
     cpu = cpu.ARM64,
+    xcode = xcode.x15betabots,
 )
 
 ios_builder(
