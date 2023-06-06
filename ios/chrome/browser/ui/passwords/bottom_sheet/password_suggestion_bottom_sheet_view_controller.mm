@@ -294,6 +294,8 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
 
+  cell.userInteractionEnabled = YES;
+
   // Make separator invisible on last cell
   CGFloat separatorLeftMargin =
       (_tableViewIsMinimized || [self isLastRow:indexPath])
@@ -406,7 +408,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   _tableView.showsVerticalScrollIndicator = NO;
   _tableView.delegate = self;
   _tableView.dataSource = self;
-  _tableView.isAccessibilityElement = YES;
+  _tableView.userInteractionEnabled = YES;
   _tableView.accessibilityIdentifier =
       kPasswordSuggestionBottomSheetTableViewId;
   [_tableView registerClass:TableViewURLCell.class
