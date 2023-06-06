@@ -102,12 +102,10 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  gpu::GpuMemoryBufferManager* gmb_manager =
-      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   resource->mailbox = sii->CreateSharedImage(
-      resource->gpu_memory_buffer.get(), gmb_manager, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      "FastInkRootViewFrame");
+      format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, usage, "FastInkRootViewFrame",
+      resource->gpu_memory_buffer->CloneHandle());
 
   resource->sync_token = sii->GenVerifiedSyncToken();
   resource->damaged = true;
