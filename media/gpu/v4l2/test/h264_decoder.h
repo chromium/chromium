@@ -67,7 +67,7 @@ class H264Decoder : public VideoDecoder {
   VideoDecoder::Result StartNewFrame(
       bool is_OUTPUT_queue_new,
       H264SliceMetadata* slice_metadata,
-      v4l2_ctrl_h264_decode_params* v4l2_decode_param);
+      v4l2_ctrl_h264_decode_params* v4l2_decode_params);
 
   // Finishes frame processing for the current decoded frame. Performs decoded
   // ref picture marking process as defined in section 8.2.5. Finally, using
