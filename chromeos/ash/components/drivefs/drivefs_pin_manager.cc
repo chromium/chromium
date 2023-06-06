@@ -393,6 +393,13 @@ bool PinManager::Add(const FileMetadata& md, const Path& path) {
   const int64_t size = GetSize(md);
   DCHECK_GE(size, 0) << " for " << id << " " << Quote(path);
 
+  if (files_to_track_.empty() && progress_.emptied_queue) {
+    progress_.files_to_pin = 0;
+    progress_.bytes_to_pin = 0;
+    progress_.pinned_files = 0;
+    progress_.pinned_bytes = 0;
+  }
+
   const auto [it, ok] =
       files_to_track_.try_emplace(id, File{.path = path,
                                            .total = size,
