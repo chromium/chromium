@@ -16112,44 +16112,44 @@ Called by update_protocol_commands_enum.py.-->
 </enum>
 
 <enum name="ChromeOSIioServiceSensorUsage">
-  <int value="0" label="ACCEL_lid"/>
-  <int value="1" label="ACCEL_base"/>
+  <int value="0" label="ACCEL_base"/>
+  <int value="1" label="ACCEL_lid"/>
   <int value="2" label="ACCEL_camera"/>
   <int value="3" label="ACCEL_others"/>
-  <int value="4" label="ANGLVEL_lid"/>
-  <int value="5" label="ANGLVEL_base"/>
+  <int value="4" label="ANGLVEL_base"/>
+  <int value="5" label="ANGLVEL_lid"/>
   <int value="6" label="ANGLVEL_camera"/>
   <int value="7" label="ANGLVEL_others"/>
-  <int value="8" label="LIGHT_lid"/>
-  <int value="9" label="LIGHT_base"/>
+  <int value="8" label="LIGHT_base"/>
+  <int value="9" label="LIGHT_lid"/>
   <int value="10" label="LIGHT_camera"/>
   <int value="11" label="LIGHT_others"/>
-  <int value="12" label="COUNT_lid"/>
-  <int value="13" label="COUNT_base"/>
+  <int value="12" label="COUNT_base"/>
+  <int value="13" label="COUNT_lid"/>
   <int value="14" label="COUNT_camera"/>
   <int value="15" label="COUNT_others"/>
-  <int value="16" label="MAGN_lid"/>
-  <int value="17" label="MAGN_base"/>
+  <int value="16" label="MAGN_base"/>
+  <int value="17" label="MAGN_lid"/>
   <int value="18" label="MAGN_camera"/>
   <int value="19" label="MAGN_others"/>
-  <int value="20" label="ANGL_lid"/>
-  <int value="21" label="ANGL_base"/>
+  <int value="20" label="ANGL_base"/>
+  <int value="21" label="ANGL_lid"/>
   <int value="22" label="ANGL_camera"/>
   <int value="23" label="ANGL_others"/>
-  <int value="24" label="BARO_lid"/>
-  <int value="25" label="BARO_base"/>
+  <int value="24" label="BARO_base"/>
+  <int value="25" label="BARO_lid"/>
   <int value="26" label="BARO_camera"/>
   <int value="27" label="BARO_others"/>
-  <int value="28" label="ACCEL_UNCALIBRATED_lid"/>
-  <int value="29" label="ACCEL_UNCALIBRATED_base"/>
+  <int value="28" label="ACCEL_UNCALIBRATED_base"/>
+  <int value="29" label="ACCEL_UNCALIBRATED_lid"/>
   <int value="30" label="ACCEL_UNCALIBRATED_camera"/>
   <int value="31" label="ACCEL_UNCALIBRATED_others"/>
-  <int value="32" label="ANGLVEL_UNCALIBRATED_lid"/>
-  <int value="33" label="ANGLVEL_UNCALIBRATED_base"/>
+  <int value="32" label="ANGLVEL_UNCALIBRATED_base"/>
+  <int value="33" label="ANGLVEL_UNCALIBRATED_lid"/>
   <int value="34" label="ANGLVEL_UNCALIBRATED_camera"/>
   <int value="35" label="ANGLVEL_UNCALIBRATED_others"/>
-  <int value="36" label="MAGN_UNCALIBRATED_lid"/>
-  <int value="37" label="MAGN_UNCALIBRATED_base"/>
+  <int value="36" label="MAGN_UNCALIBRATED_base"/>
+  <int value="37" label="MAGN_UNCALIBRATED_lid"/>
   <int value="38" label="MAGN_UNCALIBRATED_camera"/>
   <int value="39" label="MAGN_UNCALIBRATED_others"/>
 </enum>
