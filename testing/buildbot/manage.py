@@ -15,7 +15,6 @@ import collections
 import glob
 import json
 import os
-import six
 import subprocess
 import sys
 
@@ -220,8 +219,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
   try:
     config = json.loads(content)
   except ValueError as e:
-    six.raise_from(
-        Error('Exception raised while checking %s: %s' % (filepath, e)), e)
+    raise Error('Exception raised while checking %s: %s' % (filepath, e)) from e
 
   for builder, data in sorted(config.items()):
     if builder in SKIP:

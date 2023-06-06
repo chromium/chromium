@@ -17,7 +17,6 @@ import glob
 import itertools
 import json
 import os
-import six
 import string
 import sys
 
@@ -450,9 +449,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     try:
       return ast.literal_eval(self.read_file(pyl_file_path))
     except (SyntaxError, ValueError) as e: # pragma: no cover
-      six.raise_from(
-          BBGenErr('Failed to parse pyl file "%s": %s' %
-                   (pyl_file_path, e)), e)  # pragma: no cover
+      raise BBGenErr('Failed to parse pyl file "%s": %s' %
+                     (pyl_file_path, e)) from e
     # pylint: enable=inconsistent-return-statements
 
   # TOOD(kbr): require that os_type be specified for all bots in waterfalls.pyl.
@@ -641,11 +639,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                                     path + [str(key), str(idx)],
                                                     update=update)
               except (IndexError, TypeError) as e:
-                six.raise_from(
-                    BBGenErr('Error merging lists by key "%s" from source %s '
-                             'into target %s at index %s. Verify target list '
-                             'length is equal or greater than source' %
-                             (str(key), str(b), str(a), str(idx))), e)
+                raise BBGenErr('Error merging lists by key "%s" from source %s '
+                               'into target %s at index %s. Verify target list '
+                               'length is equal or greater than source' %
+                               (str(key), str(b), str(a), str(idx))) from e
         elif update:
           if b[key] is None:
             del a[key]
