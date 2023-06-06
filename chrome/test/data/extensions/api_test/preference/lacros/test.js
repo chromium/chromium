@@ -16,7 +16,7 @@ var preferencesToTest = [
   {
     root: chrome.accessibilityFeatures,
     preferences: {
-      autoclick: false,
+      spokenFeedback: false,
     }
   },
   {
