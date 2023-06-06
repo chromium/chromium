@@ -192,6 +192,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // received on a navigation to a matching URL.
   bool ShouldBlockUntilHeadReceived() const;
 
+  // Allows for a timer to be used to limit the maximum amount of time that a
+  // navigation can be blocked waiting for the head of this prefetch to be
+  // received.
+  void TakeBlockUntilHeadTimer(
+      std::unique_ptr<base::OneShotTimer> block_until_head_timer);
+  void ResetBlockUntilHeadTimer();
+
   // Whether or not |this| is servable.
   bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
 
@@ -444,6 +451,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // The time at which |PrefetchService| started blocking until the head of
   // |this| was received.
   absl::optional<base::TimeTicks> blocked_until_head_start_time_;
+
+  // A timer used to limit the maximum amount of time that a navigation can be
+  // blocked waiting for the head of this prefetch to be received.
+  std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

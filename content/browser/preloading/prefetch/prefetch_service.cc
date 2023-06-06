@@ -258,6 +258,23 @@ void OnIsolatedCookieCopyComplete(
   }
 }
 
+void BlockUntilHeadTimeoutHelper(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  VLOG(0) << "PS::BlockUntilHeadTimeoutHelper";
+
+  if (!prefetch_container || !prefetch_container->GetLastStreamingURLLoader()) {
+    return;
+  }
+
+  // Takes the on_received_head_callback
+  base::OnceClosure on_received_head_callback =
+      prefetch_container->GetLastStreamingURLLoader()
+          ->ReleaseOnReceivedHeadCallback();
+  if (on_received_head_callback) {
+    std::move(on_received_head_callback).Run();
+  }
+}
+
 }  // namespace
 
 // static
@@ -1437,6 +1454,22 @@ void PrefetchService::GetPrefetchToServe(
                        weak_method_factory_.GetWeakPtr(), key,
                        prefetch_container->GetWeakPtr(),
                        std::move(on_prefetch_to_serve_ready)));
+
+    base::TimeDelta block_until_head_timeout = PrefetchBlockUntilHeadTimeout(
+        prefetch_container->GetPrefetchType().GetEagerness());
+    VLOG(0) << "PS::GetPrefetchToServe; block_until_head_timeout = "
+            << block_until_head_timeout;
+    if (block_until_head_timeout.is_positive()) {
+      std::unique_ptr<base::OneShotTimer> block_until_head_timer =
+          std::make_unique<base::OneShotTimer>();
+      block_until_head_timer->Start(
+          FROM_HERE, block_until_head_timeout,
+          base::BindOnce(&BlockUntilHeadTimeoutHelper,
+                         prefetch_container->GetWeakPtr()));
+      prefetch_container->TakeBlockUntilHeadTimer(
+          std::move(block_until_head_timer));
+    }
+
     return;
   }
 
@@ -1455,6 +1488,15 @@ void PrefetchService::WaitOnPrefetchToServeHead(
     ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
     return;
   }
+
+  prefetch_container->ResetBlockUntilHeadTimer();
+
+  if (!prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
+    prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+    ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
+    return;
+  }
+
   if (nav_url == prefetch_container->GetURL()) {
     PrepareToServe(nav_url, prefetch_container);
     GetPrefetchToServe(key, std::move(on_prefetch_to_serve_ready));

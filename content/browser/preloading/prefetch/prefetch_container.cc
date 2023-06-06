@@ -770,6 +770,22 @@ bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
   return PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness());
 }
 
+void PrefetchContainer::TakeBlockUntilHeadTimer(
+    std::unique_ptr<base::OneShotTimer> block_until_head_timer) {
+  VLOG(0) << "PC::TakeBlockUntilHeadTimer";
+
+  CHECK(!block_until_head_timer_);
+  block_until_head_timer_ = std::move(block_until_head_timer);
+}
+
+void PrefetchContainer::ResetBlockUntilHeadTimer() {
+  VLOG(0) << "PC::ResetBlockUntilHeadTimer";
+  if (block_until_head_timer_) {
+    block_until_head_timer_->AbandonAndStop();
+  }
+  block_until_head_timer_.reset();
+}
+
 bool PrefetchContainer::IsPrefetchServable(
     base::TimeDelta cacheable_duration) const {
   // Whether or not the response (either full or partial) from the streaming URL

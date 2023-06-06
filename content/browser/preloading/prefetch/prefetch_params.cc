@@ -240,8 +240,31 @@ bool PrefetchShouldBlockUntilHead(
   }
 }
 
+base::TimeDelta PrefetchBlockUntilHeadTimeout(
+    blink::mojom::SpeculationEagerness prefetch_eagerness) {
+  int timeout_in_milliseconds = 0;
+  switch (prefetch_eagerness) {
+    case blink::mojom::SpeculationEagerness::kEager:
+      timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+          features::kPrefetchUseContentRefactor,
+          "block_until_head_timeout_eager_prefetch", 0);
+      break;
+    case blink::mojom::SpeculationEagerness::kModerate:
+      timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+          features::kPrefetchUseContentRefactor,
+          "block_until_head_timeout_moderate_prefetch", 0);
+      break;
+    case blink::mojom::SpeculationEagerness::kConservative:
+      timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+          features::kPrefetchUseContentRefactor,
+          "block_until_head_timeout_conservative_prefetch", 0);
+      break;
+  }
+  return base::Milliseconds(timeout_in_milliseconds);
+}
+
 std::string GetPrefetchEagernessHistogramSuffix(
-    const blink::mojom::SpeculationEagerness& eagerness) {
+    blink::mojom::SpeculationEagerness eagerness) {
   switch (eagerness) {
     case blink::mojom::SpeculationEagerness::kEager:
       return "Eager";
