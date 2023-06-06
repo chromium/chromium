@@ -14,7 +14,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
 
 import {CredentialFieldElement} from './credential_field.js';
 import {CredentialNoteElement} from './credential_note.js';
@@ -82,7 +82,11 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   }
 
   private onDeleteClick_() {
-    // TODO(crbug.com/1432717): fill this in.
+    // TODO(crbug.com/1432717): show a modal dialog instead.
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSKEY_DELETE_BUTTON_CLICKED);
+    PasswordManagerImpl.getInstance().removeCredential(
+        this.passkey.id, this.passkey.storedIn);
   }
 
   private onEditClicked_() {

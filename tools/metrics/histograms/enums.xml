@@ -35584,7 +35584,7 @@ Called by update_extension_histograms.py.-->
   <int value="1035" label="BLUETOOTHLOWENERGY_UNREGISTERADVERTISEMENT"/>
   <int value="1036"
       label="DELETED_PASSWORDSPRIVATE_CANPASSWORDACCOUNTBEMANAGED"/>
-  <int value="1037" label="PASSWORDSPRIVATE_REMOVESAVEDPASSWORD"/>
+  <int value="1037" label="PASSWORDSPRIVATE_REMOVECREDENTIAL"/>
   <int value="1038" label="PASSWORDSPRIVATE_REMOVEPASSWORDEXCEPTION"/>
   <int value="1039" label="PASSWORDSPRIVATE_REQUESTPLAINTEXTPASSWORD"/>
   <int value="1040" label="DELETED_LAUNCHERPAGE_HIDE"/>
@@ -81959,6 +81959,7 @@ Called by update_net_trust_anchors.py.-->
              dialog is closed"/>
   <int value="11" label="The credential is requested by typing the URL."/>
   <int value="12" label="Passkey copy display name button clicked"/>
+  <int value="13" label="Passkey card delete button clicked"/>
 </enum>
 
 <enum name="PasswordWeaknessScore">

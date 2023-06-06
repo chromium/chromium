@@ -26713,6 +26713,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PasswordManager_RemovePasskey">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <description>
+    The user removed a Google Password Manager passkey from within the Password
+    Manager. Desktop only.
+  </description>
+</action>
+
 <action name="PasswordManager_RemovePasswordException">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

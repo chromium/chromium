@@ -290,7 +290,7 @@ suite('PasswordViewTest', function() {
         page.shadowRoot!.querySelector<HTMLButtonElement>(
                             '#deleteButton')!.click();
         const {id, fromStores} =
-            await passwordManager.whenCalled('removeSavedPassword');
+            await passwordManager.whenCalled('removeCredential');
         assertEquals(ID, id);
         assertEquals(
             chrome.passwordsPrivate.PasswordStoreSet.DEVICE, fromStores);
@@ -328,7 +328,7 @@ suite('PasswordViewTest', function() {
         // click delete on the dialog.
         dialog.$.removeButton.click();
         const {id, fromStores} =
-            await passwordManager.whenCalled('removeSavedPassword');
+            await passwordManager.whenCalled('removeCredential');
         assertEquals(ID, id);
         assertEquals(
             chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,

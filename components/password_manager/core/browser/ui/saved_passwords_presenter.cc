@@ -12,6 +12,7 @@
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -147,7 +148,18 @@ void SavedPasswordsPresenter::RemoveObservers() {
 
 bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
-  // TODO(crbug.com/1432717): support passkeys.
+  if (credential.is_passkey) {
+    CHECK(passkey_store_);
+    std::string credential_id(credential.passkey_credential_id.begin(),
+                              credential.passkey_credential_id.end());
+    if (!passkey_store_->DeletePasskey(std::move(credential_id))) {
+      return false;
+    }
+    // No forms have changed, thus the list of changed forms is empty.
+    // TODO(crbug.com/1432717): remove once the observer interface is in place.
+    OnLoginsChanged(/*store=*/nullptr, /*changes=*/{});
+    return true;
+  }
   std::vector<PasswordForm> forms_to_delete =
       GetCorrespondingPasswordForms(credential);
   undo_helper_->StartGroupingActions();

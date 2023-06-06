@@ -41,13 +41,13 @@ class PasswordsPrivateChangeSavedPasswordFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateRemoveSavedPasswordFunction : public ExtensionFunction {
+class PasswordsPrivateRemoveCredentialFunction : public ExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.removeSavedPassword",
-                             PASSWORDSPRIVATE_REMOVESAVEDPASSWORD)
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.removeCredential",
+                             PASSWORDSPRIVATE_REMOVECREDENTIAL)
 
  protected:
-  ~PasswordsPrivateRemoveSavedPasswordFunction() override = default;
+  ~PasswordsPrivateRemoveCredentialFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

@@ -446,7 +446,7 @@ absl::optional<int> PasswordsPrivateDelegateImpl::ChangeSavedPassword(
   return credential_id_generator_.GenerateId(std::move(updated_credential));
 }
 
-void PasswordsPrivateDelegateImpl::RemoveSavedPassword(
+void PasswordsPrivateDelegateImpl::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {
   ExecuteFunction(
@@ -470,6 +470,9 @@ void PasswordsPrivateDelegateImpl::RemoveEntryInternal(
   if (entry->blocked_by_user) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemovePasswordException"));
+  } else if (entry->is_passkey) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_RemovePasskey"));
   } else {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));

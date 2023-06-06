@@ -97,6 +97,11 @@ struct CredentialUIEntry {
   // True if this credential is a passkey, false otherwise.
   bool is_passkey = false;
 
+  // If this is a passkey, a non empty credential id as a byte string. Empty
+  // otherwise.
+  // https://w3c.github.io/webauthn/#credential-id
+  std::vector<uint8_t> passkey_credential_id;
+
   // List of facets represented by this entry which contains the display name,
   // url and sign-on realm of a credential.
   std::vector<CredentialFacet> facets;

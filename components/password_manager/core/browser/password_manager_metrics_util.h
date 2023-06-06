@@ -604,7 +604,9 @@ enum class PasswordViewPageInteractions {
   kCredentialRequestedByUrl = 11,
   // The copy display name button in settings passkey view page is clicked.
   kPasskeyDisplayNameCopyButtonClicked = 12,
-  kMaxValue = kPasskeyDisplayNameCopyButtonClicked,
+  // The delete button in a passkey view page is clicked.
+  kPasskeyDeleteButtonClicked = 13,
+  kMaxValue = kPasskeyDeleteButtonClicked,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

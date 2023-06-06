@@ -96,9 +96,9 @@ class PasswordsPrivateDelegate
       int id,
       const api::passwords_private::ChangeSavedPasswordParams& params) = 0;
 
-  // Removes the saved password entry corresponding to the |id| in the
-  // specified |from_stores|. Any invalid id will be ignored.
-  virtual void RemoveSavedPassword(
+  // Removes the credential entry corresponding to the |id| in the specified
+  // |from_stores|. Any invalid id will be ignored.
+  virtual void RemoveCredential(
       int id,
       api::passwords_private::PasswordStoreSet from_stores) = 0;
 

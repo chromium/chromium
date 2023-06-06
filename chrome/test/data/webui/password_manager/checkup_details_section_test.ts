@@ -776,7 +776,7 @@ suite('CheckupDetailsSectionTest', function() {
     deleteDialog.$.delete.click();
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    const params = await passwordManager.whenCalled('removeSavedPassword');
+    const params = await passwordManager.whenCalled('removeCredential');
     assertEquals(params.id, credential.id);
     assertEquals(params.fromStores, credential.storedIn);
     assertEquals(PasswordCheckInteraction.REMOVE_PASSWORD, interaction);

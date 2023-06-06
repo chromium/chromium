@@ -122,6 +122,7 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
 
 CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
     : is_passkey(true),
+      passkey_credential_id(passkey.credential_id()),
       username(base::UTF8ToUTF16(passkey.username())),
       user_display_name(base::UTF8ToUTF16(passkey.display_name())) {
   CredentialFacet facet;

@@ -172,7 +172,7 @@ declare global {
       export function recordPasswordsPageAccessInSettings(): void;
       export function changeSavedPassword(
           id: number, params: ChangeSavedPasswordParams): Promise<number>;
-      export function removeSavedPassword(
+      export function removeCredential(
           id: number, fromStores: PasswordStoreSet): void;
       export function removePasswordException(id: number): void;
       export function undoRemoveSavedPasswordOrException(): void;

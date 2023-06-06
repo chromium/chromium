@@ -38,6 +38,9 @@ std::string TestPasskeyModel::AddNewPasskeyForTesting(
 }
 
 bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
-  NOTIMPLEMENTED();
-  return false;
+  // Don't implement the shadow chain deletion logic. Instead, remove the
+  // credential with the matching id.
+  return std::erase_if(credentials_, [&credential_id](const auto& credential) {
+           return credential.credential_id() == credential_id;
+         }) > 0;
 }

@@ -71,7 +71,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordPasswordCheckInteraction',
       'recordPasswordViewInteraction',
       'removeBlockedSite',
-      'removeSavedPassword',
+      'removeCredential',
       'resetImporter',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
@@ -235,9 +235,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(id);
   }
 
-  removeSavedPassword(
+  removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
-    this.methodCalled('removeSavedPassword', {id, fromStores});
+    this.methodCalled('removeCredential', {id, fromStores});
   }
 
   removeBlockedSite(id: number) {

@@ -195,7 +195,7 @@ suite('PasswordDetailsCardTest', function() {
         PasswordViewPageInteractions.PASSWORD_DELETE_BUTTON_CLICKED,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
 
-    const params = await passwordManager.whenCalled('removeSavedPassword');
+    const params = await passwordManager.whenCalled('removeCredential');
     assertEquals(params.id, password.id);
     assertEquals(params.fromStores, password.storedIn);
   });
@@ -227,7 +227,7 @@ suite('PasswordDetailsCardTest', function() {
 
                 // Verify that password was not deleted immediately.
                 assertEquals(
-                    0, passwordManager.getCallCount('removeSavedPassword'));
+                    0, passwordManager.getCallCount('removeCredential'));
 
                 const deleteDialog = card.shadowRoot!.querySelector(
                     'multi-store-delete-password-dialog');
@@ -247,7 +247,7 @@ suite('PasswordDetailsCardTest', function() {
                 deleteDialog.$.removeButton.click();
 
                 const params =
-                    await passwordManager.whenCalled('removeSavedPassword');
+                    await passwordManager.whenCalled('removeCredential');
                 assertEquals(password.id, params.id);
                 assertEquals(store, params.fromStores);
               }));
@@ -273,7 +273,7 @@ suite('PasswordDetailsCardTest', function() {
     await flushTasks();
 
     // Verify that password was not deleted immediately.
-    assertEquals(0, passwordManager.getCallCount('removeSavedPassword'));
+    assertEquals(0, passwordManager.getCallCount('removeCredential'));
 
     const deleteDialog =
         card.shadowRoot!.querySelector('multi-store-delete-password-dialog');

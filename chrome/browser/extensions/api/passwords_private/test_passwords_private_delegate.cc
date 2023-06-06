@@ -52,6 +52,10 @@ TestPasswordsPrivateDelegate::TestPasswordsPrivateDelegate()
     current_entries_.push_back(CreateEntry(i));
     current_exceptions_.push_back(CreateException(i));
   }
+  api::passwords_private::PasswordUiEntry passkey = CreateEntry(kNumMocks);
+  passkey.is_passkey = true;
+  passkey.display_name = "displayName";
+  current_entries_.push_back(std::move(passkey));
 }
 TestPasswordsPrivateDelegate::~TestPasswordsPrivateDelegate() = default;
 
@@ -65,8 +69,8 @@ TestPasswordsPrivateDelegate::GetCredentialGroups() {
   std::vector<api::passwords_private::CredentialGroup> groups;
   api::passwords_private::CredentialGroup group_api;
   group_api.name = "test.com";
-  for (size_t i = 0; i < kNumMocks; i++) {
-    group_api.entries.push_back(CreateEntry(i));
+  for (const auto& entry : current_entries_) {
+    group_api.entries.push_back(entry.Clone());
   }
   groups.push_back(std::move(group_api));
   return groups;
@@ -114,18 +118,15 @@ absl::optional<int> TestPasswordsPrivateDelegate::ChangeSavedPassword(
   return id;
 }
 
-void TestPasswordsPrivateDelegate::RemoveSavedPassword(
+void TestPasswordsPrivateDelegate::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {
-  if (current_entries_.empty())
-    return;
-
-  // Since this is just mock data, remove the first element regardless of the
-  // data contained. One case where this logic is especially false is when the
-  // password is stored in both stores and |store| only specifies one of them
-  // (in that case the number of entries shouldn't change).
-  last_deleted_entry_ = std::move(current_entries_[0]);
-  current_entries_.erase(current_entries_.begin());
+  const auto [removed, _] = std::ranges::remove_if(
+      current_entries_, [id](const auto& entry) { return entry.id == id; });
+  if (removed != current_entries_.end()) {
+    last_deleted_entry_ = std::move(*removed);
+    current_entries_.erase(removed);
+  }
   SendSavedPasswordsList();
 }
 

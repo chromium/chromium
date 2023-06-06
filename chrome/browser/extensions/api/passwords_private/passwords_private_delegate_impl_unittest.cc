@@ -17,6 +17,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -299,6 +300,17 @@ password_manager::PasswordForm CreateSampleForm(
   form.password_value = u"test";
   form.in_store = store;
   return form;
+}
+
+sync_pb::WebauthnCredentialSpecifics CreatePasskey() {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(base::RandBytesAsString(16));
+  passkey.set_credential_id(base::RandBytesAsString(16));
+  passkey.set_rp_id("abc1.com");
+  passkey.set_user_id({1, 2, 3, 4});
+  passkey.set_user_name("passkey_username");
+  passkey.set_user_display_name("passkey_display_name");
+  return passkey;
 }
 
 MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
@@ -1485,14 +1497,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   PasskeyModel* passkey_model = PasskeyModelFactory::GetForProfile(profile());
   ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
   ASSERT_TRUE(passkey_model);
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_sync_id(base::RandBytesAsString(16));
-  passkey.set_credential_id(base::RandBytesAsString(16));
-  passkey.set_rp_id("abc1.com");
-  passkey.set_user_id({1, 2, 3, 4});
-  passkey.set_user_name("passkey_username");
-  passkey.set_user_display_name("passkey_display_name");
-  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
+  passkey_model->AddNewPasskeyForTesting(passkey);
 
   password_manager::PasswordForm password = CreateSampleForm(
       password_manager::PasswordForm::Store::kProfileStore, u"username1");
@@ -1511,14 +1517,53 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   api::passwords_private::PasswordUiEntry expected_entry2;
   expected_entry2.is_passkey = true;
   expected_entry2.urls.link = "https://abc1.com/";
-  expected_entry2.username = "passkey_username";
-  expected_entry2.display_name = "passkey_display_name";
+  expected_entry2.username = passkey.user_name();
+  expected_entry2.display_name = passkey.user_display_name();
   expected_entry2.stored_in =
       api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
   EXPECT_THAT(groups[0].entries,
               testing::UnorderedElementsAre(
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry2))));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
+  base::UserActionTester user_action_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kPasswordsGrouping,
+       password_manager::features::kPasswordManagerPasskeys,
+       syncer::kSyncWebauthnCredentials},
+      /*disabled_features=*/{});
+
+  auto delegate = CreateDelegate();
+
+  PasskeyModel* passkey_model = PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
+  ASSERT_TRUE(passkey_model);
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
+  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
+  SetUpPasswordStores({});
+
+  auto groups = delegate->GetCredentialGroups();
+  api::passwords_private::PasswordUiEntry& passkey_entry =
+      groups.at(0).entries.at(0);
+  ASSERT_TRUE(passkey_entry.is_passkey);
+  EXPECT_EQ(user_action_tester.GetActionCount("PasswordManager_RemovePasskey"),
+            0);
+
+  delegate->RemoveCredential(passkey_entry.id, passkey_entry.stored_in);
+  groups = delegate->GetCredentialGroups();
+  EXPECT_TRUE(groups.empty());
+  EXPECT_EQ(user_action_tester.GetActionCount("PasswordManager_RemovePasskey"),
+            1);
+
+  // Attempt removing a non existent entry.
+  delegate->RemoveCredential(
+      /*id=*/42,
+      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT);
+  EXPECT_EQ(user_action_tester.GetActionCount("PasswordManager_RemovePasskey"),
+            1);
 }
 
 }  // namespace extensions

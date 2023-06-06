@@ -120,7 +120,7 @@ export class PasswordRemoveDialogElement extends
     } else {
       assert(this.removeFromDeviceChecked_);
     }
-    PasswordManagerImpl.getInstance().removeSavedPassword(
+    PasswordManagerImpl.getInstance().removeCredential(
         this.duplicatedPassword.id, fromStores);
 
     this.$.dialog.close();

@@ -137,7 +137,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       this.showDeletePasswordDialog_ = true;
       return;
     }
-    PasswordManagerImpl.getInstance().removeSavedPassword(
+    PasswordManagerImpl.getInstance().removeCredential(
         this.password.id, this.password.storedIn);
     this.dispatchEvent(new CustomEvent('password-removed', {
       bubbles: true,

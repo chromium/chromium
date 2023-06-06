@@ -118,7 +118,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordPasswordCheckReferrer',
       'showPasswordManager',
       'removeException',
-      'removeSavedPassword',
+      'removeCredential',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'requestCredentialsDetails',
@@ -170,10 +170,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   recordPasswordsPageAccessInSettings() {}
 
-  removeSavedPassword(
+  removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     this.actual_.removed.passwords++;
-    this.methodCalled('removeSavedPassword', {id, fromStores});
+    this.methodCalled('removeCredential', {id, fromStores});
   }
 
   movePasswordsToAccount(ids: number[]) {

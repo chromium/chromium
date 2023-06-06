@@ -60,7 +60,7 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
   private onRemoveClick_() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.REMOVE_PASSWORD);
-    this.passwordManager_.removeSavedPassword(this.item.id, this.item.storedIn);
+    this.passwordManager_.removeCredential(this.item.id, this.item.storedIn);
     this.$.dialog.close();
   }
 

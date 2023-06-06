@@ -129,7 +129,7 @@ var availableTests = [
 
       if (numCalls == 1) {
         numSavedPasswords = savedPasswordsList.length;
-        chrome.passwordsPrivate.removeSavedPassword(savedPasswordsList[0].id,
+        chrome.passwordsPrivate.removeCredential(savedPasswordsList[0].id,
             chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
       } else if (numCalls == 2) {
         chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords - 1);
@@ -142,6 +142,30 @@ var availableTests = [
       }
     };
 
+    chrome.passwordsPrivate.onSavedPasswordsListChanged.addListener(callback);
+    chrome.passwordsPrivate.getSavedPasswordList(callback);
+  },
+
+  function removePasskey() {
+    var numCalls = 0;
+    var numSavedCredentials;
+    var callback = function(credentials) {
+      numCalls++;
+
+      if (numCalls == 1) {
+        numSavedCredentials = credentials.length;
+        var passkey = credentials[numSavedCredentials - 1];
+        chrome.test.assertTrue(passkey.isPasskey);
+        chrome.passwordsPrivate.removeCredential(passkey.id,
+                                                 passkey.storedIn);
+      } else if (numCalls == 2) {
+        chrome.test.assertEq(credentials.length, numSavedCredentials - 1);
+        chrome.test.assertEq(credentials.find(c => c.isPasskey), undefined);
+        chrome.test.succeed();
+      } else {
+        chrome.test.fail();
+      }
+    };
     chrome.passwordsPrivate.onSavedPasswordsListChanged.addListener(callback);
     chrome.passwordsPrivate.getSavedPasswordList(callback);
   },
@@ -649,6 +673,11 @@ var availableTests = [
         chrome.test.assertTrue(!!entry.urls.link);
         idSet.add(entry.id);
       }
+
+      // The last entry should be a passkey.
+      var passkey = group.entries[group.entries.length - 1];
+      chrome.test.assertTrue(passkey.isPasskey);
+      chrome.test.assertEq(passkey.displayName, "displayName");
 
       // Ensure that all entry ids are unique.
       chrome.test.assertEq(group.entries.length, idSet.size);

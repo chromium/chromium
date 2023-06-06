@@ -757,7 +757,7 @@ suite('PasswordsCheckSection', function() {
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     const {id, fromStores} =
-        await passwordManager.whenCalled('removeSavedPassword');
+        await passwordManager.whenCalled('removeCredential');
 
     assertEquals(PasswordCheckInteraction.REMOVE_PASSWORD, interaction);
     assertEquals(0, id);

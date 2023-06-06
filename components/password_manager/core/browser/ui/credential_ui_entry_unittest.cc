@@ -142,6 +142,7 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromPasskey) {
   ASSERT_EQ(entry.facets.size(), 1u);
   EXPECT_EQ(entry.facets.at(0).url, GURL("https://rpid.com/"));
   EXPECT_EQ(entry.facets.at(0).signon_realm, "https://rpid.com/");
+  EXPECT_TRUE(entry.stored_in.empty());
 }
 
 TEST(CredentialUIEntryTest, TestGetAffiliatedDomains) {

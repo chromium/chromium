@@ -72,17 +72,17 @@ ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
       "id."));
 }
 
-// PasswordsPrivateRemoveSavedPasswordFunction
-ResponseAction PasswordsPrivateRemoveSavedPasswordFunction::Run() {
+// PasswordsPrivateRemoveCredentialFunction
+ResponseAction PasswordsPrivateRemoveCredentialFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
   auto parameters =
-      api::passwords_private::RemoveSavedPassword::Params::Create(args());
+      api::passwords_private::RemoveCredential::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())
-      ->RemoveSavedPassword(parameters->id, parameters->from_stores);
+      ->RemoveCredential(parameters->id, parameters->from_stores);
   return RespondNow(NoArguments());
 }
 

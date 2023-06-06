@@ -37,7 +37,7 @@ export const PasswordRemovalMixin = dedupingMixin(
             return false;
           }
 
-          PasswordManagerImpl.getInstance().removeSavedPassword(
+          PasswordManagerImpl.getInstance().removeCredential(
               password.id, password.storedIn);
           return true;
         }

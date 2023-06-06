@@ -175,7 +175,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   }
 
   private onDeletePasswordClick_() {
-    PasswordManagerImpl.getInstance().removeSavedPassword(
+    PasswordManagerImpl.getInstance().removeCredential(
         this.item.id, this.item.storedIn);
     this.dispatchEvent(new CustomEvent('password-removed', {
       bubbles: true,

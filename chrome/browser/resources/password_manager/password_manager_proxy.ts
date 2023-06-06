@@ -65,8 +65,9 @@ export enum PasswordViewPageInteractions {
   TIMED_OUT_IN_VIEW_PAGE = 10,
   CREDENTIAL_REQUESTED_BY_URL = 11,
   PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED = 12,
+  PASSKEY_DELETE_BUTTON_CLICKED = 13,
   // Must be last.
-  COUNT = 13,
+  COUNT = 14,
 }
 
 /**
@@ -209,12 +210,12 @@ export interface PasswordManagerProxy {
       Promise<number>;
 
   /**
-   * Should remove the saved password and notify that the list has changed.
-   * @param id The id for the password entry being removed. No-op if |id| is not
-   *     in the list.
+   * Should remove the credential and notify that the list has changed.
+   * @param id The id for the credential being removed. No-op if |id| is not in
+   *     the list.
    * @param fromStores The store from which credential should be removed.
    */
-  removeSavedPassword(
+  removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet): void;
 
   /**
@@ -475,9 +476,9 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     return chrome.passwordsPrivate.changeSavedPassword(id, params);
   }
 
-  removeSavedPassword(
+  removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
-    chrome.passwordsPrivate.removeSavedPassword(id, fromStores);
+    chrome.passwordsPrivate.removeCredential(id, fromStores);
   }
 
   removeBlockedSite(id: number) {

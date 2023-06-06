@@ -221,6 +221,10 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RemovePasskey) {
+  EXPECT_TRUE(RunPasswordsSubtest("removePasskey")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestPlaintextPassword) {
   EXPECT_TRUE(RunPasswordsSubtest("requestPlaintextPassword")) << message_;
 }
