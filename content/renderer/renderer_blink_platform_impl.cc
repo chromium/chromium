@@ -865,11 +865,16 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  // TODO(crbug.com/1371756): plumb `router_rules` with the function callers
+  // if there is such use case. As of 2023-06-01, only
+  // `DedicatedOrSharedWorkerFetchContextImpl` calls the function, and
+  // no need to allow it set the `router_rules`.
   ServiceWorkerSubresourceLoaderFactory::Create(
       base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(service_worker_container_host),
           /*remote_controller=*/mojo::NullRemote(), client_id.Utf8(),
-          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault),
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
+          /*router_rules=*/absl::nullopt),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
       std::move(receiver), std::move(task_runner));
 }

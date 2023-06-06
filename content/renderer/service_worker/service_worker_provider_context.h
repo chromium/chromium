@@ -291,6 +291,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   absl::optional<std::string> sha256_script_checksum_;
 
+  absl::optional<blink::ServiceWorkerRouterRules> router_rules_;
+
   // Tracks feature usage for UseCounter.
   std::set<blink::mojom::WebFeature> used_features_;
 
