@@ -32,6 +32,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -39,11 +40,13 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
@@ -129,6 +132,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private Profile mProfile;
+    private BottomSheetController mBottomSheetController;
 
     /**
      * For controlling the UX flow of exporting passwords.
@@ -396,6 +400,14 @@ public class PasswordSettings extends PreferenceFragmentCompat
                 getView().announceForAccessibility(
                         getString(R.string.accessible_find_in_page_no_results));
             }
+        }
+
+        if (!mNoPasswords
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+            PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
+                    new PasswordMigrationWarningCoordinator(getContext(), mBottomSheetController);
+            passwordMigrationWarningCoordinator.showWarning();
         }
     }
 
@@ -685,6 +697,10 @@ public class PasswordSettings extends PreferenceFragmentCompat
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+    }
+
+    public void setBottomSheetController(BottomSheetController bottomSheetController) {
+        mBottomSheetController = bottomSheetController;
     }
 
     @VisibleForTesting

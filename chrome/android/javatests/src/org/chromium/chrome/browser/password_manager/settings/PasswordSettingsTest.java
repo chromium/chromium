@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -18,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,6 +30,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -37,6 +41,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 import org.chromium.components.prefs.PrefService;
@@ -44,6 +50,7 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * Tests for the "Passwords" settings screen. These tests are not batchable (without significant
@@ -55,6 +62,9 @@ public class PasswordSettingsTest {
     private static final String OFFER_TO_SAVE_PASSWORDS_HISTOGRAM =
             "PasswordManager.Settings.ToggleOfferToSavePasswords";
     private static final String AUTO_SIGNIN_HISTOGRAM = "PasswordManager.Settings.ToggleAutoSignIn";
+
+    @Rule
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Rule
     public SettingsActivityTestRule<PlaceholderSettingsForTest>
@@ -330,6 +340,19 @@ public class PasswordSettingsTest {
         Assert.assertNotNull(PasswordCheckFactory.getPasswordCheckInstance());
         // Clean up the password check component.
         PasswordCheckFactory.destroy();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
+    public void testLocalPasswordsMigrationSheetTriggered() {
+        mTestHelper.setPasswordSourceWithMultipleEntries(PasswordSettingsTestHelper.GREEK_GODS);
+        SettingsActivity activity = mTestHelper.startPasswordSettingsFromMainSettings(
+                mPasswordSettingsActivityTestRule);
+        waitForView(
+                withId(org.chromium.chrome.browser.pwd_migration.R.id.pwd_migration_warning_sheet),
+                ViewUtils.VIEW_VISIBLE);
     }
 
     private static PrefService getPrefService() {
