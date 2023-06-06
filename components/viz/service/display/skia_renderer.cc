@@ -3189,8 +3189,8 @@ void SkiaRenderer::UpdateRenderPassTextures(
     }
 
     const RenderPassRequirements& requirements = render_pass_it->second;
-    bool size_appropriate = backing.size.width() >= requirements.size.width() &&
-                            backing.size.height() >= requirements.size.height();
+    bool size_appropriate = backing.size.width() == requirements.size.width() &&
+                            backing.size.height() == requirements.size.height();
     bool mipmap_appropriate =
         !requirements.generate_mipmap || backing.generate_mipmap;
     bool no_change_in_format = requirements.format == backing.format;
