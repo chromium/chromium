@@ -751,7 +751,7 @@ class DeskSyncBridgeTest : public testing::Test {
     std::string policy_json;
     base::Value::List template_list;
     template_list.Append(
-        desk_template_conversion::SerializeDeskTemplateAsPolicy(
+        desk_template_conversion::SerializeDeskTemplateAsBaseValue(
             admin_template1.get(), cache_.get()));
     bool conversion_success =
         base::JSONWriter::Write(template_list, &policy_json);
@@ -821,11 +821,11 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateJsonConversionShouldBeLossless) {
       desk_template_conversion::FromSyncProto(desk_proto);
 
   base::Value template_value =
-      desk_template_conversion::SerializeDeskTemplateAsPolicy(
+      desk_template_conversion::SerializeDeskTemplateAsBaseValue(
           desk_template.get(), app_cache());
 
   std::unique_ptr<ash::DeskTemplate> converted_desk_template =
-      desk_template_conversion::ParseDeskTemplateFromSource(
+      desk_template_conversion::ParseDeskTemplateFromBaseValue(
           template_value, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_EQ(desk_template->desk_restore_data()->ConvertToValue(),

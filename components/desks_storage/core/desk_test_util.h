@@ -99,6 +99,35 @@ inline constexpr char kPolicyTemplateWithoutType[] =
     "1,\"first_non_pinned_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"event_flag\":0}]}}";
 
+inline constexpr char kAdminTemplatePolicy[] =
+    "[{\"auto_launch_on_startup\": "
+    "true,\"created_time_usec\": \"13320917261678808\",\"desk\": {\"apps\":  "
+    "[{\"app_type\": \"browser\",\"browser_tabs\": [{\"url\": "
+    "\"https://www.chromium.org/\"}],\"window_id\": 3000}, {\"app_type\": "
+    "\"browser\",\"browser_tabs\": [{\"url\": \"chrome://version/\"},"
+    "{\"url\": \"https://dev.chromium.org/\"}],\"window_id\": 30001}]},"
+    "\"name\": \"App Launch Automation 1\",\"updated_time_usec\":"
+    " \"13320917261678808\",\"uuid\": "
+    "\"27ea906b-a7d3-40b1-8c36-76d332d7f184\"},{\"auto_launch_on_startup\":"
+    " false,\"created_time_usec\": \"13320917271679905\",\"desk\": {\"apps\": "
+    "[{\"app_type\": \"browser\",\"browser_tabs\": "
+    "[{\"url\": \"https://www.google.com/\"}, {\"url\": "
+    "\"https://www.youtube.com/\"}],\"window_id\": 30001}]},\"name\":"
+    " \"App Launch Automation 2\",\"updated_time_usec\":"
+    " \"13320917271679905\",\"uuid\":"
+    " \"3aa30d88-576e-48ea-ab26-cbdd2cbe43a1\"}]";
+
+inline constexpr char kAdminTemplatePolicyWithOneTemplate[] =
+    "[{\"auto_launch_on_startup\": "
+    "true,\"created_time_usec\": \"13320917261678808\",\"desk\": {\"apps\":  "
+    "[{\"app_type\": \"browser\",\"browser_tabs\": [{\"url\": "
+    "\"https://www.chromium.org/\"}],\"window_id\": 3000}, {\"app_type\": "
+    "\"browser\",\"browser_tabs\": [{\"url\": \"chrome://version/\"},"
+    "{\"url\": \"https://dev.chromium.org/\"}],\"window_id\": 30001}]},"
+    "\"name\": \"App Launch Automation 1\",\"updated_time_usec\":"
+    " \"13320917261678808\",\"uuid\": "
+    "\"27ea906b-a7d3-40b1-8c36-76d332d7f184\"}]";
+
 // Populates the given cache with test app information.
 void PopulateAppRegistryCache(AccountId account_id,
                               apps::AppRegistryCache* cache);

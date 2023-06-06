@@ -85,7 +85,7 @@ void DeskModel::SetPolicyDeskTemplates(const std::string& policy_json) {
 
   for (auto& desk_template : parsed_list->GetList()) {
     std::unique_ptr<ash::DeskTemplate> dt =
-        desk_template_conversion::ParseDeskTemplateFromSource(
+        desk_template_conversion::ParseDeskTemplateFromBaseValue(
             desk_template, ash::DeskTemplateSource::kPolicy);
     if (dt) {
       policy_entries_.push_back(std::move(dt));
@@ -123,8 +123,9 @@ void DeskModel::HandleTemplateConversionToPolicyJson(
   }
 
   base::Value::List template_list;
-  template_list.Append(desk_template_conversion::SerializeDeskTemplateAsPolicy(
-      entry.get(), app_cache));
+  template_list.Append(
+      desk_template_conversion::SerializeDeskTemplateAsBaseValue(entry.get(),
+                                                                 app_cache));
 
   std::move(callback).Run(GetTemplateJsonStatus::kOk,
                           base::Value(std::move(template_list)));

@@ -77,7 +77,7 @@ std::unique_ptr<ash::DeskTemplate> ReadFileToTemplate(
     return nullptr;
   }
 
-  return desk_template_conversion::ParseDeskTemplateFromSource(
+  return desk_template_conversion::ParseDeskTemplateFromBaseValue(
       *desk_template_value, ash::DeskTemplateSource::kUser);
 }
 
@@ -266,13 +266,13 @@ void LocalDeskDataManager::AddOrUpdateEntry(
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
   DCHECK(cache);
   base::Value template_base_value =
-      desk_template_conversion::SerializeDeskTemplateAsPolicy(new_entry.get(),
-                                                              cache);
+      desk_template_conversion::SerializeDeskTemplateAsBaseValue(
+          new_entry.get(), cache);
   // Deserialize the `template_base_value` to a desk template to make sure that
   // we can properly get the correct information now instead of during a future
   // user operation.
   std::unique_ptr<ash::DeskTemplate> deserialize_entry =
-      desk_template_conversion::ParseDeskTemplateFromSource(
+      desk_template_conversion::ParseDeskTemplateFromBaseValue(
           template_base_value, new_entry->source());
   auto& saved_desks = saved_desks_list_[desk_type];
   auto existing_it = saved_desks.find(uuid);

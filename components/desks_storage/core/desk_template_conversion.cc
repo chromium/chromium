@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -68,10 +69,16 @@ constexpr char kApps[] = "apps";
 constexpr char kAppName[] = "app_name";
 constexpr char kAppType[] = "app_type";
 constexpr char kAppTypeArc[] = "ARC";
+constexpr char kAppTypeArcAdminFormat[] = "arc";
 constexpr char kAppTypeBrowser[] = "BROWSER";
+constexpr char kAppTypeBrowserAdminFormat[] = "browser";
 constexpr char kAppTypeChrome[] = "CHROME_APP";
+constexpr char kAppTypeChromeAdminFormat[] = "chrome_app";
 constexpr char kAppTypeProgressiveWeb[] = "PWA";
+constexpr char kAppTypeProgressiveWebAdminFormat[] = "progressive_web_app";
+constexpr char kAppTypeIsolatedWebAppAdminFormat[] = "isolated_web_app";
 constexpr char kAppTypeUnsupported[] = "UNSUPPORTED";
+constexpr char kAutoLaunchOnStartup[] = "auto_launch_on_startup";
 constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kCreatedTime[] = "created_time_usec";
 constexpr char kDesk[] = "desk";
@@ -93,6 +100,7 @@ constexpr char kLaunchContainerNone[] = "LAUNCH_CONTAINER_NONE";
 constexpr char kMaximumSize[] = "maximum_size";
 constexpr char kMinimumSize[] = "minimum_size";
 constexpr char kName[] = "name";
+constexpr char kPolicy[] = "policy";
 constexpr char kPreMinimizedWindowState[] = "pre_minimized_window_state";
 constexpr char kTabRangeFirstIndex[] = "first_index";
 constexpr char kTabRangeLastIndex[] = "last_index";
@@ -100,6 +108,7 @@ constexpr char kSizeHeight[] = "height";
 constexpr char kSizeWidth[] = "width";
 constexpr char kSnapPercentage[] = "snap_percent";
 constexpr char kTabs[] = "tabs";
+constexpr char kTabsAdminFormat[] = "browser_tabs";
 constexpr char kTabGroups[] = "tab_groups";
 constexpr char kTabUrl[] = "url";
 constexpr char kTitle[] = "title";
@@ -1882,6 +1891,133 @@ DeskTemplateType GetDeskTemplateTypeFromProtoType(
   }
 }
 
+// Corrects the admin template browser format so that subsequent serialization
+// code stores browsers correctly.
+void CorrectAdminTemplateBrowserFormat(base::Value& app) {
+  if (!app.is_dict()) {
+    return;
+  }
+
+  auto& app_dict = app.GetDict();
+  base::Value::List* tabs = app_dict.FindList(kTabsAdminFormat);
+
+  if (tabs == nullptr) {
+    return;
+  }
+
+  app_dict.Set(kTabs, tabs->Clone());
+}
+
+// Corrects the admin template format for app types.  Modifies the reference
+// passed.
+void CorrectAdminTemplateAppTypeFormat(base::Value& app) {
+  if (!app.is_dict()) {
+    return;
+  }
+
+  auto& app_dict = app.GetDict();
+
+  std::string app_type;
+  if (!GetString(app_dict, kAppType, &app_type)) {
+    return;
+  }
+
+  // In the future all these types will be supported so we include them here
+  // to exhaust the possible enum types that can be given to us.  However
+  // app types that are not browser will not be supported in the current version
+  // of admin templates so return unsupported for everything other than
+  // browsers.
+  if (app_type == kAppTypeBrowserAdminFormat) {
+    app_dict.Set(kAppType, kAppTypeBrowser);
+    CorrectAdminTemplateBrowserFormat(app);
+  } else if (app_type == kAppTypeArcAdminFormat) {
+    app_dict.Set(kAppType, kAppTypeUnsupported);
+  } else if (app_type == kAppTypeChromeAdminFormat) {
+    app_dict.Set(kAppType, kAppTypeUnsupported);
+  } else if (app_type == kAppTypeProgressiveWebAdminFormat) {
+    app_dict.Set(kAppType, kAppTypeUnsupported);
+  } else if (app_type == kAppTypeIsolatedWebAppAdminFormat) {
+    app_dict.Set(kAppType, kAppTypeUnsupported);
+  } else {
+    app_dict.Set(kAppType, kAppTypeUnsupported);
+  }
+}
+
+// Modifies the strings in the desk's apps such that they match the format
+// defined by this file.  This does not verify the format, that is handled
+// by `ConvertJsonToRestoreData`.  The value is copied and returned corrected.
+// If the admin format itself is corrupted return the clone, it will be
+// discarded by the parsing code.
+base::Value::Dict CorrectAdminTemplateFormat(const base::Value::Dict* desk) {
+  auto desk_clone = desk->Clone();
+  base::Value::List* apps = desk_clone.FindList(kApps);
+  if (apps == nullptr) {
+    return desk_clone;
+  }
+
+  if (apps) {
+    for (auto& app : *apps) {
+      CorrectAdminTemplateAppTypeFormat(app);
+    }
+  }
+
+  return desk_clone;
+}
+
+std::unique_ptr<ash::DeskTemplate> ParseAdminTemplate(
+    const base::Value& admin_template) {
+  if (!admin_template.is_dict()) {
+    return nullptr;
+  }
+
+  const base::Value::Dict& value_dict = admin_template.GetDict();
+
+  bool auto_launch_on_startup;
+  std::string created_time_usec_str;
+  int64_t created_time_usec;
+  std::string name;
+  std::string updated_time_usec_str;
+  int64_t updated_time_usec;
+  std::string uuid_str;
+  const base::Value::Dict* desk = value_dict.FindDict(kDesk);
+  if (!desk ||
+      !GetBool(value_dict, kAutoLaunchOnStartup, &auto_launch_on_startup) ||
+      !GetString(value_dict, kUuid, &uuid_str) ||
+      !GetString(value_dict, kName, &name) ||
+      !GetString(value_dict, kCreatedTime, &created_time_usec_str) ||
+      !base::StringToInt64(created_time_usec_str, &created_time_usec) ||
+      !GetString(value_dict, kUpdatedTime, &updated_time_usec_str) ||
+      !base::StringToInt64(updated_time_usec_str, &updated_time_usec) ||
+      name.empty() || created_time_usec_str.empty() ||
+      updated_time_usec_str.empty()) {
+    return nullptr;
+  }
+
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(uuid_str);
+  if (!uuid.is_valid()) {
+    return nullptr;
+  }
+
+  const base::Time created_time =
+      desks_storage::desk_template_conversion::ProtoTimeToTime(
+          created_time_usec);
+  const base::Time updated_time =
+      desks_storage::desk_template_conversion::ProtoTimeToTime(
+          updated_time_usec);
+
+  auto ash_admin_template = std::make_unique<ash::DeskTemplate>(
+      std::move(uuid), ash::DeskTemplateSource::kPolicy, name, created_time,
+      ash::DeskTemplateType::kTemplate, auto_launch_on_startup,
+      admin_template.Clone());
+
+  auto corrected_desk = CorrectAdminTemplateFormat(desk);
+  ash_admin_template->set_updated_time(updated_time);
+  ash_admin_template->set_desk_restore_data(
+      ConvertJsonToRestoreData(&corrected_desk));
+
+  return ash_admin_template;
+}
+
 }  // namespace
 
 namespace desks_storage {
@@ -1924,28 +2060,48 @@ int64_t TimeToProtoTime(const base::Time& t) {
   return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
-std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
-    const base::Value& policy_json,
+std::vector<std::unique_ptr<ash::DeskTemplate>>
+ParseAdminTemplatesFromPolicyValue(const base::Value& value) {
+  std::vector<std::unique_ptr<ash::DeskTemplate>> desk_templates;
+  if (!value.is_list()) {
+    return desk_templates;
+  }
+
+  for (const auto& desk_template : value.GetList()) {
+    auto desk_template_ptr = ParseAdminTemplate(desk_template);
+    if (desk_template_ptr == nullptr) {
+      continue;
+    }
+
+    desk_templates.push_back(std::move(desk_template_ptr));
+  }
+
+  return desk_templates;
+}
+
+std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromBaseValue(
+    const base::Value& value,
     ash::DeskTemplateSource source) {
-  if (!policy_json.is_dict())
+  if (!value.is_dict()) {
     return nullptr;
+  }
 
-  const base::Value::Dict& policy_json_dict = policy_json.GetDict();
+  const base::Value::Dict& value_dict = value.GetDict();
 
-  int version;
-  std::string uuid_str;
-  std::string name;
   std::string created_time_usec_str;
-  std::string updated_time_usec_str;
   int64_t created_time_usec;
+  std::string name;
+  std::string updated_time_usec_str;
   int64_t updated_time_usec;
-  const base::Value::Dict* desk = policy_json_dict.FindDict(kDesk);
-  if (!desk || !GetInt(policy_json_dict, kVersion, &version) ||
-      !GetString(policy_json_dict, kUuid, &uuid_str) ||
-      !GetString(policy_json_dict, kName, &name) ||
-      !GetString(policy_json_dict, kCreatedTime, &created_time_usec_str) ||
+  std::string uuid_str;
+  int version;
+  const base::Value::Dict* desk = value_dict.FindDict(kDesk);
+  if (!desk || !GetInt(value_dict, kVersion, &version) ||
+      !GetString(value_dict, kUuid, &uuid_str) ||
+      !GetString(value_dict, kName, &name) ||
+      !GetString(value_dict, kCreatedTime, &created_time_usec_str) ||
       !base::StringToInt64(created_time_usec_str, &created_time_usec) ||
-      !GetString(policy_json_dict, kUpdatedTime, &updated_time_usec_str) ||
+      !GetString(value_dict, kUpdatedTime, &updated_time_usec_str) ||
       !base::StringToInt64(updated_time_usec_str, &updated_time_usec) ||
       name.empty() || created_time_usec_str.empty() ||
       updated_time_usec_str.empty()) {
@@ -1958,19 +2114,33 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
 
   // Set default value for the desk type to template.
   std::string desk_type_string;
-  if (!GetString(policy_json_dict, kDeskType, &desk_type_string)) {
+  if (!GetString(value_dict, kDeskType, &desk_type_string)) {
     desk_type_string = kDeskTypeTemplate;
   } else if (!IsValidDeskTemplateType(desk_type_string)) {
     return nullptr;
   }
 
+  // If policy template set auto launch bool.
+  bool auto_launch_on_startup = false;
+  GetBool(value_dict, kAutoLaunchOnStartup, &auto_launch_on_startup);
+
   const base::Time created_time = ProtoTimeToTime(created_time_usec);
   const base::Time updated_time = ProtoTimeToTime(updated_time_usec);
 
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      std::make_unique<ash::DeskTemplate>(
-          std::move(uuid), source, name, created_time,
-          GetDeskTypeFromString(desk_type_string));
+  std::unique_ptr<ash::DeskTemplate> desk_template = nullptr;
+
+  // Note: this method is responsible for parsing both regular and policy
+  // templates after said policy templates are pushed to the device.
+  if (auto* policy_value = value_dict.FindDict(kPolicy)) {
+    desk_template = std::make_unique<ash::DeskTemplate>(
+        std::move(uuid), source, name, created_time,
+        GetDeskTypeFromString(desk_type_string), auto_launch_on_startup,
+        base::Value(policy_value->Clone()));
+  } else {
+    desk_template = std::make_unique<ash::DeskTemplate>(
+        std::move(uuid), source, name, created_time,
+        GetDeskTypeFromString(desk_type_string));
+  }
 
   desk_template->set_updated_time(updated_time);
   desk_template->set_desk_restore_data(ConvertJsonToRestoreData(desk));
@@ -1978,8 +2148,9 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
   return desk_template;
 }
 
-base::Value SerializeDeskTemplateAsPolicy(const ash::DeskTemplate* desk,
-                                          apps::AppRegistryCache* app_cache) {
+base::Value SerializeDeskTemplateAsBaseValue(
+    const ash::DeskTemplate* desk,
+    apps::AppRegistryCache* app_cache) {
   base::Value::Dict desk_dict;
   desk_dict.Set(kVersion, kVersionNum);
   desk_dict.Set(kUuid, desk->uuid().AsLowercaseString());
@@ -1990,6 +2161,10 @@ base::Value SerializeDeskTemplateAsPolicy(const ash::DeskTemplate* desk,
 
   desk_dict.Set(
       kDesk, ConvertRestoreDataToValue(desk->desk_restore_data(), app_cache));
+
+  if (desk->policy_definition().type() == base::Value::Type::DICT) {
+    desk_dict.Set(kPolicy, desk->policy_definition().Clone());
+  }
 
   return base::Value(std::move(desk_dict));
 }

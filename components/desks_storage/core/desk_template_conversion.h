@@ -38,14 +38,22 @@ base::Time ProtoTimeToTime(int64_t proto_time);
 // (Microseconds since the Windows epoch).
 int64_t TimeToProtoTime(const base::Time& t);
 
+// Creates a default template from policy.  Template will be created without
+// window information.  Expects a list value containing the different template
+// definitions.  Schema located at:
+// `components/policy/resources/templates/policy_definitions/miscellaneous/...
+// ...AppLaunchAutomation.yaml`
+std::vector<std::unique_ptr<ash::DeskTemplate>>
+ParseAdminTemplatesFromPolicyValue(const base::Value& value);
+
 // Converts a JSON desk template to an ash desk template. The returned desk
 // template will have source set to `source`. The policy associated is
 // PreconfiguredDeskTemplates.
-std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
-    const base::Value& policy_json,
+std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromBaseValue(
+    const base::Value& value,
     ash::DeskTemplateSource source);
 
-base::Value SerializeDeskTemplateAsPolicy(
+base::Value SerializeDeskTemplateAsBaseValue(
     const ash::DeskTemplate* desk_template,
     apps::AppRegistryCache* app_cache);
 
