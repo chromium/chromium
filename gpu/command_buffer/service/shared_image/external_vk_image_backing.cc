@@ -230,7 +230,10 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   if (!pixel_data.empty()) {
     auto image_info = backing->AsSkImageInfo();
-    DCHECK_EQ(pixel_data.size(), image_info.computeMinByteSize());
+    if (pixel_data.size() != image_info.computeMinByteSize()) {
+      DLOG(ERROR) << "Invalid initial pixel data size";
+      return nullptr;
+    }
     SkPixmap pixmap(image_info, pixel_data.data(), image_info.minRowBytes());
     backing->UploadToVkImage({pixmap});
 

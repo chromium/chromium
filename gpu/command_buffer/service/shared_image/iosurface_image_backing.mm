@@ -1350,10 +1350,16 @@ bool IOSurfaceImageBacking::InitializePixels(
       IOSurfaceGetBaseAddressOfPlane(io_surface_, io_surface_plane_));
   size_t dst_stride =
       IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_);
-  const size_t src_stride = (format().BitsPerPixel() / 8) * size().width();
 
   const uint8_t* src_data = pixel_data.data();
-  size_t height = size().height();
+  const size_t src_stride = (format().BitsPerPixel() / 8) * size().width();
+  const size_t height = size().height();
+
+  if (pixel_data.size() != src_stride * height) {
+    DLOG(ERROR) << "Invalid initial pixel data size";
+    return false;
+  }
+
   for (size_t y = 0; y < height; ++y) {
     memcpy(dst_data, src_data, src_stride);
     dst_data += dst_stride;

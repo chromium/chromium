@@ -152,6 +152,10 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   }
   if (!pixel_data.empty()) {
     SkImageInfo info = backing->AsSkImageInfo();
+    if (pixel_data.size() != info.computeMinByteSize()) {
+      DLOG(ERROR) << "Invalid initial pixel data size";
+      return nullptr;
+    }
     SkPixmap pixmap(info, pixel_data.data(), info.minRowBytes());
 
     if (!backing->UploadFromMemory({pixmap})) {

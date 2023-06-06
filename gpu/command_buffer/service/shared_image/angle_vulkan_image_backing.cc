@@ -271,7 +271,10 @@ bool AngleVulkanImageBacking::Initialize(
   if (!data.empty()) {
     DCHECK(format().is_single_plane());
     auto image_info = AsSkImageInfo();
-    DCHECK_EQ(data.size(), image_info.computeMinByteSize());
+    if (data.size() != image_info.computeMinByteSize()) {
+      DLOG(ERROR) << "Invalid initial pixel data size";
+      return false;
+    }
     SkPixmap pixmap(image_info, data.data(), image_info.minRowBytes());
     UploadFromMemory({pixmap});
     SetCleared();

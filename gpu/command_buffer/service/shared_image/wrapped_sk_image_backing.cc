@@ -269,6 +269,10 @@ bool WrappedSkImageBacking::InitializeWithData(
             GrMipMapped::kNo, GrProtected::kNo);
   } else {
     auto info = AsSkImageInfo();
+    if (pixels.size() != info.computeMinByteSize()) {
+      DLOG(ERROR) << "Invalid initial pixel data size";
+      return false;
+    }
     SkPixmap pixmap(info, pixels.data(), info.minRowBytes());
     textures_[0].backend_texture =
         context_state_->gr_context()->createBackendTexture(

@@ -774,10 +774,16 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     int bytes_per_pixel = format.BitsPerPixel() / 8;
 
     // NOTE: hwb_info.stride is in pixels
-    int dst_stride = bytes_per_pixel * hwb_info.stride;
-    int src_stride = bytes_per_pixel * size.width();
+    const size_t dst_stride = bytes_per_pixel * hwb_info.stride;
+    const size_t src_stride = bytes_per_pixel * size.width();
+    const size_t height = size.height();
 
-    for (int y = 0; y < size.height(); y++) {
+    if (pixel_data.size() != src_stride * height) {
+      DLOG(ERROR) << "Invalid initial pixel data size";
+      return nullptr;
+    }
+
+    for (size_t y = 0; y < height; y++) {
       void* dst = reinterpret_cast<uint8_t*>(address) + dst_stride * y;
       const void* src = pixel_data.data() + src_stride * y;
 

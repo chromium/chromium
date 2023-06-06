@@ -158,6 +158,10 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
 
   graphite_textures_.resize(1);
   auto image_info = AsSkImageInfo();
+  if (pixels.size() != image_info.computeMinByteSize()) {
+    DLOG(ERROR) << "Invalid initial pixel data size";
+    return false;
+  }
   SkPixmap pixmap(image_info, pixels.data(), image_info.minRowBytes());
 
   auto& texture = graphite_textures_[0];
