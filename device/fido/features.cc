@@ -12,17 +12,36 @@
 
 namespace device {
 
+// Flags defined in this file should have a comment above them that either
+// marks them as permanent flags, or specifies what lifecycle stage they're at.
+//
+// Permanent flags are those that we'll keep around indefinitely because
+// they're useful for testing, debugging, etc. These should be commented with
+//    // Permanent flag
+//
+// Standard flags progress through a lifecycle and are eliminated at the end of
+// it. The comments above them should be one of the following:
+//    // Not yet enabled by default.
+//    // Enabled in M123. Remove in or after M126.
+//
+// Every release or so we should cleanup and delete flags which have been
+// default-enabled for long enough, based on the removal milestone in their
+// comment.
+
 #if BUILDFLAG(IS_WIN)
+// Permanent flag
 BASE_FEATURE(kWebAuthUseNativeWinApi,
              "WebAuthenticationUseNativeWinApi",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+// Permanent flag
 BASE_FEATURE(kWebAuthCableExtensionAnywhere,
              "WebAuthenticationCableExtensionAnywhere",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Enabled in M102. Ready to be removed.
 BASE_FEATURE(kWebAuthCrosPlatformAuthenticator,
              "WebAuthenticationCrosPlatformAuthenticator",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -64,7 +83,7 @@ BASE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON,
              "WebAuthenticationRequireEasyAccessorFieldsInJSON",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Added in M115. Not yet enabled by default.
+// Not yet enabled by default.
 BASE_FEATURE(kWebAuthnICloudKeychain,
              "WebAuthenticationICloudKeychain",
              base::FEATURE_DISABLED_BY_DEFAULT);
