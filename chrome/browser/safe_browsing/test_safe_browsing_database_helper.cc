@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/test/test_utils.h"
 
 namespace {
 
@@ -143,6 +144,9 @@ void TestSafeBrowsingDatabaseHelper::LocallyMarkPrefixAsBad(
     const safe_browsing::ListIdentifier& list_id) {
   safe_browsing::FullHashStr full_hash =
       safe_browsing::V4ProtocolManagerUtil::GetFullHash(url);
+  while (!v4_db_factory_->IsReady()) {
+    content::RunAllTasksUntilIdle();
+  }
   v4_db_factory_->MarkPrefixAsBad(list_id, full_hash);
 }
 

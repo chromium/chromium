@@ -107,6 +107,9 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
   // with the source of truth.
   void LocallyMarkPrefixAsBad(const GURL& url, const ListIdentifier& list_id) {
     FullHashStr full_hash = V4ProtocolManagerUtil::GetFullHash(url);
+    while (!v4_db_factory_->IsReady()) {
+      content::RunAllTasksUntilIdle();
+    }
     v4_db_factory_->MarkPrefixAsBad(list_id, full_hash);
   }
 
