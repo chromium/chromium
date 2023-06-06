@@ -1,5 +1,14 @@
+<style>
+    .crisp {
+        shape-rendering: crispEdges;
+    }
+</style>
+
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
-    <path fill$="[[getHexColor_(scheme.primary)]]" d="M0.000120163 24C0.000120742 10.7452 10.7453 -2.48674e-06 24.0001 -1.90735e-06C37.255 -1.32796e-06 48.0001 10.7452 48.0001 24L0.000120163 24Z"></path>
-    <path fill$="[[getHexColor_(scheme.secondary)]]" d="M24 48C37.2548 48 48.0001 37.2548 48.0001 24L24 24L24 48Z"></path>
-    <path fill$="[[getHexColor_(scheme.tertiary)]]" d="M0.000120163 24C0.000118997 37.3335 10.7451 48 24 48L24 24L0.000120163 24Z"></path>
+    <path fill$="[[getHexColor_(scheme.primary)]]" d="M0 24C0 10.75 10.75 0 24 0C37.25 0 48 10.75 48 24Z"></path>
+    <path class="crisp" fill$="[[getHexColor_(scheme.primary)]]" d="M0 24L24 12L48 24Z"></path>
+    <path fill$="[[getHexColor_(scheme.secondary)]]" d="M48 24C48 37.25 37.25 48 24 48V24Z"></path>
+    <path class="crisp" fill$="[[getHexColor_(scheme.secondary)]]" d="M49 24L24 49V24Z"></path>
+    <path fill$="[[getHexColor_(scheme.tertiary)]]" d="M0 24C0 37.25 10.75 48 24 48V24Z"></path>
+    <path class="crisp" fill$="[[getHexColor_(scheme.tertiary)]]" d="M0 24L24 48V24Z"></path>
 </svg>
