@@ -85,10 +85,17 @@ void WaitforPDFExtensionView() {
 #pragma mark - Tests
 
 // Fullscreens tests for Chrome.
-@interface FullscreenTestCase : WebHttpServerChromeTestCase
+// TODO(crbug.com/1338585): Remove the "ZZZ" when the bug is fixed.
+@interface ZZZFullscreenTestCase : WebHttpServerChromeTestCase
 @end
 
-@implementation FullscreenTestCase
+@implementation ZZZFullscreenTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -406,6 +413,26 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGrey tapWebStateElementWithID:@"link"];
   AssertURLIs(ErrorPageResponseProvider::GetDnsFailureUrl());
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+}
+
+@end
+
+#pragma mark - Smooth scrolling enabled Tests
+
+// Fullscreens tests for Chrome.
+@interface FullscreenSmoothScrollingTestCase : ZZZFullscreenTestCase
+@end
+
+@implementation FullscreenSmoothScrollingTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end
