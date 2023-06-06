@@ -5,8 +5,11 @@
 import("//media/media_options.gni")
 
 source_set("libavif") {
-  sources = [
+  public = [
     "src/include/avif/avif.h",
+  ]
+
+  sources = [
     "src/include/avif/internal.h",
     "src/src/alpha.c",
     "src/src/avif.c",
