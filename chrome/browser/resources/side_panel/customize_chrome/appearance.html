@@ -1,4 +1,4 @@
-<style include="cr-hidden-style cr-icons">
+<style include="cr-hidden-style cr-icons sp-shared-style">
   #editThemeButton {
     margin: 0 16px 24px;
     width: calc(100% - 32px);
@@ -34,6 +34,22 @@
   managed-dialog {
     --cr-dialog-width: min(calc(100% - 32px), 512px);
   }
+
+  customize-color-scheme-mode,
+  .sp-hr {
+    display: none;
+    margin: 0 16px 16px;
+    width: calc(100% - 32px);
+  }
+
+  :host-context([chrome-refresh-2023]) customize-color-scheme-mode,
+  :host-context([chrome-refresh-2023]) .sp-hr {
+    display: block;
+  }
+
+  :host-context([chrome-refresh-2023]) #editThemeButton {
+    margin-bottom: 16px;
+  }
 </style>
 <customize-chrome-theme-snapshot id="themeSnapshot"
     hidden$="[[!showFirstPartyThemeView_]]">
@@ -48,6 +64,10 @@
   <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
   $i18n{changeTheme}
 </cr-button>
+<hr class="sp-hr" hidden$="[[!showFirstPartyThemeView_]]">
+<customize-color-scheme-mode
+    hidden$="[[!showFirstPartyThemeView_]]">
+</customize-color-scheme-mode>
 <customize-chrome-colors id="chromeColors"
     hidden$="[[!showFirstPartyThemeView_]]">
 </customize-chrome-colors>
