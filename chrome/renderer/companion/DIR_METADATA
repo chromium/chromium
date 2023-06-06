@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser"
+}
+team_email: "lens-chrome-eng+bugs@google.com"
