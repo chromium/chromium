@@ -4456,6 +4456,7 @@ static_library("browser") {
       "//components/web_modal",
       "//components/webauthn/core/browser",
       "//courgette:courgette_lib",
+      "//services/device/public/cpp/bluetooth",
       "//services/device/public/cpp/hid",
       "//third_party/sqlite",
       "//third_party/zxcvbn-cpp",
