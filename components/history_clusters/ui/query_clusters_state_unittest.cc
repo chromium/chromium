@@ -98,7 +98,11 @@ TEST_F(QueryClustersStateTest, FilterParamsSetForZeroState) {
   QueryClustersFilterParams filter_params =
       GetQueryClustersFilterParamsForState(&state);
   EXPECT_TRUE(filter_params.is_search_initiated);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(filter_params.has_related_searches);
+#else
   EXPECT_TRUE(filter_params.has_related_searches);
+#endif
 }
 
 TEST_F(QueryClustersStateTest, FilterParamsNotSetForZeroStateFeatureDisabled) {

@@ -33,7 +33,11 @@ QueryClustersFilterParams GetZeroStateFilterParamsFromFlags() {
 
   QueryClustersFilterParams filter_params;
   filter_params.is_search_initiated = true;
+#if BUILDFLAG(IS_ANDROID)
+  filter_params.has_related_searches = false;
+#else
   filter_params.has_related_searches = true;
+#endif
   filter_params.is_shown_on_prominent_ui_surfaces = true;
   // TODO(b/277528165): Apply category filtering only for eligible users.
   return filter_params;
