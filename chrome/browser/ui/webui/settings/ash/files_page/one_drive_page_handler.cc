@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/settings/ash/files_page/one_drive_page_handler.h"
 
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,12 +36,6 @@ void OnGetEmailAddress(
     }
   }
   std::move(callback).Run(absl::nullopt);
-}
-
-void OnRequestODFSMountResult(
-    OneDrivePageHandler::ConnectToOneDriveCallback callback,
-    base::File::Error result) {
-  std::move(callback).Run(result == base::File::Error::FILE_OK);
 }
 
 void OnShowItemInFolder(
@@ -103,6 +100,7 @@ void OneDrivePageHandler::ConnectToOneDrive(
     ConnectToOneDriveCallback callback) {
   file_system_provider::Service* service =
       file_system_provider::Service::Get(profile_);
+  // First check if OneDrive is already mounted.
   CHECK(service);
   file_system_provider::ProviderId provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
@@ -115,8 +113,15 @@ void OneDrivePageHandler::ConnectToOneDrive(
     std::move(callback).Run(false);
     return;
   }
-  service->RequestMount(provider_id, base::BindOnce(&OnRequestODFSMountResult,
-                                                    std::move(callback)));
+  // Show connect OneDrive dialog. This method's callback is called before the
+  // user tries to sign in. The connection status is detected separately by
+  // listening to provided file system mount events.
+  Browser* browser =
+      FindSystemWebAppBrowser(profile_, ash::SystemWebAppType::FILE_MANAGER);
+  gfx::NativeWindow modal_parent =
+      browser ? browser->window()->GetNativeWindow() : nullptr;
+  std::move(callback).Run(
+      ash::cloud_upload::ShowConnectOneDriveDialog(modal_parent));
 }
 
 void OneDrivePageHandler::DisconnectFromOneDrive(
