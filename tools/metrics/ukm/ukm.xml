@@ -18775,6 +18775,13 @@ be describing additional metrics about the same event.
       The estimated private footprint of the page, in kilobytes.
     </summary>
   </metric>
+  <metric name="RecentCPUUsage">
+    <summary>
+      The estimated CPU usage of the page over the last 5 minutes, with 100,000
+      as 100% usage of 1 full core. (The same scale as the
+      PerformanceMonitor.AverageCPU8.* histograms.)
+    </summary>
+  </metric>
   <metric name="ResidentSetSizeEstimate">
     <summary>
       The estimated resident set size of the page, in kilobytes.

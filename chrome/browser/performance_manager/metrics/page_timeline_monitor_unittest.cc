@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
+
 #include <memory>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-shared.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -17,6 +22,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +31,29 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
+
+namespace {
+
+// A class that returns constant 50% CPU used since it was created.
+class FixedCPUMeasurementDelegate final
+    : public PageTimelineCPUMonitor::CPUMeasurementDelegate {
+ public:
+  FixedCPUMeasurementDelegate() = default;
+  ~FixedCPUMeasurementDelegate() final = default;
+
+  base::TimeDelta GetCumulativeCPUUsage() final {
+    return (base::TimeTicks::Now() - creation_time_) / 2;
+  }
+
+  static std::unique_ptr<CPUMeasurementDelegate> Create(const ProcessNode*) {
+    return std::make_unique<FixedCPUMeasurementDelegate>();
+  }
+
+ private:
+  base::TimeTicks creation_time_ = base::TimeTicks::Now();
+};
+
+}  // namespace
 
 class PageTimelineMonitorUnitTest : public GraphTestHarness {
  public:
@@ -36,6 +65,8 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
       delete;
 
   void SetUp() override {
+    GetGraphFeatures().EnableExecutionContextRegistry();
+
     GraphTestHarness::SetUp();
 
     std::unique_ptr<PageTimelineMonitor> monitor =
@@ -43,6 +74,8 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     monitor_ = monitor.get();
     monitor_->SetShouldCollectSliceCallbackForTesting(
         base::BindRepeating([]() { return true; }));
+    monitor_->cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
+        base::BindRepeating(&FixedCPUMeasurementDelegate::Create));
     graph()->PassToGraph(std::move(monitor));
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -454,7 +487,11 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
   mock_graph.other_frame->SetPrivateFootprintKbEstimate(789);
   mock_graph.child_frame->SetPrivateFootprintKbEstimate(1000);
 
+  // Let an arbitrary amount of time pass so there's some CPU usage to measure.
+  task_env().FastForwardBy(base::Minutes(1));
+
   TriggerCollectSlice();
+
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
   // Expect 1 entry per page.
@@ -468,8 +505,18 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
   const auto kExpectedPrivateFootprint =
       base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
           {mock_source_id, 0},
-          // other_page is the sum of other_frame and child_frame
+          // `other_page` is the sum of `other_frame` and `child_frame`
           {mock_source_id2, 1789},
+      });
+  // FixedCPUMeasurementDelegate always returns 50% of the CPU is used.
+  // `process` contains `frame` and `other_frame` -> each gets 25%
+  // `other_process` contains `child_frame` -> 50%
+  const auto kExpectedCPUUsage =
+      base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
+          // `page` contains `frame`
+          {mock_source_id, 2500},
+          // `other_page` gets the sum of `other_frame` and `child_frame`
+          {mock_source_id2, 7500},
       });
   for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntryMetric(
@@ -478,6 +525,8 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "PrivateFootprintEstimate",
         kExpectedPrivateFootprint.at(entry->source_id));
+    test_ukm_recorder()->ExpectEntryMetric(
+        entry, "RecentCPUUsage", kExpectedCPUUsage.at(entry->source_id));
   }
 }
 

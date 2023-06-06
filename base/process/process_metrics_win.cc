@@ -169,14 +169,18 @@ TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
   if (!time_internal::HasConstantRateTSC())
     return GetCumulativeCPUUsage();
 
+  const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
+  if (tsc_ticks_per_second == 0) {
+    // TSC is only initialized once TSCTicksPerSecond() is called twice 50 ms
+    // apart on the same thread to get a baseline. This often doesn't happen in
+    // unit tests, and theoretically may happen in production if
+    // GetPreciseCumulativeCPUUsage() is called before any uses of ThreadTicks.
+    return GetCumulativeCPUUsage();
+  }
+
   ULONG64 process_cycle_time = 0;
   if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
     NOTREACHED();
-    return TimeDelta();
-  }
-
-  const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
-  if (tsc_ticks_per_second == 0) {
     return TimeDelta();
   }
 

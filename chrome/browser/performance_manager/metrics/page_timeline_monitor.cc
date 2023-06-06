@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 
 #include <stdint.h>
+#include <map>
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -27,6 +28,18 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
+
+namespace {
+
+// CPU usage metrics are provided as a double in the [0.0, number of cores *
+// 100.0] range. The CPU usage is usually below 1%, so the UKM is
+// reported out of 10,000 instead of out of 100 to make analyzing the data
+// easier. This is the same scale factor used by the
+// PerformanceMonitor.AverageCPU8 histograms recorded in
+// chrome/browser/metrics/power/process_metrics_recorder_util.cc.
+constexpr int kCPUUsageFactor = 100 * 100;
+
+}  // namespace
 
 PageTimelineMonitor::PageTimelineMonitor()
     // These counters are initialized to a random value due to privacy concerns,
@@ -60,10 +73,10 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
   }
 }
 
-void PageTimelineMonitor::CollectSlice() {
-  // Whether or not we record a full PageTimelineState slice, record the
-  // estimated memory usage, which has fewer privacy implications so can be
-  // recorded more often.
+void PageTimelineMonitor::CollectPageResourceUsage() {
+  const PageTimelineCPUMonitor::CPUUsageMap cpu_usage_map =
+      cpu_monitor_.UpdateCPUMeasurements();
+
   for (auto const& pair : page_node_info_map_) {
     const PageNode* page_node = pair.first;
 
@@ -73,8 +86,18 @@ void PageTimelineMonitor::CollectSlice() {
     ukm::builders::PerformanceManager_PageResourceUsage(source_id)
         .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
         .SetPrivateFootprintEstimate(page_node->EstimatePrivateFootprintSize())
+        .SetRecentCPUUsage(kCPUUsageFactor *
+                           PageTimelineCPUMonitor::EstimatePageCPUUsage(
+                               page_node, cpu_usage_map))
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+void PageTimelineMonitor::CollectSlice() {
+  // Whether or not we record a full PageTimelineState slice, record the
+  // PageResourceUsage, which has fewer privacy implications so can be recorded
+  // more often.
+  CollectPageResourceUsage();
 
   // We only collect a slice randomly every ~20 times this gets called for
   // privacy purposes. Always fall through when we're in a test.
@@ -193,9 +216,11 @@ void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
   graph_ = graph;
   graph_->AddPageNodeObserver(this);
   graph_->RegisterObject(this);
+  cpu_monitor_.StartMonitoring(graph_);
 }
 
 void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
+  cpu_monitor_.StopMonitoring(graph_);
   graph_->UnregisterObject(this);
   graph_->RemovePageNodeObserver(this);
   graph_ = nullptr;

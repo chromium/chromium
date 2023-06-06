@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -95,7 +96,10 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     ~PageNodeInfo() = default;
   };
 
-  // Method collecting the PageTimelineState UKM.
+  // Method collecting the PageResourceUsage UKM.
+  void CollectPageResourceUsage();
+
+  // Method collecting a slice for the PageTimelineState UKM.
   void CollectSlice();
 
   bool ShouldCollectSlice() const;
@@ -122,6 +126,9 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   base::RepeatingCallback<bool()> should_collect_slice_callback_;
 
   bool battery_saver_enabled_ = false;
+
+  // Helper to take CPU measurements for the UKM.
+  PageTimelineCPUMonitor cpu_monitor_;
 
   // WeakPtrFactory for the RepeatingTimer to call a method on this object.
   base::WeakPtrFactory<PageTimelineMonitor> weak_factory_{this};

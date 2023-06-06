@@ -23,49 +23,13 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
+#include "components/performance_manager/resource_attribution/attribution_impl_helpers.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
 namespace performance_manager {
 
 namespace {
-
-void AttributeResourceToFramesAndWorkers(
-    uint64_t resource_value,
-    ProcessNodeImpl* process_node,
-    void (FrameNodeImpl::*frame_node_setter)(uint64_t),
-    void (WorkerNodeImpl::*worker_node_setter)(uint64_t),
-    void (ProcessNodeImpl::*process_node_setter)(uint64_t)) {
-  CHECK(process_node_setter);
-  (process_node->*process_node_setter)(resource_value);
-
-  // Now attribute the resources of the process to its frames and workers
-  // Only renderers can host frames and workers.
-  if (process_node->process_type() != content::PROCESS_TYPE_RENDERER) {
-    return;
-  }
-
-  const size_t frame_and_worker_node_count =
-      process_node->frame_nodes().size() + process_node->worker_nodes().size();
-  if (frame_and_worker_node_count == 0) {
-    return;
-  }
-
-  // For now, equally split the process' resources among all of its frames and
-  // workers.
-  // TODO(anthonyvd): This should be more sophisticated, like attributing the
-  // RSS and PMF to each node proportionally to its V8 heap size.
-  const uint64_t resource_estimate_part =
-      resource_value / frame_and_worker_node_count;
-  CHECK(frame_node_setter);
-  for (FrameNodeImpl* frame : process_node->frame_nodes()) {
-    (frame->*frame_node_setter)(resource_estimate_part);
-  }
-  CHECK(worker_node_setter);
-  for (WorkerNodeImpl* worker : process_node->worker_nodes()) {
-    (worker->*worker_node_setter)(resource_estimate_part);
-  }
-}
 
 // The process metrics refresh interval.
 constexpr base::TimeDelta kMetricsRefreshInterval = base::Minutes(2);
@@ -242,18 +206,20 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
       continue;
     }
 
-    // Attribute the RSS and PMF of the process to its frames and workers, also
-    // saving the total in the process node.
-    AttributeResourceToFramesAndWorkers(
-        process_dump_iter.os_dump().resident_set_kb, process_node,
-        &FrameNodeImpl::SetResidentSetKbEstimate,
-        &WorkerNodeImpl::SetResidentSetKbEstimate,
-        &ProcessNodeImpl::set_resident_set_kb);
-    AttributeResourceToFramesAndWorkers(
-        process_dump_iter.os_dump().private_footprint_kb, process_node,
+    // Equally split the RSS and PMF of the process to its frames and workers.
+    // TODO(anthonyvd): This should be more sophisticated, like attributing the
+    // RSS and PMF to each node proportionally to its V8 heap size.
+    uint64_t process_rss = process_dump_iter.os_dump().resident_set_kb;
+    process_node->set_resident_set_kb(process_rss);
+    resource_attribution::SplitResourceAmongFrameAndWorkerImpls(
+        process_rss, process_node, &FrameNodeImpl::SetResidentSetKbEstimate,
+        &WorkerNodeImpl::SetResidentSetKbEstimate);
+    uint64_t process_pmf = process_dump_iter.os_dump().private_footprint_kb;
+    process_node->set_private_footprint_kb(process_pmf);
+    resource_attribution::SplitResourceAmongFrameAndWorkerImpls(
+        process_pmf, process_node,
         &FrameNodeImpl::SetPrivateFootprintKbEstimate,
-        &WorkerNodeImpl::SetPrivateFootprintKbEstimate,
-        &ProcessNodeImpl::set_private_footprint_kb);
+        &WorkerNodeImpl::SetPrivateFootprintKbEstimate);
   }
 
   GraphImpl::FromGraph(graph_)
