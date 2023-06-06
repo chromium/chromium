@@ -114,7 +114,7 @@ HlsFallbackImplementation SelectHlsFallbackImplementation() {
   if (base::FeatureList::IsEnabled(kHlsPlayer)) {
     return HlsFallbackImplementation::kMediaPlayer;
   }
-  return kNone;
+  return HlsFallbackImplementation::kNone;
 #endif
 }
 
