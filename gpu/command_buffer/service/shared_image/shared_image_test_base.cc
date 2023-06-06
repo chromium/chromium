@@ -135,6 +135,10 @@ GrDirectContext* SharedImageTestBase::gr_context() {
   return context_state_->gr_context();
 }
 
+GrContextType SharedImageTestBase::gr_context_type() {
+  return context_state_->gr_context_type();
+}
+
 void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   gpu_preferences_.gr_context_type = context_type;
 
@@ -185,12 +189,12 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
       ,
       /*vulkan_context_provider=*/nullptr
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#if BUILDFLAG(SKIA_USE_METAL)
+#if BUILDFLAG(SKIA_USE_DAWN)
           ,
-      metal_context_provider_.get()
-#elif BUILDFLAG(SKIA_USE_DAWN)
-      ,
       /*metal_context_provider=*/nullptr, dawn_context_provider_.get()
+#elif BUILDFLAG(SKIA_USE_METAL)
+      ,
+      metal_context_provider_.get()
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
   );
 

@@ -50,6 +50,7 @@ class SharedImageTestBase : public testing::Test {
 
   bool use_passthrough() const;
   GrDirectContext* gr_context();
+  GrContextType gr_context_type();
 
   // Initializes `context_state_` for `context_type`. Expected to be called as
   // part of test SetUp(). Note this function can fail with an assertion error
