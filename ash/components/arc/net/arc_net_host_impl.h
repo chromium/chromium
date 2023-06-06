@@ -232,7 +232,10 @@ class ArcNetHostImpl : public KeyedService,
   // doing BFS over the device's root windows and its children.
   aura::Window* GetAppWindow(const std::string& package_name);
 
-  // Pass any Chrome flags into ARC.
+  // Pass any Chrome flags into ARC. This function may be empty depending on the
+  // current state of flags, i.e. if all Chrome->ARC flags have been launched
+  // and cleaned up, this method may not do anything. But we keep this around to
+  // keep the mojo file stable and decrease churn.
   void SetUpFlags();
 
   void CreateNetworkSuccessCallback(

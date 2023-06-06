@@ -679,12 +679,8 @@ struct ArcPingTestResult {
 enum Flag {
   [Default] UNKNOWN  = 0,
 
-  // Chrome Finch flag kEnableArcHostVpn. If true, ARC should start the
-  // ArcHostVpn service when a builtin VPN client is started. This flag value
-  // can be toggled at any time, but ARC will only use the latest value when a
-  // builtin VPN network is detected and sent to ARC as part of an
-  // ActiveNetworksChanged call.
-  ENABLE_ARC_HOST_VPN = 1,
+  // Launched and deprecated, b/257889534
+  DEPRECATED_ENABLE_ARC_HOST_VPN = 1,
 };
 
 // The band to start an AP on.

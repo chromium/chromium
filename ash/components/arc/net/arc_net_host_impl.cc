@@ -327,8 +327,8 @@ void ArcNetHostImpl::SetUpFlags() {
   if (!net_instance)
     return;
 
-  net_instance->SetUpFlag(arc::mojom::Flag::ENABLE_ARC_HOST_VPN,
-                          base::FeatureList::IsEnabled(arc::kEnableArcHostVpn));
+  // arc::mojom::Flag::DEPRECATE_ENABLE_ARC_HOST_VPN no longer passed to ARC,
+  // see b/257889534
 }
 
 void ArcNetHostImpl::OnConnectionClosed() {
