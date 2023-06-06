@@ -2903,7 +2903,6 @@ crbug.com/626703 [ Mac13 Release ] external/wpt/html/semantics/embedded-content/
 crbug.com/626703 [ Mac13-arm64 Release ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Pass Timeout ]
-crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Pass Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure Pass ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure Pass ]
 crbug.com/626703 external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint-parent.html [ Failure Pass ]
