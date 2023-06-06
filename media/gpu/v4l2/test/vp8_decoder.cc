@@ -514,11 +514,11 @@ Vp8Decoder::ParseResult Vp8Decoder::ReadNextFrame(
   return result ? Vp8Decoder::kOk : Vp8Decoder::kError;
 }
 
-VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
+VideoDecoder::Result Vp8Decoder::DecodeNextFrame(const int frame_number,
+                                                 std::vector<uint8_t>& y_plane,
                                                  std::vector<uint8_t>& u_plane,
                                                  std::vector<uint8_t>& v_plane,
-                                                 gfx::Size& size,
-                                                 const int frame_number) {
+                                                 gfx::Size& size) {
   Vp8FrameHeader frame_hdr{};
 
   Vp8Decoder::ParseResult parser_res = ReadNextFrame(frame_hdr);

@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
     std::vector<uint8_t> v_plane;
     gfx::Size size;
     const VideoDecoder::Result res =
-        dec->DecodeNextFrame(y_plane, u_plane, v_plane, size, i);
+        dec->DecodeNextFrame(i, y_plane, u_plane, v_plane, size);
     if (res == VideoDecoder::kEOStream) {
       LOG(INFO) << "End of stream.";
       break;

@@ -40,14 +40,14 @@ class H264Decoder : public VideoDecoder {
   static std::unique_ptr<H264Decoder> Create(
       const base::MemoryMappedFile& stream);
 
-  // Parses next frame from IVF stream and decodes the frame.  This method will
+  // Parses next frame from the input and decodes the frame. This method will
   // place the Y, U, and V values into the respective vectors and update the
   // size with the display area size of the decoded frame.
-  VideoDecoder::Result DecodeNextFrame(std::vector<uint8_t>& y_plane,
+  VideoDecoder::Result DecodeNextFrame(const int frame_number,
+                                       std::vector<uint8_t>& y_plane,
                                        std::vector<uint8_t>& u_plane,
                                        std::vector<uint8_t>& v_plane,
-                                       gfx::Size& size,
-                                       const int frame_number) override;
+                                       gfx::Size& size) override;
 
  private:
   H264Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -65,9 +65,9 @@ class H264Decoder : public VideoDecoder {
   // data which indicates the beginning of a new frame. Additionally
   // this initializes the decode parameter's dpb parameter from the DPB.
   VideoDecoder::Result StartNewFrame(
+      bool is_OUTPUT_queue_new,
       H264SliceMetadata* slice_metadata,
-      v4l2_ctrl_h264_decode_params* v4l2_decode_param,
-      bool is_OUTPUT_queue_new);
+      v4l2_ctrl_h264_decode_params* v4l2_decode_param);
 
   // Finishes frame processing for the current decoded frame. Performs decoded
   // ref picture marking process as defined in section 8.2.5. Finally, using

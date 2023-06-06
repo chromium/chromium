@@ -52,11 +52,11 @@ class VideoDecoder {
   // Decoders implement this. The function writes the next displayed picture
   // into the output plane buffers |y_plane|, |u_plane|, and |v_plane|. |size|
   // is the visible picture size.
-  virtual Result DecodeNextFrame(std::vector<uint8_t>& y_plane,
+  virtual Result DecodeNextFrame(const int frame_number,
+                                 std::vector<uint8_t>& y_plane,
                                  std::vector<uint8_t>& u_plane,
                                  std::vector<uint8_t>& v_plane,
-                                 gfx::Size& size,
-                                 const int frame_number) = 0;
+                                 gfx::Size& size) = 0;
 
   // Handles dynamic resolution change with new resolution parsed from frame
   // header.

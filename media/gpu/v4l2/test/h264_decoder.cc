@@ -584,9 +584,9 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
 }
 
 VideoDecoder::Result H264Decoder::StartNewFrame(
+    bool is_OUTPUT_queue_new,
     H264SliceMetadata* slice_metadata,
-    v4l2_ctrl_h264_decode_params* v4l2_decode_param,
-    bool is_OUTPUT_queue_new) {
+    v4l2_ctrl_h264_decode_params* v4l2_decode_param) {
   const H264PPS* pps = parser_->GetPPS(curr_slice_hdr_->pic_parameter_set_id);
   const H264SPS* sps = parser_->GetSPS(pps->seq_parameter_set_id);
 
@@ -657,7 +657,7 @@ void H264Decoder::ProcessNextFrame() {
     CreateOUTPUTQueue(kDriverCodecFourcc);
   }
 
-  StartNewFrame(&slice_metadata, &v4l2_decode_param, is_OUTPUT_queue_new);
+  StartNewFrame(is_OUTPUT_queue_new, &slice_metadata, &v4l2_decode_param);
   SetupDecodeParams(*curr_slice_hdr_, slice_metadata, &v4l2_decode_param);
 
   const int pps_id = curr_slice_hdr_->pic_parameter_set_id;
@@ -946,11 +946,11 @@ std::set<uint32_t> H264Decoder::GetReusableReferenceSlots(
   return reusable_buffer_slots;
 }
 
-VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
+VideoDecoder::Result H264Decoder::DecodeNextFrame(const int frame_number,
+                                                  std::vector<uint8_t>& y_plane,
                                                   std::vector<uint8_t>& u_plane,
                                                   std::vector<uint8_t>& v_plane,
-                                                  gfx::Size& size,
-                                                  const int frame_number) {
+                                                  gfx::Size& size) {
   // If this is the start of the Decoder, initialize Decoder state.
   if (!parser_) {
     InitializeDecoderLogic();
