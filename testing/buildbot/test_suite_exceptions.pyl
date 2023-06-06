@@ -3889,9 +3889,6 @@
   },
   'system_webview_wpt': {
     'modifications': {
-      'android-pie-arm64-wpt-rel-non-cq': {
-        'experiment_percentage': 100,
-      },
       'android-webview-pie-x86-wpt-fyi-rel': {
         'args': [
           '--use-upstream-wpt',

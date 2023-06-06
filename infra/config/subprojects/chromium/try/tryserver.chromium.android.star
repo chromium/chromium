@@ -404,11 +404,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-pie-arm64-wpt-rel-non-cq",
-    mirrors = ["ci/android-pie-arm64-wpt-rel-non-cq"],
-)
-
-try_.builder(
     name = "android-chrome-pie-x86-wpt-fyi-rel",
     mirrors = ["ci/android-chrome-pie-x86-wpt-fyi-rel"],
 )

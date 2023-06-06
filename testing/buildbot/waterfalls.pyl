@@ -1156,17 +1156,6 @@
         },
         'os_type': 'android',
       },
-      'android-pie-arm64-wpt-rel-non-cq': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'system_webview_wpt',
-        },
-        'os_type': 'android',
-      },
       'android-webview-12-x64-dbg-tests': {
         'mixins': [
           '12-x64-emulator',
