@@ -91,7 +91,8 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 
   // Only valid top frame navigations are considered.
   if (!navigation_handle || !navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInPrimaryMainFrame()) {
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
     base::UmaHistogramEnumeration(
         kPrivacySandboxPromptHelperEventHistogram,
         SettingsPrivacySandboxPromptHelperEvent::kNonTopFrameNavigation);
