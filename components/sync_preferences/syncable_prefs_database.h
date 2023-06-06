@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -15,16 +16,26 @@ namespace sync_preferences {
 // This class represents the metadata corresponding to a syncable preference.
 class SyncablePrefMetadata {
  public:
-  SyncablePrefMetadata(int syncable_pref_id, syncer::ModelType model_type);
+  SyncablePrefMetadata(int syncable_pref_id,
+                       syncer::ModelType model_type,
+                       bool is_history_opt_in_required = false);
   // Returns the unique ID corresponding to the syncable preference.
   int syncable_pref_id() const { return syncable_pref_id_; }
   // Returns the model type of the pref, i.e. PREFERENCES, PRIORITY_PREFERENCES,
   // OS_PREFERENCES or OS_PRIORITY_PREFERENCES.
   syncer::ModelType model_type() const { return model_type_; }
 
+  // Returns whether the pref requires history opt-in to be synced.
+  bool is_history_opt_in_required() const {
+    // TODO(crbug.com/1448000): Remove once db is populated.
+    NOTREACHED() << "Database is not populated correctly yet";
+    return is_history_opt_in_required_;
+  }
+
  private:
   int syncable_pref_id_;
   syncer::ModelType model_type_;
+  bool is_history_opt_in_required_;
 };
 
 // This class provides an interface to define the list of syncable
