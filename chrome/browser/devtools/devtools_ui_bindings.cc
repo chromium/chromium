@@ -1324,6 +1324,23 @@ void DevToolsUIBindings::DispatchProtocolMessageFromDevToolsFrontend(
       this, base::as_bytes(base::make_span(message)));
 }
 
+void DevToolsUIBindings::RecordCountHistogram(const std::string& name,
+                                              int sample,
+                                              int min,
+                                              int exclusive_max,
+                                              int buckets) {
+  if (!frontend_host_) {
+    return;
+  }
+
+  if (!(min <= sample && sample < exclusive_max && buckets >= 3)) {
+    frontend_host_->BadMessageReceived();
+    return;
+  }
+
+  base::UmaHistogramCustomCounts(name, sample, min, exclusive_max, buckets);
+}
+
 void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
                                                    int sample,
                                                    int boundary_value) {

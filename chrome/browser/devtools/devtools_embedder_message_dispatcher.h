@@ -91,6 +91,11 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void GetSyncInformation(DispatchCallback callback) = 0;
     virtual void DispatchProtocolMessageFromDevToolsFrontend(
         const std::string& message) = 0;
+    virtual void RecordCountHistogram(const std::string& name,
+                                      int sample,
+                                      int min,
+                                      int exclusive_max,
+                                      int buckets) = 0;
     virtual void RecordEnumeratedHistogram(const std::string& name,
                                            int sample,
                                            int boundary_value) = 0;

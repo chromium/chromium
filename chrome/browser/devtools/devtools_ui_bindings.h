@@ -166,6 +166,11 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void OpenNodeFrontend() override;
   void DispatchProtocolMessageFromDevToolsFrontend(
       const std::string& message) override;
+  void RecordCountHistogram(const std::string& name,
+                            int sample,
+                            int min,
+                            int exclusive_max,
+                            int buckets) override;
   void RecordEnumeratedHistogram(const std::string& name,
                                  int sample,
                                  int boundary_value) override;
