@@ -68,10 +68,11 @@ class ForwardingModelTypeStore : public ModelTypeStore {
 
 // static
 std::unique_ptr<ModelTypeStore>
-ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type) {
+ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type,
+                                                   StorageType storage_type) {
   std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
       blocking_store(new BlockingModelTypeStoreImpl(
-                         type, StorageType::kUnspecified,
+                         type, storage_type,
                          ModelTypeStoreBackend::CreateInMemoryForTest()),
                      base::OnTaskRunnerDeleter(
                          base::SequencedTaskRunner::GetCurrentDefault()));
@@ -80,7 +81,7 @@ ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type) {
   // let keep memory sanitizers happy.
   ANNOTATE_LEAKING_OBJECT_PTR(blocking_store.get());
   return std::make_unique<ModelTypeStoreImpl>(
-      type, StorageType::kUnspecified, std::move(blocking_store),
+      type, storage_type, std::move(blocking_store),
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 

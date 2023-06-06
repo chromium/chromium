@@ -281,7 +281,8 @@ absl::optional<ModelError>
 BlockingModelTypeStoreImpl::DeleteAllDataAndMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return backend_->DeleteDataAndMetadataForPrefix(
-      GetModelTypeLowerCaseRootTag(model_type_));
+      base::StrCat({GetStorageTypePrefix(storage_type_),
+                    GetModelTypeLowerCaseRootTag(model_type_)}));
 }
 
 // static
