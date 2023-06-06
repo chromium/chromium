@@ -2184,7 +2184,8 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   if (AXObject::HasARIAOwns(element))
     HandleAttributeChangedWithCleanLayout(html_names::kAriaOwnsAttr, element);
 
-  MaybeNewRelationTarget(*node, Get(node));
+  AXObject* obj = Get(node);
+  MaybeNewRelationTarget(*node, obj);
 
   // Even if the node or parent are ignored, an ancestor may need to include
   // descendants of the attached node, thus ChildrenChangedWithCleanLayout()
@@ -2206,6 +2207,12 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
       HTMLImageElement* primary_image_element = map->ImageElement();
       if (node != primary_image_element) {
         ChildrenChangedWithCleanLayout(SafeGet(primary_image_element));
+      } else if (AXObject* ax_previous_parent = GetAXImageForMap(*map)) {
+        if (ax_previous_parent != obj) {
+          ChildrenChangedWithCleanLayout(ax_previous_parent->GetNode(),
+                                         ax_previous_parent);
+          ax_previous_parent->ClearChildren();
+        }
       }
     }
   }
