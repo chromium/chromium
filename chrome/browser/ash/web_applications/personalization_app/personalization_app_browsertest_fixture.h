@@ -5,21 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
 
-#include <memory>
-
-#include "ash/wallpaper/test_wallpaper_image_downloader.h"
+#include "chrome/browser/ash/web_applications/personalization_app/test_personalization_app_webui_provider.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
 namespace ash::personalization_app {
-
-class TestPersonalizationAppWebUIProvider
-    : public TestChromeWebUIControllerFactory::WebUIProvider {
- public:
-  std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
-                                                     const GURL& url) override;
-};
 
 class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
  public:
@@ -37,7 +28,7 @@ class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
 
  private:
   TestChromeWebUIControllerFactory test_factory_;
-  TestPersonalizationAppWebUIProvider test_web_ui_provider_;
+  TestPersonalizationAppWebUIProvider test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
       scoped_controller_factory_registration_{&test_factory_};
 };

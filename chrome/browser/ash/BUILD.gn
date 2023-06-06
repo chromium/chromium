@@ -4569,6 +4569,8 @@ static_library("test_support") {
     "wallpaper_handlers/test_wallpaper_fetcher_delegate.h",
     "web_applications/personalization_app/personalization_app_browsertest_fixture.cc",
     "web_applications/personalization_app/personalization_app_browsertest_fixture.h",
+    "web_applications/personalization_app/test_personalization_app_webui_provider.cc",
+    "web_applications/personalization_app/test_personalization_app_webui_provider.h",
   ]
   allow_circular_includes_from = [
     "//chrome/test:test_support",
