@@ -7072,6 +7072,21 @@
             ]
         }
     ],
+    "IOSFeedSignedOutViewDemotion": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Feed_View_Demotion",
+                    "enable_features": [
+                        "EnableSignedOutViewDemotion"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFeedSyncPromoFastFollows": [
         {
             "platforms": [
