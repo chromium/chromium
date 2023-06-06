@@ -417,6 +417,7 @@ SkiaOutputDeviceDCompPresenter::SkiaOutputDeviceDCompPresenter(
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps = 1;
   capabilities_.renderer_allocates_images = true;
+  capabilities_.supports_viewporter = true;
 }
 
 SkiaOutputDeviceDCompPresenter::~SkiaOutputDeviceDCompPresenter() = default;
