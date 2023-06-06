@@ -144,7 +144,8 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
         FastCheckoutAutofillProfile newSelection = profiles[0];
 
         // Populate all model entries.
-        ModelList profileItems = new ModelList();
+        ModelList profileItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
+        profileItems.clear();
         for (FastCheckoutAutofillProfile profile : profiles) {
             if (previousSelection != null
                     && profile.getGUID().equals(previousSelection.getGUID())) {
@@ -168,7 +169,6 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                                     .log();
                         })));
 
-        mModel.set(FastCheckoutProperties.PROFILE_MODEL_LIST, profileItems);
         setSelectedAutofillProfile(newSelection);
     }
 
@@ -188,8 +188,8 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
             if (item.type != DetailItemType.PROFILE) {
                 continue;
             }
-            boolean isSelected = selectedProfile.getGUID().equals(
-                    item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE).getGUID());
+            boolean isSelected = selectedProfile.equals(
+                    item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE));
             boolean wasSelected = item.model.get(AutofillProfileItemProperties.IS_SELECTED);
             item.model.set(AutofillProfileItemProperties.IS_SELECTED, isSelected);
             if (isSelected) {
@@ -224,8 +224,8 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
         FastCheckoutCreditCard newSelection = creditCards[0];
 
         // Populate all model entries.
-        ModelList cardItems = new ModelList();
-
+        ModelList cardItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
+        cardItems.clear();
         for (FastCheckoutCreditCard card : creditCards) {
             if (previousSelection != null && card.getGUID().equals(previousSelection.getGUID())) {
                 newSelection = card;
@@ -249,7 +249,6 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                                     .log();
                         })));
 
-        mModel.set(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST, cardItems);
         setSelectedCreditCard(newSelection);
     }
 
@@ -270,8 +269,8 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
             if (item.type != DetailItemType.CREDIT_CARD) {
                 continue;
             }
-            boolean isSelected = selectedCreditCard.getGUID().equals(
-                    item.model.get(CreditCardItemProperties.CREDIT_CARD).getGUID());
+            boolean isSelected =
+                    selectedCreditCard.equals(item.model.get(CreditCardItemProperties.CREDIT_CARD));
             boolean wasSelected = item.model.get(CreditCardItemProperties.IS_SELECTED);
             item.model.set(CreditCardItemProperties.IS_SELECTED, isSelected);
             if (isSelected) {
