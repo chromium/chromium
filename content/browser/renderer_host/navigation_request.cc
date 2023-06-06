@@ -4827,13 +4827,42 @@ void NavigationRequest::OnStartChecksComplete(
   // there is no client security state for top-level navigations, which mainly
   // means that Private Network Access checks are skipped for such requests.
   //
+  // For fenced frames, document fetch initiator can only be the parent. Fenced
+  // frames can only be navigated in two ways:
+  // 1. Directly by their parent, and never by another frame at a distance via
+  // `window.location` or `window.open`; in this case the `ClientSecurityState`
+  // needs to come from the parent.
+  // 2. By themselves; in this case the `ClientSecurityState` needs to come
+  // from the initiator. However, currently the support for getting the
+  // initator's client security state has not been implemented yet. The one from
+  // its embedder/parent is used instead. Fenced frame always has an outer
+  // document, `GetParentFrameOrOuterDocument()` will never be nullptr.
+  //
+  // NOTE: For embedder initiated fenced frame navigation that is subject to
+  // private network access checks:
+  // 1. The preflight request is sent with an opaque origin: "Origin: null".
+  // See: `FencedFrame::Navigate()`.
+  // 2. The credentials mode of the preflight request is "include". This
+  // prevents response header `Access-Control-Allow-Origin: '*'` from working.
+  // The response header must explicitly specify the origin.
+  // 3. However, we cannot know the origin because of 1.
+  // 4. It is also unsafe to respond to the preflight with response header
+  // `Access-Control-Allow-Origin: 'null'`. See:
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+  //
+  // This implies there is a limitation for fenced frame that sends a preflight
+  // request because of private network access. Fenced frame embedder
+  // initiated private network access always fails.
+  //
   // TODO(https://crbug.com/1291252): Use the client security state of the
   // navigation initiator instead.
   //
   // TODO(https://crbug.com/1129326): Figure out the UX story for main-frame
   // navigations, then revisit the exception made in that case.
   network::mojom::ClientSecurityStatePtr client_security_state = nullptr;
-  RenderFrameHostImpl* parent = GetParentFrame();
+  RenderFrameHostImpl* parent = (frame_tree_node()->IsFencedFrameRoot())
+                                    ? GetParentFrameOrOuterDocument()
+                                    : GetParentFrame();
   if (parent) {
     client_security_state = parent->BuildClientSecurityState();
 
