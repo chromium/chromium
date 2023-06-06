@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_style.h"
 
-#include "ui/base/pointer/touch_ui_controller.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -14,11 +14,8 @@ namespace {
 // the tab.
 constexpr int kGM2SeparatorThickness = 1;
 constexpr int kChromeRefreshSeparatorThickness = 2;
-
-// Returns the height of the separator between tabs.
-int GetSeparatorHeight() {
-  return ui::TouchUiController::Get()->touch_ui() ? 24 : 20;
-}
+// TODO (1451400): This constant should be in LayoutConstants.
+constexpr int kChromeRefreshSeparatorHeight = 16;
 
 class GM2TabStyle : public TabStyle {
  public:
@@ -67,7 +64,8 @@ int GM2TabStyle::GetDragHandleExtension(int height) const {
 }
 
 gfx::Size GM2TabStyle::GetSeparatorSize() const {
-  return gfx::Size(kGM2SeparatorThickness, GetSeparatorHeight());
+  return gfx::Size(kGM2SeparatorThickness,
+                   GetLayoutConstant(TAB_SEPARATOR_HEIGHT));
 }
 
 gfx::Size GM2TabStyle::GetPreviewImageSize() const {
@@ -103,7 +101,8 @@ int ChromeRefresh2023TabStyle::GetBottomCornerRadius() const {
 }
 
 gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
-  return gfx::Size(kChromeRefreshSeparatorThickness, GetSeparatorHeight());
+  return gfx::Size(kChromeRefreshSeparatorThickness,
+                   kChromeRefreshSeparatorHeight);
 }
 
 int ChromeRefresh2023TabStyle::GetContentsHorizontalInsetSize() const {

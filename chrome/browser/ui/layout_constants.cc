@@ -86,6 +86,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 12 : 16;
     case TAB_HEIGHT:
       return (touch_ui ? 41 : 34) + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+    case TAB_SEPARATOR_HEIGHT:
+      // TODO (1451400): ChromeRefresh2023 needs different values for this
+      // constant.
+      return touch_ui ? 24 : 20;
     case TAB_PRE_TITLE_PADDING:
       return 8;
     case TAB_STACK_DISTANCE:

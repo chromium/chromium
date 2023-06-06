@@ -98,6 +98,9 @@ enum LayoutConstant {
   // drawn as a 1-px line flush with the bottom of the tab's topmost DIP.
   TAB_HEIGHT,
 
+  // The height of a separator in the tabstrip.
+  TAB_SEPARATOR_HEIGHT,
+
   // Padding before the tab title.
   TAB_PRE_TITLE_PADDING,
 
