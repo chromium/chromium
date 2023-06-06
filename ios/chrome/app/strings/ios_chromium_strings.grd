@@ -404,7 +404,7 @@ Things to consider:
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE" desc="The title for the UIAlert that redirects the user to iOS' application settings for Chrome.">
           Allow Chromium notifications to get price drop alerts
       </message>
-      <message name="IDS_IOS_PRODUCT_NAME" desc="The Chrome application name">
+      <message name="IDS_IOS_PRODUCT_NAME" desc="The Chrome application name" translateable="false">
         Chromium
       </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_EMPTY_MESSAGE" desc="To use the Other Devices section of the Recent Tabs view, a user must be signed in and activate Tabs synchronization on multiple devices. This message is shown in this section when the user is signed in and has activated Tabs synchronization only on this device.">

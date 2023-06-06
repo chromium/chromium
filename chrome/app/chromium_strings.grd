@@ -293,10 +293,10 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           </message>
         </then>
         <else>
-          <message name="IDS_PRODUCT_NAME" desc="The Chromium application name">
+          <message name="IDS_PRODUCT_NAME" desc="The Chrome application name" translateable="false">
             Chromium
           </message>
-          <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chromium application short name.">
+          <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome application short name." translateable="false">
             Chromium
           </message>
         </else>
@@ -461,7 +461,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium may not function correctly because it is no longer supported on this Linux distribution
         </message>
       </if>
-      <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu.">
+      <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu." translateable="false">
         Chromium
       </message>
       <!-- Hung Browser Detector -->
@@ -539,7 +539,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
       <!-- Crash Recovery Dialog -->
-      <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes.">
+      <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes." translateable="false">
         Chromium
       </message>
       <if expr="is_win">
@@ -555,7 +555,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PASSWORD_MANAGER_ONBOARDING_DETAILS_C" desc="The explanation text that is shown below the title in the password manager onboarding dialog.">
         Chromium lets you know if your passwords are ever compromised
       </message>
-      <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble.">
+      <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble." translateable="false">
         Chromium
       </message>
       <message name="IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE" desc="The text of the Google Password Manager links displayed on Password Manager bubbles footer when the credentials are stored only locally.">
@@ -867,7 +867,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <if expr="is_macosx">
-        <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome.">
+        <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome." translateable="false">
           Chromium
         </message>
         <message name="IDS_HELPER_NAME" desc="The helper application's name.  Should contain the Chrome application name (IDS_PRODUCT_NAME). Example: Google Chrome Helper.">
@@ -883,7 +883,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- Chrome sign-in page -->
-      <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page">
+      <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page" translateable="false">
         Chromium
       </message>
 
@@ -1653,7 +1653,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <!-- ChromiumUpdater Strings -->
       <if expr="is_win">
-        <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name">
+        <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name" translateable="false">
           Chromium
         </message>
         <message name="IDS_NO_UPDATE_RESPONSE" desc="Updater response for no updates when handling install result.">
