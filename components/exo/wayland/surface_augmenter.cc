@@ -21,11 +21,11 @@
 
 namespace exo {
 namespace wayland {
+
 namespace {
 
 // A property key containing a boolean set to true if a surface augmenter is
-// associated with with surface object.
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSurfaceHasAugmentedSurfaceKey, false)
+// associated with with subsurface object.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSubSurfaceHasAugmentedSubSurfaceKey, false)
 
 ////////////////////////////////////////////////////////////////////////////////

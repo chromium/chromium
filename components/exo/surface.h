@@ -85,6 +85,10 @@ extern const ui::ClassProperty<std::string*>* const kClientSurfaceIdKey;
 // component.
 extern const ui::ClassProperty<int32_t>* const kWindowSessionId;
 
+// A property key containing a boolean set to true if a surface augmenter is
+// associated with with surface object.
+extern const ui::ClassProperty<bool>* const kSurfaceHasAugmentedSurfaceKey;
+
 // This class represents a rectangular area that is displayed on the screen.
 // It has a location, size and pixel contents.
 class Surface final : public ui::PropertyHandler {

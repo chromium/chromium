@@ -75,6 +75,9 @@
 DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Surface*)
 
 namespace exo {
+
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSurfaceHasAugmentedSurfaceKey, false)
+
 namespace {
 
 // A property key containing the surface that is associated with
@@ -451,7 +454,12 @@ void Surface::AddSubSurface(Surface* sub_surface) {
   DCHECK(!sub_surface->window()->parent());
   sub_surface->window()->SetBounds(
       gfx::Rect(sub_surface->window()->bounds().size()));
-  window_->AddChild(sub_surface->window());
+
+  // As an optimization, don't add augmented subsurfaces's aura::Window to the
+  // tree.
+  if (!GetProperty(kSurfaceHasAugmentedSurfaceKey)) {
+    window_->AddChild(sub_surface->window());
+  }
 
   DCHECK(!ListContainsEntry(pending_sub_surfaces_, sub_surface));
   pending_sub_surfaces_.push_back(std::make_pair(sub_surface, gfx::PointF()));
@@ -481,7 +489,9 @@ void Surface::RemoveSubSurface(Surface* sub_surface) {
 
   if (sub_surface->window()->IsVisible())
     sub_surface->window()->Hide();
-  window_->RemoveChild(sub_surface->window());
+  if (sub_surface->window()->parent() == window_.get()) {
+    window_->RemoveChild(sub_surface->window());
+  }
 
   DCHECK(ListContainsEntry(pending_sub_surfaces_, sub_surface));
   pending_sub_surfaces_.erase(
@@ -1064,8 +1074,9 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         sub_surface->SetTrustedDamage(trusted_damage_);
         sub_surfaces_.push_back(sub_surface_entry);
         // Move sub-surface to its new position in the stack.
-        if (stacking_target)
+        if (stacking_target && sub_surface->window()->parent()) {
           window_->StackChildAbove(sub_surface->window(), stacking_target);
+        }
 
         // Stack next sub-surface above this sub-surface.
         stacking_target = sub_surface->window();
@@ -1728,7 +1739,12 @@ void Surface::UpdateContentSize() {
           1.0f / state_.basic_state.buffer_scale);
     }
 
-    window_->Show();
+    // Check that a window has a parent before showing it.
+    // For example, aura::Window associated with augmented subsurfaces don't
+    // have parents, because they are not part of the tree.
+    if (window_->parent()) {
+      window_->Show();
+    }
   } else {
     window_->Hide();
   }
