@@ -56,7 +56,7 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
         std::move(callback).Run(HlsDataSource::ReadStatusCodes::kError);
         return;
       }
-      size = std::min(size, range_->GetLength() - pos);
+      size = std::min(size, static_cast<size_t>(range_->GetLength() - pos));
       pos += range_->GetOffset();
     }
 
