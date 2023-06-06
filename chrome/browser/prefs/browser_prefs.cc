@@ -1638,7 +1638,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
-  webapps::InstallPromptPrefs::RegisterLocalPrefs(registry);
+  webapps::InstallPromptPrefs::RegisterProfilePrefs(registry);
 #else  // BUILDFLAG(IS_ANDROID)
   bookmarks_webui::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);

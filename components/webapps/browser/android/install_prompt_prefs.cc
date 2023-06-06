@@ -26,7 +26,7 @@ constexpr char kInstallPromptLastIgnoreTime[] =
 }  // anonymous namespace
 
 // static
-void InstallPromptPrefs::RegisterLocalPrefs(PrefRegistrySimple* registry) {
+void InstallPromptPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kInstallPromptDismissCount, 0);
   registry->RegisterTimePref(kInstallPromptLastDismissTime, base::Time());
   registry->RegisterIntegerPref(kInstallPromptIgnoreCount, 0);

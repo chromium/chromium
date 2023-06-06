@@ -16,7 +16,7 @@ class InstallPromptPrefsTest : public ::testing::Test {
  public:
   void SetUp() override {
     // user_prefs::UserPrefs::Set(browser_context(), &prefs_);
-    InstallPromptPrefs::RegisterLocalPrefs(prefs_.registry());
+    InstallPromptPrefs::RegisterProfilePrefs(prefs_.registry());
   }
 
   TestingPrefServiceSimple* prefs() { return &prefs_; }

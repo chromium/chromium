@@ -20,7 +20,7 @@ class InstallPromptPrefs {
   InstallPromptPrefs(const InstallPromptPrefs&) = delete;
   InstallPromptPrefs& operator=(const InstallPromptPrefs&) = delete;
 
-  static void RegisterLocalPrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   static void RecordInstallPromptDismissed(PrefService* pref_service,
                                            base::Time time);
