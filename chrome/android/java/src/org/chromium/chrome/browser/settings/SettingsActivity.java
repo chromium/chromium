@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
@@ -121,6 +122,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private ScrimCoordinator mScrim;
 
     private BottomSheetController mBottomSheetController;
+
+    private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier =
+            new OneshotSupplierImpl<>();
 
     @Nullable
     private UiConfig mUiConfig;
@@ -268,6 +272,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 () -> mScrim, (sheet) -> {}, getWindow(),
                 KeyboardVisibilityDelegate.getInstance(), () -> sheetContainer);
         // clang-format on
+
+        mBottomSheetControllerSupplier.set(mBottomSheetController);
     }
 
     // OnPreferenceStartFragmentCallback:
@@ -504,7 +510,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof PrivacyGuideFragment) {
             PrivacyGuideFragment pgFragment = (PrivacyGuideFragment) fragment;
-            pgFragment.setBottomSheetController(mBottomSheetController);
+            pgFragment.setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
             pgFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
             pgFragment.setSettingsLauncher(mSettingsLauncher);

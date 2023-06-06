@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
@@ -45,7 +46,7 @@ public class SafeBrowsingFragmentTest {
     @Mock
     private SafeBrowsingBridge.Natives mNativeMock;
     @Mock
-    private BottomSheetController mBottomSheetController;
+    private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
 
     private FragmentScenario mScenario;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtectionButton;
@@ -72,7 +73,8 @@ public class SafeBrowsingFragmentTest {
         mScenario.onFragment(fragment -> {
             mEnhancedProtectionButton = fragment.getView().findViewById(R.id.enhanced_option);
             mStandardProtectionButton = fragment.getView().findViewById(R.id.standard_option);
-            ((SafeBrowsingFragment) fragment).setBottomSheetController(mBottomSheetController);
+            ((SafeBrowsingFragment) fragment)
+                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         });
     }
 

@@ -1088,4 +1088,15 @@ public class PrivacyGuideFragmentTest {
         // card
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCookies"));
     }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    public void testBottomSheetControllerOnRecreate() {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+        mSettingsActivityTestRule.recreateActivity();
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
+        onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
+    }
 }

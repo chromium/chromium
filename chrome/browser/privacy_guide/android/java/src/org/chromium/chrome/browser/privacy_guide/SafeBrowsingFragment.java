@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -96,10 +97,14 @@ public class SafeBrowsingFragment extends Fragment
     private void displayBottomSheet(View sheetContent) {
         PrivacyGuideBottomSheetView bottomSheet = new PrivacyGuideBottomSheetView(sheetContent);
         // TODO(crbug.com/1287979): Re-enable animation once bug is fixed
-        mBottomSheetController.requestShowContent(bottomSheet, /* animate= */ false);
+        if (mBottomSheetController != null) {
+            mBottomSheetController.requestShowContent(bottomSheet, false);
+        }
     }
 
-    public void setBottomSheetController(BottomSheetController bottomSheetController) {
-        mBottomSheetController = bottomSheetController;
+    void setBottomSheetControllerSupplier(
+            OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
+        bottomSheetControllerSupplier.onAvailable(
+                (bottomSheetController) -> mBottomSheetController = bottomSheetController);
     }
 }
