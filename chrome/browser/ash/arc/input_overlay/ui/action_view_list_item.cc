@@ -27,6 +27,10 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
 
 ActionViewListItem::~ActionViewListItem() = default;
 
+void ActionViewListItem::OnActionUpdated() {
+  labels_view_->OnActionUpdated();
+}
+
 void ActionViewListItem::Init() {
   SetUseDefaultFillLayout(true);
   auto* container = AddChildView(std::make_unique<ash::RoundedContainer>());

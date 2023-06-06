@@ -549,8 +549,8 @@ void DisplayOverlayController::OnActionRemoved(Action* action) {
   input_mapping_view_->OnActionRemoved(action);
 }
 
-int DisplayOverlayController::GetInputMappingListSize() {
-  return input_mapping_view_->children().size();
+int DisplayOverlayController::GetTouchInjectorActionsSize() {
+  return touch_injector_->actions().size();
 }
 
 void DisplayOverlayController::AddTouchInjectorObserver(

@@ -83,7 +83,7 @@ void EditingList::Init() {
 
 bool EditingList::HasControls() const {
   DCHECK(controller_);
-  return controller_->GetInputMappingListSize() != 0;
+  return controller_->GetTouchInjectorActionsSize() != 0;
 }
 
 void EditingList::AddHeader(views::View* container) {
@@ -159,9 +159,8 @@ void EditingList::AddControlListContent(views::View* container) {
   // | ......                 |
   // --------------------------
   // TODO(b/270969479): Wrap |scroll_content| in a scroll view.
-  auto* scroll_content =
-      container->AddChildView(std::make_unique<views::View>());
-  scroll_content
+  scroll_content_ = container->AddChildView(std::make_unique<views::View>());
+  scroll_content_
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
           /*inside_border_insets=*/gfx::Insets(),
@@ -169,7 +168,7 @@ void EditingList::AddControlListContent(views::View* container) {
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   DCHECK(controller_);
   for (const auto& action : controller_->touch_injector()->actions()) {
-    scroll_content->AddChildView(
+    scroll_content_->AddChildView(
         std::make_unique<ActionViewListItem>(controller_, action.get()));
   }
 }
@@ -202,7 +201,14 @@ void EditingList::OnActionTypeChanged(const Action& action,
 }
 
 void EditingList::OnActionUpdated(const Action& action) {
-  NOTIMPLEMENTED();
+  DCHECK(scroll_content_);
+  for (auto* child : scroll_content_->children()) {
+    auto* list_item = static_cast<ActionViewListItem*>(child);
+    DCHECK(list_item);
+    if (list_item->action() == &action) {
+      list_item->OnActionUpdated();
+    }
+  }
 }
 
 }  // namespace arc::input_overlay

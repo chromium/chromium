@@ -42,6 +42,8 @@ class EditLabels : public views::View {
   EditLabels& operator=(const EditLabels&) = delete;
   ~EditLabels() override;
 
+  void OnActionUpdated();
+
  private:
   friend class EditLabelTest;
 

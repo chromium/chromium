@@ -78,7 +78,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // Remove the action view when removing |action|.
   void OnActionRemoved(Action* action);
 
-  int GetInputMappingListSize();
+  int GetTouchInjectorActionsSize();
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);
@@ -108,6 +108,7 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
   friend class EditingList;
+  friend class EditLabelTest;
   friend class EducationalView;
   friend class InputMappingView;
   friend class InputMenuView;

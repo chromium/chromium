@@ -370,7 +370,9 @@ void ButtonOptionsMenu::OnActionTypeChanged(const Action& action,
 }
 
 void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
-  NOTIMPLEMENTED();
+  if (action_ == &action) {
+    labels_view_->OnActionUpdated();
+  }
 }
 
 }  // namespace arc::input_overlay

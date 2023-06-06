@@ -36,6 +36,12 @@ void EditLabels::Init() {
   }
 }
 
+void EditLabels::OnActionUpdated() {
+  for (auto* label : labels_) {
+    label->OnActionUpdated();
+  }
+}
+
 void EditLabels::InitForActionTapKeyboard() {
   SetUseDefaultFillLayout(true);
   labels_.emplace_back(

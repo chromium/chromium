@@ -22,29 +22,6 @@
 #include "ui/views/controls/button/image_button_factory.h"
 
 namespace arc::input_overlay {
-namespace {
-
-// For the keys that are caught by display overlay, check if they are reserved
-// for special use.
-bool IsReservedDomCode(ui::DomCode code) {
-  switch (code) {
-    // Audio, brightness key events won't be caught by display overlay so no
-    // need to add them.
-    // Used for mouse lock.
-    case ui::DomCode::ESCAPE:
-    // Used for traversing the views, which is also required by Accessibility.
-    case ui::DomCode::TAB:
-    // Don't support according to UX requirement.
-    case ui::DomCode::BROWSER_BACK:
-    case ui::DomCode::BROWSER_FORWARD:
-    case ui::DomCode::BROWSER_REFRESH:
-      return true;
-    default:
-      return false;
-  }
-}
-
-}  // namespace
 
 ActionView::ActionView(Action* action,
                        DisplayOverlayController* display_overlay_controller)

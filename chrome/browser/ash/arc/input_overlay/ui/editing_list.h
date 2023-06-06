@@ -33,6 +33,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
   ~EditingList() override;
 
  private:
+  friend class EditLabelTest;
+
   void Init();
   bool HasControls() const;
 
@@ -56,6 +58,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void OnActionUpdated(const Action& action) override;
 
   raw_ptr<DisplayOverlayController> controller_;
+  // It wraps ActionViewListItem.
+  raw_ptr<views::View> scroll_content_;
 };
 
 }  // namespace arc::input_overlay

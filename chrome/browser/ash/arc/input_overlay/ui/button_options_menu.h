@@ -52,6 +52,8 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
   Action* action() const { return action_; }
 
  private:
+  friend class EditLabelTest;
+
   void Init();
 
   // Add UI components.
@@ -68,8 +70,8 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
   void OnMoveButtonPressed();
   void OnButtonLabelAssignmentPressed();
 
-  // View position calculation.
-  void CalculatePosition();
+  // View position calculation. Make it virtual for unit test.
+  virtual void CalculatePosition();
 
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;

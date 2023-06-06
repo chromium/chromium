@@ -28,8 +28,13 @@ class EditLabel : public views::LabelButton {
   EditLabel& operator=(const EditLabel&) = delete;
   ~EditLabel() override;
 
+  void OnActionUpdated();
+
  private:
+  friend class EditLabelTest;
+
   void Init();
+  void SetTextLabel(const std::u16string& text);
   std::u16string CalculateAccessibleName();
   bool IsInputUnbound();
 
@@ -40,6 +45,7 @@ class EditLabel : public views::LabelButton {
   // views::View:
   void OnFocus() override;
   void OnBlur() override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action> action_ = nullptr;

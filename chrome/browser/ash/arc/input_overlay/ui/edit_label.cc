@@ -34,6 +34,17 @@ EditLabel::EditLabel(DisplayOverlayController* controller,
 
 EditLabel::~EditLabel() = default;
 
+void EditLabel::OnActionUpdated() {
+  if (action_->GetCurrentDisplayedInput().input_sources() ==
+      InputSource::IS_NONE) {
+    SetTextLabel(kUnknownBind);
+  } else {
+    const auto& keys = action_->GetCurrentDisplayedInput().keys();
+    DCHECK(index_ < keys.size());
+    SetTextLabel(GetDisplayText(keys[index_]));
+  }
+}
+
 void EditLabel::Init() {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetPreferredSize(gfx::Size(32, 32));
@@ -47,15 +58,20 @@ void EditLabel::Init() {
   SetShowInkDropWhenHotTracked(false);
   SetHasInkDropActionOnClick(false);
 
-  const auto& keys = action_->GetCurrentDisplayedInput().keys();
-  if (index_ >= keys.size() || keys[index_] == ui::DomCode::NONE) {
-    SetText(kUnknownBind);
+  OnActionUpdated();
+}
+
+void EditLabel::SetTextLabel(const std::u16string& text) {
+  SetText(text);
+  SetAccessibleName(CalculateAccessibleName());
+
+  if (text == kUnknownBind) {
     SetToUnbound();
+  } else if (HasFocus()) {
+    SetToFocused();
   } else {
-    SetText(GetDisplayText(keys[index_]));
     SetToDefault();
   }
-  SetAccessibleName(CalculateAccessibleName());
 }
 
 std::u16string EditLabel::CalculateAccessibleName() {
@@ -71,7 +87,7 @@ bool EditLabel::IsInputUnbound() {
 void EditLabel::SetToDefault() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHighlightShape, /*corner_radius=*/8));
-  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kLegacyHeadline1,
+  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
                                 cros_tokens::kCrosSysOnPrimaryContainer);
   SetBorder(nullptr);
 }
@@ -79,7 +95,7 @@ void EditLabel::SetToDefault() {
 void EditLabel::SetToFocused() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHighlightShape, /*corner_radius=*/8));
-  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kLegacyHeadline1,
+  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
                                 cros_tokens::kCrosSysHighlightText);
   SetBorder(views::CreateThemedRoundedRectBorder(
       /*thickness=*/2, /*corner_radius=*/8, cros_tokens::kCrosSysPrimary));
@@ -88,7 +104,7 @@ void EditLabel::SetToFocused() {
 void EditLabel::SetToUnbound() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosRefError30, /*corner_radius=*/8));
-  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kLegacyHeadline1,
+  ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
                                 cros_tokens::kCrosRefError0);
   SetBorder(nullptr);
 }
@@ -111,6 +127,44 @@ void EditLabel::OnBlur() {
   } else {
     SetToDefault();
   }
+}
+
+bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
+  auto code = event.code();
+  std::u16string new_bind = GetDisplayText(code);
+  if (GetText() == new_bind ||
+      (!action_->support_modifier_key() &&
+       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
+      IsReservedDomCode(code)) {
+    return false;
+  }
+
+  SetTextLabel(new_bind);
+
+  std::unique_ptr<InputElement> input;
+  switch (action_->GetType()) {
+    case ActionType::TAP:
+      input = InputElement::CreateActionTapKeyElement(code);
+      break;
+    case ActionType::MOVE: {
+      const auto& input_binding = action_->GetCurrentDisplayedInput();
+      auto new_keys = input_binding.keys();
+      // If there is duplicated key in its own action, unset the key.
+      const int unassigned_index = input_binding.GetIndexOfKey(code);
+      if (unassigned_index != -1 && size_t(unassigned_index) != index_) {
+        new_keys[unassigned_index] = ui::DomCode::NONE;
+      }
+      // Set the new key.
+      new_keys[index_] = code;
+      input = InputElement::CreateActionMoveKeyElement(new_keys);
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+  DCHECK(input);
+  controller_->OnInputBindingChange(action_, std::move(input));
+  return true;
 }
 
 BEGIN_METADATA(EditLabel, views::LabelButton)

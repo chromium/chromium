@@ -4968,6 +4968,7 @@ source_set("unit_tests") {
     "arc/input_overlay/touch_id_manager_unittest.cc",
     "arc/input_overlay/touch_injector_unittest.cc",
     "arc/input_overlay/ui/action_view_unittest.cc",
+    "arc/input_overlay/ui/edit_label_unittest.cc",
     "arc/input_overlay/ui/menu_entry_view_unittest.cc",
     "arc/instance_throttle/arc_active_window_throttle_observer_unittest.cc",
     "arc/instance_throttle/arc_app_launch_throttle_observer_unittest.cc",

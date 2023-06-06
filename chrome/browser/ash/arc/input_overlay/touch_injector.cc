@@ -262,6 +262,17 @@ void TouchInjector::OnInputBindingChange(
   }
 
   target_action->PrepareToBindInput(std::move(input_element));
+
+  // For Beta version, there is no "Cancel" & "Reset to default" feature, so
+  // apply the pending change right away if there is change.
+  if (IsBeta()) {
+    if (overlapped_action) {
+      overlapped_action->BindPending();
+      NotifyActionUpdated(*overlapped_action);
+    }
+    target_action->BindPending();
+    NotifyActionUpdated(*target_action);
+  }
 }
 
 void TouchInjector::OnApplyPendingBinding() {
@@ -280,7 +291,10 @@ void TouchInjector::OnApplyPendingBinding() {
 }
 
 void TouchInjector::OnBindingSave() {
-  OnApplyPendingBinding();
+  // Pending is already applied for beta version.
+  if (!IsBeta()) {
+    OnApplyPendingBinding();
+  }
   if (display_overlay_controller_) {
     display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
   }

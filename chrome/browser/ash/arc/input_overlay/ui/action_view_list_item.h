@@ -27,7 +27,13 @@ class ActionViewListItem : public views::View {
   ActionViewListItem& operator=(const ActionViewListItem&) = delete;
   ~ActionViewListItem() override;
 
+  void OnActionUpdated();
+
+  Action* action() const { return action_; }
+
  private:
+  friend class EditLabelTest;
+
   void Init();
 
   raw_ptr<DisplayOverlayController> controller_;
