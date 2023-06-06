@@ -2642,6 +2642,70 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_PortBoundStatus) {
   }
 }
 
+// Test that domain cookies match any request url port.
+TEST(CanonicalCookieTest, IncludeForRequestURL_DomainCookiesPortMatch) {
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  CookieOptions options;
+  options.set_same_site_cookie_context(
+      CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+  CookieAccessParams params(CookieAccessSemantics::UNKNOWN,
+                            /*delegate_treats_url_as_trustworthy=*/false,
+                            CookieSamePartyStatus::kNoSamePartyEnforcement);
+
+  GURL url1("https://www.example.test:443/");
+  GURL url2("https://www.example.test:123/");
+
+  // Specify SameSite=Lax not because we care about SameSite in this test, but
+  // rather to prevent warnings that SameSite isn't specified.
+  auto host_cookie = CanonicalCookie::Create(
+      url1, "cookie=hostonly; SameSite=Lax", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */);
+
+  auto domain_cookie = CanonicalCookie::Create(
+      url1, "cookie=domain; SameSite=Lax; Domain=example.test", creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */);
+
+  // When the feature is disabled we shouldn't get any port mismatch warnings
+  // for domain cookies.
+  {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitAndDisableFeature(features::kEnablePortBoundCookies);
+
+    EXPECT_FALSE(host_cookie->IncludeForRequestURL(url1, options, params)
+                     .status.ShouldWarn());
+
+    EXPECT_FALSE(domain_cookie->IncludeForRequestURL(url1, options, params)
+                     .status.ShouldWarn());
+
+    EXPECT_TRUE(host_cookie->IncludeForRequestURL(url2, options, params)
+                    .status.HasWarningReason(
+                        CookieInclusionStatus::WARN_PORT_MISMATCH));
+
+    EXPECT_FALSE(domain_cookie->IncludeForRequestURL(url2, options, params)
+                     .status.ShouldWarn());
+  }
+  // When the feature is enabled domain cookies should match any url port.
+  {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitAndEnableFeature(features::kEnablePortBoundCookies);
+
+    EXPECT_TRUE(host_cookie->IncludeForRequestURL(url1, options, params)
+                    .status.IsInclude());
+
+    EXPECT_TRUE(domain_cookie->IncludeForRequestURL(url1, options, params)
+                    .status.IsInclude());
+
+    EXPECT_TRUE(host_cookie->IncludeForRequestURL(url2, options, params)
+                    .status.HasExclusionReason(
+                        CookieInclusionStatus::EXCLUDE_PORT_MISMATCH));
+
+    EXPECT_TRUE(domain_cookie->IncludeForRequestURL(url2, options, params)
+                    .status.IsInclude());
+  }
+}
+
 TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   GURL url("http://www.not-secure.com/foo");
   base::Time creation_time = base::Time::Now();

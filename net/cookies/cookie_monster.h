@@ -266,6 +266,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
                            CookiePortReadDiffersFromSetHistogram);
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest, IsCookieSentToSamePortThatSetIt);
 
+  // For FilterCookiesWithOptions domain shadowing.
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
+                           FilterCookiesWithOptionsExcludeShadowingDomains);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
+                           FilterCookiesWithOptionsWarnShadowingDomains);
+
   // Internal reasons for deletion, used to populate informative histograms
   // and to provide a public cause for onCookieChange notifications.
   //

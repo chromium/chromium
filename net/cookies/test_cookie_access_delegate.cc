@@ -49,6 +49,16 @@ bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
   return true;
 }
 
+// Returns true if `url` has the same scheme://eTLD+1 as `trustworthy_site_`.
+bool TestCookieAccessDelegate::ShouldTreatUrlAsTrustworthy(
+    const GURL& url) const {
+  if (SchemefulSite(url) == trustworthy_site_) {
+    return true;
+  }
+
+  return false;
+}
+
 absl::optional<FirstPartySetMetadata>
 TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& site,

@@ -1200,6 +1200,11 @@ void CookieMonster::FilterCookiesWithOptions(
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(url);
 
+  std::vector<std::pair<CanonicalCookie*, CookieAccessResult>>
+      cookies_and_access_results;
+  cookies_and_access_results.reserve(cookie_ptrs->size());
+  std::set<std::string> origin_cookie_names;
+
   for (CanonicalCookie* cookie_ptr : *cookie_ptrs) {
     // Filter out cookies that should not be included for a request to the
     // given |url|. HTTP only cookies are filtered depending on the passed
@@ -1211,41 +1216,94 @@ void CookieMonster::FilterCookiesWithOptions(
             delegate_treats_url_as_trustworthy,
             cookie_util::GetSamePartyStatus(*cookie_ptr, options,
                                             same_party_attribute_enabled_)});
+    cookies_and_access_results.emplace_back(cookie_ptr, access_result);
+
+    // Record the names of all origin cookies that would be included if both
+    // kEnablePortBoundCookies and kEnableSchemeBoundCookies are enabled.
+    //
+    // We DO want to record origin cookies that are being excluded for path
+    // reasons, so we'll remove any potential path exclusions.
+    CookieInclusionStatus status_copy = access_result.status;
+    status_copy.RemoveExclusionReason(
+        CookieInclusionStatus::EXCLUDE_NOT_ON_PATH);
+
+    bool exclusion_or_warning =
+        !status_copy.IsInclude() ||
+        status_copy.HasWarningReason(
+            CookieInclusionStatus::WARN_SCHEME_MISMATCH) ||
+        status_copy.HasWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
+
+    if (!exclusion_or_warning && cookie_ptr->IsHostCookie()) {
+      origin_cookie_names.insert(cookie_ptr->Name());
+    }
+  }
+
+  for (auto& cookie_result : cookies_and_access_results) {
+    CanonicalCookie* cookie_ptr = cookie_result.first;
+    CookieAccessResult& access_result = cookie_result.second;
+
+    // We want to collect these metrics for cookies that would be included
+    // without considering shadowing domain cookies.
+    if (access_result.status.IsInclude()) {
+      int destination_port = url.EffectiveIntPort();
+
+      if (IsLocalhost(url)) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Cookie.Port.Read.Localhost",
+            ReducePortRangeForCookieHistogram(destination_port));
+        UMA_HISTOGRAM_ENUMERATION(
+            "Cookie.Port.ReadDiffersFromSet.Localhost",
+            IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
+                                            cookie_ptr->SourceScheme()));
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Cookie.Port.Read.RemoteHost",
+            ReducePortRangeForCookieHistogram(destination_port));
+        UMA_HISTOGRAM_ENUMERATION(
+            "Cookie.Port.ReadDiffersFromSet.RemoteHost",
+            IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
+                                            cookie_ptr->SourceScheme()));
+      }
+
+      if (cookie_ptr->IsDomainCookie()) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Cookie.Port.ReadDiffersFromSet.DomainSet",
+            IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
+                                            cookie_ptr->SourceScheme()));
+      }
+    }
+
+    // Filter out any domain `cookie_ptr` which are shadowing origin cookies.
+    // Don't apply domain shadowing exclusion/warning reason if `cookie_ptr` is
+    // already being excluded/warned for scheme matching reasons (Note, domain
+    // cookies match every port so they'll never get excluded/warned for port
+    // reasons).
+    bool scheme_mismatch =
+        access_result.status.HasExclusionReason(
+            CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH) ||
+        access_result.status.HasWarningReason(
+            CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+
+    if (cookie_ptr->IsDomainCookie() && !scheme_mismatch &&
+        origin_cookie_names.count(cookie_ptr->Name())) {
+      if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+        access_result.status.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_SHADOWING_DOMAIN);
+      } else {
+        access_result.status.AddWarningReason(
+            CookieInclusionStatus::WARN_SHADOWING_DOMAIN);
+      }
+    }
 
     if (!access_result.status.IsInclude()) {
-      if (options.return_excluded_cookies())
+      if (options.return_excluded_cookies()) {
         excluded_cookies->push_back({*cookie_ptr, access_result});
+      }
       continue;
     }
 
-    if (options.update_access_time())
+    if (options.update_access_time()) {
       InternalUpdateCookieAccessTime(cookie_ptr, current_time);
-
-    int destination_port = url.EffectiveIntPort();
-
-    if (IsLocalhost(url)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Cookie.Port.Read.Localhost",
-          ReducePortRangeForCookieHistogram(destination_port));
-      UMA_HISTOGRAM_ENUMERATION(
-          "Cookie.Port.ReadDiffersFromSet.Localhost",
-          IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
-                                          cookie_ptr->SourceScheme()));
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Cookie.Port.Read.RemoteHost",
-          ReducePortRangeForCookieHistogram(destination_port));
-      UMA_HISTOGRAM_ENUMERATION(
-          "Cookie.Port.ReadDiffersFromSet.RemoteHost",
-          IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
-                                          cookie_ptr->SourceScheme()));
-    }
-
-    if (cookie_ptr->IsDomainCookie()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Cookie.Port.ReadDiffersFromSet.DomainSet",
-          IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
-                                          cookie_ptr->SourceScheme()));
     }
 
     included_cookies->push_back({*cookie_ptr, access_result});

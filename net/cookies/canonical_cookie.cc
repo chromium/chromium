@@ -1108,10 +1108,11 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
 
   int url_port = url.EffectiveIntPort();
   CHECK(url_port != url::PORT_INVALID);
-  // The cookie's source port either must match the url's port or be
-  // PORT_UNSPECIFIED.
-  bool port_matches =
-      url_port == source_port_ || source_port_ == url::PORT_UNSPECIFIED;
+  // The cookie's source port either must match the url's port, be
+  // PORT_UNSPECIFIED, or the cookie must be a domain cookie.
+  bool port_matches = url_port == source_port_ ||
+                      source_port_ == url::PORT_UNSPECIFIED || IsDomainCookie();
+
   // Or if the url is trustworthy, we'll also match 443 (in order to get secure
   // cookies).
   bool trustworthy_and_443 =

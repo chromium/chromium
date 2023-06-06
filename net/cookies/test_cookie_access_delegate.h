@@ -21,8 +21,6 @@
 
 namespace net {
 
-class SchemefulSite;
-
 // CookieAccessDelegate for testing. You can set the return value for a given
 // cookie_domain (modulo any leading dot). Calling GetAccessSemantics() will
 // then return the given value, or UNKNOWN if you haven't set one.
@@ -41,6 +39,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
+  bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override;
   absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
       const SchemefulSite& site,
       const SchemefulSite* top_frame_site,
@@ -93,6 +92,8 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
   base::flat_map<SchemefulSite, FirstPartySetEntry> first_party_sets_;
   bool invoke_callbacks_asynchronously_ = false;
+  SchemefulSite trustworthy_site_ =
+      SchemefulSite(GURL("http://trustworthysitefortestdelegate.example"));
 };
 
 }  // namespace net

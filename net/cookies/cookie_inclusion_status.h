@@ -106,6 +106,9 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_PORT_MISMATCH = 23,
     // Cookie's source_scheme did not match the scheme of the request.
     EXCLUDE_SCHEME_MISMATCH = 24,
+    // Cookie is a domain cookie and has the same name as an origin cookie on
+    // this origin.
+    EXCLUDE_SHADOWING_DOMAIN = 25,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
@@ -235,6 +238,10 @@ class NET_EXPORT CookieInclusionStatus {
     // "Secure" attribute. A trustworthy url may be setting this cookie, but we
     // can't confirm/deny that at the time of creation.
     WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME = 17,
+    // Cookie is a domain cookie and has the same name as an origin cookie on
+    // this origin. This cookie would be blocked if shadowing protection was
+    // enabled.
+    WARN_SHADOWING_DOMAIN = 18,
 
     // This should be kept last.
     NUM_WARNING_REASONS

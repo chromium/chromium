@@ -228,6 +228,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
            {EXCLUDE_DOMAIN_NON_ASCII, "EXCLUDE_DOMAIN_NON_ASCII"},
            {EXCLUDE_PORT_MISMATCH, "EXCLUDE_PORT_MISMATCH"},
            {EXCLUDE_SCHEME_MISMATCH, "EXCLUDE_SCHEME_MISMATCH"},
+           {EXCLUDE_SHADOWING_DOMAIN, "EXCLUDE_SHADOWING_DOMAIN"},
        }) {
     if (HasExclusionReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});
@@ -271,6 +272,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
            {WARN_SCHEME_MISMATCH, "WARN_SCHEME_MISMATCH"},
            {WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME,
             "WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME"},
+           {WARN_SHADOWING_DOMAIN, "WARN_SHADOWING_DOMAIN"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

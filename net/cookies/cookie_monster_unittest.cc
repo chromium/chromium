@@ -5606,6 +5606,660 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
       cm->SiteHasCookieInOtherPartition(site, /*partition_key=*/absl::nullopt));
 }
 
+// Test that domain cookies which shadow origin cookies are excluded when scheme
+// binding is enabled.
+TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  options.set_return_excluded_cookies();
+
+  auto CookieListsMatch = [](const CookieAccessResultList& actual,
+                             const CookieList& expected) {
+    if (actual.size() != expected.size()) {
+      return false;
+    }
+
+    for (size_t i = 0; i < actual.size(); i++) {
+      if (!actual[i].cookie.IsEquivalent(expected[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // We only exclude shadowing domain cookies when scheme binding is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies},
+      {net::features::kEnablePortBoundCookies});
+
+  std::vector<CanonicalCookie*> cookie_ptrs;
+  CookieAccessResultList included;
+  CookieAccessResultList excluded;
+
+  auto reset = [&cookie_ptrs, &included, &excluded]() {
+    cookie_ptrs.clear();
+    included.clear();
+    excluded.clear();
+  };
+
+  auto origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  auto origin_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  auto domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Shadowing domain cookie after the origin cookie.
+  cookie_ptrs = {origin_cookie1.get(), origin_cookie2.get(),
+                 domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie1, *origin_cookie2}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1}));
+  reset();
+
+  // Shadowing domain cookie before the origin cookie.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie2, *origin_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1}));
+  reset();
+
+  auto domain_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Multiple different shadowing domain cookies.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie2, *origin_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto domain_cookie3 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo3=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Non-shadowing domain cookie should be included.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get(),
+                 domain_cookie3.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(
+      included, {*origin_cookie2, *origin_cookie1, *domain_cookie3}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto sub_domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=subdomain; Domain=" + https_www_foo_.host(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // If there are multiple domain cookies that shadow the same cookie, they
+  // should all be excluded.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie2, *origin_cookie1}));
+  EXPECT_TRUE(
+      CookieListsMatch(excluded, {*domain_cookie1, *sub_domain_cookie1}));
+  reset();
+
+  // Domain cookies may shadow each other.
+  cookie_ptrs = {domain_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(
+      CookieListsMatch(included, {*domain_cookie1, *sub_domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {}));
+  reset();
+
+  auto path_origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=pathorigin; Path=/bar", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Origin cookies on different paths may not be shadowed, even if the
+  // origin cookie wouldn't be included on this request.
+  cookie_ptrs = {path_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {}));
+  EXPECT_TRUE(
+      CookieListsMatch(excluded, {*path_origin_cookie1, *domain_cookie1}));
+  reset();
+
+  auto insecure_origin_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(), "foo1=insecureorigin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  EXPECT_EQ(insecure_origin_cookie1->SourceScheme(),
+            CookieSourceScheme::kNonSecure);
+
+  // Origin cookies that are excluded due to scheme binding don't affect domain
+  // cookies.
+  cookie_ptrs = {insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*insecure_origin_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  auto insecure_domain_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(),
+      "foo1=insecuredomain; Domain=" + http_www_foo_.domain(), creation_time,
+      server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Domain cookies that are excluded due to scheme binding shouldn't also be
+  // exclude because of shadowing.
+  cookie_ptrs = {origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*insecure_domain_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  // If both domain and origin cookie are excluded due to scheme binding then
+  // domain cookie shouldn't get shadowing exclusion.
+  cookie_ptrs = {insecure_origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {}));
+  EXPECT_TRUE(CookieListsMatch(
+      excluded, {*insecure_origin_cookie1, *insecure_domain_cookie1}));
+  EXPECT_TRUE(
+      excluded[1].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  cm->SetCookieAccessDelegate(std::make_unique<TestCookieAccessDelegate>());
+
+  CookieURLHelper http_www_trustworthy =
+      CookieURLHelper("http://www.trustworthysitefortestdelegate.example");
+  CookieURLHelper https_www_trustworthy =
+      CookieURLHelper("https://www.trustworthysitefortestdelegate.example");
+
+  auto trust_origin_cookie1 =
+      CanonicalCookie::Create(http_www_trustworthy.url(), "foo1=trustorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+
+  auto secure_trust_domain_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo1=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_domain_cookie2 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo2=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Securely set domain cookies are excluded when shadowing trustworthy-ly set
+  // origin cookies.
+  cookie_ptrs = {trust_origin_cookie1.get(), secure_trust_domain_cookie1.get(),
+                 secure_trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(
+      included, {*trust_origin_cookie1, *secure_trust_domain_cookie2}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*secure_trust_domain_cookie1}));
+  reset();
+
+  auto trust_domain_cookie1 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo1=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto trust_domain_cookie2 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo2=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_origin_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(), "foo1=securetrustorigin", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Trustworthy-ly set domain cookies are excluded when shadowing securely set
+  // origin cookies.
+  cookie_ptrs = {secure_trust_origin_cookie1.get(), trust_domain_cookie1.get(),
+                 trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(
+      included, {*secure_trust_origin_cookie1, *trust_domain_cookie2}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*trust_domain_cookie1}));
+  reset();
+
+  auto port_origin_cookie1 =
+      CanonicalCookie::Create(https_www_foo_.url(), "foo1=differentportorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+  port_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have warnings due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(
+      CookieListsMatch(included, {*port_origin_cookie1, *domain_cookie1}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_PORT_MISMATCH));
+  reset();
+
+  auto port_insecure_origin_cookie1 =
+      std::make_unique<CanonicalCookie>(*insecure_origin_cookie1);
+  port_insecure_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have excluded due to scheme binding and have a port
+  // binding warning don't affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_PORT_MISMATCH}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  // Enable port binding to test with port exclusions.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies,
+       net::features::kEnablePortBoundCookies},
+      {});
+
+  // Origin cookies that are excluded due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*port_origin_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  reset();
+
+  // Origin cookies that are excluded due to scheme and port binding don't
+  // affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*port_insecure_origin_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH,
+           CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  reset();
+}
+
+// Test that domain cookies which shadow origin cookies have warnings when
+// scheme binding is disabled.
+TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  options.set_return_excluded_cookies();
+
+  auto CookieListsMatch = [](const CookieAccessResultList& actual,
+                             const std::vector<CanonicalCookie*>& expected) {
+    if (actual.size() != expected.size()) {
+      return false;
+    }
+
+    for (size_t i = 0; i < actual.size(); i++) {
+      if (!actual[i].cookie.IsEquivalent(*expected[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Confirms that of all the cookies in `actual` only the ones also in
+  // `expected` have WARN_SHADOWING_DOMAIN.
+  auto DomainCookiesHaveWarnings =
+      [](const CookieAccessResultList& actual,
+         const std::vector<CanonicalCookie>& expected) {
+        std::map<CanonicalCookie, CookieInclusionStatus> cookie_result_map;
+        for (const auto& cookie_result : actual) {
+          cookie_result_map.insert(
+              {cookie_result.cookie, cookie_result.access_result.status});
+        }
+
+        for (const auto& cookie : expected) {
+          // This is a touch hacky but will always work because if the
+          // cookie_result_map doesn't contain `cookie` it'll create a default
+          // entry with an empty status which will always fail the check. I.e.:
+          // return false.
+          if (!cookie_result_map[cookie].HasWarningReason(
+                  CookieInclusionStatus::WARN_SHADOWING_DOMAIN)) {
+            return false;
+          }
+
+          // Remove cookies that were part of `expected`.
+          cookie_result_map.erase(cookie);
+        }
+
+        // If any of the remaining cookies have the warning, return false.
+        for (const auto& item : cookie_result_map) {
+          if (item.second.HasWarningReason(
+                  CookieInclusionStatus::WARN_SHADOWING_DOMAIN)) {
+            return false;
+          }
+        }
+
+        return true;
+      };
+
+  // We only apply warnings to shadowing domain cookies when scheme binding is
+  // disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {net::features::kEnableSchemeBoundCookies,
+           net::features::kEnablePortBoundCookies});
+
+  std::vector<CanonicalCookie*> cookie_ptrs;
+  CookieAccessResultList included;
+  CookieAccessResultList excluded;
+
+  auto reset = [&cookie_ptrs, &included, &excluded]() {
+    cookie_ptrs.clear();
+    included.clear();
+    excluded.clear();
+  };
+
+  auto origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  auto origin_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  auto domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Shadowing domain cookie after the origin cookie.
+  cookie_ptrs = {origin_cookie1.get(), origin_cookie2.get(),
+                 domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*domain_cookie1}));
+  reset();
+
+  // Shadowing domain cookie before the origin cookie.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*domain_cookie1}));
+  reset();
+
+  auto domain_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Multiple different shadowing domain cookies.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(
+      DomainCookiesHaveWarnings(included, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto domain_cookie3 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo3=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Non-shadowing domain cookie shouldn't have a warning.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get(),
+                 domain_cookie3.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(
+      DomainCookiesHaveWarnings(included, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto sub_domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=subdomain; Domain=" + https_www_foo_.host(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // If there are multiple domain cookies that shadow the same cookie, they
+  // should all have a warning.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(
+      included, {*domain_cookie1, *sub_domain_cookie1}));
+  reset();
+
+  // Domain cookies may shadow each other.
+  cookie_ptrs = {domain_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  reset();
+
+  auto path_origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=pathorigin; Path=/bar", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Origin cookies on different paths may not be shadowed, even if the
+  // origin cookie wouldn't be included on this request.
+  cookie_ptrs = {path_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {domain_cookie1.get()}));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*domain_cookie1}));
+  reset();
+
+  auto insecure_origin_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(), "foo1=insecureorigin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  EXPECT_EQ(insecure_origin_cookie1->SourceScheme(),
+            CookieSourceScheme::kNonSecure);
+
+  // Origin cookies that have a warning for scheme binding don't affect domain
+  // cookies.
+  cookie_ptrs = {insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+  reset();
+
+  auto insecure_domain_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(),
+      "foo1=insecuredomain; Domain=" + http_www_foo_.domain(), creation_time,
+      server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Domain cookies that are excluded due to scheme binding shouldn't also get a
+  // shadow warning.
+  cookie_ptrs = {origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(
+      included[1].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_SCHEME_MISMATCH}));
+  reset();
+
+  // If both domain and origin cookie have warnings due to scheme binding then
+  // domain cookie shouldn't get shadowing warning.
+  cookie_ptrs = {insecure_origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+  EXPECT_TRUE(
+      included[1].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_SCHEME_MISMATCH}));
+  reset();
+
+  cm->SetCookieAccessDelegate(std::make_unique<TestCookieAccessDelegate>());
+
+  CookieURLHelper http_www_trustworthy =
+      CookieURLHelper("http://www.trustworthysitefortestdelegate.example");
+  CookieURLHelper https_www_trustworthy =
+      CookieURLHelper("https://www.trustworthysitefortestdelegate.example");
+
+  auto trust_origin_cookie1 =
+      CanonicalCookie::Create(http_www_trustworthy.url(), "foo1=trustorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+
+  auto secure_trust_domain_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo1=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_domain_cookie2 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo2=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Securely set domain cookie has warning when shadowing trustworthy-ly set
+  // origin cookies.
+  cookie_ptrs = {trust_origin_cookie1.get(), secure_trust_domain_cookie1.get(),
+                 secure_trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(
+      DomainCookiesHaveWarnings(included, {*secure_trust_domain_cookie1}));
+  reset();
+
+  auto trust_domain_cookie1 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo1=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto trust_domain_cookie2 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo2=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_origin_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(), "foo1=securetrustorigin", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Trustworthy-ly set domain cookies are excluded when shadowing securely set
+  // origin cookies.
+  cookie_ptrs = {secure_trust_origin_cookie1.get(), trust_domain_cookie1.get(),
+                 trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*trust_domain_cookie1}));
+  reset();
+
+  auto port_origin_cookie1 =
+      CanonicalCookie::Create(https_www_foo_.url(), "foo1=differentportorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+  port_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have warnings due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_PORT_MISMATCH));
+  reset();
+
+  auto port_insecure_origin_cookie1 =
+      std::make_unique<CanonicalCookie>(*insecure_origin_cookie1);
+  port_insecure_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have warnings due to scheme and port binding don't
+  // affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(
+      included[0].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_SCHEME_MISMATCH,
+           CookieInclusionStatus::WARN_PORT_MISMATCH}));
+  reset();
+
+  // Enable port binding to test with port exclusions.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies},
+      {net::features::kEnableSchemeBoundCookies});
+
+  // Origin cookies that are excluded due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {domain_cookie1.get()}));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {port_origin_cookie1.get()}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  reset();
+
+  // Origin cookies that are excluded due to port binding and have a scheme
+  // binding warning don't affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {domain_cookie1.get()}));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {port_insecure_origin_cookie1.get()}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  EXPECT_TRUE(excluded[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+  reset();
+}
+
 // Tests which use this class verify the expiry date clamping behavior when
 // kClampCookieExpiryTo400Days is enabled. This caps expiry dates on new/updated
 // cookies to max of 400 days, but does not affect previously stored cookies.

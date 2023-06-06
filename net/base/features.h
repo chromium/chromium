@@ -388,7 +388,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAddressTrackerLinuxIsProxied);
 // Enables binding of cookies to the port that originally set them by default.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnablePortBoundCookies);
 
-// Enables binding of cookies to the scheme that originally set them.
+// Enables binding of cookies to the scheme that originally set them. Also
+// enables domain cookie shadowing protection.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
 
 // Enables enabling third-party cookie blocking from the command line.
