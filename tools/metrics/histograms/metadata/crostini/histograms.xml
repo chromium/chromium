@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="CrostiniState">
+  <variant name="ConfigureContainer" summary="configuring the container"/>
   <variant name="CreateContainer" summary="creating container"/>
   <variant name="CreateDiskImage" summary="creating disk image"/>
   <variant name="InstallImageLoader" summary="installing component or DLC"/>

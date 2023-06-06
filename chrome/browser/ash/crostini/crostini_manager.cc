@@ -178,7 +178,7 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
       break;
     case mojom::InstallerState::kConfigureContainer:
       name = "Crostini.RestarterTimeInState2.ConfigureContainer";
-      return;
+      break;
   }
   base::UmaHistogramCustomTimes(name, duration, base::Milliseconds(10),
                                 base::Hours(6), 50);
