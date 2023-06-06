@@ -25,7 +25,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
@@ -35,6 +37,10 @@
 namespace drivefs::pinning {
 namespace {
 
+using ash::FakeSpacedClient;
+using ash::FakeUserDataAuthClient;
+using ash::SpacedClient;
+using ash::UserDataAuthClient;
 using base::BindOnce;
 using base::OnceCallback;
 using base::RunLoop;
@@ -207,13 +213,13 @@ class DriveFsPinManagerTest : public testing::Test {
   }
 
   void SetUp() override {
-    ash::UserDataAuthClient::InitializeFake();
-    ash::SpacedClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
+    SpacedClient::InitializeFake();
   }
 
   void TearDown() override {
-    ash::UserDataAuthClient::Shutdown();
-    ash::SpacedClient::Shutdown();
+    UserDataAuthClient::Shutdown();
+    SpacedClient::Shutdown();
   }
 
   PinManager::SpaceGetter GetSpaceGetter() {
@@ -2189,7 +2195,7 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace3) {
   manager.SetCompletionCallback(completion_callback.Get());
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
-  ash::FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(200 << 20);
+  FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(200 << 20);
   run_loop.Run();
 
   const Progress progress = manager.GetProgress();
@@ -2200,66 +2206,87 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace3) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
-// Tests what happens when there is enough free space during the periodic check.
-TEST_F(DriveFsPinManagerTest, OnFreeSpaceRetrieved2) {
+TEST_F(DriveFsPinManagerTest, OnSpaceUpdate) {
   PinManager manager(profile_path_, mount_path_, &drivefs_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
-  manager.OnFreeSpaceRetrieved2(int64_t(2) << 30);
 
-  const Progress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, Stage::kSyncing);
-  EXPECT_EQ(progress.free_space, int64_t(2) << 30);
-  EXPECT_EQ(progress.required_space, 0);
-  EXPECT_EQ(progress.pinned_bytes, 0);
-  EXPECT_EQ(progress.pinned_files, 0);
+  SpacedClient::Observer::SpaceEvent event;
+  const SpacedClient::Observer::SpaceEvent& cevent = event;
+
+  event.set_free_space_bytes(int64_t(2) << 30);
+  manager.OnSpaceUpdate(cevent);
+  EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
+  EXPECT_EQ(manager.progress_.free_space, int64_t(2) << 30);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  EXPECT_FALSE(manager.spaced_);
+  FakeSpacedClient::Get()->set_connected(true);
+
+  // Transition to kNotEnoughSpace.
+  event.set_free_space_bytes(int64_t(1) << 30);
+  manager.OnSpaceUpdate(cevent);
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotEnoughSpace);
+  EXPECT_EQ(manager.progress_.free_space, int64_t(1) << 30);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_TRUE(manager.spaced_);
+
+  // Still in kNotEnoughSpace.
+  event.clear_free_space_bytes();
+  manager.OnSpaceUpdate(cevent);
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotEnoughSpace);
+  EXPECT_EQ(manager.progress_.free_space, 0);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_TRUE(manager.spaced_);
+
+  // Go back to enough space.
+  event.set_free_space_bytes(int64_t(2) << 30);
+  manager.OnSpaceUpdate(cevent);
+  EXPECT_EQ(manager.progress_.stage, Stage::kSuccess);
+  EXPECT_EQ(manager.progress_.free_space, int64_t(2) << 30);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_FALSE(manager.spaced_);
 
   manager.progress_.stage = Stage::kStopped;
 }
 
-// Tests that the space check is actually periodic.
-TEST_F(DriveFsPinManagerTest, PeriodicSpaceCheck) {
-  CompletionCallback completion_callback;
-  RunLoop run_loop;
-
-  // Fall back on the periodic space check instead of using the DBus signals.
-  ash::FakeSpacedClient::Get()->set_connected(false);
-
-  EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
-      .WillOnce(RunOnceCallback<1>(int64_t(4) << 30))  // 4 GB is enough space
-      .WillOnce(RunOnceCallback<1>(int64_t(3) << 30))  // 3 GB is enough space
-      .WillOnce(
-          RunOnceCallback<1>(int64_t(2100) << 20))  // 2100 MB is enough space
-      .WillOnce(RunOnceCallback<1>(400 << 20));     // 400 MB is not enough
-
+TEST_F(DriveFsPinManagerTest, StartMonitoringSpace) {
   PinManager manager(profile_path_, mount_path_, &drivefs_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
-
-  // Check the original time interval.
-  EXPECT_EQ(manager.space_check_interval_, base::Seconds(5));
-
-  // But use a much shorter interval for this test.
-  manager.space_check_interval_ = base::Milliseconds(100);
-
-  manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(completion_callback.Get());
   manager.progress_.stage = Stage::kSyncing;
+  EXPECT_FALSE(manager.spaced_);
 
-  manager.CheckFreeSpace();
+  // If SpacedClient is not connected, then StartMonitoringSpace should fail.
+  FakeSpacedClient::Get()->set_connected(false);
+  EXPECT_FALSE(manager.StartMonitoringSpace());
+  EXPECT_FALSE(manager.spaced_);
 
-  // There should be 3 iterations of 100 ms each.
-  base::ElapsedTimer timer;
-  run_loop.Run();
-  EXPECT_GE(timer.Elapsed(), base::Milliseconds(300));
+  // If SpacedClient is connected, then StartMonitoringSpace should succeed.
+  FakeSpacedClient::Get()->set_connected(true);
+  EXPECT_TRUE(manager.StartMonitoringSpace());
+  EXPECT_TRUE(manager.spaced_);
 
-  const Progress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, Stage::kNotEnoughSpace);
-  EXPECT_EQ(progress.free_space, 400 << 20);
-  EXPECT_EQ(progress.required_space, 0);
-  EXPECT_EQ(progress.pinned_bytes, 0);
-  EXPECT_EQ(progress.pinned_files, 0);
+  // StartMonitoringSpace called when it is already monitoring.
+  EXPECT_TRUE(manager.StartMonitoringSpace());
+  EXPECT_TRUE(manager.spaced_);
+
+  // Stop monitoring.
+  manager.StopMonitoringSpace();
+  EXPECT_FALSE(manager.spaced_);
+
+  // Stop monitoring when it is already stopped.
+  manager.StopMonitoringSpace();
+  EXPECT_FALSE(manager.spaced_);
+
+  manager.progress_.stage = Stage::kStopped;
 }
 
 TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {

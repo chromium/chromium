@@ -255,8 +255,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // manager accordingly.
   void SetOnline(bool online);
 
-  // Periodically check for free space.
-  // Used in testing to override the 60s delay in space checks.
+  // Check for free space.
   void CheckFreeSpace();
 
  private:
@@ -429,10 +428,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // `spaced` daemon client.
   ash::SpacedClient* spaced_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
-  // Interval at which the free space is periodically checked.
-  base::TimeDelta space_check_interval_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      base::Seconds(5);
-
   SpaceGetter space_getter_ GUARDED_BY_CONTEXT(sequence_checker_);
   CompletionCallback completion_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -476,8 +471,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CannotGetFreeSpace2);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace2);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace3);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFreeSpaceRetrieved2);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, PeriodicSpaceCheck);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSpaceUpdate);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, StartMonitoringSpace);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, SetOnline);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnTransientError);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnError);

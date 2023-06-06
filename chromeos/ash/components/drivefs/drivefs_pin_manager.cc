@@ -668,6 +668,16 @@ void PinManager::CheckFreeSpace() {
       base::BindOnce(&PinManager::OnFreeSpaceRetrieved2, GetWeakPtr()));
 }
 
+void PinManager::LowDiskSpace(const user_data_auth::LowDiskSpace& event) {
+  LOG(ERROR) << "LowDiskSpace: " << HumanReadableSize(event.disk_free_bytes());
+  OnFreeSpaceRetrieved2(event.disk_free_bytes());
+}
+
+void PinManager::OnSpaceUpdate(const SpaceEvent& event) {
+  VLOG(1) << "OnSpaceUpdate: " << HumanReadableSize(event.free_space_bytes());
+  OnFreeSpaceRetrieved2(event.free_space_bytes());
+}
+
 void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -681,22 +691,13 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
 
   if (progress_.HasEnoughFreeSpace()) {
     if (progress_.stage == Stage::kNotEnoughSpace) {
-      return Complete(Stage::kSuccess);
+      // Transition from kNotEnoughSpace to kSuccess.
+      Complete(Stage::kSuccess);
+    } else {
+      NotifyProgress();
     }
-
-    NotifyProgress();
-  } else {
-    if (progress_.stage != Stage::kNotEnoughSpace) {
-      return Complete(Stage::kNotEnoughSpace);
-    }
-  }
-
-  // Periodically retrieve the disk space only if the `StatefulDiskSpaceUpdate`
-  // signal has not been connected successfully.
-  if (!spaced_) {
-    SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
-        space_check_interval_);
+  } else if (progress_.stage != Stage::kNotEnoughSpace) {
+    Complete(Stage::kNotEnoughSpace);
   }
 }
 
@@ -997,21 +998,20 @@ void PinManager::StartPinning() {
       FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
       kStalledFileInterval);
 
-  if (!StartMonitoringSpace()) {
-    CheckFreeSpace();
-  }
-
+  CheckFreeSpace();
+  StartMonitoringSpace();
   PinSomeFiles();
 }
 
 bool PinManager::StartMonitoringSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (spaced_) {
-    LOG(ERROR) << "SpacedClient observer is already registered";
+    VLOG(1) << "SpacedClient::Observer is already registered";
     return true;
   }
 
   SpacedClient* const spaced = SpacedClient::Get();
+  DCHECK(spaced);
   if (!spaced->IsConnected()) {
     LOG(ERROR) << "SpacedClient is not connected";
     return false;
@@ -1019,7 +1019,7 @@ bool PinManager::StartMonitoringSpace() {
 
   spaced_ = spaced;
   spaced_->AddObserver(this);
-  VLOG(1) << "Added SpacedClient observer";
+  VLOG(1) << "Added SpacedClient::Observer";
   return true;
 }
 
@@ -1028,7 +1028,7 @@ void PinManager::StopMonitoringSpace() {
   if (spaced_) {
     spaced_->RemoveObserver(this);
     spaced_ = nullptr;
-    VLOG(1) << "Removed SpacedClient observer";
+    VLOG(1) << "Removed SpacedClient::Observer";
   }
 }
 
@@ -1369,17 +1369,6 @@ void PinManager::NotifyProgress() {
   for (Observer& observer : observers_) {
     observer.OnProgress(progress_);
   }
-}
-
-void PinManager::LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) {
-  LOG(ERROR) << "Got LowDiskSpace "
-             << HumanReadableSize(status.disk_free_bytes());
-  OnFreeSpaceRetrieved2(status.disk_free_bytes());
-}
-
-void PinManager::OnSpaceUpdate(const SpaceEvent& event) {
-  VLOG(1) << "OnSpaceUpdate: " << HumanReadableSize(event.free_space_bytes());
-  OnFreeSpaceRetrieved2(event.free_space_bytes());
 }
 
 void PinManager::CheckStalledFiles() {
