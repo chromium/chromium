@@ -333,7 +333,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
         ACMatchClassification::URL);
   }
 
-  match.description = info.title();
+  match.description = AutocompleteMatch::SanitizeString(info.title());
   auto description_terms =
       FindTermMatches(autocomplete_input_.text(), match.description);
   match.description_class = ClassifyTermMatches(

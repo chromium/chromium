@@ -1150,7 +1150,7 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
       ACMatchClassification::URL | ACMatchClassification::MATCH,
       ACMatchClassification::URL);
 
-  match.description = info.title();
+  match.description = AutocompleteMatch::SanitizeString(info.title());
   match.description_class =
       ClassifyDescription(params.input.text(), match.description);
 
