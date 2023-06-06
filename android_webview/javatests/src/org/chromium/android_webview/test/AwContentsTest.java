@@ -1503,6 +1503,7 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1451828")
     @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackground() throws Throwable {
         mActivityTestRule.startBrowserProcess();
