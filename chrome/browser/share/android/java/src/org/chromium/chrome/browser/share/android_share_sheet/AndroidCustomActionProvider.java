@@ -152,8 +152,10 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 .setDisableForMultiWindow(true)
                 .setOnClickCallback((view) -> {
                     mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
+                    // Do not add link to the screenshot for Android share sheet since there's no
+                    // custom action to remove the link from image.
                     LongScreenshotsCoordinator coordinator =
-                            LongScreenshotsCoordinator.create(mActivity, mTabProvider.get(), mUrl,
+                            LongScreenshotsCoordinator.create(mActivity, mTabProvider.get(), "",
                                     mChromeOptionShareCallback, mBottomSheetController, null);
                     coordinator.captureScreenshot();
                 })
