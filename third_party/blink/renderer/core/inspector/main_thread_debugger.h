@@ -81,6 +81,8 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
   void ExceptionThrown(ExecutionContext*, ErrorEvent*);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MainThreadDebuggerMultipleMainFramesTest, Allow);
+
   void ReportConsoleMessage(ExecutionContext*,
                             mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,

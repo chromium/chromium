@@ -1160,6 +1160,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDirectCompositorThreadIpc);
 // restriction is lifted and wildcards are supported in the port and scheme.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCSPWildcardsInPermissionsPolicies);
 
+// Allows running DevTools main thread debugger even when a renderer process
+// hosts multiple main frames.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAllowDevToolsMainThreadDebuggerForMutipleMainFrames);
+
 }  // namespace features
 }  // namespace blink
 

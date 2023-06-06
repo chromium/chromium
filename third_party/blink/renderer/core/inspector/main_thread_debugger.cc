@@ -32,8 +32,10 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/synchronization/lock.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -65,6 +67,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -334,7 +337,35 @@ void MainThreadDebugger::endEnsureAllContextsInGroup(int context_group_id) {
 
 bool MainThreadDebugger::canExecuteScripts(int context_group_id) {
   LocalFrame* frame = WeakIdentifierMap<LocalFrame>::Lookup(context_group_id);
-  return frame->DomWindow()->CanExecuteScripts(kNotAboutToExecuteScript);
+  if (!frame->DomWindow()->CanExecuteScripts(kNotAboutToExecuteScript)) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAllowDevToolsMainThreadDebuggerForMutipleMainFrames)) {
+    return true;
+  }
+
+  size_t num_main_frames = 0;
+  for (auto& page : Page::OrdinaryPages()) {
+    if (page->MainFrame() && page->MainFrame()->IsOutermostMainFrame()) {
+      ++num_main_frames;
+    }
+  }
+
+  if (num_main_frames > 1) {
+    String message = String(
+        "DevTools debugger is disabled because it is attached to a process "
+        "that hosts multiple top-level frames, where DevTools debugger doesn't "
+        "work properly. Please enable chrome://flags/#disable-process-reuse "
+        "and restart the browser to enable debugger.");
+    frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kError, message));
+    return false;
+  }
+
+  return true;
 }
 
 void MainThreadDebugger::runIfWaitingForDebugger(int context_group_id) {
