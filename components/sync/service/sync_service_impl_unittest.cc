@@ -1530,5 +1530,22 @@ TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
                                     /*expected_count=*/1);
 }
 
+TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {
+  SignIn();
+  CreateService();
+  InitializeForNthSync();
+  ASSERT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+
+  // Mimic entering Sync paused state.
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  ASSERT_EQ(SyncService::TransportState::PAUSED,
+            service()->GetTransportState());
+
+  // Expect the error status when Sync is paused.
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kError);
+}
+
 }  // namespace
 }  // namespace syncer

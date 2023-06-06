@@ -1867,11 +1867,17 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
   // Download status doesn't make sense for non-real data types.
   CHECK(IsRealDataType(type));
 
-  if (!IsLocalSyncEnabled() &&
-      !auth_manager_->IsActiveAccountInfoFullyLoaded()) {
-    DVLOG(1) << "Waiting for refresh tokens to be loaded from the disk";
-    // GetDisableReasons() won't be empty until then.
-    return ModelTypeDownloadStatus::kWaitingForUpdates;
+  if (!IsLocalSyncEnabled()) {
+    if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
+      DVLOG(1) << "Waiting for refresh tokens to be loaded from the disk";
+      // GetDisableReasons() won't be empty until then.
+      return ModelTypeDownloadStatus::kWaitingForUpdates;
+    }
+
+    if (auth_manager_->IsSyncPaused()) {
+      DVLOG(1) << "Error download status because sync is paused";
+      return ModelTypeDownloadStatus::kError;
+    }
   }
 
   // TODO(crbug.com/1425026): check whether this works when local sync is
