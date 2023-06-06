@@ -194,6 +194,7 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
           std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
           views::style::STYLE_SECONDARY));
   installation_progress_separator_->SetText(u"|");
+  installation_progress_separator_->SetAccessibleRole(ax::mojom::Role::kNone);
   installation_progress_separator_->SetProperty(views::kMarginsKey,
                                                 gfx::Insets::TLBR(0, 8, 0, 8));
   installation_progress_eta_label_ =
