@@ -14,7 +14,6 @@ import android.os.StrictMode;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -345,7 +344,7 @@ public class CronetTestRule implements TestRule {
     public static void prepareTestStorage(Context context) {
         File storage = new File(getTestStorageDirectory());
         if (storage.exists()) {
-            Assert.assertTrue(recursiveDelete(storage));
+            assertThat(recursiveDelete(storage)).isTrue();
         }
         ensureTestStorageExists();
     }
@@ -373,7 +372,7 @@ public class CronetTestRule implements TestRule {
     private static void ensureTestStorageExists() {
         File storage = new File(getTestStorageDirectory());
         if (!storage.exists()) {
-            Assert.assertTrue(storage.mkdir());
+            assertThat(storage.mkdir()).isTrue();
         }
     }
 

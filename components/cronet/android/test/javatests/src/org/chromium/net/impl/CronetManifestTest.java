@@ -6,8 +6,6 @@ package org.chromium.net.impl;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.content.Context;
@@ -67,12 +65,15 @@ public class CronetManifestTest {
         mMetadata.putBoolean(CronetManifest.TELEMETRY_OPT_IN_META_DATA_STR, true);
         mAppInfo.metaData = mMetadata;
 
-        assertTrue(CronetManifest.isAppOptedInForTelemetry(
-                mMockContext, CronetSource.CRONET_SOURCE_STATICALLY_LINKED));
-        assertTrue(CronetManifest.isAppOptedInForTelemetry(
-                mMockContext, CronetSource.CRONET_SOURCE_PLAY_SERVICES));
-        assertTrue(CronetManifest.isAppOptedInForTelemetry(
-                mMockContext, CronetSource.CRONET_SOURCE_FALLBACK));
+        assertThat(CronetManifest.isAppOptedInForTelemetry(
+                           mMockContext, CronetSource.CRONET_SOURCE_STATICALLY_LINKED))
+                .isTrue();
+        assertThat(CronetManifest.isAppOptedInForTelemetry(
+                           mMockContext, CronetSource.CRONET_SOURCE_PLAY_SERVICES))
+                .isTrue();
+        assertThat(CronetManifest.isAppOptedInForTelemetry(
+                           mMockContext, CronetSource.CRONET_SOURCE_FALLBACK))
+                .isTrue();
     }
 
     @Test

@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -49,7 +48,7 @@ public class GetStatusTest {
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @After
@@ -71,7 +70,7 @@ public class GetStatusTest {
         TestStatusListener statusListener0 = new TestStatusListener();
         urlRequest.getStatus(statusListener0);
         statusListener0.waitUntilOnStatusCalled();
-        assertTrue(statusListener0.mOnStatusCalled);
+        assertThat(statusListener0.mOnStatusCalled).isTrue();
         assertThat(statusListener0.mStatus).isEqualTo(Status.INVALID);
 
         urlRequest.start();
@@ -80,7 +79,7 @@ public class GetStatusTest {
         TestStatusListener statusListener1 = new TestStatusListener();
         urlRequest.getStatus(statusListener1);
         statusListener1.waitUntilOnStatusCalled();
-        assertTrue(statusListener1.mOnStatusCalled);
+        assertThat(statusListener1.mOnStatusCalled).isTrue();
         assertThat(statusListener1.mStatus)
                 .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
         callback.waitForNextStep();
@@ -91,7 +90,7 @@ public class GetStatusTest {
         TestStatusListener statusListener2 = new TestStatusListener();
         urlRequest.getStatus(statusListener2);
         statusListener2.waitUntilOnStatusCalled();
-        assertTrue(statusListener2.mOnStatusCalled);
+        assertThat(statusListener2.mOnStatusCalled).isTrue();
         assertThat(statusListener1.mStatus)
                 .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
 
@@ -106,7 +105,7 @@ public class GetStatusTest {
         TestStatusListener statusListener3 = new TestStatusListener();
         urlRequest.getStatus(statusListener3);
         statusListener3.waitUntilOnStatusCalled();
-        assertTrue(statusListener3.mOnStatusCalled);
+        assertThat(statusListener3.mOnStatusCalled).isTrue();
         assertThat(statusListener3.mStatus).isEqualTo(Status.INVALID);
 
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
@@ -163,7 +162,7 @@ public class GetStatusTest {
         // executed, the |url_request_| is null.
         urlRequest.getStatus(statusListener);
         statusListener.waitUntilOnStatusCalled();
-        assertTrue(statusListener.mOnStatusCalled);
+        assertThat(statusListener.mOnStatusCalled).isTrue();
         // The request should be in IDLE state because GetStatusOnNetworkThread
         // is called before |url_request_| is initialized and started.
         assertThat(statusListener.mStatus).isEqualTo(Status.IDLE);

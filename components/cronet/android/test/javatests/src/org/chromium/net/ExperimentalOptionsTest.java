@@ -5,8 +5,8 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -62,14 +62,13 @@ public class ExperimentalOptionsTest {
                 (builder)
                         -> CronetTestUtil.setMockCertVerifierForTesting(
                                 builder, QuicTestServer.createMockCertVerifier()));
-
-        assertTrue(Http2TestServer.startHttp2TestServer(getContext(), mHangingUrlLatch));
+        assertThat(Http2TestServer.startHttp2TestServer(getContext(), mHangingUrlLatch)).isTrue();
     }
 
     @After
     public void tearDown() throws Exception {
         mHangingUrlLatch.countDown();
-        assertTrue(Http2TestServer.shutdownHttp2TestServer());
+        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
     }
 
     @Test
@@ -100,7 +99,7 @@ public class ExperimentalOptionsTest {
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         cronetEngine.stopNetLog();
         assertFileContainsString(logfile, "HostResolverRules");
-        assertTrue(logfile.delete());
+        assertThat(logfile.delete()).isTrue();
         assertThat(logfile.exists()).isFalse();
     }
 
@@ -115,7 +114,7 @@ public class ExperimentalOptionsTest {
 
         CronetUrlRequestContext context =
                 (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
-        assertTrue(context.getEnableTelemetryForTesting());
+        assertThat(context.getEnableTelemetryForTesting()).isTrue();
     }
 
     @Test
@@ -153,7 +152,7 @@ public class ExperimentalOptionsTest {
         assertThat(callback.mResponseAsString).isEqualTo("GET");
 
         assertFileContainsString(file, "CLIENT_HANDSHAKE_TRAFFIC_SECRET");
-        assertTrue(file.delete());
+        assertThat(file.delete()).isTrue();
         assertThat(file.exists()).isFalse();
     }
 
@@ -167,7 +166,7 @@ public class ExperimentalOptionsTest {
             Log.i(TAG, "Retrying...");
             Thread.sleep(100);
         }
-        assertTrue("file content doesn't match", contains);
+        assertWithMessage("file content doesn't match").that(contains).isTrue();
     }
 
     // Returns whether a file contains a particular string.
@@ -327,8 +326,8 @@ public class ExperimentalOptionsTest {
         BidirectionalStream stream = builder.build();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in BidirectionalStream: net::ERR_HTTP2_PING_FAILED");

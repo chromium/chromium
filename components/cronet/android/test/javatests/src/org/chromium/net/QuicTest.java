@@ -5,8 +5,7 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
-
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -111,8 +110,9 @@ public class QuicTest {
         assertThat(callback.mResponseInfo.getReceivedByteCount())
                 .isGreaterThan((long) expectedContent.length());
         CronetTestUtil.nativeFlushWritePropertiesForTesting(cronetEngine);
-        assertTrue(fileContainsString("local_prefs.json",
-                QuicTestServer.getServerHost() + ":" + QuicTestServer.getServerPort()));
+        assertThat(fileContainsString("local_prefs.json",
+                           QuicTestServer.getServerHost() + ":" + QuicTestServer.getServerPort()))
+                .isTrue();
         cronetEngine.shutdown();
 
         // Make another request using a new context but with no QUIC hints.
@@ -219,7 +219,7 @@ public class QuicTest {
         assertThat(cronetEngine.getDownstreamThroughputKbps()).isAtLeast(0);
 
         CronetTestUtil.nativeFlushWritePropertiesForTesting(cronetEngine);
-        assertTrue(fileContainsString("local_prefs.json", "network_qualities"));
+        assertThat(fileContainsString("local_prefs.json", "network_qualities")).isTrue();
         cronetEngine.shutdown();
     }
 
@@ -274,7 +274,9 @@ public class QuicTest {
 
     // Helper method to assert that the request is negotiated over QUIC.
     private void assertIsQuic(UrlResponseInfo responseInfo) {
-        assertTrue(responseInfo.getNegotiatedProtocol().startsWith("http/2+quic")
-                || responseInfo.getNegotiatedProtocol().startsWith("h3"));
+        String protocol = responseInfo.getNegotiatedProtocol();
+        assertWithMessage("Expected the negotiatedProtocol to be QUIC but was " + protocol)
+                .that(protocol.startsWith("http/2+quic") || protocol.startsWith("h3"))
+                .isTrue();
     }
 }

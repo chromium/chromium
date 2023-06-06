@@ -7,7 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -61,7 +60,7 @@ public class RequestFinishedInfoTest {
 
         @Override
         public void onRequestFinished(RequestFinishedInfo requestInfo) {
-            assertTrue(mCallback.isDone());
+            assertThat(mCallback.isDone()).isTrue();
             super.onRequestFinished(requestInfo);
         }
     };
@@ -227,7 +226,7 @@ public class RequestFinishedInfoTest {
         Date startTime = new Date();
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         requestFinishedListener.blockUntilDone();
         Date endTime = new Date();
 
@@ -517,7 +516,7 @@ public class RequestFinishedInfoTest {
         MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
         // Check that annotation got updated in onSucceeded() callback.
         assertThat(requestInfo.getAnnotations()).containsExactly(requestAnnotation);
-        assertTrue(requestAnnotation.get());
+        assertThat(requestAnnotation.get()).isTrue();
     }
 
     @Test
@@ -540,7 +539,7 @@ public class RequestFinishedInfoTest {
                         mUrl, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         requestFinishedListener.blockUntilDone();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertWithMessage("RequestFinishedInfo.Listener must be called")
@@ -574,7 +573,7 @@ public class RequestFinishedInfoTest {
                         connectionRefusedUrl, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         requestFinishedListener.blockUntilDone();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertWithMessage("RequestFinishedInfo.Listener must be called")

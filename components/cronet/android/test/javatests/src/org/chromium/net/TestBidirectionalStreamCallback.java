@@ -6,8 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static junit.framework.Assert.assertTrue;
-
 import android.os.ConditionVariable;
 
 import java.nio.ByteBuffer;
@@ -293,7 +291,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onSucceeded(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
                         ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
@@ -313,7 +311,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onFailed(BidirectionalStream stream, UrlResponseInfo info, CronetException error) {
         checkOnValidThread();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         // Shouldn't happen after success.
         assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single stream.
@@ -333,7 +331,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onCanceled(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         // Should happen at most once for a single stream.
         assertThat(mOnCanceledCalled).isFalse();
         assertThat(mOnErrorCalled).isFalse();

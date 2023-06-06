@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -97,7 +96,7 @@ public class CronetTestRuleTest {
     @SmallTest
     @OnlyRunJavaCronet
     public void testRunOnlyJavaMustRun() {
-        assertTrue(mTestRule.testingJavaImpl());
+        assertThat(mTestRule.testingJavaImpl()).isTrue();
         assertThat(mTestWasRun).isFalse();
         mTestWasRun = true;
         assertThat(mTestRule.getTestFramework().getEngine()).isInstanceOf(JavaCronetEngine.class);

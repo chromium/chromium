@@ -6,8 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.net.CronetTestRule.getContext;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -76,7 +74,7 @@ public class BidirectionalStreamQuicTest {
                         .build();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         assertThat(callback.mResponseAsString)
                 .isEqualTo("This is a simple text file served by QUIC.\n");
@@ -109,7 +107,7 @@ public class BidirectionalStreamQuicTest {
         Date startTime = new Date();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         requestFinishedListener.blockUntilDone();
         Date endTime = new Date();
         RequestFinishedInfo finishedInfo = requestFinishedListener.getRequestInfo();
@@ -147,7 +145,7 @@ public class BidirectionalStreamQuicTest {
                                                  .build();
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
+            assertThat(stream.isDone()).isTrue();
             assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
@@ -182,7 +180,7 @@ public class BidirectionalStreamQuicTest {
                                                  .build();
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
+            assertThat(stream.isDone()).isTrue();
             assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
@@ -220,7 +218,7 @@ public class BidirectionalStreamQuicTest {
 
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
+            assertThat(stream.isDone()).isTrue();
 
             // Flush after stream is completed is no-op. It shouldn't call into the destroyed
             // adapter.
@@ -254,7 +252,7 @@ public class BidirectionalStreamQuicTest {
                             .build();
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
+            assertThat(stream.isDone()).isTrue();
 
             assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
             assertThat(callback.mResponseAsString)
@@ -299,7 +297,7 @@ public class BidirectionalStreamQuicTest {
                         .build();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         // Server terminated on us, so the stream must fail.
         // QUIC reports this as ERR_QUIC_PROTOCOL_ERROR. Sometimes we get ERR_CONNECTION_REFUSED.
         assertThat(callback.mError).isInstanceOf(NetworkException.class);
@@ -333,7 +331,7 @@ public class BidirectionalStreamQuicTest {
                         .build();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         assertThat(callback.mError).isNotNull();
         if (callback.mError instanceof QuicException) {
             QuicException quicException = (QuicException) callback.mError;

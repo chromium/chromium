@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -43,7 +42,7 @@ public class DiskStorageTest {
     @Before
     public void setUp() throws Exception {
         System.loadLibrary("cronet_tests");
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @After
@@ -61,9 +60,9 @@ public class DiskStorageTest {
     public void testReadOnlyStorageDirectory() throws Exception {
         mReadOnlyStoragePath = PathUtils.getDataDirectory() + "/read_only";
         File readOnlyStorage = new File(mReadOnlyStoragePath);
-        assertTrue(readOnlyStorage.mkdir());
+        assertThat(readOnlyStorage.mkdir()).isTrue();
         // Setting the storage directory as readonly has no effect.
-        assertTrue(readOnlyStorage.setReadOnly());
+        assertThat(readOnlyStorage.setReadOnly()).isTrue();
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             builder.setStoragePath(mReadOnlyStoragePath);
             builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
@@ -94,9 +93,9 @@ public class DiskStorageTest {
             }
         }
         File diskCacheDir = new File(mReadOnlyStoragePath + "/disk_cache");
-        assertTrue(diskCacheDir.exists());
+        assertThat(diskCacheDir.exists()).isTrue();
         File prefsDir = new File(mReadOnlyStoragePath + "/prefs");
-        assertTrue(prefsDir.exists());
+        assertThat(prefsDir.exists()).isTrue();
     }
 
     @Test
@@ -156,11 +155,11 @@ public class DiskStorageTest {
             }
         }
         oldPrefsFile = new File(testStorage + "/local_prefs.json");
-        assertTrue(!oldPrefsFile.exists());
+        assertThat(!oldPrefsFile.exists()).isTrue();
         File diskCacheDir = new File(testStorage + "/disk_cache");
-        assertTrue(diskCacheDir.exists());
+        assertThat(diskCacheDir.exists()).isTrue();
         File prefsDir = new File(testStorage + "/prefs");
-        assertTrue(prefsDir.exists());
+        assertThat(prefsDir.exists()).isTrue();
     }
 
     @Test
@@ -220,9 +219,9 @@ public class DiskStorageTest {
         reader.close();
         assertThat(stringBuilder.toString()).isEqualTo(dummyContent);
         File diskCacheDir = new File(testStorage + "/disk_cache");
-        assertTrue(diskCacheDir.exists());
+        assertThat(diskCacheDir.exists()).isTrue();
         File prefsDir = new File(testStorage + "/prefs");
-        assertTrue(prefsDir.exists());
+        assertThat(prefsDir.exists()).isTrue();
     }
 
     @Test
@@ -282,6 +281,6 @@ public class DiskStorageTest {
         File diskCacheDir = new File(testStorage + "/disk_cache");
         assertThat(diskCacheDir.exists()).isFalse();
         File prefsDir = new File(testStorage + "/prefs");
-        assertTrue(prefsDir.exists());
+        assertThat(prefsDir.exists()).isTrue();
     }
 }

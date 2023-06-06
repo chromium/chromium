@@ -6,8 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.net.CronetTestRule.getContext;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -37,12 +35,12 @@ public class BrotliTest {
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
+        assertThat(Http2TestServer.startHttp2TestServer(getContext())).isTrue();
     }
 
     @After
     public void tearDown() throws Exception {
-        assertTrue(Http2TestServer.shutdownHttp2TestServer());
+        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
     }
 
     @Test

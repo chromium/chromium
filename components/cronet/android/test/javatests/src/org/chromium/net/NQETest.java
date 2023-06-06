@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -239,8 +238,8 @@ public class NQETest {
 
         // Verify that effective connection type callback is received and
         // effective connection type is correctly set.
-        assertTrue(
-                cronetEngine.getEffectiveConnectionType() != EffectiveConnectionType.TYPE_UNKNOWN);
+        assertThat(cronetEngine.getEffectiveConnectionType())
+                .isNotEqualTo(EffectiveConnectionType.TYPE_UNKNOWN);
 
         // Verify that the HTTP RTT, transport RTT and downstream throughput
         // estimates are available.
@@ -261,7 +260,7 @@ public class NQETest {
                 // flushed to the disk.
             }
         }
-        assertTrue(prefsFileContainsString("network_qualities"));
+        assertThat(prefsFileContainsString("network_qualities")).isTrue();
 
         cronetEngine.shutdown();
         writeCountHistogram.assertExpected();
@@ -352,14 +351,14 @@ public class NQETest {
 
             // Verify that effective connection type callback is received and
             // effective connection type is correctly set.
-            assertTrue(cronetEngine.getEffectiveConnectionType()
-                    != EffectiveConnectionType.TYPE_UNKNOWN);
+            assertThat(cronetEngine.getEffectiveConnectionType())
+                    .isNotEqualTo(EffectiveConnectionType.TYPE_UNKNOWN);
 
             cronetEngine.shutdown();
 
             if (i == 0) {
                 // Verify that the cached estimates were written to the prefs.
-                assertTrue(prefsFileContainsString("network_qualities"));
+                assertThat(prefsFileContainsString("network_qualities")).isTrue();
             }
 
             readPrefsSizeHistogram.assertExpected();

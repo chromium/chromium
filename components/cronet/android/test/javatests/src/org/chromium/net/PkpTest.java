@@ -7,7 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -65,7 +64,7 @@ public class PkpTest {
             return;
         }
         System.loadLibrary("cronet_tests");
-        assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
+        assertThat(Http2TestServer.startHttp2TestServer(getContext())).isTrue();
         mServerHost = "test.example.com";
         mServerUrl = "https://" + mServerHost + ":" + Http2TestServer.getServerPort();
         mDomain = mServerHost.substring(mServerHost.indexOf('.') + 1, mServerHost.length());

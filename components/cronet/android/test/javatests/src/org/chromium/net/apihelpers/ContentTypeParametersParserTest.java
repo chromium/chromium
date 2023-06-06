@@ -7,8 +7,6 @@ package org.chromium.net.apihelpers;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertTrue;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -86,19 +84,19 @@ public class ContentTypeParametersParserTest {
 
         assertThat(parameter.getKey()).isEqualTo("charset");
         assertThat(parameter.getValue()).isEqualTo("utf-\\8");
-        assertTrue(parser.hasMore());
+        assertThat(parser.hasMore()).isTrue();
 
         parameter = parser.getNextParameter();
 
         assertThat(parameter.getKey()).isEqualTo("foo");
         assertThat(parameter.getValue()).isEqualTo(" bar");
-        assertTrue(parser.hasMore());
+        assertThat(parser.hasMore()).isTrue();
 
         parameter = parser.getNextParameter();
 
         assertThat(parameter.getKey()).isEqualTo("baz");
         assertThat(parameter.getValue()).isEqualTo("quix");
-        assertTrue(parser.hasMore());
+        assertThat(parser.hasMore()).isTrue();
 
         parameter = parser.getNextParameter();
 

@@ -9,8 +9,6 @@ import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP;
 
 import android.content.Context;
@@ -76,7 +74,7 @@ public final class CronetLoggerTest {
     public void setUp() {
         mContext = CronetTestRule.getContext();
         mTestLogger = (TestLogger) mLoggerTestRule.mTestLogger;
-        assertTrue(NativeTestServer.startNativeTestServer(mContext));
+        assertThat(NativeTestServer.startNativeTestServer(mContext)).isTrue();
     }
 
     @After
@@ -375,7 +373,7 @@ public final class CronetLoggerTest {
         request.start();
         callback.blockForDone();
         assertThat(callback.mOnCanceledCalled).isFalse();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         mTestLogger.waitForLogCronetTrafficInfo();
 
         final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
@@ -414,7 +412,7 @@ public final class CronetLoggerTest {
         request.start();
         request.cancel();
         callback.blockForDone();
-        assertTrue(callback.mOnCanceledCalled);
+        assertThat(callback.mOnCanceledCalled).isTrue();
         assertThat(callback.mOnErrorCalled).isFalse();
         mTestLogger.waitForLogCronetTrafficInfo();
 

@@ -9,8 +9,6 @@ import static android.system.OsConstants.SOCK_STREAM;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import android.os.Build;
 import android.system.Os;
 
@@ -96,7 +94,7 @@ public class NetworkChangeNotifierTest {
 
         // Wait for ERR_NETWORK_CHANGED
         callback.blockForDone();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_NETWORK_CHANGED");

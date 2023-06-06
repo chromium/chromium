@@ -6,8 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.net.CronetTestRule.getContext;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -31,12 +29,12 @@ public class NetworkErrorLoggingTest {
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
+        assertThat(Http2TestServer.startHttp2TestServer(getContext())).isTrue();
     }
 
     @After
     public void tearDown() throws Exception {
-        assertTrue(Http2TestServer.shutdownHttp2TestServer());
+        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
     }
 
     @Test
@@ -62,8 +60,9 @@ public class NetworkErrorLoggingTest {
         callback.blockForDone();
         dataProvider.assertClosed();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertTrue(Http2TestServer.getReportingCollector().containsReport(
-                "{\"type\": \"test_report\"}"));
+        assertThat(Http2TestServer.getReportingCollector().containsReport(
+                           "{\"type\": \"test_report\"}"))
+                .isTrue();
     }
 
     @Test
@@ -84,21 +83,22 @@ public class NetworkErrorLoggingTest {
         callback.blockForDone();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         Http2TestServer.getReportingCollector().waitForReports(1);
-        assertTrue(Http2TestServer.getReportingCollector().containsReport(""
-                + "{"
-                + "  \"type\": \"network-error\","
-                + "  \"url\": \"" + url + "\","
-                + "  \"body\": {"
-                + "    \"method\": \"GET\","
-                + "    \"phase\": \"application\","
-                + "    \"protocol\": \"h2\","
-                + "    \"referrer\": \"\","
-                + "    \"sampling_fraction\": 1.0,"
-                + "    \"server_ip\": \"127.0.0.1\","
-                + "    \"status_code\": 200,"
-                + "    \"type\": \"ok\""
-                + "  }"
-                + "}"));
+        assertThat(Http2TestServer.getReportingCollector().containsReport(""
+                           + "{"
+                           + "  \"type\": \"network-error\","
+                           + "  \"url\": \"" + url + "\","
+                           + "  \"body\": {"
+                           + "    \"method\": \"GET\","
+                           + "    \"phase\": \"application\","
+                           + "    \"protocol\": \"h2\","
+                           + "    \"referrer\": \"\","
+                           + "    \"sampling_fraction\": 1.0,"
+                           + "    \"server_ip\": \"127.0.0.1\","
+                           + "    \"status_code\": 200,"
+                           + "    \"type\": \"ok\""
+                           + "  }"
+                           + "}"))
+                .isTrue();
     }
 
     @Test
@@ -150,20 +150,21 @@ public class NetworkErrorLoggingTest {
         // Note that because we don't know in advance what the server IP address is for preloaded
         // origins, we'll always get a "downgraded" dns.address_changed NEL report if we don't
         // receive a replacement NEL policy with the request.
-        assertTrue(Http2TestServer.getReportingCollector().containsReport(""
-                + "{"
-                + "  \"type\": \"network-error\","
-                + "  \"url\": \"" + url + "\","
-                + "  \"body\": {"
-                + "    \"method\": \"GET\","
-                + "    \"phase\": \"dns\","
-                + "    \"protocol\": \"h2\","
-                + "    \"referrer\": \"\","
-                + "    \"sampling_fraction\": 1.0,"
-                + "    \"server_ip\": \"127.0.0.1\","
-                + "    \"status_code\": 0,"
-                + "    \"type\": \"dns.address_changed\""
-                + "  }"
-                + "}"));
+        assertThat(Http2TestServer.getReportingCollector().containsReport(""
+                           + "{"
+                           + "  \"type\": \"network-error\","
+                           + "  \"url\": \"" + url + "\","
+                           + "  \"body\": {"
+                           + "    \"method\": \"GET\","
+                           + "    \"phase\": \"dns\","
+                           + "    \"protocol\": \"h2\","
+                           + "    \"referrer\": \"\","
+                           + "    \"sampling_fraction\": 1.0,"
+                           + "    \"server_ip\": \"127.0.0.1\","
+                           + "    \"status_code\": 0,"
+                           + "    \"type\": \"dns.address_changed\""
+                           + "  }"
+                           + "}"))
+                .isTrue();
     }
 }

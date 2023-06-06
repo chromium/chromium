@@ -6,8 +6,6 @@ package org.chromium.net.apihelpers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.os.ConditionVariable;
@@ -48,7 +46,7 @@ public class UploadDataProvidersTest {
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
         // Add url interceptors after native application context is initialized.
         mFile = new File(getContext().getCacheDir().getPath() + "/tmpfile");
         FileOutputStream fileOutputStream = new FileOutputStream(mFile);
@@ -62,7 +60,7 @@ public class UploadDataProvidersTest {
     @After
     public void tearDown() throws Exception {
         NativeTestServer.shutdownNativeTestServer();
-        assertTrue(mFile.delete());
+        assertThat(mFile.delete()).isTrue();
     }
 
     @Test
@@ -85,7 +83,7 @@ public class UploadDataProvidersTest {
     public void testFileDescriptorProvider() throws Exception {
         ParcelFileDescriptor descriptor =
                 ParcelFileDescriptor.open(mFile, ParcelFileDescriptor.MODE_READ_ONLY);
-        assertTrue(descriptor.getFileDescriptor().valid());
+        assertThat(descriptor.getFileDescriptor().valid()).isTrue();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
@@ -170,7 +168,7 @@ public class UploadDataProvidersTest {
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
@@ -210,7 +208,7 @@ public class UploadDataProvidersTest {
         urlRequest.cancel();
         second.open();
         callback.blockForDone();
-        assertTrue(callback.mOnCanceledCalled);
+        assertThat(callback.mOnCanceledCalled).isTrue();
     }
 
     @Test
