@@ -61,6 +61,13 @@ network::mojom::AttributionSupport AttributionOsLevelManager::GetSupport() {
 }
 
 // static
+bool AttributionOsLevelManager::ShouldUseOsWebSource() {
+  return GetContentClient()
+      ->browser()
+      ->ShouldUseOsWebSourceAttributionReporting();
+}
+
+// static
 bool AttributionOsLevelManager::ShouldInitializeApiState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
   if (g_state.has_value()) {

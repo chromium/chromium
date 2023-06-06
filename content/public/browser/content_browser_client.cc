@@ -539,6 +539,10 @@ bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
   return true;
 }
 
+bool ContentBrowserClient::ShouldUseOsWebSourceAttributionReporting() {
+  return true;
+}
+
 bool ContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
