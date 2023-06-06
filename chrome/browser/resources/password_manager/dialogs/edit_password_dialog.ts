@@ -41,7 +41,7 @@ export interface EditPasswordDialogElement {
 }
 
 /**
- * Computes possible conflicting username by finding all credentials with
+ * Computes possible conflicting username by finding all passwords with
  * matching signonRealms. Returns map where key is the username and value is
  * human readable representation of signonRealm. Username is considered
  * conflicting if shares any domain with |currentPassword|.
@@ -134,7 +134,12 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.setSavedPasswordsListener_ = passwordList => {
+    this.setSavedPasswordsListener_ = credentialList => {
+      // Passkeys and federated credential may have the same username as a
+      // password, since they can be different ways to authenticate the same
+      // user. Thus, ignore these when finding conflicting usernames.
+      const passwordList = credentialList.filter(
+          credential => !credential.isPasskey && !credential.federationText);
       this.conflictingUsernames_ =
           getConflictingUsernames(this.credential, passwordList);
     };
