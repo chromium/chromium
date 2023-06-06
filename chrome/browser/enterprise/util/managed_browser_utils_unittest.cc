@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/host_port_pair.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/test/cert_test_util.h"
@@ -59,6 +60,13 @@ TEST(ManagedBrowserUtils, HasManagedConnector) {
 
   std::unique_ptr<TestingProfile> profile = builder.Build();
   EXPECT_TRUE(chrome::enterprise_util::IsBrowserManaged(profile.get()));
+}
+
+TEST(ManagedBrowserUtils, GetRequestingUrl) {
+  GURL expected("https://hostname:1234");
+  net::HostPortPair host_port_pair("hostname", 1234);
+  EXPECT_EQ(expected,
+            chrome::enterprise_util::GetRequestingUrl(host_port_pair));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

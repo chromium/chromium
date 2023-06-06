@@ -3694,11 +3694,6 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     return base::OnceClosure();
   }
 
-  GURL requesting_url("https://" + cert_request_info->host_and_port.ToString());
-  DCHECK(requesting_url.is_valid())
-      << "Invalid URL string: https://"
-      << cert_request_info->host_and_port.ToString();
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -3728,6 +3723,10 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     VLOG(1) << "Client cert requested in " << profile_name << " profile.";
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  GURL requesting_url = chrome::enterprise_util::GetRequestingUrl(
+      cert_request_info->host_and_port);
+  DCHECK(requesting_url.is_valid()) << "Invalid URL string: " << requesting_url;
 
   net::ClientCertIdentityList matching_certificates, nonmatching_certificates;
   chrome::enterprise_util::AutoSelectCertificates(

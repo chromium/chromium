@@ -7,7 +7,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
@@ -18,6 +17,7 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace bruschetta {
+class BruschettaNetworkContext;
 
 extern const net::NetworkTrafficAnnotationTag kBruschettaTrafficAnnotation;
 
@@ -51,15 +51,15 @@ class SimpleURLLoaderDownload {
       GURL url,
       base::OnceCallback<void(base::FilePath path, std::string sha256)>
           callback);
-  void Download(std::unique_ptr<base::ScopedTempDir> dir);
+  void Download(Profile* profile, std::unique_ptr<base::ScopedTempDir> dir);
   void Finished(base::FilePath path);
 
-  base::raw_ptr<Profile> profile_;
   GURL url_;
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   base::OnceCallback<void(base::FilePath path, std::string sha256)> callback_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   base::OnceClosure post_deletion_closure_for_testing_;
+  std::unique_ptr<BruschettaNetworkContext> network_context_;
 
   base::WeakPtrFactory<SimpleURLLoaderDownload> weak_ptr_factory_{this};
 };

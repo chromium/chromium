@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_network_context.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
@@ -107,11 +108,14 @@ SimpleURLLoaderDownload::SimpleURLLoaderDownload(
     Profile* profile,
     GURL url,
     base::OnceCallback<void(base::FilePath path, std::string sha256)> callback)
-    : profile_(profile), url_(std::move(url)), callback_(std::move(callback)) {
+    : url_(std::move(url)), callback_(std::move(callback)) {
+  // We're owned (through a few levels of owning class) by the installer view
+  // which won't outlive the profile, so it's safe to pass around the raw
+  // pointer.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&MakeTempDir),
       base::BindOnce(&SimpleURLLoaderDownload::Download,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), profile));
 }
 
 SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
@@ -123,6 +127,7 @@ SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
 }
 
 void SimpleURLLoaderDownload::Download(
+    Profile* profile,
     std::unique_ptr<base::ScopedTempDir> dir) {
   scoped_temp_dir_ = std::move(dir);
   auto path = scoped_temp_dir_->GetPath().Append("download");
@@ -130,9 +135,8 @@ void SimpleURLLoaderDownload::Download(
   req->url = url_;
   loader_ = network::SimpleURLLoader::Create(std::move(req),
                                              kBruschettaTrafficAnnotation);
-  auto factory = profile_->GetDefaultStoragePartition()
-                     ->GetURLLoaderFactoryForBrowserProcess();
-  loader_->DownloadToFile(factory.get(),
+  network_context_ = std::make_unique<BruschettaNetworkContext>(profile);
+  loader_->DownloadToFile(network_context_->GetURLLoaderFactory(),
                           base::BindOnce(&SimpleURLLoaderDownload::Finished,
                                          weak_ptr_factory_.GetWeakPtr()),
                           std::move(path));
