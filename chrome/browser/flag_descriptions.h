@@ -1194,9 +1194,6 @@ extern const char kOmniboxAdaptNarrowTabletWindowsDescription[];
 extern const char kOmniboxCacheSuggestionResourcesName[];
 extern const char kOmniboxCacheSuggestionResourcesDescription[];
 
-extern const char kOmniboxClosePopupWithEscapeName[];
-extern const char kOmniboxClosePopupWithEscapeDescription[];
-
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 

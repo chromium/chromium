@@ -1235,8 +1235,7 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   }
 
   // Close the popup if it's open.
-  if (base::FeatureList::IsEnabled(omnibox::kClosePopupWithEscape) &&
-      PopupIsOpen()) {
+  if (PopupIsOpen()) {
     base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
                                   OmniboxEscapeAction::kClosePopup);
     if (view_) {
@@ -1250,22 +1249,18 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   // This in turn allows the user to use escape to quickly select all the text
   // for ease of replacement, and matches other browsers.
   bool user_input_was_in_progress = user_input_in_progress_;
-  bool popup_was_open = PopupIsOpen();
   // TODO(crbug.com/1340378): If the popup was open, `user_input_in_progress_`
   //  *should* also be true; checking `user_text_` in the DCHECK below, and
   //  checking `popup_was_open` in the if predicate below *should* be
   //  unnecessary. However, that's not always the case (see
   //  `user_input_in_progress_` comment in the header).
-  DCHECK(!popup_was_open || user_input_was_in_progress || user_text_.empty());
   if (view_) {
     view_->RevertAll();
     view_->SelectAll(true);
   }
-  if (user_input_was_in_progress || popup_was_open) {
-    base::UmaHistogramEnumeration(
-        kOmniboxEscapeHistogramName,
-        popup_was_open ? OmniboxEscapeAction::kClosePopupAndClearUserInput
-                       : OmniboxEscapeAction::kClearUserInput);
+  if (user_input_was_in_progress) {
+    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
+                                  OmniboxEscapeAction::kClearUserInput);
     // If the user was in the midst of editing, don't cancel any underlying page
     // load.  This doesn't match IE or Firefox, but seems more correct.  Note
     // that we do allow the page load to be stopped in the case where

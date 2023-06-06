@@ -132,7 +132,6 @@ BASE_DECLARE_FEATURE(kUseExistingAutocompleteClient);
 
 // Omnibox & Suggestions UI - these affect both the omnibox and the suggestions
 // popup.
-BASE_DECLARE_FEATURE(kClosePopupWithEscape);
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
 
 // Experiment to introduce new security indicators for HTTPS.

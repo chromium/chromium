@@ -5482,11 +5482,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-close-popup-with-escape",
-    "owners": ["manukh", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "omnibox-consumes-ime-insets",
     "owners": ["pnoland", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120

@@ -2119,13 +2119,6 @@ const char kOmniboxCacheSuggestionResourcesDescription[] =
     "When enabled, the omnibox will cache frequently used drawables and "
     "strings rather than loading them from Android every time they're needed.";
 
-const char kOmniboxClosePopupWithEscapeName[] =
-    "Omnibox Close Popup with Escape";
-const char kOmniboxClosePopupWithEscapeDescription[] =
-    "When enabled, pressing escape when the omnibox popup is open and the "
-    "default suggestion is selected will close the omnibox without removing "
-    "its focus or clearing user input.";
-
 const char kOmniboxConsumesImeInsetsName[] =
     "Omnibox Consumes IME (keyboard) insets directly";
 const char kOmniboxConsumesImeInsetsDescription[] =

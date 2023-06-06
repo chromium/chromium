@@ -754,8 +754,7 @@ chromium-metrics-reviews@google.com.
     1) If there is temporary text (i.e. a non default suggestion is selected),
     it is cleared.
 
-    2) If the popup is open and the `kClosePopupWithEscape` feature is enabled,
-    the popup is closed.
+    2) If the popup is open, the popup is closed.
 
     3) If the popup is open, which is considered as user input in progress, then
     the popup is closed and user input is cleared.

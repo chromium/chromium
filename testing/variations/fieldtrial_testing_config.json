@@ -8835,15 +8835,7 @@
             "experiments": [
                 {
                     "name": "DesktopExperiments",
-                    "params": {
-                        "EntitySuggestionsReduceLatencyDecoderTimeout": "405"
-                    },
                     "enable_features": [
-                        "OmniboxBlurWithEscape",
-                        "OmniboxClosePopupWithEscape",
-                        "OmniboxEntitySuggestionsReduceLatency",
-                        "OmniboxKeywordSearchButton",
-                        "OmniboxPreserveLongerShortcutsText",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxUIExperimentMaxAutocompleteMatches"
                     ],
