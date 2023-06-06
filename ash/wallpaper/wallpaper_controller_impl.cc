@@ -1374,11 +1374,6 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     wallpaper_path = device_policy_wallpaper_path_;
   } else {
     std::string sub_dir = GetCustomWallpaperSubdirForCurrentResolution();
-    // Wallpaper is not resized when layout is
-    // WALLPAPER_LAYOUT_CENTER.
-    // Original wallpaper should be used in this case.
-    if (info.layout == WALLPAPER_LAYOUT_CENTER)
-      sub_dir = kOriginalWallpaperSubDir;
     wallpaper_path = GetCustomWallpaperDir(sub_dir).Append(info.location);
   }
 
