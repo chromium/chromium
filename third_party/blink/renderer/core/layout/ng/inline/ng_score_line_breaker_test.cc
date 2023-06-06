@@ -38,7 +38,7 @@ class NGScoreLineBreakerTest : public RenderingTest {
     line_info_list.Clear();
     NGLineBreakPoints& break_points = context.LineBreakPoints();
     break_points.clear();
-    context.DidCreateLine();
+    context.DidCreateLine(/*is_end_paragraph*/ true);
     for (;;) {
       breaker.OptimalBreakPoints(context);
       if (!context.IsActive() || !breaker.BreakToken() ||
@@ -47,8 +47,10 @@ class NGScoreLineBreakerTest : public RenderingTest {
       }
 
       // Consume the first line in `line_info_list`.
+      const NGLineInfo& line_info = line_info_list.Front();
+      const bool is_end_paragraph = line_info.IsEndParagraph();
       line_info_list.RemoveFront();
-      context.DidCreateLine();
+      context.DidCreateLine(is_end_paragraph);
     }
   }
 
@@ -237,7 +239,7 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
   // Pretend all the lines are consumed.
   EXPECT_TRUE(optimizer.BreakToken());
   line_info_list.Clear();
-  context.DidCreateLine();
+  context.DidCreateLine(/*is_end_paragraph*/ true);
 
   // Run the optimizer again to continue. This should run up to the end of
   // `target`. It has 4 break candidates so the optimization should apply.

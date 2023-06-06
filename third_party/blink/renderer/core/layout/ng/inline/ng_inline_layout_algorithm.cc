@@ -1274,8 +1274,9 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   NGScoreLineBreakContext* score_line_break_context = nullptr;
   if (!column_spanner_path_) {
     const TextWrap text_wrap = Style().GetTextWrap();
-    initiate_balancing = text_wrap == TextWrap::kBalance && !break_token;
-    if (UNLIKELY(text_wrap == TextWrap::kPretty || initiate_balancing)) {
+    if (UNLIKELY(text_wrap == TextWrap::kPretty ||
+                 text_wrap == TextWrap::kBalance)) {
+      initiate_balancing = text_wrap == TextWrap::kBalance && !break_token;
       score_line_break_context = context_->ScoreLineBreakContext();
       use_score_line_break =
           score_line_break_context && score_line_break_context->IsActive();
@@ -1297,6 +1298,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   bool is_line_created = false;
+  bool is_end_paragraph = false;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
   const auto* opportunities_it = opportunities.begin();
@@ -1471,6 +1473,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
     CreateLine(line_opportunity, &line_info, line_box);
     is_line_created = true;
+    is_end_paragraph = line_info.IsEndParagraph();
 
     // Adjust the line BFC block-offset if we have a ruby annotation, raise
     // initial letter or sunken initial letter.
@@ -1600,7 +1603,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   items_builder->AssociateLogicalLineItems(line_box,
                                            layout_result->PhysicalFragment());
   if (score_line_break_context) {
-    score_line_break_context->DidCreateLine();
+    score_line_break_context->DidCreateLine(is_end_paragraph);
   }
   return layout_result;
 }

@@ -33,10 +33,12 @@ class CORE_EXPORT NGScoreLineBreakContext {
 
   // True if `NGScoreLineBreaker` can handle next line.
   bool IsActive() const { return line_break_points_.empty() && !is_suspended_; }
-  // Suspend (make `IsActive()` false) until `line_info_list_` becomes empty.
-  void SuspendUntilConsumed() { is_suspended_ = true; }
+  // Suspend (make `IsActive()` false) until the end of the paragraph; i.e.,
+  // either the end of the block or a forced break.
+  void SuspendUntilEndParagraph() { is_suspended_ = true; }
 
-  void DidCreateLine();
+  // Update states after a line was created.
+  void DidCreateLine(bool is_end_paragraph);
 
  private:
   NGLineInfoList line_info_list_;
@@ -54,9 +56,9 @@ inline const NGLineBreakPoint* NGScoreLineBreakContext::CurrentLineBreakPoint()
   return &line_break_points_[line_break_points_index_];
 }
 
-inline void NGScoreLineBreakContext::DidCreateLine() {
+inline void NGScoreLineBreakContext::DidCreateLine(bool is_end_paragraph) {
   // Resume from the suspended state if all lines are consumed.
-  if (UNLIKELY(is_suspended_ && line_info_list_.IsEmpty())) {
+  if (UNLIKELY(is_suspended_ && is_end_paragraph)) {
     is_suspended_ = false;
   }
 

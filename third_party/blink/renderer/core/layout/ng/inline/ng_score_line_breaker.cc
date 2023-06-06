@@ -42,16 +42,20 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
       empty_leading_floats,
       /* handled_leading_floats_index */ 0u, break_token_,
       /* column_spanner_path */ nullptr, exclusion_space_);
+  const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {
     NGLineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
     break_token_ = line_info.BreakToken();
     if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
-      context.SuspendUntilConsumed();
+      context.SuspendUntilEndParagraph();
       return;
     }
-    if (!line_info.BreakToken() || line_info.HasForcedBreak()) {
-      context.SuspendUntilConsumed();
+    if (line_info.IsEndParagraph() ||
+        UNLIKELY(lines_until_clamp > 0 &&
+                 line_info_list.Size() ==
+                     static_cast<wtf_size_t>(lines_until_clamp))) {
+      context.SuspendUntilEndParagraph();
       break;
     }
     DCHECK(!line_info.Results().empty());
