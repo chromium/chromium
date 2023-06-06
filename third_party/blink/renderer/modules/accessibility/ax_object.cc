@@ -1011,9 +1011,13 @@ bool AXObject::CanHaveChildren(Element& element) {
   // so there's no need to add its text children. Placeholder text is a separate
   // node that gets removed when it disappears, so this will only be present if
   // the placeholder is visible.
-  if (element.ShadowPseudoId() ==
-      shadow_element_names::kPseudoInputPlaceholder) {
-    return false;
+  if (Element* host = element.OwnerShadowHost()) {
+    if (auto* ancestor_input = DynamicTo<TextControlElement>(host)) {
+      if (ancestor_input->PlaceholderElement() == &element) {
+        // |element| is a placeholder.
+        return false;
+      }
+    }
   }
 
   if (IsA<HTMLBRElement>(element)) {
