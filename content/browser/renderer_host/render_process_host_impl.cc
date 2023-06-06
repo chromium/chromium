@@ -140,6 +140,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_service.h"
@@ -731,6 +732,57 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
   base::WeakPtrFactory<RenderProcessHostIsReadyObserver> weak_factory_{this};
 };
 
+bool MayReuseAndIsSuitableWithMainFrameThreshold(
+    RenderProcessHost* host,
+    SiteInstanceImpl* site_instance,
+    absl::optional<size_t> main_frame_threshold) {
+  // It's possible that |host| has become unsuitable for hosting
+  // |site_instance|, for example if it was reused by a navigation to a
+  // different site, and |site_instance| requires a dedicated process. Do not
+  // allow such hosts to be reused.  See https://crbug.com/780661.
+  if (!RenderProcessHostImpl::MayReuseAndIsSuitable(host, site_instance)) {
+    return false;
+  }
+
+  if (!main_frame_threshold) {
+    return true;
+  }
+
+  size_t main_frame_count = 0;
+  bool devtools_attached = false;
+  host->ForEachRenderFrameHost(base::BindRepeating(
+      [](size_t& main_frame_count, bool& devtools_attached,
+         RenderFrameHost* render_frame_host) {
+        if (static_cast<RenderFrameHostImpl*>(render_frame_host)
+                ->IsOutermostMainFrame()) {
+          ++main_frame_count;
+        }
+
+        if (DevToolsAgentHost::GetForId(
+                render_frame_host->GetDevToolsFrameToken().ToString())) {
+          devtools_attached = true;
+        }
+      },
+      std::ref(main_frame_count), std::ref(devtools_attached)));
+
+  // If a threshold is specified, don't reuse `host` if it already hosts more
+  // main frames (including BFCached and prerendered) than the threshold.
+  if (main_frame_count >= *main_frame_threshold) {
+    return false;
+  }
+
+  // Don't reuse `host` if DevTools is attached to any frame in that process
+  // since DevTools doesn't work well when a renderer has multiple main frames.
+  // TODO(https://crbug.com/1449114): This is just a heuristic and won't work if
+  // DevTools is attached later, and hence this should be eventually removed and
+  // fixed properly in the renderer process.
+  if (devtools_attached) {
+    return false;
+  }
+
+  return true;
+}
+
 // The following class is used to track the sites each RenderProcessHost is
 // hosting frames for and expecting navigations to. There are two of them per
 // BrowserContext: one for frames and one for navigations.
@@ -816,29 +868,9 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
         continue;
       }
 
-      // It's possible that |host| has become unsuitable for hosting
-      // |site_instance|, for example if it was reused by a navigation to a
-      // different site, and |site_instance| requires a dedicated process. Do
-      // not allow such hosts to be reused.  See https://crbug.com/780661.
-      if (!RenderProcessHostImpl::MayReuseAndIsSuitable(host, site_instance))
+      if (!MayReuseAndIsSuitableWithMainFrameThreshold(host, site_instance,
+                                                       main_frame_threshold)) {
         continue;
-
-      // If a threshold is specified, don't reuse `host` if it already hosts
-      // more main frames (including BFCached and prerendered) than the
-      // threshold.
-      if (main_frame_threshold) {
-        size_t main_frame_count = 0;
-        host->ForEachRenderFrameHost(base::BindRepeating(
-            [](size_t& main_frame_count, RenderFrameHost* render_frame_host) {
-              if (static_cast<RenderFrameHostImpl*>(render_frame_host)
-                      ->IsOutermostMainFrame()) {
-                ++main_frame_count;
-              }
-            },
-            std::ref(main_frame_count)));
-        if (main_frame_count >= *main_frame_threshold) {
-          continue;
-        }
       }
 
       if (host->VisibleClientCount())

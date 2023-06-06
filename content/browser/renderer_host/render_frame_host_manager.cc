@@ -73,6 +73,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
@@ -352,15 +353,35 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
 void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
     SiteInstanceImpl* site_instance,
     FrameTreeNode* frame_tree_node) {
-  if (base::FeatureList::IsEnabled(
-          features::kProcessPerSiteUpToMainFrameThreshold) &&
-      !base::FeatureList::IsEnabled(features::kDisableProcessReuse) &&
-      site_instance->RequiresDedicatedProcess() &&
-      frame_tree_node->IsOutermostMainFrame()) {
-    site_instance->set_process_reuse_policy(
-        SiteInstanceImpl::ProcessReusePolicy::
-            REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD);
+  if (!base::FeatureList::IsEnabled(
+          features::kProcessPerSiteUpToMainFrameThreshold)) {
+    return;
   }
+  if (base::FeatureList::IsEnabled(features::kDisableProcessReuse)) {
+    return;
+  }
+  if (!site_instance->RequiresDedicatedProcess()) {
+    return;
+  }
+  if (!frame_tree_node->IsOutermostMainFrame()) {
+    return;
+  }
+
+  // ProcessPerSite doesn't work well when DevTools is attached because DevTools
+  // assumes that there is only one main frame per renderer process
+  // (https://crbug.com/1449114). Localhost and IP based host names are a common
+  // target for DevTools to  attach to. Exclude localhost and IP based host name
+  // for process reuse to work around the problem, unless a field parameter
+  // explicitly allows it.
+  const GURL& url = site_instance->GetSiteURL();
+  if (!features::kProcessPerSiteMainFrameAllowIPAndLocalhost.Get() &&
+      (url.HostIsIPAddress() || net::IsLocalHostname(url.host()))) {
+    return;
+  }
+
+  site_instance->set_process_reuse_policy(
+      SiteInstanceImpl::ProcessReusePolicy::
+          REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD);
 }
 
 }  // namespace

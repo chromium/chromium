@@ -988,6 +988,12 @@ constexpr base::FeatureParam<int> kProcessPerSiteMainFrameThreshold{
     &kProcessPerSiteUpToMainFrameThreshold, "ProcessPerSiteMainFrameThreshold",
     2};
 
+// Allows process reuse for localhost and IP based hosts when
+// `kProcessPerSiteUpToMainFrameThreshold` is enabled.
+constexpr base::FeatureParam<bool> kProcessPerSiteMainFrameAllowIPAndLocalhost{
+    &kProcessPerSiteUpToMainFrameThreshold,
+    "ProcessPerSiteMainFrameAllowIPAndLocalhost", false};
+
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
