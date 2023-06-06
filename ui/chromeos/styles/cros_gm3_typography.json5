@@ -80,6 +80,12 @@
         "font_weight": 500,
         "line_height": 24
       },
+      "title_2": {
+        "font_family": "'Google Sans Text Bold', 'Google Sans', 'Roboto', sans-serif",
+        "font_size": 13,
+        "font_weight": 700,
+        "line_height": 20
+      },
       "headline_1": {
         "font_family": "'Google Sans Text Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 15,

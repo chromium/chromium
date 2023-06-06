@@ -71,7 +71,7 @@ constexpr auto kTokenEquivalents =
     });
 
 // Returns a map of tokens to `FontInfo`.
-base::fixed_flat_map<TypographyToken, FontInfo, 40> MapFonts() {
+base::fixed_flat_map<TypographyToken, FontInfo, 41> MapFonts() {
   return base::MakeFixedFlatMap<TypographyToken, FontInfo>({
       /* Legacy tokens */
       {TypographyToken::kLegacyDisplay1,
@@ -175,6 +175,9 @@ base::fixed_flat_map<TypographyToken, FontInfo, 40> MapFonts() {
       {TypographyToken::kCrosTitle1,
        {FontFamily::kGoogleSans, gfx::Font::NORMAL, 16,
         gfx::Font::Weight::MEDIUM, 24}},
+      {TypographyToken::kCrosTitle2,
+       {FontFamily::kGoogleSans, gfx::Font::NORMAL, 13, gfx::Font::Weight::BOLD,
+        20}},
       {TypographyToken::kCrosHeadline1,
        {FontFamily::kGoogleSans, gfx::Font::NORMAL, 15,
         gfx::Font::Weight::MEDIUM, 22}},
@@ -258,7 +261,7 @@ class TypographyProviderImpl : public TypographyProvider {
     return iter->second;
   }
 
-  const base::fixed_flat_map<TypographyToken, FontInfo, 40> font_map_;
+  const base::fixed_flat_map<TypographyToken, FontInfo, 41> font_map_;
 };
 
 }  // namespace
