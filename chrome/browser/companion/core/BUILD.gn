@@ -17,7 +17,7 @@ static_library("core") {
     "promo_handler.h",
     "signin_delegate.h",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+
   deps = [
     "mojom:mojo_bindings",
     "proto",

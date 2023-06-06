@@ -1110,12 +1110,6 @@ extern const char kEnableLensPingDescription[];
 extern const char kCscName[];
 extern const char kCscDescription[];
 
-extern const char kCscPinnedName[];
-extern const char kCscPinnedDescription[];
-
-extern const char kCscVssName[];
-extern const char kCscVssDescription[];
-
 extern const char kLensOnQuickActionSearchWidgetName[];
 extern const char kLensOnQuickActionSearchWidgetDescription[];
 
