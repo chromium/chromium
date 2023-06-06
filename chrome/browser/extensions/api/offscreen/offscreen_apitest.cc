@@ -431,6 +431,44 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   EXPECT_FALSE(manager->GetOffscreenDocumentForExtension(*extension));
 }
 
+// Tests opening and immediately closing an offscreen document (so that the
+// close happens before it's fully loaded). Regression test for
+// https://crbug.com/1450784.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["offscreen"]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function openAndRapidlyClose() {
+             let openResult =
+                 chrome.offscreen.createDocument(
+                     {
+                       url: 'offscreen.html',
+                       reasons: ['TESTING'],
+                       justification: 'Testing'
+                     });
+             chrome.offscreen.closeDocument();
+             await chrome.test.assertPromiseRejects(
+                 openResult,
+                 'Error: Offscreen document closed before fully loading.');
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class GetAllScreensMediaOffscreenApiTest : public OffscreenApiTest {
  public:

@@ -131,8 +131,7 @@ void OffscreenCreateDocumentFunction::OnExtensionHostDestroyed(
     ExtensionHost* host) {
   SendResponseToExtension(
       Error("Offscreen document closed before fully loading."));
-  // The host is destroyed, so ensure we're no longer observing it.
-  DCHECK(!host_observer_.IsObserving());
+  // WARNING: `this` can be deleted now!
 }
 
 void OffscreenCreateDocumentFunction::OnExtensionHostDidStopFirstLoad(
@@ -153,6 +152,7 @@ void OffscreenCreateDocumentFunction::SendResponseToExtension(
 
   Respond(std::move(response_value));
   Release();  // Balanced in Run().
+  // WARNING: `this` can be deleted now!
 }
 
 OffscreenCloseDocumentFunction::OffscreenCloseDocumentFunction() = default;
