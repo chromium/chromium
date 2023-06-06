@@ -10,6 +10,7 @@
 #include <deque>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/win/object_watcher.h"
@@ -29,8 +30,8 @@ class CommandQueue : public base::win::ObjectWatcher::Delegate {
   CommandQueue& operator=(const CommandQueue&) = delete;
   ~CommandQueue() override;
 
-  HRESULT ExecuteCommandLists(
-      const std::vector<ID3D12CommandList*>& command_lists);
+  HRESULT ExecuteCommandList(ID3D12CommandList* command_list);
+  HRESULT ExecuteCommandLists(base::span<ID3D12CommandList*> command_lists);
 
   // It's a synchronous method only for testing, which will block the CPU until
   // the fence is signaled with the last fence value. Calling it on the GPU main
@@ -42,6 +43,9 @@ class CommandQueue : public base::win::ObjectWatcher::Delegate {
 
   void ReferenceUntilCompleted(ComPtr<IUnknown> object);
   void ReleaseCompletedResources();
+
+  uint64_t GetCompletedValue() const;
+  uint64_t GetLastFenceValue() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNCommandQueueTest, ReferenceAndRelease);

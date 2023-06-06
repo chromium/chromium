@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace webnn::dml {
 
@@ -49,10 +50,14 @@ std::unique_ptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
       new CommandQueue(std::move(command_queue), std::move(fence)));
 }
 
+HRESULT CommandQueue::ExecuteCommandList(ID3D12CommandList* command_list) {
+  return ExecuteCommandLists(base::make_span(&command_list, 1u));
+}
+
 HRESULT CommandQueue::ExecuteCommandLists(
-    const std::vector<ID3D12CommandList*>& command_lists) {
-  command_queue_->ExecuteCommandLists(command_lists.size(),
-                                      command_lists.data());
+    base::span<ID3D12CommandList*> command_lists) {
+  command_queue_->ExecuteCommandLists(
+      base::checked_cast<uint32_t>(command_lists.size()), command_lists.data());
   ++last_fence_value_;
   return command_queue_->Signal(fence_.Get(), last_fence_value_);
 }
@@ -109,6 +114,14 @@ void CommandQueue::ReleaseCompletedResources() {
          queued_objects_.front().fence_value <= completed_value) {
     queued_objects_.pop_front();
   }
+}
+
+uint64_t CommandQueue::GetCompletedValue() const {
+  return fence_->GetCompletedValue();
+}
+
+uint64_t CommandQueue::GetLastFenceValue() const {
+  return last_fence_value_;
 }
 
 CommandQueue::QueuedObject::QueuedObject(uint64_t fence_value,

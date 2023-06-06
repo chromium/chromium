@@ -61,7 +61,7 @@ TEST_F(WebNNCommandQueueTest, WaitSyncForGpuWorkCompleted) {
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
-  EXPECT_EQ(command_queue->ExecuteCommandLists({command_list.Get()}), S_OK);
+  EXPECT_EQ(command_queue->ExecuteCommandList(command_list.Get()), S_OK);
   EXPECT_EQ(command_queue->WaitSyncForTesting(), S_OK);
   EXPECT_EQ(command_allocator->Reset(), S_OK);
   EXPECT_EQ(command_list->Reset(command_allocator.Get(), nullptr), S_OK);
@@ -85,7 +85,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncOnce) {
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
-  EXPECT_EQ(command_queue->ExecuteCommandLists({command_list.Get()}), S_OK);
+  EXPECT_EQ(command_queue->ExecuteCommandList(command_list.Get()), S_OK);
 
   bool is_signaled = false;
   base::RunLoop run_loop;
@@ -119,7 +119,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnIncreasingFenceValue) {
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
-  EXPECT_EQ(command_queue->ExecuteCommandLists({command_list.Get()}), S_OK);
+  EXPECT_EQ(command_queue->ExecuteCommandList(command_list.Get()), S_OK);
 
   int32_t count = 2;
   base::RunLoop run_loop;
@@ -139,7 +139,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnIncreasingFenceValue) {
 
   // Call WaitAsync for the second time with fence value 2.
   ASSERT_EQ(command_list->Close(), S_OK);
-  EXPECT_EQ(command_queue->ExecuteCommandLists({command_list.Get()}), S_OK);
+  EXPECT_EQ(command_queue->ExecuteCommandList(command_list.Get()), S_OK);
   EXPECT_EQ(command_queue->WaitAsync(base::BindLambdaForTesting([&]() {
     if (--count) {
       return;
@@ -173,7 +173,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnSameFenceValue) {
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
-  EXPECT_EQ(command_queue->ExecuteCommandLists({command_list.Get()}), S_OK);
+  EXPECT_EQ(command_queue->ExecuteCommandList(command_list.Get()), S_OK);
 
   int32_t count = 2;
   base::RunLoop run_loop;

@@ -22,6 +22,7 @@ source_set("webnn") {
       "dml/command_queue.h",
       "dml/command_recorder.cc",
       "dml/command_recorder.h",
+      "dml/error.h",
       "dml/platform_functions.cc",
       "dml/platform_functions.h",
     ]

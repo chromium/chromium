@@ -20,11 +20,9 @@ class Adapter;
 class GraphDMLImpl;
 
 // CommandRecorder is mainly responsible for the initialization and execution of
-// a DirectML graph. It's a wrapper of D3D12 command recorder, and own's the
-// D3D12 command list, D3D12 command allocator, DirectML operator initializer
-// and so on. CommandRecorder will be owned and called by an execution context
-// class which performs GPU work, and manages command list recording and
-// submission to queues.
+// a DirectML graph. It wraps a DirectML command recorder, and manages the
+// Direct3D 12 command list and command allocator for GPU work recording and
+// submission.
 class CommandRecorder final {
  public:
   static std::unique_ptr<CommandRecorder> Create(
@@ -33,6 +31,23 @@ class CommandRecorder final {
   ~CommandRecorder();
   CommandRecorder(const CommandRecorder&) = delete;
   CommandRecorder& operator=(const CommandRecorder&) = delete;
+
+  // Get the command queue that this command recorder submits command list to.
+  CommandQueue* GetCommandQueue() const;
+
+  // Call the `Open()` method before recording any new commands. The `Open()`
+  // method would prepare the underlying command list and command allocator.
+  // After recording the commands, call the `CloseAndExecute()` method to submit
+  // the recorded command list to the command queue for GPU execution. The
+  // caller may need to call the `CommandQueue::WaitAsync()` method on the
+  // command queue to wait for the GPU execution to complete.
+  //
+  // The caller is allowed to open the command recorder without waiting for the
+  // GPU to complete execution of previous recorded commands. The `Open()`
+  // method would ensure the command allocator is not reset while the previous
+  // command list is still being used by the GPU.
+  HRESULT Open();
+  HRESULT CloseAndExecute();
 
   void ResourceBarrier(
       const std::vector<const D3D12_RESOURCE_BARRIER>& barriers);
@@ -50,18 +65,14 @@ class CommandRecorder final {
                        const std::vector<DML_BINDING_DESC>& input_bindings,
                        const std::vector<DML_BINDING_DESC>& output_bindings);
 
-  HRESULT CloseAndExecute() const;
-  // TODO(crbug.com/1273291): The command allocator can't be reset while a
-  // command list is still executing, so reset the command allocator when
-  // opening a new command recorder.
-  HRESULT ResetCommandList() const;
-
  private:
   CommandRecorder(scoped_refptr<Adapter> adapter,
                   ComPtr<ID3D12CommandAllocator> command_allocator,
-                  ComPtr<ID3D12GraphicsCommandList> command_list,
-                  ComPtr<IDMLOperatorInitializer> operator_initializer,
                   ComPtr<IDMLCommandRecorder> command_recorder);
+
+  bool is_open_ = false;
+  // The first call to `CloseAndExecute()` sets the first submitted fence value.
+  uint64_t last_submitted_fence_value_ = UINT64_MAX;
 
   scoped_refptr<Adapter> adapter_;
   ComPtr<ID3D12CommandAllocator> command_allocator_;
