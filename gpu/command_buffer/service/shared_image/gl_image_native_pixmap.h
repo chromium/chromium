@@ -14,7 +14,6 @@
 
 namespace media {
 class V4L2SliceVideoDecodeAccelerator;
-class VaapiPictureNativePixmapOzone;
 }  // namespace media
 
 namespace ui {
@@ -55,7 +54,6 @@ class GPU_GLES2_EXPORT GLImageNativePixmap : public gl::GLImage {
  private:
   friend class gles2::GLES2DecoderImpl;
   friend class media::V4L2SliceVideoDecodeAccelerator;
-  friend class media::VaapiPictureNativePixmapOzone;
 
   explicit GLImageNativePixmap(const gfx::Size& size);
   ~GLImageNativePixmap() override;

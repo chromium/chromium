@@ -10,7 +10,6 @@ import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
-import("//media/gpu/args.gni")
 import("//testing/test.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
@@ -580,10 +579,6 @@ test("gl_unittests") {
     ]
   }
 
-  if (use_vaapi) {
-    sources += [ "gl_image_gl_texture_unittest.cc" ]
-  }
-
   include_dirs = [ "//third_party/khronos" ]
 
   deps = [
@@ -602,19 +597,6 @@ test("gl_unittests") {
     "//ui/platform_window",
     "//ui/platform_window:platform_impls",
   ]
-
-  if (use_vaapi) {
-    # gl_image_gl_texture_unittest.cc cannot easily be made to run as part of
-    # media_unittests due to its reliance on particular GL environment setup
-    # necessary for gl_image_test_template.h. Instead just leave it here until
-    # it is eliminated, at which point these deps can also be eliminated.
-    # TODO(crbug.com/1310018): Eliminate these deps once
-    # gl_image_gl_texture_unittest.cc is eliminated.
-    deps += [
-      "//media/gpu",
-      "//media/gpu/vaapi",
-    ]
-  }
 
   data_deps = [
     "//testing/buildbot/filters:gl_unittests_filters",

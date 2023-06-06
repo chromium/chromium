@@ -56,12 +56,6 @@ source_set("vaapi") {
     "vaapi_jpeg_decoder.h",
     "vaapi_jpeg_encoder.cc",
     "vaapi_jpeg_encoder.h",
-    "vaapi_picture.cc",
-    "vaapi_picture.h",
-    "vaapi_picture_factory.cc",
-    "vaapi_picture_factory.h",
-    "vaapi_video_decode_accelerator.cc",
-    "vaapi_video_decode_accelerator.h",
     "vaapi_video_decoder.cc",
     "vaapi_video_decoder.h",
     "vaapi_video_decoder_delegate.cc",
@@ -132,43 +126,6 @@ source_set("vaapi") {
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
       "//components/chromeos_camera:jpeg_encode_accelerator",
       "//components/chromeos_camera:mjpeg_decode_accelerator",
-    ]
-  }
-
-  if (use_ozone || use_egl) {
-    sources += [
-      "vaapi_picture_native_pixmap.cc",
-      "vaapi_picture_native_pixmap.h",
-    ]
-  }
-
-  if (use_vaapi_x11) {
-    deps += [ "//ui/gfx/x" ]
-    sources += [
-      "gl_image_egl_pixmap.cc",
-      "gl_image_egl_pixmap.h",
-      "vaapi_picture_native_pixmap_angle.cc",
-      "vaapi_picture_native_pixmap_angle.h",
-    ]
-  }
-
-  if (use_ozone) {
-    deps += [
-      "//media/gpu:buffer_validation",
-      "//ui/ozone",
-    ]
-    sources += [
-      "vaapi_picture_native_pixmap_ozone.cc",
-      "vaapi_picture_native_pixmap_ozone.h",
-    ]
-  }
-
-  if (use_egl) {
-    sources += [
-      "gl_image_gl_texture.cc",
-      "gl_image_gl_texture.h",
-      "vaapi_picture_native_pixmap_egl.cc",
-      "vaapi_picture_native_pixmap_egl.h",
     ]
   }
 }
@@ -247,7 +204,6 @@ source_set("unit_test") {
   sources = [
     "h264_vaapi_video_encoder_delegate_unittest.cc",
     "vaapi_image_decode_accelerator_worker_unittest.cc",
-    "vaapi_video_decode_accelerator_unittest.cc",
     "vaapi_video_encode_accelerator_unittest.cc",
     "vaapi_wrapper_unittest.cc",
     "vp9_vaapi_video_encoder_delegate_unittest.cc",
