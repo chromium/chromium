@@ -58,6 +58,13 @@ class FilesPolicyNotificationManager
   // Returns whether IO task is being tracked.
   bool HasIOTask(file_manager::io_task::IOTaskId task_id) const;
 
+ protected:
+  // The number of notifications shown so far. Used to calculate a unique
+  // notification ID. Only applies to non IOTasks operations (upload, download,
+  // etc.) as notifications for IOTasks are shown based on the task state from
+  // the SystemNotificationManager.
+  size_t notification_count_ = 0;
+
  private:
   // Holds all information related to IO task warning. Any extra information
   // needed for custom messaging should be added here.

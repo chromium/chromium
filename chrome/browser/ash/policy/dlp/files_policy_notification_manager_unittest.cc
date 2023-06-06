@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -143,6 +144,46 @@ TEST_F(FilesPolicyNotificationManagerTest, AddTrashTask) {
   EXPECT_FALSE(fpnm_->HasIOTask(task_id));
 }
 
+// FilesPolicyNotificationManager assigns new IDs for new notifications,
+// regardless of the action and files.
+TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
+  std::string notification_id_1 =
+      kUploadBlockedNotificationId + std::string("_0");
+  std::string notification_id_2 =
+      kUploadBlockedNotificationId + std::string("_1");
+  std::string notification_id_3 =
+      kOpenBlockedNotificationId + std::string("_2");
+
+  std::vector<base::FilePath> files_1 = {base::FilePath("file1.txt"),
+                                         base::FilePath("file2.txt"),
+                                         base::FilePath("file3.txt")};
+
+  // None are shown.
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_1));
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
+  // Show first notification for upload.
+  fpnm_->ShowDlpBlockNotification(dlp::FileAction::kUpload, files_1);
+  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
+  // Show another notification for the same action - should get a new ID.
+  fpnm_->ShowDlpBlockNotification(dlp::FileAction::kUpload, files_1);
+  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
+  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
+  // Show a notification for a different action & files - should still increment
+  // the ID.
+  fpnm_->ShowDlpBlockNotification(
+      dlp::FileAction::kOpen,
+      {base::FilePath("file1.txt"), base::FilePath("file2.txt")});
+  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
+  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
+  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_3));
+}
+
 class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
                           public ::testing::WithParamInterface<
                               std::tuple<dlp::FileAction, std::string>> {};
@@ -158,7 +199,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(dlp::FileAction::kShare, kOpenBlockedNotificationId)));
 
 TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification) {
-  auto [action, notification_id] = GetParam();
+  auto [action, id_prefix] = GetParam();
+  const std::string notification_id = id_prefix + std::string("_0");
 
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 

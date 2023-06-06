@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
+#include <cstddef>
+
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -53,6 +57,28 @@ file_manager::io_task::IOTaskController* GetIOTaskController(
     return nullptr;
   }
   return volume_manager->io_task_controller();
+}
+
+// Computes and returns a new notification ID for `action`.
+std::string GetNotificationId(dlp::FileAction action, size_t count) {
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      return kDownloadBlockedNotificationId + std::string("_") +
+             base::NumberToString(count);
+    case dlp::FileAction::kUpload:
+      return kUploadBlockedNotificationId + std::string("_") +
+             base::NumberToString(count);
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      return kOpenBlockedNotificationId + std::string("_") +
+             base::NumberToString(count);
+    case dlp::FileAction::kCopy:
+    case dlp::FileAction::kMove:
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
+      // TODO(b/269609831): Return valid ID.
+      return "";
+  }
 }
 }  // namespace
 
@@ -91,13 +117,11 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
 void FilesPolicyNotificationManager::ShowDlpBlockNotification(
     dlp::FileAction action,
     const std::vector<base::FilePath>& blocked_files) {
-  std::string notification_id;
   std::u16string title;
   std::u16string message;
 
   switch (action) {
     case dlp::FileAction::kDownload:
-      notification_id = kDownloadBlockedNotificationId,
       title =
           l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE);
       // ignore `blocked_files.size()` for downloads.
@@ -105,7 +129,6 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
           IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE);
       break;
     case dlp::FileAction::kUpload:
-      notification_id = kUploadBlockedNotificationId,
       title =
           l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE);
       message = l10n_util::GetPluralStringFUTF16(
@@ -113,7 +136,6 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
       break;
     case dlp::FileAction::kOpen:
     case dlp::FileAction::kShare:
-      notification_id = kOpenBlockedNotificationId,
       title = l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE);
       message = l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE, blocked_files.size());
@@ -125,6 +147,8 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
       // TODO(b/269609831): Show correct notification here.
       return;
   }
+  const std::string notification_id =
+      GetNotificationId(action, notification_count_++);
   auto notification = file_manager::CreateSystemNotification(
       notification_id, std::move(title), std::move(message),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
