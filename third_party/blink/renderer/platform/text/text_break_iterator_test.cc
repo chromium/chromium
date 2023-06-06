@@ -79,7 +79,7 @@ class TextBreakIteratorTest : public testing::Test {
     return result;
   }
 
- private:
+ protected:
   String test_string_;
 };
 
@@ -295,6 +295,15 @@ TEST_F(TextBreakIteratorTest, GraphemesClusterListTest) {
   // ARABIC LETTER MEEM + ARABIC FATHA
   EXPECT_EQ(GraphemesClusterList(u"\u0645\u064E", 0, 2),
             Vector<unsigned>({0, 0}));
+}
+
+TEST_F(TextBreakIteratorTest, SoftHyphen) {
+  SetTestString("xy\u00ADxy\u00ADxy xy\u00ADxy");
+  LazyLineBreakIterator break_iterator(test_string_);
+  break_iterator.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
+  TestNextBreakOpportunity({3, 6, 9, 12, 14}, break_iterator);
+  break_iterator.EnableSoftHyphen(false);
+  TestNextBreakOpportunity({9, 14}, break_iterator);
 }
 
 }  // namespace blink

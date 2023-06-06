@@ -311,9 +311,6 @@ class CORE_EXPORT NGLineBreaker {
   // boundaries for 'break-word' after overflow.
   bool override_break_anywhere_ = false;
 
-  // True when breaking at soft hyphens (U+00AD) is allowed.
-  bool enable_soft_hyphen_ = true;
-
   bool disable_score_line_break_ = false;
 
   // True when the line should be non-empty if |IsLastLine|..

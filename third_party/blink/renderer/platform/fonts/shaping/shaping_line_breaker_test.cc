@@ -408,7 +408,7 @@ TEST_P(BreakOpportunityTest, Next) {
               testing::ElementsAreArray(data.break_positions));
 
   if (!data.break_positions_with_soft_hyphen_disabled.empty()) {
-    breaker.DisableSoftHyphen();
+    break_iterator.EnableSoftHyphen(false);
     EXPECT_THAT(BreakPositionsByNext(breaker, string),
                 testing::ElementsAreArray(
                     data.break_positions_with_soft_hyphen_disabled));
@@ -430,7 +430,7 @@ TEST_P(BreakOpportunityTest, Previous) {
               testing::ElementsAreArray(data.break_positions));
 
   if (!data.break_positions_with_soft_hyphen_disabled.empty()) {
-    breaker.DisableSoftHyphen();
+    break_iterator.EnableSoftHyphen(false);
     EXPECT_THAT(BreakPositionsByPrevious(breaker, string),
                 testing::ElementsAreArray(
                     data.break_positions_with_soft_hyphen_disabled));

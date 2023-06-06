@@ -20,8 +20,7 @@ ShapingLineBreaker::ShapingLineBreaker(
       shape_callback_context_(shape_callback_context),
       result_(result),
       break_iterator_(break_iterator),
-      hyphenation_(hyphenation),
-      is_soft_hyphen_enabled_(true) {
+      hyphenation_(hyphenation) {
   // Line breaking performance relies on high-performance x-position to
   // character offset lookup. Ensure that the desired cache has been computed.
   DCHECK(result_);
@@ -159,24 +158,12 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::Hyphenate(
 ShapingLineBreaker::BreakOpportunity
 ShapingLineBreaker::PreviousBreakOpportunity(unsigned offset,
                                              unsigned start) const {
-  const String& text = GetText();
-  if (UNLIKELY(!IsSoftHyphenEnabled())) {
-    for (;; offset--) {
-      offset = break_iterator_->PreviousBreakOpportunity(offset, start);
-      if (offset <= start || offset >= text.length() ||
-          text[offset - 1] != kSoftHyphenCharacter) {
-        if (IsBreakableSpace(text[offset - 1]))
-          return {offset, FindNonHangableEnd(text, offset - 1), false};
-        return {offset, false};
-      }
-    }
-  }
-
   if (UNLIKELY(hyphenation_))
     return Hyphenate(offset, start, true);
 
   // If the break opportunity is preceded by trailing spaces, find the
   // end of non-hangable character (i.e., start of the space run).
+  const String& text = GetText();
   unsigned break_offset =
       break_iterator_->PreviousBreakOpportunity(offset, start);
   if (IsBreakableSpace(text[break_offset - 1]))
@@ -189,24 +176,13 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::NextBreakOpportunity(
     unsigned offset,
     unsigned start,
     unsigned len) const {
-  const String& text = GetText();
-  if (UNLIKELY(!IsSoftHyphenEnabled())) {
-    for (;; offset++) {
-      offset = break_iterator_->NextBreakOpportunity(offset);
-      if (offset >= text.length() || text[offset - 1] != kSoftHyphenCharacter) {
-        if (IsBreakableSpace(text[offset - 1]))
-          return {offset, FindNonHangableEnd(text, offset - 1), false};
-        return {offset, false};
-      }
-    }
-  }
-
   if (UNLIKELY(hyphenation_))
     return Hyphenate(offset, start, false);
 
   // We should also find the beginning of the space run to find the
   // end of non-hangable character (i.e., start of the space run),
   // which may be useful to avoid reshaping.
+  const String& text = GetText();
   unsigned break_offset = break_iterator_->NextBreakOpportunity(offset, len);
   if (IsBreakableSpace(text[break_offset - 1]))
     return {break_offset, FindNonHangableEnd(text, break_offset - 1), false};

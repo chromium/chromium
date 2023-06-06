@@ -1330,8 +1330,6 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
       };
   ShapingLineBreaker breaker(&item_shape_result, &break_iterator_, hyphenation_,
                              shape_callback, &shape_callback_context);
-  if (!enable_soft_hyphen_)
-    breaker.DisableSoftHyphen();
 
   // Use kStartShouldBeSafe if at the beginning of a line.
   unsigned options = ShapingLineBreaker::kDefaultOptions;
@@ -1588,14 +1586,6 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
     if (wtf_size_t word_len = non_hangable_run_end - start_offset) {
       // Ignore soft-hyphen opportunities if `hyphens: none`.
       bool has_hyphen = text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
-      if (UNLIKELY(has_hyphen && !enable_soft_hyphen_ &&
-                   non_hangable_run_end == end_offset)) {
-        ++end_offset;
-        if (end_offset < item.EndOffset())
-          continue;
-        has_hyphen = false;
-      }
-
       if (UNLIKELY(hyphenation_)) {
         // When 'hyphens: auto', compute all hyphenation opportunities.
         if (!hyphen_inline_size) {
@@ -1828,12 +1818,7 @@ void NGLineBreaker::AppendCandidates(const NGInlineItemResult& item_result,
     wtf_size_t next_offset;
     if (auto_wrap_) {
       const wtf_size_t len = std::min(offset.end + 1, text_content.length());
-      next_offset = offset.start;
-      do {
-        next_offset =
-            break_iterator_.NextBreakOpportunity(next_offset + 1, len);
-      } while (UNLIKELY(!enable_soft_hyphen_) && next_offset < len &&
-               text_content[next_offset - 1] == kSoftHyphenCharacter);
+      next_offset = break_iterator_.NextBreakOpportunity(offset.start + 1, len);
     } else {
       next_offset = offset.end + 1;
     }
@@ -1996,7 +1981,6 @@ bool NGLineBreaker::CanBreakInside(const NGInlineItemResult& item_result) {
   }
   const wtf_size_t next_offset =
       break_iterator_.NextBreakOpportunity(offset.start + 1);
-  // TODO: soft-hyphen
   return next_offset < offset.end;
 }
 
@@ -3411,7 +3395,8 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
     // Check that cache fields are already setup correctly.
     DCHECK_EQ(auto_wrap_, ShouldAutoWrap(style));
     if (auto_wrap_) {
-      DCHECK_EQ(enable_soft_hyphen_, style.GetHyphens() != Hyphens::kNone);
+      DCHECK_EQ(break_iterator_.IsSoftHyphenEnabled(),
+                style.GetHyphens() != Hyphens::kNone);
       DCHECK_EQ(break_iterator_.Locale(), style.LocaleForLineBreakIterator());
     }
     ShapeResultSpacing<String> spacing(spacing_.Text(), is_svg_text_);
@@ -3456,7 +3441,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
     }
     break_iterator_.SetBreakType(line_break_type);
 
-    enable_soft_hyphen_ = style.GetHyphens() != Hyphens::kNone;
+    break_iterator_.EnableSoftHyphen(style.GetHyphens() != Hyphens::kNone);
     hyphenation_ = style.GetHyphenationWithLimits();
 
     if (style.ShouldBreakSpaces()) {

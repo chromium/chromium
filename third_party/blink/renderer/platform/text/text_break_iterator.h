@@ -236,6 +236,10 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   BreakSpaceType BreakSpace() const { return break_space_; }
   void SetBreakSpace(BreakSpaceType break_space) { break_space_ = break_space; }
 
+  // Enable/disable breaking at soft hyphens (U+00AD). Enabled by default.
+  bool IsSoftHyphenEnabled() const { return !disable_soft_hyphen_; }
+  void EnableSoftHyphen(bool value) { disable_soft_hyphen_ = !value; }
+
   inline bool IsBreakable(int pos,
                           int& next_breakable,
                           LineBreakType line_break_type) const {
@@ -344,6 +348,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   unsigned start_offset_ = 0;
   LineBreakType break_type_;
   BreakSpaceType break_space_ = BreakSpaceType::kBeforeEverySpace;
+  bool disable_soft_hyphen_ = false;
 };
 
 // Iterates over "extended grapheme clusters", as defined in UAX #29.

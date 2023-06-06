@@ -374,8 +374,11 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
             // Adjust the offset by |start_offset_| because |break_iterator| has
             // text after |start_offset_|.
             DCHECK_GE(i + prior_context.length, start_offset_);
-            next_break = break_iterator->following(
-                i - 1 + prior_context.length - start_offset_);
+            next_break = i - 1 + prior_context.length - start_offset_;
+            do {
+              next_break = break_iterator->following(next_break);
+            } while (UNLIKELY(disable_soft_hyphen_ && next_break > 0 &&
+                              str[next_break - 1] == kSoftHyphenCharacter));
             if (next_break >= 0) {
               next_break = next_break + start_offset_ - prior_context.length;
             }
