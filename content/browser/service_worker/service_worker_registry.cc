@@ -1500,6 +1500,12 @@ void ServiceWorkerRegistry::DidStoreRegistration(
     return;
   }
 
+  auto registration_stored_callback =
+      base::BindOnce(&ServiceWorkerRegistry::NotifyRegistrationStored,
+                     weak_factory_.GetWeakPtr(), stored_registration_id,
+                     stored_resources_total_size_bytes, stored_scope, key,
+                     std::move(callback));
+
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
     quota_manager_proxy_->NotifyBucketModified(
@@ -1507,9 +1513,18 @@ void ServiceWorkerRegistry::DidStoreRegistration(
         storage::BucketLocator::ForDefaultBucket(key),
         stored_resources_total_size_bytes - deleted_resources_size,
         base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-        base::DoNothing());
+        std::move(registration_stored_callback));
+  } else {
+    std::move(registration_stored_callback).Run();
   }
+}
 
+void ServiceWorkerRegistry::NotifyRegistrationStored(
+    int64_t stored_registration_id,
+    uint64_t stored_resources_total_size_bytes,
+    const GURL& stored_scope,
+    const blink::StorageKey& key,
+    StatusCallback callback) {
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(stored_registration_id);
   if (registration) {
@@ -1528,10 +1543,14 @@ void ServiceWorkerRegistry::DidStoreRegistration(
     }
   }
 
-  if (storage_policy_observer_)
+  if (storage_policy_observer_) {
     storage_policy_observer_->StartTrackingOrigin(key.origin());
+  }
 
-  std::move(callback).Run(status);
+  // For all other blink::ServiceWorkerStatusCode entries,
+  // DidStoreRegistration() schedules deletion and starts over, so the only
+  // status code that can be called here is the kOk one.
+  std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);
 }
 
 void ServiceWorkerRegistry::DidDeleteRegistration(
@@ -1552,15 +1571,29 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     return;
   }
 
+  auto notify_registration_deleted_callback = base::BindOnce(
+      &ServiceWorkerRegistry::NotifyRegistrationDeletedForStorageKey,
+      weak_factory_.GetWeakPtr(), registration_id, stored_scope, key,
+      storage_key_state, std::move(callback));
+
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
     quota_manager_proxy_->NotifyBucketModified(
         storage::QuotaClientType::kServiceWorker,
         storage::BucketLocator::ForDefaultBucket(key), -deleted_resources_size,
         base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-        base::DoNothing());
+        std::move(notify_registration_deleted_callback));
+  } else {
+    std::move(notify_registration_deleted_callback).Run();
   }
+}
 
+void ServiceWorkerRegistry::NotifyRegistrationDeletedForStorageKey(
+    int64_t registration_id,
+    const GURL& stored_scope,
+    const blink::StorageKey& key,
+    storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state,
+    StatusCallback callback) {
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id);
   if (registration)
@@ -1580,7 +1613,10 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     }
   }
 
-  std::move(callback).Run(status);
+  // For all other blink::ServiceWorkerStatusCode entries,
+  // DidDeleteRegistration() schedules deletion and starts over, so the only
+  // status code that can be called here is the kOk one.
+  std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);
 }
 
 void ServiceWorkerRegistry::DidUpdateRegistration(

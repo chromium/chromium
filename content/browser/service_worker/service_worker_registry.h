@@ -383,6 +383,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       uint64_t deleted_resources_size);
+  void NotifyRegistrationStored(int64_t stored_registration_id,
+                                uint64_t stored_resources_total_size_bytes,
+                                const GURL& stored_scope,
+                                const blink::StorageKey& key,
+                                StatusCallback callback);
   void DidDeleteRegistration(
       int64_t registration_id,
       const GURL& stored_scope,
@@ -391,6 +396,12 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       uint64_t deleted_resources_size,
       storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state);
+  void NotifyRegistrationDeletedForStorageKey(
+      int64_t registration_id,
+      const GURL& stored_scope,
+      const blink::StorageKey& key,
+      storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state,
+      StatusCallback callback);
   void DidUpdateRegistration(
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus status);
