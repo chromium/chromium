@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
@@ -893,8 +894,7 @@ bool BrowserDataBackMigrator::MergePreferences(
     return false;
   }
 
-  std::string current_path;
-  MergeLacrosPreferences(*ash_root_dict, current_path, lacros_root.value(), 0u);
+  MergeLacrosPreferences(*ash_root_dict, {}, lacros_root.value());
 
   // Preferences that were split between Ash and Lacros relate to extensions.
   // Here we need to take the preferences from Lacros that were removed from
@@ -958,48 +958,61 @@ bool BrowserDataBackMigrator::MergePreferences(
 // static
 bool BrowserDataBackMigrator::MergeLacrosPreferences(
     base::Value::Dict& ash_root_dict,
-    std::string& current_dotted_path,
-    const base::Value& current_value,
-    unsigned int recursion_depth) {
-  if (recursion_depth >= kMaxRecursionDepth) {
+    const std::vector<std::string>& path,
+    const base::Value& current_value) {
+  if (path.size() >= kMaxRecursionDepth) {
     LOG(WARNING) << "We have reached maximum recursion depth "
                  << kMaxRecursionDepth
                  << " and we are stopping MergeLacrosPreferences()";
     return false;
   }
 
-  // If the |current_dotted_path| was split or ash-only, then ignore it.
-  if (base::Contains(browser_data_migrator_util::kSplitPreferencesKeys,
-                     current_dotted_path) ||
-      base::Contains(browser_data_migrator_util::kAshOnlyPreferencesKeys,
-                     current_dotted_path)) {
-    return true;
+  // If the |path| was split or ash-only, then ignore it.
+  // For predefined path, each component should not contain '.' so filter
+  // them out to avoid finding wrong paths.
+  if (base::ranges::all_of(path, [](const std::string& component) {
+        return component.find('.') == std::string::npos;
+      })) {
+    const std::string dotted_path = base::JoinString(path, ".");
+    if (base::Contains(browser_data_migrator_util::kSplitPreferencesKeys,
+                       dotted_path) ||
+        base::Contains(browser_data_migrator_util::kAshOnlyPreferencesKeys,
+                       dotted_path)) {
+      return true;
+    }
   }
 
   // If current value is not a dictionary, then it is a final pref.
   // Merge it into the |ash_root_dict|.
   if (!current_value.is_dict()) {
-    ash_root_dict.SetByDottedPath(current_dotted_path, current_value.Clone());
+    // Guaranteed by the caller, that first value is a dict.
+    DCHECK(!path.empty());
 
+    base::Value::Dict* dict = &ash_root_dict;
+    for (const auto& key :
+         base::span<const std::string>(path.begin(), path.size() - 1)) {
+      base::Value* child = dict->Find(key);
+      dict = child ? child->GetIfDict() : dict->EnsureDict(key);
+      if (!dict) {
+        // There's an non-dict entry at non-last component of the path.
+        // Fail here. This behavior is to be compatible with SetDottedPath(),
+        // which is used in the orignal code not to change the detailed
+        // behavior for urgent fix.
+        return false;
+      }
+    }
+    dict->Set(path.back(), current_value.Clone());
     return true;
   }
+
   // Otherwise, traverse all child elements of the current dictionary.
-  for (const auto child_entry : current_value.GetDict()) {
-    const std::string& child_entry_key = child_entry.first;
-    const base::Value* child_entry_value = &child_entry.second;
-
-    std::string child_dotted_path;
-    // Can be empty if it is a root dictionary.
-    if (current_dotted_path.empty()) {
-      child_dotted_path = child_entry_key;
-    } else {
-      child_dotted_path = current_dotted_path + "." + child_entry_key;
-    }
-
-    if (!MergeLacrosPreferences(ash_root_dict, child_dotted_path,
-                                *child_entry_value, recursion_depth + 1u)) {
+  std::vector<std::string> child_path = path;
+  for (const auto [child_key, child_value] : current_value.GetDict()) {
+    child_path.push_back(child_key);
+    if (!MergeLacrosPreferences(ash_root_dict, child_path, child_value)) {
       return false;
     }
+    child_path.pop_back();
   }
 
   return true;
