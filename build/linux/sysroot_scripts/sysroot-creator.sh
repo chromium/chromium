@@ -779,6 +779,11 @@ HacksAndPatches() {
   sed -i 's|\(#define\s\+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT\)|// \1|' \
     "${cppconfig_h}"
 
+  # Include limits.h in stdlib.h to fix an ODR issue
+  # (https://sourceware.org/bugzilla/show_bug.cgi?id=30516)
+  local stdlib_h="${usr_include}/stdlib.h"
+  sed -i '/#include <stddef.h>/a #include <limits.h>' "${stdlib_h}"
+
   # This is for chrome's ./build/linux/pkg-config-wrapper
   # which overwrites PKG_CONFIG_LIBDIR internally
   SubBanner "Move pkgconfig scripts"
