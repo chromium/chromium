@@ -1275,7 +1275,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   if (!column_spanner_path_) {
     const TextWrap text_wrap = Style().GetTextWrap();
     initiate_balancing = text_wrap == TextWrap::kBalance && !break_token;
-    if (UNLIKELY(text_wrap == TextWrap::kPretty)) {
+    if (UNLIKELY(text_wrap == TextWrap::kPretty || initiate_balancing)) {
       score_line_break_context = context_->ScoreLineBreakContext();
       use_score_line_break =
           score_line_break_context && score_line_break_context->IsActive();
@@ -1336,9 +1336,21 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       DCHECK_GT(line_opportunity.AvailableInlineSize(), LayoutUnit());
       DCHECK_EQ(opportunity.rect.BlockEndOffset(), LayoutUnit::Max());
       DCHECK(!opportunity.HasShapeExclusions());
-      context_->SetBalancedAvailableWidth(
-          NGParagraphLineBreaker::AttemptParagraphBalancing(
-              Node(), ConstraintSpace(), line_opportunity));
+      if (use_score_line_break) {
+        DCHECK(RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled());
+        DCHECK_EQ(ConstraintSpace().AvailableSize().inline_size,
+                  line_opportunity.AvailableInlineSize());
+        DCHECK(score_line_break_context->LineBreakPoints().empty());
+        DCHECK_EQ(score_line_break_context->LineBreakPointsIndex(), 0u);
+        NGScoreLineBreaker optimizer(Node(), ConstraintSpace(),
+                                     line_opportunity, break_token,
+                                     &ExclusionSpace());
+        optimizer.BalanceBreakPoints(*score_line_break_context);
+      } else {
+        context_->SetBalancedAvailableWidth(
+            NGParagraphLineBreaker::AttemptParagraphBalancing(
+                Node(), ConstraintSpace(), line_opportunity));
+      }
     } else if (use_score_line_break) {
       DCHECK(score_line_break_context->LineBreakPoints().empty());
       DCHECK_EQ(score_line_break_context->LineBreakPointsIndex(), 0u);

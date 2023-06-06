@@ -215,6 +215,10 @@ inline bool NeedsOptimalInlineChildLayoutContext(const NGInlineNode& node) {
     DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
     return !node.IsScoreLineBreakDisabled();
   }
+  if (UNLIKELY(wrap == TextWrap::kBalance)) {
+    return RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled() &&
+           !node.IsScoreLineBreakDisabled();
+  }
   return false;
 }
 
