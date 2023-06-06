@@ -2,6 +2,34 @@
   :host {
     color: var(--cr-primary-text-color);
   }
+
+  #left-illustration,
+  #right-illustration {
+    position: absolute;
+    top:0;
+    width: 20vw;
+  }
+
+  #left-illustration {
+    content: url(images/left_illustration.svg);
+    left: 0;
+  }
+
+  #right-illustration {
+    content: url(images/right_illustration.svg);
+    right: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #left-illustration {
+      content: url(images/left_illustration_dark.svg);
+    }
+
+    #right-illustration {
+      content: url(images/right_illustration_dark.svg);
+    }
+  }
 </style>
 
-<h1>$i18n{title}</h1>
+<img id="left-illustration" alt="">
+<img id="right-illustration" alt="">

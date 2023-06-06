@@ -19,8 +19,8 @@
 
 namespace {
 // Temporary until the mocks are ready.
-constexpr int kDialogWidth = 512;
-constexpr int kDialogHeight = 569;
+constexpr int kDialogWidth = 800;
+constexpr int kDialogHeight = 600;
 }  // namespace
 
 void ShowWaffleDialog(Browser& browser) {

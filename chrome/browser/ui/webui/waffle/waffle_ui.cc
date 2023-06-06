@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/signin_resources.h"
 #include "chrome/grit/waffle_resources.h"
 #include "chrome/grit/waffle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +26,15 @@ WaffleUI::WaffleUI(content::WebUI* web_ui)
       chrome::kChromeUIWaffleHost);
 
   source->AddLocalizedString("title", IDS_WAFFLE_PAGE_TITLE);
+
+  source->AddResourcePath("images/left_illustration.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
+  source->AddResourcePath("images/left_illustration_dark.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
+  source->AddResourcePath("images/right_illustration.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
+  source->AddResourcePath("images/right_illustration_dark.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kWaffleResources, kWaffleResourcesSize),
