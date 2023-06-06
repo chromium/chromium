@@ -19,9 +19,6 @@ interface BookmarkUiObserver {
     /** @see BookmarkDelegate#openFolder(BookmarkId) */
     default void onFolderStateSet(BookmarkId folder) {}
 
-    /** Called when a bookmark menu item is opened. */
-    default void onBookmarkItemMenuOpened() {}
-
     /** Called when the bookmark UI mode changes. */
     default void onUiModeChanged(@BookmarkUiMode int mode) {}
 }

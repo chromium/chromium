@@ -274,11 +274,6 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         }
     }
 
-    @Override
-    public void onBookmarkItemMenuOpened() {
-        mModel.set(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE, false);
-    }
-
     // DragReorderableListAdapter.DragListener implementation.
 
     @Override
