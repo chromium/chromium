@@ -58937,6 +58937,8 @@ from previous Chrome versions.
   <int value="-2088263177" label="EnableMixedContentDownloadDialog:enabled"/>
   <int value="-2087724986" label="ShelfPalmRejectionSwipeOffset:enabled"/>
   <int value="-2087444854" label="ThreadWrapperUsesMetronome:disabled"/>
+  <int value="-2086690409"
+      label="EnableExtensionsPermissionsForSupervisedUsersOnDesktop:enabled"/>
   <int value="-2085212970" label="FastPairHID:enabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
@@ -61212,6 +61214,7 @@ from previous Chrome versions.
   <int value="-926236394" label="SendTabToSelfHistory:enabled"/>
   <int value="-926039080" label="VaapiVp9kSVCHWEncoding:disabled"/>
   <int value="-923422400" label="DiscardOccludedBitmaps:enabled"/>
+  <int value="-921755651" label="EnableManagedByParentUi:disabled"/>
   <int value="-920483976" label="AccessCodeCastRememberDevices:disabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-920001827" label="NearbySharingSelfShareAutoAccept:disabled"/>
@@ -63024,6 +63027,8 @@ from previous Chrome versions.
   <int value="36110634" label="AllowScrollSettings:disabled"/>
   <int value="36422284"
       label="AutofillSaveCardDialogUnlabeledExpirationDate:enabled"/>
+  <int value="36536806"
+      label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:disabled"/>
   <int value="37024318" label="disable-affiliation-based-matching"/>
   <int value="38213894" label="PrivacySettingsRedesign:enabled"/>
   <int value="38904620" label="TabSwitcherLongpressMenu:enabled"/>
@@ -63634,6 +63639,8 @@ from previous Chrome versions.
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>
   <int value="358493847" label="BackgroundLoader:disabled"/>
   <int value="358906344" label="NotificationsRefresh:disabled"/>
+  <int value="359006230"
+      label="SupervisedPrefsControlledBySupervisedStore:enabled"/>
   <int value="359601954" label="CrostiniUsbSupport:enabled"/>
   <int value="359896413" label="SplitPartiallyOccludedQuads:disabled"/>
   <int value="359918746"
@@ -63654,6 +63661,7 @@ from previous Chrome versions.
       label="AutofillUpstreamUseAlternateSecureDataType:disabled"/>
   <int value="365068212" label="PiexWasm:disabled"/>
   <int value="365467768" label="prefetch-search-results"/>
+  <int value="365581200" label="EnableSupervisionOnDesktopAndIOS:disabled"/>
   <int value="365737168" label="SingleTouchSelect:disabled"/>
   <int value="366860338" label="InternalServerSideSpeechRecognition:enabled"/>
   <int value="367063319" label="PasswordImport:disabled"/>
@@ -63758,6 +63766,7 @@ from previous Chrome versions.
   <int value="416691040" label="SendTabToSelfOmniboxSendingAnimation:disabled"/>
   <int value="416760194" label="ExoLockNotification:disabled"/>
   <int value="416887895" label="enable-password-change-support"/>
+  <int value="417076452" label="EnableManagedByParentUi:enabled"/>
   <int value="417709910"
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
@@ -65047,6 +65056,8 @@ from previous Chrome versions.
   <int value="1120428727" label="TabGridLayoutAndroid:enabled"/>
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
+  <int value="1124100808"
+      label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:enabled"/>
   <int value="1126061778" label="CaptureThumbnailOnLoadFinished:enabled"/>
   <int value="1126956909" label="UseXpsForPrintingFromPdf:disabled"/>
   <int value="1127085005" label="TreatUnsafeDownloadsAsActive:enabled"/>
@@ -65072,6 +65083,7 @@ from previous Chrome versions.
   <int value="1138345742" label="PreferConstantFrameRate:disabled"/>
   <int value="1138349838" label="EnableMDRoundedCornersOnDialogs:disabled"/>
   <int value="1138690502" label="PreconnectToSearch:enabled"/>
+  <int value="1139053286" label="EnableSupervisionOnDesktopAndIOS:enabled"/>
   <int value="1139226452" label="enable-nacl-debug"/>
   <int value="1139363314" label="disable-supervised-user-blacklist"/>
   <int value="1139756271" label="WebOTPCrossDevice:enabled"/>
@@ -65744,6 +65756,8 @@ from previous Chrome versions.
   <int value="1490043732" label="enable-fill-on-account-select"/>
   <int value="1490255042" label="enable-overlay-scrollbar"/>
   <int value="1491212579" label="ChromeTipsInMainMenuNewBadge:enabled"/>
+  <int value="1491593531"
+      label="EnableExtensionsPermissionsForSupervisedUsersOnDesktop:disabled"/>
   <int value="1492079800" label="AutofillUpstreamAllowAllEmailDomains:enabled"/>
   <int value="1492255992" label="OnDeviceGrammarCheck:enabled"/>
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
@@ -65770,6 +65784,8 @@ from previous Chrome versions.
   <int value="1506372577" label="NearbySharingSelfShare:disabled"/>
   <int value="1507233295" label="FilesTrash:disabled"/>
   <int value="1508761653" label="disable-site-isolation-trials"/>
+  <int value="1509482104"
+      label="SupervisedPrefsControlledBySupervisedStore:disabled"/>
   <int value="1509586356" label="CrossOriginOpenerPolicy:disabled"/>
   <int value="1509901380" label="disable-drive-search-in-app-launcher"/>
   <int value="1510279169" label="PrivacyGuide2:disabled"/>

@@ -2473,6 +2473,31 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-family-link-extensions-permissions",
+    "owners": ["ljjlee", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 117
+  },
+  {
+    "name": "enable-family-link-managed-ui",
+    "owners": ["ljjlee", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 117
+  },
+  {
+    "name": "enable-family-link-prefs-controls",
+    "owners": ["ljjlee", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 117
+  },
+  {
+    "name": "enable-family-link-supervision",
+    "owners": ["ljjlee", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 117
+  },
+  {
+    "name": "enable-family-link-website-filtering",
+    "owners": ["ljjlee", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 117
+  },
+  {
     "name": "enable-federated-service",
     "owners": [ "alanlxl", "amoylan"],
     "expiry_milestone": 120

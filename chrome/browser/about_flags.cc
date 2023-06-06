@@ -7502,6 +7502,42 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebFilterInterstitialRefreshDescription,
      kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(supervised_user::kWebFilterInterstitialRefresh)},
+
+    {"enable-family-link-supervision",
+     flag_descriptions::kEnableSupervisionOnDesktopName,
+     flag_descriptions::kEnableSupervisionOnDesktopDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(supervised_user::kEnableSupervisionOnDesktopAndIOS)},
+
+    {"enable-family-link-website-filtering",
+     flag_descriptions::kFilterWebsitesForSupervisedUsersOnDesktopName,
+     flag_descriptions::kFilterWebsitesForSupervisedUsersOnDesktopDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)},
+
+    {"enable-family-link-extensions-permissions",
+     flag_descriptions::
+         kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName,
+     flag_descriptions::
+         kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::
+             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop)},
+
+    {"enable-family-link-prefs-controls",
+     flag_descriptions::kSupervisedPrefsControlledBySupervisedStoreName,
+     flag_descriptions::kSupervisedPrefsControlledBySupervisedStoreDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kSupervisedPrefsControlledBySupervisedStore)},
+
+    {"enable-family-link-managed-ui",
+     flag_descriptions::kEnableManagedByParentUiName,
+     flag_descriptions::kEnableManagedByParentUiDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(supervised_user::kEnableManagedByParentUi)},
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,

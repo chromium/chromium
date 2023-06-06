@@ -171,6 +171,22 @@ extern const char kUseClientGmbInterfaceDescription[];
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kWebFilterInterstitialRefreshName[];
 extern const char kWebFilterInterstitialRefreshDescription[];
+
+extern const char kEnableSupervisionOnDesktopName[];
+extern const char kEnableSupervisionOnDesktopDescription[];
+
+extern const char kFilterWebsitesForSupervisedUsersOnDesktopName[];
+extern const char kFilterWebsitesForSupervisedUsersOnDesktopDescription[];
+
+extern const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[];
+extern const char
+    kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[];
+
+extern const char kSupervisedPrefsControlledBySupervisedStoreName[];
+extern const char kSupervisedPrefsControlledBySupervisedStoreDescription[];
+
+extern const char kEnableManagedByParentUiName[];
+extern const char kEnableManagedByParentUiDescription[];
 #endif  // ENABLE_SUPERVISED_USERS
 
 extern const char kUpcomingFollowFeaturesName[];
