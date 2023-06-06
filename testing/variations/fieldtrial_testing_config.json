@@ -9318,7 +9318,7 @@
             ]
         }
     ],
-    "OneTimeGeolocationPermission": [
+    "OneTimePermission": [
         {
             "platforms": [
                 "chromeos",
@@ -9330,12 +9330,21 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithOkButtonAsAllowOnce",
+                    "name": "EnabledWithNormalLanguage",
                     "params": {
-                        "OkButtonBehavesAsAllowAlways": "false"
+                        "use_stronger_prompt_language": "false"
                     },
                     "enable_features": [
-                        "OneTimeGeolocationPermission"
+                        "OneTimePermission"
+                    ]
+                },
+                {
+                    "name": "EnabledWithStrongLanguage",
+                    "params": {
+                        "use_stronger_prompt_language": "true"
+                    },
+                    "enable_features": [
+                        "OneTimePermission"
                     ]
                 }
             ]

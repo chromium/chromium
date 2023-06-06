@@ -973,10 +973,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   GetPermissionRequestManager()->Dismiss();
 }
 
-class PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest
+class PermissionRequestManagerOneTimePermissionBrowserTest
     : public PermissionRequestManagerBrowserTest {
  public:
-  PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest() {
+  PermissionRequestManagerOneTimePermissionBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         permissions::features::kOneTimePermission);
     geolocation_overrider_ =
@@ -988,9 +988,8 @@ class PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest,
-    RequestForPermission) {
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerOneTimePermissionBrowserTest,
+                       RequestForPermission) {
   const char kQueryCurrentPosition[] = R"(
         new Promise(resolve => {
           navigator.geolocation.getCurrentPosition(
