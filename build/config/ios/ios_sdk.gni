@@ -54,6 +54,9 @@ declare_args() {
 
   # Set to true if all test apps should use the same bundle id.
   ios_use_shared_bundle_id_for_test_apps = true
+
+  # Set to true if building an app extension.
+  ios_is_app_extension = false
 }
 
 # If codesigning is enabled, use must configure either a codesigning identity
