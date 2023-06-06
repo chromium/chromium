@@ -34,6 +34,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
@@ -552,15 +553,29 @@ void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
   }
 }
 
+bool HasCHIPS(const net::CookieList& cookie_list) {
+  for (const auto& cookie : cookie_list) {
+    if (cookie.IsPartitioned()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy ||
-      !IsSameSiteForDIPS(details.first_party_url, details.url)) {
+  if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy) {
     return;
   }
 
-  detector_.OnClientCookiesAccessed(details.url, details.type);
+  if (!HasCHIPS(details.cookie_list) &&
+      !IsSameSiteForDIPS(GetFirstPartyURL(render_frame_host), details.url)) {
+    return;
+  }
+
+  detector_.OnClientCookiesAccessed(GetFirstPartyURL(render_frame_host),
+                                    details.type);
 }
 
 void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
@@ -589,17 +604,20 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
   // Discard all notifications that are:
   // - From other page types like FencedFrames, and Prerendered.
   // - Blocked by policies.
-  // - That are not same site (wrt GetSiteForDIPS()) with the first party URL.
-  // TODO(crbug.com/1445739): Treat partitioned 3P cookies as 1P cookies.
-  if (!IsInPrimaryPage(navigation_handle) || details.blocked_by_policy ||
-      !IsSameSiteForDIPS(details.first_party_url, details.url)) {
+  if (!IsInPrimaryPage(navigation_handle) || details.blocked_by_policy) {
     return;
   }
 
   // All access within the primary page iframes are attributed to the URL of the
   // main frame (ie the first party URL).
   if (IsInPrimaryPageIFrame(navigation_handle)) {
-    detector_.OnClientSiteDataAccessed(details.url, details.type);
+    if (!HasCHIPS(details.cookie_list) &&
+        !IsSameSiteForDIPS(GetFirstPartyURL(navigation_handle), details.url)) {
+      return;
+    }
+
+    detector_.OnClientSiteDataAccessed(GetFirstPartyURL(navigation_handle),
+                                       details.type);
     return;
   }
 
