@@ -41,32 +41,40 @@ enum {
 
 const auto& SyncablePreferences() {
   // iOS specific list of syncable preferences.
+  // TODO(crbug.com/1448000): Revise the history opt-in requirement flag for
+  // prefs.
   static const auto kIOSChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       base::StringPiece, sync_preferences::SyncablePrefMetadata>(
       {{prefs::kArticlesForYouEnabled,
-        {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kContextualSearchEnabled,
-        {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kDefaultCharset,
-        {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES, false}},
        {prefs::kEnableDoNotTrack,
-        {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES, false}},
        {prefs::kIosHandoffToOtherDevices,
-        {syncable_prefs_ids::kIosHandoffToOtherDevices, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kIosHandoffToOtherDevices, syncer::PREFERENCES,
+         false}},
        {prefs::kNetworkPredictionSetting,
-        {syncable_prefs_ids::kNetworkPredictionSetting, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kNetworkPredictionSetting, syncer::PREFERENCES,
+         false}},
        {prefs::kNTPContentSuggestionsEnabled,
-        {syncable_prefs_ids::kNTPContentSuggestionsEnabled,
-         syncer::PREFERENCES}},
+        {syncable_prefs_ids::kNTPContentSuggestionsEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
         {syncable_prefs_ids::kNTPContentSuggestionsForSupervisedUserEnabled,
-         syncer::PREFERENCES}},
+         syncer::PREFERENCES, false}},
        {prefs::kSearchSuggestEnabled,
-        {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kTrackPricesOnTabsEnabled,
-        {syncable_prefs_ids::kTrackPricesOnTabsEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kTrackPricesOnTabsEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kVoiceSearchLocale,
-        {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES}}});
+        {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES, false}}});
   return kIOSChromeSyncablePrefsAllowlist;
 }
 }  // namespace

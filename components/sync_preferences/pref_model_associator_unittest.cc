@@ -43,13 +43,14 @@ const char kStringOsPriorityPrefName[] = "os.priority.pref.string";
 // Assigning an id of 0 to all the test prefs.
 const std::unordered_map<std::string, SyncablePrefMetadata>
     kSyncablePrefsDatabase = {
-        {kStringPrefName, {0, syncer::PREFERENCES}},
-        {kListPrefName, {0, syncer::PREFERENCES}},
-        {kDictionaryPrefName, {0, syncer::PREFERENCES}},
-        {kCustomMergePrefName, {0, syncer::PREFERENCES}},
-        {kStringPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES}},
-        {kStringOsPrefName, {0, syncer::OS_PREFERENCES}},
-        {kStringOsPriorityPrefName, {0, syncer::OS_PRIORITY_PREFERENCES}}};
+        {kStringPrefName, {0, syncer::PREFERENCES, false}},
+        {kListPrefName, {0, syncer::PREFERENCES, false}},
+        {kDictionaryPrefName, {0, syncer::PREFERENCES, false}},
+        {kCustomMergePrefName, {0, syncer::PREFERENCES, false}},
+        {kStringPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES, false}},
+        {kStringOsPrefName, {0, syncer::OS_PREFERENCES, false}},
+        {kStringOsPriorityPrefName,
+         {0, syncer::OS_PRIORITY_PREFERENCES, false}}};
 
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:

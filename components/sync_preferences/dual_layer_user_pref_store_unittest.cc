@@ -33,11 +33,11 @@ constexpr char kNonSyncablePrefName[] = "nonsyncable-pref";
 // Assigning an id of 0 to all the test prefs.
 const std::unordered_map<std::string, SyncablePrefMetadata>
     kSyncablePrefsDatabase = {
-        {kPref1, {0, syncer::PREFERENCES}},
-        {kPref2, {0, syncer::PREFERENCES}},
-        {kPref3, {0, syncer::PREFERENCES}},
-        {kPrefName, {0, syncer::PREFERENCES}},
-        {kPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES}},
+        {kPref1, {0, syncer::PREFERENCES, false}},
+        {kPref2, {0, syncer::PREFERENCES, false}},
+        {kPref3, {0, syncer::PREFERENCES, false}},
+        {kPrefName, {0, syncer::PREFERENCES, false}},
+        {kPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES, false}},
 };
 
 base::Value MakeDict(

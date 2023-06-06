@@ -18,7 +18,7 @@ class SyncablePrefMetadata {
  public:
   SyncablePrefMetadata(int syncable_pref_id,
                        syncer::ModelType model_type,
-                       bool is_history_opt_in_required = false);
+                       bool is_history_opt_in_required);
   // Returns the unique ID corresponding to the syncable preference.
   int syncable_pref_id() const { return syncable_pref_id_; }
   // Returns the model type of the pref, i.e. PREFERENCES, PRIORITY_PREFERENCES,
