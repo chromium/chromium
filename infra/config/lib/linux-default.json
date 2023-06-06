@@ -1,5 +1,6 @@
 {
   "ci": {
+    "3pp-linux-amd64-packager": "Ubuntu-22.04",
     "Android FYI Release (NVIDIA Shield TV)": "Ubuntu-22.04",
     "Android FYI Release (Nexus 5X)": "Ubuntu-22.04",
     "Android FYI Release (Pixel 2)": "Ubuntu-22.04",
