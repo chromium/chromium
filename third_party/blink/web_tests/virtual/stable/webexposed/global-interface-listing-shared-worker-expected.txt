@@ -11,6 +11,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface AbortSignal : EventTarget
 [Worker]     static method abort
+[Worker]     static method any
 [Worker]     static method timeout
 [Worker]     attribute @@toStringTag
 [Worker]     getter aborted

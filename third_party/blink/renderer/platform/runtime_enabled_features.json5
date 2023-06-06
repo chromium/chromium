@@ -211,7 +211,7 @@
   data: [
     {
       name: "AbortSignalAny",
-      status: "experimental",
+      status: "stable",
       depends_on: ["AbortSignalComposition"]
     },
     {
