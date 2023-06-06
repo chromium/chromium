@@ -237,14 +237,20 @@ void SaveCardBubbleViews::Init() {
   // For server cards, there is an explanation between the title and the
   // controls; use DialogContentType::kText. For local cards, since there is no
   // explanation, use DialogContentType::kControl instead.
+  // When feature kAutofillMoveLegalTermsAndIconForNewCardEnrollment is enabled,
+  // there are legal messages before the buttons for server cards, so use
+  // DialogContentType::kText. For local card, since there is no legal message,
+  // use DialogContentType::kControl instead.
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       controller_->GetExplanatoryMessage().empty()
           ? views::DialogContentType::kControl
           : views::DialogContentType::kText,
-      GetDialogButtons() == ui::DIALOG_BUTTON_NONE
+      base::FeatureList::IsEnabled(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment) &&
+              !controller_->GetLegalMessageLines().empty()
           ? views::DialogContentType::kText
           : views::DialogContentType::kControl));
-  AddChildView(CreateMainContentView().release());
+  AddChildView(CreateMainContentView());
 }
 
 }  // namespace autofill

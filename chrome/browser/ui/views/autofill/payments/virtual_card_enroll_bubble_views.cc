@@ -129,7 +129,7 @@ void VirtualCardEnrollBubbleViews::Init() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
     set_margins(provider->GetDialogInsetsForContentType(
-        views::DialogContentType::kText, views::DialogContentType::kControl));
+        views::DialogContentType::kText, views::DialogContentType::kText));
   }
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
