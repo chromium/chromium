@@ -86,6 +86,9 @@ TARGET_DEVICES = {
         'jetstream2': {
             'JetStream2': 5,
         },
+        'jetstream2-minormc': {
+            'JetStream2': 5,
+        },
         'system_health.common_desktop': {
             # cputimeToFirstContentfulPaint
             'browse:social:tumblr_infinite_scroll:2018': 10,
@@ -140,6 +143,9 @@ TARGET_DEVICES = {
     },
     'mac-m1_mini_2020-perf': {
         'jetstream2': {
+            'JetStream2': 5,
+        },
+        'jetstream2-minormc': {
             'JetStream2': 5,
         },
         'speedometer2': {
