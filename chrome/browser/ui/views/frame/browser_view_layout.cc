@@ -337,7 +337,12 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
     if (controller->draggable_region()->contains(
             point_in_contents_web_view_coords.x(),
             point_in_contents_web_view_coords.y())) {
-      return HTCAPTION;
+      // Draggable regions should be ignored for clicks into any child widgets,
+      // for example alerts or find bar.
+      return browser_view_->ChildOfAnchorWidgetContainsPoint(
+                 point_in_browser_view_coords)
+                 ? HTCLIENT
+                 : HTCAPTION;
     }
   }
 

@@ -407,6 +407,9 @@ class BrowserView : public BrowserWindow,
   // view of the update.
   void ToggleWindowControlsOverlayEnabled(base::OnceClosure done);
 
+  bool ChildOfAnchorWidgetContainsPoint(
+      const gfx::Point& point_in_browser_view_coords);
+
   bool borderless_mode_enabled_for_testing() const {
     return borderless_mode_enabled_;
   }

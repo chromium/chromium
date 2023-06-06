@@ -2204,6 +2204,20 @@ void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
           .Then(std::move(done)));
 }
 
+bool BrowserView::ChildOfAnchorWidgetContainsPoint(
+    const gfx::Point& point_in_browser_view_coords) {
+  auto* parent_widget = GetWidgetForAnchoring();
+  views::Widget::Widgets widgets;
+  views::Widget::GetAllChildWidgets(parent_widget->GetNativeView(), &widgets);
+
+  return base::ranges::any_of(widgets, [&](auto* widget) {
+    return widget != parent_widget && widget->IsVisible() &&
+           widget->GetWindowBoundsInScreen().Contains(
+               views::View::ConvertPointToScreen(this,
+                                                 point_in_browser_view_coords));
+  });
+}
+
 bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
 }
@@ -3683,9 +3697,12 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
                                       contents_web_view_,
                                       &point_in_contents_web_view_coords);
 
+    // Draggable regions should be ignored for clicks into any child widgets,
+    // for example alerts or find bar.
     return !controller->draggable_region()->contains(
-        point_in_contents_web_view_coords.x(),
-        point_in_contents_web_view_coords.y());
+               point_in_contents_web_view_coords.x(),
+               point_in_contents_web_view_coords.y()) ||
+           ChildOfAnchorWidgetContainsPoint(point_in_contents_web_view_coords);
   }
 
   return true;
