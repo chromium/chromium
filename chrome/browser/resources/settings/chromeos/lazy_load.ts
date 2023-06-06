@@ -162,6 +162,7 @@ export {AppManagementMainViewElement} from './os_apps_page/app_management_page/m
 export {AppManagementPinToShelfItemElement} from './os_apps_page/app_management_page/pin_to_shelf_item.js';
 export {AppManagementPluginVmDetailViewElement} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 export {AppManagementPwaDetailViewElement} from './os_apps_page/app_management_page/pwa_detail_view.js';
+export {AppManagementResizeLockItemElement} from './os_apps_page/app_management_page/resize_lock_item.js';
 export {AppManagementSubAppsItemElement} from './os_apps_page/app_management_page/sub_apps_item.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';

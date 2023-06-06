@@ -117,7 +117,6 @@ build_webui_tests("build") {
     "app_management/file_handling_item_test.ts",
     "app_management/managed_apps_test.ts",
     "app_management/reducers_test.js",
-    "app_management/resize_lock_item_test.js",
     "app_management/supported_links_item_test.js",
     "app_management/test_plugin_vm_browser_proxy.js",
     "app_management/test_store.js",
@@ -205,6 +204,7 @@ build_webui_tests("build") {
     "os_apps_page/app_management_page/pin_to_shelf_item_test.ts",
     "os_apps_page/app_management_page/plugin_vm_detail_view_test.ts",
     "os_apps_page/app_management_page/pwa_detail_view_test.ts",
+    "os_apps_page/app_management_page/resize_lock_item_test.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js",
     "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",

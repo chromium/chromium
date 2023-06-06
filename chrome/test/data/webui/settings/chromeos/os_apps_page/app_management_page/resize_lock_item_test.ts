@@ -2,24 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://os-settings/lazy_load.js';
 
-import 'chrome://os-settings/os_settings.js';
-
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {setupFakeHandler, replaceBody, isHidden} from './test_util.js';
+import {AppManagementResizeLockItemElement} from 'chrome://os-settings/lazy_load.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import {isHidden, replaceBody, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-resize-lock-item>', () => {
-  let resizeLockItem;
-  let fakeHandler;
+  let resizeLockItem: AppManagementResizeLockItemElement;
+  let fakeHandler: FakePageHandler;
 
-  setup(async () => {
+  setup(() => {
     fakeHandler = setupFakeHandler();
     resizeLockItem = document.createElement('app-management-resize-lock-item');
 
     replaceBody(resizeLockItem);
     flushTasks();
+  });
+
+  teardown(() => {
+    resizeLockItem.remove();
   });
 
   test('Resize lock setting visibility', async () => {
@@ -41,7 +47,7 @@ suite('<app-management-resize-lock-item>', () => {
       resizeLocked: true,
     };
     const appWithResizeLocked =
-        await fakeHandler.addApp(null, arcOptionsWithResizeLocked);
+        await fakeHandler.addApp('', arcOptionsWithResizeLocked);
     await fakeHandler.flushPipesForTesting();
     resizeLockItem.app = appWithResizeLocked;
     assertTrue(isHidden(resizeLockItem));
@@ -52,7 +58,7 @@ suite('<app-management-resize-lock-item>', () => {
       resizeLocked: false,
     };
     const appWithoutResizeLocked =
-        await fakeHandler.addApp(null, arcOptionsWithoutResizeLocked);
+        await fakeHandler.addApp('', arcOptionsWithoutResizeLocked);
     await fakeHandler.flushPipesForTesting();
     resizeLockItem.app = appWithoutResizeLocked;
     assertTrue(isHidden(resizeLockItem));
@@ -63,7 +69,7 @@ suite('<app-management-resize-lock-item>', () => {
       hideResizeLocked: false,
     };
     const appWithHideResizeLockedFalse =
-        await fakeHandler.addApp(null, arcOptionsWithHideResizeLockedFalse);
+        await fakeHandler.addApp('', arcOptionsWithHideResizeLockedFalse);
     await fakeHandler.flushPipesForTesting();
     resizeLockItem.app = appWithHideResizeLockedFalse;
     assertFalse(isHidden(resizeLockItem));
@@ -74,7 +80,7 @@ suite('<app-management-resize-lock-item>', () => {
       hideResizeLocked: true,
     };
     const appWithHideResizeLockedTrue =
-        await fakeHandler.addApp(null, arcOptionsWithHideResizeLockedTrue);
+        await fakeHandler.addApp('', arcOptionsWithHideResizeLockedTrue);
     await fakeHandler.flushPipesForTesting();
     resizeLockItem.app = appWithHideResizeLockedTrue;
     assertTrue(isHidden(resizeLockItem));

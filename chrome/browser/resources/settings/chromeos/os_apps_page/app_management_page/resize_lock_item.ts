@@ -17,7 +17,7 @@ import {recordSettingChange} from '../../metrics_recorder.js';
 import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './resize_lock_item.html.js';
 
-class AppManagementResizeLockItemElement extends PolymerElement {
+export class AppManagementResizeLockItemElement extends PolymerElement {
   static get is() {
     return 'app-management-resize-lock-item';
   }

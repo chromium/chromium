@@ -193,7 +193,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementPage', 'app_management/app_management_page_tests.js'],
  ['AppManagementReducers', 'app_management/reducers_test.js'],
- ['AppManagementResizeLockItem', 'app_management/resize_lock_item_test.js'],
  [
    'AppManagementSupportedLinksItem',
    'app_management/supported_links_item_test.js',
@@ -508,6 +507,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsAppsPageAppManagementPagePwaDetailView',
    'os_apps_page/app_management_page/pwa_detail_view_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageResizeLockItem',
+   'os_apps_page/app_management_page/resize_lock_item_test.js'
  ],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [
