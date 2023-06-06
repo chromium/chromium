@@ -29,6 +29,7 @@
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/mojom/hdr_metadata.mojom.h"
 
 namespace cc {
 namespace {
@@ -263,19 +264,8 @@ size_t SafeSizeForTargetColorParams(
     // bool for whether or not there is HDR metadata.
     target_color_params_size += PaintOpWriter::SerializedSize<bool>();
     if (auto& hdr_metadata = target_color_params->hdr_metadata) {
-      // The minimum and maximum luminance.
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->cta_861_3.max_content_light_level);
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->cta_861_3.max_frame_average_light_level);
-      // The x and y coordinates for primaries and white point.
-      target_color_params_size += PaintOpWriter::SerializedSizeOfElements(
-          &hdr_metadata->smpte_st_2086.primaries.fRX, 4 * 2);
-      // The CLL and FALL
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->smpte_st_2086.luminance_max);
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->smpte_st_2086.luminance_min);
+      target_color_params_size +=
+          PaintOpWriter::SerializedSize(hdr_metadata.value());
     }
   }
   return target_color_params_size;
@@ -295,23 +285,7 @@ void WriteTargetColorParams(
     const bool has_hdr_metadata = !!target_color_params->hdr_metadata;
     writer.Write(has_hdr_metadata);
     if (target_color_params->hdr_metadata) {
-      const auto& hdr_metadata = target_color_params->hdr_metadata;
-
-      const auto& cta_861_3 = hdr_metadata->cta_861_3;
-      writer.Write(cta_861_3.max_content_light_level);
-      writer.Write(cta_861_3.max_frame_average_light_level);
-
-      const auto& smpte_st_2086 = hdr_metadata->smpte_st_2086;
-      writer.Write(smpte_st_2086.primaries.fRX);
-      writer.Write(smpte_st_2086.primaries.fRY);
-      writer.Write(smpte_st_2086.primaries.fGX);
-      writer.Write(smpte_st_2086.primaries.fGY);
-      writer.Write(smpte_st_2086.primaries.fBX);
-      writer.Write(smpte_st_2086.primaries.fBY);
-      writer.Write(smpte_st_2086.primaries.fWX);
-      writer.Write(smpte_st_2086.primaries.fWY);
-      writer.Write(smpte_st_2086.luminance_max);
-      writer.Write(smpte_st_2086.luminance_min);
+      writer.Write(target_color_params->hdr_metadata.value());
     }
   }
 }
@@ -341,29 +315,8 @@ bool ReadTargetColorParams(
   reader.Read(&has_hdr_metadata);
   if (has_hdr_metadata) {
     gfx::HDRMetadata hdr_metadata;
-    unsigned max_content_light_level = 0;
-    unsigned max_frame_average_light_level = 0;
-    reader.Read(&max_content_light_level);
-    reader.Read(&max_frame_average_light_level);
-
-    SkColorSpacePrimaries primaries = SkNamedPrimariesExt::kInvalid;
-    float luminance_max = 0;
-    float luminance_min = 0;
-    reader.Read(&primaries.fRX);
-    reader.Read(&primaries.fRY);
-    reader.Read(&primaries.fGX);
-    reader.Read(&primaries.fGY);
-    reader.Read(&primaries.fBX);
-    reader.Read(&primaries.fBY);
-    reader.Read(&primaries.fWX);
-    reader.Read(&primaries.fWY);
-    reader.Read(&luminance_max);
-    reader.Read(&luminance_min);
-
-    target_color_params->hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataSmpteSt2086(primaries, luminance_max, luminance_min),
-        gfx::HdrMetadataCta861_3(max_content_light_level,
-                                 max_frame_average_light_level));
+    reader.Read(&hdr_metadata);
+    target_color_params->hdr_metadata = hdr_metadata;
   }
   return true;
 }

@@ -22,6 +22,10 @@ namespace gpu {
 struct Mailbox;
 }
 
+namespace gfx {
+struct HDRMetadata;
+}
+
 namespace cc {
 
 class PaintShader;
@@ -84,6 +88,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkYUVAInfo::Subsampling* subsampling);
   void Read(gpu::Mailbox* mailbox);
   void Read(SkHighContrastConfig* config);
+  void Read(gfx::HDRMetadata* hdr_metadata);
 
   void Read(scoped_refptr<SkottieWrapper>* skottie);
 
@@ -196,8 +201,9 @@ class CC_PAINT_EXPORT PaintOpReader {
     kZeroSkColorFilterBytes = 52,
     kInsufficientPixelData = 53,
     kSkGainmapInfoDeserializationFailure = 54,
+    kHdrMetadataDeserializeFailure = 55,
 
-    kMaxValue = kSkGainmapInfoDeserializationFailure
+    kMaxValue = kHdrMetadataDeserializeFailure
   };
 
   template <typename T>

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <vector>
 
 #include "base/bits.h"
 #include "base/notreached.h"
@@ -42,6 +43,7 @@
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/mojom/hdr_metadata.mojom.h"
 
 namespace cc {
 namespace {
@@ -87,6 +89,12 @@ size_t PaintOpWriter::SerializedSize(const SkFlattenable* flattenable) {
 size_t PaintOpWriter::SerializedSize(const SkColorSpace* color_space) {
   return SerializedSizeOfBytes(color_space ? color_space->writeToMemory(nullptr)
                                            : 0u);
+}
+
+// static
+size_t PaintOpWriter::SerializedSize(const gfx::HDRMetadata& hdr_metadata) {
+  return SerializedSizeOfBytes(
+      gfx::mojom::HDRMetadata::Serialize(&hdr_metadata).size());
 }
 
 // static
@@ -486,6 +494,13 @@ void PaintOpWriter::Write(const SkColorSpace* color_space) {
   size_t written = color_space->writeToMemory(memory_);
   CHECK_EQ(written, size);
   DidWrite(written);
+}
+
+void PaintOpWriter::Write(const gfx::HDRMetadata& hdr_metadata) {
+  std::vector<uint8_t> bytes =
+      gfx::mojom::HDRMetadata::Serialize(&hdr_metadata);
+  WriteSize(bytes.size());
+  WriteData(bytes.size(), bytes.data());
 }
 
 void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
