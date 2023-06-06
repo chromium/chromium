@@ -4,12 +4,20 @@
 
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "ui/display/screen_info.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#endif
 
 namespace blink {
 
@@ -33,7 +41,36 @@ bool LayoutNGView::IsFragmentationContextRoot() const {
   return ShouldUsePrintingLayout();
 }
 
-void LayoutNGView::UpdateBlockLayout() {
+void LayoutNGView::UpdateLayout() {
+  NOT_DESTROYED();
+  if (!GetDocument().Printing()) {
+    page_size_ = PhysicalSize();
+  }
+
+  if (PageLogicalHeight() && ShouldUsePrintingLayout()) {
+    intrinsic_logical_widths_ = LogicalWidth();
+    if (!fragmentation_context_) {
+      fragmentation_context_ =
+          MakeGarbageCollected<ViewFragmentationContext>(*this);
+    }
+  } else if (fragmentation_context_) {
+    fragmentation_context_.Clear();
+  }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // The font code in FontPlatformData does not have a direct connection to the
+  // document, the frame or anything from which we could retrieve the device
+  // scale factor. After using zoom for DSF, the GraphicsContext does only ever
+  // have a DSF of 1 on Linux. In order for the font code to be aware of an up
+  // to date DSF when layout happens, we plumb this through to the FontCache, so
+  // that we can correctly retrieve RenderStyleForStrike from out of
+  // process. crbug.com/845468
+  LocalFrame& frame = GetFrameView()->GetFrame();
+  ChromeClient& chrome_client = frame.GetChromeClient();
+  FontCache::SetDeviceScaleFactor(
+      chrome_client.GetScreenInfo(frame).device_scale_factor);
+#endif
+
   is_resizing_initial_containing_block_ =
       LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
       LogicalHeight() != ViewLogicalHeightForBoxSizing();

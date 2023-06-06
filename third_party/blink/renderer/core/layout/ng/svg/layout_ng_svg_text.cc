@@ -202,7 +202,7 @@ void LayoutNGSVGText::Paint(const PaintInfo& paint_info) const {
   }
 }
 
-void LayoutNGSVGText::UpdateBlockLayout() {
+void LayoutNGSVGText::UpdateLayout() {
   NOT_DESTROYED();
 
   // If the root layout size changed (eg. window size changes), or the screen

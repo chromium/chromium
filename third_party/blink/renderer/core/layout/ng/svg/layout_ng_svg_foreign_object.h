@@ -55,6 +55,7 @@ class LayoutNGSVGForeignObject final
 
  private:
   // LayoutObject override:
+  void UpdateLayout() override;
   const char* GetName() const override;
   bool IsOfType(LayoutObjectType type) const override;
   bool IsChildAllowed(LayoutObject* child,
@@ -70,8 +71,6 @@ class LayoutNGSVGForeignObject final
   bool CreatesNewFormattingContext() const override;
 
   // LayoutBlock override:
-  void UpdateBlockLayout() override;
-
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   // The resolved viewport in the regular SVG coordinate space (after any

@@ -23,11 +23,6 @@ class CORE_EXPORT LayoutNGBlockFlow
   explicit LayoutNGBlockFlow(ContainerNode*);
   ~LayoutNGBlockFlow() override;
 
-  void UpdateBlockLayout() final {
-    NOT_DESTROYED();
-    NOTREACHED_NORETURN();
-  }
-
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutNGBlockFlow";

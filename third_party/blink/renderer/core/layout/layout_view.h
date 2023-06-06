@@ -100,7 +100,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  void UpdateLayout() override;
+  void UpdateLayout() override {
+    NOT_DESTROYED();
+    NOTREACHED_NORETURN();
+  }
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const override;
@@ -362,8 +365,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return false;
   }
 
-  Member<LocalFrameView> frame_view_;
-
+ protected:
   // The page size.
   // This is only used during printing to split the content into pages.
   // Outside of printing, this is 0x0.
@@ -371,6 +373,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   Member<ViewFragmentationContext> fragmentation_context_;
 
+ private:
+  Member<LocalFrameView> frame_view_;
   Member<LayoutQuote> layout_quote_head_;
   unsigned layout_counter_count_ = 0;
   unsigned layout_list_item_count_ = 0;

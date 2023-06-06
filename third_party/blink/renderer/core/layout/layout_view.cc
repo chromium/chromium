@@ -65,12 +65,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/quad_f.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#endif
 
 namespace blink {
 
@@ -305,40 +300,6 @@ bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
     }
   }
   return false;
-}
-
-void LayoutView::UpdateLayout() {
-  NOT_DESTROYED();
-  if (!GetDocument().Printing()) {
-    page_size_ = PhysicalSize();
-  }
-
-  if (PageLogicalHeight() && ShouldUsePrintingLayout()) {
-    intrinsic_logical_widths_ = LogicalWidth();
-    if (!fragmentation_context_) {
-      fragmentation_context_ =
-          MakeGarbageCollected<ViewFragmentationContext>(*this);
-    }
-  } else if (fragmentation_context_) {
-    fragmentation_context_.Clear();
-  }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // The font code in FontPlatformData does not have a direct connection to the
-  // document, the frame or anything from which we could retrieve the device
-  // scale factor. After using zoom for DSF, the GraphicsContext does only ever
-  // have a DSF of 1 on Linux. In order for the font code to be aware of an up
-  // to date DSF when layout happens, we plumb this through to the FontCache, so
-  // that we can correctly retrieve RenderStyleForStrike from out of
-  // process. crbug.com/845468
-  LocalFrame& frame = GetFrameView()->GetFrame();
-  ChromeClient& chrome_client = frame.GetChromeClient();
-  FontCache::SetDeviceScaleFactor(
-      chrome_client.GetScreenInfo(frame).device_scale_factor);
-#endif
-
-  LayoutBlockFlow::UpdateLayout();
-  ClearNeedsLayout();
 }
 
 PhysicalRect LayoutView::LocalVisualRectIgnoringVisibility() const {

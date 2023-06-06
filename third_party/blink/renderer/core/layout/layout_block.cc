@@ -356,24 +356,6 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   child->Destroy();
 }
 
-void LayoutBlock::UpdateLayout() {
-  NOT_DESTROYED();
-
-  UpdateBlockLayout();
-
-  // It's safe to check for control clip here, since controls can never be table
-  // cells. If we have a lightweight clip, there can never be any overflow from
-  // children.
-  if (HasControlClip() && HasLayoutOverflow())
-    ClearLayoutOverflow();
-}
-
-void LayoutBlock::UpdateBlockLayout() {
-  NOT_DESTROYED();
-  ClearNeedsLayout();
-  NOTREACHED_NORETURN();
-}
-
 void LayoutBlock::AddVisualOverflowFromChildren() {
   NOT_DESTROYED();
   // It is an error to call this function on a LayoutBlock that it itself inside

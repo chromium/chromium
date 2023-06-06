@@ -154,8 +154,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  virtual void UpdateBlockLayout();
-
   void InsertPositionedObject(LayoutBox*);
   static void RemovePositionedObject(LayoutBox*);
   void RemovePositionedObjects(LayoutObject*,
@@ -236,7 +234,10 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
  protected:
   void WillBeDestroyed() override;
 
-  void UpdateLayout() override;
+  void UpdateLayout() override {
+    NOT_DESTROYED();
+    NOTREACHED_NORETURN();
+  }
 
  public:
   void Paint(const PaintInfo&) const override;
