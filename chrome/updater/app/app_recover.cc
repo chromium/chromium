@@ -67,7 +67,21 @@ void AppRecover::Uninitialize() {
 void AppRecover::FirstTaskRun() {
   if (!global_prefs_) {
     VLOG(0) << "Recovery task could not acquire global prefs.";
-    Shutdown(kErrorFailedToLockPrefsMutex);
+
+    // If global prefs cannot be acquired, it's possible that an active updater
+    // is running but is stuck. Issuing a GetVersion RPC to the updater may
+    // unstick it, and won't do harm if it is actively working.
+    scoped_refptr<UpdateService> update_service =
+        CreateUpdateServiceProxy(updater_scope());
+    update_service->GetVersion(
+        base::BindOnce(
+            [](scoped_refptr<UpdateService> /*update_service*/,
+               const base::Version& version) {
+              VLOG(0) << "GetVersion returned " << version;
+            },
+            update_service)
+            .Then(base::BindOnce(&AppRecover::Shutdown, this,
+                                 kErrorFailedToLockPrefsMutex)));
     return;
   }
 
