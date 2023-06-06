@@ -84,6 +84,10 @@ class TestBase {
                        std::string* message = nullptr,
                        absl::Span<IpczHandle> handles = {});
 
+  // Like WaitToGet but expects success and requires the read parcel to have
+  // no handles. Returns the parcel contents as a string.
+  std::string WaitToGetString(IpczHandle portal);
+
   // Sends an empty parcel from `portal` and expects an empty parcel in return.
   void PingPong(IpczHandle portal);
 

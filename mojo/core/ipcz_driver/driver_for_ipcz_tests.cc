@@ -55,10 +55,13 @@ class MojoIpczInProcessTestNodeController
   };
 
   MojoIpczInProcessTestNodeController(
+      ipcz::test::TestNode& source,
       const std::string& node_name,
       std::unique_ptr<ipcz::test::TestNode> test_node,
       ipcz::test::TestDriver* test_driver)
-      : node_thread_delegate_(std::move(test_node), test_driver),
+      : source_(source),
+        is_broker_(test_node->GetDetails().is_broker),
+        node_thread_delegate_(std::move(test_node), test_driver),
         node_thread_(&node_thread_delegate_, node_name) {
     node_thread_.StartAsync();
   }
@@ -71,11 +74,28 @@ class MojoIpczInProcessTestNodeController
     return true;
   }
 
+  ipcz::test::TransportPair CreateNewTransports() override {
+    ipcz::test::TransportPair transports;
+    if (is_broker_) {
+      transports = source_.CreateBrokerToBrokerTransports();
+    } else {
+      transports = source_.CreateTransports();
+    }
+
+    Transport::FromHandle(transports.ours)
+        ->set_remote_process(base::Process::Current());
+    Transport::FromHandle(transports.theirs)
+        ->set_remote_process(base::Process::Current());
+    return transports;
+  }
+
  private:
   ~MojoIpczInProcessTestNodeController() override {
     CHECK(node_thread_.HasBeenJoined());
   }
 
+  ipcz::test::TestNode& source_;
+  const bool is_broker_;
   NodeThreadDelegate node_thread_delegate_;
   base::DelegateSimpleThread node_thread_;
 };
@@ -83,8 +103,13 @@ class MojoIpczInProcessTestNodeController
 class MojoIpczChildTestNodeController
     : public ipcz::test::TestNode::TestNodeController {
  public:
-  explicit MojoIpczChildTestNodeController(base::Process process)
-      : process_(std::move(process)) {}
+  MojoIpczChildTestNodeController(
+      ipcz::test::TestNode& source,
+      const ipcz::test::TestNodeDetails& child_details,
+      base::Process process)
+      : source_(source),
+        is_broker_(child_details.is_broker),
+        process_(std::move(process)) {}
 
   // ipcz::test::TestNode::TestNodeController:
   bool WaitForShutdown() override {
@@ -101,9 +126,24 @@ class MojoIpczChildTestNodeController
     return *result_;
   }
 
+  ipcz::test::TransportPair CreateNewTransports() override {
+    ipcz::test::TransportPair transports;
+    if (is_broker_) {
+      transports = source_.CreateBrokerToBrokerTransports();
+    } else {
+      transports = source_.CreateTransports();
+    }
+
+    Transport::FromHandle(transports.ours)
+        ->set_remote_process(process_.Duplicate());
+    return transports;
+  }
+
  private:
   ~MojoIpczChildTestNodeController() override { DCHECK(result_.has_value()); }
 
+  ipcz::test::TestNode& source_;
+  const bool is_broker_;
   base::Process process_;
   absl::optional<bool> result_;
 };
@@ -127,7 +167,7 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     return kMojoIpczMultiprocessTestDriverName;
   }
 
-  ipcz::test::TestNode::TransportPair CreateTransports(
+  ipcz::test::TransportPair CreateTransports(
       ipcz::test::TestNode& source,
       bool for_broker_target) const override {
     std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>> transports;
@@ -199,8 +239,8 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     std::unique_ptr<ipcz::test::TestNode> node = details.factory();
     node->SetTransport(their_transport);
     return ipcz::MakeRefCounted<MojoIpczInProcessTestNodeController>(
-        std::string(details.name.begin(), details.name.end()), std::move(node),
-        this);
+        source, std::string(details.name.begin(), details.name.end()),
+        std::move(node), this);
   }
 
   ipcz::Ref<ipcz::test::TestNode::TestNodeController> SpawnTestNodeProcess(
@@ -259,7 +299,7 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     endpoint.ProcessLaunchAttempted();
     Transport::FromHandle(our_transport)->set_remote_process(child.Duplicate());
     return ipcz::MakeRefCounted<MojoIpczChildTestNodeController>(
-        std::move(child));
+        source, details, std::move(child));
   }
 
   const Mode mode_;

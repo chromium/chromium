@@ -846,7 +846,7 @@ void NodeLink::HandleTransportError(const OperationContext& context) {
   }
 
   Ref<NodeLink> self = WrapRefCounted(this);
-  node_->DropConnection(context, remote_node_name_);
+  node_->DropConnection(context, *this);
 }
 
 void NodeLink::WaitForParcelFragmentToResolve(

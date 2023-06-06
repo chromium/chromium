@@ -149,26 +149,34 @@ Ref<NodeLink> Node::GetBrokerLink() {
   return broker_link_;
 }
 
-void Node::SetAssignedName(const NodeName& name) {
-  absl::MutexLock lock(&mutex_);
-  ABSL_ASSERT(!assigned_name_.is_valid());
-  assigned_name_ = name;
-}
-
 bool Node::AddConnection(const NodeName& remote_node_name,
                          Connection connection) {
   std::vector<BrokerLinkCallback> callbacks;
   {
-    absl::ReleasableMutexLock lock(&mutex_);
-    auto [it, inserted] = connections_.insert({remote_node_name, connection});
-    if (!inserted) {
-      lock.Release();
+    absl::MutexLock lock(&mutex_);
+    for (;;) {
+      auto it = connections_.find(remote_node_name);
+      if (it == connections_.end()) {
+        break;
+      }
 
-      const OperationContext context{OperationContext::kTransportNotification};
-      connection.link->Deactivate(context);
-      return false;
+      // Assume that if we're getting a new connection to an already-known node,
+      // it must be because the application has explicitly initiated a new
+      // connection to the same node and it expects the previous connection to
+      // be replaced.
+      //
+      // Note that DropConnection() may elicit trap notifications. Although we
+      // may be here *either* within a ConnectNode() API call *or* while
+      // handling an incoming NodeConnector message, we can err on the side of
+      // caution (i.e. less re-entrancy in event handlers) by treating every
+      // case like an API call.
+      mutex_.Unlock();
+      const OperationContext context{OperationContext::kAPICall};
+      DropConnection(context, *it->second.link);
+      mutex_.Lock();
     }
 
+    connections_.insert({remote_node_name, connection});
     const bool remote_is_broker =
         connection.link->remote_node_type() == Type::kBroker;
     const bool local_is_broker = type_ == Type::kBroker;
@@ -184,6 +192,7 @@ bool Node::AddConnection(const NodeName& remote_node_name,
       ABSL_ASSERT(!broker_link_);
       broker_link_ = connection.link;
       broker_link_callbacks_.swap(callbacks);
+      assigned_name_ = broker_link_->local_node_name();
     }
   }
 
@@ -221,7 +230,6 @@ NodeName Node::GenerateRandomName() const {
 
 void Node::SetAllocationDelegate(Ref<NodeLink> link) {
   absl::MutexLock lock(&mutex_);
-  ABSL_ASSERT(!allocation_delegate_link_);
   allocation_delegate_link_ = std::move(link);
 }
 
@@ -463,14 +471,14 @@ bool Node::AcceptRelayedMessage(msg::AcceptRelayedMessage& accept) {
 }
 
 void Node::DropConnection(const OperationContext& context,
-                          const NodeName& name) {
+                          const NodeLink& connection_link) {
   Ref<NodeLink> link;
   std::vector<NodeName> pending_introductions;
   bool lost_broker = false;
   {
     absl::MutexLock lock(&mutex_);
-    auto it = connections_.find(name);
-    if (it == connections_.end()) {
+    auto it = connections_.find(connection_link.remote_node_name());
+    if (it == connections_.end() || it->second.link != &connection_link) {
       return;
     }
     link = std::move(it->second.link);
@@ -505,7 +513,13 @@ void Node::DropConnection(const OperationContext& context,
   link->Deactivate(context);
 
   if (lost_broker) {
-    CancelAllIntroductions();
+    // Break all connections if the broker is lost. In practice we should only
+    // need to break connections which were introduced by the lost broker, but
+    // there's less risk of weird future inconsistencies if we just say that as
+    // a rule, primary broker disconnection serves as a sort of "reset" for a
+    // node. The node can be re-connected to a broker and continue operating
+    // normally from there.
+    ShutDown();
   } else {
     for (auto& target : pending_introductions) {
       NotifyIntroductionFailed(*link, target);
@@ -582,6 +596,7 @@ void Node::ShutDown() {
     broker_link_.reset();
     allocation_delegate_link_.reset();
     other_brokers_.clear();
+    assigned_name_ = {};
   }
 
   const OperationContext context{OperationContext::kAPICall};

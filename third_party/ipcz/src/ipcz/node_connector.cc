@@ -131,7 +131,6 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
         connect.params().broker_name, Node::Type::kBroker,
         connect.params().protocol_version, transport_,
         NodeLinkMemory::Create(node_, std::move(mapping)));
-    node_->SetAssignedName(connect.params().receiver_name);
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(new_link);
     }
@@ -258,7 +257,6 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
         connect.params().broker_name, Node::Type::kBroker,
         broker_protocol_version, transport_,
         NodeLinkMemory::Create(node_, std::move(broker_mapping)));
-    node_->SetAssignedName(connect.params().name);
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(broker_link);
     }

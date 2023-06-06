@@ -51,6 +51,11 @@ class TestDriver;
 
 using TestNodeFactory = std::unique_ptr<TestNode> (*)();
 
+struct TransportPair {
+  IpczDriverHandle ours;
+  IpczDriverHandle theirs;
+};
+
 // Type used to package metadata about a MULTINODE_TEST_NODE() or
 // MULTINODE_TEST() invocation.
 struct TestNodeDetails {
@@ -86,6 +91,8 @@ struct TestNodeDetails {
 // making multinode tests easier to read and write.
 class TestNode : public internal::TestBase {
  public:
+  using TransportPair = ::ipcz::test::TransportPair;
+
   // Exposes interaction with one node spawned by another.
   class TestNodeController : public RefCounted {
    public:
@@ -93,6 +100,10 @@ class TestNode : public internal::TestBase {
     // executed and terminated cleanly, or false if it encountered at least one
     // test expectation failure while running.
     virtual bool WaitForShutdown() = 0;
+
+    // Creates a new pair of transports suitable for connecting the calling
+    // node with the TestNode controlled by this object.
+    virtual TransportPair CreateNewTransports() = 0;
   };
 
   virtual ~TestNode();
@@ -195,10 +206,6 @@ class TestNode : public internal::TestBase {
   // non-broker) node to another non-broker node. Most tests should not use this
   // directly, but should instead connect to other nodes using the more
   // convenient helpers ConnectToBroker() or SpawnTestNode().
-  struct TransportPair {
-    IpczDriverHandle ours;
-    IpczDriverHandle theirs;
-  };
   TransportPair CreateTransports();
 
   // Creates a pair of transport appropriate for connecting two broker nodes
@@ -256,9 +263,8 @@ class TestDriver {
   // pair and pass `theirs` to some newly spawned test node. If
   // `for_broker_target` is true, `theirs` will be suitable for passing to a
   // broker node; otherwise it must be passed to a non-broker.
-  virtual TestNode::TransportPair CreateTransports(
-      TestNode& source,
-      bool for_broker_target) const = 0;
+  virtual TransportPair CreateTransports(TestNode& source,
+                                         bool for_broker_target) const = 0;
 
   // Spawns a new TestNode instance for a TestNode described by `details`,
   // passing `their_transport` to the new node so it can establish a connection.

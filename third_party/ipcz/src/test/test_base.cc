@@ -170,6 +170,12 @@ IpczResult TestBase::WaitToGet(IpczHandle portal,
   return Get(portal, message, handles);
 }
 
+std::string TestBase::WaitToGetString(IpczHandle portal) {
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal, &message));
+  return message;
+}
+
 void TestBase::PingPong(IpczHandle portal) {
   EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, {}));
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal));

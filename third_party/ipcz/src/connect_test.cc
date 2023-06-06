@@ -352,5 +352,179 @@ MULTINODE_TEST(ConnectTest, MultiBrokerIntroductions) {
   CloseAll({other_broker, client});
 }
 
+class ReconnectTestNode : public ConnectTestNode {
+ public:
+  void SendTransport(IpczHandle portal, IpczDriverHandle transport) {
+    IpczBoxContents contents{
+        .size = sizeof(contents),
+        .type = IPCZ_BOX_TYPE_DRIVER_OBJECT,
+        .object = {.driver_object = transport},
+    };
+    IpczHandle box;
+    ASSERT_EQ(IPCZ_RESULT_OK,
+              ipcz().Box(node(), &contents, IPCZ_NO_FLAGS, nullptr, &box));
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              ipcz().Put(portal, nullptr, 0, &box, 1, IPCZ_NO_FLAGS, nullptr));
+  }
+
+  IpczDriverHandle ReceiveTransport(IpczHandle portal) {
+    IpczDriverHandle handle;
+    ReceiveTransport(portal, handle);
+    return handle;
+  }
+
+  IpczHandle Reconnect(IpczDriverHandle transport, IpczConnectNodeFlags flags) {
+    IpczHandle portal;
+    Reconnect(transport, flags, portal);
+    return portal;
+  }
+
+ private:
+  void ReceiveTransport(IpczHandle portal, IpczDriverHandle& handle) {
+    IpczHandle box;
+    EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal, nullptr, {&box, 1}));
+
+    IpczBoxContents contents{.size = sizeof(contents)};
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &contents));
+    ASSERT_EQ(IPCZ_BOX_TYPE_DRIVER_OBJECT, contents.type);
+    handle = contents.object.driver_object;
+  }
+
+  void Reconnect(IpczDriverHandle transport,
+                 IpczConnectNodeFlags flags,
+                 IpczHandle& portal) {
+    flags |= GetTestDriver()->GetExtraClientConnectNodeFlags();
+    ASSERT_EQ(IPCZ_RESULT_OK, ipcz().ConnectNode(node(), transport, 1, flags,
+                                                 nullptr, &portal));
+  }
+};
+
+using ReconnectTest = test::MultinodeTest<ReconnectTestNode>;
+
+MULTINODE_TEST_NODE(ReconnectTestNode, ReconnectionTestNonBroker) {
+  IpczHandle broker = ConnectToBroker();
+  VerifyEndToEnd(broker);
+  IpczDriverHandle new_transport = ReceiveTransport(broker);
+  IpczHandle new_portal = Reconnect(new_transport, IPCZ_CONNECT_NODE_TO_BROKER);
+  VerifyEndToEnd(new_portal);
+  WaitForConditionFlags(broker, IPCZ_TRAP_PEER_CLOSED);
+  CloseAll({broker, new_portal});
+}
+
+MULTINODE_TEST(ReconnectTest, BrokerNonBroker) {
+  IpczHandle non_broker;
+  auto controller = SpawnTestNode<ReconnectionTestNonBroker>({&non_broker, 1});
+  TransportPair transports = controller->CreateNewTransports();
+  VerifyEndToEnd(non_broker);
+  SendTransport(non_broker, transports.theirs);
+  IpczHandle new_portal = Reconnect(transports.ours, IPCZ_NO_FLAGS);
+  VerifyEndToEnd(new_portal);
+  WaitForConditionFlags(non_broker, IPCZ_TRAP_PEER_CLOSED);
+  CloseAll({non_broker, new_portal});
+}
+
+MULTINODE_TEST_BROKER_NODE(ReconnectTestNode, ReconnectionTestBroker) {
+  IpczHandle other_broker = ConnectToBroker();
+  VerifyEndToEnd(other_broker);
+  IpczDriverHandle new_transport = ReceiveTransport(other_broker);
+  IpczHandle new_portal = Reconnect(new_transport, IPCZ_CONNECT_NODE_TO_BROKER);
+  VerifyEndToEnd(new_portal);
+  WaitForConditionFlags(other_broker, IPCZ_TRAP_PEER_CLOSED);
+  CloseAll({other_broker, new_portal});
+}
+
+MULTINODE_TEST(ReconnectTest, BrokerBroker) {
+  IpczHandle other_broker;
+  auto controller = SpawnTestNode<ReconnectionTestBroker>({&other_broker, 1});
+  TransportPair transports = controller->CreateNewTransports();
+  VerifyEndToEnd(other_broker);
+  SendTransport(other_broker, transports.theirs);
+  IpczHandle new_portal =
+      Reconnect(transports.ours, IPCZ_CONNECT_NODE_TO_BROKER);
+  VerifyEndToEnd(new_portal);
+  WaitForConditionFlags(other_broker, IPCZ_TRAP_PEER_CLOSED);
+  CloseAll({other_broker, new_portal});
+}
+
+MULTINODE_TEST_NODE(ReconnectTestNode, TransitiveReconnectClientA) {
+  IpczHandle broker = ConnectToBroker();
+
+  IpczHandle client_b;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(broker, nullptr, {&client_b, 1}));
+  WaitForDirectRemoteLink(client_b);
+  VerifyEndToEnd(client_b);
+
+  IpczDriverHandle new_transport = ReceiveTransport(broker);
+  IpczHandle new_broker = Reconnect(new_transport, IPCZ_CONNECT_NODE_TO_BROKER);
+  VerifyEndToEnd(new_broker);
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditionFlags(broker, IPCZ_TRAP_PEER_CLOSED));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditionFlags(client_b, IPCZ_TRAP_PEER_CLOSED));
+
+  // Pass a portal to the broker which it will forward to client B. Then verify
+  // that our portal ends up with a working direct link to it, implying that
+  // the two client nodes have been automatically re-introduced.
+  auto [new_client_a, new_client_b] = OpenPortals();
+  Put(new_broker, "", {&new_client_a, 1});
+  WaitForDirectRemoteLink(new_client_b);
+  VerifyEndToEnd(new_client_b);
+
+  Put(new_broker, "bye");
+  CloseAll({broker, new_broker, client_b, new_client_b});
+}
+
+MULTINODE_TEST_NODE(ReconnectTestNode, TransitiveReconnectClientB) {
+  IpczHandle broker = ConnectToBroker();
+
+  IpczHandle client_a;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(broker, nullptr, {&client_a, 1}));
+  WaitForDirectRemoteLink(client_a);
+  VerifyEndToEnd(client_a);
+
+  IpczHandle new_client_a;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(broker, nullptr, {&new_client_a, 1}));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditionFlags(client_a, IPCZ_TRAP_PEER_CLOSED));
+  WaitForDirectRemoteLink(new_client_a);
+  VerifyEndToEnd(new_client_a);
+
+  Put(broker, "bye");
+  CloseAll({broker, client_a, new_client_a});
+}
+
+MULTINODE_TEST(ReconnectTest, TransitiveReconnection) {
+  // Tests that when a non-broker reconnects to a broker, it can also get
+  // reconnected to other nodes via that broker.
+  IpczHandle client_a;
+  auto a_controller = SpawnTestNode<TransitiveReconnectClientA>({&client_a, 1});
+  IpczHandle client_b = SpawnTestNode<TransitiveReconnectClientB>();
+
+  // Establish a pair of portals between clients A and B.
+  auto [a, b] = OpenPortals();
+  Put(client_a, "", {&a, 1});
+  Put(client_b, "", {&b, 1});
+
+  // Send client A a transport with which to re-connect to us. Verify that it's
+  // reconnected and wait for its previous portal to be closed.
+  TransportPair transports = a_controller->CreateNewTransports();
+  SendTransport(client_a, transports.theirs);
+  IpczHandle new_client_a = Reconnect(transports.ours, IPCZ_NO_FLAGS);
+  VerifyEndToEnd(new_client_a);
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditionFlags(client_a, IPCZ_TRAP_PEER_CLOSED));
+
+  // Accept a new portal from A and forward it to B.
+  IpczHandle new_b_to_a;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(new_client_a, nullptr, {&new_b_to_a, 1}));
+  Put(client_b, "", {&new_b_to_a, 1});
+
+  // Wait for A and B to confirm thier reconnection.
+  EXPECT_EQ("bye", WaitToGetString(new_client_a));
+  EXPECT_EQ("bye", WaitToGetString(client_b));
+  CloseAll({client_a, client_b, new_client_a});
+}
+
 }  // namespace
 }  // namespace ipcz

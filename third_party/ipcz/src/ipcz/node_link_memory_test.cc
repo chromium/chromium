@@ -38,20 +38,21 @@ class NodeLinkMemoryTest : public testing::Test {
   // Connects a broker to a non-broker and returns their respective NodeLinks.
   static std::pair<Ref<NodeLink>, Ref<NodeLink>> ConnectNodes(
       Ref<Node> broker,
-      Ref<Node> non_broker) {
+      Ref<Node> non_broker,
+      const NodeName& non_broker_name) {
     std::pair<Ref<NodeLink>, Ref<NodeLink>> links;
     auto transports = DriverTransport::CreatePair(kTestDriver);
     DriverMemoryWithMapping buffer =
         NodeLinkMemory::AllocateMemory(kTestDriver);
     links.first = NodeLink::CreateInactive(
-        broker, LinkSide::kA, broker->GetAssignedName(),
-        non_broker->GetAssignedName(), Node::Type::kNormal, 0, transports.first,
+        broker, LinkSide::kA, broker->GetAssignedName(), non_broker_name,
+        Node::Type::kNormal, 0, transports.first,
         NodeLinkMemory::Create(broker, std::move(buffer.mapping)));
     links.second = NodeLink::CreateInactive(
-        non_broker, LinkSide::kB, non_broker->GetAssignedName(),
-        broker->GetAssignedName(), Node::Type::kBroker, 0, transports.second,
+        non_broker, LinkSide::kB, non_broker_name, broker->GetAssignedName(),
+        Node::Type::kBroker, 0, transports.second,
         NodeLinkMemory::Create(non_broker, buffer.memory.Map()));
-    broker->AddConnection(non_broker->GetAssignedName(), {.link = links.first});
+    broker->AddConnection(non_broker_name, {.link = links.first});
     non_broker->AddConnection(broker->GetAssignedName(),
                               {.link = links.second, .broker = links.first});
     links.first->Activate();
@@ -73,8 +74,7 @@ class NodeLinkMemoryTest : public testing::Test {
 
   void SetUp() override {
     // Brokers assign their own names, no need to assign one to `node_a_`.
-    node_b_->SetAssignedName(kTestNonBrokerName);
-    auto links = ConnectNodes(node_a_, node_b_);
+    auto links = ConnectNodes(node_a_, node_b_, kTestNonBrokerName);
     link_a_ = std::move(links.first);
     link_b_ = std::move(links.second);
   }
@@ -273,8 +273,7 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
   };
   const Ref<Node> node_c{
       MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver, &options)};
-  node_c->SetAssignedName(kOtherTestNonBrokerName);
-  auto links = ConnectNodes(node_a(), node_c);
+  auto links = ConnectNodes(node_a(), node_c, kOtherTestNonBrokerName);
 
   // We use a small enough size that this is guaranteed to allocate within
   // NodeLinkMemory. But we allocate them from node C's side of the link, where
