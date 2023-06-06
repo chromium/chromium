@@ -888,18 +888,14 @@ Cache::Cache(GlobalFetch::ScopedFetcher* fetcher,
              CacheStorageBlobClientList* blob_client_list,
              mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache>
                  cache_pending_remote,
-             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-             ContextLifecycleNotifier* context)
-    : scoped_fetcher_(fetcher),
-      blob_client_list_(blob_client_list),
-      cache_remote_(context) {
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : scoped_fetcher_(fetcher), blob_client_list_(blob_client_list) {
   cache_remote_.Bind(std::move(cache_pending_remote), std::move(task_runner));
 }
 
 void Cache::Trace(Visitor* visitor) const {
   visitor->Trace(scoped_fetcher_);
   visitor->Trace(blob_client_list_);
-  visitor->Trace(cache_remote_);
   ScriptWrappable::Trace(visitor);
 }
 
