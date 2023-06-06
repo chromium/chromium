@@ -6167,7 +6167,7 @@ Permissions you've already given to websites and apps may apply to this account.
     Beta
   </message>
   <message name="IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling Steam (name of app).">
-      Any games and apps installed via Steam will also be removed from this device
+      Any apps and games installed using Steam for Chromebook (Beta) will be removed from this device. Data associated with these apps and games will also be removed. Make sure to back up saved apps and games before uninstalling.
   </message>
   <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
       Data associated with this app may be removed from this device
