@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 11, NextIndex: 45
+// NextMinVersion: 12, NextIndex: 46
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -727,6 +727,23 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=9] RunBluetoothPairingRoutine@44(string peripheral_id)
+      => (RunRoutineResponse response);
+
+  // Requests that the PowerButton routine is created and started on the
+  // platform. This routine checks the functionality of the power button. The
+  // routine passes if a power button event is received before the timeout.
+  // Otherwise, the routine fails.
+  // The availability of this routine can be determined by checking that
+  // kPowerButton is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |timeout_seconds| - length of time, in seconds, to listen to the power
+  //                       button events. Range: [1, 600].
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=11] RunPowerButtonRoutine@45(uint32 timeout_seconds)
       => (RunRoutineResponse response);
 };
 
