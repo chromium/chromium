@@ -4119,6 +4119,7 @@ crbug.com/535738 external/wpt/media-source/mediasource-changetype-play-without-c
 crbug.com/978966 [ Mac ] paint/markers/ellipsis-mixed-text-in-ltr-flow-with-markers.html [ Failure Pass ]
 crbug.com/1451329 [ Mac11-arm64 ] paint/markers/marker-invalidation.html [ Failure Pass ]
 crbug.com/1451329 [ Mac12-arm64 ] paint/markers/marker-invalidation.html [ Failure Pass ]
+crbug.com/1451329 [ Mac13-arm64 ] paint/markers/marker-invalidation.html [ Failure Pass ]
 
 # Sheriff 2019-06-27
 crbug.com/979243 [ Mac10.14 Release ] editing/selection/inline-closest-leaf-child.html [ Failure Pass ]
