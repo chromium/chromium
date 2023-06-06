@@ -330,6 +330,16 @@ std::string MakeBidScript(const url::Origin& seller,
         if (browserSignals.prevWins[i][1].winner !== -i)
           throw new Error("prevWin MD not what passed in");
       }
+      if (browserSignals.prevWinsMs.length !== 3)
+        throw new Error("prevWinsMs");
+      for (let i = 0; i < browserSignals.prevWinsMs.length; ++i) {
+        if (!(browserSignals.prevWinsMs[i] instanceof Array))
+          throw new Error("prevWinsMs entry not an array");
+        if (typeof browserSignals.prevWinsMs[i][0] != "number")
+          throw new Error("Not a Number in prevWin?");
+        if (browserSignals.prevWinsMs[i][1].winner !== -i)
+          throw new Error("prevWin MD not what passed in");
+      }
       if (debugLossReportUrl) {
         if (reportPostAuctionSignals)
           debugLossReportUrl += postAuctionSignalsPlaceholder;
