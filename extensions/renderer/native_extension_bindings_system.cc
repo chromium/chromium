@@ -653,7 +653,6 @@ void NativeExtensionBindingsSystem::HandleResponse(
       request_id, response,
       !success && error.empty() ? "Unknown error." : error,
       std::move(extra_data));
-  ipc_message_sender_->SendOnRequestResponseReceivedIPC(request_id);
 }
 
 IPCMessageSender* NativeExtensionBindingsSystem::GetIPCMessageSender() {

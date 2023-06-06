@@ -634,9 +634,16 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   if (!registry->enabled_extensions().GetByID(params.extension_id))
     return;
 
-  if (!IsRequestFromServiceWorker(params)) {
-    // Increment ref count for non-service worker extension API. Ref count for
-    // service worker extension API is handled separately on IO thread via IPC.
+  // Increment the keepalive to ensure the extension doesn't shut down while
+  // it's executing an API function.
+  if (IsRequestFromServiceWorker(params)) {
+    CHECK(function->worker_id());
+    std::string uuid = process_manager->IncrementServiceWorkerKeepaliveCount(
+        *function->worker_id(),
+        content::ServiceWorkerExternalRequestTimeoutType::kDefault,
+        Activity::API_FUNCTION, function->name());
+    function->set_request_uuid(std::move(uuid));
+  } else {
     process_manager->IncrementLazyKeepaliveCount(
         function->extension(), Activity::API_FUNCTION, function->name());
   }
@@ -656,15 +663,38 @@ void ExtensionFunctionDispatcher::RemoveWorkerCallbacksForProcess(
 }
 
 void ExtensionFunctionDispatcher::OnExtensionFunctionCompleted(
-    const Extension* extension,
-    bool is_from_service_worker,
-    const char* name) {
-  if (extension && !is_from_service_worker) {
-    // Decrement ref count for non-service worker extension API. Service
-    // worker extension API ref counts are handled separately on IO thread
-    // directly via IPC.
-    ProcessManager::Get(browser_context_)
-        ->DecrementLazyKeepaliveCount(extension, Activity::API_FUNCTION, name);
+    const ExtensionFunction& extension_function) {
+  if (!extension_function.extension()) {
+    // The function had no associated extension; nothing to clean up.
+    return;
+  }
+
+  if (!extension_function.browser_context()) {
+    // The ExtensionFunction's browser context is null'ed out when the browser
+    // context is being shut down. If this happens, there's nothing to clean up.
+    return;
+  }
+
+  if (!ExtensionRegistry::Get(browser_context_)
+           ->enabled_extensions()
+           .GetByID(extension_function.extension()->id())) {
+    // The extension may have been unloaded (the ExtensionFunction holds a
+    // reference to it, so it's still safe to access). If so, there's nothing to
+    // // clean up.
+    return;
+  }
+
+  ProcessManager* process_manager = ProcessManager::Get(browser_context_);
+  if (extension_function.is_from_service_worker()) {
+    CHECK(!extension_function.request_uuid().empty());
+    CHECK(extension_function.worker_id());
+    process_manager->DecrementServiceWorkerKeepaliveCount(
+        *extension_function.worker_id(), extension_function.request_uuid(),
+        Activity::API_FUNCTION, extension_function.name());
+  } else {
+    process_manager->DecrementLazyKeepaliveCount(extension_function.extension(),
+                                                 Activity::API_FUNCTION,
+                                                 extension_function.name());
   }
 }
 
@@ -753,9 +783,14 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   function->set_response_callback(std::move(callback));
   function->set_source_context_type(context_type);
   function->set_source_process_id(requesting_process_id);
-  function->set_worker_thread_id(params.worker_thread_id);
   if (is_worker_request) {
-    function->set_service_worker_version_id(params.service_worker_version_id);
+    CHECK(extension);
+    WorkerId worker_id;
+    worker_id.thread_id = params.worker_thread_id;
+    worker_id.version_id = params.service_worker_version_id;
+    worker_id.render_process_id = requesting_process_id;
+    worker_id.extension_id = extension->id();
+    function->set_worker_id(std::move(worker_id));
   } else {
     function->SetRenderFrameHost(render_frame_host);
   }

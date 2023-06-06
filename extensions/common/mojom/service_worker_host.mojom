@@ -56,25 +56,6 @@ interface ServiceWorkerHost {
       int64 service_worker_version_id,
       int32 worker_thread_id);
 
-  // Asks the browser to increment the pending activity count for
-  // the worker with version id `service_worker_version_id`.
-  // Each request to increment must use unique `request_uuid`. If a request with
-  // `request_uuid` is already in progress (due to race condition or renderer
-  // compromise), browser process ignores the IPC.
-  // TODO(crbug.com/1423190): Investigate simpifying this message because the
-  // browser process should already know that a request is active or not.
-  IncrementServiceWorkerActivity(int64 service_worker_version_id,
-                                 string request_uuid);
-
-  // Asks the browser to decrement the pending activity count for
-  // the worker with version id `service_worker_version_id`.
-  // `request_uuid` must match the GUID of a previous request, otherwise the
-  // browser process ignores the IPC.
-  // TODO(crbug.com/1423190): Investigate simpifying this message because the
-  // browser process should already know that a request is active or not.
-  DecrementServiceWorkerActivity(int64 service_worker_version_id,
-                                 string request_uuid);
-
   // A service worker thread sends this message when an extension service worker
   // starts an API request. We use [UnlimitedSize] here because `params` may be
   // large with some extension function (ex. Storage API).

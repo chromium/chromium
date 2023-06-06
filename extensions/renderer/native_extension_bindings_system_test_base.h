@@ -53,7 +53,6 @@ class TestIPCMessageSender : public IPCMessageSender {
   // IPCMessageSender:
   void SendRequestIPC(ScriptContext* context,
                       mojom::RequestParamsPtr params) override;
-  void SendOnRequestResponseReceivedIPC(int request_id) override {}
   // The event listener methods are less of a pain to mock (since they don't
   // have complex parameters like mojom::RequestParams).
   MOCK_METHOD2(SendAddUnfilteredEventListenerIPC,

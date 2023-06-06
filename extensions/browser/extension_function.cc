@@ -363,8 +363,7 @@ ExtensionFunction::~ExtensionFunction() {
         name());
   }
   if (dispatcher() && (render_frame_host() || is_from_service_worker())) {
-    dispatcher()->OnExtensionFunctionCompleted(
-        extension(), is_from_service_worker(), name());
+    dispatcher()->OnExtensionFunctionCompleted(*this);
   }
 
 // The extension function should always respond to avoid leaks in the

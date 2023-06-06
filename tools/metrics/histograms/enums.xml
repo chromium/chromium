@@ -11108,7 +11108,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="AVG_BAD_INST_ID"/>
   <int value="5" label="AVG_BAD_EXT_ID"/>
   <int value="6" label="OBSOLETE_AVG_NULL_AVG"/>
-  <int value="7" label="ESWMF_INVALID_DECREMENT_ACTIVITY"/>
+  <int value="7" label="DEPRECATED_ESWMF_INVALID_DECREMENT_ACTIVITY"/>
   <int value="8" label="EFD_BAD_MESSAGE"/>
   <int value="9" label="EFD_BAD_MESSAGE_WORKER"/>
   <int value="10" label="WVG_PARTITION_ID_NOT_UTF8"/>

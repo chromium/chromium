@@ -91,11 +91,6 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void DidStopContext(const GURL& service_worker_scope,
                       int64_t service_worker_version_id);
 
-  void IncrementServiceWorkerActivity(int64_t service_worker_version_id,
-                                      const std::string& request_uuid);
-  void DecrementServiceWorkerActivity(int64_t service_worker_version_id,
-                                      const std::string& request_uuid);
-
   void RequestWorker(mojom::RequestParamsPtr params);
   void WorkerResponseAck(int request_id, int64_t service_worker_version_id);
 

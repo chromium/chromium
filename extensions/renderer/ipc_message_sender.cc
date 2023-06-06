@@ -4,12 +4,10 @@
 
 #include "extensions/renderer/ipc_message_sender.h"
 
-#include <map>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/uuid.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
@@ -61,8 +59,6 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         base::BindOnce(&MainThreadIPCMessageSender::OnResponse,
                        weak_ptr_factory_.GetWeakPtr(), request_id));
   }
-
-  void SendOnRequestResponseReceivedIPC(int request_id) override {}
 
   mojom::EventListenerParamPtr GetEventListenerParam(ScriptContext* context) {
     return !context->GetExtensionID().empty()
@@ -311,22 +307,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     params->worker_thread_id = worker_thread_id;
     params->service_worker_version_id = service_worker_version_id_;
 
-    std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    request_id_to_guid_[params->request_id] = guid;
-
-    // Keeps the worker alive during extension function call. Balanced in
-    // `SendOnRequestResponseReceivedIPC()`.
-    dispatcher_->IncrementServiceWorkerActivity(service_worker_version_id_,
-                                                guid);
     dispatcher_->RequestWorker(std::move(params));
-  }
-
-  void SendOnRequestResponseReceivedIPC(int request_id) override {
-    auto iter = request_id_to_guid_.find(request_id);
-    DCHECK(iter != request_id_to_guid_.end());
-    dispatcher_->DecrementServiceWorkerActivity(service_worker_version_id_,
-                                                iter->second);
-    request_id_to_guid_.erase(iter);
   }
 
   void SendAddUnfilteredEventListenerIPC(
@@ -520,9 +501,6 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   WorkerThreadDispatcher* const dispatcher_;
   const int64_t service_worker_version_id_;
   absl::optional<ExtensionId> extension_id_;
-
-  // request id -> GUID map for each outstanding requests.
-  std::map<int, std::string> request_id_to_guid_;
 };
 
 }  // namespace

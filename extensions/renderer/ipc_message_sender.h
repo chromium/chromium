@@ -38,10 +38,6 @@ class IPCMessageSender {
   virtual void SendRequestIPC(ScriptContext* context,
                               mojom::RequestParamsPtr params) = 0;
 
-  // Handles sending any additional messages required after receiving a response
-  // to a request.
-  virtual void SendOnRequestResponseReceivedIPC(int request_id) = 0;
-
   // Sends a message to add/remove an unfiltered listener.
   virtual void SendAddUnfilteredEventListenerIPC(
       ScriptContext* context,

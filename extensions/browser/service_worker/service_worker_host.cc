@@ -151,53 +151,6 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
           service_worker_scope, service_worker_version_id, worker_thread_id);
 }
 
-void ServiceWorkerHost::IncrementServiceWorkerActivity(
-    int64_t service_worker_version_id,
-    const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!GetBrowserContext()) {
-    return;
-  }
-
-  active_request_uuids_.insert(request_uuid);
-  // The worker might have already stopped before we got here, so the increment
-  // below might fail legitimately. Therefore, we do not send bad_message to the
-  // worker even if it fails.
-  render_process_host_->GetStoragePartition()
-      ->GetServiceWorkerContext()
-      ->StartingExternalRequest(
-          service_worker_version_id,
-          content::ServiceWorkerExternalRequestTimeoutType::kDefault,
-          request_uuid);
-}
-
-void ServiceWorkerHost::DecrementServiceWorkerActivity(
-    int64_t service_worker_version_id,
-    const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!GetBrowserContext()) {
-    return;
-  }
-
-  content::ServiceWorkerExternalRequestResult result =
-      render_process_host_->GetStoragePartition()
-          ->GetServiceWorkerContext()
-          ->FinishedExternalRequest(service_worker_version_id, request_uuid);
-  if (result != content::ServiceWorkerExternalRequestResult::kOk) {
-    LOG(ERROR) << "ServiceWorkerContext::FinishedExternalRequest failed: "
-               << static_cast<int>(result);
-  }
-
-  bool erased = active_request_uuids_.erase(request_uuid) == 1;
-  // The worker may have already stopped before we got here, so only report
-  // a bad message if we didn't have an increment for the UUID.
-  if (!erased) {
-    bad_message::ReceivedBadMessage(
-        render_process_host_->GetID(),
-        bad_message::ESWMF_INVALID_DECREMENT_ACTIVITY);
-  }
-}
-
 void ServiceWorkerHost::RequestWorker(mojom::RequestParamsPtr params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetBrowserContext()) {
