@@ -2398,7 +2398,8 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
   Vector<String> ids;
   AXObject* listbox_candidate = nullptr;
   if (ElementsFromAttribute(GetElement(), owned_elements,
-                            html_names::kAriaOwnsAttr, ids)) {
+                            html_names::kAriaOwnsAttr, ids) &&
+      owned_elements.size() > 0) {
     DCHECK(owned_elements[0]);
     listbox_candidate = AXObjectCache().GetOrCreate(owned_elements[0]);
   }
@@ -4465,16 +4466,15 @@ bool AXObject::ElementsFromAttribute(Element* from,
   // We compute the attr-associated elements, which are either explicitly set
   // element references set via the IDL, or computed from the content attribute.
   TokenVectorFromAttribute(from, ids, attribute);
-
   HeapVector<Member<Element>>* attr_associated_elements =
       from->GetElementArrayAttribute(attribute);
   if (!attr_associated_elements)
-    return false;
+    return ids.size();
 
   for (const auto& element : *attr_associated_elements)
     elements.push_back(element);
 
-  return elements.size();
+  return ids.size();
 }
 
 // static
@@ -4484,12 +4484,14 @@ bool AXObject::AriaLabelledbyElementVector(
     Vector<String>& ids) {
   // Try both spellings, but prefer aria-labelledby, which is the official spec.
   if (ElementsFromAttribute(from, elements, html_names::kAriaLabelledbyAttr,
-                            ids)) {
+                            ids) &&
+      elements.size() > 0) {
     return true;
   }
 
   return ElementsFromAttribute(from, elements, html_names::kAriaLabeledbyAttr,
-                               ids);
+                               ids) &&
+         elements.size() > 0;
 }
 
 // static

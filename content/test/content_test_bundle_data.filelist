@@ -33,6 +33,8 @@ data/accessibility/accname/desc-img-alt-describedby-invalid-expected-blink.txt
 data/accessibility/accname/desc-img-alt-describedby-invalid.html
 data/accessibility/accname/desc-img-alt-describedby-not-displayed-expected-blink.txt
 data/accessibility/accname/desc-img-alt-describedby-not-displayed.html
+data/accessibility/accname/desc-img-alt-describedby-presentational-dynamic-expected-blink.txt
+data/accessibility/accname/desc-img-alt-describedby-presentational-dynamic.html
 data/accessibility/accname/desc-img-alt-describedby-presentational-expected-blink.txt
 data/accessibility/accname/desc-img-alt-describedby-presentational.html
 data/accessibility/accname/desc-img-alt-describedby.html

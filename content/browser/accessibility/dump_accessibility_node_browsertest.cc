@@ -373,6 +373,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
       FILE_PATH_LITERAL("desc-img-alt-describedby-presentational.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       DescImgAltDescribedbyPresentationalDynamic) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "desc-img-alt-describedby-presentational-dynamic.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, DescImgDescribedby) {
   RunAccNameTest(FILE_PATH_LITERAL("desc-img-describedby.html"));
 }
