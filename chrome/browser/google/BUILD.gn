@@ -54,7 +54,10 @@ source_set("google") {
         "switches.h",
       ]
 
-      deps += [ "//google_update" ]
+      deps += [
+        "//chrome/updater/app/server/win:updater_legacy_idl_idl",
+        "//google_update",
+      ]
     }
 
     deps += [
@@ -103,6 +106,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/common:version_header",
       "//chrome/install_static/test:test_support",
+      "//chrome/updater/app/server/win:updater_legacy_idl_idl",
       "//components/policy/core/common",
       "//google_update",
     ]

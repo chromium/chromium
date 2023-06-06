@@ -32,7 +32,7 @@
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chrome/installer/util/helper.h"
-#include "google_update/google_update_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/win/atl_module.h"

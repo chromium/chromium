@@ -34,6 +34,7 @@ include_rules = [
   "+chrome/services/sharing/public",
   "+chrome/services/removable_storage_writer/public",
   "+chrome/services/util_win/public",
+  "+chrome/updater/app/server/win/updater_legacy_idl.h",
   "+chromeos",
   "+components/about_ui",
   "+components/account_id",
