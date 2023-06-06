@@ -70,6 +70,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
@@ -144,6 +145,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private static final int AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT = 3;
 
     private final AccessibilityDelegate mDelegate;
+    protected AccessibilityManager mAccessibilityManager;
     protected Context mContext;
     private final String mProductVersion;
     protected long mNativeObj;
@@ -251,6 +253,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mView = mDelegate.getContainerView();
         mContext = mView.getContext();
         mProductVersion = mDelegate.getProductVersion();
+        mAccessibilityManager =
+                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
 
         WebContents webContents = mDelegate.getWebContents();
         if (webContents != null) {
@@ -472,7 +476,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     public boolean isAccessibilityEnabled() {
         return isNativeInitialized()
-                && (mAccessibilityEnabledOverride
+                && (mAccessibilityEnabledOverride || mAccessibilityManager.isEnabled()
                         || AccessibilityState.isAnyAccessibilityServiceEnabled());
     }
 
