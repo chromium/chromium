@@ -40,6 +40,7 @@ class BaseTelemetryExtensionApiGuardFunction : public ExtensionFunction {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
+  void InvokeCanAccessApi();
   void OnCanAccessApi(absl::optional<std::string> error);
 
   std::unique_ptr<ApiGuardDelegate> api_guard_delegate_;
