@@ -10,7 +10,7 @@ see: [`//components/user_manager/user_type.h`](../../../components/user_manager/
 
 For a more in depth explanation, see:
 
-[Profiles, Sessions, Users, and more for ChromeOS Personalization](go/chromeos-personalization-user-types)
+[Profiles, Sessions, Users, and more for ChromeOS Personalization](http://go/chromeos-personalization-user-types)
 
 ## Tests
 
@@ -25,7 +25,7 @@ tests, javascript component browser tests, and javascript full-app browsertests.
   * primarily to test behavior of mojom handlers
   * heavily mocked out ash environment
     * fake user manager
-    * fake wallpaper_controller
+    * fake wallpaper\_controller
     * etc
 * component browser tests
   * `personalization_app_component_browsertest.js`
@@ -108,7 +108,7 @@ has some useful information.
 ### VSCode
 
 - Follow [vscode setup](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/vscode.md).
-  - (Optional) Set up [code-server](go/vscode/remote_development_via_web) for remote development.
+  - (Optional) Set up [code-server](http://go/vscode/remote_development_via_web) for remote development.
 - Create `tsconfig.json` using [helper script](https://chromium.googlesource.com/chromium/src/+/HEAD/ash/webui/personalization_app/tools/gen_tsconfig.py).
   Please follow the help doc in the header of the helper script.
 - Edit `${PATH_TO_CHROMIUM}/src/.git/info/exclude` and add these lines
