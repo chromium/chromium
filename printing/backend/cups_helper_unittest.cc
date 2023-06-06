@@ -769,8 +769,6 @@ TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoResolution) {
   // an OS-dependent default value.
 #if BUILDFLAG(IS_MAC)
   constexpr gfx::Size kExpectedDpi(kDefaultMacDpi, kDefaultMacDpi);
-#elif BUILDFLAG(IS_LINUX)
-  constexpr gfx::Size kExpectedDpi(kPixelsPerInch, kPixelsPerInch);
 #else
   constexpr gfx::Size kExpectedDpi(kDefaultPdfDpi, kDefaultPdfDpi);
 #endif
