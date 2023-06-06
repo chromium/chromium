@@ -425,63 +425,6 @@ SkYUVAInfo::Subsampling SubsamplingFromTextureSizes(gfx::Size ya_size,
 // uses absl::optional, the style also requires it to have a declared ctor
 SkiaRenderer::BatchedQuadState::BatchedQuadState() = default;
 
-// Parameters needed to draw a CompositorRenderPassDrawQuad.
-struct SkiaRenderer::DrawRPDQParams {
-  struct BypassGeometry {
-    // The additional matrix to concatenate to the SkCanvas after image filters
-    // have been configured so that the DrawQuadParams geometry is properly
-    // mapped (i.e. when set, |visible_rect| and |draw_region| must be
-    // pre-transformed by this before |content_device_transform|).
-    SkMatrix transform;
-
-    // Clipping in bypassed render pass coordinate space. This can come from
-    // RenderPassDrawQuad::visible_rect and bypass quads clip_rect.
-    gfx::RectF clip_rect;
-  };
-
-  explicit DrawRPDQParams(const gfx::RectF& visible_rect);
-
-  // Root of the calculated image filter DAG to be applied to the render pass.
-  sk_sp<SkImageFilter> image_filter = nullptr;
-  // If |image_filter| can be represented as a single color filter, this will
-  // be that filter. |image_filter| will still be non-null.
-  sk_sp<SkColorFilter> color_filter = nullptr;
-  // Root of the calculated backdrop filter DAG to be applied to the render pass
-  sk_sp<SkImageFilter> backdrop_filter = nullptr;
-  // Resolved mask image and calculated transform matrix baked into an SkShader,
-  // which will be applied using SkCanvas::clipShader in RPDQ's coord space.
-  sk_sp<SkShader> mask_shader = nullptr;
-  // Backdrop border box for the render pass, to clip backdrop-filtered content
-  absl::optional<gfx::RRectF> backdrop_filter_bounds;
-  // The content space bounds that includes any filtered extents. If empty,
-  // the draw can be skipped.
-  gfx::Rect filter_bounds;
-
-  // Geometry from the bypassed RenderPassDrawQuad.
-  absl::optional<BypassGeometry> bypass_geometry;
-
-  // True when there is an |image_filter| and it's not equivalent to
-  // |color_filter|.
-  bool has_complex_image_filter() const {
-    return image_filter && !color_filter;
-  }
-
-  // True if the RenderPass's output rect would clip the visible contents that
-  // are bypassing the renderpass' offscreen buffer.
-  bool needs_bypass_clip(const gfx::RectF& content_rect) const {
-    if (!bypass_geometry)
-      return false;
-
-    SkRect content_bounds =
-        bypass_geometry->transform.mapRect(gfx::RectFToSkRect(content_rect));
-    return !bypass_geometry->clip_rect.Contains(
-        gfx::SkRectToRectF(content_bounds));
-  }
-};
-
-SkiaRenderer::DrawRPDQParams::DrawRPDQParams(const gfx::RectF& visible_rect)
-    : filter_bounds(gfx::ToEnclosingRect(visible_rect)) {}
-
 // State calculated from a DrawQuad and current renderer state, that is common
 // to all DrawQuad rendering.
 struct SkiaRenderer::DrawQuadParams {
@@ -733,6 +676,104 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
  private:
   sk_sp<SkImage> sk_image_;
 };
+
+// Parameters needed to draw a CompositorRenderPassDrawQuad.
+struct SkiaRenderer::DrawRPDQParams {
+  struct BypassGeometry {
+    // The additional matrix to concatenate to the SkCanvas after image filters
+    // have been configured so that the DrawQuadParams geometry is properly
+    // mapped (i.e. when set, |visible_rect| and |draw_region| must be
+    // pre-transformed by this before |content_device_transform|).
+    SkMatrix transform;
+
+    // Clipping in bypassed render pass coordinate space. This can come from
+    // RenderPassDrawQuad::visible_rect and bypass quads clip_rect.
+    gfx::RectF clip_rect;
+  };
+
+  class MaskShader {
+   public:
+    MaskShader(ResourceId mask_resource_id, SkMatrix mask_to_quad_matrix)
+        : mask_resource_id_(mask_resource_id),
+          mask_to_quad_matrix_(mask_to_quad_matrix) {
+      CHECK(!mask_resource_id_.is_null());
+    }
+
+    // Get the resolved mask image and calculated transform matrix baked into an
+    // SkShader
+    sk_sp<SkShader> GetOrCreateSkShader(SkiaRenderer* renderer) const;
+
+   private:
+    ResourceId mask_resource_id_;
+
+    // Map mask rect to full quad rect so that mask coordinates don't change
+    // with clipping.
+    SkMatrix mask_to_quad_matrix_;
+
+    mutable sk_sp<SkShader> sk_shader_ = nullptr;
+  };
+
+  explicit DrawRPDQParams(const gfx::RectF& visible_rect);
+
+  // Root of the calculated image filter DAG to be applied to the render pass.
+  sk_sp<SkImageFilter> image_filter = nullptr;
+  // If |image_filter| can be represented as a single color filter, this will
+  // be that filter. |image_filter| will still be non-null.
+  sk_sp<SkColorFilter> color_filter = nullptr;
+  // Root of the calculated backdrop filter DAG to be applied to the render pass
+  sk_sp<SkImageFilter> backdrop_filter = nullptr;
+  // If present, the mask image, which can be applied using SkCanvas::clipShader
+  // in RPDQ's coord space.
+  absl::optional<MaskShader> mask_shader;
+  // Backdrop border box for the render pass, to clip backdrop-filtered content
+  absl::optional<gfx::RRectF> backdrop_filter_bounds;
+  // The content space bounds that includes any filtered extents. If empty,
+  // the draw can be skipped.
+  gfx::Rect filter_bounds;
+
+  // Geometry from the bypassed RenderPassDrawQuad.
+  absl::optional<BypassGeometry> bypass_geometry;
+
+  // True when there is an |image_filter| and it's not equivalent to
+  // |color_filter|.
+  bool has_complex_image_filter() const {
+    return image_filter && !color_filter;
+  }
+
+  // True if the RenderPass's output rect would clip the visible contents that
+  // are bypassing the renderpass' offscreen buffer.
+  bool needs_bypass_clip(const gfx::RectF& content_rect) const {
+    if (!bypass_geometry) {
+      return false;
+    }
+
+    SkRect content_bounds =
+        bypass_geometry->transform.mapRect(gfx::RectFToSkRect(content_rect));
+    return !bypass_geometry->clip_rect.Contains(
+        gfx::SkRectToRectF(content_bounds));
+  }
+};
+
+sk_sp<SkShader> SkiaRenderer::DrawRPDQParams::MaskShader::GetOrCreateSkShader(
+    SkiaRenderer* renderer) const {
+  if (sk_shader_) {
+    return sk_shader_;
+  }
+
+  ScopedSkImageBuilder mask_image_builder(renderer, mask_resource_id_,
+                                          /*maybe_concurrent_reads=*/false);
+  const SkImage* mask_image = mask_image_builder.sk_image();
+  CHECK(mask_image);
+  sk_shader_ = mask_image->makeShader(
+      SkTileMode::kClamp, SkTileMode::kClamp,
+      SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone),
+      &mask_to_quad_matrix_);
+
+  return sk_shader_;
+}
+
+SkiaRenderer::DrawRPDQParams::DrawRPDQParams(const gfx::RectF& visible_rect)
+    : filter_bounds(gfx::ToEnclosingRect(visible_rect)) {}
 
 // A read lock based fence that is signaled after gpu commands are completed
 // meaning the resource has been read.
@@ -1507,7 +1548,8 @@ void SkiaRenderer::PreparePaintOrCanvasForRPDQ(
     // Apply the mask image using clipShader(), this works the same regardless
     // of if we need a saveLayer for image filtering since the clip is applied
     // at the end automatically.
-    current_canvas_->clipShader(rpdq_params.mask_shader);
+    current_canvas_->clipShader(
+        rpdq_params.mask_shader->GetOrCreateSkShader(this));
   }
 
   if (needs_save_layer) {
@@ -1561,7 +1603,8 @@ void SkiaRenderer::PrepareColorOrCanvasForRPDQ(
   bool needs_save_layer =
       rpdq_params.has_complex_image_filter() || rpdq_params.backdrop_filter;
   if (rpdq_params.mask_shader) {
-    current_canvas_->clipShader(rpdq_params.mask_shader);
+    current_canvas_->clipShader(
+        rpdq_params.mask_shader->GetOrCreateSkShader(this));
   }
 
   if (needs_save_layer) {
@@ -2862,25 +2905,15 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
     const DrawQuadParams* params) {
   DrawRPDQParams rpdq_params(params->visible_rect);
 
-  // Prepare mask.
-  ResourceId mask_resource_id = quad->mask_resource_id();
-  ScopedSkImageBuilder mask_image_builder(this, mask_resource_id,
-                                          /*maybe_concurrent_reads=*/false);
-  const SkImage* mask_image = mask_image_builder.sk_image();
-  DCHECK_EQ(!!mask_resource_id, !!mask_image);
-  if (mask_image) {
+  if (!quad->mask_resource_id().is_null()) {
     // Scale normalized uv rect into absolute texel coordinates.
     SkRect mask_rect = gfx::RectFToSkRect(
         gfx::ScaleRect(quad->mask_uv_rect, quad->mask_texture_size.width(),
                        quad->mask_texture_size.height()));
-    // Map to full quad rect so that mask coordinates don't change with clipping
     SkMatrix mask_to_quad_matrix =
         SkMatrix::RectToRect(mask_rect, gfx::RectToSkRect(quad->rect));
-
-    rpdq_params.mask_shader = mask_image->makeShader(
-        SkTileMode::kClamp, SkTileMode::kClamp,
-        SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone),
-        &mask_to_quad_matrix);
+    rpdq_params.mask_shader.emplace(quad->mask_resource_id(),
+                                    mask_to_quad_matrix);
   }
 
   const cc::FilterOperations* filters = FiltersForPass(quad->render_pass_id);
