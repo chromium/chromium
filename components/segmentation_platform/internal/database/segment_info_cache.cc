@@ -18,8 +18,9 @@ SegmentInfoCache::SegmentInfoCache() = default;
 SegmentInfoCache::~SegmentInfoCache() = default;
 
 absl::optional<SegmentInfo> SegmentInfoCache::GetSegmentInfo(
-    SegmentId segment_id) const {
-  auto it = segment_info_cache_.find(segment_id);
+    SegmentId segment_id,
+    ModelSource model_source) const {
+  auto it = segment_info_cache_.find(std::make_pair(segment_id, model_source));
   return (it == segment_info_cache_.end()) ? absl::nullopt
                                            : absl::make_optional(it->second);
 }
@@ -30,7 +31,8 @@ SegmentInfoCache::GetSegmentInfoForSegments(
   std::unique_ptr<SegmentInfoCache::SegmentInfoList> segments_found =
       std::make_unique<SegmentInfoCache::SegmentInfoList>();
   for (SegmentId target : segment_ids) {
-    absl::optional<SegmentInfo> info = GetSegmentInfo(target);
+    absl::optional<SegmentInfo> info =
+        GetSegmentInfo(target, ModelSource::SERVER_MODEL_SOURCE);
     if (info.has_value()) {
       segments_found->emplace_back(
           std::make_pair(target, std::move(info.value())));
@@ -41,11 +43,14 @@ SegmentInfoCache::GetSegmentInfoForSegments(
 
 void SegmentInfoCache::UpdateSegmentInfo(
     SegmentId segment_id,
+    ModelSource model_source,
     absl::optional<SegmentInfo> segment_info) {
   if (segment_info.has_value()) {
-    segment_info_cache_[segment_id] = std::move(segment_info.value());
+    segment_info_cache_[std::make_pair(segment_id, model_source)] =
+        std::move(segment_info.value());
   } else {
-    segment_info_cache_.erase(segment_info_cache_.find(segment_id));
+    segment_info_cache_.erase(
+        segment_info_cache_.find(std::make_pair(segment_id, model_source)));
   }
 }
 
