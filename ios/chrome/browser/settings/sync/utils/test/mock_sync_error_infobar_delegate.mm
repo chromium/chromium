@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/sync/utils/test/mock_sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/sync/utils/test/mock_sync_error_infobar_delegate.h"
 
 #import "ui/gfx/image/image.h"
 

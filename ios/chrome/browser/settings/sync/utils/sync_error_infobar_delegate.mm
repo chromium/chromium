@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_error_infobar_delegate.h"
 
 #import <UIKit/UIKit.h>
 
@@ -19,11 +19,11 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_presenter.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/models/image_model.h"
 
@@ -175,14 +175,16 @@ bool SyncErrorInfoBarDelegate::Accept() {
 void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
   // If the inforbar is in the process of being removed, nothing must be done.
   infobars::InfoBar* infobar = this->infobar();
-  if (!infobar)
+  if (!infobar) {
     return;
+  }
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state_);
   syncer::SyncService::UserActionableError new_error_state =
       sync_service->GetUserActionableError();
-  if (error_state_ == new_error_state)
+  if (error_state_ == new_error_state) {
     return;
+  }
   error_state_ = new_error_state;
   if (new_error_state == syncer::SyncService::UserActionableError::kNone) {
     infobar->RemoveSelf();

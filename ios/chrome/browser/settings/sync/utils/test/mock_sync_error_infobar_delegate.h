@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_TEST_MOCK_SYNC_ERROR_INFOBAR_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_TEST_MOCK_SYNC_ERROR_INFOBAR_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_TEST_MOCK_SYNC_ERROR_INFOBAR_DELEGATE_H_
+#define IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_TEST_MOCK_SYNC_ERROR_INFOBAR_DELEGATE_H_
 
 #import <UIKit/UIKit.h>
 #import <string>
 
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_error_infobar_delegate.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/models/image_model.h"
 
@@ -39,4 +39,4 @@ class MockSyncErrorInfoBarDelegate : public SyncErrorInfoBarDelegate {
   MOCK_METHOD(ui::ImageModel, GetIcon, (), (const, override));
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_TEST_MOCK_SYNC_ERROR_INFOBAR_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_TEST_MOCK_SYNC_ERROR_INFOBAR_DELEGATE_H_

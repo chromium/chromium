@@ -12,13 +12,9 @@ source_set("test") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    "//base",
-    "//components/infobars/core",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/infobars/test",
-    "//ios/chrome/browser/ui/infobars/test",
-    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/settings/sync/utils",
     "//testing/gmock",
+    "//ui/base",
+    "//ui/gfx",
   ]
 }

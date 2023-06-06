@@ -8,7 +8,7 @@
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_error_infobar_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

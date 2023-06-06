@@ -126,13 +126,13 @@ source_set("sync_error_browser_agent") {
     "sync_error_browser_agent.mm",
   ]
   deps = [
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

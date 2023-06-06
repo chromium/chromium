@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -31,7 +32,6 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

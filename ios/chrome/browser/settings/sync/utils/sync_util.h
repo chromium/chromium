@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_
+#define IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -47,4 +47,4 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
                        web::WebState* web_state,
                        id<SyncPresenter> presenter);
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_

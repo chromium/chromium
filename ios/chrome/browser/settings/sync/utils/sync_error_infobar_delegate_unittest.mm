@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_error_infobar_delegate.h"
 
 #import <memory>
 
@@ -11,12 +11,12 @@
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
