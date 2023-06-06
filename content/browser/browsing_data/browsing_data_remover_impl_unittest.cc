@@ -246,20 +246,22 @@ class ProbablySameFilterMatcher
           const base::RepeatingCallback<bool(const GURL&)>&> {
  public:
   explicit ProbablySameFilterMatcher(
-      const base::RepeatingCallback<bool(const GURL&)>& filter)
-      : to_match_(filter) {}
+      base::RepeatingCallback<bool(const GURL&)> filter)
+      : to_match_(std::move(filter)) {}
 
   bool MatchAndExplain(const base::RepeatingCallback<bool(const GURL&)>& filter,
                        MatchResultListener* listener) const override {
-    if (!filter && !*to_match_)
+    if (!filter && !to_match_) {
       return true;
-    if (!filter || !*to_match_)
+    }
+    if (!filter || !to_match_) {
       return false;
+    }
 
     const GURL urls_to_test_[] = {GURL("a.com"), GURL("b.com"), GURL("c.com"),
                                   GURL("invalid spec")};
     for (GURL url : urls_to_test_) {
-      if (filter.Run(url) != to_match_->Run(url)) {
+      if (filter.Run(url) != to_match_.Run(url)) {
         if (listener)
           *listener << "The filters differ on the URL " << url;
         return false;
@@ -269,20 +271,20 @@ class ProbablySameFilterMatcher
   }
 
   void DescribeTo(::std::ostream* os) const override {
-    *os << "is probably the same url filter as " << &*to_match_;
+    *os << "is probably the same url filter as " << &to_match_;
   }
 
   void DescribeNegationTo(::std::ostream* os) const override {
-    *os << "is definitely NOT the same url filter as " << &*to_match_;
+    *os << "is definitely NOT the same url filter as " << &to_match_;
   }
 
  private:
-  const raw_ref<const base::RepeatingCallback<bool(const GURL&)>> to_match_;
+  const base::RepeatingCallback<bool(const GURL&)> to_match_;
 };
 
 inline Matcher<const base::RepeatingCallback<bool(const GURL&)>&>
-ProbablySameFilter(const base::RepeatingCallback<bool(const GURL&)>& filter) {
-  return MakeMatcher(new ProbablySameFilterMatcher(filter));
+ProbablySameFilter(base::RepeatingCallback<bool(const GURL&)> filter) {
+  return MakeMatcher(new ProbablySameFilterMatcher(std::move(filter)));
 }
 
 base::Time AnHourAgo() {
@@ -390,14 +392,15 @@ class BrowsingDataRemoverImplTest : public testing::Test {
                                      const base::Time& delete_end,
                                      uint64_t remove_mask,
                                      bool include_protected_origins) {
-    // TODO(msramek): Consider moving |storage_partition| to the test fixture.
-    StoragePartitionRemovalTestStoragePartition storage_partition;
+    auto new_storage_partition =
+        std::make_unique<StoragePartitionRemovalTestStoragePartition>();
 
     if (network_context_override_) {
-      storage_partition.set_network_context(network_context_override_);
+      new_storage_partition->set_network_context(network_context_override_);
     }
 
-    remover_->OverrideStoragePartitionForTesting(&storage_partition);
+    remover_->OverrideStoragePartitionForTesting(new_storage_partition.get());
+    storage_partition_ = std::move(new_storage_partition);
 
     uint64_t origin_type_mask =
         BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
@@ -411,7 +414,7 @@ class BrowsingDataRemoverImplTest : public testing::Test {
 
     // Save so we can verify later.
     storage_partition_removal_data_ =
-        storage_partition.GetStoragePartitionRemovalData();
+        storage_partition_->GetStoragePartitionRemovalData();
   }
 
   void BlockUntilOriginDataRemoved(
@@ -419,13 +422,15 @@ class BrowsingDataRemoverImplTest : public testing::Test {
       const base::Time& delete_end,
       uint64_t remove_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) {
-    StoragePartitionRemovalTestStoragePartition storage_partition;
+    auto new_storage_partition =
+        std::make_unique<StoragePartitionRemovalTestStoragePartition>();
 
     if (network_context_override_) {
-      storage_partition.set_network_context(network_context_override_);
+      new_storage_partition->set_network_context(network_context_override_);
     }
 
-    remover_->OverrideStoragePartitionForTesting(&storage_partition);
+    remover_->OverrideStoragePartitionForTesting(new_storage_partition.get());
+    storage_partition_ = std::move(new_storage_partition);
 
     BrowsingDataRemoverCompletionObserver completion_observer(remover_);
     remover_->RemoveWithFilterAndReply(
@@ -436,7 +441,7 @@ class BrowsingDataRemoverImplTest : public testing::Test {
 
     // Save so we can verify later.
     storage_partition_removal_data_ =
-        storage_partition.GetStoragePartitionRemovalData();
+        storage_partition_->GetStoragePartitionRemovalData();
   }
 
   BrowserContext* GetBrowserContext() { return browser_context_.get(); }
@@ -488,6 +493,9 @@ class BrowsingDataRemoverImplTest : public testing::Test {
   }
 
  private:
+  std::unique_ptr<StoragePartitionRemovalTestStoragePartition>
+      storage_partition_;
+
   // Cached pointer to BrowsingDataRemoverImpl for access to testing methods.
   raw_ptr<BrowsingDataRemoverImpl, DanglingUntriaged> remover_;
 
@@ -1335,8 +1343,9 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveDownloadsByTimeOnly) {
   base::RepeatingCallback<bool(const GURL&)> filter =
       BrowsingDataFilterBuilder::BuildNoopFilter();
 
-  EXPECT_CALL(*tester.download_manager(),
-              RemoveDownloadsByURLAndTime(ProbablySameFilter(filter), _, _));
+  EXPECT_CALL(
+      *tester.download_manager(),
+      RemoveDownloadsByURLAndTime(ProbablySameFilter(std::move(filter)), _, _));
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 BrowsingDataRemover::DATA_TYPE_DOWNLOADS,
@@ -1351,8 +1360,9 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveDownloadsByOrigin) {
   builder->AddRegisterableDomain("host1.com");
   base::RepeatingCallback<bool(const GURL&)> filter = builder->BuildUrlFilter();
 
-  EXPECT_CALL(*tester.download_manager(),
-              RemoveDownloadsByURLAndTime(ProbablySameFilter(filter), _, _));
+  EXPECT_CALL(
+      *tester.download_manager(),
+      RemoveDownloadsByURLAndTime(ProbablySameFilter(std::move(filter)), _, _));
 
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               BrowsingDataRemover::DATA_TYPE_DOWNLOADS,
