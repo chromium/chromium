@@ -182,8 +182,8 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
   extensions::ExtensionContextMenuModel context_menu(
-      extension.get(), browser(), extensions::ExtensionContextMenuModel::PINNED,
-      nullptr, true,
+      extension.get(), browser(), /*is_pinned=*/true, /*delegate=*/nullptr,
+      /*can_show_icon_in_toolbar=*/true,
       extensions::ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
 
   // Changing the context menu may trigger the reload page bubble. Accept it so

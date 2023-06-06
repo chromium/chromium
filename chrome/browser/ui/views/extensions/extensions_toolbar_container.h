@@ -83,7 +83,6 @@ class ExtensionsToolbarContainer
       delete;
   ~ExtensionsToolbarContainer() override;
 
-  DisplayMode display_mode() const { return display_mode_; }
   const ToolbarIcons& icons_for_testing() const { return icons_; }
   ToolbarActionViewController* popup_owner_for_testing() {
     return popup_owner_;
@@ -153,8 +152,6 @@ class ExtensionsToolbarContainer
   void OnContextMenuClosed() override;
   bool CanShowActionsInToolbar() const override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
-  extensions::ExtensionContextMenuModel::ButtonVisibility GetActionVisibility(
-      const std::string& action_id) const override;
   void UndoPopOut() override;
   void SetPopupOwner(ToolbarActionViewController* popup_owner) override;
   void HideActivePopup() override;

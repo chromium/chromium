@@ -97,15 +97,14 @@ bool IsExtensionForcePinned(const Extension& extension, Profile* profile) {
 }
 
 // Returns the id for the visibility command for the given |extension|.
-int GetVisibilityStringId(
-    Profile* profile,
-    const Extension* extension,
-    ExtensionContextMenuModel::ButtonVisibility button_visibility) {
-  if (IsExtensionForcePinned(*extension, profile))
+int GetVisibilityStringId(Profile* profile,
+                          const Extension* extension,
+                          bool is_pinned) {
+  if (IsExtensionForcePinned(*extension, profile)) {
     return IDS_EXTENSIONS_PINNED_BY_ADMIN;
-  if (button_visibility == ExtensionContextMenuModel::PINNED)
-    return IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
-  return IDS_EXTENSIONS_PIN_TO_TOOLBAR;
+  }
+  return is_pinned ? IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR
+                   : IDS_EXTENSIONS_PIN_TO_TOOLBAR;
 }
 
 // Returns true if the given |extension| is required to remain installed by
@@ -256,7 +255,7 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
 ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
     Browser* browser,
-    ButtonVisibility button_visibility,
+    bool is_pinned,
     PopupDelegate* delegate,
     bool can_show_icon_in_toolbar,
     ContextMenuSource source)
@@ -266,7 +265,7 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       browser_(browser),
       profile_(browser->profile()),
       delegate_(delegate),
-      button_visibility_(button_visibility),
+      is_pinned_(is_pinned),
       source_(source) {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -400,9 +399,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       ExtensionTabUtil::OpenOptionsPage(extension, browser_);
       break;
     case TOGGLE_VISIBILITY: {
-      bool currently_visible = button_visibility_ == PINNED;
       ToolbarActionsModel::Get(browser_->profile())
-          ->SetActionVisibility(extension->id(), !currently_visible);
+          ->SetActionVisibility(extension->id(), !is_pinned_);
       break;
     }
     case UNINSTALL: {
@@ -581,7 +579,7 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
           ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
                                          ui::kColorIcon, 16));
     } else {
-      int message_id = button_visibility_ == ExtensionContextMenuModel::PINNED
+      int message_id = is_pinned_
                            ? IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR
                            : IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR;
       AddItemWithStringId(TOGGLE_VISIBILITY, message_id);
@@ -664,7 +662,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   if (can_show_icon_in_toolbar &&
       source_ == ContextMenuSource::kToolbarAction) {
     int visibility_string_id =
-        GetVisibilityStringId(profile_, extension, button_visibility_);
+        GetVisibilityStringId(profile_, extension, is_pinned_);
     DCHECK_NE(-1, visibility_string_id);
     AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
     if (IsExtensionForcePinned(*extension, profile_)) {

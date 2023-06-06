@@ -91,7 +91,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
                                            "ExtensionUninstallDialog");
       extensions::ExtensionContextMenuModel menu_model(
           extensions()[0].get(), browser(),
-          extensions::ExtensionContextMenuModel::PINNED, nullptr,
+          /*is_pinned=*/true, nullptr,
           /*can_show_icon_in_toolbar=*/false,
           extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
       menu_model.ExecuteCommand(
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // browser.
   extensions::ExtensionContextMenuModel menu(
       extensions()[0].get(), incognito_browser(),
-      extensions::ExtensionContextMenuModel::PINNED, nullptr,
+      /*is_pinned=*/true, nullptr,
       /* can_show_icon_in_toolbar=*/true,
       extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
   EXPECT_FALSE(menu.IsCommandIdEnabled(

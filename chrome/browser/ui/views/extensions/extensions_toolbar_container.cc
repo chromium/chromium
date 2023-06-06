@@ -410,22 +410,7 @@ bool ExtensionsToolbarContainer::CanShowActionsInToolbar() const {
 
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
     const std::string& action_id) const {
-  return GetActionVisibility(action_id) !=
-         extensions::ExtensionContextMenuModel::UNPINNED;
-}
-
-extensions::ExtensionContextMenuModel::ButtonVisibility
-ExtensionsToolbarContainer::GetActionVisibility(
-    const std::string& action_id) const {
-  if (model_->IsActionPinned(action_id)) {
-    return extensions::ExtensionContextMenuModel::PINNED;
-  }
-
-  if (ShouldForceVisibility(action_id)) {
-    return extensions::ExtensionContextMenuModel::TRANSITIVELY_VISIBLE;
-  }
-
-  return extensions::ExtensionContextMenuModel::UNPINNED;
+  return model_->IsActionPinned(action_id) || ShouldForceVisibility(action_id);
 }
 
 void ExtensionsToolbarContainer::UndoPopOut() {
