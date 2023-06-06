@@ -188,11 +188,6 @@
 #include "media/base/media_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_ZYGOTE)
-#include "base/rand_util.h"
-#include "chromeos/startup/startup_switches.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #include "content/browser/android/battery_metrics.h"
@@ -323,9 +318,6 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     switches::kEnableResourcesFileSharing,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::switches::kZygoteHugepageRemap,
-#endif
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                              kForwardSwitches, std::size(kForwardSwitches));
@@ -365,20 +357,6 @@ void InitializeZygoteSandboxForBrowserProcess(
     }
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // We determine whether to enable the zygote hugepage remap feature. We store
-  // the result in the current command line. This will automatically propagate
-  // to zygotes via LaunchZygoteHelper. Later,
-  // ChromeBrowserMainExtraPartsMetrics::PreBrowserStart will register the
-  // synthetic field trial.
-  // This is a 50/50 trial.
-  const bool enable_hugepage = base::RandInt(/*min=*/0, /*max=*/1) == 1;
-  if (enable_hugepage) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kZygoteHugepageRemap);
-  }
-#endif
 
   // Tickle the zygote host so it forks now.
   ZygoteHostImpl::GetInstance()->Init(parsed_command_line);

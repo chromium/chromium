@@ -159,7 +159,6 @@
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/mglru.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
-#include "chromeos/hugepage_text/hugepage_text.h"
 #include "ui/lottie/resource.h"  // nogncheck
 #endif
 
@@ -1655,10 +1654,6 @@ void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void ChromeMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::InitHugepagesAndMlockSelf();
-#endif
-
 #if BUILDFLAG(ENABLE_NACL)
   nacl::AddNaClZygoteForkDelegates(delegates);
 #endif

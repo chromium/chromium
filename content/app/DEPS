@@ -1,5 +1,4 @@
 include_rules = [
-  "+chromeos/hugepage_text/hugepage_text.h",
   "+chromeos/startup",
   "+components/discardable_memory",
   "+components/download",

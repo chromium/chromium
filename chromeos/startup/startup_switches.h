@@ -19,9 +19,6 @@ extern const char kCrosPostLoginDataFD[];
 COMPONENT_EXPORT(CHROMEOS_STARTUP_CONSTANTS)
 extern const char kCrosPostLoginLogFile[];
 
-COMPONENT_EXPORT(CHROMEOS_STARTUP_CONSTANTS)
-extern const char kZygoteHugepageRemap[];
-
 }  // namespace switches
 }  // namespace chromeos
 

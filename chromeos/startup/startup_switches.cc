@@ -16,8 +16,5 @@ const char kCrosPostLoginDataFD[] = "cros-postlogin-data-fd";
 // The path of the log file that Lacros should use post-login.
 const char kCrosPostLoginLogFile[] = "cros-postlogin-log-file";
 
-// Whether to enable the zygote hugepage remap feature.
-const char kZygoteHugepageRemap[] = "zygote-hugepage-remap";
-
 }  // namespace switches
 }  // namespace chromeos

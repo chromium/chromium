@@ -98,10 +98,6 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/startup/startup_switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/metrics/pressure/pressure_metrics_reporter.h"
 #endif  // BUILDFLAG(IS_LINUX)
@@ -634,16 +630,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                               group_name);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Register a synthetic finch trial for whether the zygote hugepage remap
-  // feature is enabled.
-  bool hugepage_remap = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kZygoteHugepageRemap);
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "ZygoteHugepageRemap", hugepage_remap ? "Enabled" : "Disabled",
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-#endif
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {

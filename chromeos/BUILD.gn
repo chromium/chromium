@@ -35,15 +35,6 @@ component("chromeos") {
       configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
     }
 
-    deps += [
-      ":chromeos_export",
-      "//base",
-      "//chromeos/startup:constants",
-    ]
-    sources += [
-      "hugepage_text/hugepage_text.cc",
-      "hugepage_text/hugepage_text.h",
-    ]
     if (current_cpu == "arm" || current_cpu == "x86") {
       defines = [ "BINDER_IPC_32BIT" ]
     }
