@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/utility/safe_browsing/mac/dmg_test_utils.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
@@ -58,7 +59,9 @@ struct UDIFTestCase {
   const char* file_name;
 
   // The NULL-terminated C array of expected partition types.
-  const char** expected_partitions;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const char** expected_partitions;
 
   // A bitmask of ExpectedResults. As the parser currently only supports
   // certain UDIF features, this is used to properly test expectations.

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,7 +31,8 @@ using base::ASCIIToUTF16;
 @end
 
 @implementation WatchedLifetimeMenuController {
-  BOOL* _deallocCalled;
+  // This field is not a raw_ptr<> because it requires @property rewrite.
+  RAW_PTR_EXCLUSION BOOL* _deallocCalled;
 }
 
 @synthesize deallocCalled = _deallocCalled;

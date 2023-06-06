@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/browser/web_contents.h"
@@ -20,7 +21,10 @@
 #endif
 
 @implementation ShellNativeAppWindowController {
-  extensions::ShellNativeAppWindowMac* _appWindow;  // Owns us.
+  // This field is not a raw_ptr<> because it is a pointer to Objective-C
+  // object.
+  RAW_PTR_EXCLUSION extensions::ShellNativeAppWindowMac*
+      _appWindow;  // Owns us.
 }
 
 @synthesize appWindow = _appWindow;

@@ -170,6 +170,7 @@ class GFX_EXPORT NativeView {
 #else
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field also points to Objective-C object.
   RAW_PTR_EXCLUSION NSView* ns_view_ = nullptr;
 #endif
 };
@@ -202,6 +203,7 @@ class GFX_EXPORT NativeWindow {
 #else
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field also points to Objective-C object.
   RAW_PTR_EXCLUSION NSWindow* ns_window_ = nullptr;
 #endif
 };
