@@ -31,6 +31,7 @@ using testing::UnorderedElementsAre;
 
 using webauthn_credentials_helper::EntityHasSyncId;
 using webauthn_credentials_helper::LocalPasskeysMatchChecker;
+using webauthn_credentials_helper::MockPasskeyModelObserver;
 using webauthn_credentials_helper::NewPasskey;
 using webauthn_credentials_helper::PasskeyHasSyncId;
 using webauthn_credentials_helper::PasskeySyncActiveChecker;
@@ -127,6 +128,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
       ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
           .Wait());
 
+  MockPasskeyModelObserver observer(&GetModel());
+  EXPECT_CALL(observer, OnPasskeysChanged);
   GetModel().DeletePasskey(passkey.credential_id());
   EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
 }
@@ -155,6 +158,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
       ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
           .Wait());
 
+  MockPasskeyModelObserver observer(&GetModel());
+  EXPECT_CALL(observer, OnPasskeysChanged).Times(0);
   EXPECT_FALSE(GetModel().DeletePasskey("non existing id"));
   EXPECT_TRUE(
       ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))

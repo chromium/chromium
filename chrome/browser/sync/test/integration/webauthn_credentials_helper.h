@@ -7,8 +7,10 @@
 
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +32,8 @@ class PasskeySyncActiveChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
-class LocalPasskeysMatchChecker : public SingleClientStatusChangeChecker {
+class LocalPasskeysMatchChecker : public StatusChangeChecker,
+                                  public PasskeyModel::Observer {
  public:
   using Matcher =
       testing::Matcher<std::vector<sync_pb::WebauthnCredentialSpecifics>>;
@@ -40,11 +43,15 @@ class LocalPasskeysMatchChecker : public SingleClientStatusChangeChecker {
 
   // SingleClientStatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override;
-  void OnSyncCycleCompleted(syncer::SyncService* sync) override;
+
+  // PasskeyModel::Observer:
+  void OnPasskeysChanged() override;
 
  private:
   const int profile_;
   const Matcher matcher_;
+  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer> observation_{
+      this};
 };
 
 class ServerPasskeysMatchChecker
@@ -60,6 +67,18 @@ class ServerPasskeysMatchChecker
 
  private:
   const Matcher matcher_;
+};
+
+class MockPasskeyModelObserver : public PasskeyModel::Observer {
+ public:
+  explicit MockPasskeyModelObserver(PasskeyModel* model);
+  ~MockPasskeyModelObserver() override;
+
+  MOCK_METHOD(void, OnPasskeysChanged, (), (override));
+
+ private:
+  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer> observation_{
+      this};
 };
 
 PasskeyModel& GetModel(int profile_idx);

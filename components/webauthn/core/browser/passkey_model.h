@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_type_store.h"
 
@@ -35,6 +36,16 @@ class ModelTypeControllerDelegate;
 // accessible though PasskeyModel.
 class PasskeyModel : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Notifies the observer that passkeys have changed, e.g. because a new one
+    // was downloaded or deleted.
+    virtual void OnPasskeysChanged() = 0;
+  };
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
   // Returns the sync ModelTypeControllerDelegate for the WEBAUTHN_CREDENTIAL
   // data type.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>

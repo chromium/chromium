@@ -12,6 +12,14 @@
 TestPasskeyModel::TestPasskeyModel() = default;
 TestPasskeyModel::~TestPasskeyModel() = default;
 
+void TestPasskeyModel::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TestPasskeyModel::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 TestPasskeyModel::GetModelTypeControllerDelegate() {
   NOTIMPLEMENTED();
@@ -34,13 +42,23 @@ TestPasskeyModel::GetAllPasskeys() const {
 std::string TestPasskeyModel::AddNewPasskeyForTesting(
     sync_pb::WebauthnCredentialSpecifics passkey) {
   credentials_.push_back(std::move(passkey));
+  NotifyPasskeysChanged();
   return credentials_.back().credential_id();
 }
 
 bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
   // Don't implement the shadow chain deletion logic. Instead, remove the
   // credential with the matching id.
-  return std::erase_if(credentials_, [&credential_id](const auto& credential) {
-           return credential.credential_id() == credential_id;
-         }) > 0;
+  bool removed =
+      std::erase_if(credentials_, [&credential_id](const auto& credential) {
+        return credential.credential_id() == credential_id;
+      }) > 0;
+  NotifyPasskeysChanged();
+  return removed;
+}
+
+void TestPasskeyModel::NotifyPasskeysChanged() {
+  for (auto& observer : observers_) {
+    observer.OnPasskeysChanged();
+  }
 }

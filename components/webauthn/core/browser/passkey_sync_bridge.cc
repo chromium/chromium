@@ -118,6 +118,14 @@ PasskeySyncBridge::PasskeySyncBridge(
 
 PasskeySyncBridge::~PasskeySyncBridge() = default;
 
+void PasskeySyncBridge::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PasskeySyncBridge::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 std::unique_ptr<syncer::MetadataChangeList>
 PasskeySyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
@@ -150,6 +158,7 @@ absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
+  NotifyPasskeysChanged();
   return absl::nullopt;
 }
 
@@ -184,6 +193,9 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
+  if (!entity_changes.empty()) {
+    NotifyPasskeysChanged();
+  }
   return absl::nullopt;
 }
 
@@ -228,6 +240,7 @@ void PasskeySyncBridge::ApplyDisableSyncChanges(
   CHECK(store_);
   store_->DeleteAllDataAndMetadata(base::DoNothing());
   data_.clear();
+  NotifyPasskeysChanged();
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -296,6 +309,7 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
+  NotifyPasskeysChanged();
   return true;
 }
 
@@ -316,6 +330,7 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
   data_[sync_id] = std::move(specifics);
+  NotifyPasskeysChanged();
   return sync_id;
 }
 
@@ -363,6 +378,7 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
     std::string storage_key = specifics.sync_id();
     data_[std::move(storage_key)] = std::move(specifics);
   }
+  NotifyPasskeysChanged();
 }
 
 void PasskeySyncBridge::OnStoreCommitWriteBatch(
@@ -370,5 +386,11 @@ void PasskeySyncBridge::OnStoreCommitWriteBatch(
   if (error) {
     change_processor()->ReportError(*error);
     return;
+  }
+}
+
+void PasskeySyncBridge::NotifyPasskeysChanged() {
+  for (auto& observer : observers_) {
+    observer.OnPasskeysChanged();
   }
 }

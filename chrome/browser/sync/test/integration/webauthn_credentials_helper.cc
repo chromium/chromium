@@ -55,9 +55,9 @@ bool PasskeySyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
 
 LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
                                                      Matcher matcher)
-    : SingleClientStatusChangeChecker(test()->GetSyncService(profile)),
-      profile_(profile),
-      matcher_(matcher) {}
+    : profile_(profile), matcher_(matcher) {
+  observation_.Observe(&GetModel(profile_));
+}
 
 LocalPasskeysMatchChecker::~LocalPasskeysMatchChecker() = default;
 
@@ -70,8 +70,7 @@ bool LocalPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return matches;
 }
 
-void LocalPasskeysMatchChecker::OnSyncCycleCompleted(
-    syncer::SyncService* sync) {
+void LocalPasskeysMatchChecker::OnPasskeysChanged() {
   CheckExitCondition();
 }
 
@@ -90,6 +89,12 @@ bool ServerPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << result_listener.str();
   return matches;
 }
+
+MockPasskeyModelObserver::MockPasskeyModelObserver(PasskeyModel* model) {
+  observation_.Observe(model);
+}
+
+MockPasskeyModelObserver::~MockPasskeyModelObserver() = default;
 
 PasskeyModel& GetModel(int profile_idx) {
   return *PasskeyModelFactory::GetForProfile(test()->GetProfile(profile_idx));
