@@ -938,6 +938,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/lens:java",
       "//chrome/browser/loading_modal/android:junit",
       "//chrome/browser/locale:java",
+      "//chrome/browser/mandatory_reauth/android/internal:junit",
       "//chrome/browser/notifications:java",
       "//chrome/browser/notifications:junit_tests",
       "//chrome/browser/omaha/android:java",

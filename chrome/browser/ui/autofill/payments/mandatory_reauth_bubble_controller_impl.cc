@@ -154,8 +154,11 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
   // The Android view's lifecycle is managed by this controller. We also
   // register it as a raw pointer in the base class to use its closing logic
   // when this controller wants to close it.
-  view_android_ = MandatoryReauthOptInViewAndroid::CreateAndShow();
-  set_bubble_view(view_android_.get());
+  view_android_ =
+      MandatoryReauthOptInViewAndroid::CreateAndShow(web_contents());
+  if (view_android_) {
+    set_bubble_view(view_android_.get());
+  }
 #else
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =

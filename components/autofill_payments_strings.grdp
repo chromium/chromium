@@ -592,6 +592,18 @@
     settings
   </message>
 
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_CONTENT_DESCRIPTION" desc="Content description for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. It is read as accessibility string when the bottom sheet containing the prompt is focused. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Alert about new payment setting
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_OPENED_FULL" desc="The accessibility string for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. It is read as accessibility string when the bottom sheet containing the prompt is fully opened. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Alert about new payment setting is opened
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_CLOSED" desc="The accessibility string for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. It is read as accessibility string when the bottom sheet containing the prompt is closed. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Alert about new payment setting is closed
+    </message>
+  </if>
+
   <!-- virtual cards related strings - start -->
   <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL" desc="Text shown in the button in the Autofill dropdown menu when a credit card form field is queried, to offer the option to use a virtual card.">

@@ -4,6 +4,12 @@
 
 import("//build/config/android/rules.gni")
 
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/mandatory_reauth/MandatoryReauthOptInBottomSheetComponent.java" ]
+
+  deps = [ "//components/browser_ui/bottomsheet/android:java" ]
+}
+
 generate_jni("jni_headers") {
   sources = [ "internal/java/src/org/chromium/chrome/browser/mandatory_reauth/MandatoryReauthOptInBottomSheetViewBridge.java" ]
 }

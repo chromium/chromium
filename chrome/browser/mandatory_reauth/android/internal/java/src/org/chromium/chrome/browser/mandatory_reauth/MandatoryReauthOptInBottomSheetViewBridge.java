@@ -4,34 +4,59 @@
 
 package org.chromium.chrome.browser.mandatory_reauth;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Java bridge to delegate calls from native MandatoryReauthOptInViewAndroid. Facilitates creating
  * the Mandatory Reauth opt-in bottom sheet.
  */
 @JNINamespace("autofill")
-public class MandatoryReauthOptInBottomSheetViewBridge {
-    private MandatoryReauthOptInBottomSheetViewBridge() {}
+class MandatoryReauthOptInBottomSheetViewBridge {
+    private final MandatoryReauthOptInBottomSheetComponent mComponent;
 
-    /**
-     * Creates an instance of a {@link MandatoryReauthOptInBottomSheetViewBridge}.
-     */
-    @CalledByNative
-    private static MandatoryReauthOptInBottomSheetViewBridge create() {
-        return new MandatoryReauthOptInBottomSheetViewBridge();
+    MandatoryReauthOptInBottomSheetViewBridge(MandatoryReauthOptInBottomSheetComponent component) {
+        mComponent = component;
     }
 
     /**
-     * Create and show the view.
+     * Creates an instance of a {@link MandatoryReauthOptInBottomSheetViewBridge}.
+     *
+     * @param windowAndroid Window to show the bottom sheet.
      */
     @CalledByNative
-    private void show() {}
+    private static @Nullable MandatoryReauthOptInBottomSheetViewBridge create(
+            WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return null;
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return null;
+        BottomSheetController controller = BottomSheetControllerProvider.from(windowAndroid);
+        if (controller == null) return null;
+
+        return new MandatoryReauthOptInBottomSheetViewBridge(
+                new MandatoryReauthOptInBottomSheetCoordinator(context, controller));
+    }
 
     /**
-     * Lets the native controller dismiss the view.
+     * Shows the view.
      */
     @CalledByNative
-    private void close() {}
+    boolean show() {
+        return mComponent.show();
+    }
+
+    /**
+     * Closes the view.
+     */
+    @CalledByNative
+    void close() {
+        mComponent.close();
+    }
 }
