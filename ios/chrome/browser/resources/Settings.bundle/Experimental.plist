@@ -158,12 +158,14 @@
 				<string></string>
 				<string>promos_manager::Promo::AppStoreRating</string>
 				<string>promos_manager::Promo::DefaultBrowser</string>
+				<string>promos_manager::Promo::Choice</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled (No Promos Forced)</string>
 				<string>App Store Rating</string>
 				<string>Default Browser</string>
+				<string>Waffle</string>
 			</array>
 		</dict>
 		<dict>
