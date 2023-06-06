@@ -806,7 +806,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
-    expires_after="M117">
+    expires_after="M122">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
