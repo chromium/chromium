@@ -262,8 +262,9 @@ class IdlCompiler(object):
             new_ir = self._maybe_make_copy(old_ir)
             self._ir_map.add(new_ir)
 
-            if (new_ir.is_mixin and 'LegacyTreatAsPartialInterface' not in
-                    new_ir.extended_attributes):
+            if (new_ir.is_mixin and not new_ir.is_partial
+                    and 'LegacyTreatAsPartialInterface'
+                    not in new_ir.extended_attributes):
                 continue
 
             basepath, _ = posixpath.splitext(
@@ -378,9 +379,12 @@ class IdlCompiler(object):
                 new_ir_headers = new_ir.code_generator_info.blink_headers
                 to_be_merged_headers = (
                     to_be_merged.code_generator_info.blink_headers)
-                if (new_ir_headers is not None
-                        and to_be_merged_headers is not None):
-                    new_ir_headers.extend(to_be_merged_headers)
+                if to_be_merged_headers is not None:
+                    if new_ir_headers is None:
+                        new_ir.code_generator_info.set_blink_headers(
+                            to_be_merged_headers)
+                    else:
+                        new_ir_headers.extend(to_be_merged_headers)
 
     def _process_interface_inheritances(self):
         def create_inheritance_chain(obj, table):

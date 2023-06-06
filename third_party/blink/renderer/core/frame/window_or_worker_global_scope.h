@@ -46,26 +46,19 @@ class ScriptState;
 class ScriptValue;
 
 class CORE_EXPORT WindowOrWorkerGlobalScope {
-  STATIC_ONLY(WindowOrWorkerGlobalScope);
-
  public:
-  static void reportError(ScriptState*, ExecutionContext&, const ScriptValue&);
+  void reportError(ScriptState*, const ScriptValue&);
+  String btoa(const String& string_to_encode, ExceptionState&);
+  String atob(const String& encoded_string, ExceptionState&);
+  bool crossOriginIsolated();
+  String crossOriginEmbedderPolicy();
+  ScriptValue structuredClone(ScriptState*,
+                              const ScriptValue& message,
+                              const StructuredSerializeOptions*,
+                              ExceptionState&);
 
-  static String btoa(ExecutionContext&,
-                     const String& string_to_encode,
-                     ExceptionState&);
-  static String atob(ExecutionContext&,
-                     const String& encoded_string,
-                     ExceptionState&);
-
-  static bool crossOriginIsolated(const ExecutionContext&);
-  static String crossOriginEmbedderPolicy(const ExecutionContext&);
-
-  static ScriptValue structuredClone(ScriptState*,
-                                     ExecutionContext&,
-                                     const ScriptValue& message,
-                                     const StructuredSerializeOptions*,
-                                     ExceptionState&);
+ protected:
+  virtual ExecutionContext* GetExecutionContext() const = 0;
 };
 
 }  // namespace blink
