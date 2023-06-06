@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -37,8 +36,6 @@ class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
   void SetUpOnMainThread() override;
 
  private:
-  raw_ptr<TestWallpaperImageDownloader, DanglingUntriaged>
-      test_wallpaper_image_downloader_;
   TestChromeWebUIControllerFactory test_factory_;
   TestPersonalizationAppWebUIProvider test_web_ui_provider_;
   content::ScopedWebUIControllerFactoryRegistration

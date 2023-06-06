@@ -390,6 +390,10 @@ class ASH_EXPORT WallpaperControllerImpl
     return drivefs_delegate_.get();
   }
 
+  WallpaperImageDownloader* wallpaper_image_downloader_for_testing() {
+    return wallpaper_image_downloader_.get();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest,

@@ -56,11 +56,8 @@ PersonalizationAppBrowserTestFixture::~PersonalizationAppBrowserTestFixture() =
     default;
 
 void PersonalizationAppBrowserTestFixture::SetUpInProcessBrowserTestFixture() {
-  auto wallpaper_image_downloader =
-      std::make_unique<TestWallpaperImageDownloader>();
-  test_wallpaper_image_downloader_ = wallpaper_image_downloader.get();
   WallpaperControllerImpl::SetWallpaperImageDownloaderForTesting(
-      std::move(wallpaper_image_downloader));
+      std::make_unique<TestWallpaperImageDownloader>());
 }
 
 void PersonalizationAppBrowserTestFixture::SetUpOnMainThread() {

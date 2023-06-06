@@ -425,11 +425,8 @@ class WallpaperControllerTest : public AshTestBase {
     WallpaperControllerImpl::SetWallpaperPrefManagerForTesting(
         std::move(pref_manager));
 
-    auto test_wallpaper_image_downloader =
-        std::make_unique<TestWallpaperImageDownloader>();
-    test_wallpaper_image_downloader_ = test_wallpaper_image_downloader.get();
     WallpaperControllerImpl::SetWallpaperImageDownloaderForTesting(
-        std::move(test_wallpaper_image_downloader));
+        std::make_unique<TestWallpaperImageDownloader>());
 
     AshTestBase::SetUp();
 
@@ -749,6 +746,11 @@ class WallpaperControllerTest : public AshTestBase {
     RunAllTasksUntilIdle();
   }
 
+  TestWallpaperImageDownloader* test_wallpaper_image_downloader() {
+    return static_cast<TestWallpaperImageDownloader*>(
+        controller_->wallpaper_image_downloader_for_testing());
+  }
+
   raw_ptr<WallpaperControllerImpl, ExperimentalAsh> controller_;
   raw_ptr<WallpaperPrefManager, ExperimentalAsh> pref_manager_ =
       nullptr;  // owned by controller
@@ -762,7 +764,6 @@ class WallpaperControllerTest : public AshTestBase {
 
   TestWallpaperControllerClient client_;
   raw_ptr<TestWallpaperDriveFsDelegate> drivefs_delegate_;
-  raw_ptr<TestWallpaperImageDownloader> test_wallpaper_image_downloader_;
 
   const AccountId kChildAccountId =
       AccountId::FromUserEmailGaiaId(kChildEmail, kChildEmail);
@@ -4101,7 +4102,7 @@ TEST_F(WallpaperControllerTest,
   info.collection_id = "fun_collection";
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
-  test_wallpaper_image_downloader_->set_image_generator(
+  test_wallpaper_image_downloader()->set_image_generator(
       base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
 
   controller_->UpdateDailyRefreshWallpaperForTesting();
@@ -4472,7 +4473,7 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperWithoutInternet) {
   // Attempt to set the same online wallpaper without internet. Verify it
   // still succeeds because the previous call to |SetOnlineWallpaper()| has
   // saved the file.
-  test_wallpaper_image_downloader_->set_image_generator(
+  test_wallpaper_image_downloader()->set_image_generator(
       base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
   ClearWallpaperCount();
   base::RunLoop run_loop;
