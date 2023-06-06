@@ -1427,8 +1427,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       }
 
       if (need_client_metadata &&
-          webid::IsEndpointUrlValid(idp_info->provider->config_url,
-                                    idp_info->endpoints.client_metadata)) {
+          webid::IsEndpointSameOrigin(idp_info->provider->config_url,
+                                      idp_info->endpoints.client_metadata)) {
         // Copy OnClientMetadataResponseReceived() parameters because `idp_info`
         // is moved.
         GURL client_metadata_endpoint = idp_info->endpoints.client_metadata;

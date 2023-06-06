@@ -6,7 +6,7 @@ msg.params: {
             email : john_doe@idp.example
             givenName : John
             idpConfigUrl : https://devtools.test:8443/resources/fedcm/fedcm.json
-            idpSigninUrl : https://idp.example/signin
+            idpSigninUrl : https://devtools.test:8443/signin
             loginState : SignIn
             name : John Doe
             pictureUrl : https://idp.example/profile/123
@@ -16,7 +16,7 @@ msg.params: {
             email : aisha@idp.example
             givenName : Aisha
             idpConfigUrl : https://devtools.test:8443/resources/fedcm/fedcm.json
-            idpSigninUrl : https://idp.example/signin
+            idpSigninUrl : https://devtools.test:8443/signin
             loginState : SignUp
             name : Aisha Ahmad
             pictureUrl : https://idp.example/profile/567

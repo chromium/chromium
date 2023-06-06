@@ -52,8 +52,8 @@ absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
       endpoint_name, http_response_code);
 }
 
-bool IsEndpointUrlValid(const GURL& identity_provider_config_url,
-                        const GURL& endpoint_url) {
+bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
+                          const GURL& endpoint_url) {
   return url::Origin::Create(identity_provider_config_url)
       .IsSameOriginWith(endpoint_url);
 }

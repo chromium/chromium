@@ -37,8 +37,8 @@ absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
 
 // Returns whether a FedCM endpoint URL is valid given the passed-in config
 // endpoint URL.
-bool IsEndpointUrlValid(const GURL& identity_provider_config_url,
-                        const GURL& endpoint_url);
+bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
+                          const GURL& endpoint_url);
 
 // Returns whether FedCM should fail/skip the accounts endpoint request because
 // the user is not signed-in to the IdP.
