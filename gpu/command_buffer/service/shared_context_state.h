@@ -87,7 +87,7 @@ class GPU_GLES2_EXPORT SharedContextState
       scoped_refptr<gl::GLContext> context,
       bool use_virtualized_gl_contexts,
       ContextLostCallback context_lost_callback,
-      GrContextType gr_context_type = GrContextType::kGL,
+      GrContextType gr_context_type,
       viz::VulkanContextProvider* vulkan_context_provider = nullptr,
       viz::MetalContextProvider* metal_context_provider = nullptr,
       viz::DawnContextProvider* dawn_context_provider = nullptr,

@@ -41,7 +41,8 @@ class GrCacheControllerTest : public testing::Test {
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), std::move(surface), std::move(context),
-        false /* use_virtualized_gl_contexts */, base::DoNothing());
+        false /* use_virtualized_gl_contexts */, base::DoNothing(),
+        GrContextType::kGL);
     context_state_->InitializeSkia(GpuPreferences(), workarounds);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());

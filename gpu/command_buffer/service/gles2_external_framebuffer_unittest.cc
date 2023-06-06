@@ -56,7 +56,8 @@ void CreateSharedContext(const GpuPreferences& preferences,
       base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
   context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), surface, context,
-      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+      GrContextType::kGL);
   context_state->InitializeSkia(GpuPreferences(), workarounds);
   context_state->InitializeGL(GpuPreferences(), feature_info);
 }

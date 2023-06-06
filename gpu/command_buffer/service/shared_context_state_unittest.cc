@@ -87,7 +87,8 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
 
     auto shared_context_state = base::MakeRefCounted<SharedContextState>(
         new gl::GLShareGroup(), surface, context,
-        false /* use_virtualized_gl_contexts */, base::DoNothing());
+        false /* use_virtualized_gl_contexts */, base::DoNothing(),
+        GrContextType::kGL);
 
     bool result =
         shared_context_state->InitializeGL(GpuPreferences(), feature_info);
