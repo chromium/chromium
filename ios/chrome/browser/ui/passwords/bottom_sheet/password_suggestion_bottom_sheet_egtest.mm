@@ -320,8 +320,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
       assertWithMatcher:grey_textFieldValue(@"user2")];
 }
 
-// TODO(crbug.com/1448911): Re-enable when issue is fixed.
-- (void)DISABLED_testOpenPasswordBottomSheetDeletePassword {
+- (void)testOpenPasswordBottomSheetDeletePassword {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
