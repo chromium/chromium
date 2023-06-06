@@ -222,13 +222,14 @@
         z-index: 0;
       }
 
-      :host-context([chrome-refresh-2023].focus-outline-visible):host(
-            [search-focused_]:not([narrow])) {
+      :host-context([chrome-refresh-2023]):host(
+          [search-focused_]:not([narrow])) {
         outline: 2px solid var(--cr-focus-outline-color);
+        outline-offset: 2px;
       }
 
-      :host-context([chrome-refresh-2023].focus-outline-visible):host(
-            [search-focused_]:not([narrow])) #background {
+      :host-context([chrome-refresh-2023]):host(
+          [search-focused_]:not([narrow])) #background {
         background-clip: padding-box;
       }
 

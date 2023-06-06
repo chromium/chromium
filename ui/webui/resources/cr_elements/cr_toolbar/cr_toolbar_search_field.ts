@@ -10,7 +10,6 @@ import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {DomIf, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -97,7 +96,6 @@ export class CrToolbarSearchFieldElement extends
     this.addEventListener('click', e => this.showSearch_(e));
 
     if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      FocusOutlineManager.forDocument(document);
       this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
     }
   }
