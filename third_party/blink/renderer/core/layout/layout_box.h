@@ -859,7 +859,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit OverrideLogicalHeight() const;
   LayoutUnit OverrideLogicalWidth() const;
   bool IsOverrideLogicalHeightDefinite() const;
-  bool StretchInlineSizeIfAuto() const;
   bool StretchBlockSizeIfAuto() const;
   bool HasOverrideLogicalHeight() const;
   bool HasOverrideLogicalWidth() const;
@@ -873,15 +872,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool HasOverrideContainingBlockContentLogicalHeight() const;
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
   void ClearOverrideContainingBlockContentSize();
-
-  // When an available inline size override has been set, we'll use that to fill
-  // available inline size, rather than deducing it from the containing block
-  // (and then subtract space taken up by adjacent floats).
-  LayoutUnit OverrideAvailableInlineSize() const;
-  bool HasOverrideAvailableInlineSize() const {
-    NOT_DESTROYED();
-    return extra_input_;
-  }
 
   LayoutUnit AdjustBorderBoxLogicalWidthForBoxSizing(float width) const;
   LayoutUnit AdjustBorderBoxLogicalHeightForBoxSizing(float height) const;

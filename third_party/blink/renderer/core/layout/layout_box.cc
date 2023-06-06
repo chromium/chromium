@@ -2038,11 +2038,6 @@ bool LayoutBox::IsOverrideLogicalHeightDefinite() const {
   return extra_input_ && extra_input_->is_override_block_size_definite;
 }
 
-bool LayoutBox::StretchInlineSizeIfAuto() const {
-  NOT_DESTROYED();
-  return extra_input_ && extra_input_->stretch_inline_size_if_auto;
-}
-
 bool LayoutBox::StretchBlockSizeIfAuto() const {
   NOT_DESTROYED();
   return extra_input_ && extra_input_->stretch_block_size_if_auto;
@@ -2127,14 +2122,6 @@ void LayoutBox::ClearOverrideContainingBlockContentSize() {
   if (!rare_data_)
     return;
   EnsureRareData().has_override_containing_block_content_logical_width_ = false;
-}
-
-LayoutUnit LayoutBox::OverrideAvailableInlineSize() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideAvailableInlineSize());
-  if (extra_input_)
-    return extra_input_->available_inline_size;
-  return LayoutUnit();
 }
 
 LayoutUnit LayoutBox::AdjustBorderBoxLogicalWidthForBoxSizing(

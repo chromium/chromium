@@ -270,8 +270,6 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
   // resolve percentages.
   DCHECK_GE(input->containing_block_content_inline_size, LayoutUnit());
 
-  input->available_inline_size = space.AvailableSize().inline_size;
-
   if (space.IsFixedInlineSize())
     input->override_inline_size = space.AvailableSize().inline_size;
   if (space.IsFixedBlockSize()) {
@@ -279,7 +277,6 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
     input->is_override_block_size_definite =
         !space.IsInitialBlockSizeIndefinite();
   }
-  input->stretch_inline_size_if_auto = space.IsInlineAutoBehaviorStretch();
   input->stretch_block_size_if_auto =
       space.IsBlockAutoBehaviorStretch() &&
       space.AvailableSize().block_size != kIndefiniteSize;
