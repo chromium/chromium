@@ -38,7 +38,7 @@ BuilderStep = namedtuple('BuilderStep', ['build', 'step_name'])
 # could be changed so it's not a subclass of TestResultsFetcher.
 class MockTestResultsFetcher(TestResultsFetcher):
     def __init__(self, web, luci_auth, builders=None):
-        super(MockTestResultsFetcher, self).__init__(web, luci_auth, builders)
+        super().__init__(web, luci_auth, builders)
         self._canned_results = {}
         self._canned_retry_summary_json = {}
         self._webdriver_results = {}
@@ -53,20 +53,11 @@ class MockTestResultsFetcher(TestResultsFetcher):
     def gather_results(self,
                        build: Build,
                        step_name: str,
-                       exclude_exonerated: bool = True) -> WebTestResults:
-        return self.fetch_results(build, step_name=step_name)
-
-    def fetch_results(self, build, full=False, step_name=None):
+                       exclude_exonerated: bool = False,
+                       only_unexpected: bool = True) -> WebTestResults:
         step = BuilderStep(build=build, step_name=step_name)
         self.fetched_builds.append(step)
         return self._canned_results.get(step)
-
-    def set_webdriver_test_results(self, build, m, results):
-        self._webdriver_results[(build, m)] = results
-
-    def fetch_webdriver_test_results(self, build, m):
-        self.fetched_webdriver_builds.append((build, m))
-        return self._webdriver_results.get((build, m))
 
     def set_retry_sumary_json(self, build, content):
         self._canned_retry_summary_json[build] = content

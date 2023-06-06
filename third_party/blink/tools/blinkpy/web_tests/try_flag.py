@@ -118,13 +118,8 @@ class TryFlag(object):
                                   (build, len(generic_steps)))
                 continue
             step_name = generic_steps[0]
-            results_url = results_fetcher.results_url(build.builder_name,
-                                                      build.build_number,
-                                                      step_name)
-            self._host.print_(
-                '-- %s: %s/results.html' %
-                (BUILDER_CONFIGS[build.builder_name].version, results_url))
-            results = results_fetcher.fetch_results(build, True, step_name)
+            results = results_fetcher.gather_results(build, step_name, False,
+                                                     False)
             for result in results:
                 self._process_result(build, result)
 

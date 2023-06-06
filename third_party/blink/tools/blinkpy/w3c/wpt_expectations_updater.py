@@ -202,17 +202,6 @@ class WPTExpectationsUpdater:
             # TODO(crbug.com/1412527): After switching `webdriver_tests_suite`
             # to ResultDB, use `get_failing_results_dict` instead with
             # `min_attempts_for_update=1` to get failing webdriver results.
-            if self.host.builders.has_webdriver_tests_for_builder(
-                    build.builder_name):
-                main = self.host.builders.main_for_builder(build.builder_name)
-                webdriver_results = fetcher.fetch_webdriver_test_results(
-                    build, main)
-                if not webdriver_results:
-                    webdriver_results = WebTestResults(
-                        [],
-                        step_name=self.WEBDRIVER_SUITE,
-                        builder_name=build.builder_name)
-                results.append(webdriver_results)
 
         results = self._make_results_for_update(results)
         test_expectations = {}

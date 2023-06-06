@@ -26,13 +26,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import json
 import logging
 import unittest
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.results_fetcher import TestResultsFetcher, Build, filter_latest_builds
-from blinkpy.common.net.web_mock import MockWeb
+from blinkpy.common.net.results_fetcher import (
+    TestResultsFetcher,
+    Build,
+    filter_latest_builds,
+)
 from blinkpy.common.net.web_test_results import Artifact
 from blinkpy.common.system.log_testing import LoggingTestCase
 
@@ -41,127 +43,6 @@ class BuilderTest(LoggingTestCase):
     def setUp(self):
         self.set_logging_level(logging.DEBUG)
         self.fetcher = TestResultsFetcher.from_host(MockHost())
-
-    def test_results_url_no_build_number(self):
-        self.assertEqual(
-            self.fetcher.results_url('Test Builder'),
-            'https://test-results.appspot.com/data/layout_results/Test_Builder/results/layout-test-results'
-        )
-
-    @unittest.skip('crbug/1234319 disable to unblock the CI')
-    def test_results_url_with_build_number(self):
-        self.assertEqual(
-            self.fetcher.results_url('Test Builder', 10),
-            'https://test-results.appspot.com/data/layout_results/Test_Builder/10/layout-test-results'
-        )
-
-    def test_results_url_with_build_number_step_name(self):
-        self.assertEqual(
-            self.fetcher.results_url('Test Builder', 10,
-                                     'blink_web_tests (with patch)'),
-            'https://test-results.appspot.com/data/layout_results/Test_Builder'
-            '/10/blink_web_tests%20%28with%20patch%29/layout-test-results')
-
-    def test_results_url_with_non_numeric_build_number(self):
-        with self.assertRaisesRegexp(AssertionError,
-                                     'expected numeric build number'):
-            self.fetcher.results_url('Test Builder', 'ba5eba11')
-
-    def test_builder_results_url_base(self):
-        self.assertEqual(
-            self.fetcher.builder_results_url_base('WebKit Mac10.8 (dbg)'),
-            'https://test-results.appspot.com/data/layout_results/WebKit_Mac10_8__dbg_'
-        )
-
-    def test_accumulated_results_url(self):
-        self.assertEqual(
-            self.fetcher.accumulated_results_url_base('WebKit Mac10.8 (dbg)'),
-            'https://test-results.appspot.com/data/layout_results/WebKit_Mac10_8__dbg_/results/layout-test-results'
-        )
-
-    def test_fetch_web_test_results_with_no_results_fetched(self):
-        results = self.fetcher.fetch_web_test_results(
-            self.fetcher.results_url('B'))
-        self.assertIsNone(results)
-        self.assertLog([
-            'DEBUG: Got 404 response from:\n'
-            'https://test-results.appspot.com/data/layout_results/B/results/layout-test-results/failing_results.json\n'
-        ])
-
-    def test_fetch_results_with_weird_step_name(self):
-        self.fetcher.web = MockWeb(
-            urls={
-                'https://test-results.appspot.com/testfile?buildnumber=123&'
-                'callback=ADD_RESULTS&builder=builder&name=full_results.json':
-                b'ADD_RESULTS(' + json.dumps(
-                    [{
-                        "TestType": "blink_web_tests on Intel GPU (with patch)"
-                    }, {
-                        "TestType": "base_unittests (with patch)"
-                    }]).encode('utf8', 'replace') + b');',
-                'https://test-results.appspot.com/data/layout_results/builder/123/'
-                'blink_web_tests%20on%20Intel%20GPU%20%28with%20patch%29/'
-                'layout-test-results/failing_results.json':
-                json.dumps({
-                    'tests': {
-                        'test.html': {
-                            'actual': 'PASS'
-                        }
-                    },
-                }).encode('utf8', 'replace')
-            })
-        step_name = 'blink_web_tests on Intel GPU (with patch)'
-        results = self.fetcher.fetch_results(Build('builder', 123), False,
-                                             step_name)
-        self.assertIsNot(results.result_for_test('test.html'), None)
-        self.assertLog([])
-
-    def test_fetch_results_without_build_number(self):
-        self.assertIsNone(self.fetcher.fetch_results(Build('builder', None)))
-
-    def test_fetch_webdriver_results_without_build_number(self):
-        self.assertIsNone(
-            self.fetcher.fetch_webdriver_test_results(Build('builder', None),
-                                                      'bar'))
-        self.assertLog(
-            ['DEBUG: Builder name or build number or master is None\n'])
-
-    def test_fetch_webdriver_results_without_master(self):
-        self.assertIsNone(
-            self.fetcher.fetch_webdriver_test_results(Build('builder', 1), ''))
-        self.assertLog(
-            ['DEBUG: Builder name or build number or master is None\n'])
-
-    def test_fetch_webdriver_test_results_with_no_results(self):
-        results = self.fetcher.fetch_webdriver_test_results(
-            Build('bar-rel', 123), 'foo.chrome')
-        self.assertIsNone(results)
-        self.assertLog([
-            'DEBUG: Got 404 response from:\n'
-            'https://test-results.appspot.com/testfile?buildnumber=123&'
-            'master=foo.chrome&builder=bar-rel&'
-            'testtype=webdriver_tests_suite+%28with+patch%29&name=full_results.json\n'
-        ])
-
-    def test_fetch_webdriver_results_success(self):
-        self.fetcher.web = MockWeb(
-            urls={
-                'https://test-results.appspot.com/testfile?buildnumber=123&'
-                'master=foo.chrome&builder=bar-rel&'
-                'testtype=webdriver_tests_suite+%28with+patch%29&'
-                'name=full_results.json':
-                json.dumps({
-                    'tests': {
-                        'test.html': {
-                            'actual': 'PASS'
-                        }
-                    },
-                }).encode('utf8', 'replace'),
-            })
-        results = self.fetcher.fetch_webdriver_test_results(
-            Build('bar-rel', 123), 'foo.chrome')
-        self.assertIsNot(results.result_for_test('test.html'), None)
-        self.assertLog([])
 
     def test_get_full_builder_url(self):
         self.assertEqual(
