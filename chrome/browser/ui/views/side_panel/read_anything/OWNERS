@@ -1,6 +1,6 @@
 abigailbklein@google.com
 dtseng@chromium.org
+jocelyntran@google.com
+kristislee@google.com
+lwinston@google.com
 mschillaci@google.com
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
