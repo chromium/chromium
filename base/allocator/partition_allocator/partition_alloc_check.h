@@ -30,7 +30,7 @@
 // - Otherwise, crash immediately. This provides worse error messages though.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // For official build discard log strings to reduce binary bloat.
-#if !CHECK_WILL_STREAM()
+#if !PA_BASE_CHECK_WILL_STREAM()
 // See base/check.h for implementation details.
 #define PA_CHECK(condition)                        \
   PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \

@@ -9,7 +9,7 @@
 
 // PA_NOTREACHED() annotates paths that are supposed to be unreachable. They
 // crash if they are ever hit.
-#if CHECK_WILL_STREAM()
+#if PA_BASE_CHECK_WILL_STREAM()
 // PartitionAlloc uses async-signal-safe RawCheckFailure() for error reporting.
 // Async-signal-safe functions are guaranteed to not allocate as otherwise they
 // could operate with inconsistent allocator state.
