@@ -457,7 +457,12 @@ void AnimationHost::SetScrollAnimationDurationForTesting(
 }
 
 bool AnimationHost::NeedsTickAnimations() const {
-  return !ticking_animations_.Read(*this).empty();
+  for (auto& animation : ticking_animations_.Read(*this)) {
+    if (!animation->keyframe_effect()->awaiting_deletion()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void AnimationHost::TickMutator(base::TimeTicks monotonic_time,
@@ -527,8 +532,9 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
   // mutator even if there are active scroll animations.
   // The ticking of worklet animations is deferred until draw to ensure that
   // mutator output takes effect in the same impl frame that it was mutated.
-  if (!NeedsTickAnimations())
+  if (is_active_tree && !NeedsTickAnimations()) {
     return false;
+  }
 
   TRACE_EVENT_INSTANT0("cc", "NeedsTickAnimations", TRACE_EVENT_SCOPE_THREAD);
 
@@ -540,7 +546,7 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
       scroll_timelines.push_back(timeline);
     } else {
       animated |= timeline->TickTimeLinkedAnimations(
-          ticking_animations_.Read(*this), monotonic_time);
+          ticking_animations_.Read(*this), monotonic_time, !is_active_tree);
     }
   }
   // Tick the scroll-linked animations last, since a smooth scroll (time-linked)
@@ -787,8 +793,9 @@ void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
 void AnimationHost::RemoveFromTicking(scoped_refptr<Animation> animation) {
   auto to_erase =
       base::ranges::find(ticking_animations_.Write(*this), animation);
-  if (to_erase != ticking_animations_.Write(*this).end())
+  if (to_erase != ticking_animations_.Write(*this).end()) {
     ticking_animations_.Write(*this).erase(to_erase);
+  }
 }
 
 const AnimationHost::AnimationsList&

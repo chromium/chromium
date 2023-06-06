@@ -32,7 +32,7 @@ class MockKeyframeEffect : public KeyframeEffect {
  public:
   explicit MockKeyframeEffect(Animation* animation)
       : KeyframeEffect(animation) {}
-  MOCK_METHOD1(Tick, void(base::TimeTicks monotonic_time));
+  MOCK_METHOD1(Tick, bool(base::TimeTicks monotonic_time));
 };
 
 class WorkletAnimationTest : public AnimationTimelinesTest {

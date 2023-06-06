@@ -92,7 +92,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void AttachElement(ElementId element_id);
   void DetachElement();
 
-  void Tick(base::TimeTicks monotonic_time) override;
+  bool Tick(base::TimeTicks monotonic_time) override;
   void RemoveFromTicking();
 
   void UpdateState(bool start_ready_keyframe_models, AnimationEvents* events);
@@ -122,8 +122,6 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   bool RequiresInvalidation() const;
   bool AffectsNativeProperty() const;
-
-  bool HasNonDeletedKeyframeModel() const;
 
   bool AnimationsPreserveAxisAlignment() const;
 
@@ -162,6 +160,8 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   // Returns 0 if there is a continuous animation which should be ticked as
   // fast as possible.
   base::TimeDelta MinimumTickInterval() const;
+
+  bool awaiting_deletion() { return awaiting_deletion_; }
 
  protected:
   // We override this because we have additional bookkeeping (eg, noting if
@@ -204,6 +204,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   bool scroll_offset_animation_was_interrupted_;
 
   bool is_ticking_;
+  bool awaiting_deletion_;
   absl::optional<base::TimeTicks> last_tick_time_;
 
   bool needs_push_properties_;

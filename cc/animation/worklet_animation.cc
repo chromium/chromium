@@ -57,13 +57,15 @@ void WorkletAnimation::PushPropertiesTo(Animation* animation_impl) {
   worklet_animation_impl->SetPlaybackRate(playback_rate());
 }
 
-void WorkletAnimation::Tick(base::TimeTicks monotonic_time) {
+bool WorkletAnimation::Tick(base::TimeTicks monotonic_time) {
   // Do not tick worklet animations on main thread as we will tick them on the
   // compositor and the tick is more expensive than regular animations.
-  if (!is_impl_instance_)
-    return;
-  if (!local_time_.Read(*this).has_value())
-    return;
+  if (!is_impl_instance_) {
+    return false;
+  }
+  if (!local_time_.Read(*this).has_value()) {
+    return false;
+  }
   // As the output of a WorkletAnimation is driven by a script-provided local
   // time, we don't want the underlying effect to participate in the normal
   // animations lifecycle. To avoid this we pause the underlying keyframe effect
@@ -71,6 +73,7 @@ void WorkletAnimation::Tick(base::TimeTicks monotonic_time) {
   // call to |WorkletAnimation::Tick| into a seek in the effect.
   keyframe_effect()->Pause(base::TimeTicks() + local_time_.Read(*this).value());
   keyframe_effect()->Tick(base::TimeTicks());
+  return true;
 }
 
 void WorkletAnimation::UpdateState(bool start_ready_animations,

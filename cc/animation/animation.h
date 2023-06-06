@@ -114,7 +114,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
   // Adds TIME_UPDATED event generated in the current frame to the given
   // animation events.
   virtual void TakeTimeUpdatedEvent(AnimationEvents* events) {}
-  virtual void Tick(base::TimeTicks tick_time);
+  virtual bool Tick(base::TimeTicks tick_time);
   bool IsScrollLinkedAnimation() const;
 
   void AddToTicking();
