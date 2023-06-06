@@ -37,6 +37,9 @@ void BrokerHelperWin::RefreshNetworkList() {
 
 bool BrokerHelperWin::ShouldBroker(const net::IPAddress& address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (delegate_) {
+    return delegate_->ShouldBroker();
+  }
   if (address.IsLoopback())
     return true;
 
