@@ -32,7 +32,7 @@ SearchPrefetchService* GetSearchPrefetchService(int frame_tree_node_id) {
   if (!profile) {
     return nullptr;
   }
-  return SearchPrefetchServiceFactory::GetForProfile(profile);
+  return SearchPrefetchServiceFactory::GetForProfileIfExists(profile);
 }
 
 }  // namespace
