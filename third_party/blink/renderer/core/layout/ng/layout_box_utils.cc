@@ -26,11 +26,7 @@ LayoutUnit LayoutBoxUtils::AvailableLogicalHeight(const LayoutBox& box,
   bool parallel_containing_block = IsParallelWritingMode(
       cb ? cb->StyleRef().GetWritingMode() : writing_mode, writing_mode);
 
-  // Grid layout sets OverrideContainingBlockContentLogicalWidth|Height
-  if (parallel_containing_block &&
-      box.HasOverrideContainingBlockContentLogicalHeight())
-    return box.OverrideContainingBlockContentLogicalHeight();
-
+  // Grid layout sets OverrideContainingBlockContentLogicalWidth.
   if (!parallel_containing_block &&
       box.HasOverrideContainingBlockContentLogicalWidth())
     return box.OverrideContainingBlockContentLogicalWidth();

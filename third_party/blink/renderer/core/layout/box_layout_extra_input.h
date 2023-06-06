@@ -39,18 +39,10 @@ struct BoxLayoutExtraInput {
   // one instead.
   absl::optional<LayoutUnit> override_block_size;
 
-  // If the |override_block_size| should be treated as definite for the
-  // purposes of percent block-size resolution.
-  bool is_override_block_size_definite = true;
-
-  // If an 'auto' block-size should stretch to the available size.
-  bool stretch_block_size_if_auto = false;
-
   // The content size of the containing block. These are somewhat vague legacy
   // layout values, that typically either mean available size or percentage
   // resolution size.
   LayoutUnit containing_block_content_inline_size;
-  LayoutUnit containing_block_content_block_size;
 
   // Border and padding values. This field is set only for LayoutReplaced.
   NGPhysicalBoxStrut border_padding_for_replaced;

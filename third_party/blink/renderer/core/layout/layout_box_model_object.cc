@@ -539,10 +539,6 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight()
         return false;
     }
   }
-  if (this_box && this_box->IsCustomItem() &&
-      (this_box->HasOverrideContainingBlockContentLogicalHeight())) {
-    return false;
-  }
 
   if ((logical_height_length.IsAutoOrContentOrIntrinsic() ||
        logical_height_length.IsFillAvailable()) &&
@@ -554,12 +550,8 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight()
     // resolve the block-size of the descendant, except when in quirks mode.
     // Flexboxes follow strict behavior even in quirks mode, though.
     if (!GetDocument().InQuirksMode() || cb->IsFlexibleBoxIncludingNG()) {
-      if (this_box &&
-          this_box->HasOverrideContainingBlockContentLogicalHeight()) {
-        return this_box->OverrideContainingBlockContentLogicalHeight() ==
-               LayoutUnit(-1);
-      } else if (this_box && this_box->GetSingleCachedLayoutResult() &&
-                 !this_box->GetBoxLayoutExtraInput()) {
+      if (this_box && this_box->GetSingleCachedLayoutResult() &&
+          !this_box->GetBoxLayoutExtraInput()) {
         return this_box->GetSingleCachedLayoutResult()
                    ->GetConstraintSpaceForCaching()
                    .AvailableSize()

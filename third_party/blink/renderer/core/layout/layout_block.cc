@@ -1037,13 +1037,7 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
       (!style.LogicalHeight().IsAuto() ||
        (!style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto()));
 
-  LayoutUnit stretched_flex_height(-1);
-  if (HasOverrideLogicalHeight() && IsOverrideLogicalHeightDefinite()) {
-    stretched_flex_height = OverrideContentLogicalHeight();
-  }
-  if (stretched_flex_height != LayoutUnit(-1)) {
-    available_height = stretched_flex_height;
-  } else if (style.LogicalHeight().IsFixed()) {
+  if (style.LogicalHeight().IsFixed()) {
     LayoutUnit content_box_height = AdjustContentBoxLogicalHeightForBoxSizing(
         style.LogicalHeight().Value());
     available_height =

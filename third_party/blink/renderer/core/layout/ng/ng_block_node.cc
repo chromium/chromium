@@ -244,7 +244,7 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
                               BoxLayoutExtraInput* input) {
   input->containing_block_content_inline_size =
       CalculateAvailableInlineSizeForLegacy(box, space);
-  input->containing_block_content_block_size =
+  LayoutUnit containing_block_content_block_size =
       CalculateAvailableBlockSizeForLegacy(box, space);
 
   WritingMode writing_mode = box.StyleRef().GetWritingMode();
@@ -252,7 +252,7 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
     if (!IsParallelWritingMode(containing_block->StyleRef().GetWritingMode(),
                                writing_mode)) {
       // The sizes should be in the containing block writing mode.
-      std::swap(input->containing_block_content_block_size,
+      std::swap(containing_block_content_block_size,
                 input->containing_block_content_inline_size);
 
       // We cannot lay out without a definite containing block inline-size. We
@@ -269,17 +269,6 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
   // We need a definite containing block inline-size, or we'd be unable to
   // resolve percentages.
   DCHECK_GE(input->containing_block_content_inline_size, LayoutUnit());
-
-  if (space.IsFixedInlineSize())
-    input->override_inline_size = space.AvailableSize().inline_size;
-  if (space.IsFixedBlockSize()) {
-    input->override_block_size = space.AvailableSize().block_size;
-    input->is_override_block_size_definite =
-        !space.IsInitialBlockSizeIndefinite();
-  }
-  input->stretch_block_size_if_auto =
-      space.IsBlockAutoBehaviorStretch() &&
-      space.AvailableSize().block_size != kIndefiniteSize;
 }
 
 bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
@@ -851,12 +840,6 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     SetupBoxLayoutExtraInput(constraint_space, *box_, &input);
     NGBoxFragment fragment(constraint_space.GetWritingDirection(),
                            physical_fragment);
-    DCHECK_EQ(input.override_inline_size.value_or(fragment.InlineSize()),
-              fragment.InlineSize())
-        << "Forced inline size wasn't the fragment's inline size?";
-    DCHECK_EQ(input.override_block_size.value_or(fragment.BlockSize()),
-              fragment.BlockSize())
-        << "Forced block size wasn't the fragment's block size?";
     input.override_inline_size = fragment.InlineSize();
     input.override_block_size = fragment.BlockSize();
     input.border_padding_for_replaced =

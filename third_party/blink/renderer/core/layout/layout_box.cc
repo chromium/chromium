@@ -2033,16 +2033,6 @@ LayoutUnit LayoutBox::OverrideLogicalHeight() const {
   return kIndefiniteSize;
 }
 
-bool LayoutBox::IsOverrideLogicalHeightDefinite() const {
-  NOT_DESTROYED();
-  return extra_input_ && extra_input_->is_override_block_size_definite;
-}
-
-bool LayoutBox::StretchBlockSizeIfAuto() const {
-  NOT_DESTROYED();
-  return extra_input_ && extra_input_->stretch_block_size_if_auto;
-}
-
 bool LayoutBox::HasOverrideLogicalHeight() const {
   NOT_DESTROYED();
   return extra_input_ && extra_input_->override_block_size;
@@ -2079,27 +2069,12 @@ LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalWidth() const {
 
 // TODO (lajava) Shouldn't we implement these functions based on physical
 // direction ?.
-LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalHeight() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideContainingBlockContentLogicalHeight());
-  return extra_input_->containing_block_content_block_size;
-}
-
-// TODO (lajava) Shouldn't we implement these functions based on physical
-// direction ?.
 bool LayoutBox::HasOverrideContainingBlockContentLogicalWidth() const {
   NOT_DESTROYED();
   if (extra_input_)
     return true;
   return rare_data_ &&
          rare_data_->has_override_containing_block_content_logical_width_;
-}
-
-// TODO (lajava) Shouldn't we implement these functions based on physical
-// direction ?.
-bool LayoutBox::HasOverrideContainingBlockContentLogicalHeight() const {
-  NOT_DESTROYED();
-  return extra_input_;
 }
 
 // TODO (lajava) Shouldn't we implement these functions based on physical
@@ -2745,9 +2720,6 @@ PhysicalRect LayoutBox::ClipRect(const PhysicalOffset& location) const {
 
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForGetComputedStyle() const {
   NOT_DESTROYED();
-  if (HasOverrideContainingBlockContentLogicalHeight())
-    return OverrideContainingBlockContentLogicalHeight();
-
   if (!IsPositioned())
     return ContainingBlockLogicalHeightForContent(kExcludeMarginBorderPadding);
 
@@ -2774,9 +2746,6 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForContent() const {
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForContent(
     AvailableLogicalHeightType height_type) const {
   NOT_DESTROYED();
-  if (HasOverrideContainingBlockContentLogicalHeight())
-    return OverrideContainingBlockContentLogicalHeight();
-
   LayoutBlock* cb = ContainingBlock();
   return cb->AvailableLogicalHeight(height_type);
 }
@@ -3682,11 +3651,11 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPercentageResolution(
   while (!IsA<LayoutView>(cb) &&
          (IsHorizontalWritingMode() == cb->IsHorizontalWritingMode() &&
           SkipContainingBlockForPercentHeightCalculation(cb))) {
-    if ((cb->IsBody() || cb->IsDocumentElement()) &&
-        !HasOverrideContainingBlockContentLogicalHeight())
+    if ((cb->IsBody() || cb->IsDocumentElement())) {
       root_margin_border_padding_height += cb->MarginBefore() +
                                            cb->MarginAfter() +
                                            cb->BorderAndPaddingLogicalHeight();
+    }
     skipped_auto_height_containing_block = true;
     containing_block_child = cb;
     cb = cb->ContainingBlock();
@@ -3704,9 +3673,6 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPercentageResolution(
   if (HasOverrideContainingBlockContentLogicalWidth() &&
       IsHorizontalWritingMode() != real_cb->IsHorizontalWritingMode()) {
     available_height = OverrideContainingBlockContentLogicalWidth();
-  } else if (HasOverrideContainingBlockContentLogicalHeight() &&
-             IsHorizontalWritingMode() == real_cb->IsHorizontalWritingMode()) {
-    available_height = OverrideContainingBlockContentLogicalHeight();
   } else if (IsHorizontalWritingMode() != cb->IsHorizontalWritingMode()) {
     available_height =
         containing_block_child->ContainingBlockLogicalWidthForContent();
@@ -3811,20 +3777,6 @@ bool LayoutBox::LogicalHeightComputesAsNone(SizeType size_type) const {
   if (logical_height == initial_logical_height)
     return true;
 
-  if (logical_height.IsPercentOrCalc() &&
-      HasOverrideContainingBlockContentLogicalHeight()) {
-    if (OverrideContainingBlockContentLogicalHeight() == kIndefiniteSize)
-      return true;
-    else if (!GetDocument().InQuirksMode())
-      return false;
-  }
-
-  // CustomLayout items can resolve their percentages against an available or
-  // percentage size override.
-  if (IsCustomItem() && HasOverrideContainingBlockContentLogicalHeight()) {
-    return false;
-  }
-
   if (LayoutBlock* cb = ContainingBlockForAutoHeightDetection(logical_height))
     return cb->HasAutoHeightOrContainingBlockWithAutoHeight();
   return false;
@@ -3859,9 +3811,6 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
          !logical_height.IsAuto());
   if (size_type == kMinSize && logical_height.IsAuto())
     return AdjustContentBoxLogicalHeightForBoxSizing(LayoutUnit());
-  if (size_type == kMainOrPreferredSize && logical_height.IsAuto() &&
-      StretchBlockSizeIfAuto())
-    logical_height = Length::FillAvailable();
 
   switch (logical_height.GetType()) {
     case Length::kFixed:
@@ -3960,9 +3909,6 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
     if (HasOverrideContainingBlockContentLogicalWidth() &&
         IsOrthogonalWritingModeRoot()) {
       return OverrideContainingBlockContentLogicalWidth();
-    } else if (HasOverrideLogicalHeight() &&
-               IsOverrideLogicalHeightDefinite()) {
-      return OverrideContentLogicalHeight();
     }
   }
   if (ShouldComputeLogicalHeightFromAspectRatio()) {
@@ -4099,9 +4045,6 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
                  : viewport_size.Width();
     }
   }
-
-  if (HasOverrideContainingBlockContentLogicalHeight())
-    return OverrideContainingBlockContentLogicalHeight();
 
   if (containing_block->IsBox())
     return To<LayoutBox>(containing_block)->ClientLogicalHeight();
