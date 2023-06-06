@@ -36,13 +36,30 @@ void GiveItSomeTime(base::TimeDelta delta) {
 class LacrosTtsApiTest : public ExtensionApiTest,
                          public content::VoicesChangedDelegate {
  public:
+  void SetUp() override {
+    // Start unique Ash instance with Lacros Tts Support feature enabled.
+    // TODO(crbug/1422469): Since the migration for using unique ash and
+    // removing the test workaround require Ash code change, we need to
+    // handle the version skew with ash side change landed in order to know
+    // which ash version supports the migration. Since LacrosTtsApiTest is
+    // already disabled for version skew tests, we don't need to handle version
+    // skew issue. Once Ash code change involved has been landed, we should
+    // handle version skew in the test and re-enable the test for version skew
+    // testing.
+    StartUniqueAshChrome({}, {"DisableLacrosTtsSupport"}, {},
+                         "crbug/1451677 Switch to shared ash when lacros tts "
+                         "support is enabled by default");
+    ExtensionApiTest::SetUp();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+
+    ASSERT_TRUE(tts_crosapi_util::ShouldEnableLacrosTtsSupport());
     content::TtsController::SkipAddNetworkChangeObserverForTests(true);
     content::TtsController* tts_controller =
         content::TtsController::GetInstance();
     tts_controller->SetTtsEngineDelegate(TtsExtensionEngine::GetInstance());
-    TtsPlatformImplLacros::EnablePlatformSupportForTesting();
   }
 
  protected:

@@ -173,24 +173,10 @@ base::UnguessableToken TtsAsh::GetPrimaryProfileBrowserContextId() const {
 void TtsAsh::RegisterTtsClient(mojo::PendingRemote<mojom::TtsClient> client,
                                const base::UnguessableToken& browser_context_id,
                                bool from_primary_profile) {
+  CHECK(tts_crosapi_util::ShouldEnableLacrosTtsSupport());
   DCHECK(from_primary_profile);
   if (from_primary_profile)
     primary_profile_browser_context_id_ = browser_context_id;
-
-  // Note: This is a temporary workaround for enabling Lacros tts support in
-  // ash when running Lacros tts extension api lacros browser tests.
-  // TODO(crbug.com/1227543): Migrate to enable tts lacros support feature
-  // flag in Ash before running lacros browser tests once the Lacros testing
-  // infrastructure adds that support.
-  if (!tts_crosapi_util::ShouldEnableLacrosTtsSupport()) {
-    // This code path is only called when running lacros browser tests.
-    content::TtsController::GetInstance()->SetRemoteTtsEngineDelegate(
-        CrosapiTtsEngineDelegateAsh::GetInstance());
-    // Disable the built-in TTS engine for testing.
-    // This will be used by the Lacros browser test running with Ash.
-    TtsExtensionEngine::GetInstance()
-        ->DisableBuiltInTTSEngineForTesting();  // IN-TEST
-  }
 
   mojo::Remote<mojom::TtsClient> remote(std::move(client));
   remote.set_disconnect_handler(base::BindOnce(&TtsAsh::TtsClientDisconnected,

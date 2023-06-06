@@ -186,8 +186,10 @@ TtsClientLacros::TtsClientLacros(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       is_offline_(IsOffline(net::NetworkChangeNotifier::GetConnectionType())) {
   auto* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::Tts>())
+  if (!service->IsAvailable<crosapi::mojom::Tts>() ||
+      !tts_crosapi_util::ShouldEnableLacrosTtsSupport()) {
     return;
+  }
 
   browser_context_id_ = base::UnguessableToken::Create();
   bool is_primary_profile = ProfileManager::GetPrimaryUserProfile() ==

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "ui/views/input_event_activation_protector.h"
 
@@ -53,6 +54,10 @@ void AshIsReadyForTesting() {
 
 void FakeAshTestChromeBrowserMainExtraParts::PreProfileInit() {
   crosapi::BrowserManager::DisableForTesting();
+  // TODO(crbug.com/1422469): Explore whether there is a better place to disable
+  // the built-in tts engine other than FakeAshTestChromeBrowserMainExtraParts,
+  // which may make test_ash_chrome behavior differs from production ash chrome.
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
 }
 
 void FakeAshTestChromeBrowserMainExtraParts::PreBrowserStart() {
