@@ -6693,3 +6693,6 @@ crbug.com/1450344 http/tests/devtools/resource-tree/resource-tree-non-unique-url
 
 # Temporarily disabled to unblock https://crrev.com/c/4580489
 crbug.com/1422552 http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js [ Failure Pass ]
+
+# Flaky test on mac
+crbug.com/1451711 [ Mac10.15 ] http/tests/inspector-protocol/tracing/prerender.js [ Failure Pass ]
