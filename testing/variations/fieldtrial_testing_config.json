@@ -10306,10 +10306,22 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PersistentOnly_20230605",
+                    "enable_features": [
+                        "PersistentOriginTrials"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android_webview"
             ],
             "experiments": [
                 {
