@@ -2620,6 +2620,13 @@ const FeatureEntry::FeatureVariation
          std::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+constexpr FeatureEntry::FeatureParam kStorageAccessAPI_WithPrompt[] = {
+    {"storage_access_api_auto_deny_outside_fps", "false"}};
+
+const FeatureEntry::FeatureVariation kStorageAccessAPIVariations[] = {
+    {"(with prompt)", kStorageAccessAPI_WithPrompt,
+     std::size(kStorageAccessAPI_WithPrompt), nullptr}};
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonStart[] = {
     {"searchBoxStartVariantForLensCameraAssistedSearch", "true"}};
@@ -7404,7 +7411,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"storage-access-api", flag_descriptions::kStorageAccessAPIName,
      flag_descriptions::kStorageAccessAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kStorageAccessAPI)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kStorageAccessAPI,
+                                    kStorageAccessAPIVariations,
+                                    "kStorageAccessAPI")},
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription, kOsAll,
