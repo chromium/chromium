@@ -125,7 +125,7 @@ class ChromeOmniboxClient : public OmniboxClient {
 
   // Implemented by `LocationBarView` which owns `OmniboxView` which owns this.
   const raw_ptr<LocationBar> location_bar_;
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<Browser, DanglingUntriaged> browser_;
   const raw_ptr<Profile> profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::vector<BitmapFetcherService::RequestId> request_ids_;

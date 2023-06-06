@@ -110,8 +110,8 @@ class MEDIA_EXPORT TrackRunIterator {
   const std::vector<uint8_t>& GetKeyId(size_t sample_index) const;
   bool ApplyConstantIv(size_t sample_index, SampleEncryptionEntry* entry) const;
 
-  raw_ptr<const Movie> moov_;
-  raw_ptr<MediaLog> media_log_;
+  raw_ptr<const Movie, DanglingUntriaged> moov_;
+  raw_ptr<MediaLog, DanglingUntriaged> media_log_;
 
   std::vector<TrackRunInfo> runs_;
   std::vector<TrackRunInfo>::const_iterator run_itr_;

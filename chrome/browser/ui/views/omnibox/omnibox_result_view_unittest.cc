@@ -121,7 +121,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<TestOmniboxPopupViewViews> popup_view_;
-  raw_ptr<OmniboxResultView> result_view_;
+  raw_ptr<OmniboxResultView, DanglingUntriaged> result_view_;
   std::unique_ptr<views::Widget> widget_;
 
   std::unique_ptr<display::test::TestScreen> test_screen_;

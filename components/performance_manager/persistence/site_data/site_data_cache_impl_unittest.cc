@@ -113,7 +113,8 @@ class SiteDataCacheImplTest : public ::testing::Test {
   content::TestBrowserContext browser_context_;
 
   // Owned by |data_cache_|.
-  raw_ptr<::testing::StrictMock<MockSiteCache>> mock_db_ = nullptr;
+  raw_ptr<::testing::StrictMock<MockSiteCache>, DanglingUntriaged> mock_db_ =
+      nullptr;
   std::unique_ptr<SiteDataCacheFactory> data_cache_factory_;
   std::unique_ptr<SiteDataCacheImpl> data_cache_;
 

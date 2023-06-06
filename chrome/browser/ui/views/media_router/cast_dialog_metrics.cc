@@ -191,7 +191,8 @@ void CastDialogMetrics::OnRecordSinkCount(
 }
 
 void CastDialogMetrics::OnRecordSinkCount(
-    const std::vector<raw_ptr<CastDialogSinkView>>& sink_views) {
+    const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
+        sink_views) {
   media_router::MediaRouterMetrics::RecordDeviceCount(sink_views.size());
 }
 

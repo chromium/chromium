@@ -319,9 +319,11 @@ class X11Window : public PlatformWindow,
 
   const raw_ptr<PlatformWindowDelegate> platform_window_delegate_;
 
-  raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
+  raw_ptr<WorkspaceExtensionDelegate, DanglingUntriaged>
+      workspace_extension_delegate_ = nullptr;
 
-  raw_ptr<X11ExtensionDelegate> x11_extension_delegate_ = nullptr;
+  raw_ptr<X11ExtensionDelegate, DanglingUntriaged> x11_extension_delegate_ =
+      nullptr;
 
   // Tells if the window got a ::Close call.
   bool is_shutting_down_ = false;
@@ -343,7 +345,8 @@ class X11Window : public PlatformWindow,
   // Handles XDND events going through this window.
   std::unique_ptr<XDragDropClient> drag_drop_client_;
   WmDragHandler::DragFinishedCallback drag_finished_callback_;
-  raw_ptr<WmDragHandler::LocationDelegate> drag_location_delegate_ = nullptr;
+  raw_ptr<WmDragHandler::LocationDelegate, DanglingUntriaged>
+      drag_location_delegate_ = nullptr;
 
   // Run loop used while dragging from this window.
   std::unique_ptr<X11MoveLoop> drag_loop_;

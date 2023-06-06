@@ -177,10 +177,10 @@ class BrowserRendererTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<MockUi> ui_;
-  raw_ptr<MockSchedulerDelegate> scheduler_delegate_;
-  raw_ptr<MockGraphicsDelegate> graphics_delegate_;
-  raw_ptr<MockInputDelegate> input_delegate_;
+  raw_ptr<MockUi, DanglingUntriaged> ui_;
+  raw_ptr<MockSchedulerDelegate, DanglingUntriaged> scheduler_delegate_;
+  raw_ptr<MockGraphicsDelegate, DanglingUntriaged> graphics_delegate_;
+  raw_ptr<MockInputDelegate, DanglingUntriaged> input_delegate_;
 
  private:
   BuildParams build_params_;

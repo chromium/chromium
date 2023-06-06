@@ -163,7 +163,8 @@ class RealtimeReportingClient : public KeyedService,
   void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
 
   raw_ptr<content::BrowserContext> context_;
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
+      nullptr;
   raw_ptr<extensions::EventRouter> event_router_ = nullptr;
 
   // The cloud policy clients used to upload browser events and profile events

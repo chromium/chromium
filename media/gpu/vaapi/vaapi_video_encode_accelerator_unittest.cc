@@ -261,7 +261,8 @@ class VaapiVideoEncodeAcceleratorTest
             [](VaapiVideoEncodeAccelerator* vaapi_encoder,
                scoped_refptr<VaapiWrapper> vaapi_wrapper,
                base::RepeatingClosure on_error_cb,
-               raw_ptr<MockVP9VaapiVideoEncoderDelegate>* mock_encoder,
+               raw_ptr<MockVP9VaapiVideoEncoderDelegate, DanglingUntriaged>*
+                   mock_encoder,
                base::WaitableEvent* event) {
               DCHECK_CALLED_ON_VALID_SEQUENCE(
                   vaapi_encoder->encoder_sequence_checker_);
@@ -673,7 +674,8 @@ class VaapiVideoEncodeAcceleratorTest
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   scoped_refptr<MockVaapiWrapper> mock_vpp_vaapi_wrapper_;
-  raw_ptr<MockVP9VaapiVideoEncoderDelegate> mock_encoder_ = nullptr;
+  raw_ptr<MockVP9VaapiVideoEncoderDelegate, DanglingUntriaged> mock_encoder_ =
+      nullptr;
 };
 
 struct VaapiVideoEncodeAcceleratorTestParam {

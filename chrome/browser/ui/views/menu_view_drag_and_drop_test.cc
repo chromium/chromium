@@ -214,7 +214,7 @@ class MenuViewDragAndDropTest : public MenuTestBase,
                    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // The special view in the menu, which supports its own drag and drop.
-  raw_ptr<TestTargetView> target_view_ = nullptr;
+  raw_ptr<TestTargetView, DanglingUntriaged> target_view_ = nullptr;
 
   // Whether or not we have been asked to close on drag complete.
   bool asked_to_close_ = false;

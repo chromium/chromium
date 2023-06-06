@@ -1436,7 +1436,7 @@ class CaptureLostTrackingWidget : public Widget {
 
  private:
   // Weak. Stores whether OnMouseCaptureLost has been invoked for this widget.
-  raw_ptr<CaptureLostState> capture_lost_state_;
+  raw_ptr<CaptureLostState, DanglingUntriaged> capture_lost_state_;
 };
 
 }  // namespace

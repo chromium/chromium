@@ -114,10 +114,12 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
   DownloadBubbleSecurityViewTest& operator=(
       const DownloadBubbleSecurityViewTest&) = delete;
 
-  raw_ptr<views::BubbleDialogDelegate> bubble_delegate_;
+  raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
+      nullptr;
   std::unique_ptr<MockDownloadBubbleUIController> bubble_controller_;
   std::unique_ptr<MockDownloadBubbleNavigationHandler> bubble_navigator_;
-  raw_ptr<DownloadBubbleSecurityView> security_view_;
+  raw_ptr<DownloadBubbleSecurityView, DanglingUntriaged> security_view_ =
+      nullptr;
   std::unique_ptr<views::Widget> anchor_widget_;
 
   testing::NiceMock<download::MockDownloadItem> download_item_;
@@ -126,7 +128,7 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
 
   std::unique_ptr<testing::NiceMock<content::MockDownloadManager>> manager_;
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
 };

@@ -307,7 +307,8 @@ class SessionProtoDBTest : public testing::Test {
 
  protected:
   raw_ptr<
-      leveldb_proto::test::FakeDB<session_proto_db::SessionProtoDBTestProto>>
+      leveldb_proto::test::FakeDB<session_proto_db::SessionProtoDBTestProto>,
+      DanglingUntriaged>
       test_content_db_;
 
  private:
@@ -315,7 +316,8 @@ class SessionProtoDBTest : public testing::Test {
 
   // For persisted_state_db::PersistedStateContentProto database
   raw_ptr<leveldb_proto::test::FakeDB<
-      persisted_state_db::PersistedStateContentProto>>
+              persisted_state_db::PersistedStateContentProto>,
+          DanglingUntriaged>
       content_db_;
   std::unique_ptr<
       SessionProtoDB<persisted_state_db::PersistedStateContentProto>>

@@ -415,8 +415,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   // See comment above class description for what this does.
   virtual bool CreateBigMenu() { return false; }
 
-  raw_ptr<BookmarkModel> model_ = nullptr;
-  raw_ptr<BookmarkBarView> bb_view_ = nullptr;
+  raw_ptr<BookmarkModel, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<BookmarkBarView, DanglingUntriaged> bb_view_ = nullptr;
   TestingPageNavigator navigator_;
   TestingBookmarkNavigationWrapper wrapper_;
 
@@ -1899,7 +1899,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
     int press_count_ = 0;
   };
 
-  raw_ptr<TestViewForMenuExit> test_view_ = nullptr;
+  raw_ptr<TestViewForMenuExit, DanglingUntriaged> test_view_ = nullptr;
 };
 
 VIEW_TEST(BookmarkBarViewTest20, ContextMenuExitTest)

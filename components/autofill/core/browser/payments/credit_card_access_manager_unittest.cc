@@ -568,7 +568,8 @@ class CreditCardAccessManagerTest : public testing::Test {
   // feature lists.
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<BrowserAutofillManager> browser_autofill_manager_;
-  raw_ptr<CreditCardAccessManager> credit_card_access_manager_;
+  raw_ptr<CreditCardAccessManager, DanglingUntriaged>
+      credit_card_access_manager_;
   raw_ptr<TestCreditCardOtpAuthenticator> otp_authenticator_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   raw_ptr<TestCreditCardFidoAuthenticator> fido_authenticator_;

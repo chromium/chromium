@@ -83,7 +83,7 @@ class FakePageLoadMetricsObserverDelegate
 
   // These instance variables will be returned by calls to the method with the
   // corresponding name. Tests should set these variables appropriately.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   UserInitiatedInfo user_initiated_info_;
   GURL url_;
   GURL start_url_;

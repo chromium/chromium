@@ -94,10 +94,10 @@ class UiTest : public testing::Test {
   void GetBackgroundColor(SkColor* background_color) const;
 
   std::unique_ptr<Ui> ui_instance_;
-  raw_ptr<UiInterface> ui_ = nullptr;
+  raw_ptr<UiInterface, DanglingUntriaged> ui_ = nullptr;
   std::unique_ptr<MockUiBrowserInterface> browser_;
-  raw_ptr<Model> model_ = nullptr;
-  raw_ptr<UiScene> scene_ = nullptr;
+  raw_ptr<Model, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<UiScene, DanglingUntriaged> scene_ = nullptr;
 
  private:
   bool RunFor(base::TimeDelta delta);

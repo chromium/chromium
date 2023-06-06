@@ -77,7 +77,7 @@ class MockProducerClient : public ProducerClient {
     MockProducerClient* operator*() { return client_; }
 
    private:
-    const raw_ptr<MockProducerClient> client_;
+    const raw_ptr<MockProducerClient, DanglingUntriaged> client_;
   };
 
   ~MockProducerClient() override;

@@ -50,7 +50,7 @@ class ResizerTest : public testing::Test {
   void CheckScale(float scale) { EXPECT_FLOAT_EQ(scale, ComputeScale()); }
 
  protected:
-  raw_ptr<Resizer> resizer_ = nullptr;
+  raw_ptr<Resizer, DanglingUntriaged> resizer_ = nullptr;
   UiScene scene_;
 };
 

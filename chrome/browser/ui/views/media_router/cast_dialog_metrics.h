@@ -63,7 +63,8 @@ class CastDialogMetrics {
   void OnRecordSinkCount(
       const std::vector<CastDialogSinkButton*>& sink_buttons);
   void OnRecordSinkCount(
-      const std::vector<raw_ptr<CastDialogSinkView>>& sink_views);
+      const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
+          sink_views);
 
  private:
   // Records the first user action if it hasn't already been recorded.

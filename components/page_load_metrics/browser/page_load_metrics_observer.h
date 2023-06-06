@@ -244,7 +244,8 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnSharedStorageWorkletHostCreated() override {}
 
  private:
-  raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;
+  raw_ptr<PageLoadMetricsObserverDelegate, DanglingUntriaged> delegate_ =
+      nullptr;
 };
 
 }  // namespace page_load_metrics

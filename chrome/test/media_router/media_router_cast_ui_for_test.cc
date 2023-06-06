@@ -169,8 +169,8 @@ void MediaRouterCastUiForTest::OnDialogModelUpdated(
     return;
   }
 
-  const std::vector<raw_ptr<CastDialogSinkView>>& sink_views =
-      dialog_view->sink_views_for_test();
+  const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
+      sink_views = dialog_view->sink_views_for_test();
   if (base::ranges::any_of(
           sink_views, [&, this](CastDialogSinkView* sink_view) {
             switch (watch_type_) {
@@ -252,8 +252,8 @@ CastDialogSinkView* MediaRouterCastUiForTest::GetSinkView(
     const std::string& sink_name) const {
   const CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
-  const std::vector<raw_ptr<CastDialogSinkView>>& sink_views =
-      dialog_view->sink_views_for_test();
+  const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
+      sink_views = dialog_view->sink_views_for_test();
   auto it = base::ranges::find(sink_views, base::UTF8ToUTF16(sink_name),
                                [](CastDialogSinkView* sink_view) {
                                  return sink_view->sink().friendly_name;

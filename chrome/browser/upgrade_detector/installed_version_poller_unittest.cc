@@ -120,7 +120,7 @@ class InstalledVersionPollerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ::testing::StrictMock<MockBuildStateObserver> mock_observer_;
   BuildState build_state_;
-  raw_ptr<FakeMonitor> fake_monitor_ = nullptr;
+  raw_ptr<FakeMonitor, DanglingUntriaged> fake_monitor_ = nullptr;
 };
 
 // Tests that a poll returning the current version does not update the

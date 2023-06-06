@@ -319,7 +319,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
 
  protected:
   raw_ptr<RenderFrameHost, DanglingUntriaged> iframe_render_frame_host_;
-  raw_ptr<TestIdpNetworkRequestManager> network_manager_;
+  raw_ptr<TestIdpNetworkRequestManager, DanglingUntriaged> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<NiceMock<FedCmMetrics>> metrics_;

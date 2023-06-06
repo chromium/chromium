@@ -760,7 +760,7 @@ class StorageTest
     const raw_ptr<base::flat_map<Priority, int64_t>> last_upload_generation_id_;
     const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
-    const raw_ptr<const MockUpload> mock_upload_;
+    const raw_ptr<const MockUpload, DanglingUntriaged> mock_upload_;
     const base::SequenceBound<SequenceBoundUpload> sequence_bound_upload_;
 
     const scoped_refptr<test::Decryptor> decryptor_;

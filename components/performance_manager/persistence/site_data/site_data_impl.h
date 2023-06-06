@@ -283,7 +283,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // The data store used to store the site characteristics, it should outlive
   // this object.
-  const raw_ptr<SiteDataStore> data_store_;
+  const raw_ptr<SiteDataStore, DanglingUntriaged> data_store_;
 
   // The delegate that should get notified when this object is about to get
   // destroyed, it should outlive this object.

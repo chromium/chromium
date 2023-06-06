@@ -164,7 +164,7 @@ class VR_UI_EXPORT Ui : public UiInterface,
   void OnMenuButtonClicked();
   void OnSpeechRecognitionEnded();
   void InitializeModel(const UiInitialState& ui_initial_state);
-  raw_ptr<UiBrowserInterface> browser_;
+  raw_ptr<UiBrowserInterface, DanglingUntriaged> browser_;
   ContentElement* GetContentElement();
   FovRectangle GetMinimalFov(const gfx::Transform& view_matrix,
                              const std::vector<const UiElement*>& elements,

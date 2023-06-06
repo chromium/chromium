@@ -392,7 +392,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> session_;
   raw_ptr<HttpStreamFactory> factory_ = nullptr;
-  raw_ptr<HttpStreamFactory::JobController> job_controller_ = nullptr;
+  raw_ptr<HttpStreamFactory::JobController, DanglingUntriaged> job_controller_ =
+      nullptr;
   std::unique_ptr<HttpStreamRequest> request_;
   std::unique_ptr<SequencedSocketData> tcp_data_;
   std::unique_ptr<SequencedSocketData> tcp_data2_;
@@ -4409,7 +4410,8 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
         NetworkAnonymizationKey());
   }
 
-  raw_ptr<HttpStreamFactory::JobController> job_controller2_ = nullptr;
+  raw_ptr<HttpStreamFactory::JobController, DanglingUntriaged>
+      job_controller2_ = nullptr;
 
   MockHttpStreamRequestDelegate request_delegate2_;
 
@@ -4422,10 +4424,10 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                                quic::Perspective::IS_CLIENT, false);
   }
 
-  void CreateJobControllerImpl(
-      raw_ptr<HttpStreamFactory::JobController>* job_controller,
-      MockHttpStreamRequestDelegate* request_delegate,
-      const HttpRequestInfo& request_info) {
+  void CreateJobControllerImpl(raw_ptr<HttpStreamFactory::JobController,
+                                       DanglingUntriaged>* job_controller,
+                               MockHttpStreamRequestDelegate* request_delegate,
+                               const HttpRequestInfo& request_info) {
     auto controller = std::make_unique<HttpStreamFactory::JobController>(
         factory_, request_delegate, session_.get(), &default_job_factory_,
         request_info, is_preconnect_, false /* is_websocket */,
@@ -4436,7 +4438,8 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
   }
 
   std::unique_ptr<HttpStreamRequest> CreateJobControllerAndStartImpl(
-      raw_ptr<HttpStreamFactory::JobController>* job_controller,
+      raw_ptr<HttpStreamFactory::JobController, DanglingUntriaged>*
+          job_controller,
       MockHttpStreamRequestDelegate* request_delegate,
       const HttpRequestInfo& request_info) {
     CreateJobControllerImpl(job_controller, request_delegate, request_info);

@@ -107,7 +107,7 @@ class OmniboxEditModelTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestLocationBarModel location_bar_model_;
-  raw_ptr<TestOmniboxClient> omnibox_client_;
+  raw_ptr<TestOmniboxClient, DanglingUntriaged> omnibox_client_;
   std::unique_ptr<TestOmniboxView> view_;
 };
 
