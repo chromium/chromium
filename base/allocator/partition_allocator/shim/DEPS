@@ -15,6 +15,7 @@ include_rules = [
     "+base/logging.h",
     "+base/mac/mach_logging.h",
     "+base/memory/nonscannable_memory.h",
+    "+base/synchronization/lock.h",
 ]
 
 specific_include_rules = {

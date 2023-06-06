@@ -7,8 +7,7 @@
 #include <atomic>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/check.h"
+#include "base/synchronization/lock.h"
 
 namespace allocator_shim {
 
@@ -58,9 +57,9 @@ namespace {
 
 // All modifications to g_malloc_zones are gated behind this lock.
 // Dispatch to a malloc zone does not need to acquire this lock.
-partition_alloc::internal::Lock& GetLock() {
-  static partition_alloc::internal::Lock s_lock;
-  return s_lock;
+base::Lock& GetLock() {
+  static base::Lock* g_lock = new base::Lock;
+  return *g_lock;
 }
 
 void EnsureMallocZonesInitializedLocked() {
@@ -71,6 +70,7 @@ int g_zone_count = 0;
 
 bool IsMallocZoneAlreadyStoredLocked(ChromeMallocZone* zone) {
   EnsureMallocZonesInitializedLocked();
+  GetLock().AssertAcquired();
   for (int i = 0; i < g_zone_count; ++i) {
     if (g_malloc_zones[i].context == reinterpret_cast<void*>(zone)) {
       return true;
@@ -82,7 +82,8 @@ bool IsMallocZoneAlreadyStoredLocked(ChromeMallocZone* zone) {
 }  // namespace
 
 bool StoreMallocZone(ChromeMallocZone* zone) {
-  partition_alloc::internal::ScopedGuard guard(GetLock());
+  base::AutoLock l(GetLock());
+  EnsureMallocZonesInitializedLocked();
   if (IsMallocZoneAlreadyStoredLocked(zone)) {
     return false;
   }
@@ -102,7 +103,7 @@ bool StoreMallocZone(ChromeMallocZone* zone) {
 }
 
 bool IsMallocZoneAlreadyStored(ChromeMallocZone* zone) {
-  partition_alloc::internal::ScopedGuard guard(GetLock());
+  base::AutoLock l(GetLock());
   return IsMallocZoneAlreadyStoredLocked(zone);
 }
 
@@ -112,12 +113,13 @@ bool DoesMallocZoneNeedReplacing(ChromeMallocZone* zone,
 }
 
 int GetMallocZoneCountForTesting() {
-  partition_alloc::internal::ScopedGuard guard(GetLock());
+  base::AutoLock l(GetLock());
   return g_zone_count;
 }
 
 void ClearAllMallocZonesForTesting() {
-  partition_alloc::internal::ScopedGuard guard(GetLock());
+  base::AutoLock l(GetLock());
+  EnsureMallocZonesInitializedLocked();
   memset(g_malloc_zones, 0, kMaxZoneCount * sizeof(MallocZoneFunctions));
   g_zone_count = 0;
 }
