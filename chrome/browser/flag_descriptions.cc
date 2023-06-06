@@ -1499,11 +1499,10 @@ const char kExtensionsMenuAccessControlDescription[] =
     "Enables a redesigned extensions menu that allows the user to control "
     "extensions site access.";
 const char kWebViewTagMPArchBehaviorName[] =
-    "MPArch behavior changes for <webview> tags";
+    "MPArch behavior change for <webview> tags";
 const char kWebViewTagMPArchBehaviorDescription[] =
-    "Enables a set of behavior changes associated with the migration of "
+    "Enables a behavior change associated with the migration of "
     "<webview> tags to MPArch. See https://crbug.com/1261928. Specifically, "
-    "SSL errors result in error pages in lieu of interstitials and "
     "cross-WebContents newwindow event usage invalidates some window.open "
     "usage within <webview>s. For enterprise, the "
     "ChromeAppsWebViewPermissiveBehaviorAllowed policy serves as an escape "

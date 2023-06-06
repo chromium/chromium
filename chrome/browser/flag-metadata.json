@@ -3705,7 +3705,7 @@
   {
     "name": "enable-webview-tag-mparch-behavior",
     "owners": [ "mcnee", "//components/guest_view/OWNERS" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 122
   },
   {
     "name": "enable-windows-gaming-input-data-fetcher",
