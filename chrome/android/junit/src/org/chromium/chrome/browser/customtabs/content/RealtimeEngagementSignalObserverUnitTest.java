@@ -23,6 +23,8 @@ import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
 import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.REAL_VALUES;
 import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.TIME_CAN_UPDATE_AFTER_END;
+import static org.chromium.url.JUnitTestGURLs.HTTP_URL;
+import static org.chromium.url.JUnitTestGURLs.TEXT_FRAGMENT_URL;
 import static org.chromium.url.JUnitTestGURLs.URL_1;
 
 import android.graphics.Point;
@@ -59,15 +61,17 @@ import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import java.util.List;
 
 /** Unit test for {@link RealtimeEngagementSignalObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class, ShadowGURL.class})
 @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
 @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
 public class RealtimeEngagementSignalObserverUnitTest {
@@ -719,6 +723,43 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onAllTabsClosed();
 
         verify(env.connection, times(1)).notifyDidGetUserInteraction(env.session, false);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void pauseAndUnpauseSignalsOnPageWithTextFragment() {
+        initializeTabForTest();
+        GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+
+        // Navigate to a URL with text fragment.
+        var navigationHandle = NavigationHandle.createForTesting(
+                JUnitTestGURLs.getGURL(TEXT_FRAGMENT_URL), false, 0, false);
+        webContentsObserver.didStartNavigationInPrimaryMainFrame(navigationHandle);
+
+        // Do a scroll.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(24);
+        listener.onScrollOffsetOrExtentChanged(24, SCROLL_EXTENT);
+        listener.onScrollEnded(24, SCROLL_EXTENT);
+        // We shouldn't get scroll signals.
+        verify(env.connection, never()).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+
+        // Navigate back to a URL with no text fragment.
+        var navigationHandle2 = NavigationHandle.createForTesting(
+                JUnitTestGURLs.getGURL(HTTP_URL), false, 0, false);
+        webContentsObserver.didStartNavigationInPrimaryMainFrame(navigationHandle2);
+
+        // Do a scroll.
+        listener.onScrollStarted(24, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
+        listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
+        listener.onScrollEnded(50, SCROLL_EXTENT);
+        // We should normally get signals.
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(50));
     }
 
     private void advanceTime(long millis) {
