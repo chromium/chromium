@@ -53,27 +53,29 @@ std::unique_ptr<views::Label> CreateLabel() {
 
 // static
 base::WeakPtr<views::Widget> IdleDialog::Show(
+    Browser* browser,
     base::TimeDelta dialog_duration,
     base::TimeDelta idle_threshold,
     IdleDialog::ActionSet actions,
     base::OnceClosure on_close_by_user) {
-  return policy::IdleDialogView::Show(dialog_duration, idle_threshold, actions,
-                                      std::move(on_close_by_user));
+  return policy::IdleDialogView::Show(browser, dialog_duration, idle_threshold,
+                                      actions, std::move(on_close_by_user));
 }
 
 namespace policy {
 
 // static
 base::WeakPtr<views::Widget> IdleDialogView::Show(
+    Browser* browser,
     base::TimeDelta dialog_duration,
     base::TimeDelta idle_threshold,
     IdleDialog::ActionSet actions,
     base::OnceClosure on_close_by_user) {
-  auto view = std::make_unique<IdleDialogView>(
-      dialog_duration, idle_threshold, actions, std::move(on_close_by_user));
-  auto* widget = CreateBubble(std::move(view));
+  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
+      std::make_unique<IdleDialogView>(dialog_duration, idle_threshold, actions,
+                                       std::move(on_close_by_user)),
+      browser->window()->GetNativeWindow());
   widget->Show();
-  widget->CenterWindow(widget->non_client_view()->GetPreferredSize());
   return widget->GetWeakPtr();
 }
 
@@ -117,10 +119,8 @@ IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
   SetAcceptCallback(std::move(callback1));
   SetCancelCallback(std::move(callback2));
 
-  set_draggable(true);
-  set_has_parent(false);
-  set_close_on_deactivate(false);
-  SetModalType(ui::MODAL_TYPE_NONE);
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
@@ -128,6 +128,10 @@ IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
+
+  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   main_label_ = AddChildView(CreateLabel());
   incognito_label_ = AddChildView(CreateLabel());

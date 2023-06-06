@@ -47,6 +47,10 @@
 #include "ui/base/idle/idle_time_provider.h"
 #include "ui/base/test/idle_test_utils.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/ozone/buildflags.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 using base::TestMockTimeTaskRunner;
 using testing::_;
 using testing::ElementsAre;
@@ -188,6 +192,19 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
   void ActivateBrowser(Browser* browser) {
+#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+    // TODO(nicolaso): BrowserActivationWaiter times out on Wayland. Figure out
+    // why.
+#else
+    ActivateBrowserImpl(browser);
+#endif
+#else
+    ActivateBrowserImpl(browser);
+#endif
+  }
+
+  void ActivateBrowserImpl(Browser* browser) {
     if (IsIdleBubbleOpenForTesting(browser)) {
       return;
     }
@@ -354,6 +371,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
             "Profile 3"));
   }
   std::ignore = CreateBrowser(profile3);
+  ActivateBrowser(browser());
 
   EXPECT_EQ(2, GetBrowserCount(profile));
   EXPECT_EQ(1, GetBrowserCount(profile2));
@@ -374,17 +392,17 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 300s, threshold is reached. Close browsers, then show the Profile Picker.
-  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::Seconds(300)));
-  task_runner()->FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsDialogOpen());
-  EXPECT_FALSE(ProfilePicker::IsOpen());
+  {
+    BrowserCloseWaiter waiter({browser(), browser2, browser3});
+    EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+        .WillOnce(Return(base::Seconds(300)));
+    task_runner()->FastForwardBy(base::Seconds(1));
 
-  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
-      .WillRepeatedly(Return(base::Seconds(315)));
-  BrowserCloseWaiter waiter({browser(), browser2, browser3});
-  task_runner()->FastForwardBy(base::Seconds(30));
-  waiter.Wait();
+    EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+        .WillRepeatedly(Return(base::Seconds(315)));
+    task_runner()->FastForwardBy(base::Seconds(30));
+    waiter.Wait();
+  }
   EXPECT_EQ(0, GetBrowserCount(profile));
   EXPECT_EQ(0, GetBrowserCount(profile2));
   EXPECT_EQ(1, GetBrowserCount(profile3));
@@ -439,13 +457,13 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
 
   // 300s, threshold is reached for `profile`. Close its browsers, then show the
   // Profile Picker.
-  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::Seconds(300)));
-  task_runner()->FastForwardBy(base::Seconds(1));
-  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
-      .WillRepeatedly(Return(base::Seconds(315)));
   {
     BrowserCloseWaiter waiter({browser(), browser2});
+    EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+        .WillOnce(Return(base::Seconds(300)));
+    task_runner()->FastForwardBy(base::Seconds(1));
+    EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+        .WillRepeatedly(Return(base::Seconds(315)));
     task_runner()->FastForwardBy(base::Seconds(30));
     waiter.Wait();
   }
@@ -455,13 +473,13 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // 360s, threshold is reached for `profile2`. Close its browsers.
-  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::Seconds(360)));
-  task_runner()->FastForwardBy(base::Seconds(1));
-  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
-      .WillRepeatedly(Return(base::Seconds(375)));
   {
     BrowserCloseWaiter waiter({browser3});
+    EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+        .WillOnce(Return(base::Seconds(360)));
+    task_runner()->FastForwardBy(base::Seconds(1));
+    EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+        .WillRepeatedly(Return(base::Seconds(375)));
     task_runner()->FastForwardBy(base::Seconds(30));
     waiter.Wait();
   }

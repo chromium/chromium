@@ -20,6 +20,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/idle_bubble.h"
@@ -52,7 +53,7 @@ class IdleService::BrowserObserver : public BrowserListObserver {
   void OnBrowserSetLastActive(Browser* browser) override {
     Profile* profile = browser->profile();
     auto* prefs = profile->GetPrefs();
-    if (profile == profile_ &&
+    if (browser->is_type_normal() && profile == profile_ &&
         prefs->GetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup)) {
       ShowIdleBubble(browser, base::Minutes(5), GetActionSet(prefs));
       prefs->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup, false);

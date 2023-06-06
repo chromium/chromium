@@ -63,10 +63,17 @@ class ShowDialogAction : public Action {
     continuation_ = std::move(continuation);
     // Action object's lifetime extends until it calls `continuation_`, so
     // passing `this` as a raw pointer is safe.
-    subscription_ = DialogManager::GetInstance()->ShowDialog(
-        timeout, action_types_,
-        base::BindOnce(&ShowDialogAction::OnCloseFinished,
-                       base::Unretained(this)));
+    base::CallbackListSubscription subscription =
+        DialogManager::GetInstance()->MaybeShowDialog(
+            profile, timeout, action_types_,
+            base::BindOnce(&ShowDialogAction::OnDialogFinished,
+                           base::Unretained(this)));
+    if (subscription) {
+      // If there is no dialog to show, MaybeShowDialog() resolves immediately
+      // and we destroy this object via OnCloseFinished(). This if guards
+      // against a use-after-free.
+      subscription_ = std::move(subscription);
+    }
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
@@ -75,7 +82,7 @@ class ShowDialogAction : public Action {
   }
 
  private:
-  void OnCloseFinished(bool expired) {
+  void OnDialogFinished(bool expired) {
     std::move(continuation_).Run(/*success=*/expired);
   }
 
