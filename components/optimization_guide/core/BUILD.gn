@@ -58,6 +58,8 @@ static_library("model_executor") {
       "model_execution_timeout_watchdog.h",
       "page_visibility_model_executor.cc",
       "page_visibility_model_executor.h",
+      "text_embedding_model_executor.cc",
+      "text_embedding_model_executor.h",
       "tflite_model_executor.h",
     ]
   }
@@ -210,6 +212,8 @@ static_library("core") {
       "page_entities_model_handler.h",
       "page_visibility_model_handler.cc",
       "page_visibility_model_handler.h",
+      "text_embedding_model_handler.cc",
+      "text_embedding_model_handler.h",
     ]
     if (build_with_internal_optimization_guide) {
       sources += [
@@ -403,6 +407,7 @@ source_set("unit_tests") {
       "model_validator_unittest.cc",
       "page_content_annotation_job_executor_unittest.cc",
       "page_visibility_model_handler_unittest.cc",
+      "text_embedding_model_executor_unittest.cc",
       "tflite_model_executor_unittest.cc",
     ]
     if (build_with_internal_optimization_guide) {
