@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -107,18 +108,21 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
         kHttpSiteForCookies(net::SiteForCookies::FromUrl(kHttpSite)),
         kHttpsSiteForCookies(net::SiteForCookies::FromUrl(kHttpsSite)),
         kAllHttpsSitesPattern(ContentSettingsPattern::FromString("https://*")) {
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+    enabled_features.push_back(
+        {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
 #if BUILDFLAG(IS_IOS)
-    enabled_features.push_back(kImprovedCookieControls);
+    enabled_features.push_back({kImprovedCookieControls, {}});
 #else
     if (IsStorageAccessGrantEligible()) {
-      enabled_features.push_back(blink::features::kStorageAccessAPI);
+      enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
     } else {
       disabled_features.push_back(blink::features::kStorageAccessAPI);
     }
 #endif
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   ~CookieSettingsTest() override { settings_map_->ShutdownOnUIThread(); }
@@ -279,7 +283,7 @@ TEST(CookieSettings, TestDefaultStorageAccessSetting) {
 }
 #endif
 
-TEST_P(CookieSettingsTest, UserBypass) {
+TEST_P(CookieSettingsTest, UserBypassPermanentExceptions) {
   // Bypass shouldn't be enabled.
   EXPECT_FALSE(
       cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
@@ -295,14 +299,9 @@ TEST_P(CookieSettingsTest, UserBypass) {
   EXPECT_FALSE(
       cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
 
-  FastForwardTime(cookie_settings_->kUserBypassEntriesTTL + base::Seconds(1));
-
-  // Passing the expiry of the user bypass entries should disable user bypass
-  // for |kFirstPartySite| leaving non-bypassed site(s) unaffected.
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+  base::TimeDelta expiration =
+      content_settings::features::kUserBypassUIExceptionExpiration.Get();
+  ASSERT_TRUE(expiration.is_zero());
 }
 
 TEST_P(CookieSettingsTest, TestAllowlistedScheme) {
@@ -561,6 +560,48 @@ TEST_P(CookieSettingsTestSandboxV4Enabled, ThirdPartyExceptionSessionOnly) {
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kBlockedSite));
 }
 #endif
+
+class CookieSettingsTestUserBypass : public CookieSettingsTest {
+ public:
+  CookieSettingsTestUserBypass() {
+    // Verify that cookie settings works correct with temporary user bypass
+    // exceptions.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        content_settings::features::kUserBypassUI, {{"expiration", "90d"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
+  // Bypass shouldn't be enabled.
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+
+  cookie_settings_->SetCookieSettingForUserBypass(kFirstPartySite);
+
+  // Bypass should only be enabled for |kFirstPartySite| with non-bypassed
+  // site(s) unaffected.
+  EXPECT_TRUE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+
+  base::TimeDelta expiration =
+      content_settings::features::kUserBypassUIExceptionExpiration.Get();
+  ASSERT_FALSE(expiration.is_zero());
+
+  FastForwardTime(expiration + base::Seconds(1));
+  // Passing the expiry of the user bypass entries should disable user bypass
+  // for |kFirstPartySite| leaving non-bypassed site(s) unaffected.
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+}
 
 TEST_P(CookieSettingsTest, KeepBlocked) {
   // Keep blocked cookies.
@@ -1218,6 +1259,25 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 #endif
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    CookieSettingsTestUserBypass,
+    testing::ValuesIn<TestCase>({
+      {"disable_all", false, false, false},
+          {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
+          {"disable_SAA_enable_TopLevel", false, true, false},
+          {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
+#if !BUILDFLAG(IS_IOS)
+          {"enable_SAA_disable_TopLevel", true, false, false},
+          {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
+          {"enable_SAA_enable_TopLevel", true, true, false},
+          {"enable_all", true, true, true},
+#endif
+    }),
+    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 }  // namespace
 
 }  // namespace content_settings

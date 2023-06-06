@@ -57,5 +57,8 @@ const base::FeatureParam<base::TimeDelta>
 
 BASE_FEATURE(kUserBypassUI, "UserBypassUI", base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kUserBypassUIExceptionExpiration{
+    &kUserBypassUI, "expiration", base::Days(90)};
+
 }  // namespace features
 }  // namespace content_settings

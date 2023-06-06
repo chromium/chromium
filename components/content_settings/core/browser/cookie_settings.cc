@@ -7,7 +7,9 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -15,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -89,7 +92,10 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
 
 void CookieSettings::SetCookieSettingForUserBypass(
     const GURL& first_party_url) {
-  base::Time expiry_time = GetConstraintExpiration(kUserBypassEntriesTTL);
+  base::TimeDelta expiration =
+      content_settings::features::kUserBypassUIExceptionExpiration.Get();
+  base::Time expiry_time =
+      expiration.is_zero() ? base::Time() : GetConstraintExpiration(expiration);
   ContentSettingConstraints constraints = {expiry_time, SessionModel::Durable};
 
   host_content_settings_map_->SetContentSettingCustomScope(
