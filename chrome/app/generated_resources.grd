@@ -8211,43 +8211,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </if>
       </if>
 
-      <!--iOS password promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS promo bubble letting users know their password is saved.">
-              Your Password Is Saved
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use Your Passwords on Your iOS Devices
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON" desc="In Title Case: The text inside the button inviting the user to get started.">
-              Get Started
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS promo bubble letting users know their password is saved.">
-              Your password is saved
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use your passwords on your iOS devices
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON" desc="The text inside the button inviting the user to get started.">
-              Get started
-            </message>
-          </if>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
-            You can access it on Google Password Manager.
-          </message>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_GENERIC" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: download Chrome for iOS and sync their account.">
-            To use your saved passwords on your phone, download Chrome for iOS and sync your account.
-          </message>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sync their account.">
-            To use your saved passwords on your phone, follow the QR code, download Chrome for iOS and sync your account.
-          </message>
-        </if>
-      </if>
-
       <!--Accessible name/action strings-->
       <message name="IDS_ACCESSIBLE_INCOGNITO_WINDOW_TITLE_FORMAT" desc="The format for the accessible title of an Incognito window">
         <ph name="WINDOW_TITLE">$1</ph> (Incognito)

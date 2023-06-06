@@ -2548,12 +2548,6 @@ if (!is_android) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
     }
 
-    if (is_chrome_branded && !is_android) {
-      sources += [
-        "../browser/ui/views/promos/ios_promo_password_bubble_browsertest.cc",
-      ]
-    }
-
     if (build_with_tflite_lib) {
       sources += [
         "../browser/optimization_guide/prediction/prediction_manager_browsertest.cc",
