@@ -74,7 +74,8 @@ repos:
     hooks:
       - id: codespell
         # skip false positives
-        args: [--skip=package-lock.json, --skip=tests/test_screenshot.py]
+        args:
+          [--skip=package-lock.json, --skip=tests/screenshot/test_screenshot.py]
   - repo: local
     hooks:
       - id: copyright
