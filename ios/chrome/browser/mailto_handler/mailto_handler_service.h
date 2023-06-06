@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback.h"
 #import "components/keyed_service/core/keyed_service.h"
 
 // Service responsible for providing an handler for mailto: links.
@@ -30,7 +31,14 @@ class MailtoHandlerService : public KeyedService {
 
   // Handles the specified mailto: URL. Should fall back on the built-in
   // URL handling in case of error.
-  virtual void HandleMailtoURL(NSURL* url) = 0;
+  // TODO(crbug.com/1443722): Make pure once all subclasses provide their
+  // implementation.
+  virtual void HandleMailtoURL(NSURL* url, base::OnceClosure completion);
+
+  // Same as `HandleMailtoURL(url, completion)` without completion.
+  // TODO(crbug.com/1443722): Remove once `HandleMailtoURL(url, completion)` is
+  // used everywhere.
+  virtual void HandleMailtoURL(NSURL* url);
 };
 
 #endif  // IOS_CHROME_BROWSER_MAILTO_HANDLER_MAILTO_HANDLER_SERVICE_H_

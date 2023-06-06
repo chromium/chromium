@@ -11,10 +11,10 @@ source_set("mailto_handler") {
     "mailto_handler_service.mm",
   ]
   deps = [
-    "//base",
     "//components/keyed_service/core",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
+  public_deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }
 

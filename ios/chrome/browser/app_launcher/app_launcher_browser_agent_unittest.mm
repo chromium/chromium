@@ -148,7 +148,7 @@ TEST_F(AppLauncherBrowserAgentTest, MailToUrlLaunchesApp) {
   // the application will open the URL.
   OCMExpect([application_ openURL:net::NSURLWithGURL(kMailToUrl)
                           options:@{}
-                completionHandler:nil]);
+                completionHandler:[OCMArg isNotNil]]);
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kMailToUrl, kSourcePageUrl, /*link_transition=*/true);
 

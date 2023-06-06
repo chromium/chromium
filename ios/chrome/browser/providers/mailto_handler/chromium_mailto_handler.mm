@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_helpers.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -21,7 +24,10 @@ class ChromiumMailtoHandlerService final : public MailtoHandlerService {
   NSString* SettingsTitle() const final;
   UIViewController* CreateSettingsController() final;
   void DismissAllMailtoHandlerInterfaces() final;
+  // TODO(crbug.com/1443722): Remove once `HandleMailtoURL(url, completion)` is
+  // used everywhere.
   void HandleMailtoURL(NSURL* url) final;
+  void HandleMailtoURL(NSURL* url, base::OnceClosure completion) final;
 };
 
 NSString* ChromiumMailtoHandlerService::SettingsTitle() const {
@@ -37,9 +43,22 @@ void ChromiumMailtoHandlerService::DismissAllMailtoHandlerInterfaces() {
 }
 
 void ChromiumMailtoHandlerService::HandleMailtoURL(NSURL* url) {
+  // TODO(crbug.com/1443722): Remove once `HandleMailtoURL(url, completion)` is
+  // used everywhere.
+  HandleMailtoURL(url, base::NullCallback());
+}
+
+void ChromiumMailtoHandlerService::HandleMailtoURL(
+    NSURL* url,
+    base::OnceClosure completion) {
+  __block base::OnceClosure block_completion = std::move(completion);
   [[UIApplication sharedApplication] openURL:url
-                                     options:@{}
-                           completionHandler:nil];
+      options:@{}
+      completionHandler:^(BOOL success) {
+        if (block_completion) {
+          std::move(block_completion).Run();
+        }
+      }];
 }
 
 }  // namespace

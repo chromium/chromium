@@ -6,6 +6,8 @@ source_set("mailto_handler") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_mailto_handler.mm" ]
   deps = [
+    "//base",
+    "//ios/chrome/browser/mailto_handler",
     "//ios/public/provider/chrome/browser/mailto_handler:mailto_handler_api",
   ]
 }

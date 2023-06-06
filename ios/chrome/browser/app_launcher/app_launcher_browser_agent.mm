@@ -111,10 +111,7 @@ void AppLauncherBrowserAgent::TabHelperDelegate::LaunchAppForTabHelper(
   // Uses a Mailto Handler to open the appropriate app.
   if (url.SchemeIs(url::kMailToScheme)) {
     MailtoHandlerServiceFactory::GetForBrowserState(browser_->GetBrowserState())
-        ->HandleMailtoURL(net::NSURLWithGURL(url));
-    // TODO(crbug.com/1443722): Call the completion asynchronously through
-    // `HandleMailtoURL()`.
-    std::move(completion).Run();
+        ->HandleMailtoURL(net::NSURLWithGURL(url), std::move(completion));
     return;
   }
 
