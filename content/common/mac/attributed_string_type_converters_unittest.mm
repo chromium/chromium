@@ -8,17 +8,22 @@
 
 #include <memory>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 class AttributedStringConverterTest : public testing::Test {
  public:
   NSMutableAttributedString* AttributedString() {
     NSString* str = @"The quick brown fox jumped over the lazy dog.";
-    return [[[NSMutableAttributedString alloc] initWithString:str] autorelease];
+    return [[NSMutableAttributedString alloc] initWithString:str];
   }
 
   NSDictionary* FontAttributeDictionary(NSString* name, CGFloat size) {
@@ -28,8 +33,9 @@ class AttributedStringConverterTest : public testing::Test {
 
   NSAttributedString* ConvertAndRestore(NSAttributedString* str) {
     ui::mojom::AttributedStringPtr attributed_str =
-        ui::mojom::AttributedString::From(base::mac::NSToCFCast(str));
-    return base::mac::CFToNSCast(attributed_str.To<CFAttributedStringRef>());
+        ui::mojom::AttributedString::From(base::apple::NSToCFPtrCast(str));
+    return base::apple::CFToNSPtrCast(
+        attributed_str.To<CFAttributedStringRef>());
   }
 };
 
@@ -123,7 +129,7 @@ TEST_F(AttributedStringConverterTest, OutOfRange) {
       attributed_string.To<CFAttributedStringRef>();
   EXPECT_TRUE(cf_attributed_string);
   NSAttributedString* ns_attributed_string =
-      base::mac::CFToNSCast(cf_attributed_string);
+      base::apple::CFToNSPtrCast(cf_attributed_string);
 
   NSRange range;
   NSDictionary* attrs = [ns_attributed_string attributesAtIndex:0
@@ -150,7 +156,7 @@ TEST_F(AttributedStringConverterTest, SystemFontSubstitution) {
       attributed_string.To<CFAttributedStringRef>();
   EXPECT_TRUE(cf_attributed_string);
   NSAttributedString* ns_attributed_string =
-      base::mac::CFToNSCast(cf_attributed_string);
+      base::apple::CFToNSPtrCast(cf_attributed_string);
 
   NSRange range;
   NSDictionary* attrs = [ns_attributed_string attributesAtIndex:0

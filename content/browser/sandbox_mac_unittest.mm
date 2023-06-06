@@ -41,6 +41,10 @@
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 namespace {
 
@@ -83,7 +87,7 @@ class SandboxMacTest : public base::MultiProcessTest {
     ASSERT_GE(pipe_, 0);
 
     base::LaunchOptions options;
-    options.fds_to_remap.push_back(std::make_pair(pipe_, pipe_));
+    options.fds_to_remap.emplace_back(pipe_, pipe_);
 
     base::Process process = SpawnChildWithOptions(procname, options);
     ASSERT_TRUE(process.IsValid());
@@ -172,7 +176,7 @@ MULTIPROCESS_TEST_MAIN(ClipboardAccessProcess) {
   CHECK(!pasteboard_name.empty());
   CHECK([NSPasteboard pasteboardWithName:base::SysUTF8ToNSString(
                                              pasteboard_name)] == nil);
-  CHECK([NSPasteboard generalPasteboard] == nil);
+  CHECK(NSPasteboard.generalPasteboard == nil);
 
   return 0;
 }
@@ -180,9 +184,9 @@ MULTIPROCESS_TEST_MAIN(ClipboardAccessProcess) {
 TEST_F(SandboxMacTest, ClipboardAccess) {
   scoped_refptr<ui::UniquePasteboard> pb = new ui::UniquePasteboard;
   ASSERT_TRUE(pb->get());
-  EXPECT_EQ([[pb->get() types] count], 0U);
+  EXPECT_EQ(pb->get().types.count, 0U);
 
-  extra_data_ = base::SysNSStringToUTF8([pb->get() name]);
+  extra_data_ = base::SysNSStringToUTF8(pb->get().name);
 
   ExecuteInAllSandboxTypes("ClipboardAccessProcess",
                            base::BindRepeating(
@@ -206,6 +210,10 @@ TEST_F(SandboxMacTest, SSLInitTest) {
   ExecuteInAllSandboxTypes("SSLProcess", base::RepeatingClosure());
 }
 
+// This test checks to make sure that `__builtin_available()` (and therefore the
+// Objective-C equivalent `@available()`) work within a sandbox. When revving
+// the macOS releases supported by Chromium, bump this up. This value
+// specifically matches the oldest macOS release supported by Chromium.
 MULTIPROCESS_TEST_MAIN(BuiltinAvailable) {
   CheckCreateSeatbeltServer();
 

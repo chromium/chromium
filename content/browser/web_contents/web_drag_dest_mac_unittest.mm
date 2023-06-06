@@ -8,7 +8,6 @@
 
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/common/drop_data.h"
@@ -17,6 +16,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/test/cocoa_helper.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 class WebDragDestTest : public content::RenderViewHostImplTestHarness {
  public:

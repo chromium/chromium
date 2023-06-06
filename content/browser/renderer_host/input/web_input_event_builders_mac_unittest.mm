@@ -19,6 +19,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using blink::WebKeyboardEvent;
 using blink::WebInputEvent;
 using content::WebKeyboardEventBuilder;
@@ -191,13 +195,15 @@ TEST(WebInputEventBuilderMacTest, NumPadMapping) {
        ui::DomKey::FromCharacter('9')},
   };
 
-  for (size_t i = 0; i < std::size(table); ++i) {
-    NSEvent* mac_event = BuildFakeKeyEvent(
-        table[i].mac_key_code, table[i].character, 0, NSEventTypeKeyDown);
+  for (const auto& mapping_entry : table) {
+    NSEvent* mac_event =
+        BuildFakeKeyEvent(mapping_entry.mac_key_code, mapping_entry.character,
+                          0, NSEventTypeKeyDown);
     WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
-    EXPECT_EQ(table[i].windows_key_code, web_event.windows_key_code);
-    EXPECT_EQ(table[i].dom_code, static_cast<ui::DomCode>(web_event.dom_code));
-    EXPECT_EQ(table[i].dom_key, web_event.dom_key);
+    EXPECT_EQ(mapping_entry.windows_key_code, web_event.windows_key_code);
+    EXPECT_EQ(mapping_entry.dom_code,
+              static_cast<ui::DomCode>(web_event.dom_code));
+    EXPECT_EQ(mapping_entry.dom_key, web_event.dom_key);
   }
 }
 
@@ -236,8 +242,7 @@ TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
 // Test that individual modifier keys are still reported correctly, even if the
 // undocumented left- or right-hand flags are not set.
 TEST(WebInputEventBuilderMacTest, MissingUndocumentedModifierFlags) {
-  for (size_t i = 0; i < std::size(kModifierKeys); ++i) {
-    const ModifierKey& key = kModifierKeys[i];
+  for (const auto& key : kModifierKeys) {
     NSEvent* mac_event = BuildFakeKeyEvent(
         key.mac_key_code, 0, key.non_specific_mask, NSEventTypeFlagsChanged);
     WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
@@ -660,22 +665,22 @@ TEST(WebInputEventBuilderMacTest, ScrollWheelMatchesUIEvent) {
   NSPoint location = NSMakePoint(11, 22);
 
   // WebMouseWheelEventBuilder requires a non-nil view to map coordinates. So
-  // create a dummy window, but don't show it. It will be released when closed.
+  // create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
 
   NSEvent* mac_event = cocoa_test_event_utils::TestScrollEvent(
       location, window, delta_x, delta_y, precise, NSEventPhaseNone,
       NSEventPhaseNone);
-  EXPECT_EQ(delta_x, [mac_event deltaX]);
-  EXPECT_EQ(delta_y, [mac_event deltaY]);
+  EXPECT_EQ(delta_x, mac_event.deltaX);
+  EXPECT_EQ(delta_y, mac_event.deltaY);
 
   blink::WebMouseWheelEvent web_event =
-      content::WebMouseWheelEventBuilder::Build(mac_event,
-                                                [window contentView]);
+      content::WebMouseWheelEventBuilder::Build(mac_event, window.contentView);
   ui::MouseWheelEvent ui_event((base::apple::OwnedNSEvent(mac_event)));
 
   EXPECT_EQ(delta_x * ui::kScrollbarPixelsPerCocoaTick, web_event.delta_x);
@@ -690,7 +695,6 @@ TEST(WebInputEventBuilderMacTest, ScrollWheelMatchesUIEvent) {
   // Both ui:: and blink:: events use an origin at the top-left.
   EXPECT_EQ(100 - 22, web_event.PositionInWidget().y());
   EXPECT_EQ(web_event.PositionInWidget().y(), ui_event.y());
-  [window close];
 }
 
 // Test if the value of twist and rotation_angle are set correctly when the
@@ -699,14 +703,15 @@ TEST(WebInputEventBuilderMacTest, TouchEventsWithPointerTypePenRotationLess90) {
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 60.0);
-  // Create a dummy window, but don't show it. It will be released when closed.
+  // Create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, [window contentView]);
+      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(60, touch_event.touches[0].twist);
   EXPECT_EQ(60, touch_event.touches[0].rotation_angle);
 }
@@ -718,12 +723,13 @@ TEST(WebInputEventBuilderMacTest,
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 160.0);
-  // Create a dummy window, but don't show it. It will be released when closed.
+  // Create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
       content::WebTouchEventBuilder::Build(mac_event, [window contentView]);
   EXPECT_EQ(160, touch_event.touches[0].twist);
@@ -737,14 +743,15 @@ TEST(WebInputEventBuilderMacTest,
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 260.0);
-  // Create a dummy window, but don't show it. It will be released when closed.
+  // Create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, [window contentView]);
+      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(260, touch_event.touches[0].twist);
   EXPECT_EQ(80, touch_event.touches[0].rotation_angle);
 }
@@ -756,33 +763,35 @@ TEST(WebInputEventBuilderMacTest,
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 390.0);
-  // Create a dummy window, but don't show it. It will be released when closed.
+  // Create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, [window contentView]);
+      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(30, touch_event.touches[0].twist);
   EXPECT_EQ(30, touch_event.touches[0].rotation_angle);
 }
 
 // Test if all the values of a WebTouchEvent are set correctly.
 TEST(WebInputEventBuilderMacTest, BuildWebTouchEvents) {
-  NSEvent* mac_event = BuildFakeMouseEvent(
-      kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
-      kCGEventMouseSubtypeTabletPoint, /* rotation */ 60.0,
-      /* pressure */ 0.3, /* tilt_x */ 0.5, /* tilt_y */ 0.6,
-      /* tangential_pressure */ 0.7);
-  // Create a dummy window, but don't show it. It will be released when closed.
+  NSEvent* mac_event =
+      BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
+                          kCGEventMouseSubtypeTabletPoint, /*rotation=*/60.0,
+                          /*pressure=*/0.3, /*tilt_x=*/0.5, /*tilt_y=*/0.6,
+                          /*tangential_pressure=*/0.7);
+  // Create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, [window contentView]);
+      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchStart, touch_event.GetType());
   EXPECT_FALSE(touch_event.hovering);
   EXPECT_EQ(1U, touch_event.touches_length);
@@ -803,19 +812,20 @@ TEST(WebInputEventBuilderMacTest, BuildWebTouchEvents) {
 
 // Test if the mouse back button values of a WebMouseEvent are set correctly.
 TEST(WebInputEventBuilderMacTest, BuildWebMouseEventsWithBackButton) {
-  NSEvent* mac_event = BuildFakeMouseEvent(
-      kCGEventOtherMouseDown, {6, 9}, kCGMouseButtonLeft,
-      kCGEventMouseSubtypeDefault, /* rotation */ 0.0,
-      /* pressure */ 0.0, /* tilt_x */ 0.0, /* tilt_y */ 0.0,
-      /* tangential_pressure */ 0.0, /* button_number */ 3);
-  // Create a dummy window, but don't show it. It will be released when closed.
+  NSEvent* mac_event =
+      BuildFakeMouseEvent(kCGEventOtherMouseDown, {6, 9}, kCGMouseButtonLeft,
+                          kCGEventMouseSubtypeDefault, /*rotation=*/0.0,
+                          /*pressure=*/0.0, /*tilt_x=*/0.0, /*tilt_y=*/0.0,
+                          /*tangential_pressure=*/0.0, /*button_number=*/3);
+  // Create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
   blink::WebMouseEvent mouse_event =
-      content::WebMouseEventBuilder::Build(mac_event, [window contentView]);
+      content::WebMouseEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, mouse_event.GetType());
   EXPECT_EQ(gfx::PointF(6, 9), mouse_event.PositionInScreen());
   EXPECT_EQ(blink::WebPointerProperties::PointerType::kMouse,
@@ -825,19 +835,20 @@ TEST(WebInputEventBuilderMacTest, BuildWebMouseEventsWithBackButton) {
 
 // Test if the mouse forward button values of a WebMouseEvent are set correctly.
 TEST(WebInputEventBuilderMacTest, BuildWebMouseEventsWithForwardButton) {
-  NSEvent* mac_event = BuildFakeMouseEvent(
-      kCGEventOtherMouseDown, {6, 9}, kCGMouseButtonLeft,
-      kCGEventMouseSubtypeDefault, /* rotation */ 0.0,
-      /* pressure */ 0.0, /* tilt_x */ 0.0, /* tilt_y */ 0.0,
-      /* tangential_pressure */ 0.0, /* button_number */ 4);
-  // Create a dummy window, but don't show it. It will be released when closed.
+  NSEvent* mac_event =
+      BuildFakeMouseEvent(kCGEventOtherMouseDown, {6, 9}, kCGMouseButtonLeft,
+                          kCGEventMouseSubtypeDefault, /*rotation=*/0.0,
+                          /*pressure=*/0.0, /*tilt_x=*/0.0, /*tilt_y=*/0.0,
+                          /*tangential_pressure=*/0.0, /*button_number=*/4);
+  // Create a dummy window, but don't show it.
   NSWindow* window =
       [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
                                   styleMask:NSWindowStyleMaskBorderless
                                     backing:NSBackingStoreBuffered
                                       defer:NO];
+  window.releasedWhenClosed = NO;
   blink::WebMouseEvent mouse_event =
-      content::WebMouseEventBuilder::Build(mac_event, [window contentView]);
+      content::WebMouseEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, mouse_event.GetType());
   EXPECT_EQ(gfx::PointF(6, 9), mouse_event.PositionInScreen());
   EXPECT_EQ(blink::WebPointerProperties::PointerType::kMouse,

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
-
 #import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 
@@ -13,12 +11,17 @@
 #include "base/path_service.h"
 #import "content/browser/cocoa/system_hotkey_map.h"
 #include "content/public/common/content_paths.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace content {
 
 class SystemHotkeyMapTest : public ::testing::Test {
  protected:
-  SystemHotkeyMapTest() {}
+  SystemHotkeyMapTest() = default;
 
   NSDictionary* DictionaryFromTestFile(const char* file) {
     base::FilePath test_data_dir;
@@ -28,27 +31,23 @@ class SystemHotkeyMapTest : public ::testing::Test {
 
     base::FilePath test_path = test_data_dir.AppendASCII(file);
     return [NSDictionary
-        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(test_path)];
+        dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(test_path)
+                              error:nil];
   }
 
   void AddEntryToDictionary(BOOL enabled,
                             unsigned short key_code,
                             NSUInteger modifiers) {
-    NSMutableArray* parameters = [NSMutableArray array];
-    // The first parameter is unused.
-    [parameters addObject:[NSNumber numberWithInt:65535]];
-    [parameters addObject:[NSNumber numberWithUnsignedShort:key_code]];
-    [parameters addObject:[NSNumber numberWithUnsignedInteger:modifiers]];
-
-    NSMutableDictionary* value_dictionary = [NSMutableDictionary dictionary];
-    [value_dictionary setObject:parameters forKey:@"parameters"];
-    [value_dictionary setObject:@"standard" forKey:@"type"];
-
-    NSMutableDictionary* outer_dictionary = [NSMutableDictionary dictionary];
-    [outer_dictionary setObject:value_dictionary forKey:@"value"];
-
-    NSNumber* enabled_number = [NSNumber numberWithBool:enabled];
-    [outer_dictionary setObject:enabled_number forKey:@"enabled"];
+    NSDictionary* outer_dictionary = @{
+      @"value" : @{
+        @"parameters" : @[
+          // The first parameter is unused.
+          @65535, @(key_code), @(modifiers)
+        ],
+        @"type" : @"standard"
+      },
+      @"enabled" : @(enabled)
+    };
 
     NSString* key = [NSString stringWithFormat:@"%d", count_];
     [system_hotkey_inner_dictionary_ setObject:outer_dictionary forKey:key];
@@ -56,25 +55,26 @@ class SystemHotkeyMapTest : public ::testing::Test {
   }
 
   void SetUp() override {
-    system_hotkey_dictionary_.reset([[NSMutableDictionary alloc] init]);
-    system_hotkey_inner_dictionary_.reset([[NSMutableDictionary alloc] init]);
+    system_hotkey_dictionary_ = [NSMutableDictionary dictionary];
+    system_hotkey_inner_dictionary_ = [NSMutableDictionary dictionary];
     [system_hotkey_dictionary_ setObject:system_hotkey_inner_dictionary_
                                   forKey:@"AppleSymbolicHotKeys"];
     count_ = 100;
   }
 
   void TearDown() override {
-    system_hotkey_dictionary_.reset();
-    system_hotkey_inner_dictionary_.reset();
+    system_hotkey_dictionary_ = nil;
+    system_hotkey_inner_dictionary_ = nil;
   }
 
   // A constructed dictionary that matches the format of the one that would be
   // parsed from the system hotkeys plist.
-  base::scoped_nsobject<NSMutableDictionary> system_hotkey_dictionary_;
+  NSMutableDictionary* __strong system_hotkey_dictionary_;
 
  private:
   // A reference to the mutable dictionary to which new entries are added.
-  base::scoped_nsobject<NSMutableDictionary> system_hotkey_inner_dictionary_;
+  NSMutableDictionary* __strong system_hotkey_inner_dictionary_;
+
   // Each entry in the system_hotkey_inner_dictionary_ needs to have a unique
   // key. This count is used to generate those unique keys.
   int count_;
@@ -146,9 +146,8 @@ TEST_F(SystemHotkeyMapTest, ParseMouse) {
 
   // Command + Alt + = is an accessibility shortcut. Its entry in the plist is
   // incomplete.
-  // TODO(erikchen): OSX uses the default bindings, so this hotkey should still
-  // be reserved.
-  // http://crbug.com/383558
+  // TODO(erikchen): macOS uses the default bindings, so this hotkey should
+  // still be reserved. http://crbug.com/383558
   key_code = kVK_ANSI_Equal;
   modifiers = NSEventModifierFlagCommand | NSEventModifierFlagOption;
   EXPECT_FALSE(map.IsHotkeyReserved(key_code, modifiers));
@@ -168,7 +167,7 @@ TEST_F(SystemHotkeyMapTest, ParseCustomEntries) {
 
   SystemHotkeyMap map;
 
-  bool result = map.ParseDictionary(system_hotkey_dictionary_.get());
+  bool result = map.ParseDictionary(system_hotkey_dictionary_);
   EXPECT_TRUE(result);
 
   // Entries without control, command, or alternate key mask should not be

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-#import "base/task/single_thread_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 
 #import <Cocoa/Cocoa.h>
@@ -13,6 +9,8 @@
 #include <stdint.h>
 
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -32,6 +30,10 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/layout.h"
 #include "ui/display/screen.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using content::RenderWidgetHostViewMac;
 
@@ -85,10 +87,9 @@ bool CheckObjectRespondsToEditCommands(NSArray* edit_commands, id test_obj) {
 class RenderWidgetHostDelegateEditCommandCounter
     : public RenderWidgetHostDelegate {
  public:
-  RenderWidgetHostDelegateEditCommandCounter()
-      : edit_command_message_count_(0) {}
-  ~RenderWidgetHostDelegateEditCommandCounter() override {}
-  unsigned int edit_command_message_count_;
+  RenderWidgetHostDelegateEditCommandCounter() = default;
+  ~RenderWidgetHostDelegateEditCommandCounter() override = default;
+  unsigned int edit_command_message_count_ = 0;
 
  private:
   void ExecuteEditCommand(
@@ -162,7 +163,7 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     int32_t routing_id = process_host->GetNextRoutingID();
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
         RenderWidgetHostImpl::Create(
-            /*frmae_tree=*/nullptr, &delegate,
+            /*frame_tree=*/nullptr, &delegate,
             site_instance_group->GetSafeRef(), routing_id,
             /*hidden=*/false, /*renderer_initiated_creation=*/false,
             std::make_unique<FrameTokenMessageQueue>());
@@ -173,27 +174,33 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     // Owned by its |GetInProcessNSView()|, i.e. |rwhv_cocoa|.
     RenderWidgetHostViewMac* rwhv_mac =
         new RenderWidgetHostViewMac(render_widget.get());
-    base::scoped_nsobject<RenderWidgetHostViewCocoa> rwhv_cocoa(
-        [rwhv_mac->GetInProcessNSView() retain]);
+    // ARC conversion note: the previous version of this code held this view
+    // strongly throughout with a scoped_nsobject. The precise lifetime
+    // attribute replicates that but it's not clear if it's necessary.
+    [[maybe_unused]] RenderWidgetHostViewCocoa* __attribute__((
+        objc_precise_lifetime)) rwhv_cocoa = rwhv_mac->GetInProcessNSView();
 
     NSArray* edit_command_strings = RenderWidgetHostViewMacEditCommandHelper::
         GetEditSelectorNamesForTesting();
     RenderWidgetHostNSViewHostOwner* rwhwvm_owner =
-        [[[RenderWidgetHostNSViewHostOwner alloc]
-            initWithRenderWidgetHostViewMac:rwhv_mac] autorelease];
+        [[RenderWidgetHostNSViewHostOwner alloc]
+            initWithRenderWidgetHostViewMac:rwhv_mac];
 
     RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
         [rwhwvm_owner class]);
 
     for (NSString* edit_command_name in edit_command_strings) {
       NSString* sel_str = [edit_command_name stringByAppendingString:@":"];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
       [rwhwvm_owner performSelector:NSSelectorFromString(sel_str)
                          withObject:nil];
+#pragma clang diagnostic pop
     }
 
-    size_t num_edit_commands = [edit_command_strings count];
+    size_t num_edit_commands = edit_command_strings.count;
     EXPECT_EQ(delegate.edit_command_message_count_, num_edit_commands);
-    rwhv_cocoa.reset();
+    rwhv_cocoa = nil;
   }
   process_host->Cleanup();
   ui::WindowResizeHelperMac::Get()->ShutdownForTests();
@@ -205,12 +212,11 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperTest,
   RenderWidgetHostViewMacEditCommandHelper helper;
   NSArray* edit_command_strings = RenderWidgetHostViewMacEditCommandHelper::
       GetEditSelectorNamesForTesting();
-  ASSERT_GT([edit_command_strings count], 0U);
+  ASSERT_GT(edit_command_strings.count, 0U);
 
   // Create a class instance and add methods to the class.
   RenderWidgetHostViewMacEditCommandHelperTestClass* test_obj =
-      [[[RenderWidgetHostViewMacEditCommandHelperTestClass alloc] init]
-          autorelease];
+      [[RenderWidgetHostViewMacEditCommandHelperTestClass alloc] init];
 
   // Check that edit commands aren't already attached to the object.
   ASSERT_FALSE(CheckObjectRespondsToEditCommands(edit_command_strings,
@@ -236,7 +242,7 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperTest,
 TEST_F(RenderWidgetHostViewMacEditCommandHelperTest, TestMenuItemEnabling) {
   RenderWidgetHostViewMacEditCommandHelper helper;
   RenderWidgetHostNSViewHostOwner* rwhvm_owner =
-      [[[RenderWidgetHostNSViewHostOwner alloc] init] autorelease];
+      [[RenderWidgetHostNSViewHostOwner alloc] init];
 
   // The select all menu should always be enabled.
   SEL select_all = NSSelectorFromString(@"selectAll:");

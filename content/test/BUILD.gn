@@ -2719,6 +2719,10 @@ test("content_unittests") {
     "test_render_frame_host_unittest.cc",
   ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "../browser/accessibility/browser_accessibility_mac_unittest.mm",

@@ -9,6 +9,10 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 using WebDragSourceMacTest = RenderViewHostTestHarness;
@@ -17,10 +21,9 @@ TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
   DropData drop_data;
   drop_data.url = GURL("javascript:%");
 
-  base::scoped_nsobject<WebDragSource> source([[WebDragSource alloc]
-      initWithHost:nullptr
-          dropData:drop_data
-      isPrivileged:NO]);
+  WebDragSource* source = [[WebDragSource alloc] initWithHost:nullptr
+                                                     dropData:drop_data
+                                                 isPrivileged:NO];
 
   // Test that asking for the data of an invalidly-escaped URL doesn't throw any
   // exceptions. http://crbug.com/128371
