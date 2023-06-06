@@ -1086,6 +1086,12 @@
     },
 
     'chromium_gtests_for_win_and_linux_only': {
+      # pthreadpool is only built on Windows and Linux platforms, that is
+      # determined by `build_tflite_with_xnnpack` defined in
+      # third_party/tflite/features.gni.
+      'pthreadpool_unittests': {
+        'ci_only': True,
+      },
     },
 
     'chromium_ios_scripts': {
