@@ -1253,8 +1253,7 @@ void AppMenuModel::Build() {
   if (features::IsChromeRefresh2023()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (companion::IsCompanionFeatureEnabled()) {
-      // TODO(josephjoopark): Update CSC string with StringId when finalized.
-      AddItem(IDC_SHOW_SEARCH_COMPANION, u"Chrome Search Companion");
+      AddItemWithStringId(IDC_SHOW_SEARCH_COMPANION, IDS_SHOW_SEARCH_COMPANION);
     }
 #endif
     AddItemWithStringId(IDC_TRANSLATE_PAGE, IDS_SHOW_TRANSLATE);
