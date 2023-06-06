@@ -13749,6 +13749,13 @@ be describing additional metrics about the same event.
       The result of a page's request to open a video capture device (e.g.,
       webcam).
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
