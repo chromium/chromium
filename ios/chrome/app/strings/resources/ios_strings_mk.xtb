@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
 <translation id="2242467532204595597">Користете Chrome секогаш кога ќе допрете линкови во пораки, документи и други апликации.</translation>
-<translation id="22508856139286506">Отфрлени предупредувања (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
 <translation id="2252674110805316998">Пребарување на интернет</translation>
 <translation id="2256933947031277845">Вашата организација ви дозволува да се најавите само со одредени сметки.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Промената не можеше да се зачува.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Автоматско пополнување лозинки</translation>
+<translation id="3265534588625245297">Управувајте со сајтовите што ги следите</translation>
 <translation id="3268451620468152448">Отворени картички</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3277021493514034324">Адресата на сајтот е копирана</translation>
@@ -1072,6 +1072,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7887198238286927132">За да ја заштити вашата приватност, Chrome нема автоматски да го пополнува ова поле.</translation>
 <translation id="7911190106180361398">Вашата организација не дозволува да синхронизирате сѐ.</translation>
 <translation id="7920949005883349320">Приватност и безбедност</translation>
+<translation id="792357691529995513">Не се најдени проблеми</translation>
 <translation id="7930998711684428189">Ве предупредува ако лозинките се откриени при упад во податоците.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извезување лозинки…</translation>

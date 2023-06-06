@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Клавішу "<ph name="KEY_NAME" />" не натиснено</translation>
 <translation id="1435763214710588005">Щомісяця дані про використання трафіку скидатимуться у вибраний день</translation>
 <translation id="1442433966118452622">Джерело зображення</translation>
+<translation id="1449035143498573192">Відкрити в Пошуку Google</translation>
 <translation id="1451536289672181509">Це клавіатура.</translation>
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1468664791493211953">Пропозиції</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Методи введення</translation>
 <translation id="7955587717700691983">Клавіатура з Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7971535376154084247">Загальні налаштування</translation>
 <translation id="7977800524392185497">Щоб приєднатися до мережі <ph name="NETWORK_NAME" />, перейдіть у налаштування</translation>
 <translation id="7978412674231730200">Секретний ключ</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Назва локального постачальника</translation>
 <translation id="8475690821716466388">Мережа Wi-Fi захищена ненадійним протоколом WEP PSK</translation>
 <translation id="8476242415522716722">підсвічування клавіатури</translation>
+<translation id="8476942730579767658">Вікна й робочі столи</translation>
 <translation id="8477551185774834963">Затримка DNS трохи довша, ніж дозволено</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
 <translation id="8491311378305535241">Не вдається підключитися з додатків для Android до веб-сайтів HTTP через брандмауер</translation>

@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="2239626343334228536">Vee blaaierdata uit …</translation>
 <translation id="2242467532204595597">Gebruik Chrome enige tyd wanneer jy op skakels in boodskappe, dokumente en ander apps tik.</translation>
-<translation id="22508856139286506">Toegemaakte waarskuwings (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Kieslys → Geskiedenis</translation>
 <translation id="2252674110805316998">Websoektog</translation>
 <translation id="2256933947031277845">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld.</translation>
@@ -356,6 +355,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3245744387817103524">Jou verandering kon nie gestoor word nie.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Vul wagwoorde outomaties in</translation>
+<translation id="3265534588625245297">Bestuur die werwe wat jy volg</translation>
 <translation id="3268451620468152448">Maak oortjies oop</translation>
 <translation id="3272527697863656322">Kanselleer</translation>
 <translation id="3277021493514034324">Werfadres is gekopieer</translation>
@@ -1072,6 +1072,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7887198238286927132">Om jou privaatheid te beskerm, sal Chrome nie hierdie veld outomaties invul nie.</translation>
 <translation id="7911190106180361398">Jou organisasie laat jou nie toe om alles te sinkroniseer nie.</translation>
 <translation id="7920949005883349320">Privaatheid en sekuriteit</translation>
+<translation id="792357691529995513">Geen kwessies is gekry nie</translation>
 <translation id="7930998711684428189">Waarsku jou as wagwoorde in 'n dataskending blootgestel is.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Voer wagwoorde uit …</translation>

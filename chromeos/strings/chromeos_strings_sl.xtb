@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Tipka <ph name="KEY_NAME" /> ni bila pritisnjena.</translation>
 <translation id="1435763214710588005">Vsak mesec na izbrani dan samodejno ponastavi preneseno količino podatkov.</translation>
 <translation id="1442433966118452622">Vir slike</translation>
+<translation id="1449035143498573192">Odpri v Iskanju Google</translation>
 <translation id="1451536289672181509">Naprava je tipkovnica.</translation>
 <translation id="1459693405370120464">Vreme</translation>
 <translation id="1468664791493211953">Ponudbe</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Načini vnosa</translation>
 <translation id="7955587717700691983">Tipkovnica Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Splošni kontrolniki</translation>
 <translation id="7977800524392185497">Če se želite pridružiti omrežju <ph name="NETWORK_NAME" />, odprite nastavitve.</translation>
 <translation id="7978412674231730200">Zasebni ključ</translation>
 <translation id="7994702968232966508">Način EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Ime domačega ponudnika</translation>
 <translation id="8475690821716466388">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP PSK</translation>
 <translation id="8476242415522716722">sij pod osvetlitvijo tipkovnice</translation>
+<translation id="8476942730579767658">Okna in namizja</translation>
 <translation id="8477551185774834963">Zakasnitev DNS-ja je nekoliko nad dovoljenim pragom</translation>
 <translation id="8483248364096924578">Naslov IP</translation>
 <translation id="8491311378305535241">Iz aplikacij za Android ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>

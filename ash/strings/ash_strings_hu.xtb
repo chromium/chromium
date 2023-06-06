@@ -1345,7 +1345,6 @@ Frissen telepítve</translation>
 <translation id="6961121602502368900">A Telefon némítása funkció nem használható munkaprofillal</translation>
 <translation id="6961840794482373852">Az Alt + Felfelé nyíl billentyűparancs módosult. A Felfelé nyíl billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Felfelé nyíl.</translation>
 <translation id="696267987219125751">A keretezés ki van kapcsolva.</translation>
-<translation id="6964690557625666701">Az összes kitűzött elem bulizik</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Első lépések</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1520,6 +1519,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7780159184141939021">Képernyő elforgatása</translation>
 <translation id="7796735576426975947">Új értesítés elrejtve</translation>
 <translation id="7798302898096527229">A kikapcsoláshoz nyomja meg a Keresés vagy a Shift billentyűt.</translation>
+<translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7807067443225230855">Keresés és a Segéd</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> és <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Erős jel</translation>

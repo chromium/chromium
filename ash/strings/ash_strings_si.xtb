@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">දන්නා ජාල</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> සම්බන්ධයි.</translation>
 <translation id="1240638468526743569">යෙදුමක්</translation>
+<translation id="1242704516557658755">මෑතක දී භාවිතා කරන ලද කවුළු ලැයිස්තුවේ පසුපසට කාලක්‍රම කරන්න</translation>
 <translation id="124678866338384709">වත්මන් ටැබය වසන්න</translation>
 <translation id="1246890715821376239">සහාය නොදක්වන යෙදුම්</translation>
 <translation id="1247372569136754018">මයික්‍රෆෝනය (අභ්‍යන්තර)</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">තිරය මත යතුරු පුවරුව අබල කර ඇත</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> බල ගැන්වීම</translation>
+<translation id="1276975447697633661">ගොනුව තෝරා, <ph name="KEY" /> ඔබන්න</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">දුරකථනය තිබෙන තැන සොයා ගන්න</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> නම් වූ සුරැකි මේසයක් දැනටමත් පවතී</translation>
@@ -346,6 +348,7 @@
 <translation id="2528111225373402384">හොට්ස්පොට් සැකසීම්</translation>
 <translation id="2530896289327917474">කැරට් බ්‍රවුස් කිරීම ක්‍රියාත්මක හෝ ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2531025035050312891">උපාංගය මන්දගාමී වේ</translation>
+<translation id="2531107890083353124">පටිත්ත ඇදගෙන යන අතරේ, <ph name="KEY_ONE" /> ඔබන්න</translation>
 <translation id="254900897760075745">තෝරන ලද අන්තර්ගතය ක්ලිප්බෝඩ් වෙත පිටපත් කරන්න</translation>
 <translation id="2549711466868162843">ආලෝකය වැඩි දියුණු කරන්න</translation>
 <translation id="2549985041256363841">පටිගත කිරීම අරඹන්න</translation>
@@ -391,6 +394,7 @@
 <translation id="2750932254614666392">"මකන්න"</translation>
 <translation id="2750941250130734256">සක්‍රිය කවුළුව ඈඳීම ඉවත් කර ඇත.</translation>
 <translation id="2761723519669354964">රාක්කයෙන් උද්දීප්ත අයිතමය විවෘත කරන්න</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> සිට <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="2782591952652094792">ග්‍රහණ ප්‍රකාරයෙන් ඉවත් වන්න</translation>
 <translation id="2785499565474703580">1 උපාංගයක් සම්බන්ධ කර ඇත</translation>
@@ -424,6 +428,7 @@
 <translation id="2942350706960889382">ඈඳන ලද විශාලකය</translation>
 <translation id="2942516765047364088">රාක්ක ස්ථානය</translation>
 <translation id="2946119680249604491">සබඳතාව එක් කරන්න</translation>
+<translation id="2949420361496057765"><ph name="MODIFIER" /> ඔබා සබැඳියක් ක්ලික් කරන්න</translation>
 <translation id="295852781144570696">උපාංග ශ්‍රව්‍ය</translation>
 <translation id="2960314608273155470">ග්‍රහණ ප්‍රකාරය, පෙරනිමි වන්නේ <ph name="SOURCE" /> <ph name="TYPE" />. යතුරු පුවරු සංචාලනය සඳහා ටැබය ඔබන්න.</translation>
 <translation id="2961963223658824723">යම් දෙයක් වැරදිණි. මිනිත්තු කිහිපයකින් නැවත උත්සාහ කරන්න.</translation>
@@ -529,6 +534,7 @@
 <translation id="3410336247007142655">අඳුරු තේමා සැකසීම් පෙන්වන්න</translation>
 <translation id="3413817803639110246">තවම දැකීමට කිසිවක් නැත</translation>
 <translation id="3417835166382867856">ටැබ සොයන්න</translation>
+<translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ඔබාගෙන සිට, ඔබට විවෘත කිරීමට අවශ්‍ය කවුළුව වෙත පැමිණෙන තෙක් <ph name="KEY" /> තට්ටු කර, අනතුරුව මුදා හරින්න</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> වෙතින් විසන්ධි කරන්න</translation>
 <translation id="3430396595145920809">ආපසු යාමට දකුණින් ස්වයිප් කරන්න</translation>
 <translation id="3431517721463707585">14 වෙනි මේසය</translation>
@@ -543,6 +549,7 @@
 <translation id="346243998268439747">විශාලන මට්ටම යළි පිහිටුවන්න</translation>
 <translation id="3465223694362104965">මෙම උපාංගයට වෙනත් යතුරු පුවරුවක් සම්බන්ධ කර ඇත. ඔබ මෙය භාවිත කිරීමට පෙර ඔබ මෙම යතුරු පුවරුව විශ්වාස කරන බව තහවුරු කර ගන්න.</translation>
 <translation id="3465356146291925647">ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> අනතුරුව <ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">පාලනය-Shift-ඉඩ</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">රාක්කය ස්වයංක්‍රීයව සැඟවී ඇත</translation>
@@ -607,6 +614,7 @@
 <translation id="3677931086890821290">මෙය ස්ථාන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවිවලට සහ ChromeOS හට Wi-Fi සහ ජංගම ජාල ස්ථානය භාවිතා කිරීමට ඉඩ දෙයි.</translation>
 <translation id="3679827876008292680">කවුළුවේ අවසාන පටිත්ත වෙත යන්න</translation>
 <translation id="36813544980941320">Wi-Fi ජාල ඔබගේ දුරකථනය සහ <ph name="DEVICE_NAME" /> අතර බෙදා ගනු ඇත</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> අනතුරුව <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">වෙබ් අඩවි</translation>
 <translation id="3702809606464356667">වත්මන් මේසයෙන් කවුළු පෙන්වමින්, සියලු මේසවලින් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="3702846122927433391">නයිජීරියාවේ ජනගහනය</translation>
@@ -635,6 +643,7 @@
 <translation id="383058930331066723">බැටරි සුරැකුම් ප්‍රකාරය ක්‍රියාත්මකයි</translation>
 <translation id="383629559565718788">යතුරුපුවරු සැකසීම් පෙන්වන්න</translation>
 <translation id="384082539148746321">අච්චුව මකන්නද?</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> පසුව <ph name="KEY_ONE" /> හෝ <ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /> හෝ <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">ජාල තොරතුරු ලද නොහැක</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="385300504083504382">ආරම්භය</translation>
@@ -853,6 +862,7 @@
 <translation id="4798888871844665150">අයිතමය දැනටමත් පසුරු පුවරුවේ පිටපත් කර ඇත. බැලීමට <ph name="SHORTCUT_KEY_NAME" /> + V භාවිත කරන්න.</translation>
 <translation id="479989351350248267">සොයන්න</translation>
 <translation id="4804818685124855865">විසන්ධි කරන්න</translation>
+<translation id="4813311884204119883">පටිති තීරුවේ ඇති හිස් ප්‍රදේශයට සබැඳිය අදින්න</translation>
 <translation id="4814539958450445987">පුරන තිරය</translation>
 <translation id="481455355267255546">මීළඟට</translation>
 <translation id="4831034276697007977">ඔබට ස්වයංක්‍රීය ක්ලික් කිරීම් අක්‍රිය කළ යුතු බව ඔබට තහවුරුද?</translation>
@@ -860,6 +870,7 @@
 <translation id="485592688953820832">ක්‍රියා කිසිවක් නැත (විරාම ගන්වන්න)</translation>
 <translation id="485634149294284819">යතුරු පුවරු මෙනුව ඇතුළු කරන්න</translation>
 <translation id="485806788160414322">මාධ්‍ය වාදනය හෝ විරාම කරන්න</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" /> පසුව <ph name="KEY_ONE" /> හෝ <ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /> හෝ <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> බාගැනීමට ඔබගේ ජාල සබැඳුම පරීක්ෂා කරන්න</translation>
 <translation id="4864369630010738180">පුරමින්...</translation>
 <translation id="4864648187878336334">15 වෙනි මේසය</translation>
@@ -1003,6 +1014,7 @@
 <translation id="5463129623250377817">තෝරන ලද අන්තර්ගතය ක්ලිප්බෝඩ් වෙත කපන්න</translation>
 <translation id="5465662442746197494">උදව් අවශ්‍යද?</translation>
 <translation id="547979256943495781">රාක්කය දකුණට</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> හෝ <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">නිත්‍ය මෘදුකාංග යාවත්කාලීන ලබා ගත හැකිය</translation>
 <translation id="5503884284981862082">Google සහයක විවෘත කරන්න/වසන්න</translation>
 <translation id="5506975627792768506">විශාලකය සක්‍රීය හෝ අක්‍රිය කරන්න</translation>
@@ -1194,6 +1206,7 @@
 <translation id="6330012934079202188">සියලු මේසවලින් කවුළු පෙන්වමින්, වත්මන් මේසයෙන් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> යනු <ph name="MANAGER" /> විසින් කළමනාකරණය කරනු ලබන කළමනාකරණය කළ සැසියකි</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> සම්බන්ධිතයි</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> අනතුරුව <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">යෙදුම් යෝජනා</translation>
 <translation id="6352082849089527770">නොදන්නා ජාල</translation>
 <translation id="6359587239691116345">නවතම විශේෂාංග සහ ආරක්ෂක වැඩි දියුණු කිරීම් ලබා ගන්න. ඔබ මෙම යාවත්කාලීනය ප්‍රතික්ෂේප කරන්නේ නම්, ඔබේ උපාංගය තවදුරටත් නිසි ලෙස ක්‍රියා නොකරන අතර ඔබ ආරක්ෂක සහ කාර්ය සාධන ගැටලු අත්විඳිය හැක.</translation>
@@ -1239,6 +1252,7 @@
 <translation id="6537924328260219877">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, දුරකථන බැටරිය <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ස්කෑන් කරන <ph name="FILENAME" /> බාගන්න</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> වෙත විකාශය කරමින්</translation>
+<translation id="6555373427270923730">ලිපින තීරුවෙහි වෙබ් ලිපිනයක් ටයිප් කර, අනතුරුව <ph name="MODIFIER" /><ph name="KEY" /> ඔබන්න</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 නව ස්ථාපනය</translation>
 <translation id="6559976592393364813">පරිපාලකයාගෙන් අසන්න</translation>
@@ -1330,7 +1344,6 @@
 <translation id="6961121602502368900">කාර්යාල පැතිකඩෙහි දුරකථනය නිහඬ කිරීම ලබා ගත නොහැකිය</translation>
 <translation id="6961840794482373852">Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Up යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළට ඊතලය ඔබන්න.</translation>
 <translation id="696267987219125751">කැමරා රාමු කිරීම ක්‍රියා විරහිතයි.</translation>
-<translation id="6964690557625666701">අමුණන ලද සියලු අයිතම සාද පවත්වයි</translation>
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6972754398087986839">අරඹන්න</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1505,6 +1518,7 @@
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>
 <translation id="7796735576426975947">නව දැනුම්දීම සඟවා ඇත</translation>
 <translation id="7798302898096527229">අවලංගු කිරීමට සෙවීම හෝ Shift ඔබන්න.</translation>
+<translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7807067443225230855">සෙවීම සහ සහායක</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> සහ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ප්‍රබල සංඥාව</translation>
@@ -1647,6 +1661,7 @@
 <translation id="8425213833346101688">වෙනස් කරන්න</translation>
 <translation id="8426708595819210923">සුබ සන්ධ්‍යාවක් <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">සැකසුම්</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> සිට <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">ජාල සැකසීම්</translation>
 <translation id="8433977262951327081">රාක්කය තුළ ආදාන විකල්ප මෙනු බුබුළ පෙන්වීමේ කෙටි මග වෙනස් කර ඇත. <ph name="OLD_SHORTCUT" /> වෙනුවට <ph name="NEW_SHORTCUT" /> භාවිත කරන්න.</translation>
 <translation id="8437311513256731931">ප්‍රතිපෝෂණ මෙවලම විවෘත කරන්න</translation>
@@ -1678,6 +1693,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> ඔබ ඔබගේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කළ යුතු බව නිර්දේශ කරයි</translation>
 <translation id="8563862697512465947">දැනුම්දීම් සැකසීම්</translation>
 <translation id="857201607579416096">මෙනුව තිරයේ පහළ දකුණු කොණට ගෙන ගියා.</translation>
+<translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ඔබා සබැඳියක් ක්ලික් කරන්න</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ඔබගේ යෙදුම් නම හෝ වර්ණය අනුව අනුපිළිවෙළට සකසන්න</translation>
 <translation id="8609384513243082612">නව පටිත්ත විවෘත කරන්න</translation>

@@ -185,7 +185,6 @@
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2239626343334228536">正在清除瀏覽資料...</translation>
 <translation id="2242467532204595597">隨時可以使用 Chrome 開啟訊息、文件和其他應用程式中的連結。</translation>
-<translation id="22508856139286506">已忽略的警告 (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">「選單」→「歷史記錄」</translation>
 <translation id="2252674110805316998">網頁搜尋</translation>
 <translation id="2256933947031277845">貴機構規定你只能使用特定帳戶登入。</translation>
@@ -354,6 +353,7 @@
 <translation id="3245744387817103524">無法儲存變更。</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /> (第 <ph name="INDEX" /> 項建議，共 <ph name="NUM_SUGGESTIONS" /> 項)</translation>
 <translation id="3264775633254836593">自動填寫密碼</translation>
+<translation id="3265534588625245297">管理你追蹤的網站</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
@@ -1068,6 +1068,7 @@
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>
 <translation id="7911190106180361398">貴機構不允許你同步處理任何內容。</translation>
 <translation id="7920949005883349320">隱私權和安全性</translation>
+<translation id="792357691529995513">未發現任何問題</translation>
 <translation id="7930998711684428189">可在密碼因資料侵害事件遭到外洩時顯示警告訊息。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼...</translation>

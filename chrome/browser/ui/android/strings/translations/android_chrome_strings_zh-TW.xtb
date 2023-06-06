@@ -40,7 +40,6 @@
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1202892408424955784">已追蹤的產品</translation>
 <translation id="1204037785786432551">下載連結</translation>
-<translation id="1204692632633423444">Chrome 操作按鈕：<ph name="ACTION" /></translation>
 <translation id="1206892813135768548">複製連結文字</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
 <translation id="1227058898775614466">瀏覽記錄</translation>
@@ -60,6 +59,7 @@
 <translation id="1269129608791067105">這裡會顯示你的歷史記錄</translation>
 <translation id="1273937721055267968">封鎖 <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">輕觸即可展開</translation>
+<translation id="1289059016768036948">系統會要求你登入 Google 帳戶</translation>
 <translation id="1291207594882862231">清除歷史記錄、Cookie、網站資料、快取…</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
 <translation id="1298077576058087471">節省高達 60% 的數據用量，閱讀今日新聞</translation>
@@ -128,6 +128,7 @@
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
+<translation id="1657932388559784161">已關閉網頁洞察資訊底部功能表</translation>
 <translation id="1668122540633280551">選擇 Chrome 首頁自動播放預覽影片的方式。</translation>
 <translation id="1670399744444387456">基本</translation>
 <translation id="1671236975893690980">正在等候下載…</translation>
@@ -298,6 +299,7 @@
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2649068648233607930">你的瀏覽器是由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="2650348088770008516">已關閉隱私權指南說明</translation>
+<translation id="2650408372219180431">匯出並刪除儲存到這部裝置的密碼</translation>
 <translation id="2650751991977523696">要再次下載檔案嗎？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 個音訊檔案}other{# 個音訊檔案}}</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
@@ -508,6 +510,7 @@
 <translation id="3773856050682458546">基本資料再加上你所造訪的網站和所用應用程式的相關資訊</translation>
 <translation id="3775705724665058594">傳送至你的裝置</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
+<translation id="3795154175078851242">複製圖片和連結</translation>
 <translation id="3803784507854318295">管理自動播放方式</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -808,6 +811,7 @@
 <translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">驗證中…</translation>
+<translation id="542190472198460451">所有密碼都會下載到你的裝置，並從 Chrome <ph name="CHROME_CHANNEL" /> 中移除</translation>
 <translation id="5423934151118863508">這裡會顯示您最常造訪的網頁</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">修改密碼</translation>
@@ -961,6 +965,7 @@
 <translation id="6232535412751077445">啟用「不追蹤」選項後，您的瀏覽流量會置入一項特定的要求，其作用則視網站是否回應要求，以及網站解讀要求的方式而定。
 
 舉例來說，部分網站可能會以顯示廣告的方式回應這類要求，而這些廣告並非根據您所造訪的其他網站記錄而產生。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供更相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
+<translation id="6233974827872475843">開啟同步功能，將這部裝置上的密碼儲存在 Google 帳戶中</translation>
 <translation id="6255794742848779505">我們正在變更密碼儲存在這部裝置上的方式</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
@@ -1369,6 +1374,7 @@
 <translation id="8221401890884589479">你可以封鎖不喜歡的網站，Chrome 也會自動將 30 天前的網站從清單中刪除。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">動態消息資訊卡選單</translation>
 <translation id="8236097722223016103">加入書籤</translation>
+<translation id="8237871086242677046">網頁洞察資訊底部功能表</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已經過加密，Google 不會得知預先載入網頁內容的相關資訊。Google 伺服器會知道哪些網站已透過私密方式預先載入。這項資訊僅用於預先載入網頁，不會與你 Google 帳戶的其他資訊連結。</translation>
@@ -1468,6 +1474,7 @@
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
 <translation id="874726034427945498">如要讓網址列顯示更貼近需求的建議，可以同步分頁和歷史記錄</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
+<translation id="8754448020583829686">複製 (不含連結)</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8766529642647037772">要建立類似的醒目顯示連結嗎？</translation>
@@ -1479,6 +1486,7 @@
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8805097383171548551">如要掃描 QR 圖碼，請使用配有攝影機的裝置。</translation>
 <translation id="8812260976093120287">在部分網站上，你可以在你的裝置上使用上述支援的付款應用程式付款。</translation>
+<translation id="8816556050903368450">加入連結：<ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">無法檢視分頁的預覽內容。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8835786707922974220">確保你可以隨時存取已儲存的密碼</translation>
@@ -1566,6 +1574,7 @@
 <translation id="938850635132480979">錯誤：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="950679278154734362">如要在車上同步處理資訊並確保資料安全無虞，你必須建立設定檔鎖定。每次進入車輛時，都必須輸入驗證碼或密碼。</translation>
+<translation id="952301137339791907">已開啟網頁洞察資訊底部功能表</translation>
 <translation id="95817756606698420">Chrome 可以在中國使用 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> 搜尋。你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中變更這項設定。</translation>
 <translation id="962979164594783469">安裝這個應用程式</translation>
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>

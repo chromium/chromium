@@ -1344,7 +1344,6 @@
 <translation id="6961121602502368900">Η Σίγαση τηλεφώνου δεν είναι διαθέσιμη στο προφίλ εργασίας</translation>
 <translation id="6961840794482373852">Η συντόμευση πληκτρολογίου Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Up, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Επάνω βέλος.</translation>
 <translation id="696267987219125751">Το καδράρισμα της κάμερας είναι ανενεργό.</translation>
-<translation id="6964690557625666701">Δεν εμφανίζονται τα καρφιτσωμένα στοιχεία</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Έναρξη</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1519,6 +1518,7 @@
 <translation id="7780159184141939021">Περιστροφή οθόνης</translation>
 <translation id="7796735576426975947">Απόκρυψη νέας ειδοποίησης</translation>
 <translation id="7798302898096527229">Πατήστε Search ή Shift για ακύρωση.</translation>
+<translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7807067443225230855">Αναζήτηση και Βοηθός</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> και <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Ισχυρό σήμα</translation>

@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> 키를 누르지 않았습니다.</translation>
 <translation id="1435763214710588005">매월 선택한 날짜에 데이터 사용량을 자동으로 재설정합니다.</translation>
 <translation id="1442433966118452622">이미지 출처</translation>
+<translation id="1449035143498573192">Google 검색에서 열기</translation>
 <translation id="1451536289672181509">키보드 기기입니다.</translation>
 <translation id="1459693405370120464">날씨</translation>
 <translation id="1468664791493211953">혜택</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">입력</translation>
 <translation id="7955587717700691983">블루투스 키보드</translation>
 <translation id="7960831585769876809">온도</translation>
+<translation id="7971535376154084247">일반 컨트롤</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> 네트워크에 참여하려면 설정으로 이동하세요.</translation>
 <translation id="7978412674231730200">비공개 키</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">홈 공급자 이름</translation>
 <translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
 <translation id="8476242415522716722">키보드 언더글로우</translation>
+<translation id="8476942730579767658">창 및 데스크</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
 <translation id="8483248364096924578">IP 주소</translation>
 <translation id="8491311378305535241">Android 앱에서 방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>

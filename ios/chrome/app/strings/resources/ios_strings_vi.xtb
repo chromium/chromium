@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Đã tải trang web</translation>
 <translation id="2239626343334228536">Đang xóa dữ liệu duyệt web...</translation>
 <translation id="2242467532204595597">Dùng Chrome bất cứ lúc nào bạn nhấn vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
-<translation id="22508856139286506">Cảnh báo đã đóng (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Trình đơn → Nhật ký</translation>
 <translation id="2252674110805316998">Tìm kiếm trên web</translation>
 <translation id="2256933947031277845">Tổ chức của bạn chỉ cho phép bạn đăng nhập bằng một số tài khoản nhất định.</translation>
@@ -356,6 +355,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3245744387817103524">Không thể lưu thay đổi của bạn.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> trong số <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Tự động điền mật khẩu</translation>
+<translation id="3265534588625245297">Quản lý các trang web mà bạn theo dõi</translation>
 <translation id="3268451620468152448">Thẻ đang mở</translation>
 <translation id="3272527697863656322">Hủy</translation>
 <translation id="3277021493514034324">Đã sao chép địa chỉ trang web</translation>

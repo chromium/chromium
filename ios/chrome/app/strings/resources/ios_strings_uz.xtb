@@ -187,7 +187,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
 <translation id="2239626343334228536">Brauzer tarixini tozalash...</translation>
 <translation id="2242467532204595597">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni bosganda Chrome ochiladi.</translation>
-<translation id="22508856139286506">Yopilgan ogohlantirishlar (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menyu → Tarix</translation>
 <translation id="2252674110805316998">Veb qidiruv</translation>
 <translation id="2256933947031277845">Tashkilotingiz faqat ayrim hisoblardan kirishga ruxsat beradi.</translation>
@@ -356,6 +355,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3245744387817103524">Oʻzgarish saqlanmadi.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Parollarni avtomatik kiritish</translation>
+<translation id="3265534588625245297">Kuzatadigan saytlaringizni boshqarish</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
 <translation id="3272527697863656322">Bekor qilish</translation>
 <translation id="3277021493514034324">Sayt manzilidan nusxa olindi</translation>

@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2239626343334228536">正在清除瀏覽資料…</translation>
 <translation id="2242467532204595597">隨時使用 Chrome 開啟訊息、文件和其他應用程式中的連結。</translation>
-<translation id="22508856139286506">已關閉的警告 (<ph name="COUNT" /> 個)</translation>
 <translation id="2251686759395008410">「選單」→「記錄」</translation>
 <translation id="2252674110805316998">網絡搜尋</translation>
 <translation id="2256933947031277845">您的機構只允許您透過特定帳戶登入。</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">無法儲存您的變更。</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /> (第 <ph name="INDEX" /> 項建議，共 <ph name="NUM_SUGGESTIONS" /> 項)</translation>
 <translation id="3264775633254836593">自動填入密碼</translation>
+<translation id="3265534588625245297">管理您追蹤的網站</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>

@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Die Taste „<ph name="KEY_NAME" />“ ist nicht gedrückt</translation>
 <translation id="1435763214710588005">Setzt die Datennutzung jeden Monat automatisch am ausgewählten Tag zurück</translation>
 <translation id="1442433966118452622">Bildquelle</translation>
+<translation id="1449035143498573192">In der Google Suche öffnen</translation>
 <translation id="1451536289672181509">Das Gerät ist eine Tastatur.</translation>
 <translation id="1459693405370120464">Wetter</translation>
 <translation id="1468664791493211953">Angebote</translation>
@@ -612,6 +613,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardhintergrund</translation>
 <translation id="6017514345406065928">Grün</translation>
+<translation id="6019566113895157499">Tastenkombinationen</translation>
 <translation id="6034694447310538551">Automatisches Zurücksetzen jeden Monat aktivieren</translation>
 <translation id="6037291330010597344">Der Dokumenteneinzug des Scanners ist leer. Lege Dokumente ein und versuche es noch einmal.</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -858,6 +860,7 @@
 <translation id="7953669802889559161">Eingaben</translation>
 <translation id="7955587717700691983">Bluetooth-Tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
+<translation id="7971535376154084247">Allgemeine Einstellungen</translation>
 <translation id="7977800524392185497">Gehe zu den Einstellungen, um eine Verbindung zu einem Netzwerk (<ph name="NETWORK_NAME" />) herzustellen</translation>
 <translation id="7978412674231730200">Privater Schlüssel</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
@@ -921,6 +924,7 @@
 <translation id="8461329675984532579">Name des Homepageanbieters</translation>
 <translation id="8475690821716466388">Das WLAN ist mit dem schwachen Protokoll WEP PSK gesichert</translation>
 <translation id="8476242415522716722">Leuchten auf Tastatur-Unterseite</translation>
+<translation id="8476942730579767658">Fenster und Desktops</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
 <translation id="8483248364096924578">IP-Adresse</translation>
 <translation id="8491311378305535241">Eine Verbindung zu HTTP-Websites durch eine Firewall ist von Android-Apps aus nicht möglich</translation>

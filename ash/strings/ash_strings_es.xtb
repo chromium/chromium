@@ -243,6 +243,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1998100899771863792">Escritorio actual</translation>
 <translation id="2001444736072756133">Busca tus <ph name="CATEGORY" />, archivos, aplicaciones y más.</translation>
 <translation id="2016340657076538683">Escribe un mensaje</translation>
+<translation id="2017998995161831444">Abrir Ayuda en la aplicación Explorar</translation>
 <translation id="2018630726571919839">Cuéntame un chiste</translation>
 <translation id="2021864487439853900">Haz clic para desbloquear</translation>
 <translation id="2023558322300866873">Puedes detener la captura de paquetes en cualquier momento</translation>
@@ -630,6 +631,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3773700760453577392">Un administrador ha inhabilitado el inicio de sesión múltiple para <ph name="USER_EMAIL" />.
 Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3779139509281456663">Conectando <ph name="NAME" /></translation>
+<translation id="3781910048497807059">Mover el enfoque al panel anterior</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="3796198851576711985">salud de la batería</translation>
@@ -768,6 +770,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4406883609789734330">Subtítulos automáticos</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> está desactivado.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
+<translation id="4427695046139341014">Panel de juego</translation>
 <translation id="4430019312045809116">Volumen</translation>
 <translation id="4435022394553622295">Consulta las notificaciones y aplicaciones de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Las aplicaciones se han ordenado por nombre</translation>
@@ -800,6 +803,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4541706525461326392">Quitando perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="4544483149666270818">Selecciona una ventana para grabar</translation>
 <translation id="454541942614298893">mi dispositivo</translation>
+<translation id="4545950850562423083">Guardar página actual como marcador</translation>
 <translation id="4548482551627849548">Mover ventana activa al escritorio de la izquierda</translation>
 <translation id="4560576029703263363">Activado</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -856,6 +860,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4789348252524569426">No se pueden instalar los archivos de voz. El dispositivo debe actualizarse. Reinícialo y vuelve a intentarlo.</translation>
 <translation id="478959186716341421">Enviando contenido</translation>
 <translation id="4798622944000246716">Tu red móvil no admite puntos de acceso</translation>
+<translation id="4798888871844665150">El elemento copiado ya está en el portapapeles. Usa <ph name="SHORTCUT_KEY_NAME" /> + V para verlo.</translation>
 <translation id="479989351350248267">buscar</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4813311884204119883">Arrastra un enlace al área en blanco de la barra de pestañas</translation>
@@ -956,6 +961,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5229343007215035173">Activar o desactivar la pantalla de privacidad</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="523505283826916779">Ajustes de accesibilidad</translation>
+<translation id="5238719049014159442">Abrir/Cerrar el menú de aplicaciones</translation>
 <translation id="5245201184978705914">No se puede generar la transcripción</translation>
 <translation id="5253783950165989294">Conectado a un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
@@ -1265,6 +1271,7 @@ Nueva instalación</translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
 <translation id="6625718907317144388">Se han ocultado notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" />, entre otras, porque la protección contra fisgones está activada</translation>
 <translation id="6627638273713273709">Tecla de búsqueda + Mayús + K</translation>
+<translation id="662830937908749204">Mover el enfoque al siguiente panel</translation>
 <translation id="6637729079642709226">Cambiar hora</translation>
 <translation id="6641720045729354415">Activar/Desactivar Subtítulos automáticos. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Deshacer order por nombre</translation>
@@ -1338,7 +1345,6 @@ Nueva instalación</translation>
 <translation id="6961121602502368900">La función Silenciar teléfono no está disponible en el perfil de trabajo</translation>
 <translation id="6961840794482373852">La combinación de teclas Alt + tecla de flecha hacia arriba ha cambiado. Para usar la tecla Re Pág, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + tecla de flecha hacia arriba.</translation>
 <translation id="696267987219125751">El encuadre de cámara está desactivado.</translation>
-<translation id="6964690557625666701">Todos los elementos fijados están ocultos</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Empezar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1423,6 +1429,7 @@ Nueva instalación</translation>
 <translation id="7401222354741467707">Hacer captura o grabación de pantalla completa</translation>
 <translation id="7405710164030118432">Para desbloquear el dispositivo, introduce tu código de acceso parental de Family Link</translation>
 <translation id="7406608787870898861">Termina de configurar tu red móvil</translation>
+<translation id="7406854842098869085">Mantén pulsada la tecla <ph name="MODIFIER_1" />, pulsa <ph name="KEY" /> hasta llegar a la ventana que quieras abrir y suelta las teclas</translation>
 <translation id="740790383907119240">Accesos directos a aplicaciones</translation>
 <translation id="7413851974711031813">Pulsa Esc para cerrar</translation>
 <translation id="7416471219712049036">Guardar la página actual</translation>
@@ -1502,6 +1509,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7727952505535211425">Abrir el sitio web de la barra de direcciones en una pestaña nueva</translation>
 <translation id="77365090426890123">uso de memoria</translation>
 <translation id="7742327441377685481">No hay notificaciones</translation>
+<translation id="7748275671948949022">Destacar el botón del menú de aplicaciones en la estantería</translation>
 <translation id="7749443890790263709">Has alcanzado el número máximo de escritorios.</translation>
 <translation id="776344839111254542">Haz clic para ver los detalles de la actualización</translation>
 <translation id="7768784765476638775">Enunciar selección</translation>
@@ -1511,6 +1519,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796735576426975947">Nueva notificación oculta</translation>
 <translation id="7798302898096527229">Pulsa la tecla de búsqueda o Mayús para cancelarlo.</translation>
+<translation id="780301667611848630">No, gracias</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
@@ -1518,6 +1527,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7848989271541991537">Se ha movido a la página <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851039877802112575">Mover el enfoque a ventanas emergentes y cuadros de diálogo</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Desliza tres dedos hacia arriba para acceder a la vista general</translation>
 <translation id="7862292329216937261">Para usar el dispositivo como invitado, debes cerrar sesión y seleccionar Navegar como invitado en la parte inferior de la pantalla.</translation>
@@ -1655,6 +1665,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" />teclas del <ph name="KEY_ONE" /> al <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Configuración de red</translation>
 <translation id="8433977262951327081">La combinación de teclas para mostrar el cuadro del menú de opciones de entrada en la estantería ha cambiado. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">Abrir herramienta de comentarios</translation>
 <translation id="8443879455002739353">Copiar</translation>
 <translation id="8444246603146515890">Se ha activado el escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">Más información</translation>
@@ -1706,6 +1717,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8683506306463609433">Control del rendimiento activo</translation>
 <translation id="8703634754197148428">Inicia la grabación. Cuando la grabación haya empezado, pulsa Alt + Mayús + L para ir a la estantería donde se encuentra el botón para pararla.</translation>
+<translation id="8704155109538237473">Enfocar la ventana de imagen en imagen</translation>
 <translation id="870917907284186124">Activar/Desactivar dictado (escribir con la voz)</translation>
 <translation id="8717459106217102612">Seleccionar la palabra o la letra anterior</translation>
 <translation id="8721053961083920564">Activa o desactiva el volumen. <ph name="STATE_TEXT" /></translation>

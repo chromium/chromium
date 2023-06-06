@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">לא התבצעה לחיצה על המקש <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">איפוס אוטומטי של השימוש בחבילת הגלישה ביום הנבחר מדי חודש</translation>
 <translation id="1442433966118452622">מקור התמונה</translation>
+<translation id="1449035143498573192">‏פתיחה בחיפוש Google</translation>
 <translation id="1451536289672181509">המכשיר הוא מקלדת.</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
 <translation id="1468664791493211953">מבצעים</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">שיטות קלט</translation>
 <translation id="7955587717700691983">‏מקלדת Bluetooth</translation>
 <translation id="7960831585769876809">טמפרטורה</translation>
+<translation id="7971535376154084247">אמצעי בקרה כלליים</translation>
 <translation id="7977800524392185497">כדי להצטרף לרשת <ph name="NETWORK_NAME" />, צריך לעבור להגדרות</translation>
 <translation id="7978412674231730200">מפתח פרטי</translation>
 <translation id="7994702968232966508">‏שיטת EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">שם ספק ביתי</translation>
 <translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP PSK חלש</translation>
 <translation id="8476242415522716722">תאורה מתחת למקשי המקלדת</translation>
+<translation id="8476942730579767658">חלונות ושולחנות עבודה וירטואליים</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
 <translation id="8483248364096924578">‏כתובת IP</translation>
 <translation id="8491311378305535241">‏לא ניתן להתחבר עם חומת אש לאתרי HTTPS מאפליקציות ל-Android</translation>

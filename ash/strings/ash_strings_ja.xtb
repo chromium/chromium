@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">既知のネットワーク</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> を接続しました。</translation>
 <translation id="1240638468526743569">アプリ</translation>
+<translation id="1242704516557658755">最近使用したウィンドウ リストで逆方向に移動する</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1246890715821376239">サポートされていないアプリ</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
 <translation id="1272079795634619415">中止</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />を充電中</translation>
+<translation id="1276975447697633661">ファイルを選択して <ph name="KEY" /> キーを押す</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />（<ph name="ANNOTATION" />）</translation>
 <translation id="1285992161347843613">スマートフォンを探す</translation>
 <translation id="1287002645302686982">「<ph name="DESK_TEMPLATE_NAME" />」という名前の保存済みのデスクがすでに存在します</translation>
@@ -345,6 +347,7 @@
 <translation id="2528111225373402384">アクセス ポイント設定</translation>
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
+<translation id="2531107890083353124">タブをドラッグしながら、<ph name="KEY_ONE" /> キーを押す</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
 <translation id="2549711466868162843">明るさを調整</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
@@ -390,6 +393,7 @@
 <translation id="2750932254614666392">"削除"</translation>
 <translation id="2750941250130734256">アクティブなウィンドウの固定を解除しました。</translation>
 <translation id="2761723519669354964">シェルフのハイライト表示されたアイテムを開きます</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />～<ph name="KEY_TWO" /> キーを押す</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
 <translation id="2785499565474703580">1 台のデバイスが接続されています</translation>
@@ -423,6 +427,7 @@
 <translation id="2942350706960889382">ドッキング拡大鏡</translation>
 <translation id="2942516765047364088">シェルフの位置</translation>
 <translation id="2946119680249604491">接続を追加</translation>
+<translation id="2949420361496057765"><ph name="MODIFIER" /> キーを押しながらリンクをクリックする</translation>
 <translation id="295852781144570696">デバイスの音声</translation>
 <translation id="2960314608273155470">キャプチャ モードです。デフォルトは <ph name="SOURCE" /> の <ph name="TYPE" /> です。キーボード ナビゲーションを使用するには、タブキーを押してください。</translation>
 <translation id="2961963223658824723">エラーが発生しました。数秒後にもう一度お試しください。</translation>
@@ -528,6 +533,7 @@
 <translation id="3410336247007142655">ダークモードの設定を表示</translation>
 <translation id="3413817803639110246">通知はありません</translation>
 <translation id="3417835166382867856">タブを検索</translation>
+<translation id="3426253816581969877"><ph name="MODIFIER_1" />+<ph name="MODIFIER_2" /> キーを押したまま、目的のウィンドウが表示されるまで <ph name="KEY" /> キーを押し、表示されたらキーを放す</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> との接続を解除します</translation>
 <translation id="3430396595145920809">右側からスワイプすると前の画面に戻ります</translation>
 <translation id="3431517721463707585">デスク 14</translation>
@@ -542,6 +548,7 @@
 <translation id="346243998268439747">拡大縮小をリセットする</translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
 <translation id="3465356146291925647">管理者によって管理</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> キーを押してから、<ph name="KEY_TWO" /> または <ph name="KEY_THREE" /> キーを押す</translation>
 <translation id="3477079411857374384">Control+Shift+Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">シェルフは自動的に非表示になります</translation>
@@ -606,6 +613,7 @@
 <translation id="3677931086890821290">位置情報へのアクセスを許可したすべてのアプリとウェブサイト、ChromeOS で、Wi-Fi とモバイル ネットワークの位置情報を使用できるようになります。</translation>
 <translation id="3679827876008292680">ウィンドウ内の最後のタブに移動する</translation>
 <translation id="36813544980941320">スマートフォンと <ph name="DEVICE_NAME" /> で Wi-Fi ネットワークが共有されます</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> キーを押してから <ph name="KEY_TWO" /> キーを押す</translation>
 <translation id="3694122362646626770">ウェブサイト</translation>
 <translation id="3702809606464356667">現在のデスクのウィンドウを表示しています、すべてのデスクのウィンドウを表示するには上矢印キーを押してください</translation>
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
@@ -633,6 +641,7 @@
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
 <translation id="384082539148746321">テンプレートを削除しますか？</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" /> キーを押してから、<ph name="KEY_ONE" />、<ph name="KEY_TWO" />、<ph name="KEY_THREE" />、<ph name="KEY_FOUR" /> のいずれかのキーを押す</translation>
 <translation id="3846575436967432996">利用可能なネットワーク情報がありません</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="385300504083504382">先頭</translation>
@@ -848,6 +857,7 @@
 <translation id="4798622944000246716">ご利用のモバイル ネットワークはアクセス ポイントに対応していません</translation>
 <translation id="479989351350248267">検索</translation>
 <translation id="4804818685124855865">切断</translation>
+<translation id="4813311884204119883">タブバーの空白部分にリンクをドラッグする</translation>
 <translation id="4814539958450445987">ログイン画面</translation>
 <translation id="481455355267255546">次の予定</translation>
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
@@ -855,6 +865,7 @@
 <translation id="485592688953820832">なし（一時停止）</translation>
 <translation id="485634149294284819">キーボード メニューを入力してください</translation>
 <translation id="485806788160414322">メディアを再生または一時停止する</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" /> キーを押してから、<ph name="KEY_ONE" />、<ph name="KEY_TWO" />、<ph name="KEY_THREE" />、<ph name="KEY_FOUR" /> のいずれかのキーを押す</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> をダウンロードするには、ネットワーク接続を確認してください</translation>
 <translation id="4864369630010738180">ログインしています...</translation>
 <translation id="4864648187878336334">デスク 15</translation>
@@ -997,6 +1008,7 @@
 <translation id="5463129623250377817">選択した内容をクリップボードに切り取る</translation>
 <translation id="5465662442746197494">不明点がある場合</translation>
 <translation id="547979256943495781">シェルフは右側にあります</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" />+<ph name="KEY_ONE" /> または <ph name="MODIFIER_TWO" />+<ph name="MODIFIER_THREE" />+<ph name="KEY_TWO" /> キーを押す</translation>
 <translation id="5491186829646618080">利用可能なファームウェアのアップデートがあります</translation>
 <translation id="5503884284981862082">Google アシスタントを起動または終了します</translation>
 <translation id="5506975627792768506">拡大鏡をオンまたはオフにします</translation>
@@ -1188,6 +1200,7 @@
 <translation id="6330012934079202188">すべてのデスクのウィンドウを表示しています、現在のデスクのウィンドウを表示するには上矢印キーを押してください</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> は <ph name="MANAGER" /> が管理する管理対象セッションです</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> を接続しました</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> キーを押してから、<ph name="MODIFIER_THREE" />+<ph name="KEY_TWO" /> または <ph name="KEY_THREE" /> キーを押す</translation>
 <translation id="6351032674660237738">アプリの候補</translation>
 <translation id="6352082849089527770">不明なネットワーク</translation>
 <translation id="6359587239691116345">最新の機能を入手しセキュリティを強化しましょう。このアップデートを承認しない場合、デバイスが正しく動作せず、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
@@ -1233,6 +1246,7 @@
 <translation id="6537924328260219877">信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ダウンロードする <ph name="FILENAME" /> をスキャンしています</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
+<translation id="6555373427270923730">アドレスバーにウェブアドレスを入力して、<ph name="MODIFIER" />+<ph name="KEY" /> キーを押す</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 新たなインストール</translation>
 <translation id="6559976592393364813">管理者に問い合わせる</translation>
@@ -1323,7 +1337,6 @@
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
 <translation id="696267987219125751">カメラのフレーミングはオフです。</translation>
-<translation id="6964690557625666701">固定したアイテムはすべてシェルフ グループにあります</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">開始する</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
@@ -1497,6 +1510,7 @@
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>
 <translation id="7798302898096527229">キャンセルするには検索キーまたは Shift キーを押します。</translation>
+<translation id="780301667611848630">同意しない</translation>
 <translation id="7807067443225230855">検索とアシスタント</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">電波: 強い</translation>
@@ -1638,6 +1652,7 @@
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426708595819210923">こんばんは、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />～<ph name="KEY_TWO" /> キーを押す</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8433977262951327081">シェルフに入力オプション メニューのふきだしを表示するためのショートカットが変わりました。今後は <ph name="OLD_SHORTCUT" /> ではなく <ph name="NEW_SHORTCUT" /> を使用してください。</translation>
 <translation id="8443879455002739353">「コピー」</translation>
@@ -1668,6 +1683,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> を更新するよう推奨しています</translation>
 <translation id="8563862697512465947">通知設定</translation>
 <translation id="857201607579416096">メニューは画面右下に移動しました。</translation>
+<translation id="8581946341807941670"><ph name="MODIFIER_1" />+<ph name="MODIFIER_2" /> キーを押しながらリンクをクリックする</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">名前または色でアプリを並べ替えられます</translation>
 <translation id="8609384513243082612">新しいタブを開く</translation>

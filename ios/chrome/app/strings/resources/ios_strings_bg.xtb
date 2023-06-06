@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
 <translation id="2242467532204595597">Използвайте Chrome всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
-<translation id="22508856139286506">Отхвърлени предупреждения (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">„Меню → История“</translation>
 <translation id="2252674110805316998">Търсене в мрежата</translation>
 <translation id="2256933947031277845">Организацията ви разрешава да влизате само с определени профили.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Промяната ви не бе запазена.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> от <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Автоматично попълване на пароли</translation>
+<translation id="3265534588625245297">Управление на следените от вас сайтове</translation>
 <translation id="3268451620468152448">Отворени раздели</translation>
 <translation id="3272527697863656322">Отказ</translation>
 <translation id="3277021493514034324">Адресът на сайта бе копиран</translation>

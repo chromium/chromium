@@ -57,6 +57,7 @@
 <translation id="1423591390236870726">Touche <ph name="KEY_NAME" /> non enfoncée</translation>
 <translation id="1435763214710588005">Réinitialise automatiquement l'utilisation de données tous les mois à un jour défini</translation>
 <translation id="1442433966118452622">Source de l'image</translation>
+<translation id="1449035143498573192">Ouvrir dans Recherche Google</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
 <translation id="1459693405370120464">Météo</translation>
 <translation id="1468664791493211953">Offres</translation>
@@ -855,6 +856,7 @@
 <translation id="7953669802889559161">Entrées</translation>
 <translation id="7955587717700691983">Clavier Bluetooth</translation>
 <translation id="7960831585769876809">Température</translation>
+<translation id="7971535376154084247">Commandes générales</translation>
 <translation id="7977800524392185497">Pour vous connecter à un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
@@ -918,6 +920,7 @@
 <translation id="8461329675984532579">Nom du propriétaire</translation>
 <translation id="8475690821716466388">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP PSK</translation>
 <translation id="8476242415522716722">sous-lueur du clavier</translation>
+<translation id="8476942730579767658">Fenêtres et bureaux</translation>
 <translation id="8477551185774834963">La latence du DNS dépasse un peu le seuil acceptable</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8491311378305535241">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP à partir d'applications Android</translation>

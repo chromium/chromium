@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
 <translation id="2239626343334228536">Бришу се подаци прегледања...</translation>
 <translation id="2242467532204595597">Користите Chrome сваки пут када додирнете линкове у порукама, документима и другим апликацијама.</translation>
-<translation id="22508856139286506">Одбачена упозорења (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
 <translation id="2252674110805316998">Веб-претрага</translation>
 <translation id="2256933947031277845">Организација вам дозвољава да се пријавите само помоћу одређених налога.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Чување промене није успело.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Аутоматски попуни лозинке</translation>
+<translation id="3265534588625245297">Управљајте сајтовима које пратите</translation>
 <translation id="3268451620468152448">Отворене картице</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>

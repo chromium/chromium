@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
 <translation id="2242467532204595597">Тепер ви можете відкривати в Chrome посилання з повідомлень, документів і інших додатків.</translation>
-<translation id="22508856139286506">Закриті попередження (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Меню → Історія</translation>
 <translation id="2252674110805316998">Пошук в Інтернеті</translation>
 <translation id="2256933947031277845">Ваша організація дозволяє входити лише в певні облікові записи.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Не вдалося зберегти зміну.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Автозаповнення паролів</translation>
+<translation id="3265534588625245297">Керуйте сайтами, на які підписалися</translation>
 <translation id="3268451620468152448">Відкриті вкладки</translation>
 <translation id="3272527697863656322">Скасувати</translation>
 <translation id="3277021493514034324">Адресу сайту скопійовано</translation>
@@ -1072,6 +1072,7 @@
 <translation id="7887198238286927132">Щоб захистити вашу конфіденційність, Chrome не буде автоматично заповнювати це поле.</translation>
 <translation id="7911190106180361398">Адміністратор вашої організації не дозволяє синхронізувати всі дані.</translation>
 <translation id="7920949005883349320">Конфіденційність і безпека</translation>
+<translation id="792357691529995513">Проблем не виявлено</translation>
 <translation id="7930998711684428189">Попереджає, якщо паролі розкрито через порушення безпеки даних.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортувати паролі…</translation>

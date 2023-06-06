@@ -40,7 +40,6 @@
 <translation id="1201402288615127009">다음</translation>
 <translation id="1202892408424955784">추적 중인 제품</translation>
 <translation id="1204037785786432551">링크 다운로드</translation>
-<translation id="1204692632633423444">Chrome 작업 버튼: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">링크 텍스트 복사</translation>
 <translation id="1209206284964581585">지금 숨기기</translation>
 <translation id="1227058898775614466">탐색 기록</translation>
@@ -60,6 +59,7 @@
 <translation id="1269129608791067105">여기에서 방문 기록을 확인할 수 있습니다</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> 차단</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
+<translation id="1289059016768036948">Google 계정에 로그인하라는 메시지가 표시됩니다</translation>
 <translation id="1291207594882862231">방문 기록, 쿠키, 사이트 데이터, 캐시 삭제…</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1298077576058087471">데이터 최대 60% 절약 및 오늘의 뉴스 읽기</translation>
@@ -127,6 +127,7 @@
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
+<translation id="1657932388559784161">페이지 통계 하단 시트가 닫힘</translation>
 <translation id="1668122540633280551">Chrome 홈페이지에서 동영상 미리보기가 자동으로 재생되는 방식을 선택합니다.</translation>
 <translation id="1670399744444387456">기본</translation>
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
@@ -297,6 +298,7 @@
 <translation id="2647434099613338025">언어 추가</translation>
 <translation id="2649068648233607930">내 브라우저는 <ph name="DOMAIN" />에서 관리합니다</translation>
 <translation id="2650348088770008516">개인 정보 보호 가이드 설명이 닫힘</translation>
+<translation id="2650408372219180431">이 기기에 저장된 비밀번호 내보내기 및 삭제</translation>
 <translation id="2650751991977523696">파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{오디오 파일 #개}other{오디오 파일 #개}}</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
@@ -507,6 +509,7 @@
 <translation id="3773856050682458546">기본 데이터, 방문한 웹사이트 및 사용한 앱에 관한 정보</translation>
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
+<translation id="3795154175078851242">링크가 있는 이미지 복사</translation>
 <translation id="3803784507854318295">자동 재생 관리</translation>
 <translation id="3810838688059735925">동영상</translation>
 <translation id="3810973564298564668">관리</translation>
@@ -809,6 +812,7 @@
 <translation id="5401851137404501592">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />에 코드(<ph name="ONE_TIME_CODE" />)를 제출하시겠습니까?</translation>
 <translation id="5414836363063783498">확인 중...</translation>
+<translation id="542190472198460451">모든 비밀번호가 기기에 다운로드되며 Chrome <ph name="CHROME_CHANNEL" />에서 삭제됩니다</translation>
 <translation id="5423934151118863508">자주 방문한 페이지가 여기에 표시됩니다.</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB 사용 가능</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
@@ -962,6 +966,7 @@
 <translation id="6232535412751077445">‘추적 안함’을 사용하도록 설정하면 요청이 사용자의 인터넷 사용 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지 여부와 요청이 해석되는 방법에 따라 결과가 결정됩니다.
 
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>
+<translation id="6233974827872475843">동기화를 사용 설정하여 이 기기의 비밀번호를 Google 계정에 저장하세요.</translation>
 <translation id="6255794742848779505">이 기기에 비밀번호가 저장되는 방식이 변경됩니다</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
@@ -1370,6 +1375,7 @@
 <translation id="8221401890884589479">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome에서는 30일이 지난 사이트도 목록에서 자동 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
 <translation id="8236097722223016103">북마크에 추가</translation>
+<translation id="8237871086242677046">페이지 통계 하단 시트</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="8255617931166444521">사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8259179246279078674">미리 로드된 페이지는 암호화되어 있으므로 Google에서는 미리 로드된 페이지의 콘텐츠에 관해 어떠한 정보도 알 수 없습니다. Google 서버는 어떤 사이트가 비공개로 미리 로드되었는지 파악하게 됩니다. 이 정보는 페이지를 미리 로드하는 데에만 사용되며, Google 계정의 다른 정보와 연결되지 않습니다.</translation>
@@ -1469,6 +1475,7 @@
 <translation id="8746155870861185046">강조표시한 텍스트 공유</translation>
 <translation id="874726034427945498">주소 표시줄의 추천 항목을 개선하려면 탭과 방문 기록을 동기화하세요</translation>
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
+<translation id="8754448020583829686">링크 없이 복사</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="8765470054473112089">주소 표시줄이나 검색창에 검색어를 입력하면 Chrome은 더 나은 추천을 위해 사용자가 입력한 내용을 기본 검색엔진에 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="8766529642647037772">다음과 같은 강조표시된 링크를 만들까요?</translation>
@@ -1480,6 +1487,7 @@
 <translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8805097383171548551">QR 코드를 스캔하려면 카메라가 있는 기기를 사용하세요.</translation>
 <translation id="8812260976093120287">일부 웹사이트에서는 위의 결제 앱을 사용하여 내 기기에서 결제할 수 있습니다.</translation>
+<translation id="8816556050903368450">포함된 링크: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="8835786707922974220">언제든지 저장된 비밀번호에 액세스할 수 있도록 하세요</translation>
@@ -1567,6 +1575,7 @@
 <translation id="938850635132480979">오류: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">암호 입력</translation>
 <translation id="950679278154734362">자동차에서 정보를 동기화하고 데이터를 안전하게 유지하려면 프로필 잠금을 만들어야 합니다. 차량에 탑승할 때마다 코드나 비밀번호를 사용하게 됩니다.</translation>
+<translation id="952301137339791907">페이지 통계 하단 시트가 열림</translation>
 <translation id="95817756606698420">중국에서 검색할 때 Chrome에서 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />를 사용할 수 있습니다. <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 변경할 수 있습니다.</translation>
 <translation id="962979164594783469">앱 설치</translation>
 <translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>

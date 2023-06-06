@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">No s'ha premut la tecla <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Restableix l'ús de dades automàticament cada mes en un dia seleccionat</translation>
 <translation id="1442433966118452622">Font de la imatge</translation>
+<translation id="1449035143498573192">Obre a la Cerca de Google</translation>
 <translation id="1451536289672181509">El dispositiu és un teclat.</translation>
 <translation id="1459693405370120464">Temps</translation>
 <translation id="1468664791493211953">Ofertes</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Introducció de text</translation>
 <translation id="7955587717700691983">Teclat Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Controls generals</translation>
 <translation id="7977800524392185497">Per unir-te a una xarxa <ph name="NETWORK_NAME" />, ves a Configuració</translation>
 <translation id="7978412674231730200">Clau privada</translation>
 <translation id="7994702968232966508">Mètode EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Nom del proveïdor domèstic</translation>
 <translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
 <translation id="8476242415522716722">retroil·luminació del teclat</translation>
+<translation id="8476942730579767658">Finestres i escriptoris</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
 <translation id="8483248364096924578">Adreça IP</translation>
 <translation id="8491311378305535241">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc des d'aplicacions d'Android</translation>

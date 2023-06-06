@@ -40,7 +40,6 @@
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1202892408424955784">Көз салынган товарлар</translation>
 <translation id="1204037785786432551">Жүктөп алуу шилтемеси</translation>
-<translation id="1204692632633423444">Chrome'догу аракет баскычы: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Шилтеме текстин көчүрүү</translation>
 <translation id="1209206284964581585">Азырынча жашыруу</translation>
 <translation id="1227058898775614466">Чабыттоо таржымалы</translation>
@@ -1176,7 +1175,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7304072650267745798">Android түзмөгүңүздө ушуга окшош параметр болушу мүмкүн. Эгер Chrome'до жана Android түзмөгүңүздө бул параметр күйгүзүлсө, компания вебсайттарда жана колдонмолордо көрсөтүлгөн жарнаманын майнаптуулугун талдай алышы мүмкүн.</translation>
 <translation id="7304873321153398381">Оффлайн. Chrome сырсөздөрүңүздү текшере албай жатат</translation>
 <translation id="7313188324932846546">Шайкештирүүнү жөндөө үчүн басыңыз</translation>
-<translation id="7324354302972299151">"Байкоо салынбасын" сурамын жөнөтүңүз</translation>
+<translation id="7324354302972299151">"Do Not Track" сурамын жөнөтүңүз</translation>
 <translation id="7332075081379534664">Аккаунтуңузга ийгиликтүү кирдиңиз</translation>
 <translation id="7333232495927792353">Google'дан эң ылайыктуу контентти көрүү үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="7339898014177206373">Жаңы терезе</translation>

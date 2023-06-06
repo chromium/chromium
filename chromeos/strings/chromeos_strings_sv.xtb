@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> har inte tryckts ned</translation>
 <translation id="1435763214710588005">Dataanvändningen återställs automatiskt den angivna dagen i månaden</translation>
 <translation id="1442433966118452622">Bildkälla</translation>
+<translation id="1449035143498573192">Öppna i Google Sök</translation>
 <translation id="1451536289672181509">Enheten är ett tangentbord.</translation>
 <translation id="1459693405370120464">Väder</translation>
 <translation id="1468664791493211953">Erbjudanden</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Inmatningar</translation>
 <translation id="7955587717700691983">Bluetooth-tangentbord</translation>
 <translation id="7960831585769876809">Temperatur</translation>
+<translation id="7971535376154084247">Allmänna inställningar</translation>
 <translation id="7977800524392185497">Öppna inställningarna om du vill ansluta till ett <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
 <translation id="7994702968232966508">EAP-metod</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Hemleverantörens namn</translation>
 <translation id="8475690821716466388">wifi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
 <translation id="8476242415522716722">bakgrundsbelysning för tangentbord</translation>
+<translation id="8476942730579767658">Fönster och skrivbord</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
 <translation id="8483248364096924578">IP-adress</translation>
 <translation id="8491311378305535241">Det gick inte att ansluta till HTTPS-webbplatser från Android-appar genom brandvägg</translation>

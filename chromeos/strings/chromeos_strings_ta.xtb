@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> பட்டன் அழுத்தப்படவில்லை</translation>
 <translation id="1435763214710588005">தேர்ந்தெடுத்த நாளில் ஒவ்வொரு மாதமும் டேட்டா உபயோகத்தைத் தானாக ரீசெட் செய்யும்</translation>
 <translation id="1442433966118452622">பட ஆதாரம்</translation>
+<translation id="1449035143498573192">Google Searchசில் திற</translation>
 <translation id="1451536289672181509">சாதனம் ஒரு கீபோர்டு.</translation>
 <translation id="1459693405370120464">வானிலை</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">உள்ளீட்டு முறைகள்</translation>
 <translation id="7955587717700691983">புளூடூத் கீபோர்டு</translation>
 <translation id="7960831585769876809">வெப்பநிலை</translation>
+<translation id="7971535376154084247">பொதுவான கட்டுப்பாடுகள்</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> நெட்வொர்க்கில் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">உள்நாட்டு மொபைல் சேவை வழங்குநர் பெயர்</translation>
 <translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8476242415522716722">கீபோர்டு ஒளிர்வை மங்கலாக்குதல்</translation>
+<translation id="8476942730579767658">சாளரங்களும் டெஸ்க்குகளும்</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
 <translation id="8483248364096924578">IP முகவரி</translation>
 <translation id="8491311378305535241">Android ஆப்ஸில் இருந்து HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>

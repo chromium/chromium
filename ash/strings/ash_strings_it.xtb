@@ -63,6 +63,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1235458158152011030">Reti note</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
 <translation id="1240638468526743569">Un'app</translation>
+<translation id="1242704516557658755">Vai indietro nell'elenco di finestre utilizzate più di recente</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246890715821376239">App non supportate</translation>
 <translation id="1247372569136754018">Microfono (interno)</translation>
@@ -74,6 +75,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1270290102613614947">Tastiera sullo schermo disattivata</translation>
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1275285675049378717">Alimentazione di <ph name="POWER_SOURCE" /></translation>
+<translation id="1276975447697633661">Seleziona il file, quindi premi <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localizza telefono</translation>
 <translation id="1287002645302686982">Esiste già una scrivania salvata denominata <ph name="DESK_TEMPLATE_NAME" /></translation>
@@ -346,6 +348,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2528111225373402384">Impostazioni hotspot</translation>
 <translation id="2530896289327917474">Attiva o disattiva la navigazione con cursore</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
+<translation id="2531107890083353124">Mentre trascini la scheda, premi <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Copia i contenuti selezionati negli appunti</translation>
 <translation id="2549711466868162843">Migliora l'illuminazione</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
@@ -391,6 +394,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Finestra attiva sganciata.</translation>
 <translation id="2761723519669354964">Apri l'elemento evidenziato dalla barra delle app</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Esci dalla modalità di acquisizione</translation>
 <translation id="2785499565474703580">1 dispositivo connesso</translation>
@@ -424,6 +428,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2942350706960889382">Lente d'ingrandimento ancorata</translation>
 <translation id="2942516765047364088">Posizione barra delle app</translation>
 <translation id="2946119680249604491">Aggiungi connessione</translation>
+<translation id="2949420361496057765">Premi <ph name="MODIFIER" /> e fai clic su un link</translation>
 <translation id="295852781144570696">Audio del dispositivo</translation>
 <translation id="2960314608273155470">Modalità di acquisizione, l'impostazione predefinita è <ph name="TYPE" /> <ph name="SOURCE" />. Premi Tab per usare la navigazione da tastiera.</translation>
 <translation id="2961963223658824723">Si è verificato un problema. Riprova tra qualche secondo.</translation>
@@ -529,6 +534,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3410336247007142655">Mostra le impostazioni del tema scuro</translation>
 <translation id="3413817803639110246">Niente da vedere in questo momento</translation>
 <translation id="3417835166382867856">Cerca tra le schede</translation>
+<translation id="3426253816581969877">Tieni premuto <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, tocca <ph name="KEY" /> fin quando arrivi alla finestra che vuoi aprire, quindi rilascia</translation>
 <translation id="3428447136709161042">Disconnettiti da <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Scorri da destra per tornare indietro</translation>
 <translation id="3431517721463707585">Scrivania 14</translation>
@@ -543,6 +549,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="346243998268439747">Reimposta il livello di zoom</translation>
 <translation id="3465223694362104965">Dal tuo ultimo accesso, un'altra tastiera si è connessa a questo dispositivo. Prima di usarla, assicurati che sia attendibile.</translation>
 <translation id="3465356146291925647">Gestita dall'amministratore</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> poi <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">CTRL + MAIUSC + barra spaziatrice</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Barra delle app nascosta in automatico</translation>
@@ -603,6 +610,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3677931086890821290">Tutti i siti web e le app che dispongono dell'autorizzazione di accesso alla posizione e di ChromeOS possono usare la posizione rilevata da reti Wi-Fi e mobili.</translation>
 <translation id="3679827876008292680">Vai all'ultima scheda nella finestra</translation>
 <translation id="36813544980941320">Il tuo telefono e il dispositivo <ph name="DEVICE_NAME" /> useranno le stesse reti Wi-Fi</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> poi <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Siti web</translation>
 <translation id="3702809606464356667">Dalla visualizzazione delle finestre della scrivania corrente, premi il tasto Freccia su per mostrare le finestre di tutte le scrivanie</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
@@ -632,6 +640,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="383058930331066723">La modalità Risparmio energetico è attiva</translation>
 <translation id="383629559565718788">Mostra impostazioni tastiera</translation>
 <translation id="384082539148746321">Vuoi eliminare il modello?</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> poi <ph name="KEY_ONE" /> o <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Nessuna informazione di rete disponibile</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="385300504083504382">Inizio</translation>
@@ -850,6 +859,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4798888871844665150">Elemento copiato già presente negli appunti. Utilizza <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare.</translation>
 <translation id="479989351350248267">ricerca</translation>
 <translation id="4804818685124855865">Disconnetti</translation>
+<translation id="4813311884204119883">Trascina il link in un'area vuota della tabstrip</translation>
 <translation id="4814539958450445987">Schermata di accesso</translation>
 <translation id="481455355267255546">Prossimi eventi</translation>
 <translation id="4831034276697007977">Vuoi disattivare i clic automatici?</translation>
@@ -857,6 +867,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="485592688953820832">Nessuna azione (pausa)</translation>
 <translation id="485634149294284819">Menu per impostare la tastiera</translation>
 <translation id="485806788160414322">Riproduci o metti in pausa i contenuti multimediali</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" />, poi <ph name="KEY_ONE" /> o <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869">Controlla la tua connessione a Internet per scaricare il file <ph name="FILENAME" /></translation>
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4864648187878336334">Scrivania 15</translation>
@@ -1000,6 +1011,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5463129623250377817">Taglia i contenuti selezionati negli appunti</translation>
 <translation id="5465662442746197494">Hai bisogno di assistenza?</translation>
 <translation id="547979256943495781">Barra delle app a destra</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> oppure <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Aggiornamenti firmware disponibili</translation>
 <translation id="5503884284981862082">Apri/chiudi l'Assistente Google</translation>
 <translation id="5506975627792768506">Attiva o disattiva la lente d'ingrandimento</translation>
@@ -1191,6 +1203,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6330012934079202188">Dalla visualizzazione delle finestre di tutte le scrivanie, premi il tasto Freccia su per mostrare le finestre della scrivania corrente</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connesso</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> quindi <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APP SUGGERITE</translation>
 <translation id="6352082849089527770">Reti sconosciute</translation>
 <translation id="6359587239691116345">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti. Se rifiuti questo aggiornamento, il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza.</translation>
@@ -1236,6 +1249,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6537924328260219877">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Scansione del file <ph name="FILENAME" /> per il download in corso…</translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
+<translation id="6555373427270923730">Digita un indirizzo web nella barra degli indirizzi, quindi premi <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nuova installazione</translation>
 <translation id="6559976592393364813">Rivolgiti all'amministratore</translation>
@@ -1327,7 +1341,6 @@ Nuova installazione</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
 <translation id="696267987219125751">Zoom automatico disattivato.</translation>
-<translation id="6964690557625666701">Tutti gli elementi fissati sono in modalità Shelf Party</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Inizia</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1502,6 +1515,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7780159184141939021">Ruota lo schermo</translation>
 <translation id="7796735576426975947">Nuova notifica nascosta</translation>
 <translation id="7798302898096527229">Premi il tasto per la ricerca o MAIUSC per annullare.</translation>
+<translation id="780301667611848630">No, grazie</translation>
 <translation id="7807067443225230855">Ricerca e assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Segnale forte</translation>
@@ -1644,6 +1658,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8426708595819210923">Buonasera <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8433977262951327081">La scorciatoia per mostrare il fumetto del menu di opzioni di immissione nella barra delle app è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Apri lo strumento di feedback</translation>
@@ -1675,6 +1690,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="856298576161209842"><ph name="MANAGER" /> ti consiglia di aggiornare <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Impostazioni di notifica</translation>
 <translation id="857201607579416096">Menu spostato nell'angolo in basso a destra dello schermo.</translation>
+<translation id="8581946341807941670">Premi <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e fai clic su un link</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordina le app per nome o colore</translation>
 <translation id="8609384513243082612">Apre una nuova scheda</translation>

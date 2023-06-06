@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">ვებგვერდი ჩაიტვირთა</translation>
 <translation id="2239626343334228536">მიმდინარეობს დათვალიერების მონაცემების გასუფთავება…</translation>
 <translation id="2242467532204595597">გამოიყენეთ Chrome შეტყობინებებში, დოკუმენტებსა და სხვა აპებში არსებულ ბმულებზე ყოველი შეხებისას.</translation>
-<translation id="22508856139286506">დახურული გაფრთხილებები (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">მენიუ → ისტორია</translation>
 <translation id="2252674110805316998">ვებ-ძიება</translation>
 <translation id="2256933947031277845">თქვენი ორგანიზაცია სისტემაში მხოლოდ კონკრეტული ანგარიშებით შესვლის უფლებას გაძლებთ.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">ცვლილების შენახვა ვერ მოხერხდა.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
 <translation id="3264775633254836593">პაროლების ავტომატური შევსება</translation>
+<translation id="3265534588625245297">მართეთ ვებსაიტები, რომლებსაც თვალს ადევნებთ</translation>
 <translation id="3268451620468152448">გახსნილი ჩანართები</translation>
 <translation id="3272527697863656322">გაუქმება</translation>
 <translation id="3277021493514034324">გვერდის მისამართი დაკოპირდა</translation>

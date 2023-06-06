@@ -40,7 +40,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1202892408424955784">Cynhyrchion sy'n cael eu dilyn</translation>
 <translation id="1204037785786432551">Dolen lawrlwytho</translation>
-<translation id="1204692632633423444">Botwm gweithredu Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copïo testun y ddolen</translation>
 <translation id="1209206284964581585">Cuddio am nawr</translation>
 <translation id="1227058898775614466">Hanes llywio</translation>
@@ -1184,7 +1183,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7304072650267745798">Gall eich dyfais Android gynnwys gosodiad tebyg. Os yw'r gosodiad hwn wedi'i droi ymlaen yn Chrome ac ar eich dyfais Android, mae'n bosib y bydd cwmni'n gallu mesur effeithlonrwydd hysbyseb ar draws gwefannau rydych yn ymweld â nhw ac apiau rydych yn eu defnyddio.</translation>
 <translation id="7304873321153398381">All-lein. Ni all Chrome wirio'ch cyfrineiriau.</translation>
 <translation id="7313188324932846546">Tapiwch i osod cysoni</translation>
-<translation id="7324354302972299151">Anfon cais "Peidio â Thracio"</translation>
+<translation id="7324354302972299151">Anfon cais "Do Not Track"</translation>
 <translation id="7332075081379534664">Wedi mewngofnodi'n llwyddiannus</translation>
 <translation id="7333232495927792353">Cysonwch i gael y cynnwys mwyaf perthnasol o Google</translation>
 <translation id="7339898014177206373">Ffenestr newydd</translation>

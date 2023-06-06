@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Tasti <ph name="KEY_NAME" /> nuk është shtypur</translation>
 <translation id="1435763214710588005">Rivendos automatikisht përdorimin e të dhënave çdo muaj në një ditë të zgjedhur</translation>
 <translation id="1442433966118452622">Burimi i imazhit</translation>
+<translation id="1449035143498573192">Hap në "Kërko në Google"</translation>
 <translation id="1451536289672181509">Pajisja është një tastierë.</translation>
 <translation id="1459693405370120464">Moti</translation>
 <translation id="1468664791493211953">Ofertat</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Hyrjet</translation>
 <translation id="7955587717700691983">Tastierë me Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Kontrollet e përgjithshme</translation>
 <translation id="7977800524392185497">Për t'iu bashkuar një rrjeti <ph name="NETWORK_NAME" />, shko te "Cilësimet"</translation>
 <translation id="7978412674231730200">Çelës privat</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Emri i ofruesit të rrjetit bazë</translation>
 <translation id="8475690821716466388">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP PSK</translation>
 <translation id="8476242415522716722">ndriçimi i poshtëm i tastierës</translation>
+<translation id="8476942730579767658">Dritaret dhe tavolinat e punës</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
 <translation id="8491311378305535241">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës nga aplikacionet për Android</translation>

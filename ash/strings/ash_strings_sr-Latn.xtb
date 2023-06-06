@@ -1345,7 +1345,6 @@ Novo instaliranje</translation>
 <translation id="6961121602502368900">Isključivanje zvuka telefona nije dostupno na poslovnom profilu</translation>
 <translation id="6961840794482373852">Tasterska prečica Ctrl + strelica nagore je promenjena. Da biste koristili taster Page Up, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nagore.</translation>
 <translation id="696267987219125751">Uokvirivanje kamere je isključeno.</translation>
-<translation id="6964690557625666701">Sve zakačene stavke su na žurci</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="6972754398087986839">Započnimo</translation>
 <translation id="6979158407327259162">Google disk</translation>
@@ -1520,6 +1519,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7780159184141939021">Rotirajte ekran</translation>
 <translation id="7796735576426975947">Novo obaveštenje je skriveno</translation>
 <translation id="7798302898096527229">Pritisnite taster za pretragu ili Shift da biste otkazali.</translation>
+<translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7807067443225230855">Pretraga i Pomoćnik</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>

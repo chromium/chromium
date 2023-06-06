@@ -1317,7 +1317,7 @@ Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou d
 
 A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
 <translation id="2195032660890227692">Esta política foi removida no <ph name="PRODUCT_NAME" /> 68 e substituída por <ph name="ARC_BR_POLICY_NAME" />.</translation>
-<translation id="2197625019569762163">Se esta política for definida como verdadeira, o teclado numérico será exibido por padrão para inserir a senha na tela de login. Os usuários ainda podem alternar para o teclado normal.
+<translation id="2197625019569762163">Se esta política for definida como verdadeira, o teclado numérico será exibido por padrão para inserir a senha na tela de login. Os usuários ainda podem mudar para o teclado normal.
 
       Se você definir a política, os usuários não poderão mudá-la. Se não for definida ou for definida como falsa, não terá efeito.</translation>
 <translation id="2200698565850397198">Configurar a lista de bloqueio de mensagens nativas</translation>
@@ -2228,7 +2228,6 @@ Se a política for ativada ou não for definida, o usuário poderá definir a im
 
       Se for deixada sem definição, ela será ativada.</translation>
 <translation id="3038323923255997294">Continua executando os aplicativos em segundo plano quando o <ph name="PRODUCT_NAME" /> é fechado</translation>
-<translation id="3041707370546071653">Se a senha do Kerberos será ou não lembrada. Se não for definida ou for definida como falsa, a senha não será lembrada. Será ignorada se a senha não for especificada.</translation>
 <translation id="3041887182529293512">Se a política for definida como verdadeira ou não for definida, sugestões de conteúdo geradas automaticamente serão exibidas na página "Nova guia" com base no histórico de navegação, nos interesses ou na localização do usuário.
 
       Se ela for definida como falsa, essas sugestões não aparecerão na página "Nova guia".</translation>
@@ -2973,7 +2972,6 @@ Se o modelo de URI tiver uma variável <ph name="HTTP_VARIABLE_DNS" />, as solic
 Na versão 114 e mais recentes, o <ph name="DOH_SALT_POLICY_NAME" /> é opcional quando a política está definida.</translation>
 <translation id="3634125384445314047">Permitir que fotos e vídeos recentes capturados no smartphone sejam acessados usando o recurso Seu smartphone.</translation>
 <translation id="3642557248926713561">Desativar a proteção de extensões pelo recurso Navegação segura</translation>
-<translation id="3643284063603988867">Ativar o recurso "Lembrar senha"</translation>
 <translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
@@ -5349,21 +5347,6 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="583627479140113555">Ativar a importação de senhas salvas na primeira execução</translation>
 <translation id="5838452040629810808">Ativar destaque do cursor</translation>
 <translation id="5842283830553218200">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado por padrão.</translation>
-<translation id="5844880038533636588">Se definida, a política vai especificar uma lista de apps e extensões com instalação silenciosa, sem interação do usuário, e que não podem ser desinstalados ou desativados. As permissões são concedidas implicitamente, inclusive para as APIs de extensão enterprise.deviceAttributes e enterprise.platformKeys. Essas duas APIs não estão disponíveis para apps e extensões que não sejam de instalação forçada.
-
-      Se a política for deixada sem definição, nenhum app ou extensão será instalado automaticamente, e o usuário poderá desinstalar qualquer app ou extensão no <ph name="PRODUCT_NAME" />.
-
-      Esta política substitui a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se um app ou extensão de instalação forçada for removido da lista, será automaticamente desinstalado pelo <ph name="PRODUCT_NAME" />.
-
-      Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store poderão ter a instalação forçada apenas se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> ou registrada no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store poderão ter a instalação forçada apenas se a instância for gerenciada via MDM, associada a um domínio via MCX ou registrada no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />
-
-      O código-fonte de qualquer extensão pode ser modificado pelos usuários com ferramentas para desenvolvedores, o que pode prejudicar a funcionalidade da extensão. Se isso for uma preocupação, defina a política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
-
-      Cada item da lista da política é uma string que contém um ID de extensão e, opcionalmente, um URL de atualização separados por ponto e vírgula (;). O ID da extensão é a string de 32 letras encontrada, por exemplo, em chrome://extensions no modo de desenvolvedor. Se especificado, o URL de atualização vai apontar para um documento XML de manifesto de atualização (https://developer.chrome.com/extensions/autoupdate). O URL de atualização usará um destes esquemas: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ou <ph name="FILE_SCHEME" />. Por padrão, o URL de atualização da Chrome Web Store é usado. O URL de atualização definido nesta política só é usado na instalação inicial. As atualizações subsequentes da extensão empregam o URL indicado no manifesto da extensão.
-
-       Observação: esta política não se aplica ao modo de navegação anônima. Leia sobre a hospedagem de extensões (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="5847509620317822100">Este recurso foi removido no Chrome 100.
 
       Se a política for definida como "Ativada", apps instalados anteriormente pelo usuário em outros dispositivos serão recomendados. Eles vão aparecer no acesso rápido depois das recomendações de apps locais quando nenhum texto de pesquisa tiver sido inserido.
@@ -7950,11 +7933,6 @@ também é seguro.</translation>
 <translation id="8076521374016204899">Se a política for definida como "Ativada" ou não for definida, os usuários que autenticam com uma senha poderão bloquear a tela.
 
       Se a política for definida como "Desativada", os usuários não poderão bloquear a tela. Eles só poderão sair da sessão do usuário.</translation>
-<translation id="8077245272412229388">Adiciona contas já preenchidas do Kerberos. Se as credenciais do Kerberos coincidirem com as credenciais de login, uma conta poderá ser configurada para reutilizar as credenciais de login especificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" como conta principal e senha, respectivamente. Assim, o tíquete do Kerberos poderá ser recuperado automaticamente, a não ser que a "autenticação de dois fatores" esteja configurada. O usuário não poderá modificar contas adicionadas por meio desta política.
-
-          Se esta política for ativada, a lista de contas definidas por meio dela será adicionada às configurações de contas do Kerberos.
-
-          Se esta política for desativada ou não estiver definida, nenhuma conta será adicionada às configurações de contas do Kerberos, e todas as contas adicionadas anteriormente com essa política serão removidas. O usuário ainda poderá adicionar contas manualmente se a política "Os usuários podem adicionar contas do Kerberos" estiver ativada.</translation>
 <translation id="8078297389450285582">Se a política for definida como "Ativada" ou não for definida, o modelo de escurecimento inteligente será ativado e poderá aumentar o tempo de tela ativa. Se ocorrer esse aumento, os intervalos de desligamento, bloqueio e descanso da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 
       Se a política for definida como "Desativada", o modelo de escurecimento inteligente não influenciará a luminosidade da tela.</translation>

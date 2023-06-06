@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
 <translation id="2242467532204595597">Выкарыстоўвайце Chrome кожны раз, калі націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах.</translation>
-<translation id="22508856139286506">Адхіленыя папярэджанні (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Меню → Гісторыя</translation>
 <translation id="2252674110805316998">Вэб-пошук</translation>
 <translation id="2256933947031277845">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Не ўдалося захаваць змяненне.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Аўтазапаўненне пароляў</translation>
+<translation id="3265534588625245297">Кіруйце сайтамі, на якія вы падпісаны</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
 <translation id="3272527697863656322">Скасаваць</translation>
 <translation id="3277021493514034324">Адрас сайта скапіраваны</translation>
@@ -1072,6 +1072,7 @@
 <translation id="7887198238286927132">У мэтах аховы вашай прыватнасці Chrome не будзе выкарыстоўваць аўтазапаўненне ў гэтым полі.</translation>
 <translation id="7911190106180361398">Ваша арганізацыя не дазваляе сінхранізаваць усё.</translation>
 <translation id="7920949005883349320">Прыватнасць і бяспека</translation>
+<translation id="792357691529995513">Праблем не знойдзена</translation>
 <translation id="7930998711684428189">Папярэджвае вас у выпадку, калі пры ўцечцы даных былі раскрыты вашы паролі.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспарт пароляў...</translation>

@@ -1344,7 +1344,6 @@ Gosodiad newydd</translation>
 <translation id="6961121602502368900">Nid yw Distewi'r Ffôn ar gael ar broffil gwaith</translation>
 <translation id="6961840794482373852">Mae'r llwybr byr bysellfwrdd Alt + Saeth i fyny wedi newid. I ddefnyddio'r fysell Page Up, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth i fyny.</translation>
 <translation id="696267987219125751">Mae fframio'r camera wedi'i ddiffodd.</translation>
-<translation id="6964690557625666701">Mae'r holl eitemau sydd wedi'u pinio yn cael parti</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6972754398087986839">Cychwyn arni</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1519,6 +1518,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7780159184141939021">Cylchdroi'r Sgrîn</translation>
 <translation id="7796735576426975947">Hysbysiad newydd wedi'i guddio</translation>
 <translation id="7798302898096527229">Pwyswch Search neu Shift i ganslo.</translation>
+<translation id="780301667611848630">Dim diolch</translation>
 <translation id="7807067443225230855">Search ac Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal cryf</translation>

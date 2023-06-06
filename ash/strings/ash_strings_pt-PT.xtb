@@ -1344,7 +1344,6 @@ Nova instalação</translation>
 <translation id="6961121602502368900">A funcionalidade Silenciar telemóvel não está disponível no perfil de trabalho.</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima foi alterado. Para utilizar a tecla Página para cima, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
 <translation id="696267987219125751">O enquadramento da câmara está desativado.</translation>
-<translation id="6964690557625666701">Todos os itens afixados estão ocultos</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Começar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1519,6 +1518,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
+<translation id="780301667611848630">Não</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>

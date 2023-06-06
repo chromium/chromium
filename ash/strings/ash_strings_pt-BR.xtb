@@ -279,7 +279,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2224075387478458881">A gravação de tela não é permitida quando conteúdo protegido está visível</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
-<translation id="2248634276911611268">Abrir link em uma nova guia e alternar para ela</translation>
+<translation id="2248634276911611268">Abrir link em uma nova guia e mudar para ela</translation>
 <translation id="225680501294068881">Procurando dispositivos...</translation>
 <translation id="225716114209817872">Máximo</translation>
 <translation id="2257486738914982088">Algo deu errado no download do arquivo <ph name="FILENAME" /></translation>
@@ -1027,7 +1027,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="553675580533261935">Saindo da sessão</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5546397813406633847">Recuperar usuário</translation>
-<translation id="554893713779400387">Alternar para o ditado</translation>
+<translation id="554893713779400387">Mudar para o ditado</translation>
 <translation id="5551456515017410630">Abrir/fechar agenda</translation>
 <translation id="5551974246223970793">Acessar o próximo resultado ao pesquisar em uma página</translation>
 <translation id="5558091555391176027">Alternar a alta visibilidade do Compartilhar por proximidade</translation>
@@ -1147,7 +1147,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6043994281159824495">Sair agora</translation>
 <translation id="6045629311476491587">Usados por <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
-<translation id="6047696787498798094">O compartilhamento de tela será interrompido quando você alternar para outro usuário. Quer continuar?</translation>
+<translation id="6047696787498798094">O compartilhamento de tela será interrompido quando você mudar para outro usuário. Quer continuar?</translation>
 <translation id="6052614013050385269">Clicar com o botão direito do mouse em um link</translation>
 <translation id="6054305421211936131">Fazer login com cartão inteligente</translation>
 <translation id="6059276912018042191">Guias recentes do Chrome</translation>
@@ -1344,7 +1344,6 @@ Nova instalação</translation>
 <translation id="6961121602502368900">O recurso "Silenciar smartphone" não está disponível no perfil de trabalho</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima mudou. Para usar a tecla Page Up, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
 <translation id="696267987219125751">O enquadramento da câmera está desativado.</translation>
-<translation id="6964690557625666701">Todos os itens fixados estão em estantes</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Vamos começar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1519,6 +1518,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7780159184141939021">Girar tela</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Pressione Pesquisar ou Shift para cancelar.</translation>
+<translation id="780301667611848630">Não</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>

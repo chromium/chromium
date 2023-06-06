@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Näppäintä ei painettu: <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Nollaa datan käytön valittuna päivänä joka kuukausi</translation>
 <translation id="1442433966118452622">Kuvan lähde</translation>
+<translation id="1449035143498573192">Avaa Google Haussa</translation>
 <translation id="1451536289672181509">Laite on näppäimistö.</translation>
 <translation id="1459693405370120464">Sää</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Syötteet</translation>
 <translation id="7955587717700691983">Bluetooth-näppäimistö</translation>
 <translation id="7960831585769876809">Lämpötila</translation>
+<translation id="7971535376154084247">Yleiset asetukset</translation>
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
 <translation id="7978412674231730200">Yksityinen avain</translation>
 <translation id="7994702968232966508">EAP-tapa</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Kotiverkon palveluntarjoajan nimi</translation>
 <translation id="8475690821716466388">Wi-Fi-verkko on suojattu heikolla WEP PSK -protokollalla</translation>
 <translation id="8476242415522716722">näppäimistön takavalaistus</translation>
+<translation id="8476942730579767658">Windows ja työpöydät</translation>
 <translation id="8477551185774834963">DNS-viive hieman yli sallitun rajan</translation>
 <translation id="8483248364096924578">IP-osoite</translation>
 <translation id="8491311378305535241">HTTP-sivustoihin ei voi yhdistää palomuurin läpi Android-sovelluksilla</translation>

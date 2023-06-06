@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
 <translation id="2239626343334228536">Хөтчийн өгөгдлийг устгаж байна...</translation>
 <translation id="2242467532204595597">Мессеж, документ болон бусад аппад холбооснуудыг товших бүрдээ Chrome-г ашиглана уу.</translation>
-<translation id="22508856139286506">Үл хэрэгссэн сануулгууд (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Цэс → Түүх</translation>
 <translation id="2252674110805316998">Веб хайлт</translation>
 <translation id="2256933947031277845">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Таны өөрчлөлтийг хадгалж чадсангүй.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />-н <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">Автоматаар бөглөх хэсгийн нууц үгнүүд</translation>
+<translation id="3265534588625245297">Дагадаг сайтуудаа удирдана уу</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
 <translation id="3272527697863656322">Цуцлах</translation>
 <translation id="3277021493514034324">Сайтын хаягийг хуулсан</translation>
@@ -1072,6 +1072,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7887198238286927132">Таны нууцлалыг хамгаалахын тулд Chrome энэ талбарыг автоматаар бөглөхгүй.</translation>
 <translation id="7911190106180361398">Танай байгууллага танд бүх зүйлийг синк хийхийг зөвшөөрдөггүй.</translation>
 <translation id="7920949005883349320">Нууцлал, аюулгүй байдал</translation>
+<translation id="792357691529995513">Ямар ч асуудал олдсонгүй</translation>
 <translation id="7930998711684428189">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулга өгдөг.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Нууц үгийг экспортлох...</translation>

@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Η ιστοσελίδα φορτώθηκε</translation>
 <translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="2242467532204595597">Χρησιμοποιήστε το Chrome κάθε φορά που πατάτε συνδέσμους σε μηνύματα, έγγραφα και άλλες εφαρμογές.</translation>
-<translation id="22508856139286506">Προειδοποιήσεις που παραβλέφθηκαν (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Μενού → Ιστορικό</translation>
 <translation id="2252674110805316998">Αναζήτηση στον Ιστό</translation>
 <translation id="2256933947031277845">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Δεν ήταν δυνατή η αποθήκευση της αλλαγής που πραγματοποιήσατε.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> από <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Αυτόματη συμπλήρωση κωδικών πρόσβασης</translation>
+<translation id="3265534588625245297">Διαχειριστείτε τους ιστοτόπους που ακολουθείτε</translation>
 <translation id="3268451620468152448">Ανοικτές καρτέλες</translation>
 <translation id="3272527697863656322">Ακύρωση</translation>
 <translation id="3277021493514034324">Η διεύθυνση ιστοτόπου αντιγράφηκε</translation>

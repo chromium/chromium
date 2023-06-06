@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Клавиша <ph name="KEY_NAME" /> не нажата</translation>
 <translation id="1435763214710588005">Каждый месяц объем переданных данных автоматически обнуляется в указанный день</translation>
 <translation id="1442433966118452622">Источник изображения</translation>
+<translation id="1449035143498573192">Открыть в Google Поиске</translation>
 <translation id="1451536289672181509">Это клавиатура.</translation>
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1468664791493211953">Предложения</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Способы ввода</translation>
 <translation id="7955587717700691983">Клавиатура Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7971535376154084247">Общие настройки</translation>
 <translation id="7977800524392185497">Чтобы подключиться к сети <ph name="NETWORK_NAME" />, перейдите в настройки.</translation>
 <translation id="7978412674231730200">Закрытый ключ</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Название провайдера</translation>
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
 <translation id="8476242415522716722">подсветка клавиатуры</translation>
+<translation id="8476942730579767658">Окна и рабочие столы</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8491311378305535241">Не удается подключиться к HTTPS-сайтам из приложений для Android через брандмауэр.</translation>

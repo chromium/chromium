@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Белгилүү тармактар</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> туташты.</translation>
 <translation id="1240638468526743569">Колдонмо</translation>
+<translation id="1242704516557658755">Терезелерди тизмедеги эң акыркы колдонулган терезеден баштап артка кайтуу</translation>
 <translation id="124678866338384709">Учурдагы өтмөктү жабуу</translation>
 <translation id="1246890715821376239">Колдоого алынбаган колдонмолор</translation>
 <translation id="1247372569136754018">Микрофон (ички)</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">Экрандагы баскычтоп өчүрүлдү</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> түзмөгүн кубаттоодо</translation>
+<translation id="1276975447697633661">Файлды тандап, <ph name="KEY" /> баскычын басыңыз</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Телефондун жайгашкан жерин аныктоо</translation>
 <translation id="1287002645302686982">"<ph name="DESK_TEMPLATE_NAME" />" деп аталган иш такта бар</translation>
@@ -346,6 +348,7 @@
 <translation id="2528111225373402384">Байланыш түйүнүнүн параметрлери</translation>
 <translation id="2530896289327917474">Caret серептөөсүн күйгүзүү же өчүрүү</translation>
 <translation id="2531025035050312891">түзмөк жай</translation>
+<translation id="2531107890083353124">Өтмөктү сүйрөгөндө, <ph name="KEY_ONE" /> баскычын басып туруңуз</translation>
 <translation id="254900897760075745">Тандалган контентти алмашуу буферине көчүрүү</translation>
 <translation id="2549711466868162843">Жарыкты жакшыртуу</translation>
 <translation id="2549985041256363841">Жаздырып баштоо</translation>
@@ -391,6 +394,7 @@
 <translation id="2750932254614666392">"Өчүрүү"</translation>
 <translation id="2750941250130734256">Активдүү терезе ажыратылды.</translation>
 <translation id="2761723519669354964">Текчедеги бөлүнүп көрсөтүлгөн нерсени ачуу</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />—<ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
 <translation id="2782591952652094792">Сүрөткө тартуу режиминен чыгуу</translation>
 <translation id="2785499565474703580">1 түзмөк туташып турат</translation>
@@ -424,6 +428,7 @@
 <translation id="2942350706960889382">Жалгаштырылган лупа</translation>
 <translation id="2942516765047364088">Текченин жайгашуусу</translation>
 <translation id="2946119680249604491">Туташуу кошуу</translation>
+<translation id="2949420361496057765"><ph name="MODIFIER" /> баскычын басып, шилтемени чыкылдатыңыз</translation>
 <translation id="295852781144570696">Түзмөктөгү аудиолор</translation>
 <translation id="2960314608273155470">Сүрөткө тартуу режими, демейки шартта: <ph name="SOURCE" /> <ph name="TYPE" />. Өтүү үчүн баскычтоптогу "Tab" баскычын басыңыз.</translation>
 <translation id="2961963223658824723">Бир жерден ката кетти. Бир нече секунддан кийин кайталап көрүңүз.</translation>
@@ -529,6 +534,7 @@
 <translation id="3410336247007142655">Караңгы теманын параметрлерин көрсөтүү</translation>
 <translation id="3413817803639110246">Азырынча бир да эскертме жок</translation>
 <translation id="3417835166382867856">Өтмөктөрдү издөө</translation>
+<translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> баскычын коё бербей басып, ачкыңыз келген терезе ачылганча <ph name="KEY" /> дегенди таптап, анан коё бериңиз</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> тармагынан ажыратуу</translation>
 <translation id="3430396595145920809">Артка кайтуу үчүн экраныңыздын оң четинен сүрүп коюңуз</translation>
 <translation id="3431517721463707585">14-иш такта</translation>
@@ -543,6 +549,7 @@
 <translation id="346243998268439747">Чоңойтуп/кичирейтүү деңгээлин баштапкы абалга келтирүү</translation>
 <translation id="3465223694362104965">Түзмөккө акыркы жолу киргениңизден кийин ага башка баскычтоп туташтырылды. Аны колдонуудан мурда ал ишенимдүү экенин текшериңиз.</translation>
 <translation id="3465356146291925647">Администраторуңуз башкарат</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, андан соң <ph name="KEY_TWO" /> же <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Текче автоматтык түрдө жашырылды</translation>
@@ -607,6 +614,7 @@
 <translation id="3677931086890821290">Жайгашкан жерди аныктоого уруксат алган бардык колдонмолор менен вебсайттарга, ошондой эле ChromeOS'ко Wi-Fi жана мобилдик тармактардын жайгашкан жерин колдонуу мүмкүнчүлүгү берилет.</translation>
 <translation id="3679827876008292680">Терезедеги акыркы өтмөккө өтүү</translation>
 <translation id="36813544980941320">Wi-Fi тармактары телефонуңуз жана <ph name="DEVICE_NAME" /> түзмөгүңүз менен бөлүшүлөт</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, андан соң <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Вебсайттар</translation>
 <translation id="3702809606464356667">Учурдагы иш тактадагы терезелер көрсөтүлүп жатат. Бардык иш такталардагы терезелерди көрүү үчүн өйдө жебени басыңыз</translation>
 <translation id="3702846122927433391">Нигерия калкынын саны</translation>
@@ -635,6 +643,7 @@
 <translation id="383058930331066723">Батареяны үнөмдөгүч режими күйүк</translation>
 <translation id="383629559565718788">Баскычтоптун параметрлерин көрсөтүү</translation>
 <translation id="384082539148746321">Үлгүнү өчүрөсүзбү?</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, андан соң <ph name="KEY_ONE" /> же <ph name="KEY_TWO" /> же <ph name="KEY_THREE" /> же <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Бир дагы тармак маалыматы жок</translation>
 <translation id="385051799172605136">Артка</translation>
 <translation id="385300504083504382">Киришүү</translation>
@@ -853,6 +862,7 @@
 <translation id="4798888871844665150">Алмашуу буфериндеги элемент көчүрүлдү. Көрүү үчүн <ph name="SHORTCUT_KEY_NAME" /> + V баскычтарын басыңыз.</translation>
 <translation id="479989351350248267">издөө</translation>
 <translation id="4804818685124855865">Ажыратуу</translation>
+<translation id="4813311884204119883">Шилтемени өтмөк тасмасындагы бош жерге сүйрөңүз</translation>
 <translation id="4814539958450445987">Аккаунтка кирүү экраны</translation>
 <translation id="481455355267255546">Кийинки</translation>
 <translation id="4831034276697007977">Автоматтык түрдө чыкылдатууларды чын эле өчүргүңүз келеби?</translation>
@@ -860,6 +870,7 @@
 <translation id="485592688953820832">Эч кандай аракет аткарылбасын (тындыруу)</translation>
 <translation id="485634149294284819">Баскычтоп менюсун киргизиңиз</translation>
 <translation id="485806788160414322">Медиа файлды ойнотуу же тындыруу</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" />, андан соң <ph name="KEY_ONE" /> же <ph name="KEY_TWO" /> же <ph name="KEY_THREE" /> же <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> файлын жүктөп алуу үчүн тармакка туташууну текшериңиз</translation>
 <translation id="4864369630010738180">Кирүүдө…</translation>
 <translation id="4864648187878336334">15-иш такта</translation>
@@ -1003,6 +1014,7 @@
 <translation id="5463129623250377817">Тандалган текстти алмашуу буферине кесүү</translation>
 <translation id="5465662442746197494">Жардам керекпи?</translation>
 <translation id="547979256943495781">Текче экрандын оң жагында</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> же <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Орнотулган программанын жаңы версиясы чыкты</translation>
 <translation id="5503884284981862082">Google Жардамчыны ачуу/жабуу</translation>
 <translation id="5506975627792768506">Лупаны күйгүзүү же өчүрүү</translation>
@@ -1194,6 +1206,7 @@
 <translation id="6330012934079202188">Бардык иш такталардагы терезелер көрсөтүлүп жатат. Учурдагы иш тактадагы терезелерди көрүү үчүн өйдө жебени басыңыз</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> тарабынан башкарылган сеанс</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> туташты</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, андан соң <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> же <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">СУНУШТАЛГАН КОЛДОНМОЛОР</translation>
 <translation id="6352082849089527770">Белгисиз тармактар</translation>
 <translation id="6359587239691116345">Жаңы функцияларды жана коопсуздук жакшыртууларын алыңыз. Эгер бул жаңыртууну четке какчаңыз, түзмөгүңүз туура иштебей, коопсуздук жана майнаптуулук көйгөйлөрү чыгышы мүмкүн.</translation>
@@ -1239,6 +1252,7 @@
 <translation id="6537924328260219877">Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Телефондун батареясы <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Скандалган <ph name="FILENAME" /> жүктөлүп алынууда</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> экранына чыгаруу</translation>
+<translation id="6555373427270923730">Веб даректи дарек тилкесине киргизип, <ph name="MODIFIER" /><ph name="KEY" /> баскычтарын басыңыз</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Жаңы колдонмо орнотулду</translation>
 <translation id="6559976592393364813">Администраторго кайрылыңыз</translation>
@@ -1330,7 +1344,6 @@
 <translation id="6961121602502368900">Жумуш профилинде телефондун үнүн басууга болбойт</translation>
 <translation id="6961840794482373852">Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Барактын өйдө жагына жылдыруу баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + өйдө жебени басыңыз.</translation>
 <translation id="696267987219125751">Камеранын алкагы өчүк.</translation>
-<translation id="6964690557625666701">Бардык кадалган нерселер көрүнбөй турат</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Баштоо</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1505,6 +1518,7 @@
 <translation id="7780159184141939021">Экранды буруу</translation>
 <translation id="7796735576426975947">Жаңы билдирме жашырылды</translation>
 <translation id="7798302898096527229">Өчүрүп коюу үчүн Search же Shift баскычтарын басыңыз.</translation>
+<translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7807067443225230855">Издөө жана Жардамчы</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> жана <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Күчтүү сигнал</translation>
@@ -1647,6 +1661,7 @@
 <translation id="8425213833346101688">Өзгөртүү</translation>
 <translation id="8426708595819210923">Кутмандуу кечиңиз менен, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />—<ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Тармак параметрлери</translation>
 <translation id="8433977262951327081">Баштоо панелиндеги киргизүү параметрлеринин менюсунун көбүгүн ача турган ыкчам баскычтар өзгөргөн. <ph name="OLD_SHORTCUT" /> ордуна <ph name="NEW_SHORTCUT" /> баскычтарын колдонуңуз.</translation>
 <translation id="8437311513256731931">Пикир билдирүү куралын ачуу</translation>
@@ -1678,6 +1693,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү жаңыртууну сунуштайт</translation>
 <translation id="8563862697512465947">Билдирмелердин параметрлери</translation>
 <translation id="857201607579416096">Меню экрандын төмөнкү оң бурчуна жылдырылды.</translation>
+<translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> баскычтарын басып, шилтемени чыкылдатыңыз</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Колдонмолоруңузду аталышы же түсү боюнча иргей аласыз</translation>
 <translation id="8609384513243082612">Жаңы өтмөк ачуу</translation>

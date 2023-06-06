@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" />-sleutel is nie gedruk nie</translation>
 <translation id="1435763214710588005">Stel datagebruik outomaties elke maand op ’n gekose dag terug</translation>
 <translation id="1442433966118452622">Prentbron</translation>
+<translation id="1449035143498573192">Maak in Google Search oop</translation>
 <translation id="1451536289672181509">Toestel is 'n sleutelbord.</translation>
 <translation id="1459693405370120464">Weer</translation>
 <translation id="1468664791493211953">Aanbiedings</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Invoere</translation>
 <translation id="7955587717700691983">Bluetooth-sleutelbord</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
+<translation id="7971535376154084247">Algemene kontroles</translation>
 <translation id="7977800524392185497">Gaan na Instellings om by 'n <ph name="NETWORK_NAME" />-netwerk aan te sluit</translation>
 <translation id="7978412674231730200">Private sleutel</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Tuisverskaffernaam</translation>
 <translation id="8475690821716466388">Wi-fi-netwerk is met swak protokol WEP PSK beveilig</translation>
 <translation id="8476242415522716722">sleutelbord ondergloed</translation>
+<translation id="8476942730579767658">Vensters en lessenaars</translation>
 <translation id="8477551185774834963">DNS-traagheid is effens bo toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan nie deur brandmuur van Android-programme af aan HTTP-webwerwe koppel nie</translation>

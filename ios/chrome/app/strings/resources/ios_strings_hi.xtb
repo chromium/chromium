@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">वेबपेज लोड हो गया है</translation>
 <translation id="2239626343334228536">ब्राउज़िंग डेटा साफ़ हो रहा है...</translation>
 <translation id="2242467532204595597">मैसेज, दस्तावेज़ों, और अन्य ऐप्लिकेशन में मिले लिंक पर टैप करके, किसी भी समय Chrome का इस्तेमाल करें.</translation>
-<translation id="22508856139286506">खारिज की गई चेतावनियां (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">मेन्यू → इतिहास</translation>
 <translation id="2252674110805316998">वेब खोज</translation>
 <translation id="2256933947031277845">आपका संगठन, आपको सिर्फ़ कुछ खास खातों से साइन इन करने की अनुमति देता है.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">आपके बदलाव को सेव नहीं किया जा सका.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" /> में से <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">AutoFill Passwords</translation>
+<translation id="3265534588625245297">उन साइटों को मैनेज करें जिन्हें आप फ़ॉलो करते हैं</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
 <translation id="3272527697863656322">अभी नहीं</translation>
 <translation id="3277021493514034324">साइट का पता कॉपी किया गया</translation>

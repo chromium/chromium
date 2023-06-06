@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> थिचिएको छैन</translation>
 <translation id="1435763214710588005">चयन गरिएको दिनमा डेटा प्रयोग स्वतः रिसेट गर्छ</translation>
 <translation id="1442433966118452622">फोटोको स्रोत</translation>
+<translation id="1449035143498573192">Google Search मा खोल्नुहोस्</translation>
 <translation id="1451536289672181509">यो डिभाइस किबोर्ड हो।</translation>
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1468664791493211953">योजनाहरू</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">इनपुटहरू</translation>
 <translation id="7955587717700691983">ब्लुटुथ भएको किबोर्ड</translation>
 <translation id="7960831585769876809">तापक्रम</translation>
+<translation id="7971535376154084247">सामान्य कन्ट्रोलहरू</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमा कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="7978412674231730200">निजी कुञ्जी</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">गृह प्रदायकको नाम</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="8476242415522716722">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
+<translation id="8476942730579767658">विन्डो तथा डेस्कहरू</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
 <translation id="8483248364096924578">IP एड्रेस</translation>
 <translation id="8491311378305535241">Android एपहरूबाट फायरवाल पार गरेर HTTP वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>

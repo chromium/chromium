@@ -243,6 +243,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1998100899771863792">Huidige lessenaar</translation>
 <translation id="2001444736072756133">Deursoek jou <ph name="CATEGORY" />, lêers, programme en meer.</translation>
 <translation id="2016340657076538683">Tik 'n boodskap</translation>
+<translation id="2017998995161831444">Maak “Hulp” in Verken-app oop</translation>
 <translation id="2018630726571919839">Vertel vir my 'n grappie</translation>
 <translation id="2021864487439853900">Klik om te ontsluit</translation>
 <translation id="2023558322300866873">Jy kan pakketvasvang enige tyd stop</translation>
@@ -630,6 +631,7 @@ Koppel jou toestel aan krag.</translation>
 <translation id="3773700760453577392">'n Administrateur laat nie veelvuldige aanmeldings deur <ph name="USER_EMAIL" /> toe nie.
 Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3779139509281456663">Koppel tans <ph name="NAME" /></translation>
+<translation id="3781910048497807059">Skuif fokus na vorige paneel</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Sluit</translation>
 <translation id="3796198851576711985">batterygesondheid</translation>
@@ -768,6 +770,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4424159417645388645">Lessenaar 5</translation>
+<translation id="4427695046139341014">Spelkontroleskerm</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4435022394553622295">Bekyk jou foon se kennisgewings en programme op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Programme word volgens naam gerangskik</translation>
@@ -800,6 +803,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4541706525461326392">Verwyder tans profiel. Dit kan 'n paar minute neem.</translation>
 <translation id="4544483149666270818">Kies 'n venster om op te neem</translation>
 <translation id="454541942614298893">my toestel</translation>
+<translation id="4545950850562423083">Stoor huidige bladsy as boekmerk</translation>
 <translation id="4548482551627849548">Skuif aktiewe venster na lessenaar aan die linkerkant toe</translation>
 <translation id="4560576029703263363">Aan</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -856,6 +860,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4789348252524569426">Kan nie spraaklêers installeer nie. Jou toestel moet opgedateer word. Herbegin jou toestel en probeer weer.</translation>
 <translation id="478959186716341421">Saai tans uit</translation>
 <translation id="4798622944000246716">Jou mobiele netwerk steun nie warmkol nie</translation>
+<translation id="4798888871844665150">Gekopieerde item is reeds op knipbord. Gebruik <ph name="SHORTCUT_KEY_NAME" /> + V om te bekyk.</translation>
 <translation id="479989351350248267">deursoek</translation>
 <translation id="4804818685124855865">Ontkoppel</translation>
 <translation id="4813311884204119883">Sleep skakel na leë area op die oortjiestrook</translation>
@@ -956,6 +961,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5229343007215035173">Skakel privaatheidskerm aan of af</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="523505283826916779">Toeganklikheidsinstellings</translation>
+<translation id="5238719049014159442">Maak lanseerder oop/toe</translation>
 <translation id="5245201184978705914">Kan nie transkripsie genereer nie</translation>
 <translation id="5253783950165989294">Gekoppel aan 'n toestel genaamd <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="5258528442992323769">Geen gestoorde lessenaars nie</translation>
@@ -1265,6 +1271,7 @@ Nuwe installasie</translation>
 <translation id="6614169507485700968">Privaatheidskerm is aan</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-, <ph name="APP_2_TITLE" />- en ander kennisgewings word versteek omdat kykbeskerming aan is</translation>
 <translation id="6627638273713273709">Soek+Shift+K</translation>
+<translation id="662830937908749204">Skuif fokus na volgende paneel</translation>
 <translation id="6637729079642709226">Verander tyd</translation>
 <translation id="6641720045729354415">Wissel intydse onderskrif. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ontdoen sorteervolgorde volgens naam</translation>
@@ -1338,7 +1345,6 @@ Nuwe installasie</translation>
 <translation id="6961121602502368900">Maak Foon Stil is nie op werkprofiel beskikbaar nie</translation>
 <translation id="6961840794482373852">Die kortpadsleutel Alt + oppyl het verander. Om die Page Up-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + oppyl druk.</translation>
 <translation id="696267987219125751">Kamera se raamfunksie is af.</translation>
-<translation id="6964690557625666701">Alle vasgespelde items hou tans partytjie</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom aan die gang</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1423,6 +1429,7 @@ Nuwe installasie</translation>
 <translation id="7401222354741467707">Neem volle skermskoot of skermopname</translation>
 <translation id="7405710164030118432">Voer jou Family Link-ouertoegangskode in om die toestel te ontsluit</translation>
 <translation id="7406608787870898861">Stel jou mobiele netwerk klaar op</translation>
+<translation id="7406854842098869085">Druk en hou <ph name="MODIFIER_1" />, tik op <ph name="KEY" /> totdat jy die venster kry wat jy wil oopmaak, en los dan</translation>
 <translation id="740790383907119240">Programkortpaaie</translation>
 <translation id="7413851974711031813">Druk Escape om toe te maak</translation>
 <translation id="7416471219712049036">Stoor huidige bladsy</translation>
@@ -1502,6 +1509,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7727952505535211425">Maak die webwerf in die adresbalk in ’n nuwe oortjie oop</translation>
 <translation id="77365090426890123">geheuegebruik</translation>
 <translation id="7742327441377685481">Geen kennisgewings nie</translation>
+<translation id="7748275671948949022">Merk lanseerderknoppie op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
 <translation id="776344839111254542">Klik om die opdateringbesonderhede te sien</translation>
 <translation id="7768784765476638775">Hardoplees</translation>
@@ -1511,6 +1519,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7780159184141939021">Draai skerm</translation>
 <translation id="7796735576426975947">Nuwe kennisgewing is versteek</translation>
 <translation id="7798302898096527229">Druk Search of Shift om te kanselleer.</translation>
+<translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7807067443225230855">Soek en assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterk sein</translation>
@@ -1518,6 +1527,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7842569679327885685">Waarskuwing: Eksperimentele kenmerk</translation>
 <translation id="7846634333498149051">Sleutelbord</translation>
 <translation id="7848989271541991537">Is geskuif na Bladsy <ph name="PAGE_NUMBER" />, ry <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851039877802112575">Skuif fokus na opspringers en dialoë</translation>
 <translation id="7851768487828137624">Kanarie</translation>
 <translation id="7860671499921112077">Swiep met drie vingers op om by Oorsig in te gaan</translation>
 <translation id="7862292329216937261">Om die toestel as ’n gas te gebruik, moet jy afmeld en dan Blaai as ’n Gas onderaan die skerm kies.</translation>
@@ -1655,6 +1665,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> tot <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Netwerkinstellings</translation>
 <translation id="8433977262951327081">Die kortpad om die invoeropsies se kieslysborrel op die rak te wys, het verander. Gebruik asseblief <ph name="NEW_SHORTCUT" /> in plaas van <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">Maak terugvoernutsding oop</translation>
 <translation id="8443879455002739353">"Kopieer"</translation>
 <translation id="8444246603146515890">Lessenaar <ph name="DESK_TITILE" /> is geaktiveer</translation>
 <translation id="8446884382197647889">Kom meer te wete</translation>
@@ -1706,6 +1717,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8676770494376880701">Laekraglaaier gekoppel</translation>
 <translation id="8683506306463609433">Werkverrigtingnasporing is aktief</translation>
 <translation id="8703634754197148428">Begin opname. Nadat die opname begin het, kan jy Alt + Shift + L gebruik om na die rak toe te gaan en die Stop Opname-knoppie te kry.</translation>
+<translation id="8704155109538237473">Fokus op die prent-in-prent-venster</translation>
 <translation id="870917907284186124">Skakel diktering aan/af (tik met jou stem)</translation>
 <translation id="8717459106217102612">Kies vorige woord of letter</translation>
 <translation id="8721053961083920564">Wissel volume. <ph name="STATE_TEXT" /></translation>

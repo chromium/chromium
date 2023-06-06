@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Відомі мережі</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
 <translation id="1240638468526743569">Додаток</translation>
+<translation id="1242704516557658755">Переглядати вікна зі списку нещодавніх, починаючи з того, яке використовувалось останнім</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246890715821376239">Непідтримувані додатки</translation>
 <translation id="1247372569136754018">Мікрофон (внутрішній)</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1275285675049378717">Живлення пристрою (<ph name="POWER_SOURCE" />)</translation>
+<translation id="1276975447697633661">Виберіть файл і натисніть <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Пошук телефона</translation>
 <translation id="1287002645302686982">Ви вже зберегти робочий стіл під назвою "<ph name="DESK_TEMPLATE_NAME" />"</translation>
@@ -241,6 +243,7 @@
 <translation id="1998100899771863792">Поточний робочий стіл</translation>
 <translation id="2001444736072756133">Шукайте <ph name="CATEGORY" />, файли, додатки тощо.</translation>
 <translation id="2016340657076538683">Введіть повідомлення</translation>
+<translation id="2017998995161831444">Відкрити довідку в додатку Можливості</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
 <translation id="2021864487439853900">Натисніть, щоб розблокувати</translation>
 <translation id="2023558322300866873">Ви можете будь-коли зупинити захоплення пакетів</translation>
@@ -345,6 +348,7 @@
 <translation id="2528111225373402384">Налаштування точки доступу</translation>
 <translation id="2530896289327917474">Увімкнути або вимкнути клавішну навігацію</translation>
 <translation id="2531025035050312891">пристрій працює повільно</translation>
+<translation id="2531107890083353124">Перетягуючи вкладку, натисніть <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Копіювати вибраний контент у буфер обміну</translation>
 <translation id="2549711466868162843">Покращити освітлення</translation>
 <translation id="2549985041256363841">Почати запис</translation>
@@ -390,6 +394,7 @@
 <translation id="2750932254614666392">"Видалити"</translation>
 <translation id="2750941250130734256">Активне вікно відкріплено.</translation>
 <translation id="2761723519669354964">Відкрити виділений елемент на панелі запуску</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Вийти з режиму зйомки</translation>
 <translation id="2785499565474703580">Підключено 1 пристрій</translation>
@@ -423,6 +428,7 @@
 <translation id="2942350706960889382">Закріплена лупа</translation>
 <translation id="2942516765047364088">Розташування полиці</translation>
 <translation id="2946119680249604491">Додати з’єднання</translation>
+<translation id="2949420361496057765">Натисніть <ph name="MODIFIER" />, а потім – посилання</translation>
 <translation id="295852781144570696">Звук із пристрою</translation>
 <translation id="2960314608273155470">Режим зйомки. За умовчанням – <ph name="TYPE" /> <ph name="SOURCE" />. Для навігації за допомогою клавіатури натисніть клавішу Tab.</translation>
 <translation id="2961963223658824723">Сталася помилка. Повторіть спробу за кілька секунд.</translation>
@@ -528,6 +534,7 @@
 <translation id="3410336247007142655">Показати налаштування темної теми</translation>
 <translation id="3413817803639110246">Ще нічого немає</translation>
 <translation id="3417835166382867856">Шукати вкладки</translation>
+<translation id="3426253816581969877">Утримуйте <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> і натискайте <ph name="KEY" />, доки не перейдете в потрібне вікно, а тоді відпустіть</translation>
 <translation id="3428447136709161042">Відключитися від мережі "<ph name="NETWORK_NAME" />"</translation>
 <translation id="3430396595145920809">Щоб повернутися, проведіть пальцем від правого краю</translation>
 <translation id="3431517721463707585">Робочий стіл 14</translation>
@@ -542,6 +549,7 @@
 <translation id="346243998268439747">Скинути масштабування</translation>
 <translation id="3465223694362104965">Після вашого останнього входу до пристрою було підключено іншу клавіатуру. Переконайтеся, що вона безпечна, перш ніж користуватися нею.</translation>
 <translation id="3465356146291925647">Мережею керує адміністратор</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім – <ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Комбінація клавіш "Control-Shift-Space"</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Автоматичне ховання полиці</translation>
@@ -606,6 +614,7 @@
 <translation id="3677931086890821290">Усі додатки й веб-сайти, які мають дозвіл на доступ до геоданих, і ChromeOS зможуть використовувати Wi-Fi і мобільні мережі для геолокації.</translation>
 <translation id="3679827876008292680">Перейти на останню вкладку у вікні</translation>
 <translation id="36813544980941320">Ваш телефон і пристрій <ph name="DEVICE_NAME" /> підключатимуться до однакових мереж Wi-Fi</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Веб-сайти</translation>
 <translation id="3702809606464356667">Показано вікна поточного робочого столу. Щоб показати вікна всіх робочих столів, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
@@ -621,6 +630,7 @@
 <translation id="3765841986579723851">Змінено сьогодні</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
 <translation id="3779139509281456663">Підключення пристрою <ph name="NAME" /></translation>
+<translation id="3781910048497807059">Виділити попередню панель</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
 <translation id="3796198851576711985">стан акумулятора</translation>
@@ -633,6 +643,7 @@
 <translation id="383058930331066723">Режим енергозбереження ввімкнено</translation>
 <translation id="383629559565718788">Показати налаштування клавіатури</translation>
 <translation id="384082539148746321">Видалити шаблон?</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, а потім – <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> або <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Інформація про мережу не доступна</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">На початок</translation>
@@ -758,6 +769,7 @@
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
 <translation id="4424159417645388645">Робочий стіл 5</translation>
+<translation id="4427695046139341014">Ігрова панель</translation>
 <translation id="4430019312045809116">Гучність</translation>
 <translation id="4435022394553622295">Переглядайте сповіщення й додатки на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Додатки відсортовано за назвою</translation>
@@ -790,6 +802,7 @@
 <translation id="4541706525461326392">Триває видалення профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="4544483149666270818">Виберіть вікно, яке потрібно записати на відео</translation>
 <translation id="454541942614298893">мій пристрій</translation>
+<translation id="4545950850562423083">Зберегти поточну сторінку як закладку</translation>
 <translation id="4548482551627849548">Перемістити активне вікно на робочий стіл ліворуч</translation>
 <translation id="4560576029703263363">Увімкнено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -846,8 +859,10 @@
 <translation id="4789348252524569426">Не вдається встановити файли для розпізнавання мовлення. Потрібно оновити пристрій. Перезапустіть пристрій і повторіть спробу.</translation>
 <translation id="478959186716341421">Трансляція</translation>
 <translation id="4798622944000246716">Ваша мобільна мережа не підтримує точку доступу</translation>
+<translation id="4798888871844665150">Об’єкт уже скопійовано в буфер обміну. Щоб переглянути його, натисніть <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">пошук</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
+<translation id="4813311884204119883">Перетягніть посилання на порожнє місце на панелі вкладок</translation>
 <translation id="4814539958450445987">Екран входу</translation>
 <translation id="481455355267255546">Найближчі події</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
@@ -855,6 +870,7 @@
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
 <translation id="485634149294284819">Меню вибору розкладки клавіатури</translation>
 <translation id="485806788160414322">Запустити або призупинити відтворення медіаконтенту</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" />, а потім <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> або <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869">Щоб завантажити файл "<ph name="FILENAME" />", перевірте з’єднання з мережею</translation>
 <translation id="4864369630010738180">Вхід…</translation>
 <translation id="4864648187878336334">Робочий стіл 15</translation>
@@ -944,6 +960,7 @@
 <translation id="5229343007215035173">Увімкнути або вимкнути екран конфіденційності</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="523505283826916779">Налаштування доступності</translation>
+<translation id="5238719049014159442">Відкрити або закрити панель запуску</translation>
 <translation id="5245201184978705914">Не вдалося створити текстову версію</translation>
 <translation id="5253783950165989294">Підключено до пристрою "<ph name="DEVICE_NAME" />", заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Немає збережених робочих столів</translation>
@@ -997,6 +1014,7 @@
 <translation id="5463129623250377817">Вирізати вибраний контент і зберегти його в буфері обміну</translation>
 <translation id="5465662442746197494">Потрібна допомога?</translation>
 <translation id="547979256943495781">Полицю розташовано праворуч</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> або <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Доступні оновлення мікропрограми</translation>
 <translation id="5503884284981862082">Відкрити або закрити Google Асистент</translation>
 <translation id="5506975627792768506">Увімкнути або вимкнути лупу</translation>
@@ -1188,6 +1206,7 @@
 <translation id="6330012934079202188">Показано вікна всіх робочих столів. Щоб показати вікна поточного робочого столу, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Пристрій <ph name="DEVICE_NAME" /> під’єднано</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРОПОЗИЦІЇ ДОДАТКІВ</translation>
 <translation id="6352082849089527770">Невідомі мережі</translation>
 <translation id="6359587239691116345">Отримуйте доступ до найновіших функцій і покращеної безпеки. Якщо відхилити це оновлення, ваш пристрій може працювати неналежним чином і у вас можуть виникати проблеми з безпекою та продуктивністю.</translation>
@@ -1233,6 +1252,7 @@
 <translation id="6537924328260219877">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Сканування завантаженого файлу "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="6555373427270923730">Введіть веб-адресу в адресному рядку й натисніть <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нове встановлення</translation>
 <translation id="6559976592393364813">Зверніться до адміністратора</translation>
@@ -1250,6 +1270,7 @@
 <translation id="6614169507485700968">Екран конфіденційності ввімкнено</translation>
 <translation id="6625718907317144388">Сповіщення з додатків <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> та інших приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="662830937908749204">Виділити наступну панель</translation>
 <translation id="6637729079642709226">Змінення часу</translation>
 <translation id="6641720045729354415">Перемкнути живі субтитри. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Скасувати сортування за назвою</translation>
@@ -1323,7 +1344,6 @@
 <translation id="6961121602502368900">Звук телефона не можна вимкнути в робочому профілі</translation>
 <translation id="6961840794482373852">Комбінацію клавіш Alt + стрілка вгору змінено. Щоб скористатися клавішею Page Up, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вгору.</translation>
 <translation id="696267987219125751">Режим слідкування вимкнено.</translation>
-<translation id="6964690557625666701">Усі закріплені об’єкти перебувають у режимі Shelf Party</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Почати</translation>
 <translation id="6979158407327259162">Диск Google</translation>
@@ -1408,6 +1428,7 @@
 <translation id="7401222354741467707">Зробити знімок усього екрана або почати запис відео з нього</translation>
 <translation id="7405710164030118432">Щоб розблокувати пристрій, введіть код доступу батьків із Family Link</translation>
 <translation id="7406608787870898861">Завершіть налаштування мобільної мережі</translation>
+<translation id="7406854842098869085">Утримуючи клавішу <ph name="MODIFIER_1" />, натискайте клавішу <ph name="KEY" />, доки не перейдете в потрібне вікно, а тоді відпустіть</translation>
 <translation id="740790383907119240">Ярлики додатка</translation>
 <translation id="7413851974711031813">Щоб закрити, натисніть клавішу Escape</translation>
 <translation id="7416471219712049036">Зберегти поточну сторінку</translation>
@@ -1487,6 +1508,7 @@
 <translation id="7727952505535211425">Відкрити веб-сайт в адресному рядку на новій вкладці</translation>
 <translation id="77365090426890123">використання пам’яті</translation>
 <translation id="7742327441377685481">Немає сповіщень</translation>
+<translation id="7748275671948949022">Виділити кнопку запуску на панелі</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
 <translation id="776344839111254542">Натисніть, щоб переглянути деталі оновлення</translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
@@ -1496,6 +1518,7 @@
 <translation id="7780159184141939021">Обернути екран</translation>
 <translation id="7796735576426975947">Нове сповіщення приховано</translation>
 <translation id="7798302898096527229">Щоб скасувати, натисніть клавішу Search або Shift.</translation>
+<translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7807067443225230855">Пошук і Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">потужний сигнал</translation>
@@ -1503,6 +1526,7 @@
 <translation id="7842569679327885685">Попередження. Експериментальна функція</translation>
 <translation id="7846634333498149051">Клавіатура</translation>
 <translation id="7848989271541991537">Переміщено на сторінку <ph name="PAGE_NUMBER" />, рядок <ph name="ROW_NUMBER" />, стовпець <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851039877802112575">Виділити спливаючі або діалогові вікна</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Щоб відкрити режим огляду, проведіть трьома пальцями вгору</translation>
 <translation id="7862292329216937261">Щоб використовувати пристрій як гість, вийдіть з облікового запису й унизу екрана виберіть опцію "Переглядати в режимі гостя".</translation>
@@ -1637,8 +1661,10 @@
 <translation id="8425213833346101688">Змінити</translation>
 <translation id="8426708595819210923">Доброго вечора, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Налаштування</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Налаштування мережі</translation>
 <translation id="8433977262951327081">Комбінація клавіш для виклику спливаючої підказки з опціями введення змінилась. Тепер це <ph name="NEW_SHORTCUT" />, а не <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">Відкрити інструмент надсилання відгуків</translation>
 <translation id="8443879455002739353">"Копіювати"</translation>
 <translation id="8444246603146515890">Робочий стіл "<ph name="DESK_TITILE" />" активовано</translation>
 <translation id="8446884382197647889">Докладніше</translation>
@@ -1667,6 +1693,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> радить оновити пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Налаштування сповіщення</translation>
 <translation id="857201607579416096">Меню переміщено в нижній правий кут екрана.</translation>
+<translation id="8581946341807941670">Натисніть <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, а потім – посилання</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортуйте додатки за назвою чи кольором</translation>
 <translation id="8609384513243082612">Відкрити нову вкладку</translation>
@@ -1689,6 +1716,7 @@
 <translation id="8676770494376880701">Зарядний пристрій низької потужності підключено</translation>
 <translation id="8683506306463609433">Відстеження ефективності активне</translation>
 <translation id="8703634754197148428">Почніть запис. Коли запис почнеться, натисніть Alt + Shift + L, щоб перейти на полицю, де розташована кнопка зупинки запису</translation>
+<translation id="8704155109538237473">Виділити вікно в режимі "картинка в картинці"</translation>
 <translation id="870917907284186124">Увімкнути або вимкнути диктування (голосовий набір тексту)</translation>
 <translation id="8717459106217102612">Виділити попереднє слово або літеру</translation>
 <translation id="8721053961083920564">Увімкнути або вимкнути гучність. <ph name="STATE_TEXT" /></translation>

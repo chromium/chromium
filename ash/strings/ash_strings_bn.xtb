@@ -243,6 +243,7 @@
 <translation id="1998100899771863792">বর্তমান ডেক্স</translation>
 <translation id="2001444736072756133">আপনার <ph name="CATEGORY" />, ফাইল, অ্যাপ এবং আরও অনেক কিছু সার্চ করুন।</translation>
 <translation id="2016340657076538683">একটি মেসেজ লিখুন</translation>
+<translation id="2017998995161831444">Explore অ্যাপে 'সহায়তা' বিভাগটি খুলুন</translation>
 <translation id="2018630726571919839">একটি জোকস শোনাও</translation>
 <translation id="2021864487439853900">আনলক করতে ক্লিক করুন</translation>
 <translation id="2023558322300866873">আপনি যেকোনও সময় প্যাকেট ক্যাপচার বন্ধ করে দিতে পারবেন</translation>
@@ -629,6 +630,7 @@
 <translation id="3765841986579723851">আজ এডিট করা হয়েছে</translation>
 <translation id="3773700760453577392">একজন অ্যাডমিনিস্ট্রেটর <ph name="USER_EMAIL" />-র জন্য একাধিক সাইন-ইন বাতিল করেছেন। চালিয়ে যাওয়ার জন্য, সব ব্যবহারকারীকে অবশ্যই সাইন-আউট করতে হবে।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> কানেক্ট করা হচ্ছে</translation>
+<translation id="3781910048497807059">আগের প্যানেলে ফোকাস সরান</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">লক করুন</translation>
 <translation id="3796198851576711985">ব্যাটারির স্বাস্থ্য</translation>
@@ -767,6 +769,7 @@
 <translation id="4406883609789734330">লাইভ ক্যাপশন</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
+<translation id="4427695046139341014">গেম ড্যাশবোর্ড</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
 <translation id="4435022394553622295"><ph name="DEVICE_TYPE" />-এ আপনার ফোনের বিজ্ঞপ্তি ও অ্যাপ দেখুন</translation>
 <translation id="4441283832827406317">নাম অনুযায়ী অ্যাপ সাজানো হয়েছে</translation>
@@ -799,6 +802,7 @@
 <translation id="4541706525461326392">প্রোফাইল সরানো হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4544483149666270818">রেকর্ড করতে একটি উইন্ডো বেছে নিন</translation>
 <translation id="454541942614298893">আমার ডিভাইস</translation>
+<translation id="4545950850562423083">বর্তমান পৃষ্ঠাটি বুকমার্ক হিসেবে সেভ করুন</translation>
 <translation id="4548482551627849548">চালু থাকা উইন্ডো বাঁদিকের ডেস্কে সরান</translation>
 <translation id="4560576029703263363">চালু করা আছে</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -855,6 +859,7 @@
 <translation id="4789348252524569426">স্পিচ ফাইল ইনস্টল করা যাচ্ছে না। আপনার ডিভাইস আপডেট করতে হবে। ডিভাইস রিস্টার্ট করে আবার চেষ্টা করুন।</translation>
 <translation id="478959186716341421">কাস্ট করা হচ্ছে</translation>
 <translation id="4798622944000246716">আপনার মোবাইল নেটওয়ার্কে হটস্পট কাজ করে না</translation>
+<translation id="4798888871844665150">কপি করা আইটেম ইতিমধ্যেই ক্লিপবোর্ড রয়েছে। দেখার জন্য, <ph name="SHORTCUT_KEY_NAME" /> + V ব্যবহার করুন।</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="4813311884204119883">ট্যাব বারের ফাঁকা অঞ্চলে লিঙ্ক টেনে আনুন</translation>
@@ -955,6 +960,7 @@
 <translation id="5229343007215035173">প্রাইভেসি স্ক্রিন চালু/বন্ধ করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="523505283826916779">অ্যাক্সেসিবিলিটি সেটিংস</translation>
+<translation id="5238719049014159442">লঞ্চার খুলুন/বন্ধ করুন</translation>
 <translation id="5245201184978705914">ট্রান্সক্রিপ্ট তৈরি করা যাচ্ছে না</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে, ব্যাটারি চার্জ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">সেভ করা কোনও ডেস্ক নেই</translation>
@@ -1264,6 +1270,7 @@
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
 <translation id="6625718907317144388">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />-এর এবং অন্যান্য বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="6627638273713273709">সার্চ+Shift+K</translation>
+<translation id="662830937908749204">পরবর্তী প্যানেলে ফোকাস সরান</translation>
 <translation id="6637729079642709226">ব্যবহারের মোট সময় পরিবর্তন করা</translation>
 <translation id="6641720045729354415">লাইভ ক্যাপশন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">নাম অনুযায়ী বেছে নেওয়া সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
@@ -1337,7 +1344,6 @@
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>
 <translation id="6961840794482373852">Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Up কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Up Arrow কী প্রেস করুন।</translation>
 <translation id="696267987219125751">ক্যামেরা ফ্রেমিং বন্ধ আছে।</translation>
-<translation id="6964690557625666701">সমস্ত পিন করা আইটেম দেখানো হয় না</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1422,6 +1428,7 @@
 <translation id="7401222354741467707">সম্পূর্ণ স্ক্রিনশট বা স্ক্রিন রেকর্ডিং নিন</translation>
 <translation id="7405710164030118432">ডিভাইসটি আনলক করতে আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
 <translation id="7406608787870898861">আপনার মোবাইল নেটওয়ার্ক সেট আপ করা সম্পূর্ণ করুন</translation>
+<translation id="7406854842098869085"><ph name="MODIFIER_1" /> বোতাম প্রেস করে ধরে রাখুন, যে উইন্ডোয় যেতে চাইছেন সেখানে না যাওয়া পর্যন্ত <ph name="KEY" /> ট্যাপ করে রাখুন, তারপরে ছেড়ে দিন</translation>
 <translation id="740790383907119240">অ্যাপ শর্টকাট</translation>
 <translation id="7413851974711031813">বন্ধ করতে এস্কেপ (Esc) বোতাম প্রেস করুন</translation>
 <translation id="7416471219712049036">বর্তমান পৃষ্ঠা সেভ করুন</translation>
@@ -1501,6 +1508,7 @@
 <translation id="7727952505535211425">একটি নতুন ট্যাবে অ্যাড্রেস বারে ওয়েবসাইটটি খুলুন</translation>
 <translation id="77365090426890123">মেমরি ব্যবহার</translation>
 <translation id="7742327441377685481">কোনও বিজ্ঞপ্তি নেই</translation>
+<translation id="7748275671948949022">শেল্ফের 'লঞ্চার' বোতাম হাইলাইট করুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="776344839111254542">আপডেটের বিশদ বিবরণ জানার জন্য ক্লিক করুন</translation>
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
@@ -1510,6 +1518,7 @@
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>
 <translation id="7796735576426975947">নতুন বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="7798302898096527229">Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
+<translation id="780301667611848630">না থাক</translation>
 <translation id="7807067443225230855">সার্চ এবং সহায়ক</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> এবং <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">জোরালো সিগন্যাল</translation>
@@ -1517,6 +1526,7 @@
 <translation id="7842569679327885685">সতর্কতা: পরীক্ষামূলক বৈশিষ্ট্য</translation>
 <translation id="7846634333498149051">কীবোর্ড</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠার <ph name="ROW_NUMBER" /> নম্বর সারির <ph name="COLUMN_NUMBER" /> নম্বর কলামে সরানো হয়েছে।</translation>
+<translation id="7851039877802112575">পপ-আপ এবং ডায়ালগে ফোকাস সরান</translation>
 <translation id="7851768487828137624">ক্যানারি</translation>
 <translation id="7860671499921112077">'এক নজরে' মোডে প্রবেশ করতে, তিনটি আঙুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="7862292329216937261">গেস্ট হিসেবে ডিভাইসটি ব্যবহার করতে, সাইন-আউট করার পরে আপনাকে স্ক্রিনের নিচ থেকে 'গেস্ট হিসেবে ব্রাউজ করুন' বিকল্প বেছে নিতে হবে।</translation>
@@ -1654,6 +1664,7 @@
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> <ph name="KEY_TWO" />-এর মাধ্যমে</translation>
 <translation id="8433186206711564395">নেটওয়ার্ক সেটিংস</translation>
 <translation id="8433977262951327081">শেল্ফে ইনপুট বিকল্পের মেনুর বুদবুদ দেখানোর শর্টকাটটি পরিবর্তন করা হয়েছে। অনুগ্রহ করে <ph name="OLD_SHORTCUT" /> এর পরিবর্তে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
+<translation id="8437311513256731931">ফিডব্যাক টুল খুলুন</translation>
 <translation id="8443879455002739353">"কপি করুন"</translation>
 <translation id="8444246603146515890">ডেস্ক <ph name="DESK_TITILE" /> অ্যাক্টিভেট করা হয়েছে</translation>
 <translation id="8446884382197647889">আরও জানুন</translation>
@@ -1705,6 +1716,7 @@
 <translation id="8676770494376880701">নিম্ন শক্তির চার্জার সংযুক্ত করা হয়েছে</translation>
 <translation id="8683506306463609433">পারফরম্যান্স ট্রেস করার বিকল্প চালু আছে</translation>
 <translation id="8703634754197148428">রেকর্ডিং শুরু করুন। রেকর্ডিং শুরু হলে, Alt, Shift ও L কী একসাথে প্রেস করে শেল্ফে যান এবং রেকর্ডিং বন্ধ করার বোতাম খুঁজুন</translation>
+<translation id="8704155109538237473">'ছবির-মধ্যে-ছবি' উইন্ডোতে ফোকাস করুন</translation>
 <translation id="870917907284186124">ডিকটেশন চালু/বন্ধ করুন (আপনার ভয়েস দিয়ে টাইপ করুন)</translation>
 <translation id="8717459106217102612">আগের শব্দ অথবা অক্ষরটি বেছে নিন</translation>
 <translation id="8721053961083920564">ভলিউম টগল করুন। <ph name="STATE_TEXT" /></translation>

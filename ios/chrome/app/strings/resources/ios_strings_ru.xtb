@@ -187,7 +187,6 @@
 <translation id="2230173723195178503">Веб-страница загружена</translation>
 <translation id="2239626343334228536">Удаление данных о работе в браузере…</translation>
 <translation id="2242467532204595597">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chrome.</translation>
-<translation id="22508856139286506">Закрытые предупреждения (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Меню → История</translation>
 <translation id="2252674110805316998">Веб-поиск</translation>
 <translation id="2256933947031277845">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом.</translation>
@@ -356,6 +355,7 @@
 <translation id="3245744387817103524">Не удалось сохранить изменения.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> из <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Автозаполнение паролей</translation>
+<translation id="3265534588625245297">Управляйте сайтами, на которые вы подписаны</translation>
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3272527697863656322">Отмена</translation>
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
@@ -1072,6 +1072,7 @@
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
 <translation id="7911190106180361398">Синхронизация всех данных запрещена организацией</translation>
 <translation id="7920949005883349320">Конфиденциальность и безопасность</translation>
+<translation id="792357691529995513">Проблем не найдено</translation>
 <translation id="7930998711684428189">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспорт паролей...</translation>

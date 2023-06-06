@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Копчето <ph name="KEY_NAME" /> не е притиснато</translation>
 <translation id="1435763214710588005">Автоматски го ресетира потрошениот интернет секој месец на избраниот датум</translation>
 <translation id="1442433966118452622">Извор на сликата</translation>
+<translation id="1449035143498573192">Отворете во „Пребарување на Google“</translation>
 <translation id="1451536289672181509">Уредот е тастатура.</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1468664791493211953">Понуди</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Методи за внесување</translation>
 <translation id="7955587717700691983">Тастатура со Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7971535376154084247">Општи контроли</translation>
 <translation id="7977800524392185497">За да се придружите на мрежата <ph name="NETWORK_NAME" />, одете во „Поставки“</translation>
 <translation id="7978412674231730200">Приватен клуч</translation>
 <translation id="7994702968232966508">EAP-метод</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Име на оператор на почетна страница</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е обезбедена со слаб протокол WEP PSK</translation>
 <translation id="8476242415522716722">светлина одоздола на тастатурата</translation>
+<translation id="8476942730579767658">Прозорци и работни површини</translation>
 <translation id="8477551185774834963">Латенцијата на DNS е малку над дозволениот праг</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
 <translation id="8491311378305535241">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTP од апликации на Android</translation>

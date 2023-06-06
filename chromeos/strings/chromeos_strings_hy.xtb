@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> ստեղնը չի սեղմվել</translation>
 <translation id="1435763214710588005">Ամեն ամիս, նշված օրը տվյալների օգտագործման մասին տեղեկություններն ավտոմատ զրոյացվում են</translation>
 <translation id="1442433966118452622">Պատկերի աղբյուրը</translation>
+<translation id="1449035143498573192">Բացել Google Որոնման մեջ</translation>
 <translation id="1451536289672181509">Սարքը ստեղնաշար է։</translation>
 <translation id="1459693405370120464">Եղանակ</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Ներածման մեթոդներ</translation>
 <translation id="7955587717700691983">Bluetooth ստեղնաշար</translation>
 <translation id="7960831585769876809">Ջերմաստիճան</translation>
+<translation id="7971535376154084247">Ընդհանուր կարգավորումներ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ցանցի միանալու համար անցեք Կարգավորումներ</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
 <translation id="7994702968232966508">EAP եղանակ</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Տան ծառայությունների մատակարարի անունը</translation>
 <translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
 <translation id="8476242415522716722">ստեղնաշարի լուսավորություն</translation>
+<translation id="8476942730579767658">Պատուհաններ և աշխատասեղաններ</translation>
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="8483248364096924578">IP հասցե</translation>
 <translation id="8491311378305535241">Չհաջողվեց միանալ HTTP կայքերին Android-ի համար հավելվածներից հրապատի միջոցով։</translation>

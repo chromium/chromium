@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> ez dago sakatuta</translation>
 <translation id="1435763214710588005">Datu-erabilera automatikoki berrezartzen du hilabeteko hautatutako egunean</translation>
 <translation id="1442433966118452622">Irudiaren iturburua</translation>
+<translation id="1449035143498573192">Ireki Google Bilaketa zerbitzuan</translation>
 <translation id="1451536289672181509">Gailua teklatu bat da.</translation>
 <translation id="1459693405370120464">Eguraldia</translation>
 <translation id="1468664791493211953">Eskaintzak</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Idazketa-metodoak</translation>
 <translation id="7955587717700691983">Bluetooth bidezko teklatua</translation>
 <translation id="7960831585769876809">Tenperatura</translation>
+<translation id="7971535376154084247">Kontrolatzeko aukera orokorrak</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> sare batean sartzeko, joan ezarpenetara</translation>
 <translation id="7978412674231730200">Gako pribatua</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Hasierako hornitzailearen izena</translation>
 <translation id="8475690821716466388">WEP PSK protokolo ahulak babesten du wifi-sarea</translation>
 <translation id="8476242415522716722">teklatuaren azpiko argia</translation>
+<translation id="8476942730579767658">Leihoak eta lan-eremuak</translation>
 <translation id="8477551185774834963">DNSaren latentzia onartzen den atalasetik apur bat gorago dago</translation>
 <translation id="8483248364096924578">IP helbidea</translation>
 <translation id="8491311378305535241">Ezin da konektatu HTTPS darabilten webguneetara suebakiaren bidez Android-erako aplikazioetatik</translation>

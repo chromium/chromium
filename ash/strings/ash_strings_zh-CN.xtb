@@ -1337,7 +1337,6 @@
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
 <translation id="696267987219125751">相机取景功能已关闭。</translation>
-<translation id="6964690557625666701">所有已固定的内容都处于 Shelf Party 模式</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
@@ -1507,6 +1506,7 @@
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>
+<translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7807067443225230855">Google 搜索和 Google 助理</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">信号较强</translation>

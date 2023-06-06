@@ -40,7 +40,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1202892408424955784">Sporede produkter</translation>
 <translation id="1204037785786432551">Last ned linken</translation>
-<translation id="1204692632633423444">Chrome-handlingsknapp: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiér linkteksten</translation>
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
 <translation id="1227058898775614466">Navigeringslogg</translation>
@@ -1184,7 +1183,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7304072650267745798">Android-enheten din har muligens en lignende innstilling. Hvis denne innstillingen er slått på i Chrome og på Android-enheten din, kan selskaper måle effektiviteten til annonser på alle nettsteder du besøker, og i alle apper du bruker.</translation>
 <translation id="7304873321153398381">Uten nett. Chrome kan ikke sjekke passordene dine.</translation>
 <translation id="7313188324932846546">Trykk for å konfigurere synkronisering</translation>
-<translation id="7324354302972299151">Send en «Ikke spor»-forespørsel</translation>
+<translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
 <translation id="7332075081379534664">Påloggingen var vellykket</translation>
 <translation id="7333232495927792353">Synkroniser for å få det mest relevante innholdet fra Google</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>

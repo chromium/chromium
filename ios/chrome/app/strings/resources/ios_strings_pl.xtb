@@ -187,7 +187,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
 <translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
 <translation id="2242467532204595597">Używaj Chrome, zawsze gdy klikasz linki w wiadomościach, dokumentach i w innych aplikacjach.</translation>
-<translation id="22508856139286506">Zamknięte ostrzeżenia (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historia</translation>
 <translation id="2252674110805316998">Wyszukiwarka Google</translation>
 <translation id="2256933947031277845">Twoja organizacja pozwala logować się tylko na określone konta.</translation>
@@ -356,6 +355,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3245744387817103524">Nie udało się zapisać zmiany.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Automatycznie uzupełniaj hasła</translation>
+<translation id="3265534588625245297">Zarządzaj obserwowanymi witrynami</translation>
 <translation id="3268451620468152448">Otwarte karty</translation>
 <translation id="3272527697863656322">Anuluj</translation>
 <translation id="3277021493514034324">Skopiowano adres strony</translation>

@@ -187,7 +187,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation…</translation>
 <translation id="2242467532204595597">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
-<translation id="22508856139286506">Avertissements ignorés (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
 <translation id="2252674110805316998">Rechercher sur le Web</translation>
 <translation id="2256933947031277845">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes.</translation>
@@ -356,6 +355,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3245744387817103524">Impossible d'enregistrer votre modification.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> sur <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Saisir automatiquement les mots de passe</translation>
+<translation id="3265534588625245297">Gérer les sites que vous suivez</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3272527697863656322">Annuler</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
@@ -1073,6 +1073,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7887198238286927132">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement de champ.</translation>
 <translation id="7911190106180361398">Votre organisation ne vous permet pas de tout synchroniser.</translation>
 <translation id="7920949005883349320">Confidentialité et sécurité</translation>
+<translation id="792357691529995513">Aucun problème détecté</translation>
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export mots de passe…</translation>

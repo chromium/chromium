@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> товчлуурыг дараагүй</translation>
 <translation id="1435763214710588005">Дата ашиглалтыг сонгосон өдөр сар бүр автоматаар шинэчилнэ</translation>
 <translation id="1442433966118452622">Зургийн эх сурвалж</translation>
+<translation id="1449035143498573192">Google Хайлтад нээх</translation>
 <translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
 <translation id="1468664791493211953">Саналууд</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Оролт</translation>
 <translation id="7955587717700691983">Bluetooth гар</translation>
 <translation id="7960831585769876809">Температур</translation>
+<translation id="7971535376154084247">Ерөнхий тохиргоо</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> сүлжээнд нэгдэхийн тулд Тохиргоо руу очно уу</translation>
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7994702968232966508">EAP арга</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Нүүр хуудас бэлтгэх нэр</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="8476242415522716722">гарын доогуурх гэрэл</translation>
+<translation id="8476942730579767658">Цонх болон дэлгэцүүд</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
 <translation id="8483248364096924578">IP хаяг</translation>
 <translation id="8491311378305535241">Android аппуудаас HTTP вебсайт руу галт хана дундуур холбогдох боломжгүй</translation>
