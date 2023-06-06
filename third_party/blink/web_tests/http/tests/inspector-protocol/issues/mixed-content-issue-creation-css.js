@@ -23,6 +23,9 @@
 
   // We expect to receive two issues, one for a speculative prefetch and another for the actual fetch.
   dp.Audits.onIssueAdded(issue => {
+    if (issue.params.issue.code !== 'MixedContentIssue') {
+      return;
+    }
     issues.push(issue.params);
     eventReceived();
   });

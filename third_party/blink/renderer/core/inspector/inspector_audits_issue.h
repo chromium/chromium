@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace WTF {
 class String;
@@ -177,6 +179,19 @@ class CORE_EXPORT AuditsIssue {
                                  mojom::blink::GenericIssueErrorType error_type,
                                  int violating_node_id,
                                  const String& violating_node_attribute);
+
+  static void ReportStylesheetLoadingLateImportIssue(Document* document,
+                                                     const KURL& url,
+                                                     WTF::OrdinalNumber line,
+                                                     WTF::OrdinalNumber column);
+
+  static void ReportStylesheetLoadingRequestFailedIssue(
+      Document* document,
+      const KURL& url,
+      const KURL& initiator_url,
+      WTF::OrdinalNumber initiator_line,
+      WTF::OrdinalNumber initiator_column,
+      const String& failureMessage);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);

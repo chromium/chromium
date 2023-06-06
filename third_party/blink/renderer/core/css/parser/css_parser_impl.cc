@@ -645,7 +645,11 @@ bool ConsumeEndOfPreludeForAtRuleWithBlock(CSSParserTokenStream& stream) {
   return true;
 }
 
-void ConsumeErroneousAtRule(CSSParserTokenStream& stream) {
+void CSSParserImpl::ConsumeErroneousAtRule(CSSParserTokenStream& stream,
+                                           CSSAtRuleID id) {
+  if (observer_) {
+    observer_->ObserveErroneousAtRule(stream.Offset(), id);
+  }
   // Consume the prelude and block if present.
   ConsumeAtRulePrelude(stream);
   if (!stream.AtEnd()) {
@@ -682,7 +686,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         id != CSSAtRuleID::kCSSAtRuleSupports &&   // [css-conditional-3]
         id != CSSAtRuleID::kCSSAtRuleContainer &&  // [css-contain-3]
         id != CSSAtRuleID::kCSSAtRuleStartingStyle) {
-      ConsumeErroneousAtRule(stream);
+      ConsumeErroneousAtRule(stream, id);
       return nullptr;
     }
     allowed_rules = kRegularRules;
@@ -704,7 +708,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
   if (allowed_rules == kKeyframeRules || allowed_rules == kNoRules) {
     // Parse error, no at-rules supported inside @keyframes,
     // or blocks supported inside declaration lists.
-    ConsumeErroneousAtRule(stream);
+    ConsumeErroneousAtRule(stream, id);
     return nullptr;
   }
 
@@ -722,7 +726,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     if (id == CSSAtRuleID::kCSSAtRuleTry) {
       return ConsumeTryRule(stream);
     }
-    ConsumeErroneousAtRule(stream);
+    ConsumeErroneousAtRule(stream, id);
     return nullptr;
   } else if (allowed_rules == kFontFeatureRules) {
     if (id == CSSAtRuleID::kCSSAtRuleStylistic ||
@@ -783,7 +787,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       case CSSAtRuleID::kCSSAtRuleSwash:
       case CSSAtRuleID::kCSSAtRuleOrnaments:
       case CSSAtRuleID::kCSSAtRuleAnnotation:
-        ConsumeErroneousAtRule(stream);
+        ConsumeErroneousAtRule(stream, id);
         return nullptr;  // Parse error, unrecognised or not-allowed at-rule
     }
   }
@@ -2070,7 +2074,7 @@ void CSSParserImpl::ConsumeDeclarationList(
         // recovery.
         // TODO(sesse): This is largely untested; we need WPT tests
         // for error recovery, once the syntax has settled.
-        ConsumeErroneousAtRule(stream);
+        ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleInvalid);
         break;
       case kIdentToken: {
         wtf_size_t state = stream.Save();

@@ -40,6 +40,7 @@ class TestCSSParserObserver : public CSSParserObserver {
                        bool is_important,
                        bool is_parsed) override {}
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
+  void ObserveErroneousAtRule(unsigned start_offset, CSSAtRuleID id) override {}
 
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
   unsigned rule_header_start_ = 0;

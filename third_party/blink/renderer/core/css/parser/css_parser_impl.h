@@ -141,6 +141,7 @@ class CORE_EXPORT CSSParserImpl {
       const String&);
 
   bool ConsumeSupportsDeclaration(CSSParserTokenStream&);
+  void ConsumeErroneousAtRule(CSSParserTokenStream& stream, CSSAtRuleID id);
   const CSSParserContext* GetContext() const { return context_; }
 
   static void ParseDeclarationListForInspector(const String&,

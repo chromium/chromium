@@ -26991,6 +26991,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
       label="GenericIssue::FormHasPasswordFieldWithoutUsernameFieldError"/>
   <int value="75"
       label="GenericIssue::FormInputHasWrongButWellIntendedAutocompleteValueError"/>
+  <int value="76" label="StylesheetLoadingIssue::LateImportRule"/>
+  <int value="77" label="StylesheetLoadingIssue::RequestFailed"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

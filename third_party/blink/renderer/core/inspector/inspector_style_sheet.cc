@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
+#include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
@@ -59,6 +61,7 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
@@ -160,13 +163,21 @@ class StyleSheetHandler final : public CSSParserObserver {
   STACK_ALLOCATED();
 
  public:
-  StyleSheetHandler(const String& parsed_text,
-                    Document* document,
-                    CSSRuleSourceDataList* result)
+  struct IssueReportingContext {
+    KURL DocumentURL;
+    TextPosition OffsetInSource;
+  };
+  StyleSheetHandler(
+      const String& parsed_text,
+      Document* document,
+      CSSRuleSourceDataList* result,
+      absl::optional<IssueReportingContext> issueReportingContext = {})
       : parsed_text_(parsed_text),
         document_(document),
         result_(result),
-        current_rule_data_(nullptr) {
+        current_rule_data_(nullptr),
+        issueReportingContext_(issueReportingContext),
+        line_endings_(std::make_unique<LineEndings>()) {
     DCHECK(result_);
   }
 
@@ -181,17 +192,21 @@ class StyleSheetHandler final : public CSSParserObserver {
                        bool is_important,
                        bool is_parsed) override;
   void ObserveComment(unsigned start_offset, unsigned end_offset) override;
+  void ObserveErroneousAtRule(unsigned start_offset, CSSAtRuleID id) override;
 
   void AddNewRuleToSourceTree(CSSRuleSourceData*);
   CSSRuleSourceData* PopRuleData();
   template <typename CharacterType>
   inline void SetRuleHeaderEnd(const CharacterType*, unsigned);
+  const LineEndings* GetLineEndings();
 
   const String& parsed_text_;
   Document* document_;
   CSSRuleSourceDataList* result_;
   CSSRuleSourceDataList current_rule_data_stack_;
   CSSRuleSourceData* current_rule_data_;
+  absl::optional<IssueReportingContext> issueReportingContext_;
+  std::unique_ptr<LineEndings> line_endings_;
 };
 
 void StyleSheetHandler::StartRuleHeader(StyleRule::RuleType type,
@@ -352,6 +367,32 @@ void StyleSheetHandler::ObserveComment(unsigned start_offset,
   current_rule_data_stack_.back()->property_data.push_back(
       CSSPropertySourceData(property_data.name, property_data.value, false,
                             true, true, SourceRange(start_offset, end_offset)));
+}
+
+static OrdinalNumber AddOrdinalNumbers(OrdinalNumber a, OrdinalNumber b) {
+  if (a == OrdinalNumber::BeforeFirst() || b == OrdinalNumber::BeforeFirst()) {
+    return a;
+  }
+  return OrdinalNumber::FromZeroBasedInt(a.ZeroBasedInt() + b.ZeroBasedInt());
+}
+
+void StyleSheetHandler::ObserveErroneousAtRule(unsigned start_offset,
+                                               CSSAtRuleID id) {
+  if (issueReportingContext_ && id == CSSAtRuleID::kCSSAtRuleImport) {
+    const LineEndings* line_endings = GetLineEndings();
+    TextPosition start =
+        TextPosition::FromOffsetAndLineEndings(start_offset, *line_endings);
+    if (start.line_.ZeroBasedInt() == 0) {
+      start.column_ = AddOrdinalNumbers(
+          start.column_, issueReportingContext_->OffsetInSource.column_);
+    }
+    start.line_ = AddOrdinalNumbers(
+        start.line_, issueReportingContext_->OffsetInSource.line_);
+
+    AuditsIssue::ReportStylesheetLoadingLateImportIssue(
+        document_, issueReportingContext_->DocumentURL, start.line_,
+        start.column_);
+  }
 }
 
 bool VerifyRuleText(Document* document, const String& rule_text) {
@@ -1026,6 +1067,13 @@ const LineEndings* InspectorStyleSheetBase::GetLineEndings() {
   return line_endings_.get();
 }
 
+const LineEndings* StyleSheetHandler::GetLineEndings() {
+  if (line_endings_->size() > 0)
+    return line_endings_.get();
+  line_endings_ = WTF::GetLineEndings(parsed_text_);
+  return line_endings_.get();
+}
+
 void InspectorStyleSheetBase::ResetLineEndings() {
   line_endings_ = std::make_unique<LineEndings>();
 }
@@ -1630,8 +1678,10 @@ void InspectorStyleSheet::ParseText(const String& text) {
       MakeGarbageCollected<CSSRuleSourceDataList>();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       page_style_sheet_->Contents()->ParserContext());
-  StyleSheetHandler handler(text, page_style_sheet_->OwnerDocument(),
-                            rule_tree);
+  StyleSheetHandler handler(text, page_style_sheet_->OwnerDocument(), rule_tree,
+                            StyleSheetHandler::IssueReportingContext{
+                                page_style_sheet_->BaseURL(),
+                                page_style_sheet_->StartPositionInSource()});
   CSSParser::ParseSheetForInspector(
       page_style_sheet_->Contents()->ParserContext(), style_sheet, text,
       handler);
