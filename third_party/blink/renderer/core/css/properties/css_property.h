@@ -114,8 +114,21 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
       const ComputedStyle& computed_style,
       const LayoutObject* layout_object,
       bool allow_visited_style) const;
-  virtual const CSSProperty& ResolveDirectionAwareProperty(TextDirection,
-                                                           WritingMode) const {
+
+  const CSSProperty& ResolveDirectionAwareProperty(
+      TextDirection direction,
+      WritingMode writing_mode) const {
+    if (!IsInLogicalPropertyGroup()) {
+      // Avoid the potentially expensive virtual function call.
+      return *this;
+    } else {
+      return ResolveDirectionAwarePropertyInternal(direction, writing_mode);
+    }
+  }
+
+  virtual const CSSProperty& ResolveDirectionAwarePropertyInternal(
+      TextDirection,
+      WritingMode) const {
     return *this;
   }
   virtual bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(

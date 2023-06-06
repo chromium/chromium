@@ -102,10 +102,10 @@ const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
     {% if group.is_logical %}
 const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
     blink::WritingMode writing_mode) const {
-  return &ResolveDirectionAwareProperty(direction, writing_mode);
+  return &ResolveDirectionAwarePropertyInternal(direction, writing_mode);
 }
 
-const CSSProperty& {{class_name}}::ResolveDirectionAwareProperty(
+const CSSProperty& {{class_name}}::ResolveDirectionAwarePropertyInternal(
     TextDirection direction,
     blink::WritingMode writing_mode) const {
   return CSSDirectionAwareResolver::Resolve{{resolver_name}}(direction, writing_mode,
