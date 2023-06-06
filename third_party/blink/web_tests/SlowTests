@@ -1468,3 +1468,5 @@ crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-mediastreamaudiosource
 
 crbug.com/626703 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Slow ]
 crbug.com/1376679 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
+
+crbug.com/1271091 http/tests/security/frameNavigation/xss-ALLOWED-same-etld-plus-1-top-navigation-without-user-gesture.html [ Slow ]
