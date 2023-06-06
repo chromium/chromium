@@ -11,13 +11,17 @@
 #include <vector>
 
 #include "base/allocator/buildflags.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
@@ -111,8 +115,9 @@ base::Value::List MakeProcessInfo(int pid, std::string description) {
 // Some child processes have good descriptions and some don't, this function
 // returns the best it can given the data.
 std::string GetChildDescription(const content::ChildProcessData& data) {
-  if (!data.name.empty())
+  if (!data.name.empty()) {
     return base::UTF16ToUTF8(data.name);
+  }
   return content::GetProcessTypeNameInEnglish(data.process_type);
 }
 
@@ -146,8 +151,17 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   // Callback for the "startProfiling" message.
   void HandleStartProfiling(const base::Value::List& args);
 
+ protected:
+  // WebUIMessageHandler implementation.
+  void OnJavascriptDisallowed() override;
+
  private:
-  void ReturnProcessListOnUIThread(const std::string& callback_id,
+  // Sends a request for a process list, and posts the result to
+  // ReturnProcessListOnUIThread(). Takes ownership of `callback_id` so it can
+  // be bound to the posted task without copying.
+  void RequestProcessList(base::Value callback_id);
+
+  void ReturnProcessListOnUIThread(const base::Value& callback_id,
                                    std::vector<base::Value::List> children,
                                    std::vector<base::ProcessId> profiled_pids);
 
@@ -175,8 +189,9 @@ MemoryInternalsDOMHandler::MemoryInternalsDOMHandler(content::WebUI* web_ui)
 }
 
 MemoryInternalsDOMHandler::~MemoryInternalsDOMHandler() {
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void MemoryInternalsDOMHandler::RegisterMessages() {
@@ -199,39 +214,11 @@ void MemoryInternalsDOMHandler::RegisterMessages() {
 void MemoryInternalsDOMHandler::HandleRequestProcessList(
     const base::Value::List& args) {
   AllowJavascript();
-  std::string callback_id = args[0].GetString();
-
-  std::vector<base::Value::List> result;
-
-  // The only non-renderer child processes that currently support out-of-process
-  // heap profiling are GPU and UTILITY.
-  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    // Note that ChildProcessData.id is a child ID and not an OS PID.
-    const content::ChildProcessData& data = iter.GetData();
-
-    if (data.process_type == content::PROCESS_TYPE_GPU ||
-        data.process_type == content::PROCESS_TYPE_UTILITY) {
-      result.push_back(
-          MakeProcessInfo(data.GetProcess().Pid(), GetChildDescription(data)));
-    }
-  }
-
-  heap_profiling::Supervisor* supervisor =
-      heap_profiling::Supervisor::GetInstance();
-
-  // The supervisor hasn't started, so return an empty list.
-  if (!supervisor->HasStarted()) {
-    ReturnProcessListOnUIThread(callback_id, std::move(result),
-                                std::vector<base::ProcessId>());
-    return;
-  }
-
-  supervisor->GetProfiledPids(base::BindOnce(
-      &MemoryInternalsDOMHandler::ReturnProcessListOnUIThread,
-      weak_factory_.GetWeakPtr(), callback_id, std::move(result)));
+  CHECK_EQ(args.size(), 1u);
+  RequestProcessList(args[0].Clone());
 }
 
-void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List& args) {
+void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List&) {
   base::FilePath default_file = base::FilePath().AppendASCII(
       base::StringPrintf("trace_with_heap_dump.json.gz"));
 
@@ -253,8 +240,9 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List& args) {
                      weak_factory_.GetWeakPtr()),
       false);
 #else
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;  // Currently running, wait for existing save to complete.
+  }
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui_->GetWebContents()));
@@ -269,23 +257,65 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List& args) {
 void MemoryInternalsDOMHandler::HandleStartProfiling(
     const base::Value::List& args) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (args.size() != 1)
-    return;
+  CHECK_EQ(args.size(), 2u);
+  const base::Value& callback_id = args[0];
+  const base::ProcessId pid = args[1].GetInt();
 
-  base::ProcessId pid = args[0].GetInt();
+  // Refresh to get the updated state of the profiled process after profiling
+  // starts.
+  base::OnceClosure refresh_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&MemoryInternalsDOMHandler::RequestProcessList,
+                     weak_factory_.GetWeakPtr(), callback_id.Clone()));
+
   heap_profiling::Supervisor* supervisor =
       heap_profiling::Supervisor::GetInstance();
   if (supervisor->HasStarted()) {
-    supervisor->StartManualProfiling(pid);
+    supervisor->StartManualProfiling(pid, std::move(refresh_callback));
   } else {
-    supervisor->Start(
-        base::BindOnce(&heap_profiling::Supervisor::StartManualProfiling,
-                       base::Unretained(supervisor), pid));
+    supervisor->Start(base::BindOnce(
+        &heap_profiling::Supervisor::StartManualProfiling,
+        base::Unretained(supervisor), pid, std::move(refresh_callback)));
   }
 }
 
+void MemoryInternalsDOMHandler::OnJavascriptDisallowed() {
+  // Cancel any callbacks that might trigger Javascript.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void MemoryInternalsDOMHandler::RequestProcessList(base::Value callback_id) {
+  std::vector<base::Value::List> result;
+
+  // The only non-renderer child processes that currently support out-of-process
+  // heap profiling are GPU and UTILITY.
+  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+    // Note that ChildProcessData.id is a child ID and not an OS PID.
+    const content::ChildProcessData& data = iter.GetData();
+
+    if (data.process_type == content::PROCESS_TYPE_GPU ||
+        data.process_type == content::PROCESS_TYPE_UTILITY) {
+      result.push_back(
+          MakeProcessInfo(data.GetProcess().Pid(), GetChildDescription(data)));
+    }
+  }
+
+  heap_profiling::Supervisor* supervisor =
+      heap_profiling::Supervisor::GetInstance();
+
+  // The supervisor hasn't started, so return an empty list.
+  if (!supervisor->HasStarted()) {
+    ReturnProcessListOnUIThread(std::move(callback_id), std::move(result),
+                                std::vector<base::ProcessId>());
+    return;
+  }
+
+  supervisor->GetProfiledPids(base::BindOnce(
+      &MemoryInternalsDOMHandler::ReturnProcessListOnUIThread,
+      weak_factory_.GetWeakPtr(), std::move(callback_id), std::move(result)));
+}
+
 void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
-    const std::string& callback_id,
+    const base::Value& callback_id,
     std::vector<base::Value::List> children,
     std::vector<base::ProcessId> profiled_pids) {
   // This function will be called with the child processes that are not
@@ -311,8 +341,9 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
   }
 
   // Append all child processes collected on the IO thread.
-  for (auto& child : children)
+  for (auto& child : children) {
     process_list.Append(std::move(child));
+  }
 
   // Sort profiled_pids to allow binary_search in the loop.
   std::sort(profiled_pids.begin(), profiled_pids.end());
@@ -333,7 +364,7 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
   result.Set("message", GetMessageString());
   result.Set("processes", std::move(process_list));
 
-  ResolveJavascriptCallback(base::Value(callback_id), result);
+  ResolveJavascriptCallback(callback_id, result);
 }
 
 void MemoryInternalsDOMHandler::FileSelected(const base::FilePath& path,

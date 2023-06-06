@@ -21,7 +21,8 @@ function saveDump() {
 }
 
 function startProfiling(pid: number) {
-  chrome.send('startProfiling', [pid]);
+  // After profiling starts, the browser will send an updated process list.
+  sendWithPromise('startProfiling', pid).then(onProcessListReceived);
 }
 
 // celltype should either be "td" or "th". The contents of the |cols| will be

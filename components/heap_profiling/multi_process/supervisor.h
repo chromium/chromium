@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
 #define COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
@@ -71,8 +72,10 @@ class Supervisor {
 
   Mode GetMode();
 
-  // Starts profiling the process with the given id.
-  void StartManualProfiling(base::ProcessId pid);
+  // Starts profiling the process with the given `pid`. Invokes
+  // `started_profiling_closure` if and when profiling starts successfully.
+  void StartManualProfiling(base::ProcessId pid,
+                            base::OnceClosure started_profiling_closure);
 
   // Returns the pids of all profiled processes. The callback is posted on the
   // UI thread.
