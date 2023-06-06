@@ -25,8 +25,8 @@ const char kTileAblationControlGroup[] = "TileAblation_Control";
 const char kNewTabPageFieldTrialDefaultGroup[] = "Default";
 
 // Group weights for the tile ablation experiments.
-const int kTileAblationStableWeight = 5;
-const int kTileAblationPrestableWeight = 16;
+const int kTileAblationStableWeight = 0;
+const int kTileAblationPrestableWeight = 0;
 
 }  // namespace field_trial_constants
 
