@@ -909,7 +909,7 @@ void VideoRendererImpl::MaybeFireEndedCallback_Locked(bool time_progressing) {
     return;
 
   const bool have_frames_after_start_time =
-      algorithm_->frames_queued() &&
+      algorithm_->frames_queued() > 1 &&
       !IsBeforeStartTime(algorithm_->last_frame());
 
   // Don't fire ended if time isn't moving and we have frames.
@@ -922,18 +922,21 @@ void VideoRendererImpl::MaybeFireEndedCallback_Locked(bool time_progressing) {
   base::TimeDelta ended_event_delay;
   bool should_render_end_of_stream = false;
   if (!algorithm_->effective_frames_queued()) {
+    // The best frame doesn't exist or was already rendered; end immediately.
     should_render_end_of_stream = true;
   } else if (algorithm_->frames_queued() == 1u &&
-             algorithm_->average_frame_duration().is_zero()) {
+             (algorithm_->average_frame_duration().is_zero() ||
+              algorithm_->render_interval().is_zero() || !time_progressing)) {
+    // We'll end up here if playback never started or there was only one frame.
     should_render_end_of_stream = true;
   } else if (algorithm_->frames_queued() == 1u &&
-             algorithm_->render_interval().is_zero()) {
-    should_render_end_of_stream = true;
-  } else if (algorithm_->frames_queued() == 1u &&
-             algorithm_->effective_frames_queued() == 1) {
+             algorithm_->effective_frames_queued() == 1 && time_progressing) {
     const auto end_delay =
         std::max(base::TimeDelta(),
                  algorithm_->last_frame_end_time() - tick_clock_->NowTicks());
+
+    // We should only be here if time is progressing, so only fire the ended
+    // event now if we have less than one render interval before our next check.
     if (end_delay < algorithm_->render_interval()) {
       should_render_end_of_stream = true;
       ended_event_delay = end_delay;
