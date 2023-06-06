@@ -13,7 +13,6 @@ include_rules = [
     "+base/allocator/partition_allocator/partition_alloc_base",
     "+base/base_export.h",
     "+base/logging.h",
-    "+base/synchronization/lock.h",
 ]
 
 specific_include_rules = {
