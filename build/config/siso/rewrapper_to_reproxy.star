@@ -19,7 +19,7 @@ def __rewrite_rewrapper(ctx, cmd):
     for i, arg in enumerate(cmd.args):
         if i == 0:
             continue
-        # NOTE: Only handle -cfg= as that's we call rewrapper in our .gn files.
+        # NOTE: Only handle -cfg= as that's how we call rewrapper in our .gn files.
         if arg.startswith("-cfg="):
             cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
             continue
@@ -32,20 +32,47 @@ def __rewrite_rewrapper(ctx, cmd):
     if not cfg_file:
         fail("cfg file expected but none found")
 
-    # TODO(b/273407069): Read rewrapper args other than labels.
-    labels = dict()
     if not ctx.fs.exists(cfg_file):
         fail("cmd specifies rewrapper cfg %s but not found, is download_remoteexec_cfg set in gclient custom_vars?" % cfg_file)
+
+    reproxy_config = {}
     for line in str(ctx.fs.read(cfg_file)).splitlines():
+        if line.startswith("canonicalize_working_dir="):
+            reproxy_config["canonicalize_working_dir"] = line.removeprefix("canonicalize_working_dir=").lower() == "true"
+
+        if line.startswith("download_outputs="):
+            reproxy_config["download_outputs"] = line.removeprefix("download_outputs=").lower() == "true"
+
+        if line.startswith("exec_strategy="):
+            reproxy_config["exec_strategy"] = line.removeprefix("exec_strategy=")
+
+        if line.startswith("inputs="):
+            reproxy_config["inputs"] = line.removeprefix("inputs").split(",")
+
         if line.startswith("labels="):
+            if "labels" not in reproxy_config:
+                reproxy_config["labels"] = dict()
             for label in line.removeprefix("labels=").split(","):
                 label_parts = label.split("=")
                 if len(label_parts) != 2:
-                    fail("invalid label %s" % label)
-                labels[label_parts[0]] = label_parts[1]
+                    fail("not k,v %s" % label)
+                reproxy_config["labels"][label_parts[0]] = label_parts[1]
+
+        if line.startswith("platform="):
+            if "platform" not in reproxy_config:
+                reproxy_config["platform"] = dict()
+            for label in line.removeprefix("platform=").split(","):
+                label_parts = label.split("=")
+                if len(label_parts) != 2:
+                    fail("not k,v %s" % label)
+                reproxy_config["platform"][label_parts[0]] = label_parts[1]
+
+        if line.startswith("server_address="):
+            reproxy_config["server_address"] = line.removeprefix("server_address=")
+
     ctx.actions.fix(
         args = cmd.args[non_flag_start:],
-        reproxy_config = json.encode({"labels": labels})
+        reproxy_config = json.encode(reproxy_config)
     )
 
 __handlers = {
