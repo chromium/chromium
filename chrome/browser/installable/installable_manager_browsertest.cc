@@ -263,10 +263,7 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
  public:
   InstallableManagerBrowserTest()
       : disable_banner_trigger_(&test::g_disable_banner_triggering_for_testing,
-                                true) {
-    scoped_feature_list_.InitAndEnableFeature(
-        webapps::features::kDesktopPWAsDetailedInstallDialog);
-  }
+                                true) {}
 
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -351,8 +348,6 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
  private:
   // Disable the banners in the browser so it won't interfere with the test.
   base::AutoReset<bool> disable_banner_trigger_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class InstallableManagerAllowlistOriginBrowserTest

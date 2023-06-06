@@ -250,7 +250,7 @@ class InstallableManager
                              IconUsage usage);
   void OnIconFetched(GURL icon_url, IconUsage usage, const SkBitmap& bitmap);
 
-  void CheckAndFetchScreenshots(bool check_form_factor = true);
+  void CheckAndFetchScreenshots();
 
   void OnScreenshotFetched(GURL screenshot_url, const SkBitmap& bitmap);
   void PopulateScreenshots(bool check_form_factor);

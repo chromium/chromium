@@ -69,9 +69,7 @@ void OnWebAppInstallShowInstallDialog(
             .Record();
       }
 #endif
-      if (base::FeatureList::IsEnabled(
-              webapps::features::kDesktopPWAsDetailedInstallDialog) &&
-          webapps::AppBannerManager::FromWebContents(initiator_web_contents)
+      if (webapps::AppBannerManager::FromWebContents(initiator_web_contents)
               ->screenshots()
               .size()) {
         chrome::ShowWebAppDetailedInstallDialog(

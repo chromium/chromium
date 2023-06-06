@@ -79,11 +79,6 @@ BASE_FEATURE(kCreateShortcutIgnoresManifest,
              "CreateShortcutIgnoresManifest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables showing a detailed install dialog for user installs.
-BASE_FEATURE(kDesktopPWAsDetailedInstallDialog,
-             "DesktopPWAsDetailedInstallDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use segmentation to decide whether install prompt should be shown.
 BASE_FEATURE(kInstallPromptSegmentation,
              "InstallPromptSegmentation",

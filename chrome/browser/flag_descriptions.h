@@ -577,9 +577,6 @@ extern const char kDesktopPWAsScopeExtensionsDescription[];
 extern const char kDesktopPWAsBorderlessName[];
 extern const char kDesktopPWAsBorderlessDescription[];
 
-extern const char kDesktopPWAsDetailedInstallDialogName[];
-extern const char kDesktopPWAsDetailedInstallDialogDescription[];
-
 extern const char kDeviceForceScheduledRebootName[];
 extern const char kDeviceForceScheduledRebootDescription[];
 

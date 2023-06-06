@@ -1012,12 +1012,6 @@ const char kDesktopPWAsWebBundlesDescription[] =
     "Adds support for web bundles, making web apps able to be launched "
     "offline.";
 
-const char kDesktopPWAsDetailedInstallDialogName[] =
-    "Desktop PWAs Detailed Install Dialog";
-const char kDesktopPWAsDetailedInstallDialogDescription[] =
-    "Enable PWAs with screenshots to show a detailed install dialog during "
-    "installation";
-
 const char kEnablePreinstalledWebAppDuplicationFixerName[] =
     "Enable the app deduplication fix for migrated preinstalled web apps";
 const char kEnablePreinstalledWebAppDuplicationFixerDescription[] =

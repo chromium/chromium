@@ -814,10 +814,7 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
 WebAppIntegrationTestDriver::WebAppIntegrationTestDriver(TestDelegate* delegate)
     : delegate_(delegate),
       update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
-          web_app::AppIdentityUpdate::kSkipped)) {
-  scoped_feature_list_.InitAndEnableFeature(
-      webapps::features::kDesktopPWAsDetailedInstallDialog);
-}
+          web_app::AppIdentityUpdate::kSkipped)) {}
 
 WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 

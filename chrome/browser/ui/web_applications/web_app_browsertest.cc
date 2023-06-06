@@ -294,16 +294,7 @@ class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
       features::kDesktopPWAsTabStrip};
 };
 
-// A dedicated test fixture for detailed install dialog, which requires a
-// command line switch to enable manifest parsing.
-class WebAppBrowserTest_DetailedInstallDialog : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_DetailedInstallDialog() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      webapps::features::kDesktopPWAsDetailedInstallDialog};
-};
+using WebAppBrowserTest_DetailedInstallDialog = WebAppBrowserTest;
 
 #if BUILDFLAG(IS_WIN)
 using WebAppBrowserTest_ShortcutMenu = WebAppBrowserTest;

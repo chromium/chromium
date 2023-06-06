@@ -597,12 +597,7 @@ void InstallableManager::WorkOnTask() {
                           IconUsage::kPrimary);
   } else if (params.fetch_screenshots && !screenshots_downloading_ &&
              !is_screenshots_fetch_complete_) {
-    if (base::FeatureList::IsEnabled(
-            webapps::features::kDesktopPWAsDetailedInstallDialog)) {
-      CheckAndFetchScreenshots();
-    } else {
-      CheckAndFetchScreenshots(/*check_form_factor=*/false);
-    }
+    CheckAndFetchScreenshots();
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
   } else if (params.valid_splash_icon && params.prefer_maskable_icon &&
@@ -892,7 +887,7 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
   WorkOnTask();
 }
 
-void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
+void InstallableManager::CheckAndFetchScreenshots() {
   DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!is_screenshots_fetch_complete_);
 
@@ -901,15 +896,13 @@ void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
   int num_of_screenshots = 0;
   for (const auto& url : manifest().screenshots) {
 #if BUILDFLAG(IS_ANDROID)
-    if (check_form_factor &&
-        url->form_factor ==
-            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+    if (url->form_factor ==
+        blink::mojom::ManifestScreenshot::FormFactor::kWide) {
       continue;
     }
 #else
-    if (check_form_factor &&
-        url->form_factor !=
-            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+    if (url->form_factor !=
+        blink::mojom::ManifestScreenshot::FormFactor::kWide) {
       continue;
     }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -43,7 +43,6 @@ BASE_DECLARE_FEATURE(kWebApkInstallFailureRetry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);
-BASE_DECLARE_FEATURE(kDesktopPWAsDetailedInstallDialog);
 
 BASE_DECLARE_FEATURE(kInstallPromptSegmentation);
 
