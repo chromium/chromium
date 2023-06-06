@@ -1912,7 +1912,7 @@
       "fast/forms/week/week-appearance-pseudo-elements.html"
     ],
     "args": ["--disable-blink-features=DateInputInlineBlock"],
-    "expires": "Jun 8, 2023"
+    "expires": "Oct 1, 2023"
   },
   {
     "prefix": "allow-rtc-encoded-video-frame-set-metadata-all-fields",
