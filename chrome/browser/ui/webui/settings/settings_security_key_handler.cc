@@ -1119,7 +1119,9 @@ PasskeysHandler::PasskeysHandler(
 PasskeysHandler::~PasskeysHandler() = default;
 
 void PasskeysHandler::OnJavascriptAllowed() {}
-void PasskeysHandler::OnJavascriptDisallowed() {}
+void PasskeysHandler::OnJavascriptDisallowed() {
+  weak_factory_.InvalidateWeakPtrs();
+}
 
 void PasskeysHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -1207,6 +1209,7 @@ void PasskeysHandler::HandleDelete(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(2u, args.size());
 
+  AllowJavascript();
   std::vector<uint8_t> credential_id;
   const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
   DCHECK(ok);
@@ -1232,6 +1235,7 @@ void PasskeysHandler::HandleEdit(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(3u, args.size());
 
+  AllowJavascript();
   std::vector<uint8_t> credential_id;
   const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
   DCHECK(ok);
