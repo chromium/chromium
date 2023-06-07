@@ -83,14 +83,14 @@ function isSafeUrl(s: string): boolean {
 }
 
 /**
- * Setups the copy button.
+ * Creates the copy button.
  *
  * @param container The container for the button.
  * @param content The content to be copied.
  * @param snackbarLabel The label to be displayed on snackbar when the content
  *     is copied.
  */
-function setupCopyButton(
+function createCopyButton(
     container: HTMLElement, content: string,
     snackbarLabel: I18nString): HTMLElement {
   const copyButton =
@@ -123,7 +123,7 @@ function showUrl(url: string) {
   anchor.setAttribute('aria-description', url);
   anchor.focus();
 
-  setupCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
+  createCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
 }
 
 /**
@@ -147,7 +147,7 @@ function showText(text: string) {
   };
 
   const copyButton =
-      setupCopyButton(container, text, I18nString.SNACKBAR_TEXT_COPIED);
+      createCopyButton(container, text, I18nString.SNACKBAR_TEXT_COPIED);
 
   // TODO(b/172879638): There is a race in ChromeVox which will speak the
   // focused element twice.
