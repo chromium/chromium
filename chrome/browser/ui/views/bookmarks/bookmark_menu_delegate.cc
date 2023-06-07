@@ -623,6 +623,15 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
                                      size_t start_child_index,
                                      MenuItemView* menu) {
   DCHECK_LE(start_child_index, parent->children().size());
+  if (parent == GetBookmarkModel()->other_node() &&
+      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    menu->AppendMenuItem(
+        IDC_SHOW_BOOKMARK_SIDE_PANEL,
+        l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL));
+    if (!parent->children().empty()) {
+      menu->AppendSeparator();
+    }
+  }
   const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
       chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   for (auto i = parent->children().cbegin() + start_child_index;
@@ -644,13 +653,6 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
           id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
     }
     AddMenuToMaps(child_menu_item, node);
-  }
-  if (parent == GetBookmarkModel()->other_node() &&
-      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    menu->AppendSeparator();
-    menu->AppendMenuItem(
-        IDC_SHOW_BOOKMARK_SIDE_PANEL,
-        l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL));
   }
 }
 
