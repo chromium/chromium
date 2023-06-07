@@ -6,11 +6,15 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
+#import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
+#import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinatee.h"
 
@@ -18,7 +22,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ToolbarCoordinator () <ToolbarCommands>
+@interface ToolbarCoordinator () <PrimaryToolbarViewControllerDelegate,
+                                  ToolbarCommands>
 
 /// Whether this coordinator has been started.
 @property(nonatomic, assign) BOOL started;
@@ -30,6 +35,11 @@
 /// Coordinator for the secondary toolbar at the bottom of the screen.
 @property(nonatomic, strong)
     SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
+
+/// Orchestrator for the omnibox focus animation.
+@property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
+/// Whether the omnibox is currently focused.
+@property(nonatomic, assign) BOOL locationBarFocused;
 
 @end
 
@@ -68,8 +78,19 @@
 
   self.primaryToolbarCoordinator.locationBarCoordinator =
       self.locationBarCoordinator;
+  self.primaryToolbarCoordinator.viewControllerDelegate = self;
   [self.primaryToolbarCoordinator start];
   [self.secondaryToolbarCoordinator start];
+
+  self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
+  self.orchestrator.toolbarAnimatee =
+      self.primaryToolbarCoordinator.toolbarAnimatee;
+  self.orchestrator.locationBarAnimatee =
+      [self.locationBarCoordinator locationBarAnimatee];
+  self.orchestrator.editViewAnimatee =
+      [self.locationBarCoordinator editViewAnimatee];
+
+  [self updateToolbarsLayout];
 
   [super start];
   self.started = YES;
@@ -138,7 +159,18 @@
 #pragma mark Omnibox and LocationBar
 
 - (void)transitionToLocationBarFocusedState:(BOOL)focused {
-  [self.primaryToolbarCoordinator transitionToLocationBarFocusedState:focused];
+  if (self.traitEnvironment.traitCollection.verticalSizeClass ==
+      UIUserInterfaceSizeClassUnspecified) {
+    return;
+  }
+
+  [self.orchestrator
+      transitionToStateOmniboxFocused:focused
+                      toolbarExpanded:focused && !IsRegularXRegularSizeClass(
+                                                     self.traitEnvironment)
+                             animated:self.primaryToolbarCoordinator
+                                          .enableAnimationsForOmniboxFocus];
+  self.locationBarFocused = focused;
 }
 
 - (BOOL)isOmniboxFirstResponder {
@@ -180,6 +212,21 @@
   }
 }
 
+#pragma mark - PrimaryToolbarViewControllerDelegate
+
+- (void)viewControllerTraitCollectionDidChange:
+    (UITraitCollection*)previousTraitCollection {
+  [self updateToolbarsLayout];
+}
+
+- (void)close {
+  if (self.locationBarFocused) {
+    id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationCommandsHandler dismissModalDialogs];
+  }
+}
+
 #pragma mark - SideSwipeToolbarInteracting
 
 - (BOOL)isInsideToolbar:(CGPoint)point {
@@ -212,6 +259,23 @@
 /// on both coordinators.
 - (NSArray<id<ToolbarCoordinatee>>*)coordinators {
   return @[ self.primaryToolbarCoordinator, self.secondaryToolbarCoordinator ];
+}
+
+/// Returns the trait environment of the toolbars.
+- (id<UITraitEnvironment>)traitEnvironment {
+  return self.primaryToolbarViewController;
+}
+
+/// Updates toolbars layout whith current omnibox focus state.
+- (void)updateToolbarsLayout {
+  BOOL omniboxFocused =
+      self.isOmniboxFirstResponder || self.showingOmniboxPopup;
+  [self.orchestrator
+      transitionToStateOmniboxFocused:omniboxFocused
+                      toolbarExpanded:omniboxFocused &&
+                                      !IsRegularXRegularSizeClass(
+                                          self.traitEnvironment)
+                             animated:NO];
 }
 
 @end

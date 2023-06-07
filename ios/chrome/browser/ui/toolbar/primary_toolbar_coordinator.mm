@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -30,11 +29,9 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller.h"
-#import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/navigation/referrer.h"
 
@@ -42,8 +39,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PrimaryToolbarCoordinator () <PrimaryToolbarMediatorDelegate,
-                                         PrimaryToolbarViewControllerDelegate> {
+@interface PrimaryToolbarCoordinator () <PrimaryToolbarMediatorDelegate> {
   // Observer that updates `toolbarViewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
   PrerenderService* _prerenderService;
@@ -55,12 +51,8 @@
 @property(nonatomic, strong) PrimaryToolbarMediator* primaryToolbarMediator;
 // Redefined as PrimaryToolbarViewController.
 @property(nonatomic, strong) PrimaryToolbarViewController* viewController;
-// Orchestrator for the expansion animation.
-@property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
 // Whether the omnibox focusing should happen with animation.
 @property(nonatomic, assign) BOOL enableAnimationsForOmniboxFocus;
-// Whether the omnibox is currently focused.
-@property(nonatomic, assign) BOOL locationBarFocused;
 
 @end
 
@@ -92,12 +84,10 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   self.viewController.popupMenuCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
-  self.viewController.delegate = self;
+  CHECK(self.viewControllerDelegate);
+  self.viewController.delegate = self.viewControllerDelegate;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-
-  self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
-  self.orchestrator.toolbarAnimatee = self.viewController;
 
   // Button factory requires that the omnibox commands are set up, which is
   // done by the location bar.
@@ -106,11 +96,6 @@
 
   self.viewController.locationBarViewController =
       self.locationBarCoordinator.locationBarViewController;
-  self.orchestrator.locationBarAnimatee =
-      [self.locationBarCoordinator locationBarAnimatee];
-
-  self.orchestrator.editViewAnimatee =
-      [self.locationBarCoordinator editViewAnimatee];
 
   _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       FullscreenController::FromBrowser(self.browser), self.viewController);
@@ -138,21 +123,12 @@
   return self.viewController;
 }
 
-- (void)transitionToLocationBarFocusedState:(BOOL)focused {
-  if (self.viewController.traitCollection.verticalSizeClass ==
-      UIUserInterfaceSizeClassUnspecified) {
-    return;
-  }
-
-  [self.orchestrator
-      transitionToStateOmniboxFocused:focused
-                      toolbarExpanded:focused && !IsRegularXRegularSizeClass(
-                                                     self.viewController)
-                             animated:self.enableAnimationsForOmniboxFocus];
-  self.locationBarFocused = focused;
+- (id<ViewRevealingAnimatee>)animatee {
+  return self.viewController;
 }
 
-- (id<ViewRevealingAnimatee>)animatee {
+- (id<ToolbarAnimatee>)toolbarAnimatee {
+  CHECK(self.viewController);
   return self.viewController;
 }
 
@@ -207,28 +183,6 @@
 
 - (BOOL)isLoadingPrerenderer {
   return _prerenderService && _prerenderService->IsLoadingPrerender();
-}
-
-#pragma mark - PrimaryToolbarViewControllerDelegate
-
-- (void)viewControllerTraitCollectionDidChange:
-    (UITraitCollection*)previousTraitCollection {
-  BOOL omniboxFocused =
-      self.isOmniboxFirstResponder || [self showingOmniboxPopup];
-  [self.orchestrator
-      transitionToStateOmniboxFocused:omniboxFocused
-                      toolbarExpanded:omniboxFocused &&
-                                      !IsRegularXRegularSizeClass(
-                                          self.viewController)
-                             animated:NO];
-}
-
-- (void)close {
-  if (self.locationBarFocused) {
-    id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationCommandsHandler dismissModalDialogs];
-  }
 }
 
 #pragma mark - NewTabPageControllerDelegate

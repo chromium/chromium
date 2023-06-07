@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 
+@protocol PrimaryToolbarViewControllerDelegate;
 @protocol SharingPositioner;
+@protocol ToolbarAnimatee;
 @class ViewRevealingVerticalPanHandler;
 @protocol ViewRevealingAnimatee;
 
@@ -20,13 +22,15 @@
 // A reference to the view controller that implements the view revealing
 // vertical pan handler delegate methods.
 @property(nonatomic, weak, readonly) id<ViewRevealingAnimatee> animatee;
+// A reference to the view controller that implements the tooblar animation
+// protocol.
+@property(nonatomic, weak, readonly) id<ToolbarAnimatee> toolbarAnimatee;
+// Delegate for `primaryToolbarViewController`. Should be non-nil before start.
+@property(nonatomic, weak) id<PrimaryToolbarViewControllerDelegate>
+    viewControllerDelegate;
 
 // Positioner for activity services attached to the toolbar
 - (id<SharingPositioner>)SharingPositioner;
-
-// Coordinates the location bar focusing/defocusing. For example, initiates
-// transition to the expanded location bar state of the view controller.
-- (void)transitionToLocationBarFocusedState:(BOOL)focused;
 
 // Sets the pan gesture handler for the toolbar controller.
 - (void)setPanGestureHandler:
@@ -37,6 +41,9 @@
 
 // YES when a prerendered webstate is being inserted into a webStateList.
 - (BOOL)isLoadingPrerenderer;
+
+// YES when the animations for omnibox focus are enabled.
+- (BOOL)enableAnimationsForOmniboxFocus;
 
 @end
 
