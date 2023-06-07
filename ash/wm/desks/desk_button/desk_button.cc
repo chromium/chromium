@@ -10,8 +10,11 @@
 #include "ash/screen_util.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_controller.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_number_conversions.h"
@@ -148,6 +151,31 @@ void DeskButton::OnExpandedStateUpdate(bool expanded) {
   MaybeUpdateDeskSwitchButtonVisibility();
 }
 
+void DeskButton::SetActivation(bool is_activated) {
+  if (is_activated_ == is_activated) {
+    return;
+  }
+
+  is_activated_ = is_activated;
+
+  if (!force_expanded_state_) {
+    if (!is_activated_ && is_hovered_) {
+      desk_button_widget_->SetExpanded(true);
+    } else {
+      desk_button_widget_->SetExpanded(false);
+    }
+  }
+
+  background()->SetNativeControlColor(GetColorProvider()->GetColor(
+      is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                    : cros_tokens::kCrosSysSystemOnBaseOpaque));
+  desk_name_label_->SetEnabledColor(GetColorProvider()->GetColor(
+      is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                    : cros_tokens::kCrosSysOnSurface));
+
+  MaybeUpdateDeskSwitchButtonVisibility();
+}
+
 const std::u16string& DeskButton::GetTextForTest() const {
   return desk_name_label_->GetText();
 }
@@ -230,23 +258,15 @@ void DeskButton::OnDeskNameChanged(const Desk* desk,
 }
 
 void DeskButton::OnButtonPressed() {
-  is_activated_ = !is_activated_;
+  aura::Window* root = desk_button_widget_->GetNativeWindow()->GetRootWindow();
+  DeskBarController* desk_bar_controller =
+      DesksController::Get()->desk_bar_controller();
 
-  if (!force_expanded_state_) {
-    if (is_activated_ && is_expanded_) {
-      desk_button_widget_->SetExpanded(false);
-    } else if (!is_activated_ && !is_expanded_) {
-      desk_button_widget_->SetExpanded(true);
-    }
+  if (is_activated_ && desk_bar_controller->GetDeskBarView(root)) {
+    desk_bar_controller->CloseDeskBar(root);
+  } else {
+    desk_bar_controller->OpenDeskBar(root);
   }
-
-  background()->SetNativeControlColor(GetColorProvider()->GetColor(
-      is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                    : cros_tokens::kCrosSysSystemOnBaseOpaque));
-  desk_name_label_->SetEnabledColor(GetColorProvider()->GetColor(
-      is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface));
-  MaybeUpdateDeskSwitchButtonVisibility();
 }
 
 void DeskButton::OnPreviousPressed() {

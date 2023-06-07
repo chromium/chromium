@@ -11,11 +11,14 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/observer_list.h"
+#include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
 class Window;
@@ -28,8 +31,10 @@ namespace ash {
 // bar, but eventually, it will support all bars. Please note this controller is
 // owned by `DesksController`.
 class ASH_EXPORT DeskBarController : public DesksController::Observer,
+                                     public ui::EventHandler,
                                      public OverviewObserver,
-                                     public TabletModeObserver {
+                                     public TabletModeObserver,
+                                     public wm::ActivationChangeObserver {
  public:
   DeskBarController();
 
@@ -41,39 +46,57 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // DesksController::Observer:
   void OnDeskSwitchAnimationLaunching() override;
 
+  // ui::EventHandler:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
+
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
 
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
+
   // Returns desk bar view in `root`. If there is no such desk bar, nullptr is
   // returned.
   DeskBarViewBase* GetDeskBarView(aura::Window* root) const;
 
+  // Opens the desk bar in 'root'.
+  void OpenDeskBar(aura::Window* root);
+
+  // Closes the desk bar in 'root'. Please note, the destruction of the desk bar
+  // is triggered when the bar loses activation via `OnWindowActivated()`.
+  void CloseDeskBar(aura::Window* root);
+
+  // Closes all desk bars. Please note, the destruction of the desk bars is
+  // triggered when the bars lose activation via `OnWindowActivated()`.
+  void CloseAllDeskBars();
+
+ private:
   // Creates desk bar(both bar widget and bar view) in `root`. If there is
   // another bar in `root`, it will get rid of the existing one and then
   // create a new one.
   void CreateDeskBar(aura::Window* root);
 
-  // Destroys desk bar in `root`. Please note, this assumes a valid bar always
-  // exists.
-  void DestroyDeskBar(aura::Window* root);
-
-  // Destroys all desk bars.
+  // Destroys all desk bars. This is where the real destruction happens.
   void DestroyAllDeskBars();
 
-  // Shows the desk bar in 'root'. Please note, this assumes a valid bar
-  // always exists.
-  void ShowDeskBar(aura::Window* root);
-
-  // Hides the desk bar in 'root'. Please note, this assumes a valid bar
-  // always exists.
-  void HideDeskBar(aura::Window* root);
-
- private:
   // Returns bounds for desk bar widget in `root`.
   gfx::Rect GetDeskBarWidgetBounds(aura::Window* root) const;
+
+  // When pressing off the bar, it should either commit desk name change, or
+  // hide the bar.
+  void OnMaybePressOffBar(const ui::LocatedEvent& event);
+
+  // Returns desk button for `root`.
+  DeskButton* GetDeskButton(aura::Window* root);
+
+  // Updates desk button activation.
+  void SetDeskButtonActivation(aura::Window* root, bool is_activated);
 
   // Bar widgets and bar views for the desk bars. Right now, it supports only
   // desk button desk bar. Support for overview desk bar will be added later.

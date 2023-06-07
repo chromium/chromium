@@ -284,16 +284,20 @@ class DeskBarBoundsAnimation : public ui::ImplicitAnimationObserver {
   DeskBarBoundsAnimation& operator=(const DeskBarBoundsAnimation&) = delete;
 
   ~DeskBarBoundsAnimation() override {
-    DCHECK(bar_view_);
+    CHECK(bar_view_);
     bar_view_->set_is_bounds_animation_on_going(false);
-    if (Shell::Get()->overview_controller()->InOverviewSession()) {
-      // Updated the desk buttons and layout the desk bar to make sure the
-      // buttons visibility will be updated on desk bar state changes. Also
-      // make sure the button's text will be updated correctly while going back
-      // to zero state.
-      bar_view_->UpdateDeskButtonsVisibility();
-      bar_view_->Layout();
-      UpdateAccessibilityFocusInOverview();
+
+    // Updated the desk buttons and layout the desk bar to make sure the
+    // buttons visibility will be updated on desk bar state changes. Also
+    // make sure the button's text will be updated correctly while going back
+    // to zero state.
+    bar_view_->UpdateDeskButtonsVisibility();
+    bar_view_->Layout();
+    if (OverviewController* overview_controller =
+            Shell::Get()->overview_controller()) {
+      if (overview_controller->InOverviewSession()) {
+        UpdateAccessibilityFocusInOverview();
+      }
     }
   }
 

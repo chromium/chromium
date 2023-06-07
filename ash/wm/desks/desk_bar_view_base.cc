@@ -49,7 +49,9 @@ namespace {
 
 OverviewHighlightController* GetHighlightController() {
   auto* overview_controller = Shell::Get()->overview_controller();
-  CHECK(overview_controller->InOverviewSession());
+  if (!overview_controller || !overview_controller->InOverviewSession()) {
+    return nullptr;
+  }
   return overview_controller->overview_session()->highlight_controller();
 }
 
@@ -937,16 +939,19 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
                                              !is_zero_state);
 
   if (type_ == Type::kOverview) {
-    // Removes the button from the tabbing order if it becomes invisible.
-    auto* highlight_controller = GetHighlightController();
-    if (!zero_state_library_button_->GetVisible()) {
-      highlight_controller->OnViewDestroyingOrDisabling(
-          zero_state_library_button_);
+    if (auto* highlight_controller = GetHighlightController()) {
+      // Removes the button from the tabbing order if it becomes invisible.
+      if (!zero_state_library_button_->GetVisible()) {
+        highlight_controller->OnViewDestroyingOrDisabling(
+            zero_state_library_button_);
+      }
+      if (!expanded_state_library_button_->GetVisible()) {
+        highlight_controller->OnViewDestroyingOrDisabling(
+            expanded_state_library_button_->GetInnerButton());
+      }
     }
-    if (!expanded_state_library_button_->GetVisible()) {
-      highlight_controller->OnViewDestroyingOrDisabling(
-          expanded_state_library_button_->GetInnerButton());
-    }
+  } else {
+    // TODO(b/277988182): Add support for desk button desk bar.
   }
 
   const int begin_x = GetFirstMiniViewXOffset();
@@ -1318,17 +1323,21 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   }
 
   if (type_ == Type::kOverview) {
-    // Let the highlight controller know the view is destroying before it is
-    // removed from the collection because it needs to know the index of the
-    // mini view, or the desk name view (if either is currently highlighted)
-    // relative to other traversable views.
-    auto* highlight_controller = GetHighlightController();
-    // The order here matters, we call it first on the desk_name_view since it
-    // comes later in the highlight order (See documentation of
-    // `OnViewDestroyingOrDisabling()`).
-    highlight_controller->OnViewDestroyingOrDisabling(
-        (*iter)->desk_name_view());
-    highlight_controller->OnViewDestroyingOrDisabling((*iter)->desk_preview());
+    if (auto* highlight_controller = GetHighlightController()) {
+      // Let the highlight controller know the view is destroying before it is
+      // removed from the collection because it needs to know the index of the
+      // mini view, or the desk name view (if either is currently highlighted)
+      // relative to other traversable views.
+      // The order here matters, we call it first on the desk_name_view since it
+      // comes later in the highlight order (See documentation of
+      // `OnViewDestroyingOrDisabling()`).
+      highlight_controller->OnViewDestroyingOrDisabling(
+          (*iter)->desk_name_view());
+      highlight_controller->OnViewDestroyingOrDisabling(
+          (*iter)->desk_preview());
+    }
+  } else {
+    // TODO(b/277988182): Add support for desk button desk bar.
   }
 
   if (chromeos::features::IsJellyrollEnabled()) {
@@ -1492,11 +1501,12 @@ void DeskBarViewBase::SwitchToZeroState() {
   std::vector<DeskMiniView*> removed_mini_views = mini_views_;
   mini_views_.clear();
 
-  auto* highlight_controller = GetHighlightController();
-  OverviewHighlightableView* view = highlight_controller->highlighted_view();
-  // Reset the highlight if it is highlighted on a descendant of `this`.
-  if (view && Contains(view->GetView())) {
-    highlight_controller->ResetHighlightedView();
+  if (auto* highlight_controller = GetHighlightController()) {
+    OverviewHighlightableView* view = highlight_controller->highlighted_view();
+    // Reset the highlight if it is highlighted on a descendant of `this`.
+    if (view && Contains(view->GetView())) {
+      highlight_controller->ResetHighlightedView();
+    }
   }
 
   // Keep current layout until the animation is completed since the animation
@@ -1679,14 +1689,16 @@ void DeskBarViewBase::OnLibraryButtonPressed() {
   if (overview_grid_) {
     overview_session = overview_grid_->overview_session();
   } else {
+    OverviewController* overview_controller =
+        Shell::Get()->overview_controller();
     bool is_overview_started =
-        Shell::Get()->overview_controller()->StartOverview(
-            OverviewStartAction::kDeskButton);
+        overview_controller &&
+        overview_controller->StartOverview(OverviewStartAction::kDeskButton);
     // If overview refuses to start, do nothing.
     if (!is_overview_started) {
       return;
     }
-    overview_session = Shell::Get()->overview_controller()->overview_session();
+    overview_session = overview_controller->overview_session();
   }
   overview_session->ShowSavedDeskLibrary(base::Uuid(), /*saved_desk_name=*/u"",
                                          root);

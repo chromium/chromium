@@ -213,7 +213,7 @@ void DeskButtonWidget::Initialize(aura::Window* container) {
   delegate_view_->SetForceExpandedState(is_horizontal_shelf_);
 }
 
-DeskButton* DeskButtonWidget::GetDeskButtonForTest() const {
+DeskButton* DeskButtonWidget::GetDeskButton() const {
   return delegate_view_->desk_button();
 }
 

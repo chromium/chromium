@@ -65,6 +65,8 @@ class ASH_EXPORT DeskButton : public views::Button,
   // Updates label text and visibility of children.
   void OnExpandedStateUpdate(bool expanded);
 
+  void SetActivation(bool is_activated);
+
   const std::u16string& GetTextForTest() const;
 
  private:

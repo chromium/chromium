@@ -71,7 +71,7 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   // Initializes the widget, sets its contents view and basic properties.
   void Initialize(aura::Window* container);
 
-  DeskButton* GetDeskButtonForTest() const;
+  DeskButton* GetDeskButton() const;
 
  private:
   class DelegateView;
