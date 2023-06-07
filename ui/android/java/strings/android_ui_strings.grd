@@ -200,6 +200,9 @@
       <message name="IDS_LINK_COPIED" desc="Notification telling the user that the url has been copied to clipboard. [CHAR_LIMIT=32]">
         Link copied
       </message>
+      <message name="IDS_IMAGE_COPIED" desc="Notification telling the user that the image has been copied to clipboard. [CHAR_LIMIT=32]">
+        Image copied
+      </message>
       <message name="IDS_COPIED" desc="Notification telling the user that something has been copied to the clipboard.">
         Copied
       </message>

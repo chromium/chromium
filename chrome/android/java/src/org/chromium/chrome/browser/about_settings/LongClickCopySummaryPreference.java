@@ -27,7 +27,7 @@ public class LongClickCopySummaryPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setOnLongClickListener(v -> {
-            Clipboard.getInstance().setTextAndNotify(getSummary().toString());
+            Clipboard.getInstance().setText(getTitle().toString(), getSummary().toString(), true);
             return true;
         });
     }

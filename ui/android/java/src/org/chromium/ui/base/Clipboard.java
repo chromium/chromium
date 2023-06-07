@@ -242,12 +242,13 @@ public class Clipboard {
     }
 
     /**
-     * Writes text to the clipboard and shows a notification, such as a toast, to the user.
+     * Writes text to the clipboard.
      *
+     * @param label the label for the clip data.
      * @param text  will become the content of the clipboard's primary clip.
      */
-    public void setTextAndNotify(final String text) {
-        Log.w(TAG, "setTextAndNotify is a no-op because Clipboard service isn't available");
+    public void setText(final String label, final String text) {
+        Log.w(TAG, "setText is a no-op because Clipboard service isn't available");
     }
 
     /**
@@ -255,8 +256,9 @@ public class Clipboard {
      *
      * @param label the label for the clip data.
      * @param text  will become the content of the clipboard's primary clip.
+     * @param notifyOnSuccess whether show a notification, e.g. a toast, to the user when success.
      */
-    public void setText(final String label, final String text) {
+    public void setText(final String label, final String text, boolean notifyOnSuccess) {
         Log.w(TAG, "setText is a no-op because Clipboard service isn't available");
     }
 
@@ -289,6 +291,19 @@ public class Clipboard {
      */
     public void setImageUri(final Uri uri) {
         Log.w(TAG, "setImageUri is a no-op because Clipboard service isn't available");
+    }
+
+    /**
+     * Setting the clipboard's current primary clip to an image.
+     * This method requires background work and might not be immediately committed upon returning
+     * from this method.
+     *
+     * @see #setImageUri(Uri)
+     * @param Uri The {@link Uri} will become the content of the clipboard's primary clip.
+     * @param notifyOnSuccess Whether show a notification when success.
+     */
+    public void setImageUri(final Uri uri, boolean notifyOnSuccess) {
+        Log.w(TAG, "setImageUriAndNotify is a no-op because Clipboard service isn't available");
     }
 
     /**

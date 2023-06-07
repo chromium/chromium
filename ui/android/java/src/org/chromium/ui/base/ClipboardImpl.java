@@ -75,6 +75,8 @@ public class ClipboardImpl
     // This mime type annotates that clipboard contains a PNG image.
     private static final String PNG_MIME_TYPE = "image/png";
 
+    private static @Nullable Boolean sSkipImageMimeTypeCheckForTesting;
+
     // Necessary for coercing clipboard contents to text if they require
     // access to network resources, etceteras (e.g., URI in clipboard)
     private final Context mContext;
@@ -341,7 +343,10 @@ public class ClipboardImpl
     }
 
     private static boolean hasImageMimeType(ClipDescription description) {
-        return (description != null) && (description.hasMimeType("image/*"));
+        return (description != null)
+                && (description.hasMimeType("image/*")
+                        || (sSkipImageMimeTypeCheckForTesting != null
+                                && sSkipImageMimeTypeCheckForTesting));
     }
 
     /**
@@ -364,19 +369,19 @@ public class ClipboardImpl
 
     @Override
     public void setText(final String text) {
-        setText("text", text);
-    }
-
-    @Override
-    public void setTextAndNotify(final String text) {
-        if (setPrimaryClipNoException(ClipData.newPlainText("text", text))) {
-            showToastIfNeeded(R.string.copied);
-        }
+        setText("text", text, false);
     }
 
     @Override
     public void setText(final String label, final String text) {
-        setPrimaryClipNoException(ClipData.newPlainText(label, text));
+        setText(label, text, false);
+    }
+
+    @Override
+    public void setText(final String label, final String text, boolean notifyOnSuccess) {
+        if (setPrimaryClipNoException(ClipData.newPlainText(label, text)) && notifyOnSuccess) {
+            showToastIfNeeded(R.string.copied);
+        }
     }
 
     @Override
@@ -397,6 +402,11 @@ public class ClipboardImpl
 
     @Override
     public void setImageUri(final Uri uri) {
+        setImageUri(uri, false);
+    }
+
+    @Override
+    public void setImageUri(final Uri uri, boolean notifyOnSuccess) {
         if (uri == null) {
             showCopyToClipboardFailureMessage();
             return;
@@ -414,7 +424,9 @@ public class ClipboardImpl
             }
             @Override
             protected void onPostExecute(ClipData clipData) {
-                setPrimaryClipNoException(clipData);
+                if (setPrimaryClipNoException(clipData) && notifyOnSuccess) {
+                    showToastIfNeeded(R.string.image_copied);
+                }
 
                 // Storing timestamp is for avoiding accessing the system clipboard data, which may
                 // cause the clipboard access notification to show up, when we try to clean up the
@@ -662,5 +674,10 @@ public class ClipboardImpl
     private void showToastIfNeeded(@StringRes int stringId) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) return;
         Toast.makeText(mContext, stringId, Toast.LENGTH_SHORT).show();
+    }
+
+    @VisibleForTesting
+    public static void setSkipImageMimeTypeCheckForTesting(Boolean doSkip) {
+        sSkipImageMimeTypeCheckForTesting = doSkip;
     }
 }

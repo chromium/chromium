@@ -56,7 +56,7 @@ public class ToastManagerTest {
         ToastManager.resetForTesting();
         clearInvocations(mAndroidToastObject);
         clearInvocations(mAndroidToastObjectNext);
-        ToastManager.setEnabledForTesting(false);
+        ToastManager.setEnabledForTesting(null);
     }
 
     private static void waitForIdleUi() {
