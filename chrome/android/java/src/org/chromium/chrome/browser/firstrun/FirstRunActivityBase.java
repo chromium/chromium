@@ -21,8 +21,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.browser.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
@@ -109,12 +110,13 @@ public abstract class FirstRunActivityBase
     protected void onPreCreate() {
         super.onPreCreate();
         if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(), this);
+            BackPressHelper.create(
+                    this, getOnBackPressedDispatcher(), this, getSecondaryActivity());
         } else {
             BackPressHelper.create(this, getOnBackPressedDispatcher(), () -> {
                 handleBackPress();
                 return true;
-            });
+            }, getSecondaryActivity());
         }
     }
 
@@ -168,6 +170,8 @@ public abstract class FirstRunActivityBase
      */
     @Override
     public abstract @BackPressResult int handleBackPress();
+
+    public abstract @SecondaryActivity int getSecondaryActivity();
 
     protected void flushPersistentData() {
         if (mNativeInitialized) {

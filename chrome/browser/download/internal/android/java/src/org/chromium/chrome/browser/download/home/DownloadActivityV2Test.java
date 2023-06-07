@@ -54,9 +54,11 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
@@ -202,10 +204,10 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         getActivity().setContentView(mDownloadCoordinator.getView());
         if (BackPressManager.isSecondaryActivityEnabled()) {
             BackPressHelper.create(getActivity(), getActivity().getOnBackPressedDispatcher(),
-                    mDownloadCoordinator.getBackPressHandlers());
+                    mDownloadCoordinator.getBackPressHandlers(), SecondaryActivity.DOWNLOAD);
         } else {
             BackPressHelper.create(getActivity(), getActivity().getOnBackPressedDispatcher(),
-                    mDownloadCoordinator::onBackPressed);
+                    mDownloadCoordinator::onBackPressed, SecondaryActivity.DOWNLOAD);
         }
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);
@@ -668,20 +670,26 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
         // Clear the selection by back press and assert that the search view is showing again.
+        var backPressRecorder = HistogramWatcher.newSingleRecordWatcher(
+                "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
         TestThreadUtils.runOnUiThreadBlocking(
                 getActivity().getOnBackPressedDispatcher()::onBackPressed);
+        backPressRecorder.assertExpected();
         onView(withId(R.id.search_text)).check(matches(isDisplayed()));
 
         // Close the search view, by performing a back press.
+        var backPressRecorder2 = HistogramWatcher.newSingleRecordWatcher(
+                "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
         TestThreadUtils.runOnUiThreadBlocking(
                 getActivity().getOnBackPressedDispatcher()::onBackPressed);
+        backPressRecorder2.assertExpected();
         CriteriaHelper.pollInstrumentationThread(
                 () -> { onView(withId(R.id.search_text)).check(matches(not(isDisplayed()))); });
     }
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
     public void testDismissSearchViewByBackPress_BackPressRefactor() {
         testDismissSearchViewByBackPress();
     }
