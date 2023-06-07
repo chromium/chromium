@@ -90,9 +90,14 @@ void HistoryServiceObserver::DeleteResultsForHistoryBasedSegments() {
     return;
   }
   for (const auto segment_id : *history_based_segments_) {
-    // TODO(b/285227062) : Add handling for default models, if required.
+    // For Server models.
     storage_service_->segment_info_database()->SaveSegmentResult(
         segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, absl::nullopt,
+        base::DoNothing());
+
+    // For Default models.
+    storage_service_->segment_info_database()->SaveSegmentResult(
+        segment_id, proto::ModelSource::DEFAULT_MODEL_SOURCE, absl::nullopt,
         base::DoNothing());
   }
 
