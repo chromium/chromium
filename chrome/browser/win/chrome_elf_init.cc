@@ -150,9 +150,10 @@ void InitializeChromeElf() {
     if (!browser_extension_point_registry_key.Valid()) {
       browser_extension_point_registry_key.Create(HKEY_CURRENT_USER,
                                                   reg_path.c_str(), KEY_WRITE);
-    } else {
-      if (browser_extension_point_registry_key.Valid())
-        browser_extension_point_registry_key.DeleteKey(L"");
+    }
+  } else {
+    if (browser_extension_point_registry_key.Valid()) {
+      browser_extension_point_registry_key.DeleteKey(L"");
     }
   }
 }
