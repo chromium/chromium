@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
 
 #include <string>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -54,9 +55,17 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
       );
   prompt_permissions.LoadFromPermissionSet(permissions_to_display.get(),
                                            extension.GetType());
-  parent_access_ui::mojom::ExtensionPermissionsPtr permissions =
-      parent_access_ui::mojom::ExtensionPermissions::New(
-          prompt_permissions.permissions, prompt_permissions.details);
+  const size_t permissions_count = prompt_permissions.permissions.size();
+  CHECK_EQ(permissions_count, prompt_permissions.details.size());
+
+  std::vector<parent_access_ui::mojom::ExtensionPermissionPtr> permissions;
+  permissions.reserve(permissions_count);
+  for (size_t i = 0; i < permissions_count; ++i) {
+    parent_access_ui::mojom::ExtensionPermissionPtr permission =
+        parent_access_ui::mojom::ExtensionPermission::New(
+            prompt_permissions.permissions[i], prompt_permissions.details[i]);
+    permissions.push_back(std::move(permission));
+  }
 
   // Convert icon to a bitmap representation.
   std::vector<uint8_t> icon_bitmap;

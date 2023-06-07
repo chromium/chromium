@@ -26,7 +26,6 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
       extensionIconSrc: {type: String},
       extensionName: {type: String},
       extensionPermissions: {type: Array},
-      extensionPermissionDetails: {type: Array},
     };
   }
 
@@ -45,15 +44,9 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     this.extensionName = '';
     /**
      * Localized permission strings.
-     * @protected {Array<string>}
+     * @protected {Array<Object>}
      */
     this.extensionPermissions = [];
-    /**
-     * Localized permission details. Each detail corresponds to a permission at
-     * the same index in the extensionPermissions array.
-     * @protected {Array<string>}
-     */
-    this.extensionPermissionDetails = [];
   }
 
   /** @override */
@@ -76,26 +69,17 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     }
   }
 
-  /**
-   * @param {number} index
-   * @protected
-   */
-  getPermissionDetail(index) {
-    return this.extensionPermissionDetails[index];
-  }
 
   /** @private */
   renderDetails_(params) {
     this.extensionIconSrc = getBase64EncodedSrcForPng(params.iconPngBytes);
     this.extensionName = decodeMojoString16(params.extensionName);
-    this.extensionPermissions =
-        params.permissions.permissions.map((permission) => {
-          return decodeMojoString16(permission);
-        });
-    this.extensionPermissionDetails =
-        params.permissions.details.map((detail) => {
-          return decodeMojoString16(detail);
-        });
+    this.extensionPermissions = params.permissions.map((permission) => {
+      return {
+        permission: decodeMojoString16(permission.permission),
+        details: decodeMojoString16(permission.details),
+      };
+    });
   }
 }
 
