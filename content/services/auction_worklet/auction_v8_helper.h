@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -387,6 +388,10 @@ class CONTENT_EXPORT AuctionV8Helper
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
   scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
+  // This needs to be invoked after ~IsolateHolder to make sure that V8 is
+  // really shut down.
+  base::ScopedClosureRunner destroyed_callback_run_;
+
   std::unique_ptr<gin::IsolateHolder> isolate_holder_
       GUARDED_BY_CONTEXT(sequence_checker_);
   v8::Global<v8::Context> scratch_context_
@@ -413,8 +418,6 @@ class CONTENT_EXPORT AuctionV8Helper
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<v8_inspector::V8Inspector> v8_inspector_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::OnceClosure destroyed_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
