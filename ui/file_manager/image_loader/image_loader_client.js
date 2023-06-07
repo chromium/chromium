@@ -167,6 +167,13 @@ ImageLoaderClient.prototype.load = function(request, callback) {
   request.taskId = this.lastTaskId_;
 
   ImageLoaderClient.sendMessage_(request, function(result_data) {
+    if (chrome.runtime.lastError) {
+      console.warn(chrome.runtime.lastError.message);
+      callback(new LoadImageResponse(
+          LoadImageResponseStatus.ERROR,
+          /** @type {number} */ (request.taskId)));
+      return;
+    }
     // TODO(tapted): Move to a prototype for better type checking.
     const result = /** @type {!LoadImageResponse} */ (result_data);
     // Save to cache.
@@ -213,7 +220,7 @@ ImageLoaderClient.CACHE_MEMORY_LIMIT = 20 * 1024 * 1024;  // 20 MB.
  */
 ImageLoaderClient.loadToImage = function(request, image, onSuccess, onError) {
   const callback = function(result) {
-    if (result.status == LoadImageResponseStatus.ERROR) {
+    if (!result || result.status == LoadImageResponseStatus.ERROR) {
       onError();
       return;
     }
