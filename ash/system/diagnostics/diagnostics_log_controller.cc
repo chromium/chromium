@@ -163,12 +163,10 @@ std::string DiagnosticsLogController::GenerateSessionStringOnBlockingPool()
   // Add the network events section.
   log_pieces.push_back(networking_log_->GetNetworkEvents());
 
-  if (features::IsInputInDiagnosticsAppEnabled()) {
-    std::string input_log_contents = keyboard_input_log_->GetLogContents();
-    if (!input_log_contents.empty()) {
-      log_pieces.push_back(kKeyboardLogSectionHeader);
-      log_pieces.push_back(std::move(input_log_contents));
-    }
+  std::string input_log_contents = keyboard_input_log_->GetLogContents();
+  if (!input_log_contents.empty()) {
+    log_pieces.push_back(kKeyboardLogSectionHeader);
+    log_pieces.push_back(std::move(input_log_contents));
   }
 
   return base::JoinString(log_pieces, "\n");

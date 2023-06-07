@@ -5655,11 +5655,6 @@ const char kEnableInputEventLoggingDescription[] =
     "will be included in feedback reports and system logs, so DO NOT ENTER "
     "SENSITIVE INFORMATION with this flag enabled.";
 
-const char kEnableInputInDiagnosticsAppName[] =
-    "Enable input device cards in the Diagnostics App";
-const char kEnableInputInDiagnosticsAppDescription[] =
-    "Enable input device cards in the Diagnostics App";
-
 const char kDiagnosticsAppJellyName[] =
     "Enable jelly colors for the Diagnostics App";
 const char kDiagnosticsAppJellyDescription[] =

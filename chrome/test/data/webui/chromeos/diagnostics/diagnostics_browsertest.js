@@ -34,7 +34,6 @@ const DiagnosticsAppWithInput = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kEnableInputInDiagnosticsApp',
         'ash::features::kEnableTouchpadsInDiagnosticsApp',
         'ash::features::kEnableTouchscreensInDiagnosticsApp',
       ],

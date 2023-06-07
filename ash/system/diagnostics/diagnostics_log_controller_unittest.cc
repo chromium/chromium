@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -25,7 +24,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,13 +56,7 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
       delete;
   ~DiagnosticsLogControllerTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /* enabled_features=*/{ash::features::kEnableInputInDiagnosticsApp},
-        /* disabled_features=*/{});
-
-    NoSessionAshTestBase::SetUp();
-  }
+  void SetUp() override { NoSessionAshTestBase::SetUp(); }
 
  protected:
   base::FilePath GetSessionLogPath() {
@@ -120,7 +112,6 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir save_dir_;
 };
 

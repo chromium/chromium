@@ -86,11 +86,6 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
         value: true,
       },
 
-      isInputEnabled: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isInputEnabled'),
-      },
-
       /**
        * Whether a user is logged in or not.
        * Note: A guest session is considered a logged-in state.
@@ -110,7 +105,6 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
   protected bannerMessage: string;
   protected isLoggedIn: boolean;
   private saveSessionLogEnabled: boolean;
-  private isInputEnabled: boolean;
   private toastText: string;
   private browserProxy: DiagnosticsBrowserProxyImpl =
       DiagnosticsBrowserProxyImpl.getInstance();
@@ -121,11 +115,9 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
   constructor() {
     super();
     this.browserProxy.initialize();
-    if (this.isInputEnabled) {
-      this.inputDataProvider.observeConnectedDevices(
-          new ConnectedDevicesObserverReceiver(this)
-              .$.bindNewPipeAndPassRemote());
-    }
+    this.inputDataProvider.observeConnectedDevices(
+        new ConnectedDevicesObserverReceiver(this)
+            .$.bindNewPipeAndPassRemote());
   }
 
   /**
@@ -184,20 +176,18 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
           getNavigationIcon('ethernet'), 'connectivity'),
     ];
 
-    if (this.isInputEnabled) {
-      pages.push(this.createInputSelector());
-      const devices: ConnectedDevices =
-          await this.inputDataProvider.getConnectedDevices();
-      // Check the existing value of |numKeyboards| if |GetConnectedDevices|
-      // returns no keyboards as it's possible |onKeyboardConnected| was called
-      // prior.
-      this.numKeyboards = devices.keyboards.length || this.numKeyboards;
-      const isTouchPadOrTouchScreenEnabled =
-          loadTimeData.getBoolean('isTouchpadEnabled') ||
-          loadTimeData.getBoolean('isTouchscreenEnabled');
-      if (this.numKeyboards === 0 && !isTouchPadOrTouchScreenEnabled) {
-        pages.pop();
-      }
+    pages.push(this.createInputSelector());
+    const devices: ConnectedDevices =
+        await this.inputDataProvider.getConnectedDevices();
+    // Check the existing value of |numKeyboards| if |GetConnectedDevices|
+    // returns no keyboards as it's possible |onKeyboardConnected| was called
+    // prior.
+    this.numKeyboards = devices.keyboards.length || this.numKeyboards;
+    const isTouchPadOrTouchScreenEnabled =
+        loadTimeData.getBoolean('isTouchpadEnabled') ||
+        loadTimeData.getBoolean('isTouchscreenEnabled');
+    if (this.numKeyboards === 0 && !isTouchPadOrTouchScreenEnabled) {
+      pages.pop();
     }
 
     return pages;

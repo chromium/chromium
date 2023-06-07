@@ -3229,9 +3229,6 @@ extern const char kEnableGoogleAssistantAecDescription[];
 extern const char kEnableInputEventLoggingName[];
 extern const char kEnableInputEventLoggingDescription[];
 
-extern const char kEnableInputInDiagnosticsAppName[];
-extern const char kEnableInputInDiagnosticsAppDescription[];
-
 extern const char kDiagnosticsAppJellyName[];
 extern const char kDiagnosticsAppJellyDescription[];
 

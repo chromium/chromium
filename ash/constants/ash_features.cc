@@ -673,11 +673,6 @@ BASE_FEATURE(kEnableHostnameSetting,
              "EnableHostnameSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the input device cards will be shown in the diagnostics app.
-BASE_FEATURE(kEnableInputInDiagnosticsApp,
-             "EnableInputInDiagnosticsApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the jelly colors will be used in the diagnostics app. Requires
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kDiagnosticsAppJelly,
@@ -3018,10 +3013,6 @@ bool IsStartAssistantAudioDecoderOnDemandEnabled() {
 
 bool IsImeTrayHideVoiceButtonEnabled() {
   return base::FeatureList::IsEnabled(kImeTrayHideVoiceButton);
-}
-
-bool IsInputInDiagnosticsAppEnabled() {
-  return base::FeatureList::IsEnabled(kEnableInputInDiagnosticsApp);
 }
 
 bool IsInstantTetheringBackgroundAdvertisingSupported() {
