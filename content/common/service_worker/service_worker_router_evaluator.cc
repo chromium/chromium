@@ -68,6 +68,7 @@ void ServiceWorkerRouterEvaluator::Compile() {
 std::vector<blink::ServiceWorkerRouterSource>
 ServiceWorkerRouterEvaluator::Evaluate(
     const network::ResourceRequest& request) const {
+  CHECK(is_valid_);
   for (const auto& rule : compiled_rules_) {
     std::vector<int> vec;
     if (rule->url_patterns.Match(request.url.path(), &vec) &&
