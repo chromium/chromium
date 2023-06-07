@@ -11,19 +11,85 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider_source.h"
 #include "base/check.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ash {
 namespace {
 
 // Used to ensure existence of only a single `WelcomeTourScrim` at a time.
 WelcomeTourScrim* g_instance = nullptr;
+
+// MaskLayerOwner --------------------------------------------------------------
+
+// The class which owns the mask layer for a `WelcomeTour::Scrim`. The mask
+// layer is responsible for clipping the scrim around help bubble anchor views
+// so that they are emphasized by the scrim and not obstructed by it.
+class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
+ public:
+  MaskLayerOwner()
+      : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)) {
+    Init();
+  }
+
+  MaskLayerOwner(const MaskLayerOwner&) = delete;
+  MaskLayerOwner& operator=(const MaskLayerOwner&) = delete;
+  ~MaskLayerOwner() override = default;
+
+ private:
+  // ui::LayerDelegate:
+  void OnDeviceScaleFactorChanged(float old_device_scale_factory,
+                                  float new_device_scale_factor) override {
+    Invalidate();
+  }
+
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    // In the absence of help bubble anchor views, the scrim should be fully
+    // visible. As such, the mask layer for the scrim should be fully opaque.
+    gfx::SizeF size(layer()->size());
+    SkPath path(SkPath::Rect(gfx::RectFToSkRect(gfx::RectF(size))));
+
+    // TODO(http://b/277091650): Clip `path` around help bubble anchor views.
+
+    // Configure `canvas`.
+    ui::PaintRecorder recorder(context, gfx::ToFlooredSize(size));
+    gfx::Canvas* const canvas = recorder.canvas();
+
+    // Configure `flags`.
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(SK_ColorBLACK);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+
+    // Draw `path`.
+    canvas->DrawPath(path, flags);
+  }
+
+  // Invoked once to initialize `this`.
+  void Init() {
+    // Configure static mask layer properties.
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetName(WelcomeTourScrim::kMaskLayerName);
+    layer()->set_delegate(this);
+
+    // TODO(http://b/277091650): Observe help bubble changes.
+  }
+
+  // Invoked as needed to schedule repaint of the mask layer.
+  void Invalidate() { layer()->SchedulePaint(gfx::Rect(layer()->size())); }
+};
 
 }  // namespace
 
@@ -33,7 +99,6 @@ WelcomeTourScrim* g_instance = nullptr;
 // root window while in existence. On destruction, the scrim for the associated
 // root window is automatically removed.
 // TODO(http://b/277091650): Add background blur.
-// TODO(http://b/277091650): Add mask cut out for help bubble anchor view.
 class WelcomeTourScrim::Scrim : public aura::WindowObserver,
                                 public ui::ColorProviderSourceObserver {
  public:
@@ -77,6 +142,7 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
   void Init() {
     // Configure static scrim layer properties.
     layer_owner_.layer()->SetFillsBoundsOpaquely(false);
+    layer_owner_.layer()->SetMaskLayer(mask_layer_owner_.layer());
     layer_owner_.layer()->SetName(WelcomeTourScrim::kLayerName);
 
     // Configure dynamic scrim layer properties.
@@ -94,11 +160,12 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
     Observe(GetRootWindowController()->color_provider_source());
   }
 
-  // Invoked to updates bounds of the scrim layer.
+  // Invoked to updates bounds of the scrim and mask layers. Note that scrim and
+  // mask layer bounds must remain in sync.
   void UpdateBounds() {
-    layer_owner_.layer()->SetBounds(
-        gfx::Rect(/*origin=*/gfx::Point(),
-                  /*size=*/GetHelpBubbleContainer()->bounds().size()));
+    const gfx::Rect bounds(GetHelpBubbleContainer()->bounds().size());
+    layer_owner_.layer()->SetBounds(bounds);
+    mask_layer_owner_.layer()->SetBounds(bounds);
   }
 
   // Invoked to update color of the scrim layer.
@@ -114,6 +181,11 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
 
   // Owner for the scrim layer applied to the associated help bubble container.
   ui::LayerOwner layer_owner_;
+
+  // Owner for the mask layer which is applied to the scrim layer to clip the
+  // scrim around help bubble anchor views so that they are emphasized by the
+  // scrim and not obstructed by it.
+  MaskLayerOwner mask_layer_owner_;
 
   // Used to observe the associated help bubble container in order to keep the
   // bounds of the scrim layer in sync.

@@ -45,6 +45,10 @@ MATCHER_P2(Index, i, matcher, "") {
   return Matches(matcher)(arg.at(i));
 }
 
+MATCHER_P(MaskLayer, matcher, "") {
+  return Matches(matcher)(arg->layer_mask_layer());
+}
+
 MATCHER_P(Name, matcher, "") {
   return Matches(matcher)(arg->name());
 }
@@ -59,6 +63,10 @@ std::vector<RootWindowController*> GetAllRootWindowControllers() {
 
 SkColor GetColor(RootWindowController* controller, ui::ColorId id) {
   return controller->color_provider_source()->GetColorProvider()->GetColor(id);
+}
+
+gfx::Rect GetLocalBounds(const aura::Window* window) {
+  return gfx::Rect(window->bounds().size());
 }
 
 aura::Window* GetHelpBubbleContainer(RootWindowController* controller) {
@@ -81,9 +89,10 @@ void ExpectScrimsOnAllRootWindows(bool exist) {
                   AllOf(Name(Eq(WelcomeTourScrim::kLayerName)),
                         BackgroundColor(
                             GetColor(controller, cros_tokens::kCrosSysScrim)),
-                        Bounds(gfx::Rect(
-                            /*origin=*/gfx::Point(),
-                            /*size=*/help_bubble_container->bounds().size())))),
+                        Bounds(GetLocalBounds(help_bubble_container)),
+                        MaskLayer(AllOf(
+                            Name(Eq(WelcomeTourScrim::kMaskLayerName)),
+                            Bounds(GetLocalBounds(help_bubble_container)))))),
             Not(Contains(Name(Eq(WelcomeTourScrim::kLayerName))))));
   }
 }
