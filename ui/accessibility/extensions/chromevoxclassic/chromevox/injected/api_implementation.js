@@ -91,7 +91,6 @@ cvox.ApiImplementation.dispatchApiMessage = function(message) {
     case 'stop': method = cvox.ApiImplementation.stop; break;
     case 'playEarcon': method = cvox.ApiImplementation.playEarcon; break;
     case 'syncToNodeRef': method = cvox.ApiImplementation.syncToNodeRef; break;
-    case 'clickNodeRef': method = cvox.ApiImplementation.clickNodeRef; break;
     case 'getBuild': method = cvox.ApiImplementation.getBuild; break;
     case 'getVersion': method = cvox.ApiImplementation.getVersion; break;
     case 'getCurrentNode': method = cvox.ApiImplementation.getCurrentNode;
@@ -301,17 +300,6 @@ cvox.ApiImplementation.getDesc_ = function(node) {
     }));
   }
   return currentDesc;
-};
-
-/**
- * Simulate a click on an element.
- *
- * @param {Object} nodeRef A serializable reference to a node.
- * @param {boolean} shiftKey Specifies if shift is held down.
- */
-cvox.ApiImplementation.clickNodeRef = function(nodeRef, shiftKey) {
-  cvox.DomUtil.clickElem(
-      cvox.ApiUtils.getNodeFromRef(nodeRef), shiftKey, false);
 };
 
 /**

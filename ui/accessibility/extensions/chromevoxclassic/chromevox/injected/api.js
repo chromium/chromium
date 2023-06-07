@@ -372,28 +372,6 @@ if (typeof(goog) != 'undefined' && goog.require) {
    };
 
    /**
-    * Simulate a click on an element.
-    *
-    * @param {Element} targetElement The element that should be clicked.
-    * @param {boolean} shiftKey Specifies if shift is held down.
-    */
-   cvox.Api.click = function(targetElement, shiftKey) {
-     if (!cvox.Api.isChromeVoxActive() || !targetElement) {
-       return;
-     }
-
-     if (implementation) {
-       cvox.DomUtil.clickElem(targetElement, shiftKey, true);
-     } else {
-       var message = {
-         'cmd': 'clickNodeRef',
-         'args': [cvox.ApiUtils.makeNodeReference(targetElement), shiftKey]
-       };
-       channel.port1.postMessage(JSON.stringify(message));
-     }
-   };
-
-   /**
     * Returns the build info.
     *
     * @param {function(string)} callback Function to receive the build info.
