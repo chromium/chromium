@@ -12,6 +12,12 @@ import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 
+// This corresponds to the max number of concurrent ImageService requests
+// before further requests get dropped. Further requests up to 600 should be
+// batched by ImageService, but we leave this remainder as buffer in the case
+// of multiple windows.
+const MAX_IMAGE_SERVICE_REQUESTS = 30;
+
 export interface Label {
   label: string;
   icon: string;
@@ -151,6 +157,10 @@ export class PowerBookmarksService {
   private listeners_ = new Map<string, Function>();
   private folders_: chrome.bookmarks.BookmarkTreeNode[] = [];
   private bookmarksWithCachedImages_ = new Set<string>();
+  private activeImageServiceRequestCount_: number = 0;
+  private inactiveImageServiceRequests_ =
+      new Map<string, chrome.bookmarks.BookmarkTreeNode>();
+  private maxImageServiceRequests_ = MAX_IMAGE_SERVICE_REQUESTS;
 
   constructor(delegate: PowerBookmarksDelegate) {
     this.delegate_ = delegate;
@@ -297,7 +307,8 @@ export class PowerBookmarksService {
    * results. Used to batch data fetching in any cases where it is particularly
    * expensive.
    */
-  refreshDataForBookmarks(bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+  async refreshDataForBookmarks(bookmarks:
+                                    chrome.bookmarks.BookmarkTreeNode[]) {
     bookmarks.forEach(
         (bookmark) => this.findBookmarkImageUrls_(bookmark, true, false));
   }
@@ -351,6 +362,10 @@ export class PowerBookmarksService {
               bookmark.title.toLocaleLowerCase().includes(searchQuery!)) ||
              (bookmark.url &&
               bookmark.url.toLocaleLowerCase().includes(searchQuery!))));
+  }
+
+  setMaxImageServiceRequestsForTesting(max: number) {
+    this.maxImageServiceRequests_ = max;
   }
 
   private nodeMatchesContentFilters_(
@@ -503,10 +518,11 @@ export class PowerBookmarksService {
           this.delegate_.setImageUrl(bookmark, productImageUrl);
           this.bookmarksWithCachedImages_.add(bookmark.id.toString());
         } else {
-          const imageUrl = await this.findBookmarkImageUrl_(bookmark.url);
-          if (imageUrl) {
-            this.delegate_.setImageUrl(bookmark, imageUrl);
-            this.bookmarksWithCachedImages_.add(bookmark.id.toString());
+          if (this.activeImageServiceRequestCount_ <
+              this.maxImageServiceRequests_) {
+            this.findBookmarkImageUrl_(bookmark);
+          } else {
+            this.inactiveImageServiceRequests_.set(bookmark.id, bookmark);
           }
         }
       }
@@ -517,26 +533,34 @@ export class PowerBookmarksService {
     }
   }
 
-  private async findBookmarkImageUrl_(bookmarkUrl: string): Promise<string> {
-    const emptyUrl = '';
+  private async findBookmarkImageUrl_(bookmark:
+                                          chrome.bookmarks.BookmarkTreeNode) {
+    this.inactiveImageServiceRequests_.delete(bookmark.id);
 
-    if (!bookmarkUrl || !loadTimeData.getBoolean('urlImagesEnabled')) {
-      return emptyUrl;
+    if (!bookmark.url || !loadTimeData.getBoolean('urlImagesEnabled')) {
+      return;
     }
 
     const url: Url = new Url();
-    url.url = bookmarkUrl;
+    url.url = bookmark.url;
 
     // Fetch the representative image for this page, if possible.
+    this.activeImageServiceRequestCount_++;
     const {result} =
         await PageImageServiceBrowserProxy.getInstance()
             .handler.getPageImageUrl(
                 PageImageServiceClientId.Bookmarks, url,
                 {suggestImages: true, optimizationGuideImages: true});
+    this.activeImageServiceRequestCount_--;
+
     if (result) {
-      return result.imageUrl.url;
+      this.delegate_.setImageUrl(bookmark, result.imageUrl.url);
+      this.bookmarksWithCachedImages_.add(bookmark.id.toString());
     }
 
-    return emptyUrl;
+    if (this.inactiveImageServiceRequests_.size > 0) {
+      this.findBookmarkImageUrl_(
+          this.inactiveImageServiceRequests_.values().next().value);
+    }
   }
 }
