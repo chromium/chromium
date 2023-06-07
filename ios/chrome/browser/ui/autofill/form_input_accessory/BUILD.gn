@@ -4,18 +4,9 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-declare_args() {
-  # Name of the target that define the autofill fullcolor branding icon to use.
-  ios_image_autofill_branding_icon_fullcolor =
-      "//ios/chrome/browser/ui/autofill/resources:fullcolor_branding_icon"
-}
-
 source_set("form_input_accessory") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "branding_view_controller.h",
-    "branding_view_controller.mm",
-    "branding_view_controller_delegate.h",
     "form_input_accessory_chromium_text_data.h",
     "form_input_accessory_chromium_text_data.mm",
     "form_input_accessory_consumer.h",
@@ -40,7 +31,6 @@ source_set("form_input_accessory") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
-    "//components/prefs",
     "//components/strings",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
@@ -55,17 +45,16 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill:features",
+    "//ios/chrome/browser/ui/autofill/branding",
+    "//ios/chrome/browser/ui/autofill/branding:branding_ui",
     "//ios/chrome/browser/ui/autofill/manual_fill",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
-    "//ios/chrome/browser/ui/autofill/resources:monotone_branding_icon",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors:colors",
@@ -77,7 +66,6 @@ source_set("form_input_accessory") {
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ui/base",
-    ios_image_autofill_branding_icon_fullcolor,
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -100,22 +88,5 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
-  ]
-}
-
-source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
-  testonly = true
-  sources = [ "branding_view_controller_egtest.mm" ]
-  deps = [
-    "//base/test:test_support",
-    "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/autofill:features",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net:test_support",
   ]
 }

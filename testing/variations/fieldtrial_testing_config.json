@@ -6774,15 +6774,6 @@
                     "enable_features": [
                         "AutofillBrandingIOS"
                     ]
-                },
-                {
-                    "name": "Monotone",
-                    "params": {
-                        "ios-autofill-branding-monotones": "true"
-                    },
-                    "enable_features": [
-                        "AutofillBrandingIOS"
-                    ]
                 }
             ]
         }

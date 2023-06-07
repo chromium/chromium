@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/autofill/branding/branding_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
@@ -89,6 +90,9 @@ const CGFloat kIPHVerticalOffset = -5;
 // Coordinator in charge of the presenting password autofill options as a modal.
 @property(nonatomic, strong)
     ManualFillAllPasswordCoordinator* allPasswordCoordinator;
+
+// Coordinator in charge of the keyboar autofill branding.
+@property(nonatomic, strong) BrandingCoordinator* brandingCoordinator;
 
 // The Mediator for the input accessory view controller.
 @property(nonatomic, strong)
@@ -139,6 +143,9 @@ const CGFloat kIPHVerticalOffset = -5;
                              forProtocol:@protocol(SecurityAlertCommands)];
     __weak id<SecurityAlertCommands> securityAlertHandler =
         HandlerForProtocol(dispatcher, SecurityAlertCommands);
+    _brandingCoordinator =
+        [[BrandingCoordinator alloc] initWithBaseViewController:viewController
+                                                        browser:browser];
     _reauthenticationModule = [[ReauthenticationModule alloc] init];
     _injectionHandler = [[ManualFillInjectionHandler alloc]
           initWithWebStateList:browser->GetWebStateList()
@@ -153,9 +160,12 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 - (void)start {
+  [self.brandingCoordinator start];
   self.formInputAccessoryViewController =
       [[FormInputAccessoryViewController alloc]
           initWithManualFillAccessoryViewControllerDelegate:self];
+  self.formInputAccessoryViewController.brandingViewController =
+      self.brandingCoordinator.viewController;
 
   LayoutGuideCenter* layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
@@ -187,8 +197,6 @@ const CGFloat kIPHVerticalOffset = -5;
       reauthenticationModule:self.reauthenticationModule];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
-  self.formInputAccessoryViewController.brandingViewControllerDelegate =
-      self.formInputAccessoryMediator;
   [self.formInputAccessoryViewController.view
       addGestureRecognizer:self.formInputAccessoryTapRecognizer];
 
@@ -210,6 +218,8 @@ const CGFloat kIPHVerticalOffset = -5;
 
   [self.allPasswordCoordinator stop];
   self.allPasswordCoordinator = nil;
+  [self.brandingCoordinator stop];
+  self.brandingCoordinator = nil;
   [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
   self.layoutGuide = nil;
 }

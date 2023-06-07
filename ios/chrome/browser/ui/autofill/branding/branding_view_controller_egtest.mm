@@ -61,27 +61,18 @@ void BringUpKeyboard() {
       performAction:TapWebElementWithId(kFormElementUsername)];
 }
 
+// Dismisses the keyboard, if it exist.
+void DismissKeyboard() {
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:grey_tap()];
+}
+
 // Check that the branding visibility matches the parameter `visibility`.
-void CheckBrandingVisiblityWithDefaultTimeout(BOOL visibility) {
-  NSString* conditionDescription = visibility
-                                       ? @"Branding icon should be visible"
-                                       : @"Branding icon should be hidden";
-  GREYCondition* visibilityCondition = [GREYCondition
-      conditionWithName:conditionDescription
-                  block:^BOOL {
-                    NSError* error;
-                    [[EarlGrey
-                        selectElementWithMatcher:grey_accessibilityID(
-                                                     @"kBrandingButtonAXId")]
-                        assertWithMatcher:visibility
-                                              ? grey_sufficientlyVisible()
-                                              : grey_notVisible()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  BOOL success = [visibilityCondition
-      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
-  GREYAssertTrue(success, conditionDescription);
+void CheckBrandingHasVisiblity(BOOL visibility) {
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"kBrandingButtonAXId")]
+      assertWithMatcher:visibility ? grey_sufficientlyVisible()
+                                   : grey_notVisible()];
 }
 
 }  // namespace
@@ -127,13 +118,13 @@ void CheckBrandingVisiblityWithDefaultTimeout(BOOL visibility) {
 - (void)testSomeManualFillButtonsVisible {
   EnableManualFillButtonForPassword();
   BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
+  CheckBrandingHasVisiblity(YES);
 }
 
 // Tests that the branding is not visible when no manual fill button is visible.
 - (void)testAllManualFillButtonsHidden {
   BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
+  CheckBrandingHasVisiblity(NO);
 }
 
 // Tests that the branding is not visible when some manual fill button is
@@ -142,7 +133,7 @@ void CheckBrandingVisiblityWithDefaultTimeout(BOOL visibility) {
   EnableManualFillButtonForPassword();
   DisableManualFillButtons();
   BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
+  CheckBrandingHasVisiblity(NO);
 }
 
 // Tests that the branding is visible when some manual fill button is enabled,
@@ -152,7 +143,7 @@ void CheckBrandingVisiblityWithDefaultTimeout(BOOL visibility) {
   DisableManualFillButtons();
   EnableManualFillButtonForProfile();
   BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
+  CheckBrandingHasVisiblity(YES);
 }
 
 // Tests that the branding is visible when some manual fill button is enabled,
@@ -160,79 +151,45 @@ void CheckBrandingVisiblityWithDefaultTimeout(BOOL visibility) {
 - (void)testDisableManualFillButtonsDuringKeyboardPresenting {
   EnableManualFillButtonForPassword();
   BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
+  CheckBrandingHasVisiblity(YES);
   DisableManualFillButtons();
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
+  DismissKeyboard();
+  BringUpKeyboard();
+  CheckBrandingHasVisiblity(NO);
 }
 
 // Tests that the branding is invisible until some manual fill button is
 // enabled, then disappears when the manual fill button is disabled.
 - (void)testEnableAndDisableManualFillButtonsDuringKeyboardPresenting {
   BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
+  CheckBrandingHasVisiblity(NO);
   EnableManualFillButtonForPassword();
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
+  DismissKeyboard();
+  BringUpKeyboard();
+  CheckBrandingHasVisiblity(YES);
   DisableManualFillButtons();
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
+  DismissKeyboard();
+  BringUpKeyboard();
+  CheckBrandingHasVisiblity(NO);
 }
 
 // Tests that the branding is visible even after one of the multiple manual fill
 // buttons is disabled.
 - (void)testEnableTwoManualFillButtonsAndDisableOneDuringKeyboardPresenting {
-  BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
   EnableManualFillButtonForPassword();
   EnableManualFillButtonForCreditCard();
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
+  BringUpKeyboard();
+  CheckBrandingHasVisiblity(YES);
   // Hide manual fill button for password.
   [AutofillAppInterface clearPasswordStore];
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
+  DismissKeyboard();
+  BringUpKeyboard();
+  CheckBrandingHasVisiblity(YES);
   // Hide manual fill button for credit card.
   [AutofillAppInterface clearCreditCardStore];
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
-}
-
-// Tests that the branding is visible when the keyboard button is visible in the
-// keyboard accessories, even if no manual fill buttons are visible. Note that
-// this test is disabled on iPad since the keyboard button does not show there.
-- (void)testDisableManualFillWhenKeyboardButtonPressed {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Keyboard button does not exist on iPad.");
-  }
-
-  EnableManualFillButtonForPassword();
+  DismissKeyboard();
   BringUpKeyboard();
-
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
-  // Press the password button to display the keyboard button.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Disable manual fill passwords; wait until the button is hidden.
-  DisableManualFillButtons();
-  GREYCondition* passwordButtonCondition = [GREYCondition
-      conditionWithName:@"password button should be hidden"
-                  block:^BOOL {
-                    NSError* error;
-                    [[EarlGrey selectElementWithMatcher:
-                                   ManualFallbackPasswordIconMatcher()]
-                        assertWithMatcher:grey_notVisible()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  BOOL passwordButtonHidden = [passwordButtonCondition
-      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
-  GREYAssertTrue(passwordButtonHidden,
-                 @"Password button visible when no password is stored");
-  // Check that keyboard button and the branding are still visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  CheckBrandingVisiblityWithDefaultTimeout(YES);
-  // Tap on the keyboard button to reset keyboard accessories.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      performAction:grey_tap()];
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
+  CheckBrandingHasVisiblity(NO);
 }
 
 @end
@@ -255,7 +212,7 @@ void CheckBrandingVisiblityWithDefaultTimeout(BOOL visibility) {
 - (void)testBrandingDisabled {
   EnableManualFillButtonForPassword();
   BringUpKeyboard();
-  CheckBrandingVisiblityWithDefaultTimeout(NO);
+  CheckBrandingHasVisiblity(NO);
 }
 
 @end
