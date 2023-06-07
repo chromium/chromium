@@ -127,7 +127,9 @@ CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
   CHECK(!passkey.credential_id().empty());
   CredentialFacet facet;
   facet.url = RPIDToURL(passkey.rp_id());
-  facet.signon_realm = facet.url.possibly_invalid_spec();
+  facet.signon_realm =
+      FacetURI::FromPotentiallyInvalidSpec(facet.url.possibly_invalid_spec())
+          .potentially_invalid_spec();
   facets.push_back(std::move(facet));
 }
 
