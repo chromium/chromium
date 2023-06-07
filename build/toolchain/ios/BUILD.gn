@@ -40,7 +40,14 @@ template("ios_app_ext_toolchain") {
       forward_variables_from(invoker.toolchain_args, "*")
 
       ios_is_app_extension = true
-      use_partition_alloc = false
+
+      # Those variables are defined outside of //build and thus only exists
+      # when used as part of Chromium. Use build_with_chromium to check if
+      # they can be overridden safely. This prevents breaking third-party
+      # projects such as WebRTC that only uses //build but not //base.
+      if (build_with_chromium) {
+        use_partition_alloc = false
+      }
     }
   }
 }
