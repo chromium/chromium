@@ -357,8 +357,9 @@ bool MainThreadDebugger::canExecuteScripts(int context_group_id) {
     String message = String(
         "DevTools debugger is disabled because it is attached to a process "
         "that hosts multiple top-level frames, where DevTools debugger doesn't "
-        "work properly. Please enable chrome://flags/#disable-process-reuse "
-        "and restart the browser to enable debugger.");
+        "work properly. Please relaunch the browser with "
+        "--disable-features=ProcessPerSiteUpToMainFrameThreshold to enable "
+        "debugger.");
     frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError, message));
