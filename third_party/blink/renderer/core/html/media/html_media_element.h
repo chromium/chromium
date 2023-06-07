@@ -156,11 +156,14 @@ class CORE_EXPORT HTMLMediaElement
   // Note that even an audio element can have video track in cases such as
   // <audio src="video.webm">, in which case this function will return true.
   bool HasVideo() const;
+
   // Returns true if loaded media has an audio track.
   bool HasAudio() const;
 
-  bool SupportsSave() const;
+  // Whether the media element has encrypted audio or video streams.
+  bool IsEncrypted() const;
 
+  bool SupportsSave() const;
   bool SupportsLoop() const;
 
   cc::Layer* CcLayer() const;

@@ -2464,6 +2464,10 @@ bool HTMLMediaElement::HasAudio() const {
   return web_media_player_ && web_media_player_->HasAudio();
 }
 
+bool HTMLMediaElement::IsEncrypted() const {
+  return is_encrypted_media_;
+}
+
 bool HTMLMediaElement::seeking() const {
   return seeking_;
 }

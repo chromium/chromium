@@ -718,6 +718,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
                                          bool is_streaming,
                                          bool is_static);
 
+  // Notifies the `client_` and the `delegate_` about metadata change.
+  void DidMediaMetadataChange();
+
   WebLocalFrame* const frame_;
 
   WebMediaPlayer::NetworkState network_state_ =

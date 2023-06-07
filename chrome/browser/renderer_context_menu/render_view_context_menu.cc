@@ -2541,7 +2541,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     }
 
     case IDC_CONTENT_CONTEXT_COPYVIDEOFRAME:
-      return (params_.media_flags &
+      return (params_.media_flags & ContextMenuData::kMediaEncrypted) == 0 &&
+             (params_.media_flags &
               ContextMenuData::kMediaHasAvailableVideoFrame) != 0;
 
     case IDC_CONTENT_CONTEXT_COPYAVLOCATION:

@@ -536,6 +536,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (media_element->HasVideo()) {
       data.media_flags |= ContextMenuData::kMediaHasVideo;
     }
+    if (media_element->IsEncrypted()) {
+      data.media_flags |= ContextMenuData::kMediaEncrypted;
+    }
 
     // Media controls can be toggled only for video player. If we toggle
     // controls for audio then the player disappears, and there is no way to
