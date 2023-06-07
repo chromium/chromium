@@ -29,13 +29,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
  public:
   using FrameCallback = FidoBleTransaction::FrameCallback;
 
-  class Observer {
-   public:
-    virtual void FidoCableDeviceConnected(FidoCableDevice* device,
-                                          bool success) {}
-    virtual void FidoCableDeviceTimeout(FidoCableDevice* device) {}
-  };
-
   FidoCableDevice(BluetoothAdapter* adapter, std::string address);
   // Constructor used for testing purposes.
   FidoCableDevice(std::unique_ptr<FidoBleConnection> connection);
@@ -52,7 +45,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   void Connect();
   void SendPing(std::vector<uint8_t> data, DeviceCallback callback);
   FidoBleConnection::ReadCallback GetReadCallbackForTesting();
-  void set_observer(Observer* observer);
 
   // FidoDevice:
   void Cancel(CancelToken token) override;
@@ -137,7 +129,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   // request, or else is empty if no request is currently pending.
   absl::optional<CancelToken> current_token_;
   absl::optional<FidoBleTransaction> transaction_;
-  raw_ptr<Observer> observer_ = nullptr;
 
   absl::optional<EncryptionData> encryption_data_;
   base::WeakPtrFactory<FidoCableDevice> weak_factory_{this};

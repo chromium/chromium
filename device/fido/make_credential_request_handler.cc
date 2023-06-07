@@ -229,14 +229,6 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
   return base::flat_set<FidoTransportProtocol>();
 }
 
-void ReportMakeCredentialRequestTransport(FidoAuthenticator* authenticator) {
-  if (authenticator->AuthenticatorTransport()) {
-    base::UmaHistogramEnumeration(
-        "WebAuthentication.MakeCredentialRequestTransport",
-        *authenticator->AuthenticatorTransport());
-  }
-}
-
 void ReportMakeCredentialResponseTransport(
     absl::optional<FidoTransportProtocol> transport) {
   if (transport) {
@@ -583,8 +575,6 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
       NOTREACHED();
       return;
   }
-
-  ReportMakeCredentialRequestTransport(authenticator);
 
   auto request_copy(*request.get());  // can't copy and move in the same stmt.
   authenticator->MakeCredential(
@@ -968,8 +958,6 @@ void MakeCredentialRequestHandler::DispatchRequestWithToken(
   std::tie(request->pin_protocol, request->pin_auth) =
       token.PinAuth(request->client_data_hash);
   request->pin_token_for_exclude_list_probing = std::move(token);
-
-  ReportMakeCredentialRequestTransport(authenticator);
 
   auto request_copy(*request.get());  // can't copy and move in the same stmt.
   authenticator->MakeCredential(

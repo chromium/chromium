@@ -11,7 +11,6 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -41,8 +40,6 @@ using PinCallback = device::test::StatusAndValueCallbackReceiver<
 using GarbageCollectionCallback =
     device::test::ValueCallbackReceiver<CtapDeviceResponseCode>;
 using TouchCallback = device::test::TestCallbackReceiver<>;
-using LargeBlobKeyWriteResult =
-    FidoDeviceAuthenticator::LargeBlobKeyWriteResult;
 
 const std::string kRpId = "galaxy.example.com";
 const std::vector<uint8_t> kCredentialId1{1, 1, 1, 1};
@@ -56,8 +53,6 @@ const std::vector<uint8_t> kSmallBlob2{'l', 'u', 'm', 'a'};
 const std::vector<uint8_t> kSmallBlob3{'s', 't', 'a', 'r'};
 constexpr size_t kLargeBlobStorageSize = 4096;
 constexpr char kPin[] = "1234";
-constexpr char kLargeBlobWriteResultHistogram[] =
-    "WebAuthentication.LargeBlobKey.WriteResult";
 
 class FidoDeviceAuthenticatorTest : public testing::Test {
  protected:
@@ -180,13 +175,10 @@ TEST_F(FidoDeviceAuthenticatorTest, TestReadInvalidLargeBlob) {
 
 // Test reading and writing a blob that fits in a single fragment.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlob) {
-  base::HistogramTester histograms;
   AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
   EXPECT_TRUE(write.large_blob_written);
   std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
   EXPECT_EQ(read.at(0).large_blob, kSmallBlob1);
-  histograms.ExpectUniqueSample(kLargeBlobWriteResultHistogram,
-                                LargeBlobKeyWriteResult::kSuccess, 1);
 }
 
 // Tests that attempting to write a large blob overwrites the entire array if it
@@ -303,7 +295,6 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
 
   // Then, attempt writing a blob that is too large. The blob will be
   // compressed, so fill it with random data so it doesn't shrink.
-  base::HistogramTester histograms;
   std::vector<uint8_t> large_blob;
   large_blob.resize(kLargeBlobStorageSize * 2);
   base::RandBytes(large_blob.data(), large_blob.size());
@@ -316,29 +307,21 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
       GetAssertionForRead(/*credential_ids=*/{});
   ASSERT_EQ(read.size(), 1u);
   EXPECT_EQ(read.at(0).large_blob, kSmallBlob1);
-  histograms.ExpectUniqueSample(kLargeBlobWriteResultHistogram,
-                                LargeBlobKeyWriteResult::kNotEnoughSpace, 1);
 }
 
 // Tests writing a large blob for a credential that does not have a large blob
 // key set.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobNoLargeBlobKey) {
-  base::HistogramTester histograms;
   for (auto& registration : virtual_device_->mutable_state()->registrations) {
     registration.second.large_blob_key = absl::nullopt;
   }
   AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
   EXPECT_FALSE(write.large_blob_written);
-  histograms.ExpectUniqueSample(
-      kLargeBlobWriteResultHistogram,
-      LargeBlobKeyWriteResult::kCredentialHasNoLargeBlobKey, 1);
 }
 
 // Tests that a CTAP error returned while writing a large blob does not fail the
 // entire assertion.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobCtapError) {
-  base::HistogramTester histograms;
-
   VirtualCtap2Device::Config config;
   config.pin_support = true;
   config.large_blob_support = true;
@@ -352,8 +335,6 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobCtapError) {
 
   AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
   EXPECT_FALSE(write.large_blob_written);
-  histograms.ExpectUniqueSample(kLargeBlobWriteResultHistogram,
-                                LargeBlobKeyWriteResult::kCtapError, 1);
 }
 
 // Tests garbage collecting a large blob.

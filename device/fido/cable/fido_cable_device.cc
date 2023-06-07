@@ -90,11 +90,6 @@ FidoBleConnection::ReadCallback FidoCableDevice::GetReadCallbackForTesting() {
                              weak_factory_.GetWeakPtr());
 }
 
-void FidoCableDevice::set_observer(FidoCableDevice::Observer* observer) {
-  DCHECK(!observer_);
-  observer_ = observer;
-}
-
 void FidoCableDevice::Cancel(CancelToken token) {
   if (current_token_ && *current_token_ == token) {
     transaction_->Cancel();
@@ -255,9 +250,6 @@ void FidoCableDevice::OnConnected(bool success) {
     return;
   }
   StopTimeout();
-  if (observer_) {
-    observer_->FidoCableDeviceConnected(this, success);
-  }
   if (!success) {
     FIDO_LOG(ERROR) << "FidoCableDevice::Connect() failed";
     state_ = State::kDeviceError;
@@ -313,9 +305,6 @@ void FidoCableDevice::StopTimeout() {
 void FidoCableDevice::OnTimeout() {
   FIDO_LOG(ERROR) << "FIDO Cable device timeout for " << GetId();
   state_ = State::kDeviceError;
-  if (observer_) {
-    observer_->FidoCableDeviceTimeout(this);
-  }
   Transition();
 }
 

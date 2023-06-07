@@ -22,25 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="WebAuthentication.BLEUserEvents"
-    enum="WebAuthenticationBLEUserEvents" expires_after="2022-12-31">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Records user-visible BLE events that occur during a WebAuthn flow.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.CableV1DiscoveryEvent"
-    enum="WebAuthenticationCableV1DiscoveryEvent" expires_after="2022-07-03">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Records events that occur during caBLE v1 authenticator discovery so that
-    potential discovery failures can be identified.
-  </summary>
-</histogram>
-
 <histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
     enum="WebAuthenticationAOADiscoveryEvent" expires_after="2023-10-08">
   <owner>agl@chromium.org</owner>
@@ -56,17 +37,6 @@ chromium-metrics-reviews@google.com.
   <owner>martinkr@google.com</owner>
   <summary>
     Records events that happen when listening for a caBLEv2 device.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.CableV2.GetAssertionTime" units="ms"
-    expires_after="2022-09-11">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    The time taken between requesting GMS Core to do a GetAssertion operation
-    and the response getting received. Recorded only once the response is
-    received.
   </summary>
 </histogram>
 
@@ -221,28 +191,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAuthentication.LargeBlobKey.WriteResult"
-    enum="WebAuthenticationLargeBlobKeyWriteResult" expires_after="M114">
-  <owner>nsatragno@chromium.org</owner>
-  <owner>chrome-webauthn@google.com</owner>
-  <summary>
-    Records the result of writing a large blob using the CTAP
-    authenticatorLargeBlobs command (0x0C) during a WebAuthentication
-    GetAssertion request.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.MakeCredentialRequestTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2023-06-18">
-  <owner>kenrb@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Records the transport used for all WebAuthentication MakeCredential requests
-    sent to authenticators. This does not necessarily mean that there was a
-    success response from any given authenticator.
-  </summary>
-</histogram>
-
 <histogram name="WebAuthentication.MakeCredentialResponseTransport"
     enum="WebAuthenticationFidoTransport" expires_after="2023-11-12">
   <owner>kenrb@chromium.org</owner>
@@ -250,40 +198,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the transport used when an authenticator responds with success to a
     WebAuthentication MakeCredential request.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.PasskeyManagement.Delete" enum="Boolean"
-    expires_after="2023-03-19">
-  <owner>angzhan@google.com</owner>
-  <owner>martinkr@google.com</owner>
-  <owner>nsatragno@chromium.org</owner>
-  <summary>
-    Records `true` if a user succesfully deletes a passkey and `false` otherwise
-    in chrome://settings/passkeys.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.PasskeyManagement.Edit" enum="Boolean"
-    expires_after="2023-03-19">
-  <owner>angzhan@google.com</owner>
-  <owner>martinkr@google.com</owner>
-  <owner>nsatragno@chromium.org</owner>
-  <summary>
-    Records `true` if a user succesfully edits a passkey and `false` otherwise
-    in chrome://settings/passkeys.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.TouchIdCredentialStore.UpdateCredential"
-    enum="WebAuthenticationTouchIdCredentialStoreUpdateCredentialStatus"
-    expires_after="2023-03-19">
-  <owner>angzhan@google.com</owner>
-  <owner>martinkr@google.com</owner>
-  <owner>nsatragno@chromium.org</owner>
-  <summary>
-    Records the result of each Web Authentication
-    TouchIdCredentialStore.UpdateCredential() API call.
   </summary>
 </histogram>
 

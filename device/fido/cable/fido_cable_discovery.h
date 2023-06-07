@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/cable/fido_cable_device.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_device_discovery.h"
 
@@ -27,12 +26,12 @@ namespace device {
 
 class BluetoothDevice;
 class BluetoothAdvertisement;
+class FidoCableDevice;
 class FidoCableHandshakeHandler;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
     : public FidoDeviceDiscovery,
-      public BluetoothAdapter::Observer,
-      public FidoCableDevice::Observer {
+      public BluetoothAdapter::Observer {
  public:
   explicit FidoCableDiscovery(std::vector<CableDiscoveryData> discovery_data);
 
@@ -62,8 +61,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
       const CableEidArray& authenticator_eid);
 
  private:
-  enum class CableV1DiscoveryEvent : int;
-
   // V1DiscoveryDataAndEID represents a match against caBLEv1 pairing data. It
   // contains the CableDiscoveryData that matched and the BLE EID that triggered
   // the match.
@@ -126,7 +123,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
       const BluetoothDevice* device);
   absl::optional<V1DiscoveryDataAndEID>
   GetCableDiscoveryDataFromAuthenticatorEid(CableEidArray authenticator_eid);
-  void RecordCableV1DiscoveryEventOnce(CableV1DiscoveryEvent event);
 
   // FidoDeviceDiscovery:
   void StartInternal() override;
@@ -140,10 +136,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   void AdapterPoweredChanged(BluetoothAdapter* adapter, bool powered) override;
   void AdapterDiscoveringChanged(BluetoothAdapter* adapter,
                                  bool discovering) override;
-
-  // FidoCableDevice::Observer:
-  void FidoCableDeviceConnected(FidoCableDevice* device, bool success) override;
-  void FidoCableDeviceTimeout(FidoCableDevice* device) override;
 
   scoped_refptr<BluetoothAdapter> adapter_;
   std::unique_ptr<BluetoothDiscoverySession> discovery_session_;
@@ -178,7 +170,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
       observed_devices_;
 
   bool has_v1_discovery_data_ = false;
-  base::flat_set<CableV1DiscoveryEvent> recorded_events_;
 
   base::WeakPtrFactory<FidoCableDiscovery> weak_factory_{this};
 };

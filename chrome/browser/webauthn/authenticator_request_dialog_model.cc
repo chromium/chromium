@@ -48,17 +48,6 @@
 
 namespace {
 
-// BleEvent enumerates user-visible BLE events.
-enum class BleEvent {
-  kAlreadyPowered = 0,    // BLE was already powered.
-  kNeedsPowerAuto = 1,    // BLE was not powered and so we asked the user.
-  kNeedsPowerManual = 2,  // BLE was not powered and so we asked the user, but
-                          // they have to do it manually.
-  kNewlyPowered = 3,      // BLE wasn't powered, but the user turned it on.
-
-  kMaxValue = kNewlyPowered,
-};
-
 constexpr int GetMessageIdForTransportDescription(
     AuthenticatorTransport transport) {
   switch (transport) {
@@ -341,8 +330,6 @@ void AuthenticatorRequestDialogModel::
 #endif
 
   if (ble_adapter_is_powered()) {
-    base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents",
-                                  BleEvent::kAlreadyPowered);
     SetCurrentStep(step);
     return;
   }
@@ -351,24 +338,17 @@ void AuthenticatorRequestDialogModel::
       base::BindOnce(&AuthenticatorRequestDialogModel::SetCurrentStep,
                      weak_factory_.GetWeakPtr(), step);
 
-  BleEvent event;
   if (transport_availability()->can_power_on_ble_adapter) {
-    event = BleEvent::kNeedsPowerAuto;
     SetCurrentStep(Step::kBlePowerOnAutomatic);
   } else {
-    event = BleEvent::kNeedsPowerManual;
     SetCurrentStep(Step::kBlePowerOnManual);
   }
-
-  base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents", event);
 }
 
 void AuthenticatorRequestDialogModel::ContinueWithFlowAfterBleAdapterPowered() {
   DCHECK(current_step() == Step::kBlePowerOnManual ||
          current_step() == Step::kBlePowerOnAutomatic);
   DCHECK(ble_adapter_is_powered());
-  base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents",
-                                BleEvent::kNewlyPowered);
 
   std::move(after_ble_adapter_powered_).Run();
 }
@@ -1056,20 +1036,14 @@ void AuthenticatorRequestDialogModel::ContactPhoneAfterOffTheRecordInterstitial(
         &AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered,
         weak_factory_.GetWeakPtr(), std::move(name));
 
-    BleEvent event;
     if (transport_availability()->can_power_on_ble_adapter) {
-      event = BleEvent::kNeedsPowerAuto;
       SetCurrentStep(Step::kBlePowerOnAutomatic);
     } else {
-      event = BleEvent::kNeedsPowerManual;
       SetCurrentStep(Step::kBlePowerOnManual);
     }
-    base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents", event);
     return;
   }
 
-  base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents",
-                                BleEvent::kAlreadyPowered);
   ContactPhoneAfterBleIsPowered(std::move(name));
 }
 

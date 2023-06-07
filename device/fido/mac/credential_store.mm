@@ -17,7 +17,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
@@ -661,13 +660,6 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   return true;
 }
 
-void RecordUpdateCredentialStatus(
-    TouchIdCredentialStoreUpdateCredentialStatus update_status) {
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.TouchIdCredentialStore.UpdateCredential",
-      update_status);
-}
-
 bool TouchIdCredentialStore::UpdateCredential(
     base::span<uint8_t> credential_id_span,
     const std::string& username) {
@@ -678,8 +670,6 @@ bool TouchIdCredentialStore::UpdateCredential(
       /*rp_id=*/absl::nullopt, {credential_id});
   if (!credentials) {
     FIDO_LOG(ERROR) << "no credentials found";
-    RecordUpdateCredentialStatus(
-        TouchIdCredentialStoreUpdateCredentialStatus::kNoCredentialsFound);
     return false;
   }
   base::ScopedCFTypeRef<CFMutableDictionaryRef> params(
@@ -702,8 +692,6 @@ bool TouchIdCredentialStore::UpdateCredential(
   }
   if (!found_credential) {
     FIDO_LOG(ERROR) << "no credential with matching credential_id";
-    RecordUpdateCredentialStatus(
-        TouchIdCredentialStoreUpdateCredentialStatus::kNoMatchingCredentialId);
     return false;
   }
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
@@ -720,12 +708,8 @@ bool TouchIdCredentialStore::UpdateCredential(
   OSStatus status = Keychain::GetInstance().ItemUpdate(query, params);
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemUpdate failed";
-    RecordUpdateCredentialStatus(
-        TouchIdCredentialStoreUpdateCredentialStatus::kSecItemUpdateFailure);
     return false;
   }
-  RecordUpdateCredentialStatus(
-      TouchIdCredentialStoreUpdateCredentialStatus::kUpdateCredentialSuccess);
   return true;
 }
 

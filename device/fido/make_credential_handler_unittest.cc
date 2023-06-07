@@ -60,8 +60,6 @@ using TestMakeCredentialRequestCallback = test::StatusAndValuesCallbackReceiver<
 
 }  // namespace
 
-constexpr char kRequestTransportHistogram[] =
-    "WebAuthentication.MakeCredentialRequestTransport";
 constexpr char kResponseTransportHistogram[] =
     "WebAuthentication.MakeCredentialResponseTransport";
 
@@ -860,12 +858,6 @@ TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetric) {
 
   callback().WaitForCallback();
   EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
-  histograms.ExpectBucketCount(kRequestTransportHistogram,
-                               FidoTransportProtocol::kUsbHumanInterfaceDevice,
-                               1);
-  histograms.ExpectBucketCount(kRequestTransportHistogram,
-                               FidoTransportProtocol::kNearFieldCommunication,
-                               1);
   histograms.ExpectUniqueSample(kResponseTransportHistogram,
                                 FidoTransportProtocol::kUsbHumanInterfaceDevice,
                                 1);
@@ -881,7 +873,6 @@ TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetricWin) {
   auto request_handler = CreateMakeCredentialHandler();
   callback().WaitForCallback();
   EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
-  histograms.ExpectTotalCount(kRequestTransportHistogram, 0);
   histograms.ExpectUniqueSample(kResponseTransportHistogram,
                                 FidoTransportProtocol::kBluetoothLowEnergy, 1);
 }

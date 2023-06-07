@@ -110375,44 +110375,6 @@ others/histograms.xml -->
   <int value="4" label="Abandoned"/>
 </enum>
 
-<enum name="WebAuthenticationBLEUserEvents">
-  <int value="0" label="BLE was already powered on"/>
-  <int value="1"
-      label="BLE needs to be powered on so the user was asked to approve"/>
-  <int value="2"
-      label="BLE needs to be powered on, and that can only be done externally"/>
-  <int value="3" label="BLE needed to be powered on, and was powered on"/>
-</enum>
-
-<enum name="WebAuthenticationCableV1DiscoveryEvent">
-  <int value="0" label="Discovery started"/>
-  <int value="1" label="Adapter found"/>
-  <int value="2" label="Adapter already powered on"/>
-  <int value="3" label="Adapter powered on by Chrome"/>
-  <int value="4" label="Adapter powered on by user"/>
-  <int value="5" label="Adapter powered off during request"/>
-  <int value="6" label="Scanning for BLE advertisements"/>
-  <int value="7" label="BLE advertisment registered"/>
-  <int value="8" label="caBLE device found"/>
-  <int value="9" label="GATT connection established"/>
-  <int value="10" label="caBLE handshake completed"/>
-  <int value="11" label="caBLE device timed out"/>
-  <int value="12" label="Scanning for BLE advertisements failed"/>
-  <int value="13" label="Scanning for BLE advertisements stopped unexpectedly"/>
-</enum>
-
-<enum name="WebAuthenticationCableV1Event">
-  <int value="0" label="Flow started"/>
-  <int value="1" label="BLE hardware found"/>
-  <int value="2" label="BLE hardware already powered on"/>
-  <int value="3" label="User prompted to allow Chrome to power BLE"/>
-  <int value="4" label="User prompted to enable BLE in settings"/>
-  <int value="5"
-      label="Powering a BLE adapter that was not already powered succeeded"/>
-  <int value="6" label="Success"/>
-  <int value="7" label="Timeout"/>
-</enum>
-
 <enum name="WebAuthenticationCableV2DiscoveryEvent">
   <int value="0" label="Discovery started"/>
   <int value="1" label="Pairing information was provided to this discovery"/>
@@ -110519,27 +110481,12 @@ others/histograms.xml -->
   <int value="5" label="Android Accessory"/>
 </enum>
 
-<enum name="WebAuthenticationLargeBlobKeyWriteResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Not enough space"/>
-  <int value="2" label="Compression error"/>
-  <int value="3" label="Credential has no large blob key"/>
-  <int value="4" label="CTAP error"/>
-</enum>
-
 <enum name="WebAuthenticationRelyingPartySecurityCheckFailure">
   <int value="0" label="Opaque or Non-Secure Origin"/>
   <int value="1" label="Relying Party Id Invalid"/>
   <int value="2" label="AppId Extension Invalid"/>
   <int value="3" label="AppId Extension Domain Mismatch"/>
   <int value="4" label="User Icon URL Invalid"/>
-</enum>
-
-<enum name="WebAuthenticationTouchIdCredentialStoreUpdateCredentialStatus">
-  <int value="0" label="UpdateCredential succeeded"/>
-  <int value="1" label="No credentials found"/>
-  <int value="2" label="No credential with matching credential_id"/>
-  <int value="3" label="SecItemUpdate failed"/>
 </enum>
 
 <enum name="WebAuthenticationU2FAttestationPromptResult">
