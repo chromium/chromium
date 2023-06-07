@@ -191,9 +191,8 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
                 &SavedDeskDialogController::OnUserAcceptedUnsupportedAppsDialog,
                 weak_ptr_factory_.GetWeakPtr()))
             .Build();
-    dialog->SetAdditionalContentView(std::move(unsupported_apps_view));
-    dialog->SetAdditionalContentCrossAxisAlignment(
-        views::LayoutAlignment::kStart);
+    dialog->SetMiddleContentView(std::move(unsupported_apps_view));
+    dialog->SetMiddleContentAlignment(views::LayoutAlignment::kStart);
     CreateDialogWidget(std::move(dialog), root_window);
   } else {
     auto dialog =

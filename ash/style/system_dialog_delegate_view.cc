@@ -49,7 +49,7 @@ constexpr gfx::Insets kBorderInsets = gfx::Insets::TLBR(32, 32, 28, 32);
 constexpr int kIconSize = 32;
 constexpr int kIconBottomPadding = 20;
 constexpr int kTitleBottomPadding = 16;
-constexpr int kDefaultAdditionalContentTopPadding = 32;
+constexpr int kDefaultContentPadding = 32;
 constexpr int kButtonContainerTopPadding = 32;
 constexpr int kButtonSpacing = 8;
 constexpr int kMinimumAdditionalButtonPadding = 80;
@@ -69,9 +69,6 @@ constexpr int kHostWidthXSmall = 400;
 constexpr int kDialogHostPaddingLarge = 80;
 constexpr int kDialogHostPaddingSmall = 32;
 
-// The position of the additional content in the dialog child views.
-constexpr int kAdditionalContentID = 3;
-
 // The default fonts of the title and description.
 constexpr TypographyToken kTitleFont = TypographyToken::kCrosDisplay7;
 constexpr TypographyToken kBodyFont = TypographyToken::kCrosBody1;
@@ -83,6 +80,16 @@ void SetViewLayoutSpecs(
     const views::FlexSpecification flex_spec = views::FlexSpecification()) {
   view->SetProperty(views::kMarginsKey, margins);
   view->SetProperty(views::kFlexBehaviorKey, flex_spec);
+}
+
+// Sets the cross alignment to the given view.
+void SetViewCrossAxisAlignment(views::View* view,
+                               views::LayoutAlignment alignment) {
+  CHECK(view);
+  auto* cross_alignment = view->GetProperty(views::kCrossAxisAlignmentKey);
+  if (!cross_alignment || *cross_alignment != alignment) {
+    view->SetProperty(views::kCrossAxisAlignmentKey, alignment);
+  }
 }
 
 // Gets the host window of the dialog.
@@ -274,14 +281,14 @@ void SystemDialogDelegateView::SetCancelButtonText(
   button_container_->SetCancelText(cancel_text);
 }
 
-void SystemDialogDelegateView::SetAdditionalContentCrossAxisAlignment(
+void SystemDialogDelegateView::SetTopContentAlignment(
     views::LayoutAlignment alignment) {
-  DCHECK(additional_content_);
-  auto* cross_aligment =
-      additional_content_->GetProperty(views::kCrossAxisAlignmentKey);
-  if (!cross_aligment || *cross_aligment != alignment) {
-    additional_content_->SetProperty(views::kCrossAxisAlignmentKey, alignment);
-  }
+  SetViewCrossAxisAlignment(contents_[ContentType::kTop], alignment);
+}
+
+void SystemDialogDelegateView::SetMiddleContentAlignment(
+    views::LayoutAlignment alignment) {
+  SetViewCrossAxisAlignment(contents_[ContentType::kMiddle], alignment);
 }
 
 gfx::Size SystemDialogDelegateView::CalculatePreferredSize() const {
@@ -342,30 +349,55 @@ void SystemDialogDelegateView::UpdateDialogSize() {
   }
 }
 
-void SystemDialogDelegateView::SetAdditionalContentInternal(
-    std::unique_ptr<views::View> view) {
-  // If there is an additional content, remove it.
-  if (additional_content_) {
-    RemoveChildViewT(additional_content_);
+size_t SystemDialogDelegateView::GetContentIndex(ContentType type) const {
+  switch (type) {
+    case ContentType::kTop:
+      return 0u;
+    case ContentType::kMiddle:
+      // The middle content is right after the description.
+      return GetIndexOf(description_).value() + 1u;
+  }
+}
+
+void SystemDialogDelegateView::SetContentInternal(
+    std::unique_ptr<views::View> view,
+    ContentType type) {
+  // If there is an existing content, remove it.
+  views::View* content = contents_[type];
+  if (content) {
+    contents_[type] = nullptr;
+    RemoveChildViewT(content);
   }
 
-  // Add additional content and move it to the specific position.
-  additional_content_ = AddChildView(std::move(view));
-  ReorderChildView(additional_content_, kAdditionalContentID);
+  // Add content and move it to the specific position.
+  content = AddChildViewAt(std::move(view), GetContentIndex(type));
 
-  // If there is no preset margins or the top margin is 0, set the top margin
-  // with the default padding.
-  auto* margins = additional_content_->GetProperty(views::kMarginsKey);
-  if (!margins) {
-    additional_content_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(kDefaultAdditionalContentTopPadding, 0, 0, 0));
-  } else if (!margins->top()) {
-    margins->set_top(kDefaultAdditionalContentTopPadding);
+  // Set default bottom/top margins to the top/middle content if there is no
+  // preset margins or the corresponding margins are 0.
+  auto* margins = content->GetProperty(views::kMarginsKey);
+  switch (type) {
+    case ContentType::kTop:
+      if (!margins) {
+        content->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(0, 0, kDefaultContentPadding, 0));
+      } else if (!margins->bottom()) {
+        margins->set_bottom(kDefaultContentPadding);
+      }
+      break;
+    case ContentType::kMiddle:
+      if (!margins) {
+        content->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(kDefaultContentPadding, 0, 0, 0));
+      } else if (!margins->top()) {
+        margins->set_top(kDefaultContentPadding);
+      }
+      break;
   }
-
-  additional_content_->SetProperty(views::kCrossAxisAlignmentKey,
-                                   views::LayoutAlignment::kCenter);
+  content->SetProperty(views::kCrossAxisAlignmentKey,
+                       views::LayoutAlignment::kCenter);
+  contents_[type] = content;
 }
 
 void SystemDialogDelegateView::SetAdditionalViewInButtonRowInternal(
