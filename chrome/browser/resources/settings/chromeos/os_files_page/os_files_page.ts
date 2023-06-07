@@ -172,10 +172,9 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     this.driveDisabled_ = disabled;
   }
 
-  private getGoogleDriveStatus_(): string {
-    return this.driveDisabled_ ?
-        loadTimeData.getString('googleDriveDisabledLabel') :
-        loadTimeData.getString('googleDriveEnabledLabel');
+  private googleDriveSignedInLabel_(): string {
+    return this.driveDisabled_ ? this.i18n('googleDriveDisabledLabel') :
+                                 this.i18n('googleDriveSignedInAs');
   }
 
   private async updateOneDriveEmail_() {
@@ -188,7 +187,7 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     }
   }
 
-  private signedInAsLabel_(connected: boolean) {
+  private oneDriveSignedInLabel_(connected: boolean) {
     if (connected) {
       assert(this.oneDriveEmailAddress_);
       return this.i18n('oneDriveSignedInAs', this.oneDriveEmailAddress_);

@@ -68,7 +68,9 @@ export class SettingsOneDriveSubpageElement extends
   private signedInAsLabel_(connected: boolean) {
     if (connected) {
       assert(this.userEmailAddress_);
-      return this.i18n('oneDriveSignedInAs', this.userEmailAddress_);
+      return this.i18nAdvanced(
+          'oneDriveSignedInAs',
+          {tags: ['strong'], substitutions: [this.userEmailAddress_]});
     }
     return this.i18n('oneDriveDisconnected');
   }

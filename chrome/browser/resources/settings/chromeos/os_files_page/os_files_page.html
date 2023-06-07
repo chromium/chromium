@@ -15,7 +15,7 @@
           id="GoogleDriveLink"
           class="hr" on-click="onGoogleDrive_"
           label="$i18n{googleDriveLabel}"
-          sub-label="[[getGoogleDriveStatus_(driveDisabled_)]]"
+          sub-label="[[googleDriveSignedInLabel_(driveDisabled_)]]"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
@@ -24,7 +24,7 @@
           id="OneDriveLink"
           class="hr" on-click="onTapOneDrive_"
           label="$i18n{oneDriveLabel}"
-          sub-label="[[signedInAsLabel_(isOneDriveConnected_)]]"
+          sub-label="[[oneDriveSignedInLabel_(isOneDriveConnected_)]]"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <cr-link-row id="office" class="hr" on-click="onTapOffice_"
