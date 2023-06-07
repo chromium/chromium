@@ -20,6 +20,7 @@ _JAVA_PATH = os.path.join(CHROMIUM_SRC, 'third_party', 'jdk', 'current', 'bin',
 _STYLE_FILE = os.path.join(_SELF_DIR, 'chromium-style-5.0.xml')
 _REMOVE_UNUSED_IMPORTS_PATH = os.path.join(_SELF_DIR,
                                            'remove_unused_imports.py')
+_INCLUSIVE_WARNING_IDENTIFIER = 'Please use inclusive language'
 
 
 class Violation(
@@ -55,6 +56,8 @@ def run_checkstyle(local_path, style_file, java_files):
         print(stdout)
         raise
 
+    inclusive_files = []
+    inclusive_warning = ''
     for fileElement in root.getElementsByTagName('file'):
         filename = fileElement.attributes['name'].value
         if filename.startswith(local_path):
@@ -69,8 +72,20 @@ def run_checkstyle(local_path, style_file, java_files):
             column = None
             if error.hasAttribute('column'):
                 column = int(error.attributes['column'].value)
+            if _INCLUSIVE_WARNING_IDENTIFIER in message:
+                inclusive_warning = message
+                inclusive_files.append(f'{filename}:{str(line)}\n  ')
+                continue
             results.append(Violation(filename, line, column, message,
                                      severity))
+
+    if inclusive_files:
+        results.append(
+            Violation(
+                ''.join(str(filename) for filename in inclusive_files) + '\n',
+                '  ^^^ The above edited file(s) contain non-inclusive language (may be pre-existing). ^^^  ',
+                '', inclusive_warning, 'warning'))
+
     return results
 
 
