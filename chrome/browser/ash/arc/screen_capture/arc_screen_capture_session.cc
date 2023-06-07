@@ -16,6 +16,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -230,25 +231,16 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   handle.native_pixmap_handle.planes.emplace_back(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
       std::move(platform_file));
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), std::move(handle), size_,
-          buffer_format, gfx::BufferUsage::SCANOUT,
-          gpu::GpuMemoryBufferImpl::DestructionCallback());
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "Failed creating GpuMemoryBuffer";
-    std::move(callback).Run();
-    return;
-  }
 
-  auto* gpu_memory_buffer_manager =
-      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      gpu_memory_buffer.get(), gpu_memory_buffer_manager, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2 |
-          gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-      "ArcScreenCapture");
+  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(buffer_format);
+  CHECK(!si_format.IsLegacyMultiplanar());
+
+  gpu::Mailbox mailbox =
+      sii->CreateSharedImage(si_format, size_, gfx::ColorSpace(),
+                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                             gpu::SHARED_IMAGE_USAGE_GLES2 |
+                                 gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
+                             "ArcScreenCapture", std::move(handle));
   gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
   GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
