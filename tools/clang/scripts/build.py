@@ -199,14 +199,14 @@ def GetCommitDescription(commit):
 def AddCMakeToPath():
   """Download CMake and add it to PATH."""
   if sys.platform == 'win32':
-    zip_name = 'cmake-3.23.0-windows-x86_64.zip'
-    dir_name = ['cmake-3.23.0-windows-x86_64', 'bin']
+    zip_name = 'cmake-3.26.4-windows-x86_64.zip'
+    dir_name = ['cmake-3.26.4-windows-x86_64', 'bin']
   elif sys.platform == 'darwin':
-    zip_name = 'cmake-3.23.0-macos-universal.tar.gz'
-    dir_name = ['cmake-3.23.0-macos-universal', 'CMake.app', 'Contents', 'bin']
+    zip_name = 'cmake-3.26.4-macos-universal.tar.gz'
+    dir_name = ['cmake-3.26.4-macos-universal', 'CMake.app', 'Contents', 'bin']
   else:
-    zip_name = 'cmake-3.23.0-linux-x86_64.tar.gz'
-    dir_name = ['cmake-3.23.0-linux-x86_64', 'bin']
+    zip_name = 'cmake-3.26.4-linux-x86_64.tar.gz'
+    dir_name = ['cmake-3.26.4-linux-x86_64', 'bin']
 
   cmake_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, *dir_name)
   if not os.path.exists(cmake_dir):
