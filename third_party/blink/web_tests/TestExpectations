@@ -6695,3 +6695,6 @@ crbug.com/1451711 [ Mac10.15 ] http/tests/inspector-protocol/tracing/prerender.j
 # Sheriff 2023-06-06
 crbug.com/1451810 [ Linux ] wpt_internal/css/css-contain/container-queries/state-initially-stuck.html [ Failure ]
 crbug.com/1339291 [ Mac12-arm64 Release ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure ]
+
+# Sheriff 2023-06-07
+crbug.com/1452003 [ Mac12 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Pass Failure ]
