@@ -3,6 +3,15 @@
 # found in the LICENSE file.
 
 include_rules = [
+    # The basic rule is that PartitionAlloc library must not depend on Chromium
+    # project in order to be a standalone library.
+    "-base",
+    "-build",
+    "-build_overrides",
+    "-testing",
+    "-third_party",
+
+    "+base/allocator/partition_allocator",
     "+build/build_config.h",
     "+build/buildflag.h",
     "+third_party/lss/linux_syscall_support.h",
