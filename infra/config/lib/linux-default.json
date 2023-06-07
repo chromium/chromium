@@ -115,6 +115,7 @@
     "chromeos-arm64-generic-rel": "Ubuntu-22.04",
     "chromeos-jacuzzi-rel": "Ubuntu-22.04",
     "chromeos-octopus-rel": "Ubuntu-22.04",
+    "fuchsia-official": "Ubuntu-22.04",
     "ios-angle-intel": "Ubuntu-22.04",
     "lacros-amd64-generic-binary-size-rel": "Ubuntu-22.04",
     "lacros-amd64-generic-rel": "Ubuntu-22.04",
