@@ -2084,7 +2084,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 06/2022.
-  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(profile_prefs);
   profile_prefs->ClearPref(kDownloadLaterPromptStatus);
 #endif  // BUILDFLAG(IS_ANDROID)
 

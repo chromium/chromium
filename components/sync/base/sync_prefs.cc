@@ -444,41 +444,4 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
       prefs::internal::kSyncPassphrasePromptMutedProductVersion);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// static
-void SyncPrefs::MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {
-  // Before MICe, there was a toggle in Sync settings that corresponded to the
-  // SyncRequested bit. After MICe, there's no such toggle anymore, but some
-  // users may still be in the legacy state where SyncRequested is false, for
-  // various reasons:
-  // * The original MICE implementation set SyncRequested to false if all data
-  //   types were disabled, for migration / backwards compatibility reasons.
-  //   This is no longer the case as of M104 (see crbug.com/1311270,
-  //   crbug.com/1291946).
-  // * On Android, users might have had the OS-level "auto sync" toggle
-  //   disabled since before M90 or so (see crbug.com/1105795). Since then,
-  //   Chrome does not integrate with the Android "auto sync" toggle anymore,
-  //   but not all users were migrated.
-  // Migrate all these users into a supported and equivalent state, where
-  // SyncRequested is true but all data types are off.
-
-  if (pref_service->GetBoolean(prefs::internal::kSyncRequested) ||
-      !pref_service->GetBoolean(
-          prefs::internal::kSyncInitialSyncFeatureSetupComplete)) {
-    // Either SyncRequested is already true, or FirstSetupComplete is false
-    // meaning Sync isn't enabled. Either way, there's nothing to be done here.
-    return;
-  }
-
-  // Disable all data types.
-  pref_service->SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
-  for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    pref_service->ClearPref(SyncPrefs::GetPrefNameForType(type));
-  }
-
-  // ...but turn on SyncRequested.
-  pref_service->SetBoolean(prefs::internal::kSyncRequested, true);
-}
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 }  // namespace syncer
