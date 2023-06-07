@@ -169,14 +169,10 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   }
 
   void SetDevicePolicyImages(const std::vector<std::string>& images) {
-    if (images.empty()) {
-      device_policy_.payload().Clear();
-      return;
-    }
-
     enterprise_management::DeviceScreensaverLoginScreenImagesProto*
         mutable_images = device_policy_.payload()
                              .mutable_device_screensaver_login_screen_images();
+    mutable_images->clear_device_screensaver_login_screen_images();
     for (const auto& image_path : images) {
       mutable_images->add_device_screensaver_login_screen_images(
           https_server_.GetURL("/" + image_path).spec());
@@ -222,20 +218,20 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
 
   // TODO(b:280809373): Remove mutable subproto1 once policies are released.
   void SetPolicyImages(const std::vector<std::string>& images) {
-    user_policy_mixin_.RequestPolicyUpdate()
-        ->policy_payload()
-        ->mutable_subproto1()
-        ->mutable_screensaverlockscreenimages()
-        ->Clear();
     // Policy update variable should be explicitly declared here, otherwise it
-    // might go out of scope immediately and cause multiple updates if we inline
-    // the call in the loop.
+    // might go out of scope immediately and cause multiple updates if we
+    // inline the call in the loop.
     std::unique_ptr<ScopedUserPolicyUpdate> policy =
         user_policy_mixin_.RequestPolicyUpdate();
 
     auto* mutable_images = policy->policy_payload()
                                ->mutable_subproto1()
                                ->mutable_screensaverlockscreenimages();
+
+    // Fake the update as set by policy
+    mutable_images->mutable_policy_options()->set_mode(
+        enterprise_management::PolicyOptions::MANDATORY);
+    mutable_images->mutable_value()->mutable_entries()->Clear();
     for (const auto& image_path : images) {
       mutable_images->mutable_value()->mutable_entries()->Add(
           std::string(https_server_.GetURL("/" + image_path).spec()));

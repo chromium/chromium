@@ -56,6 +56,8 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
 
   void OnDownloadedImageListUpdated(const std::vector<base::FilePath>& images);
 
+  bool IsManagedScreensaverDisabledByPolicy();
+
   raw_ptr<PrefService> pref_service_ = nullptr;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
