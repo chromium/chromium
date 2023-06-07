@@ -4835,6 +4835,14 @@ if (!is_android) {
       sources -= [ "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc" ]
     }
 
+    if (is_chromeos_ash && also_build_lacros_chrome && enable_extensions) {
+      # Lacros chrome loads in helper a11y extensions, ensure their resources
+      # are available in tests.
+      # TODO(b:272150598): There must be a better way to ensure they are available
+      # to the lacros binary.
+      data += [ "$root_out_dir/lacros_clang_x64/resources/accessibility/" ]
+    }
+
     if (is_chromeos_ash || ((is_linux || is_chromeos_lacros) && use_dbus)) {
       sources += [ "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest.cc" ]
     }
@@ -5257,6 +5265,12 @@ if (is_chromeos_lacros) {
       "//chrome:packed_resources",
       "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
     ]
+
+    if (enable_extensions) {
+      data_deps +=
+          [ "//chrome/browser/resources/accessibility:extension_resources" ]
+      data += [ "$root_out_dir/resources/accessibility/" ]
+    }
   }
 }
 

@@ -26,6 +26,7 @@
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/drivefs_native_message_host_bridge_lacros.h"
+#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
@@ -166,6 +167,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     web_app_provider_bridge_ =
         std::make_unique<crosapi::WebAppProviderBridgeLacros>();
   }
+
+  EmbeddedA11yManagerLacros::GetInstance()->Init();
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is only created in test builds AND when Ash's test

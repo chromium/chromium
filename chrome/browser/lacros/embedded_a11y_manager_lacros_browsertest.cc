@@ -7,14 +7,22 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-shared.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_system.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Tests for EmbeddedA11yManagerLacros, ensuring it can install
 // the correct accessibility helper extensions on all the profiles
@@ -32,20 +40,6 @@ namespace {
 
 using AssistiveTechnologyType = crosapi::mojom::AssistiveTechnologyType;
 
-bool IsEnabled(AssistiveTechnologyType at_type, bool enabled) {
-  auto* manager = EmbeddedA11yManagerLacros::GetInstance();
-  switch (at_type) {
-    case AssistiveTechnologyType::kChromeVox:
-      return manager->chromevox_enabled() == enabled;
-    case AssistiveTechnologyType::kSelectToSpeak:
-      return manager->select_to_speak_enabled() == enabled;
-    case AssistiveTechnologyType::kSwitchAccess:
-      return manager->switch_access_enabled() == enabled;
-    case AssistiveTechnologyType::kUnknown:
-      return false;
-  }
-}
-
 }  // namespace
 
 class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
@@ -59,9 +53,10 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    EmbeddedA11yManagerLacros::GetInstance()->AddPrefChangedCallbackForTest(
-        base::BindRepeating(&EmbeddedA11yManagerLacrosTest::OnPrefChanged,
-                            base::Unretained(this)));
+    EmbeddedA11yManagerLacros::GetInstance()
+        ->AddExtensionChangedCallbackForTest(base::BindRepeating(
+            &EmbeddedA11yManagerLacrosTest::OnExtensionChanged,
+            base::Unretained(this)));
 
     auto* lacros_service = chromeos::LacrosService::Get();
     if (!lacros_service ||
@@ -73,7 +68,7 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     }
   }
 
-  void OnPrefChanged() {
+  void OnExtensionChanged() {
     if (waiter_ && waiter_->running()) {
       waiter_->Quit();
     }
@@ -85,43 +80,213 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
         ->SetAssistiveTechnologyEnabled(at_type, enabled);
   }
 
-  void WaitForFeatureEnabled(AssistiveTechnologyType at_type, bool enabled) {
-    while (!IsEnabled(at_type, enabled)) {
+  void WaitForExtensionLoaded(Profile* profile,
+                              const std::string& extension_id) {
+    extensions::ComponentLoader* component_loader =
+        extensions::ExtensionSystem::Get(profile)
+            ->extension_service()
+            ->component_loader();
+
+    while (!component_loader->Exists(extension_id)) {
       waiter_ = std::make_unique<base::RunLoop>();
       waiter_->Run();
     }
+
+    EXPECT_TRUE(component_loader->Exists(extension_id));
+  }
+
+  void WaitForExtensionUnloaded(Profile* profile,
+                                const std::string& extension_id) {
+    extensions::ComponentLoader* component_loader =
+        extensions::ExtensionSystem::Get(profile)
+            ->extension_service()
+            ->component_loader();
+    while (component_loader->Exists(extension_id)) {
+      waiter_ = std::make_unique<base::RunLoop>();
+      waiter_->Run();
+    }
+
+    EXPECT_FALSE(component_loader->Exists(extension_id));
+  }
+
+  void SetEnabledAndWaitForExtensionLoaded(Profile* profile,
+                                           AssistiveTechnologyType at_type,
+                                           const std::string& extension_id) {
+    SetFeatureEnabled(at_type, true);
+    WaitForExtensionLoaded(profile, extension_id);
+  }
+
+  void SetDisabledAndWaitForExtensionUnloaded(Profile* profile,
+                                              AssistiveTechnologyType at_type,
+                                              const std::string& extension_id) {
+    SetFeatureEnabled(at_type, false);
+    WaitForExtensionUnloaded(profile, extension_id);
   }
 
  private:
   std::unique_ptr<base::RunLoop> waiter_;
 };
 
-// Tests for changing the Ash feature getting noticed by
-// EmbeddedA11yManagerLacros. This also provides test coverage for
-// TestControllerAsh changing a11y features.
-
-IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest, ListensForChromevoxPref) {
-  EmbeddedA11yManagerLacros::GetInstance()->Init();
-  SetFeatureEnabled(AssistiveTechnologyType::kChromeVox, true);
-  WaitForFeatureEnabled(AssistiveTechnologyType::kChromeVox, true);
-  SetFeatureEnabled(AssistiveTechnologyType::kChromeVox, false);
-  WaitForFeatureEnabled(AssistiveTechnologyType::kChromeVox, false);
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       AddsAndRemovesHelperForChromeVox) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+  SetEnabledAndWaitForExtensionLoaded(
+      profile, AssistiveTechnologyType::kChromeVox,
+      extension_misc::kChromeVoxHelperExtensionId);
+  SetDisabledAndWaitForExtensionUnloaded(
+      profile, AssistiveTechnologyType::kChromeVox,
+      extension_misc::kChromeVoxHelperExtensionId);
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
                        AddsAndRemovesHelperForSelectToSpeak) {
-  EmbeddedA11yManagerLacros::GetInstance()->Init();
-  SetFeatureEnabled(AssistiveTechnologyType::kSelectToSpeak, true);
-  WaitForFeatureEnabled(AssistiveTechnologyType::kSelectToSpeak, true);
-  SetFeatureEnabled(AssistiveTechnologyType::kSelectToSpeak, false);
-  WaitForFeatureEnabled(AssistiveTechnologyType::kSelectToSpeak, false);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+  SetEnabledAndWaitForExtensionLoaded(
+      profile, AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+  SetDisabledAndWaitForExtensionUnloaded(
+      profile, AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
                        AddsAndRemovesHelperForSwitchAccess) {
-  EmbeddedA11yManagerLacros::GetInstance()->Init();
-  SetFeatureEnabled(AssistiveTechnologyType::kSwitchAccess, true);
-  WaitForFeatureEnabled(AssistiveTechnologyType::kSwitchAccess, true);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  SetEnabledAndWaitForExtensionLoaded(
+      profile, AssistiveTechnologyType::kSwitchAccess,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+  SetDisabledAndWaitForExtensionUnloaded(
+      profile, AssistiveTechnologyType::kSwitchAccess,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       SwitchAccessAndSelectToSpeak) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  // Installed with first feature enabled.
+  SetEnabledAndWaitForExtensionLoaded(
+      profile, AssistiveTechnologyType::kSwitchAccess,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+
+  // Still installed with second feature enabled.
+  SetFeatureEnabled(AssistiveTechnologyType::kSelectToSpeak, true);
+  extensions::ComponentLoader* component_loader =
+      extensions::ExtensionSystem::Get(profile)
+          ->extension_service()
+          ->component_loader();
+  EXPECT_TRUE(
+      component_loader->Exists(extension_misc::kEmbeddedA11yHelperExtensionId));
+
+  // Not unloaded if one of the two features is still enabled.
   SetFeatureEnabled(AssistiveTechnologyType::kSwitchAccess, false);
-  WaitForFeatureEnabled(AssistiveTechnologyType::kSwitchAccess, false);
+  EXPECT_TRUE(
+      component_loader->Exists(extension_misc::kEmbeddedA11yHelperExtensionId));
+
+  // Unloads after Select to Speak is also disabled.
+  SetDisabledAndWaitForExtensionUnloaded(
+      profile, AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       InstallsOnMultipleProfiles) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  size_t num_extra_profiles = 2;
+  for (size_t i = 0; i < num_extra_profiles; i++) {
+    // Create an additional profile.
+    base::FilePath path_profile =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    profiles::testing::CreateProfileSync(profile_manager, path_profile);
+
+    // Open a browser window for the profile.
+    profiles::SwitchToProfile(path_profile, false);
+    content::RunAllTasksUntilIdle();
+  }
+
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), num_extra_profiles + 1);
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  SetFeatureEnabled(AssistiveTechnologyType::kSwitchAccess, true);
+  for (auto* const profile : profiles) {
+    WaitForExtensionLoaded(profile,
+                           extension_misc::kEmbeddedA11yHelperExtensionId);
+  }
+
+  // Turn off switch access.
+  SetFeatureEnabled(AssistiveTechnologyType::kSwitchAccess, false);
+  for (auto* const profile : profiles) {
+    WaitForExtensionUnloaded(profile,
+                             extension_misc::kEmbeddedA11yHelperExtensionId);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       IncognitoProfileA11yLoadedFirst) {
+  SetFeatureEnabled(AssistiveTechnologyType::kSelectToSpeak, true);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Browser* incognito =
+      CreateIncognitoBrowser(profile_manager->GetPrimaryUserProfile());
+  content::RunAllTasksUntilIdle();
+
+  WaitForExtensionLoaded(incognito->profile(),
+                         extension_misc::kEmbeddedA11yHelperExtensionId);
+  SetDisabledAndWaitForExtensionUnloaded(
+      incognito->profile(), AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       IncognitoProfileA11yLoadedSecond) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Browser* incognito =
+      CreateIncognitoBrowser(profile_manager->GetPrimaryUserProfile());
+  content::RunAllTasksUntilIdle();
+
+  SetEnabledAndWaitForExtensionLoaded(
+      incognito->profile(), AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+  SetDisabledAndWaitForExtensionUnloaded(
+      incognito->profile(), AssistiveTechnologyType::kSelectToSpeak,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       GuestProfileA11yLoadedFirst) {
+  SetFeatureEnabled(AssistiveTechnologyType::kSwitchAccess, true);
+
+  Browser* guest_browser = CreateGuestBrowser();
+  content::RunAllTasksUntilIdle();
+
+  WaitForExtensionLoaded(guest_browser->profile(),
+                         extension_misc::kEmbeddedA11yHelperExtensionId);
+
+  SetDisabledAndWaitForExtensionUnloaded(
+      guest_browser->profile(), AssistiveTechnologyType::kSwitchAccess,
+      extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       GuestProfileA11yLoadedSecond) {
+  Browser* guest_browser = CreateGuestBrowser();
+  content::RunAllTasksUntilIdle();
+
+  SetDisabledAndWaitForExtensionUnloaded(
+      guest_browser->profile(), AssistiveTechnologyType::kChromeVox,
+      extension_misc::kChromeVoxHelperExtensionId);
+  SetDisabledAndWaitForExtensionUnloaded(
+      guest_browser->profile(), AssistiveTechnologyType::kChromeVox,
+      extension_misc::kChromeVoxHelperExtensionId);
 }
