@@ -129,6 +129,7 @@
   // animatedDismissal should have been explicitly set before calling stop.
   [_navigationController dismissViewControllerAnimated:self.animatedDismissal
                                             completion:nil];
+  _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
 }
 

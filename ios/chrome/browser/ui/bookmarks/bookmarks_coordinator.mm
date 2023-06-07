@@ -379,6 +379,7 @@ enum class PresentedState {
   [self.bookmarkNavigationController setViewControllers:@[] animated:NO];
   self.bookmarkBrowser.homeDelegate = nil;
   self.bookmarkBrowser = nil;
+  self.bookmarkNavigationController.presentationController.delegate = nil;
   self.bookmarkNavigationController = nil;
   self.currentPresentedState = PresentedState::NONE;
 }
