@@ -158,6 +158,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
@@ -434,6 +435,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(box_shadow_paint_image_generator_);
   visitor->Trace(clip_path_paint_image_generator_);
   visitor->Trace(resource_cache_);
+  visitor->Trace(lcpp_);
 #if !BUILDFLAG(IS_ANDROID)
   visitor->Trace(window_controls_overlay_changed_delegate_);
 #endif
@@ -753,6 +755,14 @@ ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
         ClipPathPaintImageGenerator::Create(local_root);
   }
   return local_root.clip_path_paint_image_generator_.Get();
+}
+
+LCPCriticalPathPredictor& LocalFrame::GetLCPP() {
+  if (!lcpp_) {
+    lcpp_ = MakeGarbageCollected<LCPCriticalPathPredictor>(*this);
+  }
+
+  return *lcpp_.Get();
 }
 
 const SecurityContext* LocalFrame::GetSecurityContext() const {

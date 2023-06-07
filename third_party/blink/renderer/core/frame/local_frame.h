@@ -135,6 +135,7 @@ class InspectorIssueReporter;
 class InspectorTaskRunner;
 class InspectorTraceEvents;
 class InterfaceRegistry;
+class LCPCriticalPathPredictor;
 class LayoutView;
 class LocalDOMWindow;
 class LocalFrameClient;
@@ -297,6 +298,7 @@ class CORE_EXPORT LocalFrame final
   BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator();
   BoxShadowPaintImageGenerator* GetBoxShadowPaintImageGenerator();
   ClipPathPaintImageGenerator* GetClipPathPaintImageGenerator();
+  LCPCriticalPathPredictor& GetLCPP();
 
   // A local root is the root of a connected subtree that contains only
   // LocalFrames. The local root is responsible for coordinating input, layout,
@@ -1127,6 +1129,8 @@ class CORE_EXPORT LocalFrame final
   // synchronous commit and otherwise is signaled from the browser process at
   // ready-to-commit time.
   absl::optional<blink::FrameAdEvidence> ad_evidence_;
+
+  Member<LCPCriticalPathPredictor> lcpp_;
 
   // True if this frame is a frame that had a script tagged as an ad on the v8
   // stack at the time of creation. This is updated in `SetAdEvidence()`,

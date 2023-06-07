@@ -43,6 +43,8 @@ import("//third_party/blink/renderer/core/input/build.gni")
 import("//third_party/blink/renderer/core/inspector/build.gni")
 import("//third_party/blink/renderer/core/intersection_observer/build.gni")
 import("//third_party/blink/renderer/core/layout/build.gni")
+import(
+    "//third_party/blink/renderer/core/lcp_critical_path_predictor/build.gni")
 import("//third_party/blink/renderer/core/loader/build.gni")
 import("//third_party/blink/renderer/core/mathml/build.gni")
 import("//third_party/blink/renderer/core/messaging/build.gni")
@@ -266,6 +268,9 @@ component("core") {
                          "",
                          "intersection_observer")
   sources += rebase_path(blink_core_sources_layout, "", "layout")
+  sources += rebase_path(blink_core_sources_lcp_critical_path_predictor,
+                         "",
+                         "lcp_critical_path_predictor")
   sources += rebase_path(blink_core_sources_loader, "", "loader")
   sources += rebase_path(blink_core_sources_mathml, "", "mathml")
   sources += rebase_path(blink_core_sources_messaging, "", "messaging")
