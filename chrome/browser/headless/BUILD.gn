@@ -105,6 +105,7 @@ if (!is_android) {
         "//components/headless/clipboard",
         "//components/headless/command_handler",
         "//components/headless/command_handler:switches",
+        "//components/headless/select_file_dialog",
         "//components/headless/test",
         "//content/public/browser",
         "//ui/display",

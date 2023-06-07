@@ -2131,6 +2131,7 @@ static_library("browser") {
     "//components/flags_ui",
     "//components/gcm_driver",
     "//components/handoff",
+    "//components/headless/select_file_dialog",
     "//components/heavy_ad_intervention",
     "//components/history/content/browser",
     "//components/history/core/browser",
