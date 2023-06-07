@@ -11,9 +11,11 @@
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -29,10 +31,10 @@
 #endif
 
 using chrome_test_util::Omnibox;
-using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
 using chrome_test_util::SignOutAccountsButton;
 
 namespace {
@@ -64,6 +66,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");
+  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
+  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 // Tests that the Sync and Account Settings screen are correctly popped if the
@@ -80,7 +84,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SigninEarlGrey verifySignedOut];
 
@@ -104,8 +108,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:PrimarySignInButton()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      SettingsSignInAndEnableSyncRowMatcher()];
   [SigninEarlGrey verifySignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -204,7 +208,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity];
 
   // Check that the user is signed out and the Main Settings screen is shown.
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SigninEarlGrey verifySignedOut];
 
@@ -388,9 +392,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Remove the primary accounts.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
-                           closeButton:YES];
+  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Closes the settings.
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]

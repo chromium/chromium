@@ -13,7 +13,9 @@
 #import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
@@ -41,6 +43,7 @@ using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
+using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
 
 namespace {
 
@@ -64,6 +67,13 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 @end
 
 @implementation SettingsTestCase
+
+- (void)setUp {
+  [super setUp];
+
+  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
+  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
+}
 
 - (void)tearDown {
   // It is possible for a test to fail with a menu visible, which can cause
@@ -324,7 +334,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                  @"Settings should register key commands when presented.");
 
   // Present the Sign-in UI.
-  id<GREYMatcher> matcher = grey_allOf(chrome_test_util::PrimarySignInButton(),
+  id<GREYMatcher> matcher = grey_allOf(SettingsSignInAndEnableSyncRowMatcher(),
                                        grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   // Wait for UI to finish loading the Sign-in screen.

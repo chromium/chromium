@@ -27,12 +27,17 @@ id<GREYMatcher> WebSigninSkipButtonMatcher();
 // dialog.
 id<GREYMatcher> WebSigninPrimaryButtonMatcher();
 
-// Returns matcher for the Google Sync Settings button on the main Settings
-// screen.
+// Returns matcher for the Sync Settings button on the main Settings screen.
+// For users who are signed-in but not syncing, this button leads to the sync
+// consent dialog instead.
 id<GREYMatcher> GoogleSyncSettingsButton();
 
 // Matcher for the upgrade sign-in promo.
 id<GREYMatcher> UpgradeSigninPromoMatcher();
+
+// Matcher for the Settings row which, upon tap, leads the user to sign-in and
+// enable sync. The row is only shown to signed-out users.
+id<GREYMatcher> SettingsSignInAndEnableSyncRowMatcher();
 
 }  // namespace chrome_test_util
 

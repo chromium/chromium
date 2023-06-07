@@ -86,19 +86,7 @@
 - (void)signinPriceTrackingUser {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  // Swipe TableView down.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 }
 
 @end

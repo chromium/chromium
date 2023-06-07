@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -32,16 +33,17 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::GoogleSyncSettingsButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsLink;
-using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
+using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
 using l10n_util::GetNSString;
 using testing::ButtonWithAccessibilityLabel;
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForUIElementTimeout;
 
 namespace {
 
@@ -77,6 +79,8 @@ void WaitForSettingDoneButton() {
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [ChromeEarlGrey clearBookmarks];
+  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
+  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 - (void)tearDown {
@@ -93,7 +97,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
@@ -114,7 +119,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Open the sync passphrase editor through the sign-in flow.
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[[EarlGrey selectElementWithMatcher:SettingsLink()]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:grey_accessibilityID(
@@ -146,7 +152,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
@@ -194,7 +201,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
@@ -240,7 +248,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
 
   [[[EarlGrey selectElementWithMatcher:
@@ -260,7 +269,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
@@ -300,7 +310,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   // Scroll and select the Encryption item.
   [[[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
@@ -329,7 +340,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
@@ -411,7 +423,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
