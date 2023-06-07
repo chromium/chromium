@@ -10,6 +10,7 @@
 #include <new>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/page_size.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -45,7 +46,7 @@ std::atomic<const allocator_shim::AllocatorDispatch*> g_chain_head{
 
 bool g_call_new_handler_on_malloc_failure = false;
 
-ALWAYS_INLINE size_t GetCachedPageSize() {
+PA_ALWAYS_INLINE size_t GetCachedPageSize() {
   static size_t pagesize = 0;
   if (!pagesize) {
     pagesize = partition_alloc::internal::base::GetPageSize();
@@ -70,7 +71,7 @@ bool CallNewHandler(size_t size) {
 #endif
 }
 
-ALWAYS_INLINE const allocator_shim::AllocatorDispatch* GetChainHead() {
+PA_ALWAYS_INLINE const allocator_shim::AllocatorDispatch* GetChainHead() {
   return g_chain_head.load(std::memory_order_relaxed);
 }
 
@@ -181,7 +182,7 @@ extern "C" {
 //       just suicide printing a message).
 //     - Assume it did succeed if it returns, in which case reattempt the alloc.
 
-ALWAYS_INLINE void* ShimCppNew(size_t size) {
+PA_ALWAYS_INLINE void* ShimCppNew(size_t size) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
@@ -194,7 +195,7 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
   return ptr;
 }
 
-ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
+PA_ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
   void* context = nullptr;
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
@@ -203,7 +204,7 @@ ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
   return chain_head->alloc_unchecked_function(chain_head, size, context);
 }
 
-ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
+PA_ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
@@ -217,7 +218,7 @@ ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
   return ptr;
 }
 
-ALWAYS_INLINE void ShimCppDelete(void* address) {
+PA_ALWAYS_INLINE void ShimCppDelete(void* address) {
   void* context = nullptr;
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
@@ -226,7 +227,7 @@ ALWAYS_INLINE void ShimCppDelete(void* address) {
   return chain_head->free_function(chain_head, address, context);
 }
 
-ALWAYS_INLINE void* ShimMalloc(size_t size, void* context) {
+PA_ALWAYS_INLINE void* ShimMalloc(size_t size, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
@@ -236,7 +237,7 @@ ALWAYS_INLINE void* ShimMalloc(size_t size, void* context) {
   return ptr;
 }
 
-ALWAYS_INLINE void* ShimCalloc(size_t n, size_t size, void* context) {
+PA_ALWAYS_INLINE void* ShimCalloc(size_t n, size_t size, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
@@ -247,7 +248,7 @@ ALWAYS_INLINE void* ShimCalloc(size_t n, size_t size, void* context) {
   return ptr;
 }
 
-ALWAYS_INLINE void* ShimRealloc(void* address, size_t size, void* context) {
+PA_ALWAYS_INLINE void* ShimRealloc(void* address, size_t size, void* context) {
   // realloc(size == 0) means free() and might return a nullptr. We should
   // not call the std::new_handler in that case, though.
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
@@ -259,7 +260,9 @@ ALWAYS_INLINE void* ShimRealloc(void* address, size_t size, void* context) {
   return ptr;
 }
 
-ALWAYS_INLINE void* ShimMemalign(size_t alignment, size_t size, void* context) {
+PA_ALWAYS_INLINE void* ShimMemalign(size_t alignment,
+                                    size_t size,
+                                    void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
@@ -270,7 +273,9 @@ ALWAYS_INLINE void* ShimMemalign(size_t alignment, size_t size, void* context) {
   return ptr;
 }
 
-ALWAYS_INLINE int ShimPosixMemalign(void** res, size_t alignment, size_t size) {
+PA_ALWAYS_INLINE int ShimPosixMemalign(void** res,
+                                       size_t alignment,
+                                       size_t size) {
   // posix_memalign is supposed to check the arguments. See tc_posix_memalign()
   // in tc_malloc.cc.
   if (((alignment % sizeof(void*)) != 0) ||
@@ -282,11 +287,11 @@ ALWAYS_INLINE int ShimPosixMemalign(void** res, size_t alignment, size_t size) {
   return ptr ? 0 : ENOMEM;
 }
 
-ALWAYS_INLINE void* ShimValloc(size_t size, void* context) {
+PA_ALWAYS_INLINE void* ShimValloc(size_t size, void* context) {
   return ShimMemalign(GetCachedPageSize(), size, context);
 }
 
-ALWAYS_INLINE void* ShimPvalloc(size_t size) {
+PA_ALWAYS_INLINE void* ShimPvalloc(size_t size) {
   // pvalloc(0) should allocate one page, according to its man page.
   if (size == 0) {
     size = GetCachedPageSize();
@@ -299,53 +304,56 @@ ALWAYS_INLINE void* ShimPvalloc(size_t size) {
   return ShimMemalign(GetCachedPageSize(), size, nullptr);
 }
 
-ALWAYS_INLINE void ShimFree(void* address, void* context) {
+PA_ALWAYS_INLINE void ShimFree(void* address, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->free_function(chain_head, address, context);
 }
 
-ALWAYS_INLINE size_t ShimGetSizeEstimate(const void* address, void* context) {
+PA_ALWAYS_INLINE size_t ShimGetSizeEstimate(const void* address,
+                                            void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->get_size_estimate_function(
       chain_head, const_cast<void*>(address), context);
 }
 
-ALWAYS_INLINE bool ShimClaimedAddress(void* address, void* context) {
+PA_ALWAYS_INLINE bool ShimClaimedAddress(void* address, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->claimed_address_function(chain_head, address, context);
 }
 
-ALWAYS_INLINE unsigned ShimBatchMalloc(size_t size,
-                                       void** results,
-                                       unsigned num_requested,
-                                       void* context) {
+PA_ALWAYS_INLINE unsigned ShimBatchMalloc(size_t size,
+                                          void** results,
+                                          unsigned num_requested,
+                                          void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->batch_malloc_function(chain_head, size, results,
                                            num_requested, context);
 }
 
-ALWAYS_INLINE void ShimBatchFree(void** to_be_freed,
-                                 unsigned num_to_be_freed,
-                                 void* context) {
+PA_ALWAYS_INLINE void ShimBatchFree(void** to_be_freed,
+                                    unsigned num_to_be_freed,
+                                    void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->batch_free_function(chain_head, to_be_freed,
                                          num_to_be_freed, context);
 }
 
-ALWAYS_INLINE void ShimFreeDefiniteSize(void* ptr, size_t size, void* context) {
+PA_ALWAYS_INLINE void ShimFreeDefiniteSize(void* ptr,
+                                           size_t size,
+                                           void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->free_definite_size_function(chain_head, ptr, size,
                                                  context);
 }
 
-ALWAYS_INLINE void ShimTryFreeDefault(void* ptr, void* context) {
+PA_ALWAYS_INLINE void ShimTryFreeDefault(void* ptr, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->try_free_default_function(chain_head, ptr, context);
 }
 
-ALWAYS_INLINE void* ShimAlignedMalloc(size_t size,
-                                      size_t alignment,
-                                      void* context) {
+PA_ALWAYS_INLINE void* ShimAlignedMalloc(size_t size,
+                                         size_t alignment,
+                                         void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr = nullptr;
   do {
@@ -356,10 +364,10 @@ ALWAYS_INLINE void* ShimAlignedMalloc(size_t size,
   return ptr;
 }
 
-ALWAYS_INLINE void* ShimAlignedRealloc(void* address,
-                                       size_t size,
-                                       size_t alignment,
-                                       void* context) {
+PA_ALWAYS_INLINE void* ShimAlignedRealloc(void* address,
+                                          size_t size,
+                                          size_t alignment,
+                                          void* context) {
   // _aligned_realloc(size == 0) means _aligned_free() and might return a
   // nullptr. We should not call the std::new_handler in that case, though.
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
@@ -372,7 +380,7 @@ ALWAYS_INLINE void* ShimAlignedRealloc(void* address,
   return ptr;
 }
 
-ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
+PA_ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->aligned_free_function(chain_head, address, context);
 }
