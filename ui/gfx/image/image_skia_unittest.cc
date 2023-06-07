@@ -625,4 +625,35 @@ TEST_F(ImageSkiaTest, UnscaledImageForArbitraryScaleFactor) {
   EXPECT_EQ(1U, image.image_reps().size());
 }
 
+// Tests that searching for representation uses supported scale values and that
+// scale values (floats) are not mismatched with scale factors (enums).
+TEST_F(ImageSkiaTest, SupportedScaleValue) {
+  // ui::kScaleFactorNone isn't probably a good choice but we need a scale
+  // factor with the enum value different from its corresponding scale value.
+  // The only enum value which meets this requirement is kScaleFactorNone (enum
+  // value 0 and scale value 1.0f). Enum values for other scale factors are
+  // equal to scale values (for instance enum value for k200Percent is 2 and its
+  // scale value is 2.0f).
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      supported_scale_factors_override(
+          {ui::k200Percent, ui::k300Percent, ui::kScaleFactorNone});
+
+  DynamicSource* source = new DynamicSource(Size(100, 200));
+  ImageSkia image(base::WrapUnique(source), gfx::Size(100, 200));
+
+  image.GetRepresentation(2.0f);
+  EXPECT_EQ(2.0f, source->GetLastRequestedScaleAndReset());
+
+  image.GetRepresentation(3.0f);
+  EXPECT_EQ(3.0f, source->GetLastRequestedScaleAndReset());
+
+  // We request 1.0 scale but k100Percent is not currently supported. However,
+  // kScaleFactorNone also uses 1.0 scale value. 1.0 is a valid scale then, and
+  // we expect that source is asked for this scale. This test case also verifies
+  // the fix for regression introduced in the past, where scale factor enum was
+  // used in place of scale value.
+  image.GetRepresentation(1.0f);
+  EXPECT_EQ(1.0f, source->GetLastRequestedScaleAndReset());
+}
+
 }  // namespace gfx
