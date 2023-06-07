@@ -13,9 +13,9 @@
 
 # Something is broken on android-pie-x86-rel with Skia and these formats, see
 # https://crbug.com/1411266 for details.
--WrappedSkImageBackingFactoryTest.*/ALPHA_8
--WrappedSkImageBackingFactoryTest.*/R_8
--WrappedSkImageBackingFactoryTest.*/RG_88
--WrappedSkImageBackingFactoryTest.*/RGBA_1010102
--WrappedSkImageBackingFactoryTest.*/Y_UV_420_8unorm
--WrappedSkImageBackingFactoryTest.*/Y_V_U_420_8unorm
+-WrappedSkImageBackingFactoryTest.*/GL_ALPHA_8
+-WrappedSkImageBackingFactoryTest.*/GL_R_8
+-WrappedSkImageBackingFactoryTest.*/GL_RG_88
+-WrappedSkImageBackingFactoryTest.*/GL_RGBA_1010102
+-WrappedSkImageBackingFactoryTest.*/GL_Y_UV_420_8unorm
+-WrappedSkImageBackingFactoryTest.*/GL_Y_V_U_420_8unorm
