@@ -8051,8 +8051,6 @@ IN_PROC_BROWSER_TEST_F(
     SSLUITest,
     MixedContentHistogramNotLoggedForSiteWithBadCertificate) {
   ASSERT_TRUE(https_server_expired_.Start());
-  base::HistogramTester histograms;
-  const std::string mixed_content_histogram = "SSL.MixedContentShown2";
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
@@ -8068,27 +8066,7 @@ IN_PROC_BROWSER_TEST_F(
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
   ProceedThroughInterstitial(tab);
-
-  // Check mixed content histogram is not logged since the main frame also had
-  // an invalid certificate.
-  histograms.ExpectTotalCount(mixed_content_histogram, 0);
 }
-
-namespace {
-
-// Used for SSL.MixedContentShown2 histogram tests, should match the enum in
-// content/browser/ssl/ssl_manager.cc. Redeclared here since the original is in
-// //content and can't be included.
-enum class MixedContentType {
-  kOptionallyBlockableMixedContent = 0,
-  kOptionallyBlockableWithCertErrors = 1,
-  kMixedForm = 2,
-  kBlockableMixedContent = 3,
-  kBlockableWithCertErrors = 4,
-  kMaxValue = kBlockableWithCertErrors,
-};
-
-}  // namespace
 
 // Tests that MixedContentShown histogram gets logged when a site with
 // a valid certificate loads a subresource with a bad certificate.
@@ -8097,8 +8075,6 @@ IN_PROC_BROWSER_TEST_F(
     MixedContentHistogramLoggedForBadCertificateSubresource) {
   ASSERT_TRUE(https_server_.Start());
   ASSERT_TRUE(https_server_expired_.Start());
-  base::HistogramTester histograms;
-  const std::string mixed_content_histogram = "SSL.MixedContentShown2";
   GURL base_url("https://site.test");
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -8123,22 +8099,12 @@ IN_PROC_BROWSER_TEST_F(
       browser(),
       https_server_.GetURL((net::test_server::GetFilePathWithReplacements(
           "/ssl/page_with_unsafe_contents.html", replacement_text)))));
-
-  // Check mixed content histogram is logged for content with cert errors.
-  histograms.ExpectTotalCount(mixed_content_histogram, 3);
-  histograms.ExpectBucketCount(
-      mixed_content_histogram,
-      MixedContentType::kOptionallyBlockableWithCertErrors, 1);
-  histograms.ExpectBucketCount(mixed_content_histogram,
-                               MixedContentType::kBlockableWithCertErrors, 2);
 }
 
 // Tests that MixedContentShown histogram gets logged when a site with
 // a valid certificate loads an insecure form.
 IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentHistogramLoggedForInsecureForm) {
   ASSERT_TRUE(https_server_.Start());
-  base::HistogramTester histograms;
-  const std::string mixed_content_histogram = "SSL.MixedContentShown2";
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
@@ -8146,9 +8112,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentHistogramLoggedForInsecureForm) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server_.GetURL("/ssl/page_displays_insecure_form.html")));
-  histograms.ExpectTotalCount(mixed_content_histogram, 1);
-  histograms.ExpectBucketCount(mixed_content_histogram,
-                               MixedContentType::kMixedForm, 1);
 }
 
 // Tests that MixedContentShown histogram gets logged when a site with
@@ -8159,17 +8122,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentHistogramLoggedForInsecureForm) {
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        MixedContentHistogramLoggedForBlockableMixedContent) {
   ASSERT_TRUE(https_server_.Start());
-  base::HistogramTester histograms;
-  const std::string mixed_content_histogram = "SSL.MixedContentShown2";
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/ssl/page_runs_insecure_content.html")));
-  histograms.ExpectTotalCount(mixed_content_histogram, 1);
-  histograms.ExpectBucketCount(mixed_content_histogram,
-                               MixedContentType::kBlockableMixedContent, 1);
 }
 
 // Tests that MixedContentShown histogram gets logged when a site with
@@ -8182,8 +8140,6 @@ IN_PROC_BROWSER_TEST_F(
     SSLUITest,
     MixedContentHistogramLoggedForOptionallyBlockableMixedContent) {
   ASSERT_TRUE(https_server_.Start());
-  base::HistogramTester histograms;
-  const std::string mixed_content_histogram = "SSL.MixedContentShown2";
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
@@ -8191,10 +8147,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server_.GetURL("/ssl/page_displays_insecure_content.html")));
-  histograms.ExpectTotalCount(mixed_content_histogram, 1);
-  histograms.ExpectBucketCount(
-      mixed_content_histogram,
-      MixedContentType::kOptionallyBlockableMixedContent, 1);
 }
 
 class SSLUIAutoReloadTest : public SSLUITest {

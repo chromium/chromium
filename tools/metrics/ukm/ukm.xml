@@ -22664,6 +22664,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SSL.MixedContentShown2">
+  <obsolete>
+    Removed in 05/2023.
+  </obsolete>
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
