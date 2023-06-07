@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/caret_bounds_changed_waiter.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
+#include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
@@ -758,6 +759,30 @@ IN_PROC_BROWSER_TEST_P(DictationTest, ChromeVoxSilencedWhenToggledOn) {
   // Assert ChromeVox was asked to stop speaking at the toggle. Note: multiple
   // requests to stop speech can be sent, so we just expect stop_count() > 0.
   EXPECT_GT(sm.stop_count(), 0);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, WorksWithSelectToSpeak) {
+  // Set up Select to Speak.
+  test::SpeechMonitor sm;
+  EXPECT_FALSE(GetManager()->IsSelectToSpeakEnabled());
+  sts_test_utils::TurnOnSelectToSpeakForTest(browser());
+
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForEditableValue(
+      "Not idly do the leaves of Lorien fall",
+      "Not idly do the leaves of Lorien fall");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+
+  aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+
+  sts_test_utils::StartSelectToSpeakInBrowserWindow(browser(), &generator);
+
+  // Now ensure STS still works properly.
+  sm.ExpectSpeechPattern("Not idly do the leaves of Lorien fall*");
+  sm.Replay();
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, EntersInterimSpeechWhenToggledOff) {

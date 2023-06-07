@@ -60,6 +60,18 @@ void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   ui::KeyboardCode key_code = event->key_code();
+  if (key_code != kSpeakSelectionKey && key_code != ui::VKEY_LWIN &&
+      key_code != ui::VKEY_CONTROL) {
+    // No need to track keys besides search, control and s.
+    if (state_ == SEARCH_DOWN) {
+      // If some other key was pressed and we were in SEARCH_DOWN state,
+      // now we should be in inactive state.
+      // Keys currently pressed hasn't changed so no need to dispatch
+      // an event.
+      state_ = INACTIVE;
+    }
+    return;
+  }
   if (pressed) {
     keys_currently_down_.insert(key_code);
   } else {

@@ -337,9 +337,9 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusClickTwice) {
 }
 
 TEST_F(SelectToSpeakEventHandlerTest, SearchPlusKeyIgnoresClicks) {
-  // If the user presses the Search key and then some other key,
-  // we should assume the user does not want select-to-speak, and
-  // click events should be ignored.
+  // If the user presses the Search key and then some other key
+  // besides 's', we should assume the user does not want select-to-speak,
+  // and click events should be ignored.
 
   generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(event_capturer_.last_key_event());
@@ -495,6 +495,16 @@ TEST_F(SelectToSpeakEventHandlerTest,
   event_capturer_.Reset();
   generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(event_capturer_.last_key_event());
+}
+
+TEST_F(SelectToSpeakEventHandlerTest, PassesCtrlKey) {
+  generator_->PressKey(ui::VKEY_CONTROL, /*flags=*/0);
+  ASSERT_TRUE(event_capturer_.last_key_event());
+  EXPECT_FALSE(event_capturer_.last_key_event()->handled());
+  event_capturer_.Reset();
+  generator_->ReleaseKey(ui::VKEY_CONTROL, /*flags=*/0);
+  EXPECT_TRUE(event_capturer_.last_key_event());
+  EXPECT_FALSE(event_capturer_.last_key_event()->handled());
 }
 
 TEST_F(SelectToSpeakEventHandlerTest, SelectionRequestedWorksWithMouse) {
