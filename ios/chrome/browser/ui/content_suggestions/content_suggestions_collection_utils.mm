@@ -248,4 +248,13 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
   return NearestAncestor([view superview], of_class);
 }
 
+BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
+                                    UIWindow* window) {
+  // Some iphone devices in landscape mode are still small enough to have a
+  // Compact  UIUserInterfaceSizeClass.
+  return traitCollection.horizontalSizeClass ==
+             UIUserInterfaceSizeClassRegular ||
+         IsLandscape(window);
+}
+
 }  // namespace content_suggestions

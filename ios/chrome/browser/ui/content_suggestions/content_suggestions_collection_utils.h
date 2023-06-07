@@ -58,6 +58,10 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target);
 // Returns the nearest ancestor of `view` that is kind of `of_class`.
 UIView* NearestAncestor(UIView* view, Class of_class);
 
+// YES if the Magic Stack should be using a wider layout.
+BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
+                                    UIWindow* window);
+
 }  // namespace content_suggestions
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COLLECTION_UTILS_H_

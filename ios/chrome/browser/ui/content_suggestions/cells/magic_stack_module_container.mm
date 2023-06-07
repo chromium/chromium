@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -209,8 +210,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   BOOL MVTModuleShouldUseWideWidth =
       (_type == ContentSuggestionsModuleType::kMostVisited &&
        !ShouldPutMostVisitedSitesInMagicStack() &&
-       self.traitCollection.horizontalSizeClass ==
-           UIUserInterfaceSizeClassRegular);
+       content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
+                                                           self.window));
   BOOL moduleShouldUseWideWidth =
       self.traitCollection.horizontalSizeClass ==
           UIUserInterfaceSizeClassRegular &&
@@ -228,9 +229,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.horizontalSizeClass !=
-          self.traitCollection.horizontalSizeClass &&
-      _type == ContentSuggestionsModuleType::kMostVisited &&
+  if (_type == ContentSuggestionsModuleType::kMostVisited &&
       !ShouldPutMostVisitedSitesInMagicStack()) {
     _contentViewWidthAnchor.constant = [self contentViewWidth];
   }
