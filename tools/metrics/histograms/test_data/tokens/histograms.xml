@@ -1,0 +1,18 @@
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Test.{TestToken3}.Histogram.{TestToken}.{TestToken2}"
+    units="microseconds" expires_after="M85">
+  <owner>person@chromium.org</owner>
+  <summary>Summary</summary>
+  <token key="TestToken" variants="TestToken"/>
+  <token key="TestToken2">
+    <variant name="TestName" summary="summary"/>
+  </token>
+  <token key="TestToken3" variants="TestToken3"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
