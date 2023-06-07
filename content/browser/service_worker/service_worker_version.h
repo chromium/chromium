@@ -26,6 +26,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/policy_container_host.h"
@@ -372,7 +373,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // |timeout_type| is to specfiy request timeout behaviour of the worker.
   // Returns true if the request was successfully scheduled to starrt.
   ServiceWorkerExternalRequestResult StartExternalRequest(
-      const std::string& request_uuid,
+      const base::Uuid& request_uuid,
       ServiceWorkerExternalRequestTimeoutType timeout_type);
 
   // Informs ServiceWorkerVersion that an event has finished being dispatched.
@@ -391,7 +392,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   // Finishes an external request that was started by StartExternalRequest().
   ServiceWorkerExternalRequestResult FinishExternalRequest(
-      const std::string& request_uuid);
+      const base::Uuid& request_uuid);
 
   // Creates a callback that is to be used for marking simple events dispatched
   // through blink::mojom::ServiceWorker as finished for the |request_id|.
@@ -979,8 +980,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Fires and clears all start callbacks.
   void FinishStartWorker(blink::ServiceWorkerStatusCode status);
 
-  // Removes any pending external request that has GUID of |request_uuid|.
-  void CleanUpExternalRequest(const std::string& request_uuid,
+  // Removes any pending external request that has Uuid of |request_uuid|.
+  void CleanUpExternalRequest(const base::Uuid& request_uuid,
                               blink::ServiceWorkerStatusCode status);
 
   // Called if no inflight events exist on the browser process. Triggers
@@ -1082,12 +1083,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   // Container for pending external requests for this service worker.
   // (key, value): (request uuid, request id).
-  using RequestUUIDToRequestIDMap = std::map<std::string, int>;
+  using RequestUUIDToRequestIDMap = std::map<base::Uuid, int>;
   RequestUUIDToRequestIDMap external_request_uuid_to_request_id_;
 
   // External request infos that were issued before this worker reached RUNNING.
   // Info contains UUID and timeout type.
-  std::map<std::string, ServiceWorkerExternalRequestTimeoutType>
+  std::map<base::Uuid, ServiceWorkerExternalRequestTimeoutType>
       pending_external_requests_;
 
   // Connected to ServiceWorkerContextClient while the worker is running.

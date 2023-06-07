@@ -23,6 +23,10 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom-forward.h"
 
+namespace base {
+class Uuid;
+}
+
 namespace blink {
 class StorageKey;
 }  // namespace blink
@@ -160,10 +164,10 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
       ServiceWorkerExternalRequestTimeoutType timeout_type,
-      const std::string& request_uuid) = 0;
+      const base::Uuid& request_uuid) = 0;
   virtual ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
-      const std::string& request_uuid) = 0;
+      const base::Uuid& request_uuid) = 0;
 
   // Returns the pending external request count for the worker with the
   // specified `key`.

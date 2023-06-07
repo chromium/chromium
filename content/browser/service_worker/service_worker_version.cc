@@ -747,7 +747,7 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
 }
 
 ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
-    const std::string& request_uuid,
+    const base::Uuid& request_uuid,
     ServiceWorkerExternalRequestTimeoutType timeout_type) {
   if (running_status() == EmbeddedWorkerStatus::STARTING) {
     return pending_external_requests_.insert({request_uuid, timeout_type})
@@ -813,7 +813,7 @@ bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
 }
 
 ServiceWorkerExternalRequestResult ServiceWorkerVersion::FinishExternalRequest(
-    const std::string& request_uuid) {
+    const base::Uuid& request_uuid) {
   if (running_status() == EmbeddedWorkerStatus::STARTING) {
     auto iter = pending_external_requests_.find(request_uuid);
     if (iter == pending_external_requests_.end())
@@ -1397,7 +1397,7 @@ void ServiceWorkerVersion::OnStarted(
     observer.OnRunningStateChanged(this);
 
   if (!pending_external_requests_.empty()) {
-    std::map<std::string, ServiceWorkerExternalRequestTimeoutType>
+    std::map<base::Uuid, ServiceWorkerExternalRequestTimeoutType>
         pending_external_requests;
     std::swap(pending_external_requests_, pending_external_requests);
     for (const auto& [uuid, timeout_type] : pending_external_requests)
@@ -2667,7 +2667,7 @@ void ServiceWorkerVersion::FinishStartWorker(
 }
 
 void ServiceWorkerVersion::CleanUpExternalRequest(
-    const std::string& request_uuid,
+    const base::Uuid& request_uuid,
     blink::ServiceWorkerStatusCode status) {
   if (status == blink::ServiceWorkerStatusCode::kOk)
     return;

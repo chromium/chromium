@@ -762,14 +762,16 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
   DCHECK(extension);
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
 
-  std::string request_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
   content::ServiceWorkerContext* service_worker_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
 
   service_worker_context->StartingExternalRequest(service_worker_version_id,
                                                   timeout_type, request_uuid);
-  return request_uuid;
+  // TODO(https://crbug.com/1451961): Update this signature to just return the
+  // base::Uuid directly.
+  return request_uuid.AsLowercaseString();
 }
 
 void ProcessManager::DecrementLazyKeepaliveCount(
@@ -824,9 +826,11 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
 
+  // TODO(crbug.com/1451961): Pass a base::Uuid into this function directly.
+  base::Uuid request_as_uuid = base::Uuid::ParseLowercase(request_uuid);
   content::ServiceWorkerExternalRequestResult result =
       service_worker_context->FinishedExternalRequest(service_worker_version_id,
-                                                      request_uuid);
+                                                      request_as_uuid);
 
   // Example of when kWorkerNotRunning can happen is when the renderer process
   // is killed while handling a service worker request (e.g. because of a bad

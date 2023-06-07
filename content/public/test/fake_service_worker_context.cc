@@ -44,14 +44,14 @@ ServiceWorkerExternalRequestResult
 FakeServiceWorkerContext::StartingExternalRequest(
     int64_t service_worker_version_id,
     ServiceWorkerExternalRequestTimeoutType timeout_type,
-    const std::string& request_uuid) {
+    const base::Uuid& request_uuid) {
   NOTREACHED();
   return ServiceWorkerExternalRequestResult::kWorkerNotFound;
 }
 ServiceWorkerExternalRequestResult
 FakeServiceWorkerContext::FinishedExternalRequest(
     int64_t service_worker_version_id,
-    const std::string& request_uuid) {
+    const base::Uuid& request_uuid) {
   NOTREACHED();
   return ServiceWorkerExternalRequestResult::kWorkerNotFound;
 }

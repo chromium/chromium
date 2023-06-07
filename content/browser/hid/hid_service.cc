@@ -348,11 +348,10 @@ void HidService::IncrementActivityCount() {
         WebContentsImpl::FromRenderFrameHostImpl(render_frame_host_);
     web_contents_impl->IncrementHidActiveFrameCount();
   } else if (service_worker_version_) {
-    CHECK(!service_worker_activity_request_uuid);
-    service_worker_activity_request_uuid =
-        base::Uuid::GenerateRandomV4().AsLowercaseString();
+    CHECK(!service_worker_activity_request_uuid_);
+    service_worker_activity_request_uuid_ = base::Uuid::GenerateRandomV4();
     service_worker_version_->StartExternalRequest(
-        *service_worker_activity_request_uuid,
+        *service_worker_activity_request_uuid_,
         ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout);
   }
 }
@@ -363,10 +362,10 @@ void HidService::DecrementActivityCount() {
         WebContentsImpl::FromRenderFrameHostImpl(render_frame_host_);
     web_contents_impl->DecrementHidActiveFrameCount();
   } else if (service_worker_version_) {
-    CHECK(service_worker_activity_request_uuid);
+    CHECK(service_worker_activity_request_uuid_);
     service_worker_version_->FinishExternalRequest(
-        *service_worker_activity_request_uuid);
-    service_worker_activity_request_uuid.reset();
+        *service_worker_activity_request_uuid_);
+    service_worker_activity_request_uuid_.reset();
   }
 }
 

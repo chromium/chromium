@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/hid_delegate.h"
@@ -109,7 +110,7 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
   const base::WeakPtr<content::ServiceWorkerVersion> service_worker_version_;
 
   // The request uuid for keeping service worker alive.
-  absl::optional<std::string> service_worker_activity_request_uuid;
+  absl::optional<base::Uuid> service_worker_activity_request_uuid_;
 
   // The last shown HID chooser UI.
   std::unique_ptr<HidChooser> chooser_;
