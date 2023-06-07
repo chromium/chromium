@@ -93,27 +93,6 @@ BOOL WaitForKeyboardToAppear() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that the addresses view controller contains the "Manage Addresses..."
-// action.
-// TODO(crbug.com/1116043): Flaky on ios simulator.
-- (void)DISABLED_testAddressesViewControllerContainsManageAddressesAction {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
-
-  // Tap on the addresses icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the address controller contains the "Manage Addresses..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackManageProfilesMatcher()]
-      assertWithMatcher:grey_interactable()];
-}
-
 // Tests that the "Manage Addresses..." action works.
 - (void)testManageAddressesActionOpensAddressSettings {
   // Bring up the keyboard.
