@@ -3329,17 +3329,8 @@ CSSValue* ConsumeAxis(CSSParserTokenRange& range,
   return MakeGarbageCollected<cssvalue::CSSAxisValue>(x, y, z);
 }
 
-CSSValue* ConsumeIntrinsicSizeLonghandOld(CSSParserTokenRange& range,
-                                          const CSSParserContext& context) {
-  if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(range.Peek().Id())) {
-    return css_parsing_utils::ConsumeIdent(range);
-  }
-  return css_parsing_utils::ConsumeLength(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-}
-
-CSSValue* ConsumeIntrinsicSizeLonghandNew(CSSParserTokenRange& range,
-                                          const CSSParserContext& context) {
+CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
+                                       const CSSParserContext& context) {
   if (css_parsing_utils::IdentMatches<CSSValueID::kNone>(range.Peek().Id())) {
     return css_parsing_utils::ConsumeIdent(range);
   }
@@ -3354,11 +3345,6 @@ CSSValue* ConsumeIntrinsicSizeLonghandNew(CSSParserTokenRange& range,
   }
   list->Append(*length);
   return list;
-}
-
-CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
-                                       const CSSParserContext& context) {
-  return ConsumeIntrinsicSizeLonghandNew(range, context);
 }
 
 static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,
