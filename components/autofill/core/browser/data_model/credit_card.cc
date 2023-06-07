@@ -797,6 +797,11 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
   if (comparison != 0)
     return comparison;
 
+  comparison = cvc_.compare(credit_card.cvc_);
+  if (comparison != 0) {
+    return comparison;
+  }
+
   if (static_cast<int>(card_issuer_) <
       static_cast<int>(credit_card.card_issuer_)) {
     return -1;
@@ -1311,7 +1316,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << credit_card.instrument_id() << " "
             << credit_card.virtual_card_enrollment_state() << " "
             << credit_card.card_art_url().spec() << " "
-            << base::UTF16ToUTF8(credit_card.product_description());
+            << base::UTF16ToUTF8(credit_card.product_description()) << " "
+            << credit_card.cvc();
 }
 
 void CreditCard::SetNameOnCardFromSeparateParts() {

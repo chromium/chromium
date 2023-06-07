@@ -425,10 +425,15 @@ class CreditCard : public AutofillDataModel {
     card_art_url_ = card_art_url;
   }
 
-  std::u16string product_description() const { return product_description_; }
+  const std::u16string& product_description() const {
+    return product_description_;
+  }
   void set_product_description(const std::u16string& product_description) {
     product_description_ = product_description;
   }
+
+  const std::u16string& cvc() const { return cvc_; }
+  void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
 
  private:
   friend class CreditCardTestApi;
@@ -537,6 +542,9 @@ class CreditCard : public AutofillDataModel {
   // The product description for the card to be used in the UI when card is
   // presented.
   std::u16string product_description_;
+
+  // The card verification code of the card. May be empty.
+  std::u16string cvc_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

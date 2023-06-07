@@ -1012,6 +1012,23 @@ TEST(CreditCardTest, Compare) {
   b.set_issuer_id("");
   EXPECT_EQ(0, a.Compare(b));
 
+  // Difference in cvc.
+  a.set_cvc(u"1234");
+  b.set_cvc(u"987");
+  EXPECT_NE(0, a.Compare(b));
+  // Card with cvc is different from card with empty cvc.
+  a.set_cvc(u"1234");
+  b.set_cvc(u"");
+  EXPECT_NE(0, a.Compare(b));
+  // Reset the cvc to empty, and empty cvc are considered the same.
+  a.set_cvc(u"");
+  b.set_cvc(u"");
+  EXPECT_EQ(0, a.Compare(b));
+  // Two same non-empty cvc are considered the same.
+  a.set_cvc(u"123");
+  b.set_cvc(u"123");
+  EXPECT_EQ(0, a.Compare(b));
+
   // Different values produce non-zero results.
   test::SetCreditCardInfo(&a, "Jimmy", nullptr, nullptr, nullptr, "");
   test::SetCreditCardInfo(&b, "Ringo", nullptr, nullptr, nullptr, "");
