@@ -7,7 +7,9 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +37,32 @@ class AmbientUiSettingsTest : public ::testing::Test {
 
 TEST_F(AmbientUiSettingsTest, DefaultConstructor) {
   EXPECT_THAT(AmbientUiSettings().theme(), Eq(kDefaultAmbientTheme));
+}
+
+TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
+  // No prior set up for kAmbientUiSettings prefs. Without TOD features,
+  // kDefaultAmbientTheme (kSlideShow) is set as default.
+  test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
+                             base::Value::Dict());
+  EXPECT_THAT(
+      AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
+      Eq(kDefaultAmbientTheme));
+}
+
+TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettingsWithTODFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kTimeOfDayScreenSaver, features::kTimeOfDayWallpaper}, {});
+  // No prior set up for kAmbientUiSettings prefs. With TOD features, kVideo is
+  // set as default.
+  test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
+                             base::Value::Dict());
+  EXPECT_THAT(
+      AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
+      Eq(AmbientTheme::kVideo));
+  EXPECT_THAT(
+      AmbientUiSettings::ReadFromPrefService(test_pref_service_).video(),
+      Eq(kDefaultAmbientVideo));
 }
 
 TEST_F(AmbientUiSettingsTest, PrefManagement) {

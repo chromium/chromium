@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -64,6 +65,8 @@ AmbientUiSettings AmbientUiSettings::ReadFromPrefService(
       LOG(ERROR)
           << "Loaded invalid AmbientUiSettings from pref. Using default.";
       pref_service.ClearPref(ambient::prefs::kAmbientUiSettings);
+    } else if (features::IsTimeOfDayScreenSaverEnabled()) {
+      return AmbientUiSettings(AmbientTheme::kVideo, kDefaultAmbientVideo);
     }
     return AmbientUiSettings();
   }

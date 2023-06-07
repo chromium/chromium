@@ -510,8 +510,20 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   SetAmbientObserver();
   FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
-  EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, ObservedTopicSource());
+  // The default theme is video theme.
+  EXPECT_EQ(AmbientModeTopicSource::kVideo, ObservedTopicSource());
   EXPECT_FALSE(ObservedPreviews().empty());
+
+  // The other topic sources do not apply to the video theme, so all other
+  // `SetTopicSource()` calls should be rejected.
+  SetTopicSource(AmbientModeTopicSource::kArtGallery);
+  EXPECT_EQ(AmbientModeTopicSource::kVideo, ObservedTopicSource());
+  SetTopicSource(AmbientModeTopicSource::kGooglePhotos);
+  EXPECT_EQ(AmbientModeTopicSource::kVideo, ObservedTopicSource());
+
+  // Set to a different theme and select different topic source.
+  SetAnimationTheme(AmbientTheme::kSlideshow);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, ObservedTopicSource());
 
   SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
   EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, ObservedTopicSource());
@@ -520,16 +532,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   // apply to any of the other themes, so the existing topic source sticks.
   SetTopicSource(ash::AmbientModeTopicSource::kVideo);
   EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, ObservedTopicSource());
-
-  SetAnimationTheme(AmbientTheme::kVideo);
-  EXPECT_EQ(AmbientModeTopicSource::kVideo, ObservedTopicSource());
-
-  // The other topic sources do not apply to the video theme, so all other
-  // `SeTopicSource()` calls should be rejected.
-  SetTopicSource(AmbientModeTopicSource::kArtGallery);
-  EXPECT_EQ(AmbientModeTopicSource::kVideo, ObservedTopicSource());
-  SetTopicSource(AmbientModeTopicSource::kGooglePhotos);
-  EXPECT_EQ(AmbientModeTopicSource::kVideo, ObservedTopicSource());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
@@ -582,6 +584,10 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {
   FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
+  // Default screen saver is video theme with only kVideo topic source option.
+  // Switch to other theme (kSlideshow) to try different topic sources.
+  SetAnimationTheme(AmbientTheme::kSlideshow);
+
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
 
   SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
@@ -916,18 +922,14 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedVideo) {
   SetAmbientObserver();
   FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
-  // Even before the video theme is selected, the default video should be
-  // present in the list of albums and considered "checked".
+  // As Time of Day features are enabled, the default theme should be kVideo.
+  EXPECT_EQ(ObservedTopicSource(), AmbientModeTopicSource::kVideo);
+
+  // The default video should be checked.
   expect_videos_selected(/*clouds_selected=*/false,
                          /*new_mexico_selected=*/true);
 
-  SetAnimationTheme(AmbientTheme::kVideo);
-
-  // After video theme is selected, the default video should remain checked.
-  expect_videos_selected(/*clouds_selected=*/false,
-                         /*new_mexico_selected=*/true);
-
-  // Switch to clouds.
+  // Switch video to clouds.
   SetAlbumSelected(kCloudsAlbumId, AmbientModeTopicSource::kVideo, true);
   expect_videos_selected(/*clouds_selected=*/true,
                          /*new_mexico_selected=*/false);
@@ -943,7 +945,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedVideo) {
                          /*new_mexico_selected=*/true);
 
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
-                                       ash::AmbientVideo::kNewMexico, 2);
+                                       ash::AmbientVideo::kNewMexico, 1);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
                                        ash::AmbientVideo::kClouds, 1);
 }
