@@ -15,10 +15,6 @@
     margin-inline-start: auto;
   }
 
-  .subsection-group {
-    padding-bottom: 10px;
-  }
-
   /* Ensure the toggle button stretches the width of its container despite
      removing its parent's padding. */
   #liveTranslateToggleButton {
@@ -51,9 +47,8 @@
   </div>
   <iron-collapse
       opened="[[prefs.accessibility.captions.live_caption_enabled.value]]">
-    <div class="cr-row continuation subsection-group">
-      <div class="start cr-padded-text cr-secondary-text"
-          aria-hidden="true">
+    <div class="cr-row continuation">
+      <div class="start cr-padded-text" aria-hidden="true">
         $i18n{captionsLanguage}
       </div>
       <settings-dropdown-menu
@@ -63,10 +58,12 @@
           menu-options="[[languageOptions_]]">
       </settings-dropdown-menu>
     </div>
-    <div class="cr-row">
-      <h2 class="flex">$i18n{captionsManageLanguagesTitle}</h2>
-      <cr-button id="addLanguage" class="header-aligned-button"
-          on-click="onAddLanguagesClick_">
+    <div class="cr-row continuation">
+      <div class="flex settings-box-text">
+        $i18n{captionsManageLanguagesTitle}
+        <div class="secondary">$i18n{captionsManageLanguagesSubtitle}</div>
+      </div>
+      <cr-button id="addLanguage" on-click="onAddLanguagesClick_">
         $i18n{addLanguages}
       </cr-button>
     </div>
