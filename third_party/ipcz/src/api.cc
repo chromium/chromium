@@ -202,23 +202,12 @@ IpczResult Get(IpczHandle source,
                IpczHandle* handles,
                size_t* num_handles,
                IpczHandle* parcel) {
-  if ((flags & IPCZ_GET_PARTIAL) && parcel) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
   if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
-    if ((flags & IPCZ_GET_PARCEL_ONLY) && !parcel) {
-      return IPCZ_RESULT_INVALID_ARGUMENT;
-    }
-
     return portal->Get(flags, data, num_bytes, handles, num_handles, parcel);
   }
 
   if (ipcz::ParcelWrapper* wrapper = ipcz::ParcelWrapper::FromHandle(source)) {
-    if ((flags & IPCZ_GET_PARCEL_ONLY) || parcel) {
-      return IPCZ_RESULT_INVALID_ARGUMENT;
-    }
-    return wrapper->Get(flags, data, num_bytes, handles, num_handles);
+    return wrapper->Get(flags, data, num_bytes, handles, num_handles, parcel);
   }
 
   return IPCZ_RESULT_INVALID_ARGUMENT;

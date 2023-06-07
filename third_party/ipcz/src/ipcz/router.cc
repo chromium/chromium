@@ -373,7 +373,6 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
     }
 
     Parcel& p = inbound_parcels_.NextElement();
-    const bool parcel_only = (flags & IPCZ_GET_PARCEL_ONLY) != 0;
     const bool allow_partial = (flags & IPCZ_GET_PARTIAL) != 0;
     const size_t data_capacity = num_bytes ? *num_bytes : 0;
     const size_t handles_capacity = num_handles ? *num_handles : 0;
@@ -394,30 +393,18 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
     }
 
     const bool consuming_whole_parcel =
-        parcel_only ||
         (data_capacity >= data_size && handles_capacity >= handles_size);
     if (!consuming_whole_parcel && !allow_partial) {
       return IPCZ_RESULT_RESOURCE_EXHAUSTED;
     }
 
-    if (parcel_only) {
-      const bool ok = inbound_parcels_.Pop(consumed_parcel);
-      ABSL_ASSERT(ok);
-    } else {
-      if (data_size > 0) {
-        memcpy(data, p.data_view().data(), data_size);
-      }
-      if (consuming_whole_parcel) {
-        const bool ok = inbound_parcels_.Pop(consumed_parcel);
-        ABSL_ASSERT(ok);
-        consumed_parcel.Consume(data_size,
-                                absl::MakeSpan(handles, handles_size));
-      } else {
-        const bool ok = inbound_parcels_.Consume(
-            data_size, absl::MakeSpan(handles, handles_size));
-        ABSL_ASSERT(ok);
-      }
+    if (data_size > 0) {
+      memcpy(data, p.data_view().data(), data_size);
     }
+
+    const bool ok = inbound_parcels_.Pop(consumed_parcel);
+    ABSL_ASSERT(ok);
+    consumed_parcel.Consume(0, absl::MakeSpan(handles, handles_size));
 
     status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
     status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();

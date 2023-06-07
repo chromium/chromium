@@ -36,12 +36,11 @@ MULTINODE_TEST_NODE(ParcelTestNode, GetClient) {
 
   // Retrieving a parcel object removes it from its portal's queue.
   IpczHandle parcel = 0;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().Get(b, IPCZ_GET_PARCEL_ONLY, nullptr, nullptr, nullptr,
-                       nullptr, nullptr, &parcel));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_GET_PARTIAL, nullptr, nullptr,
+                                       nullptr, nullptr, nullptr, &parcel));
   EXPECT_EQ(IPCZ_RESULT_UNAVAILABLE,
-            ipcz().Get(b, IPCZ_GET_PARCEL_ONLY, nullptr, nullptr, nullptr,
-                       nullptr, nullptr, &parcel));
+            ipcz().Get(b, IPCZ_GET_PARTIAL, nullptr, nullptr, nullptr, nullptr,
+                       nullptr, &parcel));
 
   // Short reads behave as with portals, providing parcel dimensions on output.
   size_t num_bytes = 0;
@@ -67,14 +66,16 @@ MULTINODE_TEST_NODE(ParcelTestNode, GetClient) {
             ipcz().Get(parcel, IPCZ_NO_FLAGS, nullptr, buffer, &num_bytes, &box,
                        &num_handles, nullptr));
   EXPECT_EQ(kMessage.size(), num_bytes);
-  EXPECT_EQ(1u, num_handles);
   EXPECT_EQ(kMessage, std::string_view(buffer, num_bytes));
+  EXPECT_EQ(1u, num_handles);
 
-  // Contents of the parcel are consumed by Get(), so now there's nothing left.
+  // Handles are consumed by Get(), but data is not. We should no longer see
+  // any handles, but should see the same data as before.
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Get(parcel, IPCZ_NO_FLAGS, nullptr, buffer, &num_bytes, &box,
                        &num_handles, nullptr));
-  EXPECT_EQ(0u, num_bytes);
+  EXPECT_EQ(kMessage.size(), num_bytes);
+  EXPECT_EQ(kMessage, std::string_view(buffer, num_bytes));
   EXPECT_EQ(0u, num_handles);
 
   // Send the contents of the box back as another parcel.
@@ -100,9 +101,8 @@ MULTINODE_TEST_NODE(ParcelTestNode, TwoPhaseGetClient) {
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForParcel(b));
 
   IpczHandle parcel = 0;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().Get(b, IPCZ_GET_PARCEL_ONLY, nullptr, nullptr, nullptr,
-                       nullptr, nullptr, &parcel));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_GET_PARTIAL, nullptr, nullptr,
+                                       nullptr, nullptr, nullptr, &parcel));
 
   // Various combinations of missing args return to indicate size requirements.
   const void* data;
@@ -180,9 +180,8 @@ MULTINODE_TEST_NODE(ParcelTestNode, CloseClient) {
   IpczHandle b = ConnectToBroker();
   IpczHandle parcel;
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForParcel(b));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().Get(b, IPCZ_GET_PARCEL_ONLY, nullptr, nullptr, nullptr,
-                       nullptr, nullptr, &parcel));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_GET_PARTIAL, nullptr, nullptr,
+                                       nullptr, nullptr, nullptr, &parcel));
 
   size_t num_bytes = 0;
   size_t num_handles = 0;

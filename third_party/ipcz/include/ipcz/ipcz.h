@@ -649,16 +649,8 @@ typedef uint32_t IpczGetFlags;
 // a partial retrieval of the next available parcel. This means that in
 // situations where Get() would normally return IPCZ_RESULT_RESOURCE_EXHAUSTED,
 // it will instead return IPCZ_RESULT_OK with as much data and handles as the
-// caller indicated they could accept. This flag may not be specified if
-// IPCZ_GET_PARCEL_ONLY is specified.
+// caller indicated they could accept.
 #define IPCZ_GET_PARTIAL IPCZ_FLAG_BIT(0)
-
-// When given to Get() and a parcel is available to consume from the referenced
-// portal, no data or handles are consumed from the available parcel. Instead
-// only a handle to the parcel is returned, and the parcel is removed from the
-// portal to allow subsequent parcels to be retrieved. See documentation on
-// Get(). This flag may not be specified if IPCZ_GET_PARTIAL is specified.
-#define IPCZ_GET_PARCEL_ONLY IPCZ_FLAG_BIT(1)
 
 // See EndGet() and the IPCZ_END_GET_* flag descriptions below.
 typedef uint32_t IpczEndGetFlags;
@@ -1318,77 +1310,74 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   // Retrieves some combination of data and handles from a source object.
   //
-  // If IPCZ_GET_PARCEL_ONLY is specified in `flags` and `source` is a portal,
-  // then `data`, `num_bytes` `handles`, and `num_handles` are all ignored and,
-  // if a parcel is available to retrieve from the portal, a handle to it is
-  // output in `parcel`. This handle can itself be used with Get() (or
-  // BeginGet() and EndGet()) to retrieve the parcel's contents, or with
-  // Reject() to reject its contents. Returned parcels are owned by the caller
-  // and must eventually be closed with Close() to release any associated
-  // resources.
+  // On input the values pointed to by `num_bytes` and `num_handles` specify the
+  // the capacity of each corresponding output buffer argument (`buffer` and
+  //`handles` respectively). A null capacity pointer implies zero capacity. It
+  // is an error to specify a non-zero capacity if the corresponding output
+  // buffer is null.
   //
-  // Otherwise, on input the values pointed to by `num_bytes` and `num_handles`
-  // must specify the capacity of each corresponding buffer argument. A null
-  // pointer implies zero capacity. It is an error to specify non-zero capacity
-  // if the corresponding buffer (`data` or `handles`) is null.
+  // Data consumed by this call is copied to the address given by `data`. If an
+  // application wishes to read directly from parcel memory instead, a two-phase
+  // get operation can be used by calling BeginGet() and EndGet() as defined
+  // below.
   //
-  // Normally the data consumed by this call is copied directly to the address
-  // given by the `data` argument, and `*num_bytes` specifies how many bytes of
-  // storage are available there. If an application wishes to read directly
-  // from parcel memory instead, a two-phase get operation can be used by
-  // calling BeginGet() and EndGet() as defined below.
+  // If the caller does not provide enough storage capacity for all data and
+  // handles in the parcel and does not specify IPCZ_GET_PARTIAL in `flags`,
+  // this returns IPCZ_RESULT_RESOURCE_EXHAUSTED and outputs the actual capacity
+  // required for the message, without copying any of its contents. See details
+  // of the IPCZ_RESULT_RESOURCE_EXHAUSTED result below.
   //
-  // Note that if the caller does not provide enough storage capacity for a
-  // complete parcel and does not specify IPCZ_GET_PARTIAL in `flags`, this
-  // returns IPCZ_RESULT_RESOURCE_EXHAUSTED and outputs the actual capacity
-  // required for the message without copying any of its contents. See details
-  // of that return value below.
+  // If IPCZ_GET_PARTIAL is specified, capacity requirements are not enforced.
+  // Instead the call succeeds after copying as much data and handles as will
+  // fit in the provided buffers. Upon return `*num_bytes` and `*num_handles`
+  // are set to the capacity actually consumed from the parcel.
   //
-  // If IPCZ_GET_PARTIAL is specified, the call succeeds as long as `source` is
-  // a parcel or a portal with a parcel available. In this case the caller
-  // retrieves as much data and handles as their expressed capacity will allow,
-  // and the in/out capacity arguments (`num_bytes` and `num_handles`) are still
-  // updated as specified in the IPCZ_RESULT_OK details below.
+  // Parcel data is never consumed per se, so multiple consecutive partial gets
+  // on a single parcel will copy data from the same buffer every time. This is
+  // not true for handles however: any handles returned by Get() are transferred
+  // to the caller and removed from the parcel. Subsequent get operations on the
+  // same parcel will not retrieve handles which have already been consumed.
   //
-  // If this call succeeds and `parcel` is non-null, then `*parcel` is populated
-  // with a new parcel handle which the application can use to report
-  // application-level validation failures regarding the retrieved parcel (see
-  // Reject()).
+  // Any unconsumed data and handles during a partial Get() are permanently lost
+  // unless the caller retains a handle to the parcel and retreives them with a
+  // subsequent get operation on the same parcel.
+  //
+  // In any case, if this call succeeds and `parcel` is non-null, then `*parcel
+  // is populated with a new parcel handle which the application can use to
+  // refer to the underlying parcel in future operations (e.g. Reject() or
+  // additional get operations).
   //
   // `options` is ignored and must be null.
   //
   // Returns:
   //
   //    IPCZ_RESULT_OK if `source` is a portal and there is a parcel available
-  //        in the portal's queue, or `source` is a parcel; and in either case
-  //        the parcel's data and handles were able to be copied into the
-  //        caller's provided buffers, or IPCZ_GET_PARCEL_ONLY was specified and
-  //        `parcel` was non-null.
+  //        in the portal's queue, or `source` is a parcel; and either
+  //        IPCZ_GET_PARTIAL was specified or the caller provided sufficient
+  //        capacity to receive all data and handles from the parcel.
   //
-  //        When IPCZ_GET_PARCEL_ONLY is not specified, values pointed to by
-  //        `num_bytes` and `num_handles` (for each one that is non-null) are
-  //        updated to reflect what was actually consumed. Note that the caller
-  //        assumes ownership of all returned handles.
+  //        If `num_bytes` was not null, `*num_bytes` is set to the number of
+  //        bytes actually copied out to `data`, which will never be greater
+  //        than the input value of `*num_bytes`. Similarly if `num_handles`
+  //        was not null, `*num_handles` is set to the number of handles
+  //        actually copied out to `handles`, which will never be greater than
+  //        the input value of `*num_handles`.
   //
   //        If `parcel` was non-null, it is populated with a handle to the
-  //        retrieved parcel object. If any attached handles were consumed by
-  //        the Get() call itself, they will no longer be attached to the
-  //        returned parcel object.
+  //        retrieved parcel object. Any handles receivedby the caller are no
+  //        longer attached to the returned parcel object and will not be
+  //        present if, for example, another Get() is issued on the parcel.
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `source` is invalid or not a portal or
-  //        parcel, `data` is null but `*num_bytes` is non-zero, `handles` is
-  //        null but `*num_handles` is non-zero; IPCZ_GET_PARCEL_ONLY is
-  //        specified in `flags` but `parcel` is null; `parcel` is non-null but
-  //        `source` is itself a parcel; or `parcel` is non-null but
-  //        IPCZ_GET_PARTIAL is specified in `flags`.
+  //        parcel, `data` is null but `*num_bytes` is non-zero, or `handles` is
+  //        null but `*num_handles` is non-zero.
   //
-  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if the consumed parcel would exceed the
-  //        caller's specified capacity for either data bytes or handles, and
-  //        IPCZ_GET_PARTIAL was not specified in `flags`. In this case any
-  //        non-null size pointer is updated to convey the minimum capacity that
-  //        would have been required for an otherwise identical Get() call to
-  //        have succeeded. Callers observing this result may wish to allocate
-  //        storage accordingly and retry with updated parameters.
+  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if the parcel's data and handles could
+  //        fit in the caller's provided buffers and the caller did not specify
+  //        IPCZ_GET_PARTIAL in `flags`. If `num_bytes` was not null,
+  //        `*num_bytes` is set to the size in bytes of the parcel's data. If
+  //        `num_handles` was not null, `*num_handles` is set to the number of
+  //        handles attached to the parcel.
   //
   //    IPCZ_RESULT_UNAVAILABLE if `source` is a portal whose parcel queue is
   //        currently empty. In this case callers should wait before attempting

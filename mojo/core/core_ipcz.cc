@@ -215,8 +215,8 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
                                MojoMessageHandle* message) {
   ScopedIpczHandle parcel;
   IpczResult result = GetIpczAPI().Get(
-      message_pipe_handle, IPCZ_GET_PARCEL_ONLY, nullptr, nullptr, nullptr,
-      nullptr, nullptr, ScopedIpczHandle::Receiver(parcel));
+      message_pipe_handle, IPCZ_GET_PARTIAL, nullptr, nullptr, nullptr, nullptr,
+      nullptr, ScopedIpczHandle::Receiver(parcel));
   if (result != IPCZ_RESULT_OK) {
     return GetMojoReadResultForIpczGet(result);
   }

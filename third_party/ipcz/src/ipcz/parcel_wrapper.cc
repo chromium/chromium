@@ -38,7 +38,8 @@ IpczResult ParcelWrapper::Get(IpczGetFlags flags,
                               void* data,
                               size_t* num_bytes,
                               IpczHandle* handles,
-                              size_t* num_handles) {
+                              size_t* num_handles,
+                              IpczHandle* parcel) {
   if (in_two_phase_get_) {
     return IPCZ_RESULT_ALREADY_EXISTS;
   }
@@ -70,7 +71,14 @@ IpczResult ParcelWrapper::Get(IpczGetFlags flags,
   }
 
   memcpy(data, parcel_.data_view().data(), data_size);
-  parcel_.Consume(data_size, absl::MakeSpan(handles, handles_size));
+  parcel_.Consume(0, absl::MakeSpan(handles, handles_size));
+
+  if (parcel) {
+    // Allow the caller to acquire another handle to this wrapper. Not
+    // particularly useful, but consistent with Portal::Get().
+    *parcel = APIObject::ReleaseAsHandle(WrapRefCounted(this));
+  }
+
   return IPCZ_RESULT_OK;
 }
 
