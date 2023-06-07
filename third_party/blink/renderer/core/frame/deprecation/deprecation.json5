@@ -31,6 +31,13 @@
     milestone: {
       valid_type: "int",
     },
+    // Deprecations that launched to stable but no longer need to dispatch
+    // warnings to developers must be kept around for at least 12 milestones.
+    // Use this field to indicate that codegen should no longer occur, and to
+    // note the milestone at which this metadata can safely be removed.
+    obsolete_to_be_removed_after_milestone: {
+      valid_type: "int",
+    },
     //
     // Here are a couple examples for reference:
     // {
@@ -195,6 +202,7 @@
       ],
       chrome_status_feature: 5726124632965120,
       milestone: 109,
+      obsolete_to_be_removed_after_milestone: 127,
     },
     {
       name: "ExpectCTHeader",
