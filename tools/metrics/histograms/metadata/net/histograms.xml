@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime"
-    units="ms" expires_after="2023-04-09">
+    units="ms" expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -555,11 +555,14 @@ chromium-metrics-reviews@google.com.
     DomainCacheFullCerts implementation of the system trust store integration,
     this records how long it took to query the Mac keychain and initialize the
     cache of intermediate certificates.
+
+    Warning: this histogram was expired from 2023-04-09 to 2023-06-07(M116);
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.IntermediateCount"
-    units="certificates" expires_after="2023-10-15">
+    units="certificates" expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -571,7 +574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.TotalCount"
-    units="certificates" expires_after="2023-10-15">
+    units="certificates" expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -583,7 +586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.TrustCount"
-    units="certificates" expires_after="2023-06-11">
+    units="certificates" expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -595,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacTrustDomainCacheInitTime" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -609,7 +612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacTrustDomainCertCount.{Domain}"
-    units="certificates" expires_after="2023-04-09">
+    units="certificates" expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -619,6 +622,9 @@ chromium-metrics-reviews@google.com.
     {Domain} trust domain. Only counts certificates that were successfully
     parsed. Only recorded by the DomainCacheFullCerts implementation, which may
     or may not be used depending on Finch trial parameters.
+
+    Warning: this histogram was expired from 2023-04-09 to 2023-06-07(M116);
+    data may be missing.
   </summary>
   <token key="Domain">
     <variant name="Admin"/>
@@ -628,7 +634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacTrustImplCacheInitTime" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
