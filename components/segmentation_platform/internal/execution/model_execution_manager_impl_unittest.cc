@@ -217,7 +217,8 @@ TEST_F(ModelExecutionManagerTest,
   EXPECT_EQ(456u, segment_info_from_db_1->model_metadata().bucket_duration());
   EXPECT_THAT(segment_info_from_db_1->prediction_result().result(),
               testing::ElementsAre(2));
-  EXPECT_FALSE(segment_info_from_db_1->has_model_source());
+  EXPECT_EQ(ModelSource::SERVER_MODEL_SOURCE,
+            segment_info_from_db_1->model_source());
 
   // Verify the metadata features have been stored correctly.
   EXPECT_EQ(proto::SignalType::USER_ACTION,

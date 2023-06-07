@@ -19,6 +19,8 @@
 namespace segmentation_platform::test {
 
 // A fake database with sample entries that can be used for tests.
+// TODO(b/285912101) : Remove this class and migrate its callers to used mock
+// version of SegmentInfoDatabase.
 class TestSegmentInfoDatabase : public SegmentInfoDatabase {
  public:
   TestSegmentInfoDatabase();
@@ -82,8 +84,12 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                          uint64_t bucket_duration,
                          proto::TimeUnit time_unit);
 
-  // Finds a segment with given |segment_id|. Creates one if it doesn't exist.
-  proto::SegmentInfo* FindOrCreateSegment(SegmentId segment_id);
+  // Finds a segment with given |segment_id| and |model_source|. Creates one if
+  // it doesn't exists. By default the |model_source| corresponds to server
+  // model.
+  proto::SegmentInfo* FindOrCreateSegment(
+      SegmentId segment_id,
+      ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
 
  private:
   std::vector<std::pair<SegmentId, proto::SegmentInfo>> segment_infos_;

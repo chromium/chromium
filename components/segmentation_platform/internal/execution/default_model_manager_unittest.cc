@@ -100,7 +100,8 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   EXPECT_EQ(segment_1, get_all_segment_result()[0]->segment_info.segment_id());
   EXPECT_EQ(model_version_db,
             get_all_segment_result()[0]->segment_info.model_version());
-  EXPECT_FALSE(get_all_segment_result()[0]->segment_info.has_model_source());
+  EXPECT_EQ(proto::ModelSource::SERVER_MODEL_SOURCE,
+            get_all_segment_result()[0]->segment_info.model_source());
   EXPECT_EQ(segment_1, get_all_segment_result()[1]->segment_info.segment_id());
   EXPECT_EQ(model_version_default,
             get_all_segment_result()[1]->segment_info.model_version());
@@ -143,7 +144,8 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, get_all_segment_result().size());
   EXPECT_EQ(segment_3, get_all_segment_result()[0]->segment_info.segment_id());
-  EXPECT_FALSE(get_all_segment_result()[0]->segment_info.has_model_source());
+  EXPECT_EQ(proto::ModelSource::SERVER_MODEL_SOURCE,
+            get_all_segment_result()[0]->segment_info.model_source());
 }
 
 }  // namespace segmentation_platform

@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/ranges/algorithm.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -30,8 +31,10 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
     MultipleSegmentInfoCallback callback) {
   auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {
-    if (base::Contains(segment_ids, pair.first))
+    if (pair.second.model_source() != ModelSource::DEFAULT_MODEL_SOURCE &&
+        base::Contains(segment_ids, pair.first)) {
       result->emplace_back(pair);
+    }
   }
   std::move(callback).Run(std::move(result));
 }
@@ -45,12 +48,13 @@ void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
 absl::optional<SegmentInfo> TestSegmentInfoDatabase::GetCachedSegmentInfo(
     SegmentId segment_id,
     ModelSource model_source) {
-  auto result =
-      base::ranges::find(segment_infos_, segment_id,
-                         &std::pair<SegmentId, proto::SegmentInfo>::first);
-
-  return result == segment_infos_.end() ? absl::nullopt
-                                        : absl::make_optional(result->second);
+  for (const auto& pair : segment_infos_) {
+    if (segment_id == pair.first &&
+        model_source == pair.second.model_source()) {
+      return absl::make_optional(pair.second);
+    }
+  }
+  return absl::nullopt;
 }
 
 void TestSegmentInfoDatabase::UpdateSegment(
@@ -59,14 +63,16 @@ void TestSegmentInfoDatabase::UpdateSegment(
     absl::optional<proto::SegmentInfo> segment_info,
     SuccessCallback callback) {
   if (segment_info.has_value()) {
-    proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+    proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
     info->CopyFrom(segment_info.value());
   } else {
     // Delete the segment.
     auto new_end = std::remove_if(
         segment_infos_.begin(), segment_infos_.end(),
-        [segment_id](const std::pair<SegmentId, proto::SegmentInfo>& pair) {
-          return pair.first == segment_id;
+        [segment_id,
+         model_source](const std::pair<SegmentId, proto::SegmentInfo>& pair) {
+          return (pair.first == segment_id &&
+                  pair.second.model_source() == model_source);
         });
     segment_infos_.erase(new_end, segment_infos_.end());
   }
@@ -78,7 +84,7 @@ void TestSegmentInfoDatabase::SaveSegmentResult(
     ModelSource model_source,
     absl::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   if (!result.has_value()) {
     info->clear_prediction_result();
   } else {
@@ -91,7 +97,7 @@ void TestSegmentInfoDatabase::SaveTrainingData(SegmentId segment_id,
                                                ModelSource model_source,
                                                const proto::TrainingData& data,
                                                SuccessCallback callback) {
-  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   info->add_training_data()->CopyFrom(data);
   std::move(callback).Run(true);
 }
@@ -101,21 +107,29 @@ void TestSegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
                                               TrainingRequestId request_id,
                                               bool delete_from_db,
                                               TrainingDataCallback callback) {
-  auto segment_info =
-      base::ranges::find(segment_infos_, segment_id,
-                         &std::pair<SegmentId, proto::SegmentInfo>::first);
+  // TODO(ritikagup) : Try replacing it with GetCachedSegmentInfo.
+  proto::SegmentInfo* segment_info = nullptr;
+  for (auto& pair : segment_infos_) {
+    if (pair.first == segment_id &&
+        pair.second.model_source() == model_source) {
+      segment_info = &pair.second;
+      break;
+    }
+  }
 
   absl::optional<proto::TrainingData> result;
-  if (segment_info != segment_infos_.end()) {
-    for (int i = 0; i < segment_info->second.training_data_size(); i++) {
-      if (segment_info->second.training_data(i).request_id() ==
-          request_id.GetUnsafeValue()) {
-        result = segment_info->second.training_data(i);
-        if (delete_from_db) {
-          segment_info->second.mutable_training_data()->DeleteSubrange(i, 1);
-        }
-        break;
+  if (segment_info == nullptr) {
+    std::move(callback).Run(result);
+    return;
+  }
+  for (int i = 0; i < segment_info->training_data_size(); i++) {
+    if (segment_info->training_data(i).request_id() ==
+        request_id.GetUnsafeValue()) {
+      result = segment_info->training_data(i);
+      if (delete_from_db) {
+        segment_info->mutable_training_data()->DeleteSubrange(i, 1);
       }
+      break;
     }
   }
   std::move(callback).Run(result);
@@ -225,12 +239,14 @@ void TestSegmentInfoDatabase::SetBucketDuration(SegmentId segment_id,
   info->mutable_model_metadata()->set_time_unit(time_unit);
 }
 
-// TODO(ritikagup@) : Add ModelSource as param to this function.
 proto::SegmentInfo* TestSegmentInfoDatabase::FindOrCreateSegment(
-    SegmentId segment_id) {
+    SegmentId segment_id,
+    ModelSource model_source) {
+  // TODO(ritikagup) : Try replacing it with GetCachedSegmentInfo.
   proto::SegmentInfo* info = nullptr;
   for (auto& pair : segment_infos_) {
-    if (pair.first == segment_id) {
+    if (pair.first == segment_id &&
+        pair.second.model_source() == model_source) {
       info = &pair.second;
       break;
     }
@@ -240,6 +256,7 @@ proto::SegmentInfo* TestSegmentInfoDatabase::FindOrCreateSegment(
     segment_infos_.emplace_back(segment_id, proto::SegmentInfo());
     info = &segment_infos_.back().second;
     info->set_segment_id(segment_id);
+    info->set_model_source(model_source);
   }
 
   return info;
