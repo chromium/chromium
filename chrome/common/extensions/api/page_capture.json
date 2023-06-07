@@ -22,21 +22,20 @@
                 "description": "The id of the tab to save as MHTML."
               }
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the MHTML has been generated.",
-            "parameters": [
-              {
-                "name": "mhtmlData",
-                "type": "binary",
-                "optional": true,
-                "description": "The MHTML data as a Blob."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the MHTML has been generated.",
+          "parameters": [
+            {
+              "name": "mhtmlData",
+              "type": "binary",
+              "optional": true,
+              "description": "The MHTML data as a Blob."
+            }
+          ]
+        }
       }
     ]
   }

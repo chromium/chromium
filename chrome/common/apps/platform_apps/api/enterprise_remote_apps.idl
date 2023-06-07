@@ -50,31 +50,31 @@ namespace enterprise.remoteApps {
     // Adds a Remote Apps folder to the launcher. Empty folders are not shown
     // in the launcher.
     // |callback|: Called with the ID of the newly added folder.
-    static void addFolder(
+    [supportsPromises] static void addFolder(
         AddFolderOptions options,
         optional StringCallback callback);
 
     // Adds a Remote App to the launcher.
     // |callback|: Called with the ID of the newly added app.
-    static void addApp(
+    [supportsPromises] static void addApp(
         AddAppOptions options,
         optional StringCallback callback);
 
     // Deletes a Remote App added by $(ref:addApp).
-    static void deleteApp(
+    [supportsPromises] static void deleteApp(
         DOMString appId,
         optional VoidCallback callback);
 
     // Sorts the Remote apps and folders according to the position specified in
     // the SortLauncherOptions.
-    static void sortLauncher(
+    [supportsPromises] static void sortLauncher(
         SortLauncherOptions options,
         optional VoidCallback callback);
 
     // Set the list of apps to be pinned on the shelf. Any apps that are
     // currently pinned and not present in `appIds` will be unpinned. Can be
     // called with an empty list to unpin all the apps.
-    [nodoc] static void setPinnedApps(
+    [nodoc, supportsPromises] static void setPinnedApps(
         DOMString[] appIds,
         optional VoidCallback callback);
   };

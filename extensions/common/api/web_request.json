@@ -179,9 +179,8 @@
         "name": "handlerBehaviorChanged",
         "type": "function",
         "description": "Needs to be called when the behavior of the webRequest handlers has changed to prevent incorrect handling due to caching. This function call is expensive. Don't call it often.",
-        "parameters": [
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+        "parameters": [],
+        "returns_async": {"name": "callback", "optional": true, "parameters": []}
       }
     ],
     "events": [
