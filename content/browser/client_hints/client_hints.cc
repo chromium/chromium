@@ -607,12 +607,11 @@ struct ClientHintsExtendedData {
     // If this is a prerender tree, also capture prerender local setting. The
     // setting was given by navigation requests on the prerendering page, and
     // has not been used as a global setting.
-    if (frame_tree_node && frame_tree_node->frame_tree().is_prerendering()) {
-      // If prerender host is nullptr, it means prerender has been canceled and
-      // the host will be discarded soon, so we do not need to continue.
-      if (auto* host = PrerenderHost::GetPrerenderHostFromFrameTreeNode(
-              *frame_tree_node))
+    if (frame_tree_node) {
+      if (auto* host = PrerenderHost::GetFromFrameTreeNodeIfPrerendering(
+              *frame_tree_node)) {
         host->GetAllowedClientHintsOnPage(main_frame_origin, &hints);
+      }
     }
     const base::TimeTicks prerender_host_time = base::TimeTicks::Now();
 
@@ -1185,25 +1184,14 @@ void PersistAcceptCH(const url::Origin& origin,
                      const std::vector<WebClientHintsType>& hints) {
   DCHECK(delegate);
 
-  // TODO(https://crbug.com/1355279): Moving the if condition from the caller
-  // into this function after PrerenderHost becomes a FrameTreeDelegate. A
-  // clearer pattern should be to check whether it is in a prerendering tree
-  // and return a nullptr if it isn't. However, the current prerender
-  // implementation returns a nullptr in two cases: not prerendered or
-  // prerender is canceled, and the callers cannot distinguish between the two
-  // reasons and have to have another if condition.
-  if (frame_tree_node.frame_tree().is_prerendering()) {
-    // For prerendering headers, it should not persist the client header until
-    // activation, considering user has not visited the page and allowed it to
-    // change content setting yet. The client hints should apply to navigations
-    // in the prerendering page, and propagate to the global setting upon user
-    // navigation.
-    // If host is nullptr, it means prerender has been canceled and will be
-    // deleted soon, so we do not need to persist anything.
-    if (auto* host =
-            PrerenderHost::GetPrerenderHostFromFrameTreeNode(frame_tree_node)) {
-      host->OnAcceptClientHintChanged(origin, hints);
-    }
+  // For prerendering headers, it should not persist the client header until
+  // activation, considering user has not visited the page and allowed it to
+  // change content setting yet. The client hints should apply to navigations
+  // in the prerendering page, and propagate to the global setting upon user
+  // navigation.
+  if (auto* host =
+          PrerenderHost::GetFromFrameTreeNodeIfPrerendering(frame_tree_node)) {
+    host->OnAcceptClientHintChanged(origin, hints);
     return;
   }
 

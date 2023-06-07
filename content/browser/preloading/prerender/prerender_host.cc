@@ -97,27 +97,12 @@ bool AreHttpRequestHeadersCompatible(
 }  // namespace
 
 // static
-PrerenderHost* PrerenderHost::GetPrerenderHostFromFrameTreeNode(
+PrerenderHost* PrerenderHost::GetFromFrameTreeNodeIfPrerendering(
     FrameTreeNode& frame_tree_node) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContentsImpl::FromRenderFrameHost(
-          frame_tree_node.current_frame_host()));
-  CHECK(web_contents);
-  PrerenderHostRegistry* prerender_registry =
-      web_contents->GetPrerenderHostRegistry();
-  int prerender_host_id =
-      frame_tree_node.frame_tree().root()->frame_tree_node_id();
-
-  if (PrerenderHost* host =
-          prerender_registry->FindNonReservedHostById(prerender_host_id)) {
-    return host;
-  } else {
-    // TODO(https://crbug.com/1355279): This function can be called during
-    // prerender activation so we have to call FindReservedHostById here and
-    // give it another shot. Consider using delegate after PrerenderHost
-    // implements FrameTree::Delegate.
-    return prerender_registry->FindReservedHostById(prerender_host_id);
+  if (!frame_tree_node.frame_tree().is_prerendering()) {
+    return nullptr;
   }
+  return &GetFromFrameTreeNode(frame_tree_node);
 }
 
 // static
