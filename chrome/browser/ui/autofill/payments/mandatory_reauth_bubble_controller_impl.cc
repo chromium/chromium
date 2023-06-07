@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 
-#include <string>
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -15,11 +13,14 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "chrome/browser/mandatory_reauth/android/jni_headers/MandatoryReauthOptInBottomSheetControllerBridge_jni.h"
+#else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
@@ -29,8 +30,15 @@ MandatoryReauthBubbleControllerImpl::MandatoryReauthBubbleControllerImpl(
       content::WebContentsUserData<MandatoryReauthBubbleControllerImpl>(
           *web_contents) {}
 
-MandatoryReauthBubbleControllerImpl::~MandatoryReauthBubbleControllerImpl() =
-    default;
+MandatoryReauthBubbleControllerImpl::~MandatoryReauthBubbleControllerImpl() {
+#if BUILDFLAG(IS_ANDROID)
+  // The view is closed by the AutofillBubbleControllerBase base class.
+  if (java_controller_bridge_) {
+    Java_MandatoryReauthOptInBottomSheetControllerBridge_destroy(
+        base::android::AttachCurrentThread(), java_controller_bridge_);
+  }
+#endif
+}
 
 void MandatoryReauthBubbleControllerImpl::ShowBubble(
     base::OnceClosure accept_mandatory_reauth_callback,
@@ -131,6 +139,14 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
   UpdatePageActionIcon();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void MandatoryReauthBubbleControllerImpl::OnClosed(JNIEnv* env,
+                                                   jint closed_reason) {
+  OnBubbleClosed(
+      static_cast<autofill::PaymentsBubbleClosedReason>(closed_reason));
+}
+#endif
+
 AutofillBubbleBase* MandatoryReauthBubbleControllerImpl::GetBubbleView() {
   return bubble_view();
 }
@@ -155,10 +171,12 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
   // register it as a raw pointer in the base class to use its closing logic
   // when this controller wants to close it.
   view_android_ =
-      MandatoryReauthOptInViewAndroid::CreateAndShow(web_contents());
-  if (view_android_) {
-    set_bubble_view(view_android_.get());
+      MandatoryReauthOptInViewAndroid::CreateAndShow(web_contents(), this);
+  if (!view_android_) {
+    java_controller_bridge_.Reset();
+    return;
   }
+  set_bubble_view(view_android_.get());
 #else
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
@@ -167,6 +185,19 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
       web_contents(), this, /*is_user_gesture=*/false, current_bubble_type_));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {
+  if (!java_controller_bridge_) {
+    java_controller_bridge_ =
+        Java_MandatoryReauthOptInBottomSheetControllerBridge_create(
+            base::android::AttachCurrentThread(),
+            reinterpret_cast<intptr_t>(this));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(java_controller_bridge_);
+}
+#endif
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MandatoryReauthBubbleControllerImpl);
 

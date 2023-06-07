@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
+import org.chromium.base.Callback;
+import org.chromium.components.autofill.PaymentsBubbleClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /**
@@ -19,14 +21,16 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
     private final View mView;
 
-    MandatoryReauthOptInBottomSheet(Context context, Runnable interactionHandler) {
+    MandatoryReauthOptInBottomSheet(Context context, Callback<Integer> interactionHandler) {
         mView = LayoutInflater.from(context).inflate(
                 R.layout.mandatory_reauth_opt_in_bottom_sheet, null);
 
         Button acceptButton = mView.findViewById(R.id.mandatory_reauth_opt_in_accept_button);
-        acceptButton.setOnClickListener(unused -> interactionHandler.run());
+        acceptButton.setOnClickListener(
+                unused -> interactionHandler.onResult(PaymentsBubbleClosedReason.ACCEPTED));
         Button cancelButton = mView.findViewById(R.id.mandatory_reauth_opt_in_cancel_button);
-        cancelButton.setOnClickListener(unused -> interactionHandler.run());
+        cancelButton.setOnClickListener(
+                unused -> interactionHandler.onResult(PaymentsBubbleClosedReason.CANCELLED));
     }
 
     /* BottomSheetContent implementation. */

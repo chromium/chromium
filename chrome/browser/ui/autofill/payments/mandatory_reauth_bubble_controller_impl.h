@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/mandatory_reauth/android/mandatory_reauth_opt_in_view_android.h"
 #endif
 
@@ -40,6 +41,9 @@ class MandatoryReauthBubbleControllerImpl
   std::u16string GetCancelButtonText() const override;
   std::u16string GetExplanationText() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+#if BUILDFLAG(IS_ANDROID)
+  void OnClosed(JNIEnv* env, jint closed_reason);
+#endif
   AutofillBubbleBase* GetBubbleView() override;
   bool IsIconVisible() override;
   MandatoryReauthBubbleType GetBubbleType() const override;
@@ -68,6 +72,11 @@ class MandatoryReauthBubbleControllerImpl
   // Handles Android view's lifecycle. The Desktop view is handled by the base
   // class `AutofillBubbleControllerBase`.
   std::unique_ptr<MandatoryReauthOptInViewAndroid> view_android_;
+
+  // This class's corresponding Java object.
+  base::android::ScopedJavaGlobalRef<jobject> java_controller_bridge_;
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaControllerBridge() override;
 #endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

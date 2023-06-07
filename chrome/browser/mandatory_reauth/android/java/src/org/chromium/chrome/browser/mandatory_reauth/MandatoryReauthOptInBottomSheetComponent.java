@@ -4,10 +4,22 @@
 
 package org.chromium.chrome.browser.mandatory_reauth;
 
+import org.chromium.components.autofill.PaymentsBubbleClosedReason;
+
 /**
  * This component allows showing the Mandatory Reauth opt-in prompt in a bottom sheet.
  */
 interface MandatoryReauthOptInBottomSheetComponent {
+    /**
+     * The delegate is used to relay the bottom sheet events to the native side.
+     */
+    interface Delegate {
+        /**
+         * Called when the prompt is closed.
+         */
+        void onClosed(@PaymentsBubbleClosedReason int closedReason);
+    }
+
     /**
      * Shows the bottom sheet.
      */
@@ -16,5 +28,5 @@ interface MandatoryReauthOptInBottomSheetComponent {
     /**
      * Closes the bottom sheet.
      */
-    void close();
+    void close(@PaymentsBubbleClosedReason int closedReason);
 }

@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,32 +34,46 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.components.autofill.PaymentsBubbleClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /** Tests for {@link MandatoryReauthOptInBottomSheetViewBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class MandatoryReauthOptInBottomSheetModuleTest {
-    private MandatoryReauthOptInBottomSheetViewBridge mBridge;
-    private MandatoryReauthOptInBottomSheetComponent mComponent;
+    private MandatoryReauthOptInBottomSheetViewBridge mViewBridge;
+    ArgumentCaptor<BottomSheetContent> mContentCaptor =
+            ArgumentCaptor.forClass(BottomSheetContent.class);
     private final ArgumentCaptor<BottomSheetObserver> mObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     private BottomSheetController mController;
+    @Mock
+    private MandatoryReauthOptInBottomSheetControllerBridge.Natives mControllerBridgeJniMock;
+
+    private static final long sPlaceholderNativePointer = 1;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mJniMocker.mock(MandatoryReauthOptInBottomSheetControllerBridgeJni.TEST_HOOKS,
+                mControllerBridgeJniMock);
         setUpBottomSheetController();
-        mComponent = new MandatoryReauthOptInBottomSheetCoordinator(
-                Robolectric.buildActivity(Activity.class).get(), mController);
-        mBridge = new MandatoryReauthOptInBottomSheetViewBridge(mComponent);
+        mViewBridge = new MandatoryReauthOptInBottomSheetViewBridge(
+                new MandatoryReauthOptInBottomSheetCoordinator(
+                        Robolectric.buildActivity(Activity.class).get(), mController,
+                        new MandatoryReauthOptInBottomSheetControllerBridge(
+                                sPlaceholderNativePointer)));
     }
 
     private void setUpBottomSheetController() {
@@ -68,44 +83,98 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
 
     @Test
     public void testShowsBottomSheet() {
-        mBridge.show();
+        mViewBridge.show();
+
         verify(mController).requestShowContent(any(), anyBoolean());
         verify(mController).addObserver(any());
     }
 
     @Test
-    public void testClosesBottomSheet() {
-        mBridge.show();
-
-        mBridge.close();
-        verify(mController).hideContent(any(), anyBoolean());
-        verify(mController).removeObserver(mObserverCaptor.getValue());
-    }
-
-    @Test
     public void testBottomSheetContents() {
-        mBridge.show();
+        mViewBridge.show();
 
-        ArgumentCaptor<BottomSheetContent> contentCaptor =
-                ArgumentCaptor.forClass(BottomSheetContent.class);
-        verify(mController).requestShowContent(contentCaptor.capture(), anyBoolean());
-        View view = contentCaptor.getValue().getContentView();
+        verify(mController).requestShowContent(mContentCaptor.capture(), anyBoolean());
 
-        assertNotNull(view);
-
-        TextView titleView = view.findViewById(R.id.mandatory_reauth_opt_in_title);
-        TextView explanationView = view.findViewById(R.id.mandatory_reauth_opt_in_explanation);
+        TextView titleView = (TextView) getView(R.id.mandatory_reauth_opt_in_title);
+        TextView explanationView = (TextView) getView(R.id.mandatory_reauth_opt_in_explanation);
 
         // Check that the custom view contains the expected title and explanation.
         assertThat(titleView.getText(), is("Always verify?"));
         assertThat(explanationView.getText(),
                 is("For added security on shared devices, turn on verification every time you pay using autofill."));
 
-        Button acceptButton = view.findViewById(R.id.mandatory_reauth_opt_in_accept_button);
-        Button cancelButton = view.findViewById(R.id.mandatory_reauth_opt_in_cancel_button);
+        Button acceptButton = (Button) getView(R.id.mandatory_reauth_opt_in_accept_button);
+        Button cancelButton = (Button) getView(R.id.mandatory_reauth_opt_in_cancel_button);
 
         // Check that the accept/cancel buttons are correctly shown.
         assertThat(acceptButton.getText(), is("Yes"));
         assertThat(cancelButton.getText(), is("No thanks"));
+    }
+
+    @Test
+    public void testPromptAcceptedByUser() {
+        mViewBridge.show();
+
+        verify(mController).requestShowContent(mContentCaptor.capture(), anyBoolean());
+
+        Button acceptButton = (Button) getView(R.id.mandatory_reauth_opt_in_accept_button);
+        acceptButton.performClick();
+
+        verify(mController).hideContent(any(), anyBoolean(), anyInt());
+        // verify(mController).removeObserver(mObserverCaptor.getValue());
+        // Verify that when the accept button is clicked, user acceptance is relayed via the
+        // delegate.
+        verify(mControllerBridgeJniMock)
+                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.ACCEPTED);
+    }
+
+    @Test
+    public void testPromptCancelledByUser() {
+        mViewBridge.show();
+
+        verify(mController).requestShowContent(mContentCaptor.capture(), anyBoolean());
+
+        Button cancelButton = (Button) getView(R.id.mandatory_reauth_opt_in_cancel_button);
+        cancelButton.performClick();
+
+        verify(mController).hideContent(any(), anyBoolean(), anyInt());
+        // verify(mController).removeObserver(mObserverCaptor.getValue());
+        // Verify that when the cancel button is clicked, user cancellation is relayed via the
+        // delegate.
+        verify(mControllerBridgeJniMock)
+                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.CANCELLED);
+    }
+
+    @Test
+    public void testPromptClosedByUser() {
+        mViewBridge.show();
+
+        mObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
+
+        verify(mController).removeObserver(mObserverCaptor.getValue());
+        // Verify that when the bottom sheet is closed without explicit user selection, the close
+        // event is relayed via the delegate.
+        verify(mControllerBridgeJniMock)
+                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.CLOSED);
+    }
+
+    @Test
+    public void testPromptClosedWithoutInteraction() {
+        mViewBridge.show();
+
+        mObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+
+        verify(mController).removeObserver(mObserverCaptor.getValue());
+        // Verify that when the bottom sheet is closed without user interaction, the close
+        // event is relayed via the delegate.
+        verify(mControllerBridgeJniMock)
+                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.NOT_INTERACTED);
+    }
+
+    private View getView(int viewId) {
+        View view = mContentCaptor.getValue().getContentView();
+        assertNotNull(view);
+
+        return view.findViewById(viewId);
     }
 }

@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -17,7 +18,8 @@ class MandatoryReauthOptInViewAndroid final : public AutofillBubbleBase {
  public:
   // Factory function for creating and showing the view.
   static std::unique_ptr<MandatoryReauthOptInViewAndroid> CreateAndShow(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      MandatoryReauthBubbleController* controller);
 
   MandatoryReauthOptInViewAndroid();
   ~MandatoryReauthOptInViewAndroid();
@@ -30,10 +32,11 @@ class MandatoryReauthOptInViewAndroid final : public AutofillBubbleBase {
   void Hide() override;
 
  private:
-  bool Show(content::WebContents* web_contents);
+  bool Show(content::WebContents* web_contents,
+            MandatoryReauthBubbleController* controller);
 
   // This class's corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
+  base::android::ScopedJavaGlobalRef<jobject> java_view_bridge_;
 };
 
 }  // namespace autofill
