@@ -5970,7 +5970,9 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
 std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
 ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    int64_t navigation_id,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
       interceptors;
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -5989,8 +5991,8 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   }
 #endif
 
-  interceptors.push_back(
-      std::make_unique<SearchPrefetchURLLoaderInterceptor>(frame_tree_node_id));
+  interceptors.push_back(std::make_unique<SearchPrefetchURLLoaderInterceptor>(
+      frame_tree_node_id, navigation_id, navigation_response_task_runner));
 
   if (base::FeatureList::IsEnabled(features::kHttpsFirstModeV2)) {
     auto https_upgrades_interceptor =

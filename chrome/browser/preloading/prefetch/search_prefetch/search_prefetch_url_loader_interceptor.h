@@ -8,6 +8,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace content {
@@ -18,7 +19,10 @@ class BrowserContext;
 class SearchPrefetchURLLoaderInterceptor
     : public content::URLLoaderRequestInterceptor {
  public:
-  explicit SearchPrefetchURLLoaderInterceptor(int frame_tree_node_id);
+  SearchPrefetchURLLoaderInterceptor(
+      int frame_tree_node_id,
+      int64_t navigation_id,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner);
   ~SearchPrefetchURLLoaderInterceptor() override;
 
   SearchPrefetchURLLoaderInterceptor(
@@ -39,8 +43,21 @@ class SearchPrefetchURLLoaderInterceptor
       content::URLLoaderRequestInterceptor::LoaderCallback callback) override;
 
  private:
+  // Maybe proxies the given request handler with the Extensions Web Request
+  // API.
+  SearchPrefetchURLLoader::RequestHandler MaybeProxyRequestHandler(
+      content::BrowserContext* browser_context,
+      SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler);
+
   // Used to get the current WebContents/Profile.
   const int frame_tree_node_id_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // These are sent to the Extensions Web Request API when maybe proxying the
+  // prefetch URL loader.
+  int64_t navigation_id_;
+  scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner_;
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

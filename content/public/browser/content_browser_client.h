@@ -1777,7 +1777,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
   WillCreateURLLoaderRequestInterceptors(
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id);
+      int frame_tree_node_id,
+      int64_t navigation_id,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner);
 
   // Callback to handle a request for a URLLoader.
   using URLLoaderRequestHandler = base::OnceCallback<void(

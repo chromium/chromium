@@ -19,7 +19,9 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -29,9 +31,15 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/browser_context_keyed_api_factory.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -254,8 +262,6 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     base::OnceCallback<void(bool)> report_error_callback)
     : streaming_prefetch_request_(streaming_prefetch_request),
       report_error_callback_(std::move(report_error_callback)),
-      url_loader_factory_(profile->GetDefaultStoragePartition()
-                              ->GetURLLoaderFactoryForBrowserProcess()),
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
   DCHECK(streaming_prefetch_request_);
@@ -273,6 +279,34 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     }
   }
   prefetch_url_ = resource_request->url;
+
+  // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
+  // that extensions can be informed of any prefetches.
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
+      pending_receiver.InitWithNewPipeAndPassRemote();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  auto* web_request_api =
+      extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
+          profile);
+  if (web_request_api) {
+    web_request_api->MaybeProxyURLLoaderFactory(
+        profile, /*frame=*/nullptr, /*render_process_id=*/0,
+        content::ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+        /*navigation_id=*/absl::nullopt, ukm::kInvalidSourceIdObj,
+        &pending_receiver, /*header_client=*/nullptr,
+        /*navigation_response_task_runner=*/nullptr,
+        /*request_initiator=*/url::Origin());
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  profile->GetDefaultStoragePartition()
+      ->GetURLLoaderFactoryForBrowserProcess()
+      ->Clone(std::move(pending_receiver));
+  url_loader_factory_ = network::SharedURLLoaderFactory::Create(
+      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+          std::move(pending_remote)));
 
   // Create a network service URL loader with passed in params.
   url_loader_factory_->CreateLoaderAndStart(

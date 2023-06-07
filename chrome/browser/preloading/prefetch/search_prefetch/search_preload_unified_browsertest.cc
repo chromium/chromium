@@ -2029,6 +2029,11 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
     ChangeAutocompleteResult(search_query, prerender_query,
                              PrerenderHint::kEnabled, PrefetchHint::kEnabled);
     registry_observer.WaitForTrigger(expected_prerender_url);
+
+    // This ensures that the request handler from
+    // SearchPrefetchURLLoaderInterceptor fully process the request.
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
   }
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
