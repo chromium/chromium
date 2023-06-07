@@ -232,7 +232,8 @@ std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
     ImageSkiaRep image;
     float resource_scale = scale;
     if (!HasRepresentationAtAllScales()) {
-      resource_scale = ui::GetSupportedResourceScaleFactorForRescale(scale);
+      resource_scale = ui::GetScaleForResourceScaleFactor(
+          ui::GetSupportedResourceScaleFactorForRescale(scale));
     }
     if (scale != resource_scale) {
       auto iter = FindRepresentation(resource_scale, fetch_new_image);
