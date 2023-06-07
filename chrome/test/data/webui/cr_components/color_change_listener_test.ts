@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addColorChangeListener, colorProviderChangeHandler, refreshColorCss, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {addColorChangeListener, colorProviderChangeHandler, COLORS_CSS_SELECTOR, refreshColorCss, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -90,6 +90,16 @@ suite('ColorChangeListenerTest', () => {
     // Handles the case where the link element does not exist.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     assertFalse(await refreshColorCss());
+  });
+
+  test('HandlesCasesWhereColorCssIsRefreshedMultipleTimes', async () => {
+    // Emulate multiple color change events from the mojo pipe. Do not await
+    // the first call so that multiple events are in flight at the same time.
+    await Promise.all(
+        [colorProviderChangeHandler(), colorProviderChangeHandler()]);
+
+    // Verify only one colors.css exists.
+    assertEquals(1, document.querySelectorAll(COLORS_CSS_SELECTOR).length);
   });
 
   test('RegistersColorChangeListener', async () => {

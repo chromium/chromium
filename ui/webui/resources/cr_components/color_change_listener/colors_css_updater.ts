@@ -20,15 +20,17 @@ export const COLORS_CSS_SELECTOR: string = 'link[href*=\'//theme/colors.css\']';
  * fetch an updated stylesheet when the ColorProvider associated with the WebUI
  * has changed.
  * Returns a promise which resolves to true once the new colors are loaded and
- * installed into the DOM. In the case of an error returns false.
+ * installed into the DOM. In the case of an error returns false. When a new
+ * colors.css is loaded, this will always freshly query the existing colors.css,
+ * allowing multiple calls to successfully remove existing, outdated CSS.
  */
 export async function refreshColorCss(root: Document|ShadowRoot = document):
     Promise<boolean> {
-  const oldColorsCssLink = root.querySelector(COLORS_CSS_SELECTOR);
-  if (!oldColorsCssLink) {
+  const colorCssNode = root.querySelector(COLORS_CSS_SELECTOR);
+  if (!colorCssNode) {
     return false;
   }
-  const href = oldColorsCssLink.getAttribute('href');
+  const href = colorCssNode.getAttribute('href');
   if (!href) {
     return false;
   }
@@ -57,7 +59,10 @@ export async function refreshColorCss(root: Document|ShadowRoot = document):
 
   await newColorsLoaded;
 
-  oldColorsCssLink.remove();
+  const oldColorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
+  if (oldColorCssNode) {
+    oldColorCssNode.remove();
+  }
   return true;
 }
 
