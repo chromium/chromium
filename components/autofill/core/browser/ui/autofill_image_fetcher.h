@@ -52,7 +52,7 @@ class AutofillImageFetcher {
       base::OnceCallback<void(const CardArtImageData&)> callback);
 
   // Subclasses may override this to provide custom handling of a given card art
-  // URL. The default behavior is a no-op.
+  // URL.
   virtual GURL ResolveCardArtURL(const GURL& card_art_url);
 
   // Subclasses may override this to provide custom handling of a fetched card

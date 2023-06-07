@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
@@ -64,13 +65,16 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
     return weak_ptr_factory_.GetWeakPtr();
   }
   GURL ResolveCardArtURL(const GURL& card_art_url) override {
-    return card_art_url_override_.is_valid() ? card_art_url_override_
-                                             : card_art_url;
+    return card_art_url_override_.is_valid()
+               ? card_art_url_override_
+               : AutofillImageFetcher::ResolveCardArtURL(card_art_url);
   }
   gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                  const gfx::Image& card_art_image) override {
-    return !card_art_image_override_.IsEmpty() ? card_art_image_override_
-                                               : card_art_image;
+    return !card_art_image_override_.IsEmpty()
+               ? card_art_image_override_
+               : AutofillImageFetcher::ResolveCardArtImage(card_art_url,
+                                                           card_art_image);
   }
 
  private:
@@ -123,7 +127,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
   gfx::Image fake_image2 = GetTestImage(IDR_DEFAULT_FAVICON);
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
-  GURL fake_url2 = GURL("https://www.example.com/fake_image2");
+  GURL fake_url2 = GURL(kCapitalOneCardArtUrl);
 
   std::map<GURL, gfx::Image> expected_images = {{fake_url1, fake_image1},
                                                 {fake_url2, fake_image2}};
@@ -141,8 +145,11 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
           2U, std::move(callback));
 
   base::HistogramTester histogram_tester;
-  // Expect to be called twice.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url1, _, _, _))
+  // Expect to be called twice. The 'normal' URL should have a size appended to
+  // it, whilst the capitalone image is 'special' and does not.
+  EXPECT_CALL(
+      *mock_image_fetcher(),
+      FetchImageAndData_(GURL(fake_url1.spec() + "=w32-h20-n"), _, _, _))
       .Times(1);
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url2, _, _, _))
       .Times(1);

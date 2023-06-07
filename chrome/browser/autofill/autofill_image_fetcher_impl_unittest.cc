@@ -4,6 +4,9 @@
 
 #include "chrome/browser/autofill/autofill_image_fetcher_impl.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
@@ -34,21 +37,6 @@ class AutofillImageFetcherImplTest : public testing::Test {
 
 // TODO(crbug.com/1313616): Write tests for
 // kAutofillEnableNewCardArtAndNetworkImages code paths
-TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
-  // Normal URLs should have a size appended to them.
-  EXPECT_EQ(GURL("https://www.example.com/fake_image1=w32-h20-n"),
-            autofill_image_fetcher()->ResolveCardArtURL(
-                GURL("https://www.example.com/fake_image1")));
-
-  // The capitalone image is 'special' and does not.
-  GURL capital_one_url =
-      GURL("https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png");
-  EXPECT_EQ(capital_one_url,
-            autofill_image_fetcher()->ResolveCardArtURL(capital_one_url));
-}
-
-// TODO(crbug.com/1313616): Write tests for
-// kAutofillEnableNewCardArtAndNetworkImages code paths
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage) {
   GURL card_art_url = GURL("https://www.example.com/fake_image1");
   // The credit card network images cannot be found in the tests, but it should
@@ -65,6 +53,27 @@ TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(), autofill_image_fetcher()->ResolveCardArtImage(
                         card_art_url, gfx::Image())));
+}
+
+class AutofillImageFetcherImplNewCardArtTest
+    : public AutofillImageFetcherImplTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableNewCardArtAndNetworkImages};
+};
+
+TEST_F(AutofillImageFetcherImplNewCardArtTest, ResolveCardArtURL) {
+  // With kAutofillEnableNewCardArtAndNetworkImages enabled, we fetch the image
+  // at its raw size, so ResolveCardArtURL should be a no-op.
+  EXPECT_EQ(GURL("https://www.example.com/fake_image1"),
+            autofill_image_fetcher()->ResolveCardArtURL(
+                GURL("https://www.example.com/fake_image1")));
+
+  // The capitalone image is 'special' however, and we swap it out for the
+  // larger variant.
+  GURL capital_one_url = GURL(kCapitalOneCardArtUrl);
+  EXPECT_EQ(GURL(kCapitalOneLargeCardArtUrl),
+            autofill_image_fetcher()->ResolveCardArtURL(capital_one_url));
 }
 
 }  // namespace autofill

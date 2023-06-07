@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -77,7 +78,17 @@ void AutofillImageFetcher::FetchImagesForURLs(
 }
 
 GURL AutofillImageFetcher::ResolveCardArtURL(const GURL& card_art_url) {
-  return card_art_url;
+  // TODO(crbug.com/1313616): There is only one gstatic card art image we are
+  // using currently, that returns as metadata when it isn't. Remove this logic
+  // and append FIFE URL suffix by default when the static image is deprecated,
+  // and we send rich card art instead.
+  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
+    return card_art_url;
+  }
+
+  // A FIFE image fetching param suffix is appended to the URL. The image
+  // should be center cropped and of Size(32, 20).
+  return GURL(card_art_url.spec() + "=w32-h20-n");
 }
 
 gfx::Image AutofillImageFetcher::ResolveCardArtImage(

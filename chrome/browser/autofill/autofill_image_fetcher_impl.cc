@@ -54,28 +54,21 @@ base::WeakPtr<AutofillImageFetcher> AutofillImageFetcherImpl::GetWeakPtr() {
 }
 
 GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
-  // TODO(crbug.com/1313616): There is only one gstatic card art image we are
-  // using currently, that returns as metadata when it isn't. Remove this logic
-  // and append FIFE URL suffix by default when the static image is deprecated,
-  // and we send rich card art instead.
-  // Check if the image is stored in Static Content Service. If not append the
-  // FIFE URL option to fetch the correct image.
-  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
-    return base::FeatureList::IsEnabled(
-               features::kAutofillEnableNewCardArtAndNetworkImages)
-               ? GURL(kCapitalOneLargeCardArtUrl)
-               : card_art_url;
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewCardArtAndNetworkImages)) {
+    return AutofillImageFetcher::ResolveCardArtURL(card_art_url);
   }
 
-  // A FIFE image fetching param suffix is appended to the URL. The image
-  // should be center cropped and of Size(32, 20) unless the
-  // kAutofillEnableNewCardArtAndNetworkImages feature is enabled, in which
-  // case we take the image at its raw size and resize it to Size(40, 24)
-  // later.
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableNewCardArtAndNetworkImages)
-             ? card_art_url
-             : GURL(card_art_url.spec() + "=w32-h20-n");
+  // TODO(crbug.com/1313616): There is only one gstatic card art image we are
+  // using currently, that returns as metadata when it isn't. Remove this logic
+  // when the static image is deprecated, and we send rich card art instead.
+  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
+    return GURL(kCapitalOneLargeCardArtUrl);
+  }
+
+  // When kAutofillEnableNewCardArtAndNetworkImages is enabled, we take the
+  // image at its raw size and resize it to Size(40, 24) later.
+  return card_art_url;
 }
 
 gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
