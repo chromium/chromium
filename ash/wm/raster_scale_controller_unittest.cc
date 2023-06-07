@@ -38,6 +38,11 @@ TEST_F(RasterScaleControllerTest, RasterScaleOnlyUpdatesIfChanges) {
       EXPECT_EQ(2.0f, window->GetProperty(aura::client::kRasterScale));
       EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
     }
+
+    // Removing the same scale (2.0f) once should still leave the existing 2.0f
+    // there.
+    EXPECT_EQ(2.0f, window->GetProperty(aura::client::kRasterScale));
+    EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
   }
   EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
   EXPECT_EQ(std::vector<float>{1.0f}, tracker.TakeRasterScaleChanges());

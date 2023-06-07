@@ -89,7 +89,10 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
 
   const auto previous_scale = GetRasterScaleForWindow(window);
   DCHECK(base::Contains(scales, raster_scale));
-  base::Erase(scales, raster_scale);
+  auto scale_iter = std::find(scales.begin(), scales.end(), raster_scale);
+  if (scale_iter != scales.end()) {
+    scales.erase(scale_iter);
+  }
 
   if (scales.empty()) {
     window_scales_.erase(window);
