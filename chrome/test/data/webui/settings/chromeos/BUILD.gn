@@ -231,6 +231,7 @@ build_webui_tests("build") {
     "os_people_page/os_people_page_test.ts",
     "os_people_page/test_account_manager_browser_proxy.ts",
     "os_people_page/test_fingerprint_browser_proxy.ts",
+    "os_people_page/personalization_options_test.ts",
 
     "os_printing_page/cups_printers_entry_test.ts",
     "os_printing_page/os_printing_page_test.ts",

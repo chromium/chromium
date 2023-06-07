@@ -1563,6 +1563,17 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
       BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath));
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  html_source->AddString(
+      "osPrivacySettingsUrl",
+      BuildOSSettingsUrl(
+          chromeos::settings::mojom::kPrivacyAndSecuritySectionPath));
+
+  html_source->AddBoolean(
+      "osDeprecateSyncMetricsToggle",
+      ash::features::IsOsSettingsDeprecateSyncMetricsToggleEnabled());
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osSyncSettingsUrl",

@@ -14,6 +14,7 @@ import '../settings_shared.css.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './os_personalization_options.html.js';
 
@@ -22,7 +23,7 @@ const OsSettingsPersonalizationOptionsElementBase = PrefsMixin(PolymerElement);
 export class OsSettingsPersonalizationOptionsElement extends
     OsSettingsPersonalizationOptionsElementBase {
   static get is() {
-    return 'os-settings-personalization-options';
+    return 'os-settings-personalization-options' as const;
   }
 
   static get template() {
@@ -31,12 +32,16 @@ export class OsSettingsPersonalizationOptionsElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
+      showMetricsToggle_: {
+        type: Boolean,
+        value() {
+          return !loadTimeData.getBoolean('osDeprecateSyncMetricsToggle');
+        },
       },
     };
   }
+
+  private showMetricsToggle_: boolean;
 
   /**
    * the autocomplete search suggestions CrToggleElement.
@@ -81,7 +86,8 @@ export class OsSettingsPersonalizationOptionsElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-personalization-options': OsSettingsPersonalizationOptionsElement;
+    [OsSettingsPersonalizationOptionsElement.is]:
+        OsSettingsPersonalizationOptionsElement;
   }
 }
 

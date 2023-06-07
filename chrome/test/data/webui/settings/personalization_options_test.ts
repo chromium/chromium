@@ -9,6 +9,9 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrivacyPageVisibility, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// <if expr="chromeos_ash">
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+// </if>
 // <if expr="not is_chromeos">
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -328,5 +331,45 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     assertTrue(
         shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
   });
+  // </if>
+
+  // <if expr="chromeos_ash">
+  test(
+      'Metrics toggle links to OS sync page with deprecate sync metrics off',
+      function() {
+        let targetUrl: string = '';
+        testElement['navigateTo_'] = (url: string) => {
+          targetUrl = url;
+        };
+
+        loadTimeData.overrideValues({
+          osDeprecateSyncMetricsToggle: false,
+        });
+
+        const syncSetupUrl = loadTimeData.getString('osSyncSetupSettingsUrl');
+
+        testElement.$.metricsReportingLink.click();
+
+        assertEquals(syncSetupUrl, targetUrl);
+      });
+
+  test(
+      'Metrics toggle links to OS privacy page with deprecate sync metrics on',
+      function() {
+        let targetUrl: string = '';
+        testElement['navigateTo_'] = (url: string) => {
+          targetUrl = url;
+        };
+
+        loadTimeData.overrideValues({
+          osDeprecateSyncMetricsToggle: true,
+        });
+
+        const privacyUrl = loadTimeData.getString('osPrivacySettingsUrl');
+
+        testElement.$.metricsReportingLink.click();
+
+        assertEquals(privacyUrl, targetUrl);
+      });
   // </if>
 });

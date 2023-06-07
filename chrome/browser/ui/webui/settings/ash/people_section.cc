@@ -427,6 +427,10 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
 
+  html_source->AddBoolean(
+      "osDeprecateSyncMetricsToggle",
+      ash::features::IsOsSettingsDeprecateSyncMetricsToggleEnabled());
+
   // This handler is for chrome://os-settings.
   html_source->AddBoolean("isOSSettings", true);
 }

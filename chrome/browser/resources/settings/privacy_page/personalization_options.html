@@ -29,7 +29,7 @@
 <if expr="_google_chrome">
 <if expr="chromeos_ash">
     <!-- Ash Browser settings show a link to the OS settings instead. -->
-    <cr-link-row class="hr"
+    <cr-link-row id="metricsReportingLink" class="hr"
         label="$i18n{enablePersonalizationLogging}"
         sub-label="$i18n{enablePersonalizationLoggingDesc}"
         on-click="onMetricsReportingLinkClick_" external>

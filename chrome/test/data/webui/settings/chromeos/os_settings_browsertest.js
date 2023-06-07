@@ -561,6 +561,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsPeoplePageFingerprintListSubpage',
    'os_people_page/fingerprint_list_subpage_test.js'
  ],
+ [
+   'OsPeoplePagePersonalizationOptions',
+   'os_people_page/personalization_options_test.js',
+ ],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  [
    'OsPrintingPageCupsPrintersEntry',

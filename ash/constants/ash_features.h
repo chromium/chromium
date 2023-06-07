@@ -500,6 +500,8 @@ BASE_DECLARE_FEATURE(kOsFeedbackJelly);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kOsSettingsAppNotificationsPage);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kOsSettingsDeprecateSyncMetricsToggle);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kOsSettingsAppBadgingToggle);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kOsSettingsRevampWayfinding);
@@ -898,6 +900,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeThemeSelectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeTouchpadScrollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeDisplaySizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsAppBadgingToggleEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsOsSettingsDeprecateSyncMetricsToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsRevampWayfindingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsSearchFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSyncConsentRevampEnabled();

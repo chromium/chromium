@@ -1719,6 +1719,12 @@ BASE_FEATURE(kOsSettingsAppBadgingToggle,
              "OsSettingsAppBadgingToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether the metrics toggle in settings user sync options page should be
+// deprecated.
+BASE_FEATURE(kOsSettingsDeprecateSyncMetricsToggle,
+             "OsSettingsDeprecateSyncMetricsToggle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the wayfinding improvements for the ChromeOS Settings revamp
 BASE_FEATURE(kOsSettingsRevampWayfinding,
              "OsSettingsRevampWayfinding",
@@ -3293,6 +3299,10 @@ bool IsOobeDisplaySizeEnabled() {
 
 bool IsOsSettingsAppBadgingToggleEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppBadgingToggle);
+}
+
+bool IsOsSettingsDeprecateSyncMetricsToggleEnabled() {
+  return base::FeatureList::IsEnabled(kOsSettingsDeprecateSyncMetricsToggle);
 }
 
 bool IsOsSettingsRevampWayfindingEnabled() {
