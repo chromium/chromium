@@ -2594,8 +2594,8 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-                           gfx::RectF(pass_rect), false, 1.0f);
+                           gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
+                           gfx::PointF(), gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -2655,8 +2655,8 @@ TEST_P(RendererPixelTest, FastPassSaturateFilter) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-                           gfx::RectF(pass_rect), false, 1.0f);
+                           gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
+                           gfx::PointF(), gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -2717,8 +2717,8 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-                           gfx::RectF(pass_rect), false, 1.0f);
+                           gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
+                           gfx::PointF(), gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -2800,8 +2800,8 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-                           gfx::RectF(pass_rect), false, 1.0f);
+                           gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
+                           gfx::PointF(), gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
 
