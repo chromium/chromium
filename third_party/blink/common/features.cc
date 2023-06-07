@@ -1066,6 +1066,8 @@ BASE_FEATURE(kFledge, "Fledge", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFledgeBiddingAndAuctionServer,
              "FledgeBiddingAndAuctionServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kFledgeBiddingAndAuctionKeyURL{
+    &kFledgeBiddingAndAuctionServer, "FledgeBiddingAndAuctionKeyURL", ""};
 
 // See in the header.
 BASE_FEATURE(kFledgeConsiderKAnonymity,

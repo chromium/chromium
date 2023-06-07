@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -320,6 +321,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       url::Origin top_level_origin,
       base::OnceCallback<void(std::vector<uint8_t>)> callback);
 
+  void GetBiddingAndAuctionServerKey(
+      network::mojom::URLLoaderFactory* loader,
+      base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>
+          callback);
+
   InterestGroupPermissionsChecker& permissions_checker_for_testing() {
     return permissions_checker_;
   }
@@ -522,6 +528,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // The resulting behavior is that if reports are continuously being sent for
   // too long, possibly from multiple auctions, all reports are timed out.
   base::OneShotTimer timeout_timer_;
+
+  // Used to fetch the key for encrypting the request to the bidding and auction
+  // server.
+  BiddingAndAuctionServerKeyFetcher ba_key_fetcher_;
 
   base::WeakPtrFactory<InterestGroupManagerImpl> weak_factory_{this};
 };

@@ -453,6 +453,13 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
   std::move(state.callback).Run(state.serializer.Build());
 }
 
+void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
+    network::mojom::URLLoaderFactory* loader,
+    base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>
+        callback) {
+  ba_key_fetcher_.GetOrFetchKey(loader, std::move(callback));
+}
+
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
     blink::InterestGroup group,
     const GURL& joining_url,

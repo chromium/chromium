@@ -109,10 +109,6 @@ after discussions on the right group.
   </group>
   <group name="Unsorted" hidden="true">
     <sender name="Unsorted Sender">
-      <annotation id="auction_downloader"/>
-      <annotation id="auction_report_sender"/>
-      <annotation id="interest_group_update_fetcher"/>
-      <annotation id="interest_group_well_known_fetcher"/>
       <annotation id="shared_storage_worklet_module_script_downloader"/>
       <annotation id="proxy_config_windows_resolver"/>
       <annotation id="remoting_directory_delete_host"/>
@@ -364,6 +360,13 @@ after discussions on the right group.
     <sender name="Aggregation Service">
       <annotation id="aggregation_service_helper_keys"/>
       <annotation id="aggregation_service_report"/>
+    </sender>
+    <sender name="Protected Audiences">
+      <annotation id="auction_downloader"/>
+      <annotation id="auction_report_sender"/>
+      <annotation id="bidding_and_auction_server_key_fetch"/>
+      <annotation id="interest_group_update_fetcher"/>
+      <annotation id="interest_group_well_known_fetcher"/>
     </sender>
   </group>
   <group name="Identity and Security" hidden="true">
