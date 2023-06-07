@@ -173,7 +173,7 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
 // for details.
 BASE_FEATURE(kWebviewTagMPArchBehavior,
              "WebviewTagMPArchBehavior",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, extensions installed from .zip files (from dev mode) are changed
 // from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and
