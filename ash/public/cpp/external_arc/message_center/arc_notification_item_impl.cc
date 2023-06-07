@@ -145,10 +145,11 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
       message_center::ButtonInfo rich_data_button;
       rich_data_button.title = base::UTF8ToUTF16(button_label);
 
-      if (i == static_cast<size_t>(data->reply_button_index) &&
-          button->buttonPlaceholder.has_value()) {
+      if (i == static_cast<size_t>(data->reply_button_index)) {
         rich_data_button.placeholder =
-            base::UTF8ToUTF16(button->buttonPlaceholder.value());
+            button->buttonPlaceholder.has_value()
+                ? base::UTF8ToUTF16(button->buttonPlaceholder.value())
+                : std::u16string();
       }
       rich_data.buttons.emplace_back(rich_data_button);
     }
