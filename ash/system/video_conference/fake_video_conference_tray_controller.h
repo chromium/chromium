@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/gtest_prod_util.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 
 namespace ash {
 
@@ -46,6 +47,8 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   void HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device,
       const std::u16string& app_name) override;
+  void HandleClientUpdate(
+      crosapi::mojom::VideoConferenceClientUpdatePtr update) override;
 
   // Adds or clears media app(s) in `media_apps_`.
   void AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app);
@@ -55,6 +58,10 @@ class ASH_EXPORT FakeVideoConferenceTrayController
       std::pair<crosapi::mojom::VideoConferenceMediaDevice, std::u16string>>&
   device_used_while_disabled_records() {
     return device_used_while_disabled_records_;
+  }
+
+  const crosapi::mojom::VideoConferenceClientUpdatePtr& last_client_update() {
+    return last_client_update_;
   }
 
  private:
@@ -79,6 +86,9 @@ class ASH_EXPORT FakeVideoConferenceTrayController
 
   // General-purpose repository for fake effects.
   std::unique_ptr<fake_video_conference::EffectRepository> effect_repository_;
+
+  // Last client update received.
+  crosapi::mojom::VideoConferenceClientUpdatePtr last_client_update_;
 };
 
 }  // namespace ash

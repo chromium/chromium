@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/process_manager.h"
@@ -146,6 +147,13 @@ void VideoConferenceManagerClientImpl::RemoveMediaApp(
   }
 
   id_to_webcontents_.erase(it);
+
+  // Send a client update notification to the VCManager.
+  SendClientUpdate(crosapi::mojom::VideoConferenceClientUpdate::New(
+      /*added_or_removed_app=*/crosapi::mojom::VideoConferenceAppUpdate::
+          kAppRemoved,
+      /*title_change_info=*/nullptr));
+
   HandleMediaUsageUpdate();
 }
 
@@ -160,10 +168,23 @@ VideoConferenceManagerClientImpl::CreateVideoConferenceWebApp(
       base::BindRepeating(&VideoConferenceManagerClientImpl::RemoveMediaApp,
                           weak_ptr_factory_.GetWeakPtr());
 
+  // Callback for `VideoConferenceWebApp`s to send client updates (currently,
+  // only on title changes).
+  auto client_update_callback =
+      base::BindRepeating(&VideoConferenceManagerClientImpl::SendClientUpdate,
+                          weak_ptr_factory_.GetWeakPtr());
+
   content::WebContentsUserData<VideoConferenceWebApp>::CreateForWebContents(
-      web_contents, id, std::move(remove_media_app_callback));
+      web_contents, id, std::move(remove_media_app_callback),
+      std::move(client_update_callback));
 
   id_to_webcontents_.insert({id, web_contents});
+
+  // Send a client update notification to the VCManager.
+  SendClientUpdate(crosapi::mojom::VideoConferenceClientUpdate::New(
+      /*added_or_removed_app=*/crosapi::mojom::VideoConferenceAppUpdate::
+          kAppAdded,
+      /*title_change_info=*/nullptr));
 
   return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
       web_contents);
@@ -316,6 +337,18 @@ VideoConferenceManagerClientImpl::GetAggregatedPermissions() {
 
   return {.has_camera_permission = has_camera_permission,
           .has_microphone_permission = has_microphone_permission};
+}
+
+void VideoConferenceManagerClientImpl::SendClientUpdate(
+    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  remote_->NotifyClientUpdate(std::move(update));
+#else
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->video_conference_manager_ash()
+      ->NotifyClientUpdate(std::move(update));
+#endif
 }
 
 }  // namespace video_conference

@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_client_wrapper.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -150,6 +151,15 @@ void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
                                                        app_name);
   }
   std::move(callback).Run(true);
+}
+
+void VideoConferenceManagerAsh::NotifyClientUpdate(
+    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+  // TODO(crbug.com/1368284): Remove this conditional check once it becomes
+  // possible to enable ash features in lacros browsertests.
+  if (ash::features::IsVideoConferenceEnabled()) {
+    GetTrayController()->HandleClientUpdate(std::move(update));
+  }
 }
 
 void VideoConferenceManagerAsh::UnregisterClient(

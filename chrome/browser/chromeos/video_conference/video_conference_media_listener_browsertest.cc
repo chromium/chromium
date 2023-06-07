@@ -28,6 +28,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
@@ -147,7 +148,9 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
   VideoConferenceWebApp* CreateVcWebApp(content::WebContents* web_contents) {
     content::WebContentsUserData<VideoConferenceWebApp>::CreateForWebContents(
         web_contents, base::UnguessableToken::Create(),
-        base::BindRepeating([](const base::UnguessableToken& id) {}));
+        base::BindRepeating([](const base::UnguessableToken& id) {}),
+        base::DoNothingAs<void(
+            crosapi::mojom::VideoConferenceClientUpdatePtr)>());
 
     return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
         web_contents);

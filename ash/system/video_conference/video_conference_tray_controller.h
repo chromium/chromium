@@ -168,6 +168,11 @@ class ASH_EXPORT VideoConferenceTrayController
   // ShellObserver:
   void OnShellDestroying() override;
 
+  // Handles client updates such as a change of title or addition / removal of a
+  // VC app. Virtual to allow mock classes to override for testing.
+  virtual void HandleClientUpdate(
+      crosapi::mojom::VideoConferenceClientUpdatePtr update);
+
   // Gets `disable_shelf_autohide_timer_`, used for testing.
   base::OneShotTimer& GetShelfAutoHideTimerForTest();
 

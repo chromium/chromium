@@ -10,6 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -61,6 +64,7 @@ class VideoConferenceWebApp
       content::RenderWidgetHost* render_widget_host) override;
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
 
   // Set capturing status in state for the specified media device. This method
   // is also responsible for updating data needed for UKM reporting.
@@ -77,13 +81,21 @@ class VideoConferenceWebApp
       content::WebContents* web_contents,
       base::UnguessableToken id,
       base::RepeatingCallback<void(const base::UnguessableToken&)>
-          remove_media_app_callback);
+          remove_media_app_callback,
+      base::RepeatingCallback<
+          void(crosapi::mojom::VideoConferenceClientUpdatePtr)>
+          client_update_callback);
 
   // This callback corresponds to a method on a
   // `VideoConferenceManagerClientImpl`. It is safe to call even if the client
   // has been destroyed.
   base::RepeatingCallback<void(const base::UnguessableToken&)>
       remove_media_app_callback_;
+
+  // Callback to send a new client update.
+  base::RepeatingCallback<void(crosapi::mojom::VideoConferenceClientUpdatePtr)>
+      client_update_callback_;
+
   VideoConferenceWebAppState state_;
   std::unique_ptr<VideoConferenceUkmHelper> vc_ukm_helper_;
 

@@ -9,6 +9,34 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
+// Struct containing the id and new title for a VC app whose title updated.
+[Stable]
+struct TitleChangeInfo {
+  // Unique id corresponding to a VC web app.
+  mojo_base.mojom.UnguessableToken id@0;
+
+  // The VC app's new title.
+  mojo_base.mojom.String16 new_title@1;
+};
+
+[Stable, Extensible]
+enum VideoConferenceAppUpdate {
+  [Default] kNone,
+  kAppAdded,
+  kAppRemoved,
+};
+
+// Useful notifications from clients. Intended mainly for the VC tray.
+[Stable]
+struct VideoConferenceClientUpdate {
+  // Client just added or removed a new VC app.
+  VideoConferenceAppUpdate added_or_removed_app@0;
+
+  // Title change info. Only present if this client update was
+  // triggered by a title change.
+  TitleChangeInfo? title_change_info@1;
+};
+
 // Aggregated media usage status for a client. Used by
 // VideoConferenceManagerAsh to determine UI tray triggering,
 // contents, and hiding.
@@ -68,6 +96,9 @@ interface VideoConferenceManager {
   NotifyDeviceUsedWhileDisabled@2(VideoConferenceMediaDevice device,
                                   mojo_base.mojom.String16 app_name)
       => (bool success);
+
+  // Notifies the manager of a client update.
+  [MinVersion=1] NotifyClientUpdate@3(VideoConferenceClientUpdate update);
 };
 
 // Note to keep this in sync with VideoConferenceAppType in enums.xml.

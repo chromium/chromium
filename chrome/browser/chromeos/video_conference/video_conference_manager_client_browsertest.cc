@@ -38,8 +38,8 @@
 namespace video_conference {
 
 namespace {
-const char kTestURL1[] = "about:blank";
-const char kTestURL2[] = "https://localhost";
+constexpr char kTestURL1[] = "about:blank";
+constexpr char kTestURL2[] = "https://localhost";
 }  // namespace
 
 // Fake class for testing `VideoConferenceManagerClientImpl`. Overrides
@@ -277,6 +277,51 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
       /*disabled=*/false);
   EXPECT_FALSE(client.camera_system_disabled());
   EXPECT_FALSE(client.microphone_system_disabled());
+}
+
+// Tests client updates relating to adding and removing VC web apps and title
+// changes.
+IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
+  FakeVideoConferenceManagerClient client;
+
+  auto* vc_manager = crosapi::CrosapiManager::Get()
+                         ->crosapi_ash()
+                         ->video_conference_manager_ash();
+  vc_manager->RegisterCppClient(&client, client.client_id());
+
+  ash::FakeVideoConferenceTrayController* controller =
+      static_cast<ash::FakeVideoConferenceTrayController*>(
+          ash::VideoConferenceTrayController::Get());
+  ASSERT_TRUE(controller);
+
+  // Add a new VC web app on the client.
+  EXPECT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  client.CreateVideoConferenceWebApp(web_contents);
+
+  // Confirm the update received by the controller has `added_or_removed_app`
+  // set to true.
+  EXPECT_EQ(controller->last_client_update()->added_or_removed_app,
+            crosapi::mojom::VideoConferenceAppUpdate::kAppAdded);
+  EXPECT_FALSE(controller->last_client_update()->title_change_info);
+
+  // Update the title and confirm correct fields were set.
+  std::u16string new_title = u"New Title";
+  UpdateWebContentsTitle(web_contents, new_title);
+
+  EXPECT_EQ(controller->last_client_update()->added_or_removed_app,
+            crosapi::mojom::VideoConferenceAppUpdate::kNone);
+  EXPECT_TRUE(controller->last_client_update()->title_change_info);
+  EXPECT_EQ(controller->last_client_update()->title_change_info->new_title,
+            new_title);
+
+  // Remove the VC web app by closing the corresponding WebContents.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
+  EXPECT_EQ(controller->last_client_update()->added_or_removed_app,
+            crosapi::mojom::VideoConferenceAppUpdate::kAppRemoved);
+  EXPECT_FALSE(controller->last_client_update()->title_change_info);
 }
 #endif
 

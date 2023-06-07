@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
@@ -452,6 +453,11 @@ void VideoConferenceTrayController::OnShellDestroying() {
   Shell::Get()->RemoveShellObserver(this);
 }
 
+void VideoConferenceTrayController::HandleClientUpdate(
+    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+  // TODO(b/285795457): Implement logic to handle client updates.
+}
+
 base::OneShotTimer&
 VideoConferenceTrayController::GetShelfAutoHideTimerForTest() {
   return disable_shelf_autohide_timer_;
@@ -493,13 +499,15 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   }
 
   if (state_.is_capturing_camera != old_state.is_capturing_camera) {
-    for (auto& observer : observer_list_)
+    for (auto& observer : observer_list_) {
       observer.OnCameraCapturingStateChange(state_.is_capturing_camera);
+    }
   }
 
   if (state_.is_capturing_microphone != old_state.is_capturing_microphone) {
-    for (auto& observer : observer_list_)
+    for (auto& observer : observer_list_) {
       observer.OnMicrophoneCapturingStateChange(state_.is_capturing_microphone);
+    }
   }
 
   if (state_.is_capturing_screen != old_state.is_capturing_screen) {

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "url/gurl.h"
@@ -91,6 +92,11 @@ void FakeVideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
   VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(device,
                                                                app_name);
   device_used_while_disabled_records_.emplace_back(device, app_name);
+}
+
+void FakeVideoConferenceTrayController::HandleClientUpdate(
+    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+  last_client_update_ = std::move(update);
 }
 
 void FakeVideoConferenceTrayController::AddMediaApp(
