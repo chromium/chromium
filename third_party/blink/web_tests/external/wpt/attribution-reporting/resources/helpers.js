@@ -2,7 +2,7 @@
  * Helper functions for attribution reporting API tests.
  */
 
-const blankURL = (base = location.origin) => new URL('/wpt_internal/attribution-reporting/resources/reporting_origin.py', base);
+const blankURL = (base = location.origin) => new URL('/attribution-reporting/resources/reporting_origin.py', base);
 
 const attribution_reporting_promise_test = (f, name) =>
     promise_test(async t => {

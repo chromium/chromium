@@ -1,16 +1,16 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name=variant content="?method=a&expected-eligible=navigation-source&expected-support=web">
-<meta name=variant content="?method=img&expected-eligible=event-source, trigger&expected-support=web">
-<meta name=variant content="?method=img&eligible&expected-eligible=event-source, trigger&expected-support=web">
-<meta name=variant content="?method=open&expected-eligible=navigation-source&expected-support=web">
-<meta name=variant content="?method=script&expected-eligible=event-source, trigger&expected-support=web">
-<meta name=variant content="?method=script&eligible&expected-eligible=event-source, trigger&expected-support=web">
+<meta name=variant content="?method=a&expected-eligible=navigation-source">
+<meta name=variant content="?method=img&expected-eligible=event-source, trigger">
+<meta name=variant content="?method=img&eligible&expected-eligible=event-source, trigger">
+<meta name=variant content="?method=open&expected-eligible=navigation-source">
+<meta name=variant content="?method=script&expected-eligible=event-source, trigger">
+<meta name=variant content="?method=script&eligible&expected-eligible=event-source, trigger">
 <meta name=variant content="?method=fetch">
-<meta name=variant content='?method=fetch&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source&expected-support=web'>
+<meta name=variant content='?method=fetch&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source'>
 <meta name=variant content="?method=xhr">
-<meta name=variant content='?method=xhr&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source&expected-support=web'>
+<meta name=variant content='?method=xhr&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source'>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
@@ -36,8 +36,6 @@ const waitForRequest = async () => {
 const searchParams = new URLSearchParams(location.search);
 const expected_eligible =
     searchParams.get('expected-eligible') === null ? undefined : searchParams.get('expected-eligible');
-const expected_support =
-    searchParams.get('expected-support') === null ? undefined : searchParams.get('expected-support');
 
 promise_test(async t => {
   // Set mixed-case query params to ensure that they are propagated correctly.
@@ -54,11 +52,6 @@ promise_test(async t => {
     assert_own_property(requests[0], 'attribution-reporting-eligible');
   } else {
     assert_not_own_property(requests[0], 'attribution-reporting-eligible');
-  }
-  if (expected_support) {
-    assert_own_property(requests[0], 'attribution-reporting-support');
-  } else {
-    assert_not_own_property(requests[0], 'attribution-reporting-support');
   }
   assert_equals(requests[0].referer, location.toString());
 
