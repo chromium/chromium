@@ -13,6 +13,7 @@
     "Android WebView P (dbg)": "Ubuntu-22.04",
     "Android arm Builder (dbg)": "Ubuntu-22.04",
     "Android arm64 Builder (dbg)": "Ubuntu-22.04",
+    "Android x64 Builder (dbg)": "Ubuntu-22.04",
     "Cast Android (dbg)": "Ubuntu-22.04",
     "Cast Linux": "Ubuntu-22.04",
     "Cast Linux ARM64": "Ubuntu-22.04",
