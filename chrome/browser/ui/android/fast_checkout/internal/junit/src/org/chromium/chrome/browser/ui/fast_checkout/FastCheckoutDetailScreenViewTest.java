@@ -191,16 +191,13 @@ public class FastCheckoutDetailScreenViewTest {
     public void testRecyclerViewBindsProfileDataToItemView() {
         FastCheckoutAutofillProfile emptyFieldsProfile =
                 FastCheckoutTestUtils.createDetailedProfile(
-                        /*guid=*/"111", /*name=*/"", /*streetAddress=*/"",
+                        /*guid=*/"222", /*name=*/"", /*streetAddress=*/"",
                         /*city=*/"", /*postalCode=*/"", /*email=*/"",
                         /*phoneNumber=*/"");
 
         ModelList models = mModel.get(PROFILE_MODEL_LIST);
         models.add(new ListItem(DetailItemType.PROFILE,
-                AutofillProfileItemProperties.create(sSampleProfile1, /*isSelected=*/false,
-                        /*onClickListener=*/() -> {})));
-        models.add(new ListItem(DetailItemType.PROFILE,
-                AutofillProfileItemProperties.create(sSampleProfile2, /*isSelected=*/true,
+                AutofillProfileItemProperties.create(sSampleProfile1, /*isSelected=*/true,
                         /*onClickListener=*/() -> {})));
 
         models.add(new ListItem(DetailItemType.PROFILE,
@@ -211,35 +208,19 @@ public class FastCheckoutDetailScreenViewTest {
 
         // Check that the sheet is populated properly.
         ShadowLooper.shadowMainLooper().idle();
-        assertThat(getListItems().getAdapter().getItemCount(), is(3));
-
-        assertThatProfileItemLayoutIsCorrectAt(0, sSampleProfile1, /*isSelected=*/false);
-        assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/true);
-        assertThatProfileItemLayoutIsCorrectAt(2, emptyFieldsProfile, /*isSelected=*/false);
-
-        // Update the selection.
-        models.get(0).model.set(AutofillProfileItemProperties.IS_SELECTED, true);
-        models.get(1).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
-        models.get(2).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
-
-        ShadowLooper.shadowMainLooper().idle();
+        assertThat(getListItems().getAdapter().getItemCount(), is(2));
 
         assertThatProfileItemLayoutIsCorrectAt(0, sSampleProfile1, /*isSelected=*/true);
-        assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/false);
-        assertThatProfileItemLayoutIsCorrectAt(2, emptyFieldsProfile, /*isSelected=*/false);
+        assertThatProfileItemLayoutIsCorrectAt(1, emptyFieldsProfile, /*isSelected=*/false);
 
         // Update the selection.
         models.get(0).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
-        models.get(1).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
-        models.get(2).model.set(AutofillProfileItemProperties.IS_SELECTED, true);
+        models.get(1).model.set(AutofillProfileItemProperties.IS_SELECTED, true);
 
         ShadowLooper.shadowMainLooper().idle();
 
         assertThatProfileItemLayoutIsCorrectAt(0, sSampleProfile1, /*isSelected=*/false);
-        assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/false);
-        assertThatProfileItemLayoutIsCorrectAt(2, emptyFieldsProfile, /*isSelected=*/true);
-
-        ShadowLooper.shadowMainLooper().idle();
+        assertThatProfileItemLayoutIsCorrectAt(1, emptyFieldsProfile, /*isSelected=*/true);
     }
 
     @Test

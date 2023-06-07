@@ -239,12 +239,12 @@ public class FastCheckoutMediatorTest {
         // If the old profile no longer exists, the new first one is selected.
         mMediator.setAutofillProfileItems(
                 new FastCheckoutAutofillProfile[] {DUMMY_PROFILES[1], DUMMY_PROFILES[2]});
-        assertThat(models.size(), is(3));
+        assertThat(mModel.get(PROFILE_MODEL_LIST).size(), is(3));
         assertThat(mModel.get(SELECTED_PROFILE), is(DUMMY_PROFILES[1]));
 
         // If it can be found, it remains selected.
         mMediator.setAutofillProfileItems(DUMMY_PROFILES);
-        assertThat(models.size(), is(DUMMY_PROFILES.length + 1));
+        assertThat(mModel.get(PROFILE_MODEL_LIST).size(), is(DUMMY_PROFILES.length + 1));
         assertThat(mModel.get(SELECTED_PROFILE), is(DUMMY_PROFILES[1]));
 
         // That is true even if only the GUID remains the same.
@@ -257,7 +257,7 @@ public class FastCheckoutMediatorTest {
                         /*phoneNumber=*/"+1-111-333-222");
         mMediator.setAutofillProfileItems(new FastCheckoutAutofillProfile[] {
                 DUMMY_PROFILES[0], DUMMY_PROFILES[1], sameGUIDProfile});
-        assertThat(models.size(), is(4));
+        assertThat(mModel.get(PROFILE_MODEL_LIST).size(), is(4));
         assertThat(mModel.get(SELECTED_PROFILE), is(sameGUIDProfile));
     }
 
@@ -267,17 +267,17 @@ public class FastCheckoutMediatorTest {
         ModelList models = mModel.get(CREDIT_CARD_MODEL_LIST);
 
         // There is one extra item due to the footer.
-        assertThat(models.size(), is(DUMMY_CARDS.length + 1));
+        assertThat(mModel.get(CREDIT_CARD_MODEL_LIST).size(), is(DUMMY_CARDS.length + 1));
         assertThat(mModel.get(SELECTED_CREDIT_CARD), is(DUMMY_CARDS[0]));
 
         // If the old profile no longer exists, the new first one is selected.
         mMediator.setCreditCardItems(new FastCheckoutCreditCard[] {DUMMY_CARDS[1], DUMMY_CARDS[2]});
-        assertThat(models.size(), is(3));
+        assertThat(mModel.get(CREDIT_CARD_MODEL_LIST).size(), is(3));
         assertThat(mModel.get(SELECTED_CREDIT_CARD), is(DUMMY_CARDS[1]));
 
         // If it can be found, it remains selected.
         mMediator.setCreditCardItems(DUMMY_CARDS);
-        assertThat(models.size(), is(DUMMY_CARDS.length + 1));
+        assertThat(mModel.get(CREDIT_CARD_MODEL_LIST).size(), is(DUMMY_CARDS.length + 1));
         assertThat(mModel.get(SELECTED_CREDIT_CARD), is(DUMMY_CARDS[1]));
 
         // That is true even if only the GUID remains the same.
@@ -285,7 +285,7 @@ public class FastCheckoutMediatorTest {
                 DUMMY_CARDS[1].getGUID(), "https://example.fr", "56456551111");
         mMediator.setCreditCardItems(
                 new FastCheckoutCreditCard[] {DUMMY_CARDS[0], DUMMY_CARDS[1], sameGUIDCard});
-        assertThat(models.size(), is(4));
+        assertThat(mModel.get(CREDIT_CARD_MODEL_LIST).size(), is(4));
         assertThat(mModel.get(SELECTED_CREDIT_CARD), is(sameGUIDCard));
     }
 
