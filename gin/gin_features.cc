@@ -34,6 +34,18 @@ BASE_FEATURE(kV8FlushBaselineCode,
              "V8FlushBaselineCode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables code flushing based on tab visibility.
+BASE_FEATURE(kV8FlushCodeBasedOnTabVisibility,
+             "V8FlushCodeBasedOnTabVisibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables code flushing based on time.
+BASE_FEATURE(kV8FlushCodeBasedOnTime,
+             "V8FlushCodeBasedOnTime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kV8FlushCodeOldTime{&kV8FlushCodeBasedOnTime,
+                                                  "V8FlushCodeOldTime", 30};
+
 // Enables finalizing streaming JS compilations on a background thread.
 BASE_FEATURE(kV8OffThreadFinalization,
              "V8OffThreadFinalization",

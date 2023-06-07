@@ -249,6 +249,12 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-flush-bytecode");
   SetV8FlagsIfOverridden(features::kV8FlushBaselineCode,
                          "--flush-baseline-code", "--no-flush-baseline-code");
+  SetV8FlagsIfOverridden(features::kV8FlushCodeBasedOnTabVisibility,
+                         "--flush-code-based-on-tab-visibility",
+                         "--no-flush-code-based-on-tab-visibility");
+  SetV8FlagsIfOverridden(features::kV8FlushCodeBasedOnTime,
+                         "--flush-code-based-on-time",
+                         "--no-flush-code-based-on-time");
   SetV8FlagsIfOverridden(features::kV8OffThreadFinalization,
                          "--finalize-streaming-on-background",
                          "--no-finalize-streaming-on-background");
@@ -317,6 +323,12 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   if (base::FeatureList::IsEnabled(features::kV8FlushBytecode)) {
     if (int old_age = features::kV8FlushBytecodeOldAge.Get()) {
       SetV8FlagsFormatted("--bytecode-old-age=%i", old_age);
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kV8FlushCodeBasedOnTime)) {
+    if (int old_time = features::kV8FlushCodeOldTime.Get()) {
+      SetV8FlagsFormatted("--bytecode-old-time=%i", old_time);
     }
   }
 
