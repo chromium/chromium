@@ -885,11 +885,16 @@ RuntimeGetContextsFunction::GetFrameContexts() {
         return api::runtime::ContextType::kTab;
       case mojom::ViewType::kOffscreenDocument:
         return api::runtime::ContextType::kOffscreenDocument;
-
       case mojom::ViewType::kExtensionSidePanel:
+        return api::runtime::ContextType::kSidePanel;
+
       case mojom::ViewType::kExtensionGuest:
         // Skip these view types for now.
         break;
+
+        // Adding a new mojom::ViewType? Consider whether it should be exposed
+        // to extension developers via `chrome.runtime.getContexts()` and, if
+        // so, add a new entry in the runtime API.
     }
 
     return api::runtime::ContextType::kNone;

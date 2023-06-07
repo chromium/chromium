@@ -144,7 +144,7 @@
       {
         "id": "ContextType",
         "type": "string",
-        "enum": ["TAB", "POPUP", "BACKGROUND", "OFFSCREEN_DOCUMENT"]
+        "enum": ["TAB", "POPUP", "BACKGROUND", "OFFSCREEN_DOCUMENT", "SIDE_PANEL"]
       },
       {
         "id": "ExtensionContext",

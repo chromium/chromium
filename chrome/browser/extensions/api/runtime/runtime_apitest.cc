@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
@@ -31,6 +32,8 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/offscreen_document_host.h"
@@ -634,7 +637,11 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
              "name": "Get Contexts",
              "version": "0.1",
              "manifest_version": 3,
-             "permissions": ["offscreen"],
+             "permissions": ["offscreen", "sidePanel"],
+             "side_panel": {
+               "default_path": "side_panel.html"
+             },
+             "action": {},
              "background": {
                "service_worker": "background.js"
              }
@@ -646,6 +653,13 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
                         "<html>Hello, world!</html>");
     test_dir_.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
                         "<html>Hello, offscreen world!</html>");
+    test_dir_.WriteFile(FILE_PATH_LITERAL("side_panel.html"),
+                        R"(<html>
+                             Hello, side panel!
+                             <script src="side_panel.js"></script>
+                           </html>)");
+    test_dir_.WriteFile(FILE_PATH_LITERAL("side_panel.js"),
+                        "chrome.test.sendMessage('panel opened');");
     extension_ = LoadExtension(test_dir_.UnpackedPath());
     ASSERT_TRUE(extension_);
   }
@@ -966,6 +980,73 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
                          expected_frame_id, expected_document_id.c_str(),
                          expected_frame_url.c_str(), expected_origin.c_str());
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
+}
+
+// Tests retrieving a side panel context from the `runtime.getContexts()` API.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetSidePanelContext) {
+  // Set the side panel to open on toolbar action click. This makes it easier
+  // to trigger.
+  static constexpr char kSetUpSidePanelScript[] =
+      R"((async () => {
+           await chrome.sidePanel.setPanelBehavior(
+               {openPanelOnActionClick: true});
+           chrome.test.sendScriptResult('done');
+         })();)";
+
+  base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension().id(), kSetUpSidePanelScript,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_EQ("done", script_result);
+
+  // Click on the toolbar action and wait for the panel context to open.
+  ExtensionTestMessageListener panel_listener("panel opened");
+  ExtensionActionTestHelper::Create(browser())->Press(extension().id());
+  ASSERT_TRUE(panel_listener.WaitUntilSatisfied());
+
+  // Fetch the side panel host.
+  ExtensionHostRegistry* host_registry = ExtensionHostRegistry::Get(profile());
+  std::vector<ExtensionHost*> hosts =
+      host_registry->GetHostsForExtension(extension().id());
+  ASSERT_EQ(1u, hosts.size());
+  ExtensionHost* panel_host = hosts[0];
+  EXPECT_EQ(mojom::ViewType::kExtensionSidePanel,
+            panel_host->extension_host_type());
+  content::RenderFrameHost* panel_frame_host =
+      panel_host->web_contents()->GetPrimaryMainFrame();
+
+  // Verify the `runtime.getContexts()` API can retrieve the context and that
+  // the proper values are returned.
+  int expected_frame_id = ExtensionApiFrameIdMap::GetFrameId(panel_frame_host);
+  std::string expected_context_id =
+      ExtensionApiFrameIdMap::GetContextId(panel_frame_host)
+          .AsLowercaseString();
+  std::string expected_document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(panel_frame_host).ToString();
+  std::string expected_frame_url =
+      extension().GetResourceURL("side_panel.html").spec();
+  std::string expected_origin = extension().origin().Serialize();
+
+  base::Value side_panel_contexts =
+      GetContexts(R"({"contextTypes": ["SIDE_PANEL"]})");
+
+  // Verify the properties of the returned context.
+  static constexpr char kExpectedTemplate[] =
+      R"([{
+            "contextType": "SIDE_PANEL",
+            "contextId": "%s",
+            "tabId": -1,
+            "windowId": -1,
+            "frameId": %d,
+            "documentId": "%s",
+            "documentUrl": "%s",
+            "documentOrigin": "%s",
+            "incognito": false
+         }])";
+  std::string expected =
+      base::StringPrintf(kExpectedTemplate, expected_context_id.c_str(),
+                         expected_frame_id, expected_document_id.c_str(),
+                         expected_frame_url.c_str(), expected_origin.c_str());
+  EXPECT_THAT(side_panel_contexts, base::test::IsJson(expected));
 }
 
 // Tests the behavior of `runtime.getContexts()` with a split-mode incognito
