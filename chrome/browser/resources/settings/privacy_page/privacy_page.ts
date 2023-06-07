@@ -274,6 +274,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         computed:
             'computeNotificationsDefaultBehaviorLabel_(safetyCheckNotificationPermissionsEnabled_)',
       },
+
+      enableSafetyHub_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableSafetyHub');
+        },
+      },
     };
   }
 
@@ -298,6 +305,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private privateStateTokensEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private enablePermissionStorageAccessApi_: boolean;
+  private enableSafetyHub_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private browserProxy_: PrivacyPageBrowserProxy =

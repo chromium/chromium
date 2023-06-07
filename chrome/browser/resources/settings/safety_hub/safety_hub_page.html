@@ -1,0 +1,24 @@
+<style>
+  .tile-container {
+    align-items: stretch;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+
+  .tile {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    flex: 1;
+  }
+</style>
+
+<!-- TODO(crbug.com/1443466): Add correct strings here. -->
+<div class="tile-container">
+  <div class="tile">$i18n{privacyPageTitle}</div>
+  <div class="tile">$i18n{privacyPageTitle}</div>
+  <div class="tile">$i18n{privacyPageTitle}</div>
+</div>

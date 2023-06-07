@@ -33,6 +33,7 @@ import './privacy_page/security_keys_phones_subpage.js';
 import './privacy_page/security_keys_phones_list.js';
 import './privacy_page/security_keys_phones_dialog.js';
 import './privacy_page/security_page.js';
+import './safety_hub/safety_hub_page.js';
 import './site_settings/all_sites.js';
 import './site_settings/file_system_site_entry.js';
 import './site_settings/file_system_site_entry_item.js';
@@ -209,6 +210,7 @@ export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/s
 export {SettingsResetPageElement} from './reset_page/reset_page.js';
 export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
 export {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
+export {SettingsSafetyHubPageElement} from './safety_hub/safety_hub_page.js';
 export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
 export {SettingsSearchEngineEditDialogElement} from './search_engines_page/search_engine_edit_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';

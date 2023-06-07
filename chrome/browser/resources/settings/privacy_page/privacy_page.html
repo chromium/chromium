@@ -149,6 +149,15 @@
         </settings-subpage>
       </template>
 
+      <template is="dom-if" if="[[enableSafetyHub_]]">
+        <template is="dom-if" route-path="/safetyHub">
+          <settings-subpage id="safetyHub" class="multi-card">
+            <settings-safety-hub-page>
+            </settings-safety-hub-page>
+          </settings-subpage>
+        </template>
+      </template>
+
       <template is="dom-if" route-path="/security">
         <settings-subpage id="security" page-title="$i18n{securityPageTitle}"
             associated-control="[[$$('#securityLinkRow')]]"

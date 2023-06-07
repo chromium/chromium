@@ -86,6 +86,7 @@ build_webui_tests("build") {
     "safety_check_page_test.ts",
     "safety_check_permissions_test.ts",
     "safety_check_test_utils.ts",
+    "safety_hub_test.ts",
     "search_engines_page_test.ts",
     "search_page_test.ts",
     "search_settings_test.ts",

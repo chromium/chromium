@@ -883,6 +883,14 @@ TEST_F('CrSettingsRouteTest', 'DynamicParameters', function() {
   runMochaSuite('DynamicParameters');
 });
 
+TEST_F('CrSettingsRouteTest', 'SafetyHubReachableTests', function() {
+  runMochaSuite('SafetyHubReachableTests');
+});
+
+TEST_F('CrSettingsRouteTest', 'SafetyHubNotReachableTests', function() {
+  runMochaSuite('SafetyHubNotReachableTests');
+});
+
 // Copied from Polymer 2 test:
 // Failing on ChromiumOS dbg. https://crbug.com/709442
 GEN('#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)) && !defined(NDEBUG)');
@@ -1081,6 +1089,7 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  // Flaky on all OSes. TODO(crbug.com/1127733): Enable the test.
  ['ResetPage', 'reset_page_test.js', 'DISABLED_All'],
  ['ResetProfileBanner', 'reset_profile_banner_test.js'],
+ ['SafetyHub', 'safety_hub_test.js'],
  ['SearchEngines', 'search_engines_page_test.js'],
  ['SearchPage', 'search_page_test.js'],
  ['Search', 'search_settings_test.js'],

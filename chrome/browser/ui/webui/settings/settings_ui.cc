@@ -504,6 +504,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "safetyCheckExtensionsReviewEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
 
+  html_source->AddBoolean("enableSafetyHub",
+                          base::FeatureList::IsEnabled(features::kSafetyHub));
+
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(

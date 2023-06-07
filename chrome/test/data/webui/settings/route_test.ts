@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {buildRouter, Route, Router, routes, setPageVisibilityForTesting} from 'chrome://settings/settings.js';
+import {buildRouter, loadTimeData, Route, Router, routes, setPageVisibilityForTesting, SettingsRoutes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
 
@@ -359,5 +360,46 @@ suite('NonExistentRoute', function() {
   test('redirect to basic', function() {
     assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
     assertEquals('/', location.pathname);
+  });
+});
+
+suite('SafetyHubReachableTests', function() {
+  let routes: SettingsRoutes;
+
+  setup(function() {
+    loadTimeData.overrideValues({enableSafetyHub: true});
+    Router.resetInstanceForTesting(buildRouter());
+
+    routes = Router.getInstance().getRoutes();
+    Router.getInstance().navigateTo(routes.BASIC);
+    return flushTasks();
+  });
+
+  test('SafetyHubRouteReachable', async function() {
+    let path = Router.getInstance().getCurrentRoute().path;
+    assertEquals('/', path);
+
+    Router.getInstance().navigateTo(routes.SAFETY_HUB);
+    await flushTasks();
+
+    // Assert that the route is changed to safety hub.
+    path = Router.getInstance().getCurrentRoute().path;
+    assertEquals('/safetyHub', path);
+  });
+});
+
+suite('SafetyHubNotReachableTests', function() {
+  let routes: SettingsRoutes;
+
+  setup(function() {
+    loadTimeData.overrideValues({enableSafetyHub: false});
+    Router.resetInstanceForTesting(buildRouter());
+
+    routes = Router.getInstance().getRoutes();
+  });
+
+  test('SafetyHubRouteNotReachable', async function() {
+    // Assert that safety hub route is not reachable.
+    assertEquals(routes.SAFETY_HUB, undefined);
   });
 });

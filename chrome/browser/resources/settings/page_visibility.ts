@@ -23,6 +23,7 @@ export interface PageVisibility {
   privacy?: boolean|PrivacyPageVisibility;
   reset?: boolean;
   safetyCheck?: boolean;
+  safetyHub?: boolean;
   system?: boolean;
 }
 
@@ -65,6 +66,7 @@ if (loadTimeData.getBoolean('isGuest')) {
     privacy: false,
     reset: false,
     safetyCheck: false,
+    safetyHub: false,
     system: false,
   };
   // </if>
@@ -75,6 +77,7 @@ if (loadTimeData.getBoolean('isGuest')) {
     onStartup: false,
     reset: false,
     safetyCheck: false,
+    safetyHub: false,
     appearance: {
       setTheme: false,
       homeButton: false,
