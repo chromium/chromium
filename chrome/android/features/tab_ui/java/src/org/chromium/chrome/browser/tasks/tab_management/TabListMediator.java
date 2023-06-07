@@ -565,7 +565,9 @@ class TabListMediator {
                     // undo, identify the related TabIds and determine newIndex based on if any of
                     // the related ids are present in model.
                     newIndex = getIndexForTabWithRelatedTabs(tab);
-                    model.updateTabListModelIdForGroup(tab, newIndex);
+                    if (newIndex != Tab.INVALID_TAB_ID) {
+                        model.updateTabListModelIdForGroup(tab, newIndex);
+                    }
                 }
 
                 mLastSelectedTabListModelIndex = oldIndex;
