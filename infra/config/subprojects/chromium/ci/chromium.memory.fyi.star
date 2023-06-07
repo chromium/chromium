@@ -29,7 +29,7 @@ consoles.console_view(
 # found when we now post-process stdout.
 ci.builder(
     name = "linux-exp-asan-lsan-fyi-rel",
-    schedule = "with 24h interval",
+    schedule = "with 6h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -58,7 +58,7 @@ ci.builder(
 # found when we now post-process stdout.
 ci.builder(
     name = "linux-exp-msan-fyi-rel",
-    schedule = "with 24h interval",
+    schedule = "with 6h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -89,7 +89,7 @@ ci.builder(
 # found when we now post-process stdout.
 ci.builder(
     name = "linux-exp-tsan-fyi-rel",
-    schedule = "with 24h interval",
+    schedule = "with 6h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
