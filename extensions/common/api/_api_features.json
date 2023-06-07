@@ -557,7 +557,6 @@
   "runtime.getContexts": {
     "min_manifest_version": 3,
     "contexts": ["blessed_extension"],
-    "channel": "dev",
     "feature_flag": "ApiRuntimeGetContexts"
   },
   "runtime.getURL": {

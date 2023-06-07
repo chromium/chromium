@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -39,7 +38,6 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -745,7 +743,6 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
  private:
   raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
   TestExtensionDir test_dir_;
-  ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
 };
 
 // Tests retrieving the background service worker context using
