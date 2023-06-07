@@ -2984,7 +2984,6 @@ test("content_unittests") {
 
   if (is_mac) {
     data_deps += [ "//device/fido/strings:fido_test_strings" ]
-    deps += [ "//base:base_arc" ]
   }
 
   if (is_posix) {

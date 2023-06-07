@@ -223,6 +223,7 @@ if (is_apple) {
         "Foundation.framework",
       ]
     }
+    defines = [ "BASE_IMPLEMENTATION" ]
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
       "//base:base_static",
@@ -3492,9 +3493,10 @@ test("base_unittests") {
   }
 
   if (is_apple) {
-    public_deps = [ ":base_unittests_bundle_data" ]
-
-    deps += [ ":base_unittests_noarc" ]
+    public_deps = [
+      ":base_unittests_bundle_data",
+      ":base_unittests_noarc",
+    ]
   }
 
   if (!is_ios) {

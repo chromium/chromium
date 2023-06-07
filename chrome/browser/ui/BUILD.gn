@@ -4133,9 +4133,8 @@ static_library("ui") {
       "//chrome/browser/apps/app_shim",
     ]
 
+    public_deps += [ ":ui_arc" ]
     deps += [
-      ":ui_arc",
-      "//base:base_arc",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/mac:keystone_glue",
       "//chrome/browser/updater:browser_updater_client",

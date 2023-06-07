@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/base_export.h"
 #include "build/build_config.h"
 
 // This file defines wrappers to allow C++ code to own Objective-C objects
@@ -39,7 +40,7 @@
 
 #define OWNED_OBJC_DECL(name, objctype)                      \
   namespace base::apple {                                    \
-  class Owned##name {                                        \
+  class BASE_EXPORT Owned##name {                            \
    public:                                                   \
     /* Default-construct in a null state. */                 \
     Owned##name();                                           \

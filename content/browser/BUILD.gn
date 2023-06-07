@@ -2625,7 +2625,6 @@ source_set("browser") {
     ]
     deps += [
       ":mac_helpers",
-      "//base:base_arc",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//components/remote_cocoa/common:mojo",

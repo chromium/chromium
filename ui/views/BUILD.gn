@@ -667,7 +667,6 @@ component("views") {
     ]
     public_deps += [ "//components/remote_cocoa/common:mojo" ]
     deps += [
-      "//base:base_arc",
       "//components/crash/core/common",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",

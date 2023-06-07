@@ -364,10 +364,7 @@ static_library("content_shell_lib") {
   }
 
   if (is_mac) {
-    deps += [
-      "//base:base_arc",
-      "//ui/display:test_support",
-    ]
+    deps += [ "//ui/display:test_support" ]
   }
 
   if (is_ios) {
