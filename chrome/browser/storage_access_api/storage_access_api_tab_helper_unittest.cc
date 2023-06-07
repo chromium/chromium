@@ -14,7 +14,7 @@
 
 class MockStorageAccessAPIService : public StorageAccessAPIService {
  public:
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               RenewPermissionGrant,
               (const url::Origin& embedded_origin,
                const url::Origin& top_frame_origin),
@@ -64,7 +64,8 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
   EXPECT_CALL(service(), RenewPermissionGrant(
                              url::Origin::Create(GURL("https://bar.test")),
                              url::Origin::Create(GURL("https://example.test"))))
-      .Times(1);
+      .Times(1)
+      .WillOnce(testing::Return(true));
 
   NavigateAndCommit(GURL("https://example.test/"));
 

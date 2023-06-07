@@ -5968,6 +5968,7 @@ test("unit_tests") {
     "../browser/status_icons/status_icon_unittest.cc",
     "../browser/status_icons/status_tray_unittest.cc",
     "../browser/storage/durable_storage_permission_context_unittest.cc",
+    "../browser/storage_access_api/site_pair_cache_unittest.cc",
     "../browser/storage_access_api/storage_access_api_service_factory_unittest.cc",
     "../browser/storage_access_api/storage_access_api_service_impl_unittest.cc",
     "../browser/storage_access_api/storage_access_api_tab_helper_unittest.cc",

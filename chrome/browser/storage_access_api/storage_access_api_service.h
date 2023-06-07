@@ -14,11 +14,11 @@ class Origin;
 class StorageAccessAPIService {
  public:
   // May renew Storage Access API permission grants associated with the given
-  // origins.
+  // origins. Should return true if any grant was renewed, for ease of testing.
   //
   // The implementations of this method may apply rate limiting and caching in
   // order to avoid unnecessary disk writes.
-  virtual void RenewPermissionGrant(const url::Origin& embedded_origin,
+  virtual bool RenewPermissionGrant(const url::Origin& embedded_origin,
                                     const url::Origin& top_frame_origin) = 0;
 };
 
