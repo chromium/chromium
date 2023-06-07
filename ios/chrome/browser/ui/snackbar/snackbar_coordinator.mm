@@ -45,6 +45,8 @@
   [[MDCSnackbarManager defaultManager] setMessageFont:defaultSnackbarFont];
   [[MDCSnackbarManager defaultManager] setButtonFont:defaultSnackbarFont];
 
+  [MDCSnackbarManager defaultManager].usesGM3Shapes = YES;
+
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:self
                            forProtocol:@protocol(SnackbarCommands)];
