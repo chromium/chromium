@@ -98,6 +98,7 @@ void EcheConnectionStatusHandler::SetConnectionStatusForUi(
 }
 
 void EcheConnectionStatusHandler::ResetConnectionStatus() {
+  is_connecting_or_connected_ = false;
   last_update_timestamp_ = base::Time();
   connection_status_for_ui_ =
       mojom::ConnectionStatus::kConnectionStatusConnecting;
