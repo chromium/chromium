@@ -180,7 +180,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         } else {
             start = windowLayout.width;
             end = mIsMaximized ? displayWidth : clampedInitialWidth;
-            updateListener = (anim) -> setWindowWidth((int) anim.getAnimatedValue());
+            View content = (ViewGroup) mActivity.findViewById(R.id.compositor_view_holder);
+            updateListener = (anim) -> {
+                // Switch the invisibility type to GONE to prevent sluggish resizing artifacts.
+                if (content.getVisibility() != View.GONE) content.setVisibility(View.GONE);
+                setWindowWidth((int) anim.getAnimatedValue());
+            };
         }
         // Keep the WebContents invisible during the animation to hide the jerky visual artifacts
         // of the contents due to resizing.
@@ -196,11 +201,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             // the resized web contents.
             new Handler().postDelayed(() -> content.setVisibility(View.VISIBLE), 20);
         } else {
-            content.setVisibility(View.GONE);
+            content.setVisibility(View.INVISIBLE);
         }
     }
 
     private void onMaximizeEnd() {
+        setContentVisible(false);
         if (isMaximized()) {
             if (mSheetOnRight) {
                 configureLayoutBeyondScreen(false);
