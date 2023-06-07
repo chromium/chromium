@@ -132,34 +132,54 @@ OnDeviceTailModelExecutor::OnDeviceTailModelExecutor()
 
 OnDeviceTailModelExecutor::~OnDeviceTailModelExecutor() = default;
 
-bool OnDeviceTailModelExecutor::Init(const base::FilePath& model_filepath,
-                                     const base::FilePath& vocab_filepath,
-                                     const ModelMetadata& metadata) {
+bool OnDeviceTailModelExecutor::Init() {
+  executor_last_called_time_ = base::TimeTicks::Now();
   Reset();
-  if (model_filepath.empty() || vocab_filepath.empty()) {
+  if (model_filepath_.empty() || vocab_filepath_.empty()) {
     return false;
   }
-
   auto tokenizer = std::make_unique<OnDeviceTailTokenizer>();
-  tokenizer->Init(vocab_filepath);
+  tokenizer->Init(vocab_filepath_);
   if (!tokenizer->IsReady()) {
     DVLOG(1) << "Could not create tokenizer from file "
-             << vocab_filepath.LossyDisplayName();
+             << vocab_filepath_.LossyDisplayName();
+    vocab_filepath_.clear();
     return false;
   }
   tokenizer_ = std::move(tokenizer);
 
-  if (!InitModelInterpreter(model_filepath)) {
+  if (!InitModelInterpreter(model_filepath_)) {
     Reset();
+    model_filepath_.clear();
     return false;
   }
 
-  state_size_ = metadata.lstm_model_params().state_size();
-  num_layer_ = metadata.lstm_model_params().num_layer();
-  embedding_dimension_ = metadata.lstm_model_params().embedding_dimension();
+  state_size_ = metadata_.lstm_model_params().state_size();
+  num_layer_ = metadata_.lstm_model_params().num_layer();
+  embedding_dimension_ = metadata_.lstm_model_params().embedding_dimension();
   vocab_size_ = tokenizer_->vocab_size();
 
   return true;
+}
+
+bool OnDeviceTailModelExecutor::Init(const base::FilePath& model_filepath,
+                                     const base::FilePath& vocab_filepath,
+                                     const ModelMetadata& metadata) {
+  if (model_filepath.empty() || vocab_filepath.empty()) {
+    return false;
+  }
+
+  model_filepath_ = model_filepath;
+  vocab_filepath_ = vocab_filepath;
+  metadata_ = metadata;
+
+  if (Init()) {
+    return true;
+  }
+
+  model_filepath_.clear();
+  vocab_filepath_.clear();
+  return false;
 }
 
 bool OnDeviceTailModelExecutor::InitModelInterpreter(
@@ -524,6 +544,7 @@ float OnDeviceTailModelExecutor::GetLogProbability(float probability) {
 std::vector<OnDeviceTailModelExecutor::Prediction>
 OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
     const ModelInput& input) {
+  executor_last_called_time_ = base::TimeTicks::Now();
   DCHECK(IsReady());
   std::vector<Prediction> predictions;
 
