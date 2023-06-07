@@ -472,6 +472,22 @@ virtual/virtual_failures/failures/expected/device_failure.html [ Skip ]
 passes/slow.html [ Slow ]
 """)
 
+    if not filesystem.exists(MOCK_WEB_TESTS + 'SingleThreadedTests'):
+        filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'SmokeTests/SingleThreadedTests', """
+fast/borders/border-image-outset-split-inline-vertical-lr.html
+non/virtual
+passes/text.html
+virtual/non-existing/test.html
+virtual/virtual_passes/passes/text.html
+virtual/virtual_passes/passes/any.html
+virtual/virtual_passes
+virtual/virtual_passes/
+virtual/virtual_passes/passes
+virtual/virtual_passes/passes/
+""")
+
+
     # FIXME: This test was only being ignored because of missing a leading '/'.
     # Fixing the typo causes several tests to assert, so disabling the test entirely.
     # Add in a file should be ignored by port.find_test_files().

@@ -129,7 +129,6 @@ ARCHIVED_RESULTS_LIMIT = 25
 
 ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
 
-
 class Port(object):
     """Abstract class for Port-specific hooks for the web_test package."""
 
@@ -2555,11 +2554,32 @@ class Port(object):
                 return suite.args
         return []
 
+    @memoized
+    def _get_blocked_tests_for_threaded_compositing_testing(self):
+        path = self._filesystem.join(self.web_tests_dir(),
+                                     'SmokeTests/SingleThreadedTests')
+        return self._filesystem.read_text_file(path).split('\n')
+
     def _is_in_allowlist_for_threaded_compositing(self, test_name):
-        # We start with a very simple and small subset of the tests to create
-        # the infrastructure for an allowlist and plan to move to an external
-        # file soon.
-        return test_name.startswith("vibration")
+        # We currently only turn on threaded compositing tests for Linux
+        if not self.host.platform.is_linux():
+            return False
+        # We currently only turn on threaded compositing for web_tests
+        if self.is_wpt_test(test_name):
+            return False
+
+        block_list = self._get_blocked_tests_for_threaded_compositing_testing()
+
+        # We apply the setting of a base test to all of its virtual versions
+        base_name = self.lookup_virtual_test_base(test_name)
+        if base_name:
+            if base_name in block_list:
+                return False
+
+        if test_name in block_list:
+            return False
+
+        return False
 
     def _build_path(self, *comps):
         """Returns a path from the build directory."""

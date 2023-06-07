@@ -1326,6 +1326,7 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/web_tests/TestExpectations",
       "//third_party/blink/web_tests/WebDriverExpectations",
       "//third_party/blink/web_tests/WebGPUExpectations",
+      "//third_party/blink/web_tests/SmokeTests/SingleThreadedTests",
 
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/accessibility/",
@@ -1479,6 +1480,7 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/web_tests/TestExpectations",
       "//third_party/blink/web_tests/WebDriverExpectations",
       "//third_party/blink/web_tests/WebGPUExpectations",
+      "//third_party/blink/web_tests/SmokeTests/SingleThreadedTests",
 
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/external/",
@@ -1626,6 +1628,7 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/web_tests/TestExpectations",
       "//third_party/blink/web_tests/VirtualTestSuites",
       "//third_party/blink/web_tests/W3CImportExpectations",
+      "//third_party/blink/web_tests/SmokeTests/SingleThreadedTests",
       "//third_party/catapult/common/py_utils/",
       "//third_party/catapult/devil/",
       "//third_party/catapult/dependency_manager/",
