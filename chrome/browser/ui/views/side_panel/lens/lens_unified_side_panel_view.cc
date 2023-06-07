@@ -29,6 +29,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_details.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -176,24 +178,59 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
 }
 
 void LensUnifiedSidePanelView::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  auto last_committed_url = web_view_->GetWebContents()->GetLastCommittedURL();
-
   if (!IsDefaultSearchProviderGoogle()) {
     SetContentAndNewTabButtonVisible(/* visible= */ true,
                                      /* enable_new_tab_button= */ true);
     return;
   }
 
-  // Since Lens Web redirects to the actual UI using HTML redirection, this
-  // method gets fired twice. This check ensures we only show the user the
-  // rendered page and not the redirect. It also ensures we immediately render
-  // any page that is not lens.google.com
-  // TODO(243935799): Cleanup this check once Lens Web no longer redirects
-  if (lens::ShouldPageBeVisible(last_committed_url))
-    SetContentAndNewTabButtonVisible(
-        /* visible= */ true,
-        /* enable_new_tab_button= */ lens::IsValidLensResultUrl(
-            last_committed_url));
+  // Google Lens can configure which web contents listener callback to use to
+  // determine when to remove the loading state. Other search providers will
+  // always use DocumentOnLoadCompletedInPrimaryMainFrame.
+  if (!lens::features::
+          GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    return;
+  }
+  MaybeSetContentAndNewTabButtonVisible(
+      web_view_->GetWebContents()->GetLastCommittedURL());
+}
+
+void LensUnifiedSidePanelView::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  if (!lens::features::GetDismissLoadingStateOnDomContentLoaded() ||
+      !IsDefaultSearchProviderGoogle()) {
+    return;
+  }
+  MaybeSetContentAndNewTabButtonVisible(
+      render_frame_host->GetLastCommittedURL());
+}
+
+void LensUnifiedSidePanelView::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!lens::features::GetDismissLoadingStateOnDidFinishNavigation() ||
+      !IsDefaultSearchProviderGoogle()) {
+    return;
+  }
+  MaybeSetContentAndNewTabButtonVisible(navigation_handle->GetURL());
+}
+
+void LensUnifiedSidePanelView::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  if (!lens::features::GetDismissLoadingStateOnNavigationEntryCommitted() ||
+      !IsDefaultSearchProviderGoogle() || !load_details.entry) {
+    return;
+  }
+  MaybeSetContentAndNewTabButtonVisible(load_details.entry->GetURL());
+}
+
+void LensUnifiedSidePanelView::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (!lens::features::GetDismissLoadingStateOnDidFinishLoad() ||
+      !IsDefaultSearchProviderGoogle()) {
+    return;
+  }
+  MaybeSetContentAndNewTabButtonVisible(validated_url);
 }
 
 // Catches case where Chrome errors. I.e. no internet connection
@@ -208,6 +245,23 @@ void LensUnifiedSidePanelView::PrimaryPageChanged(content::Page& page) {
             : true;
     SetContentAndNewTabButtonVisible(/* visible= */ true,
                                      enable_new_tab_button);
+  } else if (lens::features::GetDismissLoadingStateOnPrimaryPageChanged() &&
+             IsDefaultSearchProviderGoogle()) {
+    MaybeSetContentAndNewTabButtonVisible(last_committed_url);
+  }
+}
+
+void LensUnifiedSidePanelView::MaybeSetContentAndNewTabButtonVisible(
+    const GURL& url) {
+  // Since Lens Web redirects to the actual UI using HTML redirection, this
+  // method may get fired multiple times. This check ensures we only show the
+  // user the rendered page and not the redirect. It also ensures we
+  // immediately render any page that is not lens.google.com.
+  // TODO(243935799): Cleanup this check once Lens Web no longer redirects
+  if (lens::ShouldPageBeVisible(url)) {
+    SetContentAndNewTabButtonVisible(
+        /* visible= */ true,
+        /* enable_new_tab_button= */ lens::IsValidLensResultUrl(url));
   }
 }
 
