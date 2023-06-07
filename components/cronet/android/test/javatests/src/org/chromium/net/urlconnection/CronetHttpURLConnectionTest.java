@@ -6,7 +6,8 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -18,6 +19,7 @@ import android.os.Process;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -83,7 +85,7 @@ public class CronetHttpURLConnectionTest {
                 (builder) -> { mTestRule.enableDiskCache(builder); });
 
         mTestRule.setStreamHandlerFactory(mTestRule.getTestFramework().startEngine());
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @After
@@ -301,13 +303,15 @@ public class CronetHttpURLConnectionTest {
             secondConnection.getResponseCode();
             fail();
         } catch (IOException e) {
-            assertTrue(e instanceof java.net.ConnectException || e instanceof CronetException);
+            MatcherAssert.assertThat(e,
+                    anyOf(instanceOf(java.net.ConnectException.class),
+                            instanceOf(CronetException.class)));
             assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
                     "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
         }
         checkExceptionsAreThrown(secondConnection);
         // Starts the server to avoid crashing on shutdown in tearDown().
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @Test
@@ -324,7 +328,9 @@ public class CronetHttpURLConnectionTest {
             mUrlConnection.getResponseCode();
             fail();
         } catch (IOException e) {
-            assertTrue(e instanceof java.net.ConnectException || e instanceof CronetException);
+            MatcherAssert.assertThat(e,
+                    anyOf(instanceOf(java.net.ConnectException.class),
+                            instanceOf(CronetException.class)));
             assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
                     "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
         }
@@ -747,7 +753,7 @@ public class CronetHttpURLConnectionTest {
         int bytesRead = in.read(actualOutput, 0, actualOutput.length);
         mUrlConnection.disconnect();
         assertThat(bytesRead).isEqualTo(testInputBytes.length);
-        assertTrue(Arrays.equals(testInputBytes, actualOutput));
+        assertThat(actualOutput).isEqualTo(testInputBytes);
     }
 
     @Test
@@ -874,7 +880,7 @@ public class CronetHttpURLConnectionTest {
             // message.
         }
         // Spins up server to avoid crash when shutting it down in tearDown().
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @Test

@@ -6,7 +6,6 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -57,7 +56,7 @@ public class CronetChunkedOutputStreamTest {
     @Before
     public void setUp() throws Exception {
         mTestRule.setStreamHandlerFactory(mTestRule.getTestFramework().getEngine());
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @After
@@ -173,7 +172,7 @@ public class CronetChunkedOutputStreamTest {
             }
         }
         // Restarting server to run the test for a second time.
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @Test

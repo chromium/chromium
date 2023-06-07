@@ -4,6 +4,8 @@
 
 package org.chromium.net.smoke;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.net.smoke.TestSupport.Protocol.QUIC;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -12,7 +14,6 @@ import androidx.test.filters.SmallTest;
 
 import org.json.JSONObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class QuicTest {
     @Test
     @SmallTest
     public void testQuic() throws Exception {
-        Assert.assertTrue(mServer.start());
+        assertThat(mServer.start()).isTrue();
         final String urlString = mServer.getSuccessURL();
         final URL url = new URL(urlString);
 
@@ -78,6 +79,6 @@ public class QuicTest {
                 break;
             }
         }
-        Assert.assertTrue(quicNegotiated);
+        assertThat(quicNegotiated).isTrue();
     }
 }

@@ -7,7 +7,6 @@ package org.chromium.net.urlconnection;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -65,7 +64,7 @@ public class CronetFixedModeOutputStreamTest {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
                 (builder) -> mTestRule.enableDiskCache(builder));
         mTestRule.setStreamHandlerFactory(mTestRule.getTestFramework().startEngine());
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @After
@@ -179,7 +178,7 @@ public class CronetFixedModeOutputStreamTest {
             }
         }
         // Restarting server to run the test for a second time.
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
 
     @Test
@@ -276,8 +275,7 @@ public class CronetFixedModeOutputStreamTest {
             String expectedVariant = "expected 0 bytes but received 1";
             String expectedVariantOnLollipop = "expected " + (TestUtil.UPLOAD_DATA.length - 1)
                     + " bytes but received " + TestUtil.UPLOAD_DATA.length;
-            assertTrue(expectedVariant.equals(e.getMessage())
-                    || expectedVariantOnLollipop.equals(e.getMessage()));
+            assertThat(e).hasMessageThat().isAnyOf(expectedVariant, expectedVariantOnLollipop);
         }
     }
 

@@ -11,7 +11,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +45,7 @@ public class Http2Test {
     public void testHttp2() throws Exception {
         mRule.getTestSupport().installMockCertVerifierForTesting(mRule.getCronetEngineBuilder());
         mRule.initCronetEngine();
-        Assert.assertTrue(mServer.start());
+        assertThat(mServer.start()).isTrue();
         SmokeTestRequestCallback callback = new SmokeTestRequestCallback();
         UrlRequest.Builder requestBuilder = mRule.getCronetEngine().newUrlRequestBuilder(
                 mServer.getSuccessURL(), callback, callback.getExecutor());
