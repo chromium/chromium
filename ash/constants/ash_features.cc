@@ -419,6 +419,11 @@ BASE_FEATURE(kCrostiniQtImeSupport,
              "CrostiniQtImeSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Crostini upgrade to LXD v5.
+BASE_FEATURE(kCrostiniUseLxd5,
+             "CrostiniUseLxd5",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Crostini Virtual Keyboard support.
 BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
              "CrostiniVirtualKeyboardSupport",

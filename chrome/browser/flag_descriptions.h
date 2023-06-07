@@ -3122,6 +3122,9 @@ extern const char kCrostiniQtImeSupportDescription[];
 extern const char kCrostiniVirtualKeyboardSupportName[];
 extern const char kCrostiniVirtualKeyboardSupportDescription[];
 
+extern const char kCrostiniUseLxd5Name[];
+extern const char kCrostiniUseLxd5Description[];
+
 extern const char kBruschettaName[];
 extern const char kBruschettaDescription[];
 

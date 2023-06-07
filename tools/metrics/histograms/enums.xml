@@ -62655,6 +62655,7 @@ from previous Chrome versions.
   <int value="-158938746" label="NtpRealboxPedals:enabled"/>
   <int value="-158549277" label="enable-embeddedsearch-api"/>
   <int value="-158161384" label="SafeModeForCachedFlags:disabled"/>
+  <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
   <int value="-157931320" label="CloudApAuth:disabled"/>
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
@@ -62792,6 +62793,7 @@ from previous Chrome versions.
   <int value="-81940476"
       label="OverrideSimilarLanguagesForHrefTranslate:disabled"/>
   <int value="-81292879" label="EcheSWAMeasureLatency:enabled"/>
+  <int value="-81133688" label="CrostiniUseLxd5:enabled"/>
   <int value="-80501013" label="AutofillOffNoServerData:enabled"/>
   <int value="-80353187" label="disable-display-color-calibration"/>
   <int value="-80049694" label="HindiInscriptLayout:disabled"/>

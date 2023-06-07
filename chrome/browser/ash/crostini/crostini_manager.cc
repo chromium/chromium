@@ -1476,7 +1476,9 @@ void CrostiniManager::StartTerminaVm(std::string name,
       profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
     request.set_enable_audio_capture(true);
   }
-  request.add_features(vm_tools::concierge::StartVmRequest::LXD_4_LTS);
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniUseLxd5)) {
+    request.add_features(vm_tools::concierge::StartVmRequest::LXD_5_LTS);
+  }
   const int32_t cpus = base::SysInfo::NumberOfProcessors() - num_cores_disabled;
   DCHECK_LT(0, cpus);
   request.set_cpus(cpus);
