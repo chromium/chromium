@@ -21,7 +21,7 @@ During code review ensure the following -
 
 *   If generating multiple histograms programmatically or defining common set of
     histogram, guide them to use
-    [patterned-histograms](https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#Patterned-Histograms).
+    [histogram-suffixes](https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#Histogram-Suffixes).
 
 *   Verify that expires_after is reasonable. CL author should be able to justify
     it. See guidance at on
@@ -49,8 +49,11 @@ During code review ensure the following -
 *   If modifying an existing histogram, request that the histogram be
     renamed if its meaning has changed significantly. Common practices are to
     add suffix such as 2 to the name. When doing so, the existing entry for the
-    histogram should be removed and an obsoletion message should be added
-    following the [guidance](https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#obsolete) to point to the new histogram.
+    histogram should also be kept but with `<obsolete>` tag.
+
+*   Don't allow deleting histograms or enum buckets unless there is a *very*
+    compelling reason to do so (e.g. never logged). Instead they should be
+    marked as obsolete with `<obsolete>` tag.
 
 *   Re-numbering enum bucket values is not allowed as these break backward
     compatibility with respect to the data stored.

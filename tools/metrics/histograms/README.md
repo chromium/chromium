@@ -706,8 +706,7 @@ choose to add an obsoletion message or not, the date and milestone when the
 entry became obsolete will be automatically recorded.
 
 * Add the obsoletion message in the CL description in the format
-  OBSOLETE_HISTOGRAM[histogram name]=obsoletion message (e.g. OBSOLETE_HISTOGRAM
-  [Tab.Count]=Replaced by Tab.Count2).
+  OBSOLETE_HISTOGRAM[histogram name]=obsoletion message.
   * Note: currently, it is not possible to add the same obsoletion message
     to multiple histograms in a single tag. But you can add multiple obsoletion
     message tags in one changelist. The Chrome Metrics team is in the process
@@ -776,14 +775,13 @@ recording a "parent" histogram that aggregates across a set of breakdowns.
 
 You can use the `<variants>` tag to define a set of `<variant>`s out-of-line.
 This is useful for token substitutions that are shared among multiple families
-of histograms within the same file. See
+of histograms. See
 [histograms.xml](https://source.chromium.org/search?q=file:histograms.xml%20%3Cvariants)
 for examples.
 
 *** promo
 Warning: The `name` attribute of the `<variants>` tag is globally scoped, so
-use detailed names to avoid collisions. The `<variants>` defined should only
-be used within the file.
+use detailed names to avoid collisions.
 ***
 
 By default, a `<variant>` inherits the owners declared for the patterned
