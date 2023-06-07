@@ -6889,6 +6889,7 @@ chromium-metrics-reviews@google.com.
     selects a wallpaper from the personalization hub.
   </summary>
   <token key="WallpaperType">
+    <variant name="Customized"/>
     <variant name="Online"/>
   </token>
 </histogram>

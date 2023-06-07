@@ -887,6 +887,8 @@ void WallpaperControllerImpl::SetCustomWallpaper(
     SetWallpaperCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kCustomized, SetWallpaperResult::kPermissionDenied);
     // Return early to skip the work of decoding.
     std::move(callback).Run(/*success=*/false);
     return;
@@ -912,9 +914,14 @@ void WallpaperControllerImpl::SetDecodedCustomWallpaper(
     const gfx::ImageSkia& image) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (image.isNull() || !CanSetUserWallpaper(account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kCustomized, SetWallpaperResult::kDecodingError);
     std::move(callback).Run(/*success=*/false);
     return;
   }
+
+  wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kCustomized,
+                                                 SetWallpaperResult::kSuccess);
 
   // Run callback before finishing setting the image. This is the same timing of
   // success callback, then |WallpaperControllerObserver::OnWallpaperChanged|,
