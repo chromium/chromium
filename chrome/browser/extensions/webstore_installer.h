@@ -265,7 +265,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
       extension_registry_observation_{this};
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
-  raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  raw_ptr<Delegate> delegate_;
   std::string id_;
   InstallSource install_source_;
   // The DownloadItem is owned by the DownloadManager and is valid from when

@@ -717,8 +717,8 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
 void WebstoreInstaller::ReportFailure(const std::string& error,
                                       FailureReason reason) {
   if (delegate_) {
-    delegate_->OnExtensionInstallFailure(id_, error, reason);
-    delegate_ = nullptr;
+    delegate_.ExtractAsDangling()->OnExtensionInstallFailure(id_, error,
+                                                             reason);
   }
 
   extensions::InstallTracker* tracker =
@@ -730,8 +730,7 @@ void WebstoreInstaller::ReportFailure(const std::string& error,
 
 void WebstoreInstaller::ReportSuccess() {
   if (delegate_) {
-    delegate_->OnExtensionInstallSuccess(id_);
-    delegate_ = nullptr;
+    delegate_.ExtractAsDangling()->OnExtensionInstallSuccess(id_);
   }
 
   Release();  // Balanced in Start().
