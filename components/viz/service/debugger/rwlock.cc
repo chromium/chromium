@@ -6,6 +6,8 @@
 
 namespace rwlock {
 
+RWLock::RWLock() = default;
+
 void RWLock::ReadLock() {
   int32_t expected = state_.load(std::memory_order_acquire);
   int32_t desired = expected + 1;

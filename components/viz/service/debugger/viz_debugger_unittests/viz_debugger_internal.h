@@ -5,12 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DEBUGGER_VIZ_DEBUGGER_UNITTESTS_VIZ_DEBUGGER_INTERNAL_H_
 #define COMPONENTS_VIZ_SERVICE_DEBUGGER_VIZ_DEBUGGER_UNITTESTS_VIZ_DEBUGGER_INTERNAL_H_
 
-#include <stddef.h>
+#include <stdint.h>
 
-#include <cstdint>
-#include <cstdio>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 
 #include "components/viz/service/debugger/viz_debugger.h"
@@ -25,6 +21,7 @@ class VizDebuggerInternal : public VizDebugger {
  public:
   VizDebuggerInternal();
   ~VizDebuggerInternal();
+
   void ForceEnabled();
   int GetSubmissionCount();
   void SetBufferCapacities(uint32_t bufferSize);
@@ -64,4 +61,5 @@ class VizDebuggerInternal : public VizDebugger {
 }  // namespace viz
 
 #endif  // BUILDFLAG(USE_VIZ_DEBUGGER)
-#endif
+
+#endif  // COMPONENTS_VIZ_SERVICE_DEBUGGER_VIZ_DEBUGGER_UNITTESTS_VIZ_DEBUGGER_INTERNAL_H_
