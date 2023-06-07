@@ -250,6 +250,9 @@ extern const char kAllFeedsEngagementTypeHistogram[];
 // Histogram name for the feed activity bucket metric.
 extern const char kAllFeedsActivityBucketsHistogram[];
 
+// Histogram name for the feed activity bucket filter.
+extern const char kAllFeedsActivityBucketsByProviderHistogram[];
+
 // Histogram name for a Discover feed card shown at index.
 extern const char kDiscoverFeedCardShownAtIndex[];
 
