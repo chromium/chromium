@@ -419,14 +419,8 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif
-    // Have to MTE-tag, because the address is untagged, but lies within a slot
-    // area, which is protected by MTE.
-    //
-    // There could be a race condition though if the previous slot is
-    // freed/retagged concurrently, so ideally the ref count should occupy its
-    // own MTE granule.
-    // TODO(crbug.com/1445816): improve this.
-    return static_cast<PartitionRefCount*>(TagAddr(refcount_address));
+    // No need to tag because the ref count is not protected by MTE.
+    return reinterpret_cast<PartitionRefCount*>(refcount_address);
   } else {
     // No need to tag, as the metadata region isn't protected by MTE.
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(

@@ -254,14 +254,25 @@ struct PartitionAllocTestParam {
 };
 
 const std::vector<PartitionAllocTestParam> GetPartitionAllocTestParams() {
-  std::vector<size_t> ref_count_sizes = {0, 8, 16};
-  // sizeof(PartitionRefCount) == 8 under some configurations, so we can't force
-  // the size down to 4.
+  std::vector<size_t> ref_count_sizes = {16};
+
+  bool only_supports_16b_ref_count = false;
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+  only_supports_16b_ref_count =
+      partition_alloc::internal::base::CPU::GetInstanceNoAllocation().has_mte();
+#endif
+
+  if (!only_supports_16b_ref_count) {
+    ref_count_sizes.push_back(0);
+    ref_count_sizes.push_back(8);
+    // sizeof(PartitionRefCount) == 8 under some configurations, so we can't
+    // force the size down to 4.
 #if !PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE) && \
     !PA_CONFIG(REF_COUNT_CHECK_COOKIE) &&         \
     !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  ref_count_sizes.push_back(4);
+    ref_count_sizes.push_back(4);
 #endif
+  }
 
   std::vector<PartitionAllocTestParam> params;
   for (size_t ref_count_size : ref_count_sizes) {

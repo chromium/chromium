@@ -581,6 +581,20 @@ uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
   return static_cast<uint8_t>(best_pages);
 }
 
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+// Returns size that should be tagged. Avoiding the previous slot ref count if
+// it exists to avoid a race (crbug.com/1445816).
+template <bool thread_safe>
+PA_ALWAYS_INLINE size_t TagSizeForSlot(PartitionRoot<thread_safe>* root,
+                                       size_t slot_size) {
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+  return slot_size - root->flags.ref_count_size;
+#else
+  return slot_size;
+#endif
+}
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+
 }  // namespace
 
 uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
@@ -979,7 +993,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       root->IsMemoryTaggingEnabled() && slot_size <= kMaxMemoryTaggingSize;
   if (PA_LIKELY(use_tagging)) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
-    TagMemoryRangeRandomly(return_slot, slot_size);
+    TagMemoryRangeRandomly(return_slot, TagSizeForSlot(root, slot_size));
   }
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
@@ -993,7 +1007,8 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       // Ensure the MTE-tag of the memory pointed by other provisioned slot is
       // unguessable. They will be returned to the app as is, and the MTE-tag
       // will only change upon calling Free().
-      next_slot_ptr = TagMemoryRangeRandomly(next_slot, slot_size);
+      next_slot_ptr =
+          TagMemoryRangeRandomly(next_slot, TagSizeForSlot(root, slot_size));
     } else {
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);

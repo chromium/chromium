@@ -968,6 +968,13 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       if (!ref_count_size) {
         ref_count_size = internal::kPartitionRefCountSizeAdjustment;
       }
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      if (IsMemoryTaggingEnabled()) {
+        ref_count_size = internal::base::bits::AlignUp(
+            ref_count_size, internal::kMemTagGranuleSize);
+      }
+      flags.ref_count_size = ref_count_size;
+#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
       flags.extras_size += ref_count_size;
       flags.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
