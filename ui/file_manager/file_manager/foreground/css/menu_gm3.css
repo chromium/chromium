@@ -49,7 +49,7 @@ cr-menu > [sub-menu]::after {
   -webkit-mask-image: url(../images/files/ui/arrow_right.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-sys-primary);
+  background-color: currentColor;
   content: '';
   float: right;
   height: 20px;
