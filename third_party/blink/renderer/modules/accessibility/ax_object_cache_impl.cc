@@ -1400,7 +1400,16 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
     // Must compute the parent, which occurs when an AXObject is being created
     // in the middle of the tree.
     parent = AXObject::ComputeNonARIAParent(*this, node);
-    if (!parent) {
+
+    // Only rebuild the child list of the parent if we had to compute
+    // the parent here, and it wasn't passed in as context. In other situations,
+    // we should know about the child already.
+    if (parent) {
+      DCHECK(!parent->IsDetached());
+      parent->ChildrenChangedWithCleanLayout();
+    }
+    // The parent can become detached in ChildrenChangedWithCleanLayout.
+    if (!parent || parent->IsDetached()) {
       // An AXObject must have a parent, unless it's the root.
       // This because when no parent can be computed, it means that any AXObject
       // we would create would not have a path to the root. We do not create
@@ -1436,13 +1445,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // Give the AXObject its ID and initialize.
   AssociateAXID(new_obj, axid);
   new_obj->Init(parent);
-
-  // Only rebuild the child list of the parent if we had to compute
-  // the parent here, and it wasn't passed in as context. In other situations,
-  // we should know about the child already.
-  if (parent && parent != parent_if_known) {
-    parent->ChildrenChangedWithCleanLayout();
-  }
 
   return new_obj;
 }
