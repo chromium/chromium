@@ -34,12 +34,12 @@ class CORE_EXPORT IntersectionGeometry {
     kShouldTrackFractionOfRoot = 1 << 2,
     kShouldUseReplacedContentRect = 1 << 3,
     kShouldConvertToCSSPixels = 1 << 4,
-    kShouldUseCachedRects = 1 << 5,
     // Applies to boxes. If true, OverflowClipRect() is used if necessary
     // instead of BorderBoundingBox().
-    kUseOverflowClipEdge = 1 << 6,
+    kUseOverflowClipEdge = 1 << 5,
 
     // These flags will be computed
+    kShouldUseCachedRects = 1 << 6,
     kRootIsImplicit = 1 << 7,
     kDidComputeGeometry = 1 << 8,
     kIsVisible = 1 << 9
@@ -65,17 +65,14 @@ class CORE_EXPORT IntersectionGeometry {
     PhysicalRect unscrolled_unclipped_intersection_rect;
     // True iff unscrolled_unclipped_intersection_rect actually intersects the
     // root, as defined by edge-inclusive intersection rules.
-    bool does_intersect;
+    bool does_intersect = false;
     // True iff the target rect before any margins were applied was empty
-    bool pre_margin_target_rect_is_empty;
+    bool pre_margin_target_rect_is_empty = false;
     // Invalidation flag
-    bool valid;
+    bool valid = false;
   };
 
-  static const LayoutObject* GetRootLayoutObjectForTarget(
-      const Node* root_node,
-      const LayoutObject* target,
-      bool check_containing_block_chain);
+  static const LayoutObject* GetExplicitRootLayoutObject(const Node& root_node);
 
   IntersectionGeometry(const Node* root,
                        const Element& target,
@@ -124,16 +121,47 @@ class CORE_EXPORT IntersectionGeometry {
   double IntersectionRatio() const { return intersection_ratio_; }
   unsigned ThresholdIndex() const { return threshold_index_; }
 
-  bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
   bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
   bool IsIntersecting() const { return threshold_index_ > 0; }
   bool IsVisible() const { return flags_ & kIsVisible; }
 
+  bool CanUseCachedRectsForTesting() const { return ShouldUseCachedRects(); }
+
  private:
+  bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
   bool ShouldUseCachedRects() const { return flags_ & kShouldUseCachedRects; }
+
+  struct RootAndTarget {
+    STACK_ALLOCATED();
+
+   public:
+    RootAndTarget(const Node* root_node, const Element& target_element);
+    const LayoutObject* target;
+    const LayoutObject* root;
+    enum Relationship {
+      kInvalid,
+      // The target is in a sub-frame of the implicit root.
+      kTargetInSubFrame,
+      // The target can't be scrolled in the root by any scroller.
+      kNotScrollable,
+      // The target can be scrolled in the root by the root only.
+      kScrollableByRootOnly,
+      // The target can be scrolled in the root by intermediate scrollers.
+      kScrollableByIntermediateScrollers,
+    };
+    Relationship relationship;
+
+   private:
+    static const LayoutObject* GetTargetLayoutObject(
+        const Element& target_element);
+    const LayoutObject* GetRootLayoutObject(const Node* root_node) const;
+    Relationship ComputeRelationship(bool root_is_implicit) const;
+  };
+  RootAndTarget PrepareComputeGeometry(const Node* root_node,
+                                       const Element& target_element,
+                                       CachedRects* cached_rects);
   void ComputeGeometry(const RootGeometry& root_geometry,
-                       const LayoutObject* root,
-                       const LayoutObject* target,
+                       const RootAndTarget& root_and_target,
                        const Vector<float>& thresholds,
                        const Vector<Length>& target_margin,
                        CachedRects* cached_rects);
@@ -153,8 +181,8 @@ class CORE_EXPORT IntersectionGeometry {
   PhysicalRect unclipped_intersection_rect_;
   PhysicalRect root_rect_;
   unsigned flags_;
-  double intersection_ratio_;
-  unsigned threshold_index_;
+  double intersection_ratio_ = 0;
+  unsigned threshold_index_ = 0;
 };
 
 }  // namespace blink

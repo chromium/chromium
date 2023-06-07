@@ -24,21 +24,6 @@ namespace blink {
 
 namespace {
 
-// Return true if ancestor is in the containing block chain above descendant.
-bool IsContainingBlockChainDescendant(const LayoutObject* descendant,
-                                      const LayoutObject* ancestor) {
-  if (!ancestor || !descendant || ancestor == descendant)
-    return false;
-  LocalFrame* ancestor_frame = ancestor->GetDocument().GetFrame();
-  LocalFrame* descendant_frame = descendant->GetDocument().GetFrame();
-  if (ancestor_frame != descendant_frame)
-    return false;
-
-  while (descendant && descendant != ancestor)
-    descendant = descendant->ContainingBlock();
-  return descendant;
-}
-
 // Convert a Length value to physical pixels.
 LayoutUnit ComputeMargin(const Length& length,
                          LayoutUnit reference_length,
@@ -139,13 +124,6 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
   return result;
 }
 
-// Return the local frame root for a given object
-LayoutView* LocalRootView(const LayoutObject& object) {
-  const LocalFrame* frame = object.GetDocument().GetFrame();
-  const LocalFrame* frame_root = frame ? &frame->LocalFrameRoot() : nullptr;
-  return frame_root ? frame_root->ContentLayoutObject() : nullptr;
-}
-
 // Returns true if target has visual effects applied, or if rect, given in
 // absolute coordinates, is overlapped by any content painted after target
 //
@@ -172,24 +150,6 @@ bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
   return false;
 }
 
-// Validates the given target element and returns its LayoutObject
-LayoutObject* GetTargetLayoutObject(const Element& target_element) {
-  if (!target_element.isConnected())
-    return nullptr;
-  LayoutObject* target = target_element.GetLayoutObject();
-  if (!target || (!target->IsBoxModelObject() && !target->IsText()))
-    return nullptr;
-  // If the target is inside a locked subtree, it isn't ever visible.
-  if (UNLIKELY(target->GetFrameView()->IsDisplayLocked() ||
-               DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-                   target_element))) {
-    return nullptr;
-  }
-
-  DCHECK(!target_element.GetDocument().View()->NeedsLayout());
-  return target;
-}
-
 bool CanUseGeometryMapper(const LayoutObject* object) {
   // This checks for cases where we didn't just complete a successful lifecycle
   // update, e.g., if the frame is throttled.
@@ -204,7 +164,6 @@ static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldTrackFractionOfRoot |
     IntersectionGeometry::kShouldUseReplacedContentRect |
     IntersectionGeometry::kShouldConvertToCSSPixels |
-    IntersectionGeometry::kShouldUseCachedRects |
     IntersectionGeometry::kUseOverflowClipEdge;
 
 }  // namespace
@@ -221,33 +180,15 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
   root_to_document_transform = transform_state.AccumulatedTransform();
 }
 
-// If root_node is non-null, it is treated as the explicit root of an
-// IntersectionObserver; if it is valid, its LayoutObject is returned.
-//
-// If root_node is null, returns the object to be used as the implicit root
-// for a given target.
-//
-//   https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-root
-const LayoutObject* IntersectionGeometry::GetRootLayoutObjectForTarget(
-    const Node* root_node,
-    const LayoutObject* target,
-    bool check_containing_block_chain) {
-  if (!root_node)
-    return target ? LocalRootView(*target) : nullptr;
-  if (!root_node->isConnected())
+const LayoutObject* IntersectionGeometry::GetExplicitRootLayoutObject(
+    const Node& root_node) {
+  if (!root_node.isConnected()) {
     return nullptr;
-
-  const LayoutObject* root = nullptr;
-  if (root_node->IsDocumentNode()) {
-    root = To<Document>(root_node)->GetLayoutView();
-  } else {
-    root = root_node->GetLayoutObject();
   }
-  if (target && check_containing_block_chain &&
-      !IsContainingBlockChainDescendant(target, root)) {
-    root = nullptr;
+  if (root_node.IsDocumentNode()) {
+    return To<Document>(root_node).GetLayoutView();
   }
-  return root;
+  return root_node.GetLayoutObject();
 }
 
 IntersectionGeometry::IntersectionGeometry(const Node* root_node,
@@ -257,25 +198,19 @@ IntersectionGeometry::IntersectionGeometry(const Node* root_node,
                                            const Vector<Length>& target_margin,
                                            unsigned flags,
                                            CachedRects* cached_rects)
-    : flags_(flags & kConstructorFlagsMask),
-      intersection_ratio_(0),
-      threshold_index_(0) {
+    : flags_(flags & kConstructorFlagsMask) {
   // Only one of root_margin or target_margin can be specified.
   DCHECK(root_margin.empty() || target_margin.empty());
 
-  if (cached_rects)
-    cached_rects->valid = false;
   if (!root_node)
     flags_ |= kRootIsImplicit;
-  LayoutObject* target = GetTargetLayoutObject(target_element);
-  if (!target)
+  RootAndTarget root_and_target =
+      PrepareComputeGeometry(root_node, target_element, cached_rects);
+  if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
-  const LayoutObject* root =
-      GetRootLayoutObjectForTarget(root_node, target, !ShouldUseCachedRects());
-  if (!root)
-    return;
-  RootGeometry root_geometry(root, root_margin);
-  ComputeGeometry(root_geometry, root, target, thresholds, target_margin,
+  }
+  RootGeometry root_geometry(root_and_target.root, root_margin);
+  ComputeGeometry(root_geometry, root_and_target, thresholds, target_margin,
                   cached_rects);
 }
 
@@ -289,27 +224,160 @@ IntersectionGeometry::IntersectionGeometry(const RootGeometry& root_geometry,
     : flags_(flags & kConstructorFlagsMask),
       intersection_ratio_(0),
       threshold_index_(0) {
-  if (cached_rects)
-    cached_rects->valid = false;
-  LayoutObject* target = GetTargetLayoutObject(target_element);
-  if (!target)
+  auto root_and_target =
+      PrepareComputeGeometry(&explicit_root, target_element, cached_rects);
+  if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
-  const LayoutObject* root = GetRootLayoutObjectForTarget(
-      &explicit_root, target, !ShouldUseCachedRects());
-  if (!root)
-    return;
-  ComputeGeometry(root_geometry, root, target, thresholds, target_margin,
+  }
+  ComputeGeometry(root_geometry, root_and_target, thresholds, target_margin,
                   cached_rects);
 }
 
+IntersectionGeometry::RootAndTarget::RootAndTarget(
+    const Node* root_node,
+    const Element& target_element)
+    : target(GetTargetLayoutObject(target_element)),
+      root(target ? GetRootLayoutObject(root_node) : nullptr),
+      relationship(ComputeRelationship(!root_node)) {}
+
+// Validates the given target element and returns its LayoutObject
+const LayoutObject* IntersectionGeometry::RootAndTarget::GetTargetLayoutObject(
+    const Element& target_element) {
+  if (!target_element.isConnected()) {
+    return nullptr;
+  }
+  LayoutObject* target = target_element.GetLayoutObject();
+  if (!target || (!target->IsBoxModelObject() && !target->IsText())) {
+    return nullptr;
+  }
+  // If the target is inside a locked subtree, it isn't ever visible.
+  if (UNLIKELY(target->GetFrameView()->IsDisplayLocked() ||
+               DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
+                   target_element))) {
+    return nullptr;
+  }
+
+  DCHECK(!target_element.GetDocument().View()->NeedsLayout());
+  return target;
+}
+
+// If root_node is non-null, it is treated as the explicit root of an
+// IntersectionObserver; if it is valid, its LayoutObject is returned.
+//
+// If root_node is null, returns the object to be used to compute intersection
+// for a given target with the implicit root. Note that if the target is in
+// a remote frame, the returned object is the LayoutView of the local frame
+// root instead of the topmost main frame.
+//
+//   https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-root
+const LayoutObject* IntersectionGeometry::RootAndTarget::GetRootLayoutObject(
+    const Node* root_node) const {
+  if (root_node) {
+    return GetExplicitRootLayoutObject(*root_node);
+  }
+  if (const LocalFrame* frame = target->GetDocument().GetFrame()) {
+    return frame->LocalFrameRoot().ContentLayoutObject();
+  }
+  return nullptr;
+}
+
+IntersectionGeometry::RootAndTarget::Relationship
+IntersectionGeometry::RootAndTarget::ComputeRelationship(
+    bool root_is_implicit) const {
+  if (!root || !target || root == target) {
+    return kInvalid;
+  }
+  if (root_is_implicit && !target->GetFrame()->IsOutermostMainFrame()) {
+    return kTargetInSubFrame;
+  }
+  if (target->GetFrame() != root->GetFrame()) {
+    // The case of different frame with implicit root has been covered by the
+    // previous condition.
+    DCHECK(!root_is_implicit);
+    // The target and the explicit root are required to be in the same frame.
+    return kInvalid;
+  }
+  LayoutObject::AncestorSkipInfo skip_info(root);
+  bool has_intermediate_scrollers = false;
+  for (const LayoutObject* container = target->Container(&skip_info);
+       container != root; container = container->Container(&skip_info)) {
+    if (!container || skip_info.AncestorSkipped()) {
+      // The root is not in the containing block chain of the target.
+      return kInvalid;
+    }
+    if (container->IsScrollContainer() &&
+        // Non-scrollable scrollers are ignored.
+        To<LayoutBox>(container)->HasLayoutOverflow()) {
+      has_intermediate_scrollers = true;
+    }
+  }
+  if (has_intermediate_scrollers) {
+    return kScrollableByIntermediateScrollers;
+  }
+  if (root->IsScrollContainer() && To<LayoutBox>(root)->HasLayoutOverflow()) {
+    return kScrollableByRootOnly;
+  }
+  return kNotScrollable;
+}
+
+IntersectionGeometry::RootAndTarget
+IntersectionGeometry::PrepareComputeGeometry(const Node* root_node,
+                                             const Element& target_element,
+                                             CachedRects* cached_rects) {
+  if (cached_rects) {
+    if (cached_rects->valid) {
+      flags_ |= kShouldUseCachedRects;
+    }
+    cached_rects->valid = false;
+  }
+  RootAndTarget root_and_target(root_node, target_element);
+
+  if (ShouldUseCachedRects()) {
+    CHECK(!RootIsImplicit());
+    // Cached rects can only be used if there are no scrollable objects in the
+    // hierarchy between target and root (a scrollable root is ok). The reason
+    // is that a scroll change in an intermediate scroller would change the
+    // intersection geometry, but it would not properly trigger an invalidation
+    // of the cached rects.
+    auto legacy_can_use_cached_rects = [root_node, &target_element]() {
+      if (LayoutObject* target = target_element.GetLayoutObject()) {
+        PaintLayer* root_layer = target->GetDocument().GetLayoutView()->Layer();
+        if (!root_layer) {
+          return false;
+        }
+        if (LayoutBox* scroller = target->DeprecatedEnclosingScrollableBox()) {
+          if (scroller->GetNode() == root_node) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()
+            ? (root_and_target.relationship != RootAndTarget::kNotScrollable &&
+               root_and_target.relationship !=
+                   RootAndTarget::kScrollableByRootOnly)
+            : !legacy_can_use_cached_rects()) {
+      flags_ &= ~kShouldUseCachedRects;
+    }
+  }
+
+  return root_and_target;
+}
+
 void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
-                                           const LayoutObject* root,
-                                           const LayoutObject* target,
+                                           const RootAndTarget& root_and_target,
                                            const Vector<float>& thresholds,
                                            const Vector<Length>& target_margin,
                                            CachedRects* cached_rects) {
   DCHECK(cached_rects || !ShouldUseCachedRects());
   flags_ |= kDidComputeGeometry;
+
+  const LayoutObject* root = root_and_target.root;
+  const LayoutObject* target = root_and_target.target;
+  CHECK(root);
+  CHECK(target);
+
   // Initially:
   //   target_rect_ is in target's coordinate system
   //   root_rect_ is in root's coordinate system
@@ -357,13 +425,10 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   if (property_container) {
     gfx::RectF target_rect(target_rect_);
     target_rect.Offset(gfx::Vector2dF(target->FirstFragment().PaintOffset()));
-    GeometryMapper::SourceToDestinationRect(container_properties.Transform(),
-                                            target->GetDocument()
-                                                .GetLayoutView()
-                                                ->FirstFragment()
-                                                .LocalBorderBoxProperties()
-                                                .Transform(),
-                                            target_rect);
+    GeometryMapper::SourceToDestinationRect(
+        container_properties.Transform(),
+        target->View()->FirstFragment().LocalBorderBoxProperties().Transform(),
+        target_rect);
     target_rect_ = PhysicalRect::EnclosingRect(target_rect);
   } else {
     target_rect_ = target->LocalToAncestorRect(target_rect_, nullptr);
@@ -374,7 +439,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       // the absolute coordinates of the target document.
       TransformState implicit_root_to_target_document_transform(
           TransformState::kUnapplyInverseTransformDirection);
-      target->GetDocument().GetLayoutView()->MapAncestorToLocal(
+      target->View()->MapAncestorToLocal(
           nullptr, implicit_root_to_target_document_transform,
           kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
       gfx::Transform matrix =
@@ -394,22 +459,18 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       // absolute coordinates for target's containing document (which is the
       // same as root's document).
       intersection_rect_ = PhysicalRect::EnclosingRect(
-          root_geometry.root_to_document_transform
-              .MapQuad(gfx::QuadF(gfx::RectF(intersection_rect_)))
-              .BoundingBox());
+          root_geometry.root_to_document_transform.MapRect(
+              gfx::RectF(intersection_rect_)));
       unclipped_intersection_rect_ = PhysicalRect::EnclosingRect(
-          root_geometry.root_to_document_transform
-              .MapQuad(gfx::QuadF(gfx::RectF(unclipped_intersection_rect_)))
-              .BoundingBox());
+          root_geometry.root_to_document_transform.MapRect(
+              gfx::RectF(unclipped_intersection_rect_)));
     }
   } else {
     intersection_rect_ = PhysicalRect();
   }
   // Map root_rect_ from root's coordinate system to absolute coordinates.
   root_rect_ = PhysicalRect::EnclosingRect(
-      root_geometry.root_to_document_transform
-          .MapQuad(gfx::QuadF(gfx::RectF(root_rect_)))
-          .BoundingBox());
+      root_geometry.root_to_document_transform.MapRect(gfx::RectF(root_rect_)));
 
   // Some corner cases for threshold index:
   //   - If target rect is zero area, because it has zero width and/or zero

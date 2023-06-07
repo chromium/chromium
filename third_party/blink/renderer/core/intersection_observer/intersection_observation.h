@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INTERSECTION_OBSERVER_INTERSECTION_OBSERVATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INTERSECTION_OBSERVER_INTERSECTION_OBSERVATION_H_
 
+#include "base/functional/function_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -77,12 +78,16 @@ class CORE_EXPORT IntersectionObservation final
 
   void Trace(Visitor*) const;
 
-  bool CanUseCachedRectsForTesting() const { return CanUseCachedRects(); }
+  bool CanUseCachedRectsForTesting() const;
 
  private:
+  int64_t ComputeIntersectionInternal(
+      base::FunctionRef<IntersectionGeometry(unsigned geometry_flags)>
+          geometry_creater,
+      unsigned flags,
+      absl::optional<base::TimeTicks>& monitonic_time);
   bool ShouldCompute(unsigned flags) const;
   bool MaybeDelayAndReschedule(unsigned flags, DOMHighResTimeStamp timestamp);
-  bool CanUseCachedRects() const;
   unsigned GetIntersectionGeometryFlags(unsigned compute_flags) const;
   // Inspect the geometry to see if there has been a transition event; if so,
   // generate a notification and schedule it for delivery.

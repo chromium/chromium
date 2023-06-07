@@ -182,8 +182,7 @@ class CORE_EXPORT IntersectionObserver final
   // Returns false if this observer has an explicit root node which has been
   // deleted; true otherwise.
   bool RootIsValid() const;
-  bool CanUseCachedRects() const { return can_use_cached_rects_; }
-  void InvalidateCachedRects() { can_use_cached_rects_ = 0; }
+  void InvalidateCachedRects();
 
   bool UseOverflowClipEdge() const { return use_overflow_clip_edge_ == 1; }
 
@@ -220,7 +219,6 @@ class CORE_EXPORT IntersectionObserver final
   unsigned track_visibility_ : 1;
   unsigned track_fraction_of_root_ : 1;
   unsigned always_report_root_bounds_ : 1;
-  unsigned can_use_cached_rects_ : 1;
   unsigned use_overflow_clip_edge_ : 1;
 };
 

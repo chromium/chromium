@@ -832,6 +832,10 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
   observer->observe(target3, exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
+  // CanUseCachedRectsForTesting requires clean layout.
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+
   IntersectionObservation* observation1 =
       target1->IntersectionObserverData()->GetObservationFor(*observer);
   EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
@@ -954,6 +958,10 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target3, exception_state);
   ASSERT_FALSE(exception_state.HadException());
+
+  // CanUseCachedRectsForTesting requires clean layout.
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
 
   IntersectionObservation* observation1 =
       target1->IntersectionObserverData()->GetObservationFor(*observer);
@@ -1088,6 +1096,10 @@ TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
   observer->observe(target3, exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
+  // CanUseCachedRectsForTesting requires clean layout.
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+
   IntersectionObservation* observation1 =
       target1->IntersectionObserverData()->GetObservationFor(*observer);
   EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
@@ -1096,7 +1108,7 @@ TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
   IntersectionObservation* observation3 =
       target3->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
 
   // Generate initial notifications and populate cache.
   Compositor().BeginFrame();
