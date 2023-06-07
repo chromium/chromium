@@ -2225,7 +2225,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)reportTabSelectionTime {
   if (self.tabGridEnterTime.is_null()) {
     // The enter time was not recorded. Bail out.
-    base::debug::DumpWithoutCrashing();
     return;
   }
   base::TimeDelta duration = base::TimeTicks::Now() - self.tabGridEnterTime;
