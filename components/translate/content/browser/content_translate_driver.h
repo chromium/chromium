@@ -116,7 +116,7 @@ class ContentTranslateDriver : public TranslateDriver,
   void RegisterPage(
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
-      bool page_level_translation_critiera_met) override;
+      bool page_level_translation_criteria_met) override;
 
   // translate::mojom::ContentTranslateDriver implementation:
   void GetLanguageDetectionModel(

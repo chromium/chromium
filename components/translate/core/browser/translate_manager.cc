@@ -805,7 +805,7 @@ void TranslateManager::FilterIsTranslatePossible(
     const std::string& target_lang) {
   // Short-circuit out if not in a state where initiating translation makes
   // sense (this method may be called multiple times for a given page).
-  if (!language_state_.page_level_translation_critiera_met() ||
+  if (!language_state_.page_level_translation_criteria_met() ||
       language_state_.translation_pending() ||
       language_state_.translation_declined() ||
       language_state_.IsPageTranslated()) {

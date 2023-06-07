@@ -888,7 +888,7 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_PageNeedsTranslation) {
   base::HistogramTester histogram_tester;
   translate_manager_->GetLanguageState()->LanguageDetermined("de", false);
   // Users should be able to manually translate the page, even when
-  // |page_level_translation_critiera_met| is false.
+  // |page_level_translation_criteria_met| is false.
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
   histogram_tester.ExpectTotalCount(kMenuTranslationIsAvailableName, 0);
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));

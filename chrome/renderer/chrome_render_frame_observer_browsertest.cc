@@ -56,15 +56,15 @@ class FakeContentTranslateDriver
   void RegisterPage(
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
-      bool page_level_translation_critiera_met) override {
+      bool page_level_translation_criteria_met) override {
     called_new_page_ = true;
-    page_level_translation_critiera_met_ = page_level_translation_critiera_met;
+    page_level_translation_criteria_met_ = page_level_translation_criteria_met;
   }
   void GetLanguageDetectionModel(
       GetLanguageDetectionModelCallback callback) override {}
 
   bool called_new_page_ = false;
-  bool page_level_translation_critiera_met_ = false;
+  bool page_level_translation_criteria_met_ = false;
 
  private:
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
@@ -140,7 +140,7 @@ TEST_F(ChromeRenderFrameObserverTest, CapturePageTextCalled) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
-  EXPECT_TRUE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_TRUE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest, CapturePageTextNotCalledForSubframe) {
@@ -155,7 +155,7 @@ TEST_F(ChromeRenderFrameObserverTest, CapturePageTextNotCalledForSubframe) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
-  EXPECT_TRUE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_TRUE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -170,7 +170,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -184,7 +184,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -200,7 +200,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -215,7 +215,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest, OptGuideGetsText) {
@@ -279,7 +279,7 @@ TEST_F(ChromeRenderFrameObserverNoTranslateNorPhishingTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverNoTranslateNorPhishingTest, OptGuideGetsText) {
@@ -358,7 +358,7 @@ TEST_F(ChromeRenderFrameObserverNoTranslateYesPhishingTest,
   // Translate should not be called since only the phishing logic ran.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 #else
@@ -382,7 +382,7 @@ TEST_F(ChromeRenderFrameObserverNoTranslateTest, CapturePageTextNotCalled) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 #endif

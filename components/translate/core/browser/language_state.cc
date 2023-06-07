@@ -12,7 +12,7 @@ namespace translate {
 LanguageState::LanguageState(TranslateDriver* driver)
     : is_page_translated_(false),
       translate_driver_(driver),
-      page_level_translation_critiera_met_(false),
+      page_level_translation_criteria_met_(false),
       translation_pending_(false),
       translation_error_(false),
       translation_declined_(false),
@@ -57,14 +57,14 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
 
 void LanguageState::LanguageDetermined(
     const std::string& page_language,
-    bool page_level_translation_critiera_met) {
+    bool page_level_translation_criteria_met) {
   if (is_same_document_navigation_ && !source_lang_.empty()) {
     // Same-document navigation, we don't expect our states to change.
     // Note that we'll set the languages if source_lang_ is empty.  This might
     // happen if the we did not get called on the top-page.
     return;
   }
-  page_level_translation_critiera_met_ = page_level_translation_critiera_met;
+  page_level_translation_criteria_met_ = page_level_translation_criteria_met;
   source_lang_ = page_language;
   current_lang_ = page_language;
   SetIsPageTranslated(false);

@@ -39,10 +39,10 @@ class LanguageState {
                    bool navigation_from_google);
 
   // Should be called when the language of the page has been determined.
-  // |page_level_translation_critiera_met| when false indicates that the browser
+  // |page_level_translation_criteria_met| when false indicates that the browser
   // should not offer to translate the page.
   void LanguageDetermined(const std::string& page_language,
-                          bool page_level_translation_critiera_met);
+                          bool page_level_translation_criteria_met);
 
   // Returns the language the current page should be translated to, based on the
   // previous page languages and the transition.  This should be called after
@@ -66,8 +66,8 @@ class LanguageState {
   const std::string& current_language() const { return current_lang_; }
   void SetCurrentLanguage(const std::string& language);
 
-  bool page_level_translation_critiera_met() const {
-    return page_level_translation_critiera_met_;
+  bool page_level_translation_criteria_met() const {
+    return page_level_translation_criteria_met_;
   }
 
   // Whether the page is currently in the process of being translated.
@@ -133,7 +133,7 @@ class LanguageState {
   // explicitly specify that they should not be translated by the browser (this
   // is the case for GMail for example, which provides its own translation
   // features).
-  bool page_level_translation_critiera_met_;
+  bool page_level_translation_criteria_met_;
 
   // Whether a translation is currently pending.
   // This is needed to avoid sending duplicate translate requests to a page.
