@@ -191,4 +191,8 @@ bool IsBottomOmniboxSteadyStateEnabled();
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
+// Feature flag to hide the sync promo card in the main settings screen. The
+// "Turn On Sync" row will still be shown when this is enabled.
+BASE_DECLARE_FEATURE(kHideSettingsSyncPromo);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

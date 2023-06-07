@@ -5,6 +5,7 @@
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -27,22 +28,28 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 
-@interface SigninSettingsTestCase : ChromeTestCase
+@interface SigninSettingsWithLegacyPromoTestCase : ChromeTestCase
 @end
 
-@implementation SigninSettingsTestCase
+@implementation SigninSettingsWithLegacyPromoTestCase
 
 - (void)tearDown {
   [PolicyAppInterface clearPolicies];
 
   [super tearDown];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(kHideSettingsSyncPromo);
+  return config;
 }
 
 // Tests the primary button with no accounts on the device.

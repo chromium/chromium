@@ -420,7 +420,8 @@ source_set("eg2_tests") {
     "search_engine_settings_egtest.mm",
     "settings_accessibility_egtest.mm",
     "settings_egtest.mm",
-    "signin_settings_egtest.mm",
+    "signin_settings_with_legacy_promo_egtest.mm",
+    "signin_settings_without_legacy_promo_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",
@@ -431,6 +432,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

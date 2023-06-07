@@ -681,13 +681,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       SyncServiceFactory::GetForBrowserState(_browserState);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  return [SigninPromoViewMediator
-             shouldDisplaySigninPromoViewWithAccessPoint:
-                 signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                   authenticationService:authenticationService
-                                             prefService:_browserState
-                                                             ->GetPrefs()] &&
-         !syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
+  const BOOL shouldDisplay =
+      [SigninPromoViewMediator
+          shouldDisplaySigninPromoViewWithAccessPoint:
+              signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
+                                authenticationService:authenticationService
+                                          prefService:_browserState
+                                                          ->GetPrefs()] &&
+      !syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
+  return shouldDisplay && !base::FeatureList::IsEnabled(kHideSettingsSyncPromo);
 }
 
 #pragma mark - Model Items
