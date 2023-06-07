@@ -1361,12 +1361,15 @@ void PrerenderHostRegistry::ResourceLoadComplete(
   }
 
   // Cancel the corresponding prerender if the resource load is blocked.
-  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+  for (auto& [host_id, host] : prerender_host_by_frame_tree_node_id_) {
     if (&render_frame_host->GetPage() !=
-        &iter.second->GetPrerenderedMainFrameHost()->GetPage()) {
+        &host->GetPrerenderedMainFrameHost()->GetPage()) {
       continue;
     }
-    CancelHost(iter.first, PrerenderFinalStatus::kBlockedByClient);
+    RecordBlockedByClientResourceType(resource_load_info.request_destination,
+                                      host->trigger_type(),
+                                      host->embedder_histogram_suffix());
+    CancelHost(host_id, PrerenderFinalStatus::kBlockedByClient);
     break;
   }
 }

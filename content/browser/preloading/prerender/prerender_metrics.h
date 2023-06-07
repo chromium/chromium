@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -198,6 +199,11 @@ void RecordPrerenderBackNavigationEligibility(
 
 void RecordPrerenderActivationCommitDeferTime(
     base::TimeDelta time_delta,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
+
+void RecordBlockedByClientResourceType(
+    network::mojom::RequestDestination request_destination,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 

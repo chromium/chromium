@@ -1906,6 +1906,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prerender.Experimental.ResourceLoadingBlockedByClientByType{PrerenderTriggerType}"
+    enum="RequestDestination" expires_after="2023-09-03">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Recorded by RecordBlockedByClientResourceType when prerender is cancelled
+    due to the restriction that client blocks a resource loading.
+  </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
+<histogram
     name="Prerender.Experimental.Search.FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration"
     units="ms" expires_after="2023-08-20">
   <owner>lingqi@chromium.org</owner>
