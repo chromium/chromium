@@ -214,8 +214,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Password generated";
     case SavePasswordProgressLogger::STRING_TIMES_USED:
       return "Times used";
-    case SavePasswordProgressLogger::STRING_PSL_MATCH:
-      return "PSL match";
     case SavePasswordProgressLogger::STRING_NAME_OR_ID:
       return "Form name or ID";
     case SavePasswordProgressLogger::STRING_MESSAGE:
