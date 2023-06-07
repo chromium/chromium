@@ -533,7 +533,7 @@ struct HostResolverManager::JobKey {
   HostResolverFlags flags;
   HostResolverSource source;
   SecureDnsMode secure_dns_mode;
-  base::SafeRef<ResolveContext> resolve_context;
+  base::SafeRef<ResolveContext, base::SafeRefDanglingUntriaged> resolve_context;
 
   HostCache::Key ToCacheKey(bool secure) const {
     if (query_types.Size() != 1) {

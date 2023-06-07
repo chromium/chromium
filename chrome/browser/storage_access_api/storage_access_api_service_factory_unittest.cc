@@ -29,7 +29,7 @@ class StorageAccessAPIServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment env_;
   TestingProfileManager profile_manager_ =
       TestingProfileManager(TestingBrowserProcess::GetGlobal());
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
 };
 
 TEST_F(StorageAccessAPIServiceFactoryTest, RegularProfile_ServiceCreated) {

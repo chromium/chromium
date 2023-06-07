@@ -1936,7 +1936,9 @@ class CONTENT_EXPORT NavigationRequest
   // picked for failed Back/Forward Cache restores.
   // Invariant: At least one of |loader_| or |render_frame_host_| is
   // null/absl::nullopt.
-  absl::optional<base::SafeRef<RenderFrameHostImpl>> render_frame_host_;
+  absl::optional<
+      base::SafeRef<RenderFrameHostImpl, base::SafeRefDanglingUntriaged>>
+      render_frame_host_;
 
   // Initialized on creation of the NavigationRequest. Sent to the renderer when
   // the navigation is ready to commit.

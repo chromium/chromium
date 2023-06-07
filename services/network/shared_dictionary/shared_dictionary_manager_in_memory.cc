@@ -30,14 +30,17 @@ class DictionaryReference {
   ~DictionaryReference() = default;
 
   raw_ptr<SharedDictionaryStorageInMemory> storage() const { return storage_; }
-  const raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo> dict()
-      const {
+  const raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo,
+                DanglingUntriaged>
+  dict() const {
     return dict_;
   }
 
  private:
   raw_ptr<SharedDictionaryStorageInMemory> storage_;
-  raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo> dict_;
+  raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo,
+          DanglingUntriaged>
+      dict_;
 };
 
 struct LastUsedTimeLess {

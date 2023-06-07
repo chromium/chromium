@@ -51,8 +51,8 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
   content::BrowserTaskEnvironment env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile> profile_;
-  raw_ptr<StorageAccessAPIServiceImpl> service_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<StorageAccessAPIServiceImpl, DanglingUntriaged> service_;
 };
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
