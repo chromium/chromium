@@ -39,6 +39,99 @@ const int kCurrentVersionNumber = 1;
 
 const base::FilePath::CharType kSharedDictionaryStoreFilename[] =
     FILE_PATH_LITERAL("SharedDictionary");
+
+SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
+RegisterDictionaryImpl(SQLitePersistentSharedDictionaryStore* store,
+                       const SharedDictionaryStorageIsolationKey& isolation_key,
+                       SharedDictionaryInfo dictionary_info) {
+  SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult result_out;
+  base::RunLoop run_loop;
+  store->RegisterDictionary(
+      isolation_key, std::move(dictionary_info),
+      base::BindLambdaForTesting(
+          [&](SQLitePersistentSharedDictionaryStore::
+                  RegisterDictionaryResultOrError result) {
+            ASSERT_TRUE(result.has_value());
+            result_out = result.value();
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  return result_out;
+}
+
+// Register following 4 dictionaries for ProcessEviction tests.
+//   dict1: size=1000 last_used_time=now
+//   dict2: size=3000 last_used_time=now+4
+//   dict3: size=5000 last_used_time=now+2
+//   dict4: size=7000 last_used_time=now+3
+std::tuple<SharedDictionaryInfo,
+           SharedDictionaryInfo,
+           SharedDictionaryInfo,
+           SharedDictionaryInfo>
+RegisterSharedDictionariesForProcessEvictionTest(
+    SQLitePersistentSharedDictionaryStore* store,
+    const SharedDictionaryStorageIsolationKey& isolation_key) {
+  const base::Time now = base::Time::Now();
+  auto token1 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict1 =
+      SharedDictionaryInfo(GURL("https://a.example/dict"),
+                           /*response_time=*/now,
+                           /*expiration*/ base::Seconds(100), "/pattern*",
+                           /*last_used_time*/ now,
+                           /*size=*/1000, net::SHA256HashValue({{0x00, 0x01}}),
+                           /*disk_cache_key_token=*/token1,
+                           /*primary_key_in_database=*/absl::nullopt);
+  auto result1 = RegisterDictionaryImpl(store, isolation_key, dict1);
+  dict1.set_primary_key_in_database(result1.primary_key_in_database);
+
+  auto token2 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict2 =
+      SharedDictionaryInfo(GURL("https://b.example/dict"),
+                           /*response_time=*/now,
+                           /*expiration*/ base::Seconds(100), "/pattern*",
+                           /*last_used_time*/ now + base::Seconds(1),
+                           /*size=*/3000, net::SHA256HashValue({{0x00, 0x02}}),
+                           /*disk_cache_key_token=*/token2,
+                           /*primary_key_in_database=*/absl::nullopt);
+  auto result2 = RegisterDictionaryImpl(store, isolation_key, dict2);
+  dict2.set_primary_key_in_database(result2.primary_key_in_database);
+
+  auto token3 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict3 =
+      SharedDictionaryInfo(GURL("https://c.example/dict"),
+                           /*response_time=*/now,
+                           /*expiration*/ base::Seconds(100), "/pattern*",
+                           /*last_used_time*/ now + base::Seconds(2),
+                           /*size=*/5000, net::SHA256HashValue({{0x00, 0x03}}),
+                           /*disk_cache_key_token=*/token3,
+                           /*primary_key_in_database=*/absl::nullopt);
+  auto result3 = RegisterDictionaryImpl(store, isolation_key, dict3);
+  dict3.set_primary_key_in_database(result3.primary_key_in_database);
+
+  auto token4 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict4 =
+      SharedDictionaryInfo(GURL("https://d.example/dict"),
+                           /*response_time=*/now,
+                           /*expiration*/ base::Seconds(100), "/pattern*",
+                           /*last_used_time*/ now + base::Seconds(3),
+                           /*size=*/7000, net::SHA256HashValue({{0x00, 0x04}}),
+                           /*disk_cache_key_token=*/token4,
+                           /*primary_key_in_database=*/absl::nullopt);
+  auto result4 = RegisterDictionaryImpl(store, isolation_key, dict4);
+  dict4.set_primary_key_in_database(result4.primary_key_in_database);
+
+  // Call UpdateDictionaryLastUsedTime to update the last used time of dict2.
+  store->UpdateDictionaryLastUsedTime(*dict2.primary_key_in_database(),
+                                      now + base::Seconds(4));
+
+  SharedDictionaryInfo updated_dict2 = SharedDictionaryInfo(
+      dict2.url(), dict2.response_time(), dict2.expiration(), dict2.match(),
+      now + base::Seconds(4), dict2.size(), dict2.hash(),
+      dict2.disk_cache_key_token(), dict2.primary_key_in_database());
+
+  return {dict1, updated_dict2, dict3, dict4};
+}
+
 }  // namespace
 
 SharedDictionaryStorageIsolationKey CreateIsolationKey(
@@ -111,19 +204,8 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
   SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
   RegisterDictionary(const SharedDictionaryStorageIsolationKey& isolation_key,
                      SharedDictionaryInfo dictionary_info) {
-    SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult result_out;
-    base::RunLoop run_loop;
-    store_->RegisterDictionary(
-        isolation_key, std::move(dictionary_info),
-        base::BindLambdaForTesting(
-            [&](SQLitePersistentSharedDictionaryStore::
-                    RegisterDictionaryResultOrError result) {
-              ASSERT_TRUE(result.has_value());
-              result_out = result.value();
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return result_out;
+    return RegisterDictionaryImpl(store_.get(), isolation_key,
+                                  std::move(dictionary_info));
   }
 
   std::vector<SharedDictionaryInfo> GetDictionaries(
@@ -205,12 +287,16 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return tokens;
   }
 
-  std::set<base::UnguessableToken> ProcessEviction(uint64_t cache_max_size,
-                                                   uint64_t low_watermark) {
+  std::set<base::UnguessableToken> ProcessEviction(
+      uint64_t cache_max_size,
+      uint64_t size_low_watermark,
+      uint64_t cache_max_count,
+      uint64_t count_low_watermark) {
     base::RunLoop run_loop;
     std::set<base::UnguessableToken> tokens;
     store_->ProcessEviction(
-        cache_max_size, low_watermark,
+        cache_max_size, size_low_watermark, cache_max_count,
+        count_low_watermark,
         base::BindLambdaForTesting([&](SQLitePersistentSharedDictionaryStore::
                                            UnguessableTokenSetOrError result) {
           ASSERT_TRUE(result.has_value());
@@ -316,8 +402,6 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
   void RunDeleteExpiredDictionariesFailureTest(
       SQLitePersistentSharedDictionaryStore::Error expected_error);
   void RunProcessEvictionFailureTest(
-      uint64_t cache_max_size,
-      uint64_t low_watermark,
       SQLitePersistentSharedDictionaryStore::Error expected_error);
   void RunGetAllDiskCacheKeyTokensFailureTest(
       SQLitePersistentSharedDictionaryStore::Error expected_error);
@@ -345,6 +429,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, SingleDictionary) {
       RegisterDictionary(isolation_key_, dictionary_info_);
   EXPECT_EQ(dictionary_info_.size(),
             register_dictionary_result.total_dictionary_size);
+  EXPECT_EQ(1u, register_dictionary_result.total_dictionary_count);
 
   SharedDictionaryInfo expected_info = dictionary_info_;
   expected_info.set_primary_key_in_database(
@@ -376,8 +461,11 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
       RegisterDictionary(isolation_key1, dictionary_info1);
   EXPECT_EQ(dictionary_info1.size(),
             register_dictionary_result1.total_dictionary_size);
+  EXPECT_EQ(1u, register_dictionary_result1.total_dictionary_count);
   auto register_dictionary_result2 =
       RegisterDictionary(isolation_key2, dictionary_info2);
+  EXPECT_EQ(expect_merged ? 1u : 2u,
+            register_dictionary_result2.total_dictionary_count);
 
   EXPECT_NE(register_dictionary_result1.primary_key_in_database,
             register_dictionary_result2.primary_key_in_database);
@@ -890,13 +978,12 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::RunProcessEvictionFailureTest(
-    uint64_t cache_max_size,
-    uint64_t low_watermark,
     SQLitePersistentSharedDictionaryStore::Error expected_error) {
   CreateStore();
   base::RunLoop run_loop;
   store_->ProcessEviction(
-      cache_max_size, low_watermark,
+      /*cache_max_size=*/1, /*size_low_watermark=*/1,
+      /*cache_max_count=*/1, /*count_low_watermark=*/1,
       base::BindLambdaForTesting(
           [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
                   result) {
@@ -911,8 +998,7 @@ void SQLitePersistentSharedDictionaryStoreTest::RunProcessEvictionFailureTest(
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        ProcessEvictionErrorDatabaseInitializationFailure) {
   CorruptDatabaseFile();
-  RunProcessEvictionFailureTest(/*cache_max_size=*/1, /*low_watermark=*/1,
-                                SQLitePersistentSharedDictionaryStore::Error::
+  RunProcessEvictionFailureTest(SQLitePersistentSharedDictionaryStore::Error::
                                     kFailedToInitializeDatabase);
   CheckStoreRecovered();
 }
@@ -927,7 +1013,6 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   ManipulateDatabase({"DROP TABLE dictionaries",
                       "CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
   RunProcessEvictionFailureTest(
-      /*cache_max_size=*/1, /*low_watermark=*/1,
       SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
 }
 
@@ -942,7 +1027,6 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   MakeFileUnwritable();
 
   RunProcessEvictionFailureTest(
-      /*cache_max_size=*/1, /*low_watermark=*/1,
       SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
@@ -955,7 +1039,6 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   ManipulateDatabase({"DELETE FROM meta WHERE key='total_dict_size'"});
 
   RunProcessEvictionFailureTest(
-      /*cache_max_size=*/1, /*low_watermark=*/1,
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
 }
 
@@ -1396,61 +1479,11 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
   EXPECT_EQ(dict3.size() + dict4.size(), GetTotalDictionarySize());
 }
 
-TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEviction) {
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionNotExceeded) {
   CreateStore();
-
-  const base::Time now = base::Time::Now();
-  auto token1 = base::UnguessableToken::Create();
-  SharedDictionaryInfo dict1 =
-      SharedDictionaryInfo(GURL("https://a.example/dict"),
-                           /*response_time=*/now,
-                           /*expiration*/ base::Seconds(100), "/pattern*",
-                           /*last_used_time*/ now,
-                           /*size=*/1000, net::SHA256HashValue({{0x00, 0x01}}),
-                           /*disk_cache_key_token=*/token1,
-                           /*primary_key_in_database=*/absl::nullopt);
-  auto result1 = RegisterDictionary(isolation_key_, dict1);
-  dict1.set_primary_key_in_database(result1.primary_key_in_database);
-
-  auto token2 = base::UnguessableToken::Create();
-  SharedDictionaryInfo dict2 =
-      SharedDictionaryInfo(GURL("https://b.example/dict"),
-                           /*response_time=*/now,
-                           /*expiration*/ base::Seconds(100), "/pattern*",
-                           /*last_used_time*/ now + base::Seconds(1),
-                           /*size=*/3000, net::SHA256HashValue({{0x00, 0x02}}),
-                           /*disk_cache_key_token=*/token2,
-                           /*primary_key_in_database=*/absl::nullopt);
-  auto result2 = RegisterDictionary(isolation_key_, dict2);
-  dict2.set_primary_key_in_database(result2.primary_key_in_database);
-
-  auto token3 = base::UnguessableToken::Create();
-  SharedDictionaryInfo dict3 =
-      SharedDictionaryInfo(GURL("https://c.example/dict"),
-                           /*response_time=*/now,
-                           /*expiration*/ base::Seconds(100), "/pattern*",
-                           /*last_used_time*/ now + base::Seconds(2),
-                           /*size=*/5000, net::SHA256HashValue({{0x00, 0x03}}),
-                           /*disk_cache_key_token=*/token3,
-                           /*primary_key_in_database=*/absl::nullopt);
-  auto result3 = RegisterDictionary(isolation_key_, dict3);
-  dict3.set_primary_key_in_database(result3.primary_key_in_database);
-
-  auto token4 = base::UnguessableToken::Create();
-  SharedDictionaryInfo dict4 =
-      SharedDictionaryInfo(GURL("https://d.example/dict"),
-                           /*response_time=*/now,
-                           /*expiration*/ base::Seconds(100), "/pattern*",
-                           /*last_used_time*/ now + base::Seconds(3),
-                           /*size=*/7000, net::SHA256HashValue({{0x00, 0x04}}),
-                           /*disk_cache_key_token=*/token4,
-                           /*primary_key_in_database=*/absl::nullopt);
-  auto result4 = RegisterDictionary(isolation_key_, dict4);
-  dict4.set_primary_key_in_database(result4.primary_key_in_database);
-
-  store_->UpdateDictionaryLastUsedTime(*dict2.primary_key_in_database(),
-                                       now + base::Seconds(4));
-
+  auto [dict1, dict2, dict3, dict4] =
+      RegisterSharedDictionariesForProcessEvictionTest(store_.get(),
+                                                       isolation_key_);
   // The current status:
   //   dict1: size=1000 last_used_time=now
   //   dict3: size=5000 last_used_time=now+2
@@ -1458,27 +1491,147 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEviction) {
   //   dict2: size=3000 last_used_time=now+4
 
   // No matching dictionaries to be deleted.
-  EXPECT_TRUE(ProcessEviction(16000, 15000).empty());
-
-  std::set<base::UnguessableToken> tokens = ProcessEviction(15000, 10000);
-  // The dict1 and dict3 must be deleted.
-  EXPECT_THAT(tokens, UnorderedElementsAreArray({token1, token3}));
-
+  EXPECT_TRUE(ProcessEviction(16000, 15000, 10, 9).empty());
   // Check the remaining dictionaries.
-  SharedDictionaryInfo updated_dict2 =
-      SharedDictionaryInfo(GURL("https://b.example/dict"),
-                           /*response_time=*/now,
-                           /*expiration*/ base::Seconds(100), "/pattern*",
-                           /*last_used_time*/ now + base::Seconds(4),
-                           /*size=*/3000, net::SHA256HashValue({{0x00, 0x02}}),
-                           /*disk_cache_key_token=*/token2,
-                           /*primary_key_in_database=*/absl::nullopt);
-  updated_dict2.set_primary_key_in_database(*dict2.primary_key_in_database());
+  EXPECT_THAT(
+      GetAllDictionaries(),
+      ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray(
+                                           {dict1, dict2, dict3, dict4}))));
+  // Check the total size of remaining dictionaries.
+  EXPECT_EQ(dict1.size() + dict2.size() + dict3.size() + dict4.size(),
+            GetTotalDictionarySize());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionSizeExceeded) {
+  CreateStore();
+  auto [dict1, dict2, dict3, dict4] =
+      RegisterSharedDictionariesForProcessEvictionTest(store_.get(),
+                                                       isolation_key_);
+  // The current status:
+  //   dict1: size=1000 last_used_time=now
+  //   dict3: size=5000 last_used_time=now+2
+  //   dict4: size=7000 last_used_time=now+3
+  //   dict2: size=3000 last_used_time=now+4
+
+  std::set<base::UnguessableToken> tokens =
+      ProcessEviction(15000, 10000, 10, 9);
+  // The dict1 and dict3 must be deleted.
+  EXPECT_THAT(tokens,
+              UnorderedElementsAreArray({dict1.disk_cache_key_token(),
+                                         dict3.disk_cache_key_token()}));
+  // Check the remaining dictionaries.
   EXPECT_THAT(GetAllDictionaries(),
-              ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray(
-                                                   {dict4, updated_dict2}))));
+              ElementsAre(Pair(isolation_key_,
+                               UnorderedElementsAreArray({dict4, dict2}))));
   // Check the total size of remaining dictionaries.
   EXPECT_EQ(dict4.size() + dict2.size(), GetTotalDictionarySize());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ProcessEvictionSizeExceededEvictiedUntilCountLowWatermark) {
+  CreateStore();
+  auto [dict1, dict2, dict3, dict4] =
+      RegisterSharedDictionariesForProcessEvictionTest(store_.get(),
+                                                       isolation_key_);
+  // The current status:
+  //   dict1: size=1000 last_used_time=now
+  //   dict3: size=5000 last_used_time=now+2
+  //   dict4: size=7000 last_used_time=now+3
+  //   dict2: size=3000 last_used_time=now+4
+
+  std::set<base::UnguessableToken> tokens =
+      ProcessEviction(15000, 10000, 10, 1);
+  // The dict1 and dict3 and dict4 must be deleted.
+  EXPECT_THAT(tokens,
+              UnorderedElementsAreArray({dict1.disk_cache_key_token(),
+                                         dict3.disk_cache_key_token(),
+                                         dict4.disk_cache_key_token()}));
+  // Check the remaining dictionaries.
+  EXPECT_THAT(
+      GetAllDictionaries(),
+      ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray({dict2}))));
+  // Check the total size of remaining dictionaries.
+  EXPECT_EQ(dict2.size(), GetTotalDictionarySize());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ProcessEvictionCountExceeded) {
+  CreateStore();
+
+  auto [dict1, dict2, dict3, dict4] =
+      RegisterSharedDictionariesForProcessEvictionTest(store_.get(),
+                                                       isolation_key_);
+  // The current status:
+  //   dict1: size=1000 last_used_time=now
+  //   dict3: size=5000 last_used_time=now+2
+  //   dict4: size=7000 last_used_time=now+3
+  //   dict2: size=3000 last_used_time=now+4
+
+  std::set<base::UnguessableToken> tokens = ProcessEviction(20000, 20000, 3, 2);
+  // The dict1 and dict3 must be deleted.
+  EXPECT_THAT(tokens,
+              UnorderedElementsAreArray({dict1.disk_cache_key_token(),
+                                         dict3.disk_cache_key_token()}));
+  // Check the remaining dictionaries.
+  EXPECT_THAT(GetAllDictionaries(),
+              ElementsAre(Pair(isolation_key_,
+                               UnorderedElementsAreArray({dict4, dict2}))));
+  // Check the total size of remaining dictionaries.
+  EXPECT_EQ(dict4.size() + dict2.size(), GetTotalDictionarySize());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ProcessEvictionCountExceededEvictedUntilSizeLowWaterMark) {
+  CreateStore();
+
+  auto [dict1, dict2, dict3, dict4] =
+      RegisterSharedDictionariesForProcessEvictionTest(store_.get(),
+                                                       isolation_key_);
+  // The current status:
+  //   dict1: size=1000 last_used_time=now
+  //   dict3: size=5000 last_used_time=now+2
+  //   dict4: size=7000 last_used_time=now+3
+  //   dict2: size=3000 last_used_time=now+4
+
+  std::set<base::UnguessableToken> tokens = ProcessEviction(20000, 3000, 3, 2);
+  // The dict1 and dict3 and dict4 must be deleted.
+  EXPECT_THAT(tokens,
+              UnorderedElementsAreArray({dict1.disk_cache_key_token(),
+                                         dict3.disk_cache_key_token(),
+                                         dict4.disk_cache_key_token()}));
+  // Check the remaining dictionaries.
+  EXPECT_THAT(
+      GetAllDictionaries(),
+      ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray({dict2}))));
+  // Check the total size of remaining dictionaries.
+  EXPECT_EQ(dict2.size(), GetTotalDictionarySize());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionZeroMaxSize) {
+  CreateStore();
+
+  auto [dict1, dict2, dict3, dict4] =
+      RegisterSharedDictionariesForProcessEvictionTest(store_.get(),
+                                                       isolation_key_);
+  // The current status:
+  //   dict1: size=1000 last_used_time=now
+  //   dict3: size=5000 last_used_time=now+2
+  //   dict4: size=7000 last_used_time=now+3
+  //   dict2: size=3000 last_used_time=now+4
+
+  EXPECT_TRUE(ProcessEviction(0, 0, 4, 2).empty());
+
+  std::set<base::UnguessableToken> tokens = ProcessEviction(0, 0, 3, 2);
+  // The dict1 and dict3 and dict4 must be deleted.
+  EXPECT_THAT(tokens,
+              UnorderedElementsAreArray({dict1.disk_cache_key_token(),
+                                         dict3.disk_cache_key_token()}));
+  // Check the remaining dictionaries.
+  EXPECT_THAT(GetAllDictionaries(),
+              ElementsAre(Pair(isolation_key_,
+                               UnorderedElementsAreArray({dict2, dict4}))));
+  // Check the total size of remaining dictionaries.
+  EXPECT_EQ(dict2.size() + dict4.size(), GetTotalDictionarySize());
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
@@ -1513,7 +1666,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
   //   dict1: size=1000 last_used_time=now
   //   dict2: size=3000 last_used_time=now+1
 
-  std::set<base::UnguessableToken> tokens = ProcessEviction(1000, 900);
+  std::set<base::UnguessableToken> tokens = ProcessEviction(1000, 900, 10, 9);
   // The dict1 and dict2 must be deleted.
   EXPECT_THAT(tokens, UnorderedElementsAreArray({token1, token2}));
 

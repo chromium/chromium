@@ -256,8 +256,11 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
     : public SharedDictionaryManagerOnDisk::SerializedTask {
  public:
   CacheEvictionTask(raw_ptr<SharedDictionaryManagerOnDisk> manager,
-                    uint64_t cache_max_size)
-      : manager_(manager), cache_max_size_(cache_max_size) {}
+                    uint64_t cache_max_size,
+                    uint64_t cache_max_count)
+      : manager_(manager),
+        cache_max_size_(cache_max_size),
+        cache_max_count_(cache_max_count) {}
   ~CacheEvictionTask() override = default;
 
   CacheEvictionTask(const CacheEvictionTask&) = delete;
@@ -265,7 +268,8 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
 
   void Start() override {
     manager_->metadata_store().ProcessEviction(
-        cache_max_size_, cache_max_size_ * 0.9,
+        cache_max_size_, cache_max_size_ * 0.9, cache_max_count_,
+        cache_max_count_ * 0.9,
         base::BindOnce(&CacheEvictionTask::OnProcessEvictionFinished,
                        weak_factory_.GetWeakPtr()));
   }
@@ -283,6 +287,7 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
 
   raw_ptr<SharedDictionaryManagerOnDisk> manager_;
   const uint64_t cache_max_size_;
+  const uint64_t cache_max_count_;
   base::WeakPtrFactory<CacheEvictionTask> weak_factory_{this};
 };
 
@@ -298,8 +303,8 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTaskInfo
   std::unique_ptr<SerializedTask> CreateTask(
       SharedDictionaryManagerOnDisk* manager) override {
     std::move(task_created_callback_).Run();
-    return std::make_unique<CacheEvictionTask>(manager,
-                                               manager->cache_max_size());
+    return std::make_unique<CacheEvictionTask>(
+        manager, manager->cache_max_size(), manager->cache_max_count());
   }
 
  private:
@@ -367,12 +372,14 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
     const base::FilePath& database_path,
     const base::FilePath& cache_directory_path,
     uint64_t cache_max_size,
+    uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener* app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory)
     : cache_max_size_(cache_max_size),
+      cache_max_count_(cache_max_count),
       metadata_store_(database_path,
                       /*client_task_runner=*/
                       base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -386,7 +393,9 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
 #endif  // BUILDFLAG(IS_ANDROID)
                          std::move(file_operations_factory));
   MaybePostExpiredDictionaryDeletionTask();
-  MaybePostCacheEvictionTask();
+  if (cache_max_size_ != 0u) {
+    MaybePostCacheEvictionTask();
+  }
 }
 
 SharedDictionaryManagerOnDisk::~SharedDictionaryManagerOnDisk() = default;
@@ -479,6 +488,9 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
   base::UmaHistogramCustomCounts(
       "Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeWhenAdded",
       result.value().total_dictionary_size, 1, 200000000, 50);
+  base::UmaHistogramCounts1000(
+      "Net.SharedDictionaryManagerOnDisk.TotalDictionaryCountWhenAdded",
+      result.value().total_dictionary_count);
   info.set_primary_key_in_database(result.value().primary_key_in_database);
   if (result.value().disk_cache_key_token_to_be_removed) {
     disk_cache_.DoomEntry(
@@ -488,10 +500,13 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
   std::move(callback).Run(std::move(info));
 
   MaybePostExpiredDictionaryDeletionTask();
-  if (cache_max_size_ > 0 &&
-      result.value().total_dictionary_size > cache_max_size_) {
-    MaybePostCacheEvictionTask();
+
+  if ((cache_max_size_ == 0 ||
+       result.value().total_dictionary_size <= cache_max_size_) &&
+      result.value().total_dictionary_count <= cache_max_count_) {
+    return;
   }
+  MaybePostCacheEvictionTask();
 }
 
 void SharedDictionaryManagerOnDisk::UpdateDictionaryLastUsedTime(
@@ -564,7 +579,7 @@ void SharedDictionaryManagerOnDisk::MaybePostMismatchingEntryDeletionTask() {
 }
 
 void SharedDictionaryManagerOnDisk::MaybePostCacheEvictionTask() {
-  if (cache_eviction_task_queued_ || cache_max_size_ == 0) {
+  if (cache_eviction_task_queued_) {
     return;
   }
   cache_eviction_task_queued_ = true;

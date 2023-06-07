@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
 
@@ -72,8 +73,9 @@ class EvictionCandidate {
 }  // namespace
 
 SharedDictionaryManagerInMemory::SharedDictionaryManagerInMemory(
-    uint64_t cache_max_size)
-    : cache_max_size_(cache_max_size) {}
+    uint64_t cache_max_size,
+    uint64_t cache_max_count)
+    : cache_max_size_(cache_max_size), cache_max_count_(cache_max_count) {}
 
 SharedDictionaryManagerInMemory::~SharedDictionaryManagerInMemory() = default;
 
@@ -111,9 +113,6 @@ void SharedDictionaryManagerInMemory::ClearData(
 }
 
 void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
-  if (cache_max_size_ == 0u) {
-    return;
-  }
   uint64_t total_size = 0u;
   size_t dictionary_count = 0u;
   for (const auto& it1 : storages()) {
@@ -126,7 +125,9 @@ void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
       }
     }
   }
-  if (total_size <= cache_max_size_) {
+
+  if ((cache_max_size_ == 0 || total_size <= cache_max_size_) &&
+      dictionary_count <= cache_max_count_) {
     return;
   }
 
@@ -144,14 +145,21 @@ void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
 
   std::sort(dictionaries.begin(), dictionaries.end(), LastUsedTimeLess{});
 
-  uint64_t low_watermark = cache_max_size_ * 0.9;
+  uint64_t size_low_watermark = cache_max_size_ * 0.9;
+  uint64_t count_low_watermark = cache_max_count_ * 0.9;
+  uint64_t to_be_removed_count = 0;
+  if (dictionary_count > count_low_watermark) {
+    to_be_removed_count = dictionary_count - count_low_watermark;
+  }
+
   std::vector<EvictionCandidate> eviction_candidates;
   for (auto& dict_ref : dictionaries) {
     total_size -= dict_ref.dict()->size();
     eviction_candidates.emplace_back(
         dict_ref.storage(), url::SchemeHostPort(dict_ref.dict()->url()),
         dict_ref.dict()->match());
-    if (low_watermark >= total_size) {
+    if ((cache_max_size_ == 0 || size_low_watermark >= total_size) &&
+        eviction_candidates.size() >= to_be_removed_count) {
       break;
     }
   }

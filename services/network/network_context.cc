@@ -122,6 +122,7 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/restricted_cookie_manager.h"
 #include "services/network/session_cleanup_cookie_store.h"
+#include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/ssl_config_service_mojo.h"
 #include "services/network/throttling/network_conditions.h"
@@ -511,13 +512,15 @@ NetworkContext::NetworkContext(
           params_->shared_dictionary_directory->path().Append(
               FILE_PATH_LITERAL("cache")),
           params_->shared_dictionary_cache_max_size,
+          shared_dictionary::kDictionaryMaxCountPerNetworkContext,
 #if BUILDFLAG(IS_ANDROID)
           app_status_listeners_.rbegin()->get(),
 #endif  // BUILDFLAG(IS_ANDROID)
           /*file_operations_factory=*/nullptr);
     } else {
       shared_dictionary_manager_ = SharedDictionaryManager::CreateInMemory(
-          params_->shared_dictionary_cache_max_size);
+          params_->shared_dictionary_cache_max_size,
+          shared_dictionary::kDictionaryMaxCountPerNetworkContext);
     }
   }
 

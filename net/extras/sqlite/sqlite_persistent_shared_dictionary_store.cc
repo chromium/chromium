@@ -215,7 +215,9 @@ class SQLitePersistentSharedDictionaryStore::Backend
       base::RepeatingCallback<bool(const GURL&)> url_matcher);
   UnguessableTokenSetOrError DeleteExpiredDictionariesImpl(base::Time now);
   UnguessableTokenSetOrError ProcessEvictionImpl(uint64_t cache_max_size,
-                                                 uint64_t low_watermark);
+                                                 uint64_t size_low_watermark,
+                                                 uint64_t cache_max_count,
+                                                 uint64_t count_low_watermark);
   UnguessableTokenSetOrError GetAllDiskCacheKeyTokensImpl();
   Error DeleteDictionariesByDiskCacheKeyTokensImpl(
       const std::set<base::UnguessableToken>& disk_cache_key_tokens);
@@ -235,6 +237,9 @@ class SQLitePersistentSharedDictionaryStore::Backend
   Error UpdateTotalDictionarySizeInMetaTable(
       int64_t size_delta,
       uint64_t* total_dictionary_size_out);
+
+  // Gets the total dictionary count.
+  base::expected<uint64_t, Error> GetTotalDictionaryCount();
 
   // SQLitePersistentStoreBackendBase implementation
   bool CreateDatabaseSchema() override;
@@ -264,11 +269,16 @@ class SQLitePersistentSharedDictionaryStore::Backend
       std::vector<base::UnguessableToken>* tokens_out,
       int64_t* total_size_out);
   // Selects dictionaries in order of `last_used_time` if the total size of all
-  // dictionaries exceeds `cache_max_size` until the total size reaches
-  // `low_watermark`, and fills their primary keys and tokens and total size.
+  // dictionaries exceeds `cache_max_size` or the total dictionary count exceeds
+  // `cache_max_count` until the total size reaches `size_low_watermark` and the
+  // total count reaches `count_low_watermark`, and fills their primary keys and
+  // tokens and total size. If `cache_max_size` is zero, the size limitation is
+  // ignored.
   Error SelectEvictionCandidates(
       uint64_t cache_max_size,
-      uint64_t low_watermark,
+      uint64_t size_low_watermark,
+      uint64_t cache_max_count,
+      uint64_t count_low_watermark,
       std::vector<int64_t>* primary_keys_out,
       std::vector<base::UnguessableToken>* tokens_out,
       int64_t* total_size_after_eviction_out);
@@ -450,14 +460,21 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
     return base::unexpected(error);
   }
 
+  base::expected<uint64_t, Error> total_dictionary_count_result =
+      GetTotalDictionaryCount();
+  if (!total_dictionary_count_result.has_value()) {
+    return base::unexpected(total_dictionary_count_result.error());
+  }
+
   if (!transaction.Commit()) {
     return base::unexpected(Error::kFailedToCommitTransaction);
   }
-  return base::ok(
-      RegisterDictionaryResult{.primary_key_in_database = id,
-                               .disk_cache_key_token_to_be_removed =
-                                   disk_cache_key_token_of_removed_dict,
-                               .total_dictionary_size = total_dictionary_size});
+  return base::ok(RegisterDictionaryResult{
+      .primary_key_in_database = id,
+      .disk_cache_key_token_to_be_removed =
+          disk_cache_key_token_of_removed_dict,
+      .total_dictionary_size = total_dictionary_size,
+      .total_dictionary_count = total_dictionary_count_result.value()});
 }
 
 SQLitePersistentSharedDictionaryStore::DictionaryListOrError
@@ -849,7 +866,9 @@ SQLitePersistentSharedDictionaryStore::Backend::DeleteExpiredDictionariesImpl(
 SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
 SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
     uint64_t cache_max_size,
-    uint64_t low_watermark) {
+    uint64_t size_low_watermark,
+    uint64_t cache_max_count,
+    uint64_t count_low_watermark) {
   if (!InitializeDatabase()) {
     return base::unexpected(Error::kFailedToInitializeDatabase);
   }
@@ -864,9 +883,9 @@ SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
   std::vector<int64_t> primary_keys;
   std::vector<base::UnguessableToken> tokens;
   int64_t total_size_after_eviction = 0;
-  Error error =
-      SelectEvictionCandidates(cache_max_size, low_watermark, &primary_keys,
-                               &tokens, &total_size_after_eviction);
+  Error error = SelectEvictionCandidates(
+      cache_max_size, size_low_watermark, cache_max_count, count_low_watermark,
+      &primary_keys, &tokens, &total_size_after_eviction);
   if (error != Error::kOk) {
     return base::unexpected(error);
   }
@@ -893,7 +912,9 @@ SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
 SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
     uint64_t cache_max_size,
-    uint64_t low_watermark,
+    uint64_t size_low_watermark,
+    uint64_t cache_max_count,
+    uint64_t count_low_watermark,
     std::vector<int64_t>* primary_keys_out,
     std::vector<base::UnguessableToken>* tokens_out,
     int64_t* total_size_after_eviction_out) {
@@ -903,9 +924,24 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
     return total_dictionary_size_result.error();
   }
   uint64_t total_dictionary_size = total_dictionary_size_result.value();
-  if (total_dictionary_size <= cache_max_size) {
+
+  base::expected<uint64_t, Error> total_dictionary_count_result =
+      GetTotalDictionaryCount();
+  if (!total_dictionary_count_result.has_value()) {
+    return total_dictionary_count_result.error();
+  }
+  uint64_t total_dictionary_count = total_dictionary_count_result.value();
+
+  if ((cache_max_size == 0 || total_dictionary_size <= cache_max_size) &&
+      total_dictionary_count <= cache_max_count) {
     return Error::kOk;
   }
+
+  uint64_t to_be_removed_count = 0;
+  if (total_dictionary_count > count_low_watermark) {
+    to_be_removed_count = total_dictionary_count - count_low_watermark;
+  }
+
   base::CheckedNumeric<uint64_t> checked_total_dictionary_size =
       total_dictionary_size;
 
@@ -947,7 +983,10 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
         base::checked_cast<int64_t>(checked_total_dictionary_size.ValueOrDie());
     primary_keys_out->emplace_back(primary_key_in_database);
     tokens_out->emplace_back(*disk_cache_key_token);
-    if (low_watermark >= checked_total_dictionary_size.ValueOrDie()) {
+
+    if ((cache_max_size == 0 ||
+         size_low_watermark >= checked_total_dictionary_size.ValueOrDie()) &&
+        tokens_out->size() >= to_be_removed_count) {
       break;
     }
   }
@@ -1109,6 +1148,22 @@ void SQLitePersistentSharedDictionaryStore::Backend::
   }
 }
 
+base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
+SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionaryCount() {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  static constexpr char kQuery[] = "SELECT COUNT(id) FROM dictionaries";
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return base::unexpected(Error::kInvalidSql);
+  }
+  uint64_t dictionary_count = 0;
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  if (statement.Step()) {
+    dictionary_count = statement.ColumnInt64(0);
+  }
+  return base::ok(dictionary_count);
+}
+
 bool SQLitePersistentSharedDictionaryStore::Backend::
     GetExistingDictionarySizeAndDiskCacheKeyToken(
         const SharedDictionaryStorageIsolationKey& isolation_key,
@@ -1247,12 +1302,14 @@ void SQLitePersistentSharedDictionaryStore::DeleteExpiredDictionaries(
 
 void SQLitePersistentSharedDictionaryStore::ProcessEviction(
     const uint64_t cache_max_size,
-    const uint64_t low_watermark,
+    const uint64_t size_low_watermark,
+    const uint64_t cache_max_count,
+    const uint64_t count_low_watermark,
     base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->ProcessEviction(
       WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
-      cache_max_size, low_watermark);
+      cache_max_size, size_low_watermark, cache_max_count, count_low_watermark);
 }
 
 void SQLitePersistentSharedDictionaryStore::GetAllDiskCacheKeyTokens(

@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
     int64_t primary_key_in_database;
     absl::optional<base::UnguessableToken> disk_cache_key_token_to_be_removed;
     uint64_t total_dictionary_size;
+    uint64_t total_dictionary_count;
   };
 
   using RegisterDictionaryResultOrError =
@@ -94,11 +95,15 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       const base::Time now,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   // Deletes dictionaries in order of `last_used_time` if the total size of all
-  // dictionaries exceeds `cache_max_size` until the total size reaches
-  // `low_watermark`.
+  // dictionaries exceeds `cache_max_size` or the total dictionary count exceeds
+  // `cache_max_count` until the total size reaches `size_low_watermark` and the
+  // total count reaches `count_low_watermark`. If `cache_max_size` is zero, the
+  // size limitation is ignored.
   void ProcessEviction(
       const uint64_t cache_max_size,
-      const uint64_t low_watermark,
+      const uint64_t size_low_watermark,
+      const uint64_t cache_max_count,
+      const uint64_t count_low_watermark,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void GetAllDiskCacheKeyTokens(
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);

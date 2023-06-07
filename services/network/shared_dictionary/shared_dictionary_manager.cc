@@ -12,8 +12,10 @@ namespace network {
 
 // static
 std::unique_ptr<SharedDictionaryManager>
-SharedDictionaryManager::CreateInMemory(uint64_t cache_max_size) {
-  return std::make_unique<SharedDictionaryManagerInMemory>(cache_max_size);
+SharedDictionaryManager::CreateInMemory(uint64_t cache_max_size,
+                                        uint64_t cache_max_count) {
+  return std::make_unique<SharedDictionaryManagerInMemory>(cache_max_size,
+                                                           cache_max_count);
 }
 
 // static
@@ -21,13 +23,14 @@ std::unique_ptr<SharedDictionaryManager> SharedDictionaryManager::CreateOnDisk(
     const base::FilePath& database_path,
     const base::FilePath& cache_directory_path,
     uint64_t cache_max_size,
+    uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener* app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory) {
   return std::make_unique<SharedDictionaryManagerOnDisk>(
-      database_path, cache_directory_path, cache_max_size,
+      database_path, cache_directory_path, cache_max_size, cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
       app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -17,6 +17,9 @@ namespace network::shared_dictionary {
 // HTTP header.
 constexpr base::TimeDelta kDefaultExpiration = base::Seconds(31536000);
 
+// The total dictionary count limit per NetworkContext.
+constexpr uint64_t kDictionaryMaxCountPerNetworkContext = 1000u;
+
 // The size limit of a shared dictionary.
 size_t GetDictionarySizeLimit();
 

@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/format_macros.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -52,6 +53,8 @@ const net::SchemefulSite kSite2(kUrl2);
 
 const std::string kTestData1 = "Hello world";
 const std::string kTestData2 = "Bonjour le monde";
+
+const size_t kCacheMaxCount = 100;
 
 void CheckDiskCacheEntryDataEquals(
     SharedDictionaryDiskCache& disk_cache,
@@ -131,10 +134,12 @@ class SharedDictionaryManagerTest
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager() {
     switch (GetParam()) {
       case TestManagerType::kInMemory:
-        return SharedDictionaryManager::CreateInMemory(/*cache_max_size=*/0);
+        return SharedDictionaryManager::CreateInMemory(/*cache_max_size=*/0,
+                                                       kCacheMaxCount);
       case TestManagerType::kOnDisk:
         return SharedDictionaryManager::CreateOnDisk(
             database_path_, cache_directory_path_, /*cache_max_size=*/0,
+            kCacheMaxCount,
 #if BUILDFLAG(IS_ANDROID)
             /*app_status_listener=*/nullptr,
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -456,7 +461,8 @@ TEST_P(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
   EXPECT_FALSE(dict);
 }
 
-TEST_P(SharedDictionaryManagerTest, CacheEvictionOnSetCacheMaxSize) {
+TEST_P(SharedDictionaryManagerTest,
+       CacheEvictionSizeExceededOnSetCacheMaxSize) {
   net::SharedDictionaryStorageIsolationKey isolation_key(
       url::Origin::Create(kUrl1), kSite1);
 
@@ -492,7 +498,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionOnSetCacheMaxSize) {
   EXPECT_TRUE(storage->GetDictionary(GURL("https://origin3.test/p3?")));
 }
 
-TEST_P(SharedDictionaryManagerTest, CacheEvictionOnNewDictionary) {
+TEST_P(SharedDictionaryManagerTest, CacheEvictionSizeExceededOnNewDictionary) {
   net::SharedDictionaryStorageIsolationKey isolation_key(
       url::Origin::Create(kUrl1), kSite1);
 
@@ -522,6 +528,58 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionOnNewDictionary) {
   EXPECT_FALSE(storage->GetDictionary(GURL("https://origin1.test/p1?")));
   EXPECT_FALSE(storage->GetDictionary(GURL("https://origin2.test/p2?")));
   EXPECT_TRUE(storage->GetDictionary(GURL("https://origin3.test/p3?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSizeCountExceeded) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl1), kSite1);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+  for (size_t i = 0; i < kCacheMaxCount; ++i) {
+    WriteDictionary(
+        storage.get(),
+        GURL(base::StringPrintf("https://origin.test/d%03" PRIuS, i)),
+        base::StringPrintf("p%03" PRIuS, i), {kTestData1});
+    if (GetParam() == TestManagerType::kOnDisk) {
+      FlushCacheTasks();
+    }
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  for (size_t i = 0; i < kCacheMaxCount; ++i) {
+    EXPECT_TRUE(storage->GetDictionary(
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  // Write one more dictionary. The total count exceeds the limit.
+  WriteDictionary(storage.get(),
+                  GURL(base::StringPrintf("https://origin.test/d%03" PRIuS,
+                                          kCacheMaxCount)),
+                  base::StringPrintf("p%03" PRIuS, kCacheMaxCount),
+                  {kTestData1});
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Old dictionaries must be deleted until the total count reaches
+  // kCacheMaxCount * 0.9.
+  for (size_t i = 0; i < kCacheMaxCount - kCacheMaxCount * 0.9; ++i) {
+    EXPECT_FALSE(storage->GetDictionary(
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+  }
+
+  // Newer dictionaries must not be deleted.
+  for (size_t i = kCacheMaxCount - kCacheMaxCount * 0.9 + 1;
+       i <= kCacheMaxCount; ++i) {
+    EXPECT_TRUE(storage->GetDictionary(
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+  }
 }
 
 TEST_P(SharedDictionaryManagerTest,

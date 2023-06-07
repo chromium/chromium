@@ -15,7 +15,8 @@ class SharedDictionaryStorage;
 // A SharedDictionaryManager which keeps all dictionary information in memory.
 class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
  public:
-  explicit SharedDictionaryManagerInMemory(uint64_t cache_max_size);
+  explicit SharedDictionaryManagerInMemory(uint64_t cache_max_size,
+                                           uint64_t cache_max_count);
   ~SharedDictionaryManagerInMemory() override;
 
   SharedDictionaryManagerInMemory(const SharedDictionaryManagerInMemory&) =
@@ -36,6 +37,7 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
 
  private:
   uint64_t cache_max_size_;
+  const uint64_t cache_max_count_;
   base::WeakPtrFactory<SharedDictionaryManagerInMemory> weak_factory_{this};
 };
 

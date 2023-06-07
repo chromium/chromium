@@ -36,7 +36,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   // Returns a SharedDictionaryManager which keeps the whole dictionary
   // information in memory.
   static std::unique_ptr<SharedDictionaryManager> CreateInMemory(
-      uint64_t cache_max_size);
+      uint64_t cache_max_size,
+      uint64_t cache_max_count);
 
   // Returns a SharedDictionaryManager which keeps the dictionary information
   // on disk.
@@ -44,6 +45,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       const base::FilePath& database_path,
       const base::FilePath& cache_directory_path,
       uint64_t cache_max_size,
+      uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
       base::android::ApplicationStatusListener* app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)

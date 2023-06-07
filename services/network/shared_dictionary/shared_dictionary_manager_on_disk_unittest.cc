@@ -173,9 +173,11 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager(
-      uint64_t cache_max_size = 0) {
+      uint64_t cache_max_size = 0,
+      uint64_t cache_max_count =
+          shared_dictionary::kDictionaryMaxCountPerNetworkContext) {
     return SharedDictionaryManager::CreateOnDisk(
-        database_path_, cache_directory_path_, cache_max_size,
+        database_path_, cache_directory_path_, cache_max_size, cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
         /*app_status_listener=*/nullptr,
 #endif  // BUILDFLAG(IS_ANDROID)
