@@ -3874,6 +3874,21 @@
             ]
         }
     ],
+    "CrostiniLxd5Rollout": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Lxd5",
+                    "enable_features": [
+                        "CrostiniUseLxd5"
+                    ]
+                }
+            ]
+        }
+    ],
     "CssPaintingForSpellingGrammarErrors": [
         {
             "platforms": [
