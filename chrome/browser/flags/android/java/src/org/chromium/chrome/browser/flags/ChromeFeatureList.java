@@ -486,7 +486,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBackGestureRefactorAndroid =
             new CachedFlag(BACK_GESTURE_REFACTOR, false);
     public static final CachedFlag sBaselineGm3SurfaceColors =
-            new CachedFlag(BASELINE_GM3_SURFACE_COLORS, false);
+            new CachedFlag(BASELINE_GM3_SURFACE_COLORS, true);
     public static final CachedFlag sCctAutoTranslate = new CachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBottomBarSwipeUpGesture =
             new CachedFlag(CCT_BOTTOM_BAR_SWIPE_UP_GESTURE, true);

@@ -148,7 +148,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 ChromeColors.getSurfaceColor(
                         mContext, R.dimen.omnibox_suggestion_dropdown_bg_elevation));
         assertEquals(mDropdown.getIncognitoBgColor(),
-                mContext.getColor(R.color.omnibox_dropdown_bg_incognito));
+                mContext.getColor(R.color.default_bg_color_dark_elev_1_gm3_baseline));
     }
 
     @Test

@@ -123,7 +123,7 @@ public class StripLayoutHelperManagerTest {
     public void testGetBackgroundColorFolio() {
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         mStripLayoutHelperManager.onContextChanged(mContext);
-        assertEquals(ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_2),
+        assertEquals(ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
                 mStripLayoutHelperManager.getBackgroundColor());
     }
 
