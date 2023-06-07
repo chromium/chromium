@@ -825,7 +825,9 @@
   },
   "tabCapture": {
     "dependencies": ["permission:tabCapture"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["blessed_extension"]
+  },
+  "tabCapture.capture": {
     "disallow_for_service_workers": true
   },
   "tabGroups": {

@@ -177,7 +177,8 @@ std::string TabCaptureRegistry::AddRequest(
     bool is_anonymous,
     const GURL& origin,
     content::DesktopMediaID source,
-    content::WebContents* caller_contents) {
+    int caller_render_process_id,
+    absl::optional<int> restrict_to_render_frame_id) {
   std::string device_id;
   LiveRequest* const request = FindRequest(target_contents);
 
@@ -195,13 +196,9 @@ std::string TabCaptureRegistry::AddRequest(
   requests_.push_back(std::make_unique<LiveRequest>(
       target_contents, extension_id, is_anonymous, this));
 
-  content::RenderFrameHost* const main_frame =
-      caller_contents->GetPrimaryMainFrame();
-  if (main_frame) {
-    device_id = content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-        main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
-        url::Origin::Create(origin), source, content::kRegistryStreamTypeTab);
-  }
+  device_id = content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+      caller_render_process_id, restrict_to_render_frame_id,
+      url::Origin::Create(origin), source, content::kRegistryStreamTypeTab);
 
   return device_id;
 }
