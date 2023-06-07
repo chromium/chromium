@@ -120,7 +120,7 @@
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/sync/trusted_vault_client_android.h"
+#include "chrome/browser/trusted_vault/trusted_vault_client_android.h"
 #else
 #include "components/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
