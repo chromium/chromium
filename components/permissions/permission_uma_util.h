@@ -40,7 +40,7 @@ class PermissionRequest;
 // When updating, you also need to update:
 //   1) The PermissionRequestType enum in tools/metrics/histograms/enums.xml.
 //   2) The PermissionRequestTypes suffix list in
-//      tools/metrics/histograms/histograms.xml.
+//      tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
 //   3) GetPermissionRequestString below.
 //
 // The usual rules of updating UMA values applies to this enum:
@@ -79,6 +79,7 @@ enum class RequestTypeForUma {
   PERMISSION_FILE_HANDLING = 28,
   PERMISSION_U2F_API_REQUEST = 29,
   PERMISSION_TOP_LEVEL_STORAGE_ACCESS = 30,
+  PERMISSION_MIDI = 31,
   // NUM must be the last value in the enum.
   NUM
 };

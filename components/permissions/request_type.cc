@@ -48,6 +48,8 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
     case RequestType::kMicStream:
       return IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC;
+    case RequestType::kMidi:
+      // kMidi and kMidiSysex share the same Android icon ID.
     case RequestType::kMidiSysex:
       return IDR_ANDROID_INFOBAR_MIDI;
     case RequestType::kMultipleDownloads:
@@ -99,6 +101,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kMicStream:
       return cr23 ? vector_icons::kMicChromeRefreshIcon
                   : vector_icons::kMicIcon;
+    case RequestType::kMidi:
+      // kMidi and kMidiSysex share the same desktop icon ID.
     case RequestType::kMidiSysex:
       return cr23 ? vector_icons::kMidiChromeRefreshIcon
                   : vector_icons::kMidiIcon;
@@ -157,6 +161,8 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kMicStream:
       return cr23 ? vector_icons::kMicOffChromeRefreshIcon
                   : vector_icons::kMicOffIcon;
+    case RequestType::kMidi:
+      // kMidi and kMidiSysex share the same desktop block icon ID.
     case RequestType::kMidiSysex:
       return cr23 ? vector_icons::kMidiOffChromeRefreshIcon
                   : vector_icons::kMidiOffIcon;
@@ -195,6 +201,12 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kIdleDetection;
     case ContentSettingsType::MEDIASTREAM_MIC:
       return RequestType::kMicStream;
+    case ContentSettingsType::MIDI:
+      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+        return RequestType::kMidi;
+      } else {
+        return absl::nullopt;
+      }
     case ContentSettingsType::MIDI_SYSEX:
       return RequestType::kMidiSysex;
     case ContentSettingsType::NOTIFICATIONS:
@@ -261,6 +273,12 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::IDLE_DETECTION;
     case RequestType::kMicStream:
       return ContentSettingsType::MEDIASTREAM_MIC;
+    case RequestType::kMidi:
+      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+        return ContentSettingsType::MIDI;
+      } else {
+        return absl::nullopt;
+      }
     case RequestType::kMidiSysex:
       return ContentSettingsType::MIDI_SYSEX;
 #if BUILDFLAG(IS_ANDROID)
@@ -345,6 +363,12 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "idle_detection";
     case permissions::RequestType::kMicStream:
       return "mic_stream";
+    case permissions::RequestType::kMidi:
+      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+        return "midi";
+      } else {
+        return nullptr;
+      }
     case permissions::RequestType::kMidiSysex:
       return "midi_sysex";
     case permissions::RequestType::kMultipleDownloads:

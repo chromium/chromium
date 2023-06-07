@@ -35,6 +35,7 @@ enum class RequestType {
   kGeolocation,
   kIdleDetection,
   kMicStream,
+  kMidi,
   kMidiSysex,
   kMultipleDownloads,
 #if BUILDFLAG(IS_ANDROID)
