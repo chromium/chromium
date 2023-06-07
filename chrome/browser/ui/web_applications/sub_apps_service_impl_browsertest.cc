@@ -69,9 +69,6 @@ constexpr const char kSubAppIdInvalid[] = "/invalid-sub-app-id";
 using RemoveResultsMojo =
     std::vector<blink::mojom::SubAppsServiceRemoveResultPtr>;
 
-using AddResults =
-    std::vector<std::pair<ManifestId, blink::mojom::SubAppsServiceResultCode>>;
-
 // There's one simple end-to-end test that actually calls the JS API interface,
 // the rest test the mojo interface (since the first layer listening to the API
 // calls is almost a direct passthrough to the mojo service).
@@ -138,7 +135,8 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
 
   // Calls the Add() method on the mojo interface which is async, and waits for
   // it to finish. Argument should contain paths, not full URLs.
-  AddResults CallAdd(std::vector<std::pair<std::string, std::string>> subapps) {
+  SubAppsServiceImpl::AddResults CallAdd(
+      std::vector<std::pair<std::string, std::string>> subapps) {
     // Convert params to mojo before making the call.
     std::vector<SubAppsServiceAddParametersPtr> sub_apps_mojo;
     for (const auto& [manifest_id_path, install_url_path] : subapps) {
@@ -151,7 +149,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     EXPECT_TRUE(future.Wait()) << "Add did not trigger the callback.";
 
     // Unpack the mojo results before returning them.
-    AddResults add_results;
+    SubAppsServiceImpl::AddResults add_results;
     for (const auto& result : future.Take()) {
       add_results.emplace_back(GetURLFromPath(result->manifest_id_path),
                                result->result_code);
@@ -162,7 +160,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   void ExpectCallAdd(
       base::flat_set<std::pair<ManifestId, SubAppsServiceResultCode>> expected,
       std::vector<std::pair<std::string, std::string>> subapps) {
-    AddResults actual = CallAdd(subapps);
+    SubAppsServiceImpl::AddResults actual = CallAdd(subapps);
     EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected));
   }
 

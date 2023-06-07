@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
-#include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
@@ -107,22 +106,6 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
           std::move(dialog_callback), std::move(callback), use_fallback,
           provider_->web_contents_manager().CreateDataRetriever()),
       location);
-}
-
-void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
-    ManifestId manifest_id,
-    GURL install_url,
-    base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
-    return;
-  }
-
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<FetchInstallInfoFromInstallUrlCommand>(
-          std::move(manifest_id), std::move(install_url), std::move(callback),
-          provider_->web_contents_manager().GetWeakPtr()));
 }
 
 void WebAppCommandScheduler::InstallFromInfo(

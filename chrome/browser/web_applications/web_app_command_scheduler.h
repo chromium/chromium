@@ -88,11 +88,6 @@ class WebAppCommandScheduler {
                                bool use_fallback,
                                const base::Location& location = FROM_HERE);
 
-  void FetchInstallInfoFromInstallUrl(
-      ManifestId manifest_id,
-      GURL install_url,
-      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
-
   // Install with provided `WebAppInstallInfo` instead of fetching data from
   // manifest.
   // `InstallFromInfo` doesn't install OS hooks. `InstallFromInfoWithParams`
