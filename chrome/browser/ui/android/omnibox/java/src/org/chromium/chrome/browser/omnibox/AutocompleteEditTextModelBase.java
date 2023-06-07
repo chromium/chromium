@@ -174,4 +174,9 @@ public interface AutocompleteEditTextModelBase {
      * @return Whether accessibility event should be ignored.
      */
     boolean shouldIgnoreAccessibilityEvent();
+
+    /**
+     * Set whether layout (and text) direction is Left-To-Right.
+     */
+    void setLayoutDirectionIsLtr(boolean isLtr);
 }
