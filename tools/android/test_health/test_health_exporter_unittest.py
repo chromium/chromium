@@ -28,7 +28,8 @@ _JAVA_TEST_DIR = 'javatests/org/chromium/foo_pkg'
 
 _JAVA_TEST_HEALTH = JavaTestHealth(java_package=_JAVA_PACKAGE,
                                    disabled_tests_count=1,
-                                   disable_if_tests_count=2)
+                                   disable_if_tests_count=2,
+                                   tests_count=10)
 _TEST_HEALTH_INFO = TestHealthInfo(_JAVA_TEST_NAME,
                                    test_dir=pathlib.Path(_JAVA_TEST_DIR),
                                    test_filename=_JAVA_TEST_FILENAME,
@@ -42,6 +43,7 @@ _TEST_HEALTH_JSON_DICT = dict(test_name=_JAVA_TEST_NAME,
                               java_package=_JAVA_PACKAGE,
                               disabled_tests_count=1,
                               disable_if_tests_count=2,
+                              tests_count=10,
                               git_head_hash=_GIT_HEAD_HASH,
                               git_head_timestamp=_GIT_HEAD_TIME)
 
@@ -88,7 +90,8 @@ class ToJsonFile(unittest.TestCase):
     def test_to_json_file_java_package_omitted(self):
         java_test_health = JavaTestHealth(java_package=None,
                                           disabled_tests_count=1,
-                                          disable_if_tests_count=2)
+                                          disable_if_tests_count=2,
+                                          tests_count=10)
         test_health_info = TestHealthInfo(
             _JAVA_TEST_NAME,
             test_dir=pathlib.Path(_JAVA_TEST_DIR),
