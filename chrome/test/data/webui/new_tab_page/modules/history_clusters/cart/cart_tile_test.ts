@@ -52,7 +52,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
             '6 mins ago'));
     assertEquals($$(tileElement, '#title')!.textContent, 'Foo');
     assertEquals(
-        $$(tileElement, '#titleAnnotation')!.textContent!,
+        $$(tileElement, '#titleAnnotation')!.textContent!.trim(),
         loadTimeData.getString('modulesJourneysCartAnnotation'));
     assertEquals(
         tileElement.shadowRoot!.querySelectorAll('.small-image').length, 3);
@@ -97,7 +97,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
         assertEquals($$(tileElement, '#title')!.textContent, 'Foo');
         assertTrue(isVisible($$(tileElement, '#titleAnnotation')!));
         assertEquals(
-            $$(tileElement, '#titleAnnotation')!.textContent!,
+            $$(tileElement, '#titleAnnotation')!.textContent!.trim(),
             loadTimeData.getString('modulesJourneysCartAnnotation'));
         assertEquals(
             tileElement.shadowRoot!.querySelectorAll('.small-image').length, 2);
@@ -137,7 +137,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
     assertEquals($$(tileElement, '#title')!.textContent, 'Foo');
     assertTrue(isVisible($$(tileElement, '#titleAnnotation')!));
     assertEquals(
-        $$(tileElement, '#titleAnnotation')!.textContent!,
+        $$(tileElement, '#titleAnnotation')!.textContent!.trim(),
         loadTimeData.getString('modulesJourneysCartAnnotation'));
     assertEquals(
         tileElement.shadowRoot!.querySelectorAll('.small-image').length, 0);
@@ -173,7 +173,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
     assertEquals($$(tileElement, '#title')!.textContent, 'Foo');
     assertTrue(isVisible($$(tileElement, '#titleAnnotation')!));
     assertEquals(
-        $$(tileElement, '#titleAnnotation')!.textContent!,
+        $$(tileElement, '#titleAnnotation')!.textContent!.trim(),
         loadTimeData.getString('modulesJourneysCartAnnotation'));
     assertEquals(
         tileElement.shadowRoot!.querySelectorAll('.small-image').length, 0);
