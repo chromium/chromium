@@ -61,7 +61,7 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         return super().suite_start(data)
 
     def suite_end(self, data) -> str:
-        # Do not show test failures again in noninteractive mode. THey are
+        # Do not show test failures again in noninteractive mode. They are
         # already shown during the run.
         self.test_failure_text = ''
         return super().suite_end(data)
@@ -447,17 +447,18 @@ class WPTAdapter:
     @contextlib.contextmanager
     def process_and_upload_results(self, options):
         artifacts_dir = self.port.artifacts_directory()
-        processor = WPTResultsProcessor(self.fs,
-                                        self.port,
-                                        artifacts_dir=artifacts_dir)
+        processor = WPTResultsProcessor(
+            self.fs,
+            self.port,
+            artifacts_dir=artifacts_dir,
+            failure_threshold=self.port.get_option('exit_after_n_failures'),
+            crash_timeout_threshold=self.port.get_option(
+                'exit_after_n_crashes_or_timeouts'))
         with processor.stream_results() as events:
             options.log.add_handler(events.put)
             yield
-
         processor.process_wpt_report(options.log_wptreport[0].name)
-
         processor.process_results_json(options.log_chromium[0].name)
-
         if self.port.get_option('show_results') and processor.has_regressions:
             self.port.show_results_html_file(
                 self.fs.join(artifacts_dir, 'results.html'))

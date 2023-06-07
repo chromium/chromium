@@ -8,8 +8,11 @@ import collections
 import contextlib
 import json
 import logging
+import math
+import os
 import queue
 import threading
+import signal
 from typing import (
     Any,
     Dict,
@@ -253,7 +256,9 @@ class WPTResultsProcessor:
                  port: Port,
                  artifacts_dir: str = '',
                  sink: Optional[ResultSinkReporter] = None,
-                 test_name_prefix: str = ''):
+                 test_name_prefix: str = '',
+                 failure_threshold: Optional[int] = None,
+                 crash_timeout_threshold: Optional[int] = None):
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
@@ -286,6 +291,10 @@ class WPTResultsProcessor:
             'process_output': self.process_output,
         }
         self.has_regressions: bool = False
+        self.failure_threshold = failure_threshold or math.inf
+        self.crash_timeout_threshold = crash_timeout_threshold or math.inf
+        assert self.failure_threshold > 0
+        assert self.crash_timeout_threshold > 0
 
     def copy_results_viewer(self):
         files_to_copy = ['results.html', 'results.html.version']
@@ -501,10 +510,8 @@ class WPTResultsProcessor:
         result.took = max(0, event.time - result.started) / 1000
         result.update_from_test(status, expected, message)
         result.artifacts = self._extract_artifacts(result, extra).artifacts
-        if result.unexpected and result.actual not in {
-                ResultType.Pass, ResultType.Skip
-        }:
-            self.has_regressions = True
+        if result.unexpected:
+            self._handle_unexpected_result(result)
         if not self.run_info.get('used_upstream'):
             # We only need Wpt report when run with upstream
             self.sink.report_individual_test_result(
@@ -518,6 +525,24 @@ class WPTResultsProcessor:
             'expected: %s, artifacts: %s)', result.name, self._iteration,
             result.actual, ', '.join(sorted(result.expected)), ', '.join(
                 sorted(result.artifacts)) if result.artifacts else '<none>')
+
+    def _handle_unexpected_result(self, result: WPTResult):
+        if result.actual == ResultType.Failure:
+            self.failure_threshold -= 1
+            self.has_regressions = True
+        elif result.actual in {ResultType.Crash, ResultType.Timeout}:
+            self.crash_timeout_threshold -= 1
+            self.has_regressions = True
+        if self.failure_threshold <= 0 or self.crash_timeout_threshold <= 0:
+            statuses = ('failures'
+                        if self.failure_threshold <= 0 else 'crashes/timeouts')
+            _log.error('Exiting early after exceeding threshold '
+                       f'for unexpected {statuses}.')
+            if self.port.host.platform.is_win():
+                signum = signal.CTRL_BREAK_EVENT
+            else:
+                signum = signal.SIGTERM
+            os.kill(os.getpid(), signum)
 
     def shutdown(self, event: Event, **_):
         if self._results:

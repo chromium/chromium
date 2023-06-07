@@ -723,6 +723,47 @@ class WPTResultsProcessorTest(LoggingTestCase):
             'WARNING:   test.html\n',
         ])
 
+    def test_early_exit_from_failures(self):
+        self.processor.failure_threshold = 2
+        with mock.patch('os.kill') as kill_mock:
+            self._event(action='test_start', test='/variant.html?foo=bar/abc')
+            self._event(action='test_end',
+                        test='/variant.html?foo=bar/abc',
+                        status='ERROR',
+                        expected='OK')
+            self._event(action='test_start', test='/variant.html?foo=baz')
+            self._event(action='test_end',
+                        test='/variant.html?foo=baz',
+                        status='ERROR')
+            kill_mock.assert_not_called()
+            self._event(action='test_start', test='/reftest.html')
+            self._event(action='test_end',
+                        test='/reftest.html',
+                        status='FAIL',
+                        expected='PASS')
+            kill_mock.assert_called_once()
+
+    def test_early_exit_from_crashes_and_timeouts(self):
+        self.processor.crash_timeout_threshold = 2
+        with mock.patch('os.kill') as kill_mock:
+            self._event(action='test_start', test='/variant.html?foo=bar/abc')
+            self._event(action='test_end',
+                        test='/variant.html?foo=bar/abc',
+                        status='ERROR',
+                        expected='OK')
+            self._event(action='test_start', test='/variant.html?foo=baz')
+            self._event(action='test_end',
+                        test='/variant.html?foo=baz',
+                        status='TIMEOUT',
+                        expected='OK')
+            kill_mock.assert_not_called()
+            self._event(action='test_start', test='/reftest.html')
+            self._event(action='test_end',
+                        test='/reftest.html',
+                        status='CRASH',
+                        expected='OK')
+            kill_mock.assert_called_once()
+
     def test_process_json(self):
         """Ensure that various JSONs are written to the correct locations."""
         diff_stats = {'maxDifference': 100, 'maxPixels': 3}
