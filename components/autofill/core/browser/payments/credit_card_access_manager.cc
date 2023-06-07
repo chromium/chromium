@@ -376,20 +376,20 @@ void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
   unmasked_card_cache_[identifier] = card_info;
 }
 
-void CreditCardAccessManager::GetAuthenticationType(bool fido_auth_enabled) {
+void CreditCardAccessManager::StartAuthenticationFlow(bool fido_auth_enabled) {
 #if BUILDFLAG(IS_IOS)
   // There is no FIDO auth available on iOS and there are no virtual cards on
   // iOS either, so offer CVC auth immediately.
   Authenticate(UnmaskAuthFlowType::kCvc);
 #else
   if (card_->record_type() == CreditCard::VIRTUAL_CARD)
-    GetAuthenticationTypeForVirtualCard(fido_auth_enabled);
+    StartAuthenticationFlowForVirtualCard(fido_auth_enabled);
   else
-    GetAuthenticationTypeForMaskedServerCard(fido_auth_enabled);
+    StartAuthenticationFlowForMaskedServerCard(fido_auth_enabled);
 #endif
 }
 
-void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
+void CreditCardAccessManager::StartAuthenticationFlowForVirtualCard(
     bool fido_auth_enabled) {
   // TODO(crbug.com/1243475): Currently if the card is a virtual card and FIDO
   // auth was provided by issuer, we prefer FIDO auth. Remove FIDO preference
@@ -436,7 +436,7 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
   ShowUnmaskAuthenticatorSelectionDialog();
 }
 
-void CreditCardAccessManager::GetAuthenticationTypeForMaskedServerCard(
+void CreditCardAccessManager::StartAuthenticationFlowForMaskedServerCard(
     bool fido_auth_enabled) {
   UnmaskAuthFlowType flow_type;
 #if BUILDFLAG(IS_IOS)
@@ -744,7 +744,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     // for masked server cards or the virtual card authentication process for
     // virtual cards.
     if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
-      GetAuthenticationTypeForVirtualCard(/*fido_auth_enabled=*/false);
+      StartAuthenticationFlowForVirtualCard(/*fido_auth_enabled=*/false);
     } else {
       Authenticate(UnmaskAuthFlowType::kCvcFallbackFromFido);
     }
@@ -1046,7 +1046,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
                        weak_ptr_factory_.GetWeakPtr()),
         base::Milliseconds(kUnmaskDetailsResponseTimeoutMs));
   } else {
-    GetAuthenticationType(
+    StartAuthenticationFlow(
         IsFidoAuthEnabled(get_unmask_details_returned &&
                           unmask_details_.unmask_auth_method ==
                               AutofillClient::UnmaskAuthMethod::kFido));
@@ -1207,7 +1207,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
     // Close the progress dialog without showing the confirmation.
     client_->CloseAutofillProgressDialog(
         /*show_confirmation_before_closing=*/false);
-    GetAuthenticationType(
+    StartAuthenticationFlow(
         IsFidoAuthEnabled(response_details.fido_request_options.has_value()));
     return;
   }
@@ -1270,7 +1270,7 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
   }
 
   // Start the authentication after the wait ends.
-  GetAuthenticationType(
+  StartAuthenticationFlow(
       IsFidoAuthEnabled(get_unmask_details_returned &&
                         unmask_details_.unmask_auth_method ==
                             AutofillClient::UnmaskAuthMethod::kFido));

@@ -261,13 +261,11 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskDetails& unmask_details);
 
-  // Determines what type of authentication is required. |fido_auth_enabled|
+  // Determines what type of authentication is required. `fido_auth_enabled`
   // suggests whether the server has offered FIDO auth as an option.
-  // TODO(crbug.com/1449351): Prefix these functions with
-  // "StartAuthenticationFlow" instead of "GetAuthenticationType".
-  void GetAuthenticationType(bool fido_auth_enabled);
-  void GetAuthenticationTypeForVirtualCard(bool fido_auth_enabled);
-  void GetAuthenticationTypeForMaskedServerCard(bool fido_auth_enabled);
+  void StartAuthenticationFlow(bool fido_auth_enabled);
+  void StartAuthenticationFlowForVirtualCard(bool fido_auth_enabled);
+  void StartAuthenticationFlowForMaskedServerCard(bool fido_auth_enabled);
 
   // Starts the authentication process and delegates the task to authenticators
   // based on the `unmask_auth_flow_type`. Also logs authentication type if
