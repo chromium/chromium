@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 
 #import "base/feature_list.h"
+#import "components/variations/service/google_groups_updater_service.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/language/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/metrics/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
@@ -143,6 +145,9 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   DomainDiversityReporterFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
   FollowServiceFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering)) {
+    GoogleGroupsUpdaterServiceFactory::GetInstance();
+  }
   GoogleLogoServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   IOSChromeAccountPasswordStoreFactory::GetInstance();

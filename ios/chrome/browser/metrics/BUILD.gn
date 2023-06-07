@@ -35,6 +35,8 @@ source_set("accessor") {
 source_set("metrics") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "google_groups_updater_service_factory.h",
+    "google_groups_updater_service_factory.mm",
     "incognito_usage_app_state_agent.h",
     "incognito_usage_app_state_agent.mm",
     "incognito_web_state_observer.h",
@@ -154,6 +156,7 @@ source_set("unit_tests") {
     "//components/previous_session_info",
     "//components/ukm",
     "//components/ukm:test_support",
+    "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/default_browser:test_support",

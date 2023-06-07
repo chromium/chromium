@@ -74,6 +74,7 @@ source_set("browser_state") {
     "//components/signin/public/identity_manager",
     "//components/sync_preferences",
     "//components/user_prefs",
+    "//components/variations/service",
     "//google_apis",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/autofill",
