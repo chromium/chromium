@@ -1246,6 +1246,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "cros-battery-saver",
+    "owners": [ "chromeos-bsm@google.com", "cwd" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "cros-labs-overview-desk-navigation",
     "owners": [ "richui", "janetmac" ],
     "expiry_milestone": 122

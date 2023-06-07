@@ -5327,6 +5327,12 @@ extern const char kDeskButtonDescription[] =
     "Show a desk button that provides quick access to the desk menu in the "
     "shelf in clamshell mode when there is more than one desk.";
 
+const char kCrosBatterySaverName[] =
+    "Enable ChromeOS Battery Saver Mode Support";
+const char kCrosBatterySaverDescription[] =
+    "Enables the ability to turn on battery saver mode in the ChromeOS Power "
+    "Settings";
+
 const char kDesksTemplatesName[] = "Desk Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "

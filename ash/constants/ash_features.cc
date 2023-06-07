@@ -240,6 +240,11 @@ BASE_FEATURE(kAvatarsCloudMigration,
              "AvatarsCloudMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Make Battery Saver available.
+BASE_FEATURE(kBatterySaver,
+             "CrosBatterySaver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 BASE_FEATURE(kBluetoothFixA2dpPacketSize,
@@ -2653,6 +2658,10 @@ bool IsBackgroundBlurEnabled() {
 #else
   return enabled_by_feature_flag;
 #endif
+}
+
+bool IsBatterySaverAvailable() {
+  return base::FeatureList::IsEnabled(kBatterySaver);
 }
 
 bool IsBluetoothQualityReportEnabled() {

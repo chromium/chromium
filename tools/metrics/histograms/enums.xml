@@ -64215,6 +64215,7 @@ from previous Chrome versions.
   <int value="663294302" label="ForceUseAPDownloadProtection:disabled"/>
   <int value="664363259" label="SiteCharacteristicsDatabase:enabled"/>
   <int value="664591021" label="EnableContinueReading:enabled"/>
+  <int value="664905954" label="CrosBatterySaver:disabled"/>
   <int value="664925558" label="MainThreadCompositingPriority:enabled"/>
   <int value="665320858" label="WebViewHitTestInBlinkOnTouchStart:disabled"/>
   <int value="665409384"
@@ -64497,6 +64498,7 @@ from previous Chrome versions.
   <int value="807447752" label="ChromeMemex:disabled"/>
   <int value="807734471" label="tab-management-experiment-type-disabled"/>
   <int value="808855873" label="RequestDesktopSiteGlobal:disabled"/>
+  <int value="809404981" label="CrosBatterySaver:enabled"/>
   <int value="811057677" label="ConfirmNtpSuggestionRemovals:disabled"/>
   <int value="811374216" label="disable-new-bookmark-apps"/>
   <int value="811726957" label="SlideTopChromeWithPageScrolls:enabled"/>

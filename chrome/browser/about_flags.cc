@@ -10378,6 +10378,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseGpuSchedulerDfsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kUseGpuSchedulerDfs)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-battery-saver", flag_descriptions::kCrosBatterySaverName,
+     flag_descriptions::kCrosBatterySaverDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBatterySaver)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

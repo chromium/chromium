@@ -3050,6 +3050,9 @@ extern const char kCaptureModeDemoToolsDescription[];
 extern const char kCaptureModeGifRecordingName[];
 extern const char kCaptureModeGifRecordingDescription[];
 
+extern const char kCrosBatterySaverName[];
+extern const char kCrosBatterySaverDescription[];
+
 extern const char kCrosWebAppShortcutUiUpdateName[];
 extern const char kCrosWebAppShortcutUiUpdateDescription[];
 
