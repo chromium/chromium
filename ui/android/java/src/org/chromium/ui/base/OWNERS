@@ -3,3 +3,6 @@ per-file PhotoPicker*.java=finnur@chromium.org
 per-file PhotoPicker*.java=peter@chromium.org
 per-file SelectFileDialog.java=finnur@chromium.org
 per-file SelectFileDialog.java=peter@chromium.org
+
+# Clipboard
+per-file Clipboard*.java=gangwu@chromium.org
