@@ -16,6 +16,7 @@
 
 #include <windows.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 
 // Even though most C++ allocation operators can be left alone since the
@@ -107,7 +108,8 @@ __declspec(restrict) void* _recalloc_base(void* block,
                                           size_t count,
                                           size_t size) {
   const size_t old_block_size = (block != nullptr) ? _msize(block) : 0;
-  base::CheckedNumeric<size_t> new_block_size_checked = count;
+  partition_alloc::internal::base::CheckedNumeric<size_t>
+      new_block_size_checked = count;
   new_block_size_checked *= size;
   const size_t new_block_size = new_block_size_checked.ValueOrDie();
 
