@@ -8,9 +8,9 @@
  * enter to effectively click the button and fire a 'click' event. It can also
  * style an icon inside of the button with the [has-icon] attribute.
  */
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
 
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
@@ -164,6 +164,10 @@ export class CrButtonElement extends CrButtonElementBase {
 
   private onBlur_() {
     this.spaceKeyDown_ = false;
+    // If a keyup event is never fired (e.g. after keydown the focus is moved to
+    // another element), we need to clear the ripple here. 100ms delay was
+    // chosen manually as a good time period for the ripple to be visible.
+    this.setTimeout_(() => this.getRipple().uiUpAction(), 100);
   }
 
   private onClick_(e: Event) {
