@@ -62,7 +62,7 @@ class TestGetTarballPath(unittest.TestCase):
     mock_host_arch.return_value = 'amd64'
 
     actual = _GetTarballPath('gs://bucket/sdk')
-    self.assertEqual(actual, 'gs://bucket/sdk/linux-amd64/gn.tar.gz')
+    self.assertEqual(actual, 'gs://bucket/sdk/linux-amd64/core.tar.gz')
 
 
 if __name__ == '__main__':
