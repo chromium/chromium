@@ -641,7 +641,12 @@ TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-TEST(PartitionAllocPageAllocatorTest, AllocReadWriteExecute) {
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_AllocReadWriteExecute DISABLED_AllocReadWriteExecute
+#else
+#define MAYBE_AllocReadWriteExecute AllocReadWriteExecute
+#endif  // BUILDFLAG(IS_IOS)
+TEST(PartitionAllocPageAllocatorTest, MAYBE_AllocReadWriteExecute) {
   // Verify that kReadWriteExecute is similarly functional.
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
