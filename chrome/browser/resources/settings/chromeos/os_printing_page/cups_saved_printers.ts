@@ -276,6 +276,9 @@ export class SettingsCupsSavedPrintersElement extends
   }
 
   private onRemoveClick_(): void {
+    // Remove this printer's current status reason from the cache so a stale
+    // status isn't shown if the printer is added back.
+    this.printerStatusReasonCache_.delete(this.activePrinter!.printerId);
     this.browserProxy_.removeCupsPrinter(
         this.activePrinter!.printerId, this.activePrinter!.printerName);
     recordSettingChange();
@@ -409,7 +412,7 @@ export class SettingsCupsSavedPrintersElement extends
   }
 
   /** Query each saved printer for its printer status. */
-  private fetchPrinterStatuses_() {
+  private fetchPrinterStatuses_(): void {
     if (!this.isPrinterSettingsPrinterStatusEnabled_) {
       return;
     }
@@ -425,7 +428,7 @@ export class SettingsCupsSavedPrintersElement extends
    * For each printer status received, add it to the printer status cache then
    * notify its respective printer entry to update its status.
    */
-  private onPrinterStatusReceived_(printerStatus: PrinterStatus) {
+  private onPrinterStatusReceived_(printerStatus: PrinterStatus): void {
     assert(this.isPrinterSettingsPrinterStatusEnabled_);
     if (!printerStatus) {
       return;
@@ -450,7 +453,7 @@ export class SettingsCupsSavedPrintersElement extends
    * Starts the printer status query timer which continually resets itself
    * until the page is closed.
    */
-  private startPrinterStatusQueryTimer_() {
+  private startPrinterStatusQueryTimer_(): void {
     assert(this.isPrinterSettingsPrinterStatusEnabled_);
 
     // Chooses a random number between the delay interval.
@@ -470,7 +473,7 @@ export class SettingsCupsSavedPrintersElement extends
    * Invoked once the timer is elapsed. Starts the printer status queries then
    * resets the timer.
    */
-  private onPrinterStatusQueryTimerComplete_() {
+  private onPrinterStatusQueryTimerComplete_(): void {
     assert(this.isPrinterSettingsPrinterStatusEnabled_);
 
     this.fetchPrinterStatuses_();
@@ -479,8 +482,12 @@ export class SettingsCupsSavedPrintersElement extends
     this.startPrinterStatusQueryTimer_();
   }
 
-  startPrinterStatusQueryTimerForTesting() {
+  startPrinterStatusQueryTimerForTesting(): void {
     this.startPrinterStatusQueryTimer_();
+  }
+
+  getPrinterStatusReasonCacheForTesting(): Map<string, PrinterStatusReason> {
+    return this.printerStatusReasonCache_;
   }
 }
 

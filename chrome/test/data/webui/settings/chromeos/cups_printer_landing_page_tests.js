@@ -677,6 +677,13 @@ suite('CupsSavedPrintersTests', function() {
         page.shadowRoot.querySelector('settings-cups-saved-printers');
     assertTrue(!!savedPrintersElement);
 
+    // The printer statuses should be added to the cache once fetched.
+    const printerStatusReasonCache =
+        savedPrintersElement.getPrinterStatusReasonCacheForTesting();
+    assertTrue(printerStatusReasonCache.has('id1'));
+    assertTrue(printerStatusReasonCache.has('id2'));
+    assertFalse(printerStatusReasonCache.has('id3'));
+
     // For each of the 3 saved printers verify it gets the correct printer
     // icon based on the printer status previously set.
     const printerListEntries = getPrinterEntries(savedPrintersElement);
@@ -700,6 +707,11 @@ suite('CupsSavedPrintersTests', function() {
           expectedPrinterIcon,
           entry.shadowRoot.querySelector('#printerStatusIcon').icon);
     }
+
+    // Removing the printers should also remove their cache entry.
+    await removeAllPrinters(cupsPrintersBrowserProxy, savedPrintersElement);
+    assertFalse(printerStatusReasonCache.has('id1'));
+    assertFalse(printerStatusReasonCache.has('id2'));
   });
 
   test('SavedPrintersStatusPolling', async () => {
