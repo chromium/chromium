@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -43,6 +44,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/webgpu_blocklist.h"
 #include "gpu/webgpu/callback.h"
@@ -1081,9 +1083,10 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
               memory_tracker)),
-      dawn_platform_(new DawnPlatform(gpu_preferences.enable_unsafe_webgpu
-                                          ? std::move(dawn_caching_interface)
-                                          : nullptr)),
+      dawn_platform_(new DawnPlatform(
+          base::FeatureList::IsEnabled(features::kWebGPUBlobCache)
+              ? std::move(dawn_caching_interface)
+              : nullptr)),
       dawn_instance_(
           DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),

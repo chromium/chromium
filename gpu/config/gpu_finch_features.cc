@@ -259,14 +259,14 @@ BASE_FEATURE(kEnableDrDcVulkan,
 
 // Enable WebGPU on gpu service side only. This is used with origin trial and
 // enabled by default on supported platforms.
-BASE_FEATURE(kWebGPUService,
-             "WebGPUService",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_ENABLED_BY_DEFAULT
+#define WEBGPU_ENABLED base::FEATURE_ENABLED_BY_DEFAULT
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT
+#define WEBGPU_ENABLED base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-);
+BASE_FEATURE(kWebGPUService, "WebGPUService", WEBGPU_ENABLED);
+BASE_FEATURE(kWebGPUBlobCache, "WebGPUBlobCache", WEBGPU_ENABLED);
+#undef WEBGPU_ENABLED
 
 #if BUILDFLAG(IS_ANDROID)
 
