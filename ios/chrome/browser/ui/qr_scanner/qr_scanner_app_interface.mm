@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_view_controller.h"

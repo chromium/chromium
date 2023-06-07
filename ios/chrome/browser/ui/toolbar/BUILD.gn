@@ -7,10 +7,10 @@ source_set("toolbar") {
     "adaptive_toolbar_coordinator+subclassing.h",
     "adaptive_toolbar_coordinator.h",
     "adaptive_toolbar_coordinator.mm",
+    "adaptive_toolbar_mediator.h",
+    "adaptive_toolbar_mediator.mm",
     "primary_toolbar_coordinator.h",
     "primary_toolbar_coordinator.mm",
-    "primary_toolbar_mediator.h",
-    "primary_toolbar_mediator.mm",
     "secondary_toolbar_coordinator.h",
     "secondary_toolbar_coordinator.mm",
     "toolbar_coordinatee.h",
@@ -139,7 +139,7 @@ source_set("toolbar_ui") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "toolbar_mediator_unittest.mm" ]
+  sources = [ "adaptive_toolbar_mediator_unittest.mm" ]
   deps = [
     ":toolbar",
     ":toolbar_ui",

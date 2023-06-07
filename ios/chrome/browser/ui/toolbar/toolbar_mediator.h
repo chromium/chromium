@@ -7,52 +7,29 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_menus_provider.h"
-
-namespace web {
-class WebState;
-}
-@class BrowserActionFactory;
-class OverlayPresenter;
-class TemplateURLService;
-@protocol ToolbarConsumer;
-class WebNavigationBrowserAgent;
 class WebStateList;
 
-// A mediator object that provides the relevant properties of a web state
-// to a consumer.
-@interface ToolbarMediator : NSObject <AdaptiveToolbarMenusProvider>
+/// Delegate for events in `ToolbarMediator`.
+@protocol ToolbarMediatorDelegate <NSObject>
 
-// Whether the search icon should be in dark mode or not.
-@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
+/// Updates toolbar appearance.
+- (void)updateToolbar;
 
-// The WebStateList that this mediator listens for any changes on the total
-// number of Webstates.
-@property(nonatomic, assign) WebStateList* webStateList;
+@end
 
-// The consumer for this object. This can change during the lifetime of this
-// object and may be nil.
-@property(nonatomic, strong) id<ToolbarConsumer> consumer;
+@interface ToolbarMediator : NSObject
 
-// The overlay presenter for OverlayModality::kWebContentArea.  This mediator
-// listens for overlay presentation events to determine whether the share button
-// should be enabled.
-@property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
+@property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
 
-// The template url service to use for checking whether search by image is
-// available.
-@property(nonatomic, assign) TemplateURLService* templateURLService;
+/// Creates an instance of the mediator. Observers will be installed into all
+/// existing web states in `webStateList`. While the mediator is alive,
+/// observers will be added and removed from web states when they are inserted
+/// into or removed from the web state list.
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList;
 
-// Action factory.
-@property(nonatomic, strong) BrowserActionFactory* actionFactory;
-
-// Helper for Web navigation.
-@property(nonatomic, assign) WebNavigationBrowserAgent* navigationBrowserAgent;
-
-// Updates the consumer to conforms to `webState`.
-- (void)updateConsumerForWebState:(web::WebState*)webState;
-
-// Stops observing all objects.
+/// Disconnects all observers set by the mediator on any web states in its
+/// web state list. After `disconnect` is called, the mediator will not add
+/// observers to further webstates.
 - (void)disconnect;
 
 @end

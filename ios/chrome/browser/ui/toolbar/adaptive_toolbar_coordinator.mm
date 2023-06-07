@@ -24,12 +24,12 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
+#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 
@@ -42,7 +42,7 @@
 // Whether this coordinator has been started.
 @property(nonatomic, assign) BOOL started;
 // Mediator for updating the toolbar when the WebState changes.
-@property(nonatomic, strong) ToolbarMediator* mediator;
+@property(nonatomic, strong) AdaptiveToolbarMediator* mediator;
 // Actions handler for the toolbar buttons.
 @property(nonatomic, strong) ToolbarButtonActionsHandler* actionHandler;
 
@@ -71,7 +71,7 @@
   self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   self.viewController.adaptiveDelegate = self;
 
-  self.mediator = [[ToolbarMediator alloc] init];
+  self.mediator = [[AdaptiveToolbarMediator alloc] init];
   self.mediator.incognito = browser->GetBrowserState()->IsOffTheRecord();
   self.mediator.consumer = self.viewController;
   self.mediator.navigationBrowserAgent =
@@ -122,7 +122,7 @@
 }
 
 - (UIResponder<UITextInput>*)fakeboxScribbleForwardingTarget {
-  // Only works in primary toolbar.
+  // Implemented in `ToolbarCoordinator`.
   return nil;
 }
 

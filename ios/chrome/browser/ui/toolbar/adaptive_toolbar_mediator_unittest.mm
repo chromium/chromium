@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
+#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_mediator.h"
 
 #import <memory>
 
@@ -47,11 +47,11 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TestToolbarMediator
-    : ToolbarMediator<CRWWebStateObserver, WebStateListObserving>
+@interface TestAdaptiveToolbarMediator
+    : AdaptiveToolbarMediator <CRWWebStateObserver, WebStateListObserving>
 @end
 
-@implementation TestToolbarMediator
+@implementation TestAdaptiveToolbarMediator
 @end
 
 namespace {
@@ -61,9 +61,9 @@ MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
 static const int kNumberOfWebStates = 3;
 static const char kTestUrl[] = "http://www.chromium.org";
 
-class ToolbarMediatorTest : public PlatformTest {
+class AdaptiveToolbarMediatorTest : public PlatformTest {
  public:
-  ToolbarMediatorTest() {
+  AdaptiveToolbarMediatorTest() {
     ios::provider::test::SetVoiceSearchEnabled(false);
 
     TestChromeBrowserState::Builder test_cbs_builder;
@@ -80,7 +80,7 @@ class ToolbarMediatorTest : public PlatformTest {
     test_web_state_->SetNavigationManager(std::move(navigation_manager));
     test_web_state_->SetLoading(true);
     web_state_ = test_web_state_.get();
-    mediator_ = [[TestToolbarMediator alloc] init];
+    mediator_ = [[TestAdaptiveToolbarMediator alloc] init];
     mediator_.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(test_browser_.get());
     mediator_.actionFactory =
@@ -128,7 +128,7 @@ class ToolbarMediatorTest : public PlatformTest {
 
   // Explicitly disconnect the mediator so there won't be any WebStateList
   // observers when web_state_list_ gets dealloc.
-  ~ToolbarMediatorTest() override {
+  ~AdaptiveToolbarMediatorTest() override {
     ios::provider::test::SetVoiceSearchEnabled(false);
 
     [mediator_ disconnect];
@@ -151,7 +151,7 @@ class ToolbarMediatorTest : public PlatformTest {
     web_state->SetBrowserState(chrome_browser_state_.get());
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    GURL url("http://test/" + std::to_string(index));
+    GURL url("http://test/" + base::NumberToString(index));
     web_state->SetCurrentURL(url);
     web_state_list_->InsertWebState(index, std::move(web_state),
                                     WebStateList::INSERT_FORCE_INDEX,
@@ -160,7 +160,7 @@ class ToolbarMediatorTest : public PlatformTest {
 
   void SetUpActiveWebState() { web_state_list_->ActivateWebStateAt(0); }
 
-  TestToolbarMediator* mediator_;
+  TestAdaptiveToolbarMediator* mediator_;
   std::unique_ptr<TestBrowser> test_browser_;
   web::FakeWebState* web_state_;
   ToolbarTestNavigationManager* navigation_manager_;
@@ -179,9 +179,8 @@ class ToolbarMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeWebState> test_web_state_;
 };
 
-
 // Test no setup is being done on the Toolbar if there's no Webstate.
-TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoWebstate) {
+TEST_F(AdaptiveToolbarMediatorTest, TestToolbarSetupWithNoWebstate) {
   mediator_.consumer = consumer_;
 
   [[consumer_ reject] setCanGoForward:NO];
@@ -190,7 +189,7 @@ TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoWebstate) {
 }
 
 // Test no setup is being done on the Toolbar if there's no active Webstate.
-TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoActiveWebstate) {
+TEST_F(AdaptiveToolbarMediatorTest, TestToolbarSetupWithNoActiveWebstate) {
   mediator_.webStateList = web_state_list_.get();
   mediator_.consumer = consumer_;
 
@@ -201,7 +200,7 @@ TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoActiveWebstate) {
 
 // Test no WebstateList related setup is being done on the Toolbar if there's no
 // WebstateList.
-TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoWebstateList) {
+TEST_F(AdaptiveToolbarMediatorTest, TestToolbarSetupWithNoWebstateList) {
   mediator_.consumer = consumer_;
 
   [[[consumer_ reject] ignoringNonObjectArgs] setTabCount:0
@@ -210,7 +209,7 @@ TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoWebstateList) {
 
 // Tests the Toolbar Setup gets called when the mediator's WebState and Consumer
 // have been set.
-TEST_F(ToolbarMediatorTest, TestToolbarSetup) {
+TEST_F(AdaptiveToolbarMediatorTest, TestToolbarSetup) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -223,7 +222,7 @@ TEST_F(ToolbarMediatorTest, TestToolbarSetup) {
 
 // Tests the Toolbar Setup gets called when the mediator's WebState and Consumer
 // have been set in reverse order.
-TEST_F(ToolbarMediatorTest, TestToolbarSetupReverse) {
+TEST_F(AdaptiveToolbarMediatorTest, TestToolbarSetupReverse) {
   mediator_.consumer = consumer_;
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
@@ -236,7 +235,7 @@ TEST_F(ToolbarMediatorTest, TestToolbarSetupReverse) {
 
 // Test the WebstateList related setup gets called when the mediator's WebState
 // and Consumer have been set.
-TEST_F(ToolbarMediatorTest, TestWebstateListRelatedSetup) {
+TEST_F(AdaptiveToolbarMediatorTest, TestWebstateListRelatedSetup) {
   mediator_.webStateList = web_state_list_.get();
   mediator_.consumer = consumer_;
 
@@ -245,7 +244,7 @@ TEST_F(ToolbarMediatorTest, TestWebstateListRelatedSetup) {
 
 // Test the WebstateList related setup gets called when the mediator's WebState
 // and Consumer have been set in reverse order.
-TEST_F(ToolbarMediatorTest, TestWebstateListRelatedSetupReverse) {
+TEST_F(AdaptiveToolbarMediatorTest, TestWebstateListRelatedSetupReverse) {
   mediator_.consumer = consumer_;
   mediator_.webStateList = web_state_list_.get();
 
@@ -254,7 +253,7 @@ TEST_F(ToolbarMediatorTest, TestWebstateListRelatedSetupReverse) {
 
 // Tests the Toolbar is updated when the Webstate observer method
 // DidStartLoading is triggered by SetLoading.
-TEST_F(ToolbarMediatorTest, TestDidStartLoading) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDidStartLoading) {
   // Change the default loading state to false to verify the Webstate
   // callback with true.
   web_state_->SetLoading(false);
@@ -268,7 +267,7 @@ TEST_F(ToolbarMediatorTest, TestDidStartLoading) {
 
 // Tests the Toolbar is updated when the Webstate observer method DidStopLoading
 // is triggered by SetLoading.
-TEST_F(ToolbarMediatorTest, TestDidStopLoading) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDidStopLoading) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -279,7 +278,7 @@ TEST_F(ToolbarMediatorTest, TestDidStopLoading) {
 
 // Tests the Toolbar is not updated when the Webstate observer method
 // DidStartLoading is triggered by SetLoading on the NTP.
-TEST_F(ToolbarMediatorTest, TestDidStartLoadingNTP) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDidStartLoadingNTP) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -292,7 +291,7 @@ TEST_F(ToolbarMediatorTest, TestDidStartLoadingNTP) {
 
 // Tests the Toolbar is updated when the Webstate observer method
 // DidLoadPageWithSuccess is triggered by OnPageLoaded.
-TEST_F(ToolbarMediatorTest, TestDidLoadPageWithSucess) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDidLoadPageWithSucess) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -310,7 +309,7 @@ TEST_F(ToolbarMediatorTest, TestDidLoadPageWithSucess) {
 
 // Tests the Toolbar is updated when the Webstate observer method
 // didFinishNavigation is called.
-TEST_F(ToolbarMediatorTest, TestDidFinishNavigation) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDidFinishNavigation) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -329,7 +328,7 @@ TEST_F(ToolbarMediatorTest, TestDidFinishNavigation) {
 
 // Tests the Toolbar is updated when the Webstate observer method
 // didChangeVisibleSecurityState is called.
-TEST_F(ToolbarMediatorTest, TestDidChangeVisibleSecurityState) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDidChangeVisibleSecurityState) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -347,7 +346,7 @@ TEST_F(ToolbarMediatorTest, TestDidChangeVisibleSecurityState) {
 
 // Tests the Toolbar is updated when the Webstate observer method
 // didChangeLoadingProgress is called.
-TEST_F(ToolbarMediatorTest, TestLoadingProgress) {
+TEST_F(AdaptiveToolbarMediatorTest, TestLoadingProgress) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -358,7 +357,7 @@ TEST_F(ToolbarMediatorTest, TestLoadingProgress) {
 
 // Tests the Toolbar is updated when Webstate observer method
 // didChangeBackForwardState is called.
-TEST_F(ToolbarMediatorTest, TestDidChangeBackForwardState) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDidChangeBackForwardState) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -374,7 +373,7 @@ TEST_F(ToolbarMediatorTest, TestDidChangeBackForwardState) {
 
 // Test that increasing the number of Webstates will update the consumer with
 // the right value.
-TEST_F(ToolbarMediatorTest, TestIncreaseNumberOfWebstates) {
+TEST_F(AdaptiveToolbarMediatorTest, TestIncreaseNumberOfWebstates) {
   mediator_.webStateList = web_state_list_.get();
   mediator_.consumer = consumer_;
 
@@ -384,7 +383,7 @@ TEST_F(ToolbarMediatorTest, TestIncreaseNumberOfWebstates) {
 
 // Test that decreasing the number of Webstates will update the consumer with
 // the right value.
-TEST_F(ToolbarMediatorTest, TestDecreaseNumberOfWebstates) {
+TEST_F(AdaptiveToolbarMediatorTest, TestDecreaseNumberOfWebstates) {
   mediator_.webStateList = web_state_list_.get();
   mediator_.consumer = consumer_;
 
@@ -393,7 +392,7 @@ TEST_F(ToolbarMediatorTest, TestDecreaseNumberOfWebstates) {
 }
 
 // Test that consumer is informed that voice search is enabled.
-TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderEnabled) {
+TEST_F(AdaptiveToolbarMediatorTest, TestVoiceSearchProviderEnabled) {
   ios::provider::test::SetVoiceSearchEnabled(true);
 
   OCMExpect([consumer_ setVoiceSearchEnabled:YES]);
@@ -403,7 +402,7 @@ TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderEnabled) {
 }
 
 // Test that consumer is informed that voice search is not enabled.
-TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderNotEnabled) {
+TEST_F(AdaptiveToolbarMediatorTest, TestVoiceSearchProviderNotEnabled) {
   ios::provider::test::SetVoiceSearchEnabled(false);
 
   OCMExpect([consumer_ setVoiceSearchEnabled:NO]);
@@ -413,7 +412,7 @@ TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderNotEnabled) {
 }
 
 // Test that updating the consumer for a specific webState works.
-TEST_F(ToolbarMediatorTest, TestUpdateConsumerForWebState) {
+TEST_F(AdaptiveToolbarMediatorTest, TestUpdateConsumerForWebState) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
@@ -437,7 +436,7 @@ TEST_F(ToolbarMediatorTest, TestUpdateConsumerForWebState) {
 }
 
 // Tests the menu elements.
-TEST_F(ToolbarMediatorTest, MenuElements) {
+TEST_F(AdaptiveToolbarMediatorTest, MenuElements) {
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
 
@@ -472,7 +471,7 @@ TEST_F(ToolbarMediatorTest, MenuElements) {
 }
 
 // Tests the back/forward items for the menu.
-TEST_F(ToolbarMediatorTest, MenuElementsBackForward) {
+TEST_F(AdaptiveToolbarMediatorTest, MenuElementsBackForward) {
   std::unique_ptr<web::FakeNavigationManager> navigation_manager =
       std::make_unique<web::FakeNavigationManager>();
 

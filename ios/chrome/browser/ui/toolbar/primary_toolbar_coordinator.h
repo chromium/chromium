@@ -6,22 +6,35 @@
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_COORDINATOR_H_
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 
 @protocol PrimaryToolbarViewControllerDelegate;
 @protocol SharingPositioner;
 @protocol ToolbarAnimatee;
 @class ViewRevealingVerticalPanHandler;
 @protocol ViewRevealingAnimatee;
+namespace web {
+class WebState;
+}
 
-// Coordinator for the primary part, the one containing the omnibox, of the
+// Delegate for events in `PrimaryToolbarCoordinator`.
+@protocol PrimaryToolbarCoordinatorDelegate <NSObject>
+
+// Updates toolbars and location bar for the upcoming snapshot with `webState`.
+- (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState;
+// Resets toolbars and location bar after the snapshot.
+- (void)resetToolbarAfterSideSwipeSnapshot;
+
+@end
+
+// Coordinator for the primary part, the one at the top of the screen, of the
 // adaptive toolbar.
-@interface PrimaryToolbarCoordinator
-    : AdaptiveToolbarCoordinator <FakeboxFocuser>
+@interface PrimaryToolbarCoordinator : AdaptiveToolbarCoordinator
 
 // A reference to the view controller that implements the view revealing
 // vertical pan handler delegate methods.
 @property(nonatomic, weak, readonly) id<ViewRevealingAnimatee> animatee;
+// Delegate for events in `PrimaryToolbarCoordinator`.
+@property(nonatomic, weak) id<PrimaryToolbarCoordinatorDelegate> delegate;
 // A reference to the view controller that implements the tooblar animation
 // protocol.
 @property(nonatomic, weak, readonly) id<ToolbarAnimatee> toolbarAnimatee;
@@ -36,14 +49,13 @@
 - (void)setPanGestureHandler:
     (ViewRevealingVerticalPanHandler*)panGestureHandler;
 
-// Updates toolbar appearance.
-- (void)updateToolbar;
+// Shows the animation when transitioning to a prerendered page.
+- (void)showPrerenderingAnimation;
 
-// YES when a prerendered webstate is being inserted into a webStateList.
-- (BOOL)isLoadingPrerenderer;
-
-// YES when the animations for omnibox focus are enabled.
-- (BOOL)enableAnimationsForOmniboxFocus;
+// Sets the location bar view controller, containing the omnibox. Should be
+// called after start.
+- (void)setLocationBarViewController:
+    (UIViewController*)locationBarViewController;
 
 @end
 

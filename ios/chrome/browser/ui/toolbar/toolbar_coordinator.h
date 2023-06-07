@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
+#import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_coordinating.h"
 
 @protocol OmniboxPopupPresenterDelegate;
@@ -23,8 +24,9 @@
 /// view controller. This object is also an interface between multiple toolbars
 /// and the objects which want to interact with them without having to know to
 /// which one specifically send the call.
-@interface ToolbarCoordinator
-    : ChromeCoordinator <PopupMenuUIUpdating, ToolbarCoordinating>
+@interface ToolbarCoordinator : ChromeCoordinator <FakeboxFocuser,
+                                                   PopupMenuUIUpdating,
+                                                   ToolbarCoordinating>
 
 /// Delegate for focusing omnibox in `locationBarCoordinator`.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> omniboxFocusDelegate;
