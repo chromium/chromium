@@ -9,6 +9,8 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
+#import <set>
+
 class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static AutofillBottomSheetJavaScriptFeature* GetInstance();
@@ -20,11 +22,13 @@ class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       web::WebFrame* frame);
 
-  // This function will result in detaching listeners from the username
-  // and password fields, which will prevent the bottom sheet from showing
-  // up until the form reloads. It will also re-trigger a focus event on
-  // the field that had originally triggered the bottom sheet.
-  void DetachListenersAndRefocus(web::WebFrame* frame);
+  // This function will result in detaching listeners from the provided renderer
+  // ids, which will prevent the associated bottom sheet from showing up until
+  // the form reloads. If "refocus" is true, it will also re-trigger a focus
+  // event on the field that had originally triggered the bottom sheet.
+  void DetachListeners(const std::set<autofill::FieldRendererId>& renderer_ids,
+                       web::WebFrame* frame,
+                       bool refocus);
 
  private:
   friend class base::NoDestructor<AutofillBottomSheetJavaScriptFeature>;

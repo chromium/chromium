@@ -114,10 +114,10 @@ void AutofillBottomSheetTabHelper::AttachListeners(
   }
 }
 
-void AutofillBottomSheetTabHelper::DetachListenersAndRefocus(
+void AutofillBottomSheetTabHelper::DetachPasswordListenersAndRefocus(
     web::WebFrame* frame) {
-  AutofillBottomSheetJavaScriptFeature::GetInstance()
-      ->DetachListenersAndRefocus(frame);
+  AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
+      registered_password_renderer_ids_, frame, /*refocus=*/true);
 }
 
 // WebStateObserver

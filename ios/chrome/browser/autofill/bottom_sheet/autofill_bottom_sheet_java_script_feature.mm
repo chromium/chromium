@@ -68,11 +68,21 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
   CallJavaScriptFunction(frame, "bottomSheet.attachListeners", parameters);
 }
 
-void AutofillBottomSheetJavaScriptFeature::DetachListenersAndRefocus(
-    web::WebFrame* frame) {
+void AutofillBottomSheetJavaScriptFeature::DetachListeners(
+    const std::set<autofill::FieldRendererId>& renderer_ids,
+    web::WebFrame* frame,
+    bool refocus) {
   // TODO(crbug.com/1383214): Properly handle WebFrame destruction.
   if (!frame) {
     return;
   }
-  CallJavaScriptFunction(frame, "bottomSheet.detachListenersAndRefocus", {});
+  base::Value::List renderer_id_list =
+      base::Value::List::with_capacity(renderer_ids.size());
+  for (auto renderer_id : renderer_ids) {
+    renderer_id_list.Append(static_cast<int>(renderer_id.value()));
+  }
+  base::Value::List parameters;
+  parameters.Append(std::move(renderer_id_list));
+  parameters.Append(refocus);
+  CallJavaScriptFunction(frame, "bottomSheet.detachListeners", parameters);
 }

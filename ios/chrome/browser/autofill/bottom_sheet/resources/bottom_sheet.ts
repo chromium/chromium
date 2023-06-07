@@ -100,14 +100,19 @@ function doAttachListeners_(elementsToObserve: Element[]): void {
 }
 
 /**
- * Removes all listeners and clears the list of observed elements
+ * Removes listeners on the elements associated with each provided renderer ID
+ * and removes those same elements from list of observed elements.
  * @private
  */
-function detachListeners_(): void {
-  for (const element of observedElements_) {
-    element.removeEventListener('focus', focusEventHandler_, true);
+function detachListeners_(renderer_ids: number[]): void {
+  for (const renderer_id of renderer_ids) {
+    const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
+    let index = observedElements_.indexOf(element);
+    if (index > -1) {
+      element.removeEventListener('focus', focusEventHandler_, true);
+      observedElements_.splice(index, 1);
+    }
   }
-  observedElements_ = [];
 }
 
 /**
@@ -153,18 +158,18 @@ function attachListeners(renderer_ids: number[]): void {
  * Removes all previously attached listeners before re-triggering
  * a focus event on the previously blurred element.
  */
-function detachListenersAndRefocus(): void {
-  // If the form was dismissed, we don't need to show it anymore on this page,
-  // so remove the event listeners.
-  detachListeners_();
+function detachListeners(renderer_ids: number[], refocus: boolean): void {
+  // If the bottom sheet was dismissed, we don't need to show it anymore on this
+  // page, so remove the event listeners.
+  detachListeners_(renderer_ids);
 
-  // Re-focus the previously blurred element
-  if (lastBlurredElement_) {
+  if (refocus && lastBlurredElement_) {
+    // Re-focus the previously blurred element
     lastBlurredElement_.focus();
   }
 }
 
 gCrWeb.bottomSheet = {
   attachListeners,
-  detachListenersAndRefocus
+  detachListeners
 };
