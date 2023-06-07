@@ -641,11 +641,14 @@ TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1452151): Fix test to GTEST_SKIP() if MAP_JIT is in-use,
+// or to be run otherwise, since kReadWriteExecute is used in some other
+// configurations.
 #define MAYBE_AllocReadWriteExecute DISABLED_AllocReadWriteExecute
 #else
 #define MAYBE_AllocReadWriteExecute AllocReadWriteExecute
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
 TEST(PartitionAllocPageAllocatorTest, MAYBE_AllocReadWriteExecute) {
   // Verify that kReadWriteExecute is similarly functional.
   uintptr_t buffer =
