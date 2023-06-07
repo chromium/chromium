@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.mandatory_reauth;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
@@ -18,9 +19,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
     private final View mView;
 
-    MandatoryReauthOptInBottomSheet(Context context) {
+    MandatoryReauthOptInBottomSheet(Context context, Runnable interactionHandler) {
         mView = LayoutInflater.from(context).inflate(
                 R.layout.mandatory_reauth_opt_in_bottom_sheet, null);
+
+        Button acceptButton = mView.findViewById(R.id.mandatory_reauth_opt_in_accept_button);
+        acceptButton.setOnClickListener(unused -> interactionHandler.run());
+        Button cancelButton = mView.findViewById(R.id.mandatory_reauth_opt_in_cancel_button);
+        cancelButton.setOnClickListener(unused -> interactionHandler.run());
     }
 
     /* BottomSheetContent implementation. */

@@ -26,7 +26,7 @@ class MandatoryReauthOptInBottomSheetCoordinator
 
     MandatoryReauthOptInBottomSheetCoordinator(Context context, BottomSheetController controller) {
         mController = controller;
-        mView = new MandatoryReauthOptInBottomSheet(context);
+        mView = new MandatoryReauthOptInBottomSheet(context, this::close);
     }
 
     @Override

@@ -186,6 +186,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/feedback/android:java_resources",
       "//chrome/browser/image_descriptions:java_resources",
       "//chrome/browser/lens:java_resources",
+      "//chrome/browser/mandatory_reauth/android/internal:java_resources",
       "//chrome/browser/password_check/android:java_resources",
       "//chrome/browser/password_manager/android:java_resources",
       "//chrome/browser/quick_delete:java_resources",

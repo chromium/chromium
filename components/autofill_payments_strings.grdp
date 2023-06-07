@@ -567,16 +567,16 @@
   </message>
 
   <!-- Mandatory Reauth related strings - start -->
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
-    No Thanks
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+    No thanks
   </message>
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
     Yes
   </message>
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
     Always verify?
   </message>
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
     For added security on shared devices, turn on verification every time you pay using autofill.
   </message>
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the mandatory reauth opt-in bubble on Desktop. This bubble prompts users if they would like to enroll in mandatory reauth. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
