@@ -67,8 +67,8 @@ namespace {
 #if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
 const char* PageTagToName(PageTag tag) {
   // Important: All the names should be string literals. As per prctl.h in
-  // //third_party/android_ndk the kernel keeps a pointer to the name instead
-  // of copying it.
+  // //third_party/android_toolchain the kernel keeps a pointer to the name
+  // instead of copying it.
   //
   // Having the name in .rodata ensures that the pointer remains valid as
   // long as the mapping is alive.

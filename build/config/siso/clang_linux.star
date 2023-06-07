@@ -36,12 +36,12 @@ __filegroups = {
         "type": "glob",
         "includes": ["*.h"],
     },
-    "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
+    "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
         "type": "glob",
         "includes": ["*"],
         # can't use "*.h", because c++ headers have no extension.
     },
-    "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include": {
+    "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include": {
         "type": "glob",
         "includes": ["*"],
     },
@@ -105,9 +105,9 @@ def __step_config(ctx, step_config):
             "build/linux/debian_bullseye_i386-sysroot/usr/include:include",
             "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers",
         ],
-        "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
-            "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
-            "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
+        "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
+            "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
+            "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
         ],
 
         # need this because we use

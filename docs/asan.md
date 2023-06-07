@@ -212,7 +212,7 @@ If the above step fails or to run stuff without Chromium testing script (ex.
 ContentShell.apk, or any third party apk or binary), device setup is needed:
 ```shell
 tools/android/asan/third_party/asan_device_setup.sh \
-    --lib third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/*/lib/linux
+    --lib third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/*/lib/linux
 # wait a few seconds for the device to reload
 ```
 It only needs to be run once per device. It is safe to run it multiple times.
