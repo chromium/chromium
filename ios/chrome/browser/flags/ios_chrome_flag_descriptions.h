@@ -376,6 +376,11 @@ extern const char kEnableSignedOutViewDemotionDescription[];
 extern const char kEnableUserPolicyName[];
 extern const char kEnableUserPolicyDescription[];
 
+// Title and description for the flag to enable filtering experiments by Google
+// group membership.
+extern const char kEnableVariationsGoogleGroupFilteringName[];
+extern const char kEnableVariationsGoogleGroupFilteringDescription[];
+
 // Title and description for the flag to introduce following web channels on
 // Chrome iOS.
 extern const char kEnableWebChannelsName[];

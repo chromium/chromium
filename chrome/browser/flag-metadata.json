@@ -3525,7 +3525,7 @@
   {
     "name": "enable-variations-google-group-filtering",
     "owners": [ "ljjlee", "chrome-metrics-team@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 119
   },
   {
     "name": "enable-vbr-encode-acceleration",
