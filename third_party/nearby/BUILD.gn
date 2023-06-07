@@ -49,16 +49,11 @@ source_set("connections") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
-    ":service_controller_router",
     ":v3_types",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  # core.cc uses dynamic_cast.
-  configs -= [ "//build/config/compiler:no_rtti" ]
-  configs += [ "//build/config/compiler:rtti" ]
 }
 source_set("connections_types") {
   public_configs = [
@@ -130,6 +125,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/p2p_star_pcp_handler.cc",
     "src/connections/implementation/payload_manager.cc",
     "src/connections/implementation/pcp_manager.cc",
+    "src/connections/implementation/service_controller_router.cc",
     "src/connections/implementation/webrtc_bwu_handler.cc",
     "src/connections/implementation/webrtc_endpoint_channel.cc",
     "src/connections/implementation/wifi_direct_bwu_handler.cc",
@@ -172,6 +168,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/pcp_handler.h",
     "src/connections/implementation/pcp_manager.h",
     "src/connections/implementation/service_controller.h",
+    "src/connections/implementation/service_controller_router.h",
     "src/connections/implementation/webrtc_bwu_handler.h",
     "src/connections/implementation/webrtc_endpoint_channel.h",
     "src/connections/implementation/wifi_direct_bwu_handler.h",
@@ -208,23 +205,6 @@ source_set("connections_implementation") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
-# TODO(b/286101242): Reintroduce this into |connections_implementation|.
-source_set("service_controller_router") {
-  public_configs = [
-    ":nearby_include_config",
-    ":nearby_defines",
-  ]
-  sources = [ "src/connections/implementation/service_controller_router.cc" ]
-  public = [ "src/connections/implementation/service_controller_router.h" ]
-  deps = [ ":connections_implementation" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  # service_controller_router.cc uses dynamic_cast.
-  configs -= [ "//build/config/compiler:no_rtti" ]
-  configs += [ "//build/config/compiler:rtti" ]
-}
-
 source_set("connections_test_util") {
   testonly = true
   public_configs = [
@@ -234,7 +214,6 @@ source_set("connections_test_util") {
   public = [ "src/connections/implementation/mock_service_controller_router.h" ]
   deps = [
     ":connections_implementation",
-    ":service_controller_router",
     "//third_party/googletest:gmock",
   ]
 }
