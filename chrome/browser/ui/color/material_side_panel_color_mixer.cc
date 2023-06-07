@@ -21,7 +21,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfaceSubtle};
   mixer[kColorSidePanelDivider] = {ui::kColorSysDivider};
 
-  mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysSurfaceVariant};
+  mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorSidePanelBadgeBackgroundUpdated] = {
       ui::kColorSysTertiaryContainer};
   mixer[kColorSidePanelBadgeForeground] = {ui::kColorSysOnSurfaceVariant};
