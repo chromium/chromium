@@ -128,10 +128,9 @@ void WebAppInstallManager::NotifyWebAppInstalledWithOsHooks(
   }
 }
 
-void WebAppInstallManager::NotifyWebAppSourceRemovedForTesting(
-    const AppId& app_id) {
+void WebAppInstallManager::NotifyWebAppSourceRemoved(const AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
-    observer.OnWebAppSourceRemovedForTesting(app_id);
+    observer.OnWebAppSourceRemoved(app_id);
   }
 }
 

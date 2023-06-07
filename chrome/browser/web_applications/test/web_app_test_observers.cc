@@ -106,7 +106,7 @@ void WebAppInstallManagerObserverAdapter::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
 }
 
-void WebAppInstallManagerObserverAdapter::OnWebAppSourceRemovedForTesting(
+void WebAppInstallManagerObserverAdapter::OnWebAppSourceRemoved(
     const AppId& app_id) {
   if (app_source_removed_delegate_) {
     app_source_removed_delegate_.Run(app_id);

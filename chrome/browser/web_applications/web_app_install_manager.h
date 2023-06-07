@@ -38,7 +38,7 @@ class WebAppInstallManager {
 
   virtual void NotifyWebAppInstalled(const AppId& app_id);
   virtual void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
-  virtual void NotifyWebAppSourceRemovedForTesting(const AppId& app_id);
+  virtual void NotifyWebAppSourceRemoved(const AppId& app_id);
   virtual void NotifyWebAppUninstalled(
       const AppId& app_id,
       webapps::WebappUninstallSource uninstall_source);

@@ -66,7 +66,7 @@ class WebAppInstallManagerObserverAdapter
       const AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
-  void OnWebAppSourceRemovedForTesting(const AppId& app_id) override;
+  void OnWebAppSourceRemoved(const AppId& app_id) override;
 
  protected:
   // Helper method for subclasses to allow easy waiting on `wait_loop_`.

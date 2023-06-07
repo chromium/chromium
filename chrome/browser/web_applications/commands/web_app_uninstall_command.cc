@@ -238,7 +238,7 @@ void WebAppUninstallCommand::RemoveManagementTypeAfterOsUninstallRegistration(
     }
   }
 
-  lock_->install_manager().NotifyWebAppSourceRemovedForTesting(app_id);
+  lock_->install_manager().NotifyWebAppSourceRemoved(app_id);
 
   // Registering an OS uninstall is also an "uninstall", so the
   // state is updated for the command.
