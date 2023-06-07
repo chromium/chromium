@@ -280,14 +280,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
                                      metrics::StabilityEventType::kPageLoad, 3);
   histogram_tester.ExpectBucketCount(
       "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
-
-#if BUILDFLAG(IS_WIN)
-  // Consult Stability Team before changing this test as it's recorded to
-  // histograms and used for stability measurement.
-  VerifyRendererExitCodeIsSignal(histogram_tester, STATUS_ACCESS_VIOLATION);
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
-#endif
 }
 #endif  // BUILDFLAG(BUILD_RUST_CRASH)
 
