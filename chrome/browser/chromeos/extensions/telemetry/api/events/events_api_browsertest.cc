@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function sdCardNotWorking() {
+      function keyboardDiagnosticsNotWorking() {
         chrome.test.assertThrows(() => {
           chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
             // unreachable.
