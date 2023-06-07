@@ -41,9 +41,9 @@ credential-management/support/fedcm/${manifest_filename}`;
         configURL: manifest_path,
         clientId: '1',
         nonce: '2'
-      }],
-      mediation: 'required'
-    }
+      }]
+    },
+    mediation: 'required'
   };
 }
 
@@ -61,9 +61,9 @@ credential-management/support/fedcm/${manifest_filename}`;
         configURL: manifest_path,
         clientId: '1',
         nonce: '2'
-      }],
-      mediation: 'required'
-    }
+      }]
+    },
+    mediation: 'required'
   };
 }
 
@@ -73,7 +73,7 @@ export function request_options_with_mediation_optional(manifest_filename) {
   let options = alt_request_options_with_mediation_required(manifest_filename);
   // Approved client
   options.identity.providers[0].clientId = '123';
-  options.identity.mediation = 'optional';
+  options.mediation = 'optional';
 
   return options;
 }
