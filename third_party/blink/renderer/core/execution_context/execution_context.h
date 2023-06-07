@@ -168,6 +168,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool IsSharedStorageWorkletGlobalScope() const { return false; }
   virtual bool IsJSExecutionForbidden() const { return false; }
 
+  // Notifies the execution context that new web socket activity (such as
+  // sending or receiving a message) has happened.
+  virtual void NotifyWebSocketActivity() {}
+
   // TODO(crbug.com/1335924) Change this method to be pure-virtual and each
   // derivative explicitly override it.
   virtual bool IsInFencedFrame() const { return false; }

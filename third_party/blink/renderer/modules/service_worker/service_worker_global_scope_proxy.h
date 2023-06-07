@@ -137,6 +137,9 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
           preload_url_loader_client_receiver);
   void RequestTermination(WTF::CrossThreadOnceFunction<void(bool)> callback);
 
+  bool ShouldNotifyServiceWorkerOnWebSocketActivity(
+      v8::Local<v8::Context> context);
+
   // Detaches this proxy object entirely from the outside world, clearing out
   // all references.
   //

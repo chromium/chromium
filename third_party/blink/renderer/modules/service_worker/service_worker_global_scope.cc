@@ -2646,6 +2646,21 @@ bool ServiceWorkerGlobalScope::IsInFencedFrame() const {
          mojom::blink::AncestorFrameType::kFencedFrame;
 }
 
+void ServiceWorkerGlobalScope::NotifyWebSocketActivity() {
+  CHECK(IsContextThread());
+  CHECK(event_queue_);
+
+  bool notify = To<ServiceWorkerGlobalScopeProxy>(ReportingProxy())
+                    .ShouldNotifyServiceWorkerOnWebSocketActivity(
+                        GetThread()->GetIsolate()->GetCurrentContext());
+
+  if (notify) {
+    // TODO(crbug/1399324): refactor with RAII pattern.
+    event_queue_->ResetIdleTimeout();
+    event_queue_->CheckEventQueue();
+  }
+}
+
 mojom::blink::ServiceWorkerFetchHandlerType
 ServiceWorkerGlobalScope::FetchHandlerType() {
   EventListenerVector* elv = GetEventListeners(event_type_names::kFetch);

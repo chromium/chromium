@@ -555,6 +555,13 @@ void ServiceWorkerContextClient::RequestTermination(
   instance_host_->RequestTermination(std::move(callback));
 }
 
+bool ServiceWorkerContextClient::ShouldNotifyServiceWorkerOnWebSocketActivity(
+    v8::Local<v8::Context> context) {
+  return GetContentClient()
+      ->renderer()
+      ->ShouldNotifyServiceWorkerOnWebSocketActivity(context);
+}
+
 void ServiceWorkerContextClient::StopWorkerOnInitiatorThread() {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   owner_->StopWorker();

@@ -99,6 +99,11 @@ bool ContentRendererClient::AllowPopup() {
   return false;
 }
 
+bool ContentRendererClient::ShouldNotifyServiceWorkerOnWebSocketActivity(
+    v8::Local<v8::Context> context) {
+  return false;
+}
+
 blink::ProtocolHandlerSecurityLevel
 ContentRendererClient::GetProtocolHandlerSecurityLevel() {
   return blink::ProtocolHandlerSecurityLevel::kStrict;

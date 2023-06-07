@@ -338,6 +338,7 @@ void DOMWebSocket::send(const String& message,
   DCHECK(channel_);
   buffered_amount_ += encoded_message.length();
   channel_->Send(encoded_message, base::OnceClosure());
+  NotifyWebSocketActivity();
 }
 
 void DOMWebSocket::send(DOMArrayBuffer* binary_data,
@@ -358,6 +359,7 @@ void DOMWebSocket::send(DOMArrayBuffer* binary_data,
   buffered_amount_ += binary_data->ByteLength();
   channel_->Send(*binary_data, 0, binary_data->ByteLength(),
                  base::OnceClosure());
+  NotifyWebSocketActivity();
 }
 
 void DOMWebSocket::send(NotShared<DOMArrayBufferView> array_buffer_view,
@@ -378,6 +380,7 @@ void DOMWebSocket::send(NotShared<DOMArrayBufferView> array_buffer_view,
   buffered_amount_ += array_buffer_view->byteLength();
   channel_->Send(*array_buffer_view->buffer(), array_buffer_view->byteOffset(),
                  array_buffer_view->byteLength(), base::OnceClosure());
+  NotifyWebSocketActivity();
 }
 
 void DOMWebSocket::send(Blob* binary_data, ExceptionState& exception_state) {
@@ -406,6 +409,7 @@ void DOMWebSocket::send(Blob* binary_data, ExceptionState& exception_state) {
   channel_->Send(BlobDataHandle::Create(binary_data->Uuid(),
                                         binary_data->type(), size,
                                         binary_data->AsMojoBlob()));
+  NotifyWebSocketActivity();
 }
 
 void DOMWebSocket::close(uint16_t code,
@@ -520,6 +524,7 @@ void DOMWebSocket::DidConnect(const String& subprotocol,
   subprotocol_ = subprotocol;
   extensions_ = extensions;
   event_queue_->Dispatch(Event::Create(event_type_names::kOpen));
+  NotifyWebSocketActivity();
 }
 
 void DOMWebSocket::DidReceiveTextMessage(const String& msg) {
@@ -532,6 +537,7 @@ void DOMWebSocket::DidReceiveTextMessage(const String& msg) {
 
   DCHECK(!origin_string_.IsNull());
   event_queue_->Dispatch(MessageEvent::Create(msg, origin_string_));
+  NotifyWebSocketActivity();
 }
 
 void DOMWebSocket::DidReceiveBinaryMessage(
@@ -567,6 +573,7 @@ void DOMWebSocket::DidReceiveBinaryMessage(
           MessageEvent::Create(array_buffer, origin_string_));
       break;
   }
+  NotifyWebSocketActivity();
 }
 
 void DOMWebSocket::DidError() {
@@ -612,6 +619,13 @@ void DOMWebSocket::DidClose(
 
   event_queue_->Dispatch(
       MakeGarbageCollected<CloseEvent>(was_clean, code, reason));
+}
+
+void DOMWebSocket::NotifyWebSocketActivity() {
+  ExecutionContext* context = GetExecutionContext();
+  if (context) {
+    context->NotifyWebSocketActivity();
+  }
 }
 
 void DOMWebSocket::RecordSendTypeHistogram(WebSocketSendType type) {

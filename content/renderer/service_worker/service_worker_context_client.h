@@ -177,6 +177,8 @@ class ServiceWorkerContextClient
                                   network::mojom::URLLoaderClientInterfaceBase>
                                   preload_url_loader_client_receiver) override;
   void RequestTermination(RequestTerminationCallback callback) override;
+  bool ShouldNotifyServiceWorkerOnWebSocketActivity(
+      v8::Local<v8::Context> context) override;
   scoped_refptr<blink::WebServiceWorkerFetchContext>
   CreateWorkerFetchContextOnInitiatorThread() override;
   void OnNavigationPreloadResponse(

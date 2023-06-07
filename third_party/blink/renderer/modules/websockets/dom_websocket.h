@@ -239,6 +239,11 @@ class MODULES_EXPORT DOMWebSocket
   void ReleaseChannel();
   void RecordSendTypeHistogram(WebSocketSendType);
 
+  // Called on web socket message activity (sending or receiving a message) that
+  // the execution context may want to handle, such as to extend its own
+  // lifetime.
+  void NotifyWebSocketActivity();
+
   Member<WebSocketChannel> channel_;
 
   WebSocketCommon common_;
