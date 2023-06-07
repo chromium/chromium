@@ -467,12 +467,11 @@ class WebGLConformanceIntegrationTestBase(
         if o.startswith('--js-flags'):
           found_js_flags = True
           user_js_flags = o
-          break
-        if o.startswith('--use-gl='):
+        elif o.startswith('--use-gl='):
           cls._gl_backend = o[len('--use-gl='):]
-        if o.startswith('--use-angle='):
+        elif o.startswith('--use-angle='):
           cls._angle_backend = o[len('--use-angle='):]
-        if o.startswith('--use-cmd-decoder='):
+        elif o.startswith('--use-cmd-decoder='):
           cls._command_decoder = o[len('--use-cmd-decoder='):]
     if found_js_flags:
       logging.warning('Overriding built-in JavaScript flags:')
