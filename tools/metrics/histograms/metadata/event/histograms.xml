@@ -1164,7 +1164,13 @@ chromium-metrics-reviews@google.com.
     <variant name="FirstGestureScrollUpdate"
         summary="gesture-scroll-update events that are the first one in a
                  scroll sequence"/>
-    <variant name="GestureScrollBegin" summary="gesture-scroll-begin events"/>
+    <variant name="GestureScrollBegin"
+        summary="gesture-scroll-begin event. These are rarely handled, as
+                 most user initiated scrolls will start with
+                 FirstGestureScrollUpdate. Which was added to match the
+                 legacy
+                 Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4.
+                 This tracks GestureScrollBegin"/>
     <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
     <variant name="InertialGestureScrollUpdate"
         summary="gesture-scroll-update events that are inertial (i.e.
