@@ -577,9 +577,9 @@ const char kIOSPasswordBottomSheetName[] = "IOS Password Manager Bottom Sheet";
 const char kIOSPasswordBottomSheetDescription[] =
     "Enables the display of the password bottom sheet on IOS.";
 
-const char kNewTabPageRetentionName[] =
+const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
-const char kNewTabPageRetentionDescription[] =
+const char kNewTabPageFieldTrialDescription[] =
     "Enables new tab page features that are available on first run for new "
     "Chrome iOS users.";
 

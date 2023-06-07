@@ -630,10 +630,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   if ([self isTileAblationComplete]) {
     return NO;
   }
-  ntp_tiles::NewTabPageRetentionExperimentBehavior behavior =
-      ntp_tiles::GetNewTabPageRetentionExperimentType();
-  return behavior ==
-         ntp_tiles::NewTabPageRetentionExperimentBehavior::kTileAblationHideAll;
+  ntp_tiles::NewTabPageFieldTrialExperimentBehavior behavior =
+      ntp_tiles::GetNewTabPageFieldTrialExperimentType();
+  return behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
+                         kTileAblationHideAll;
 }
 
 // Returns whether the MVT tiles should be hidden.
@@ -644,12 +644,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   if ([self isTileAblationComplete]) {
     return NO;
   }
-  ntp_tiles::NewTabPageRetentionExperimentBehavior behavior =
-      ntp_tiles::GetNewTabPageRetentionExperimentType();
+  ntp_tiles::NewTabPageFieldTrialExperimentBehavior behavior =
+      ntp_tiles::GetNewTabPageFieldTrialExperimentType();
 
-  return behavior == ntp_tiles::NewTabPageRetentionExperimentBehavior::
+  return behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
                          kTileAblationHideAll ||
-         behavior == ntp_tiles::NewTabPageRetentionExperimentBehavior::
+         behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
                          kTileAblationHideMVTOnly;
 }
 

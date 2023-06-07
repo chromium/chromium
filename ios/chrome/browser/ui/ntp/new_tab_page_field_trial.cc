@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial.h"
 
 #import "base/feature_list.h"
 #import "base/metrics/field_trial.h"
@@ -14,7 +14,7 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial_constants.h"
 #import "ios/chrome/common/channel_info.h"
 
 namespace {
@@ -24,14 +24,11 @@ namespace {
 const int kPlaceholderTrialVersion = -1;
 
 // Store local state preference with whether the client has participated in
-// kNewTabPageRetention experiment or not.
-// Note: The name is misleading since it covers more than just popular sites.
-// This is because 2 configs were merged and it's best not to change an existing
-// pref name.
-const char kTrialPrefName[] = "popular_sites.trial_version";
+// kNewTabPageFieldTrial experiment or not.
+const char kTrialPrefName[] = "new_tab_page.trial_version";
 
 // The current trial version of
-// kNewTabPageRetention; should be updated when
+// kNewTabPageFieldTrial; should be updated when
 // the experiment is modified.
 const int kCurrentTrialVersion = 1;
 
@@ -75,7 +72,7 @@ std::map<variations::VariationID, int> GetGroupWeights() {
 
 }  // namespace
 
-namespace new_tab_page_retention_field_trial {
+namespace new_tab_page_field_trial {
 
 // Creates the trial config, initializes the trial that puts clients into
 // different groups, and returns the version number of the current trial. There
@@ -87,59 +84,59 @@ void CreateNewTabPageFieldTrial(
     std::map<variations::VariationID, int> weight_by_id,
     const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list) {
-  FirstRunFieldTrialConfig config(ntp_tiles::kNewTabPageRetention.name);
+  FirstRunFieldTrialConfig config(ntp_tiles::kNewTabPageFieldTrial.name);
 
   // Tile ablation group that hides all tiles.
   config.AddGroup(
       base::StrCat({field_trial_constants::kTileAblationHideAllGroup,
                     field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixTileAblation}),
+                        kNewTabPageFieldTrialVersionSuffixTileAblation}),
       field_trial_constants::kTileAblationHideAllID,
       weight_by_id[field_trial_constants::kTileAblationHideAllID]);
   base::FieldTrialParams tile_ablation_hide_all_params;
-  tile_ablation_hide_all_params[ntp_tiles::kNewTabPageRetentionParam] = "1";
+  tile_ablation_hide_all_params[ntp_tiles::kNewTabPageFieldTrialParam] = "1";
   base::AssociateFieldTrialParams(
-      ntp_tiles::kNewTabPageRetention.name,
+      ntp_tiles::kNewTabPageFieldTrial.name,
       base::StrCat({field_trial_constants::kTileAblationHideAllGroup,
                     field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixTileAblation}),
+                        kNewTabPageFieldTrialVersionSuffixTileAblation}),
       tile_ablation_hide_all_params);
 
   // Tile ablation group that hides only MVT tiles.
   config.AddGroup(
       base::StrCat({field_trial_constants::kTileAblationHideOnlyMVTGroup,
                     field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixTileAblation}),
+                        kNewTabPageFieldTrialVersionSuffixTileAblation}),
       field_trial_constants::kTileAblationHideOnlyMVTID,
       weight_by_id[field_trial_constants::kTileAblationHideOnlyMVTID]);
   base::FieldTrialParams tile_ablation_hide_mvt_params;
-  tile_ablation_hide_mvt_params[ntp_tiles::kNewTabPageRetentionParam] = "2";
+  tile_ablation_hide_mvt_params[ntp_tiles::kNewTabPageFieldTrialParam] = "2";
   base::AssociateFieldTrialParams(
-      ntp_tiles::kNewTabPageRetention.name,
+      ntp_tiles::kNewTabPageFieldTrial.name,
       base::StrCat({field_trial_constants::kTileAblationHideOnlyMVTGroup,
                     field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixTileAblation}),
+                        kNewTabPageFieldTrialVersionSuffixTileAblation}),
       tile_ablation_hide_mvt_params);
 
   // Tile ablation control group.
   config.AddGroup(
       base::StrCat({field_trial_constants::kTileAblationControlGroup,
                     field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixTileAblation}),
+                        kNewTabPageFieldTrialVersionSuffixTileAblation}),
       field_trial_constants::kTileAblationControlID,
       weight_by_id[field_trial_constants::kTileAblationControlID]);
   base::FieldTrialParams tile_ablation_control_params;
-  tile_ablation_control_params[ntp_tiles::kNewTabPageRetentionParam] = "3";
+  tile_ablation_control_params[ntp_tiles::kNewTabPageFieldTrialParam] = "3";
   base::AssociateFieldTrialParams(
-      ntp_tiles::kNewTabPageRetention.name,
+      ntp_tiles::kNewTabPageFieldTrial.name,
       base::StrCat({field_trial_constants::kTileAblationControlGroup,
                     field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixTileAblation}),
+                        kNewTabPageFieldTrialVersionSuffixTileAblation}),
       tile_ablation_control_params);
 
   // Default group.
   scoped_refptr<base::FieldTrial> trial = config.CreateOneTimeRandomizedTrial(
-      field_trial_constants::kNewTabPageRetentionDefaultGroup,
+      field_trial_constants::kNewTabPageFieldTrialDefaultGroup,
       low_entropy_provider);
 
   //   Finalize the group choice and activates the trial - similar to a
@@ -151,14 +148,14 @@ void CreateNewTabPageFieldTrial(
   if (group_name ==
           base::StrCat({field_trial_constants::kTileAblationControlGroup,
                         field_trial_constants::
-                            kNewTabPageRetentionVersionSuffixTileAblation}) ||
-      group_name == field_trial_constants::kNewTabPageRetentionDefaultGroup) {
+                            kNewTabPageFieldTrialVersionSuffixTileAblation}) ||
+      group_name == field_trial_constants::kNewTabPageFieldTrialDefaultGroup) {
     feature_list->RegisterFieldTrialOverride(
-        ntp_tiles::kNewTabPageRetention.name,
+        ntp_tiles::kNewTabPageFieldTrial.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
   } else {
     feature_list->RegisterFieldTrialOverride(
-        ntp_tiles::kNewTabPageRetention.name,
+        ntp_tiles::kNewTabPageFieldTrial.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
   }
 }
@@ -172,7 +169,8 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             PrefService* local_state) {
   // Don't create the trial if the feature is overridden to avoid having
   // multiple registered trials for the same feature.
-  if (feature_list->IsFeatureOverridden(ntp_tiles::kNewTabPageRetention.name)) {
+  if (feature_list->IsFeatureOverridden(
+          ntp_tiles::kNewTabPageFieldTrial.name)) {
     return;
   }
 
@@ -206,4 +204,4 @@ void CreateNewTabPageFieldTrialForTesting(
   CreateNewTabPageFieldTrial(weights_by_id, low_entropy_provider, feature_list);
 }
 
-}  // namespace new_tab_page_retention_field_trial
+}  // namespace new_tab_page_field_trial

@@ -10,7 +10,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/paths/paths.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial.h"
 #import "ios/chrome/browser/ui/ntp/synced_segments_field_trial.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,9 +38,9 @@ void IOSChromeFieldTrials::SetUpClientSideFieldTrials(
     return;
   }
 
-  new_tab_page_retention_field_trial::Create(
-      entropy_providers.low_entropy(), feature_list,
-      GetApplicationContext()->GetLocalState());
+  new_tab_page_field_trial::Create(entropy_providers.low_entropy(),
+                                   feature_list,
+                                   GetApplicationContext()->GetLocalState());
   synced_segments_field_trial::Create(entropy_providers.low_entropy(),
                                       feature_list,
                                       GetApplicationContext()->GetLocalState());

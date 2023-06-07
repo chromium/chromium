@@ -502,8 +502,8 @@ extern const char kIOSPasswordBottomSheetDescription[];
 
 // Title and description of the flag to enable client side new tab page
 // experiments aimed at improving user retention.
-extern const char kNewTabPageRetentionName[];
-extern const char kNewTabPageRetentionDescription[];
+extern const char kNewTabPageFieldTrialName[];
+extern const char kNewTabPageFieldTrialDescription[];
 
 // Title and description for the flag to enable Shared Highlighting color
 // change in iOS.
