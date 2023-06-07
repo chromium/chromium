@@ -600,6 +600,10 @@ class PLATFORM_EXPORT ResourceFetcher
 
   uint32_t inflight_keepalive_bytes_ = 0;
 
+  // Records when this fetcher is detached from its context.
+  // Used to evaluate how long the keepalive requests outlive the context.
+  base::TimeTicks detached_time_;
+
   HeapMojoRemote<mojom::blink::BlobRegistry> blob_registry_remote_;
 
   // Lazily initialized when the first <script type=webbundle> is inserted.

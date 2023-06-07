@@ -1500,6 +1500,7 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
   if (!base::FeatureList::IsEnabled(
           blink::features::kKeepAliveInBrowserMigration) &&
       request.GetKeepalive()) {
+    base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.Total", true);
     // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
     // keepalive fetches because we want it to keep running even after the
     // frame is detached. It's pretty fragile to do that with the
@@ -2054,6 +2055,11 @@ void ResourceFetcher::ClearContext() {
       !base::FeatureList::IsEnabled(
           blink::features::kKeepAliveInBrowserMigration)) {
     // There are some keepalive requests.
+
+    // Records the current time to estimate how long the remaining requests will
+    // stay.
+    detached_time_ = base::TimeTicks::Now();
+
     // The use of WrapPersistent creates a reference cycle intentionally,
     // to keep the ResourceFetcher and ResourceLoaders alive until the requests
     // complete or the timer fires.
@@ -2220,6 +2226,14 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
   } else {
     RemoveResourceLoader(loader);
     DCHECK(!non_blocking_loaders_.Contains(loader));
+
+    if (resource->GetResourceRequest().GetKeepalive()) {
+      base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.Total.IsSuccess", true);
+      if (IsDetached()) {
+        base::UmaHistogramBoolean(
+            "Blink.Fetch.KeepAlive.AfterDetached.IsSuccess", true);
+      }
+    }
   }
   DCHECK(!loaders_.Contains(loader));
 
@@ -2281,6 +2295,13 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   inflight_keepalive_bytes_ -= inflight_keepalive_bytes;
 
   RemoveResourceLoader(resource->Loader());
+  if (resource->GetResourceRequest().GetKeepalive()) {
+    base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.Total.IsSuccess", false);
+    if (IsDetached()) {
+      base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.AfterDetached.IsSuccess",
+                                false);
+    }
+  }
   PendingResourceTimingInfo info = resource_timing_info_map_.Take(resource);
 
   if (!info.is_null()) {
@@ -2424,6 +2445,15 @@ bool ResourceFetcher::StartLoad(
 
 void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
   DCHECK(loader);
+
+  if (IsDetached() && detached_time_ != base::TimeTicks()) {
+    // Only logs the requests duration timed after the context is detached.
+    base::TimeDelta elapsed = base::TimeTicks::Now() - detached_time_;
+    // kKeepaliveLoadersTimeout > 10 sec, so UmaHistogramTimes can't be used.
+    base::UmaHistogramMediumTimes(
+        "Blink.Fetch.KeepAlive.AfterDetached.Duration", elapsed);
+  }
+
   if (loaders_.Contains(loader))
     loaders_.erase(loader);
   else if (non_blocking_loaders_.Contains(loader))

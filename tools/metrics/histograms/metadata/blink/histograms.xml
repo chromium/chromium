@@ -1475,6 +1475,55 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Fetch.KeepAlive.AfterDetached.Duration"
+    units="microseconds" expires_after="2023-12-01">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    The total microseconds spent between the calls to
+    ResourceFetcher::ClearContext and ResourceFetcher::RemoveResourceLoader,
+    roughly stands for how long a fetch keepalive request stays after the
+    environment (document/context) is gone, including both success and failure.
+
+    The duration is recorded within ResourceFetcher::RemoveResourceLoader when
+    the fetcher is already detached.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Fetch.KeepAlive.AfterDetached.IsSuccess" enum="Boolean"
+    expires_after="2023-12-01">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records true when loading a fetch keepalive request succeeds after
+    ResourceFetcher is detached; Records false if the load fails.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Fetch.KeepAlive.Total" enum="Boolean"
+    expires_after="2023-12-01">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records true when an attempt is made to prepare to load a fetch keepalive
+    request.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Fetch.KeepAlive.Total.IsSuccess" enum="Boolean"
+    expires_after="2023-12-01">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records true when a successful attempt is made to load a fetch keepalive
+    request; Records false if the load fails.
+
+    Note that the sum of the two buckets may still be smaller than
+    Blink.Fetch.KeepAlive.Total, as the requests that were early-terminated due
+    to quota exceeded may not be logged here.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Fetch.RequestResourceTime2{Scheme}" units="microseconds"
     expires_after="2023-05-02">
   <owner>cduvall@chromium.org</owner>
