@@ -434,6 +434,7 @@ class DrawingBufferForTests : public DrawingBuffer {
             std::move(extensions_util),
             client,
             false /* discardFramebufferSupported */,
+            false /* textureStorageEnabled */,
             true /* wantAlphaChannel */,
             true /* premultipliedAlpha */,
             preserve,

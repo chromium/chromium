@@ -801,6 +801,13 @@ BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
              "CanvasFreeMemoryWhenHidden",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to use 'TexImage2D' instead of 'TexStorage2DEXT' when creating a
+// staging texture for |DrawingBuffer|. This is a killswitch; remove when
+// launched.
+BASE_FEATURE(kUseImageInsteadOfStorageForStagingBuffer,
+             "UseImageInsteadOfStorageForStagingBuffer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, add a new option, {imageOrientation: 'none'}, to
 // createImageBitmap, which ignores the image orientation metadata of the source
 // and renders the image as encoded.
