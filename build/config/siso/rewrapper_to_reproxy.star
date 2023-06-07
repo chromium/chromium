@@ -40,6 +40,7 @@ def __rewrite_rewrapper(ctx, cmd):
         if line.startswith("canonicalize_working_dir="):
             reproxy_config["canonicalize_working_dir"] = line.removeprefix("canonicalize_working_dir=").lower() == "true"
 
+        reproxy_config["download_outputs"] = True
         if line.startswith("download_outputs="):
             reproxy_config["download_outputs"] = line.removeprefix("download_outputs=").lower() == "true"
 
