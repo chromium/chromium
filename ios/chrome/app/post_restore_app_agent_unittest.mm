@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -94,17 +93,9 @@ class PostRestoreAppAgentTest : public PlatformTest {
     accountInfo.email = kFakePreRestoreAccountEmail;
     StorePreRestoreIdentity(local_state_.Get(), accountInfo);
   }
-
-  void EnableFeatureVariationAlert() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(
-            post_restore_signin::features::kIOSNewPostRestoreExperience,
-            {{post_restore_signin::features::kIOSNewPostRestoreExperienceParam,
-              "true"}})},
-        {});
-  }
 };
 
+// Tests the logic of whether a promo should be registered.
 TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
       .Times(0);
@@ -119,23 +110,22 @@ TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
   MockAppStateChange(InitStageFinal);
 
   ClearPreRestoreIdentity(local_state_.Get());
-  EnableFeatureVariationAlert();
   MockAppStateChange(InitStageFinal);
 }
 
+// Tests that the alert promo is registered.
 TEST_F(PostRestoreAppAgentTest, registerPromoAlert) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(
                   promos_manager::Promo::PostRestoreSignInAlert))
       .Times(1);
 
-  EnableFeatureVariationAlert();
   SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
 }
 
+// Tests that the reauth prompt is disabled.
 TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
-  EnableFeatureVariationAlert();
   SetFakePreRestoreAccountInfo();
   auth_service_->SetReauthPromptForSignInAndSync();
   EXPECT_TRUE(auth_service_->ShouldReauthPromptForSignInAndSync());
@@ -143,26 +133,14 @@ TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
   EXPECT_FALSE(auth_service_->ShouldReauthPromptForSignInAndSync());
 }
 
+// Tests that the alert promo is deregistered with the right conditions.
 TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
   EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
   EXPECT_CALL(*promos_manager_.get(),
               DeregisterPromo(promos_manager::Promo::PostRestoreSignInAlert))
       .Times(1);
 
-  EnableFeatureVariationAlert();
   SetFakePreRestoreAccountInfo();
   ClearPreRestoreIdentity(local_state_.Get());
-  MockAppStateChange(InitStageFinal);
-}
-
-TEST_F(PostRestoreAppAgentTest, featureVariationSwitchToAlert) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(
-                  promos_manager::Promo::PostRestoreSignInAlert))
-      .Times(1);
-
-  EnableFeatureVariationAlert();
-  SetFakePreRestoreAccountInfo();
-
   MockAppStateChange(InitStageFinal);
 }

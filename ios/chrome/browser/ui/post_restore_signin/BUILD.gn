@@ -1,12 +1,3 @@
-source_set("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  public_deps = [ "//base" ]
-}
-
 source_set("post_restore_signin") {
   sources = [
     "metrics.h",
@@ -24,7 +15,6 @@ source_set("post_restore_signin") {
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
-    ":features",
     "//base",
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
@@ -55,7 +45,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/signin:signin_util",
-    "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/test:test_support",
     "//third_party/ocmock",
     "//ui/base",

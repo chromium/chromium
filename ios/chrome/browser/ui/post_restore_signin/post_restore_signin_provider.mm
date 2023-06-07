@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -69,30 +68,7 @@
 // Conditionally returns the promo identifier (promos_manager::Promo) based on
 // which variation of the Post Restore Sign-in Promo is currently active.
 - (promos_manager::Promo)identifier {
-  post_restore_signin::features::PostRestoreSignInType promoType =
-      post_restore_signin::features::CurrentPostRestoreSignInType();
-
-  // PostRestoreSignInProvider should not exist unless the feature
-  // `kIOSNewPostRestoreExperience` is enabled. Therefore, `promoType` should
-  // never be `kDisabled` here.
-  DCHECK_NE(promoType,
-            post_restore_signin::features::PostRestoreSignInType::kDisabled);
-
-  if (promoType ==
-      post_restore_signin::features::PostRestoreSignInType::kFullscreen) {
-    return promos_manager::Promo::PostRestoreSignInFullscreen;
-  } else if (promoType ==
-             post_restore_signin::features::PostRestoreSignInType::kAlert) {
-    return promos_manager::Promo::PostRestoreSignInAlert;
-  }
-
-  // PostRestoreSignInProvider should not exist unless the feature
-  // `kIOSNewPostRestoreExperience` is enabled. Therefore, this code path should
-  // never be reached.
-  NOTREACHED();
-
-  // Returns the fullscreen, FRE-like promo as the default.
-  return promos_manager::Promo::PostRestoreSignInFullscreen;
+  return promos_manager::Promo::PostRestoreSignInAlert;
 }
 
 #pragma mark - StandardPromoAlertHandler
@@ -141,44 +117,6 @@
       IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_CANCEL_ACTION);
 }
 
-#pragma mark - StandardPromoViewProvider
-
-- (PromoStyleViewController*)viewController {
-  if (_viewController)
-    return _viewController;
-
-  _viewController = [[PostRestoreSignInViewController alloc]
-      initWithAccountInfo:_accountInfo.value()];
-
-  return _viewController;
-}
-
-#pragma mark - StandardPromoActionHandler
-
-// The "Primary Action" was touched.
-- (void)standardPromoPrimaryAction {
-  [self.viewController dismissViewControllerAnimated:YES
-                                          completion:^{
-                                            [self showSignin];
-                                          }];
-}
-
-// The "Dismiss" button was touched. This same dismiss handler will be used for
-// two promo variations:
-//
-// (Variation #1) A fullscren, FRE-like promo, where the dismiss button says
-// "Don't Sign In".
-//
-// (Variation #2) A native iOS alert promo, where the dismiss button says
-// "Cancel".
-//
-// In both variations, the same dismiss functionality is desired.
-- (void)standardPromoDismissAction {
-  base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
-                                IOSPostRestoreSigninChoice::Dismiss);
-  ClearPreRestoreIdentity(_localState);
-}
-
 #pragma mark - Internal
 
 // Returns the user's pre-restore given name.
@@ -197,6 +135,7 @@
   return base::SysUTF8ToNSString(_accountInfo->email);
 }
 
+// Shows the signin / sync UI flow.
 - (void)showSignin {
   DCHECK(self.handler);
 

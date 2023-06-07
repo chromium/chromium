@@ -109,7 +109,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/browser/variations:fetcher",
     "//ios/chrome/common/app_group",
@@ -357,7 +356,6 @@ source_set("post_restore_app_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:signin_util",
-    "//ios/chrome/browser/ui/post_restore_signin:features",
   ]
 }
 

@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_display_handler.h"
-#import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
@@ -530,18 +529,9 @@
   // Add StandardPromoViewProvider promos here. For example:
   // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
 
-  // BanneredPromoViewProvider promo(s) below:
-  if (post_restore_signin::features::CurrentPostRestoreSignInType() ==
-      post_restore_signin::features::PostRestoreSignInType::kFullscreen)
-    _banneredViewProviderPromos
-        [promos_manager::Promo::PostRestoreSignInFullscreen] =
-            [[PostRestoreSignInProvider alloc] init];
-
   // StandardPromoAlertProvider promo(s) below:
-  if (post_restore_signin::features::CurrentPostRestoreSignInType() ==
-      post_restore_signin::features::PostRestoreSignInType::kAlert)
-    _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
-        [[PostRestoreSignInProvider alloc] init];
+  _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
+      [[PostRestoreSignInProvider alloc] init];
 
   // WhatsNewPromoHandler promo below:
   if (IsWhatsNewEnabled()) {

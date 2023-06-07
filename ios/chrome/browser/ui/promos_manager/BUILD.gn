@@ -80,7 +80,6 @@ source_set("promos_manager") {
     "//ios/chrome/browser/ui/credential_provider_promo",
     "//ios/chrome/browser/ui/default_promo/promo_handler",
     "//ios/chrome/browser/ui/post_restore_signin",
-    "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/ui/whats_new/promo",
     "//ios/chrome/common/ui/confirmation_alert",

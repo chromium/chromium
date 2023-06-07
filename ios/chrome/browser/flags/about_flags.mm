@@ -96,7 +96,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -529,12 +528,6 @@ const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
      kAutofillBrandingIOSDismissWhenInteractedWithAnimation,
      std::size(kAutofillBrandingIOSDismissWhenInteractedWithAnimation),
      nullptr}};
-
-const FeatureEntry::FeatureParam kIOSNewPostRestoreExperienceMinimal[] = {
-    {post_restore_signin::features::kIOSNewPostRestoreExperienceParam, "true"}};
-const FeatureEntry::FeatureVariation kIOSNewPostRestoreExperienceVariations[] =
-    {{"minimal", kIOSNewPostRestoreExperienceMinimal,
-      std::size(kIOSNewPostRestoreExperienceMinimal), nullptr}};
 
 const FeatureEntry::FeatureParam kNewTabPageFieldTrialTileAblationHideAll[] = {
     {ntp_tiles::kNewTabPageFieldTrialParam, "1"}};
@@ -1251,14 +1244,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"app-store-rating", flag_descriptions::kAppStoreRatingName,
      flag_descriptions::kAppStoreRatingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAppStoreRating)},
-    {"ios-new-post-restore-experience",
-     flag_descriptions::kIOSNewPostRestoreExperienceName,
-     flag_descriptions::kIOSNewPostRestoreExperienceDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         post_restore_signin::features::kIOSNewPostRestoreExperience,
-         kIOSNewPostRestoreExperienceVariations,
-         "IOSNewPostRestoreExperience")},
     {"most-visited-tiles", flag_descriptions::kMostVisitedTilesName,
      flag_descriptions::kMostVisitedTilesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},

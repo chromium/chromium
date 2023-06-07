@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/ui/post_restore_signin/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,10 +19,6 @@
 
 // The app state for the app.
 @property(nonatomic, weak, readonly) AppState* appState;
-
-// Stores whether the IOSNewPostRestoreExperience is enabled, in either
-// variation.
-@property(nonatomic) BOOL featureEnabled;
 
 // Stores whether we have pre-restore account info.
 @property(nonatomic) BOOL hasAccountInfo;
@@ -36,15 +31,6 @@
 
 // Local state is used to retrieve and/or clear the pre-restore identity.
 @property(nonatomic, assign) PrefService* localState;
-
-// Stores the PostRestoreSignInType which can be kAlert, kFullscreen, or
-// kDisabled.
-@property(nonatomic)
-    post_restore_signin::features::PostRestoreSignInType postRestoreSignInType;
-
-// Returns the appropriate post restore sign-in promo, depending on which
-// feature variation is enabled.
-@property(readonly) promos_manager::Promo promoForEnabledFeature;
 
 // Returns whether or not a post restore sign-in promo should be registered
 // with the PromosManager.
@@ -86,7 +72,7 @@
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
   if (self.appState.initStage == InitStageFinal) {
-    [self loadProperties];
+    self.hasAccountInfo = GetPreRestoreIdentity(_localState).has_value();
     [self maybeRegisterPromo];
     [self.appState removeObserver:self];
     [self.appState removeAgent:self];
@@ -97,35 +83,10 @@
 
 #pragma mark - internal
 
-// Loads all the properties to allow this app agent to decide whether to
-// register the post restore sign-in promo with the PromosManager.
-- (void)loadProperties {
-  _postRestoreSignInType =
-      post_restore_signin::features::CurrentPostRestoreSignInType();
-  _featureEnabled =
-      _postRestoreSignInType !=
-      post_restore_signin::features::PostRestoreSignInType::kDisabled;
-  _hasAccountInfo = GetPreRestoreIdentity(_localState).has_value();
-}
-
-// Returns the correct promo type depending on which feature variation is
-// enabled.
-- (promos_manager::Promo)promoForEnabledFeature {
-  switch (_postRestoreSignInType) {
-    case post_restore_signin::features::PostRestoreSignInType::kFullscreen:
-      return promos_manager::Promo::PostRestoreSignInFullscreen;
-    case post_restore_signin::features::PostRestoreSignInType::kAlert:
-      return promos_manager::Promo::PostRestoreSignInAlert;
-    case post_restore_signin::features::PostRestoreSignInType::kDisabled:
-      NOTREACHED();
-      return promos_manager::Promo::PostRestoreSignInFullscreen;
-  }
-}
-
 // Returns whether or not a post restore sign-in promo should be registered
 // with the PromosManager.
 - (BOOL)shouldRegisterPromo {
-  return _featureEnabled && _hasAccountInfo && _promosManager;
+  return _hasAccountInfo && _promosManager;
 }
 
 // Register the promo with the PromosManager, if the conditions are met,
@@ -153,7 +114,8 @@
 
   // Deregister any previously registered promos.
   [self deregisterPromos];
-  _promosManager->RegisterPromoForSingleDisplay(self.promoForEnabledFeature);
+  _promosManager->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::PostRestoreSignInAlert);
 }
 
 - (void)deregisterPromos {
