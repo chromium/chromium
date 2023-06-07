@@ -15,11 +15,12 @@ import android.widget.TextView;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 
 // TODO(crbug/1319351): Extend the comment below to explain under which circumstances this class is
 // still used
@@ -60,7 +61,7 @@ public class LegacySyncPromoView
         super(context, attrs);
         // This promo is about enabling sync, so no sense in showing it if
         // syncing isn't possible.
-        assert SyncService.get() != null;
+        assert SyncServiceFactory.get() != null;
     }
 
     @Override
@@ -98,7 +99,8 @@ public class LegacySyncPromoView
 
     private void update() {
         ViewState viewState;
-        if (!SyncService.get().hasSyncConsent() || SyncService.get().getSelectedTypes().isEmpty()) {
+        if (!SyncServiceFactory.get().hasSyncConsent()
+                || SyncServiceFactory.get().getSelectedTypes().isEmpty()) {
             viewState = getStateForEnableChromeSync();
         } else {
             viewState = getStateForStartUsing();
@@ -188,14 +190,14 @@ public class LegacySyncPromoView
         assert mInitialized : "init(...) must be called on LegacySyncPromoView before use.";
 
         super.onAttachedToWindow();
-        SyncService.get().addSyncStateChangedListener(this);
+        SyncServiceFactory.get().addSyncStateChangedListener(this);
         update();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        SyncService.get().removeSyncStateChangedListener(this);
+        SyncServiceFactory.get().removeSyncStateChangedListener(this);
     }
 
     // SyncService.SyncStateChangedListener

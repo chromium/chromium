@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
@@ -57,6 +57,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
@@ -136,7 +137,7 @@ public class MainSettings extends PreferenceFragmentCompat
         if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.addSignInStateObserver(this);
         }
-        SyncService syncService = SyncService.get();
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
@@ -149,7 +150,7 @@ public class MainSettings extends PreferenceFragmentCompat
         if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.removeSignInStateObserver(this);
         }
-        SyncService syncService = SyncService.get();
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
@@ -292,7 +293,7 @@ public class MainSettings extends PreferenceFragmentCompat
         mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
         mManageSync.setOnPreferenceClickListener(pref -> {
             Context context = getContext();
-            if (SyncService.get().isSyncDisabledByEnterprisePolicy()) {
+            if (SyncServiceFactory.getForProfile(mProfile).isSyncDisabledByEnterprisePolicy()) {
                 SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
             } else if (isSyncConsentAvailable) {
                 SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
@@ -341,7 +342,8 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private boolean shouldShowNewLabelForPasswordsPreference() {
-        return usesUnifiedPasswordManagerUI() && hasChosenToSyncPasswords(SyncService.get())
+        return usesUnifiedPasswordManagerUI()
+                && hasChosenToSyncPasswords(SyncServiceFactory.getForProfile(mProfile))
                 && !UserPrefs.get(mProfile).getBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED);
     }
 

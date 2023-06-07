@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
@@ -164,7 +164,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
                 && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(
                         mIntentDataProvider)
-                && SyncService.get().isSyncingUnencryptedUrls();
+                && SyncServiceFactory.get().isSyncingUnencryptedUrls();
     }
 
     @Override

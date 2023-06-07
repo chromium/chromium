@@ -19,9 +19,10 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.SyncService;
 
 /**
  * This activity is used for requesting a sync passphrase from the user. Typically,
@@ -42,24 +43,24 @@ public class PassphraseActivity extends AppCompatActivity
         // During a normal user flow the ChromeTabbedActivity would start the Chrome browser
         // process and this wouldn't be necessary.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-        assert SyncService.get() != null;
+        assert SyncServiceFactory.get() != null;
         getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Profile profile = Profile.getLastUsedRegularProfile();
         Account account = CoreAccountInfo.getAndroidAccountFrom(
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
+                        ConsentLevel.SYNC));
         if (account == null) {
             finish();
             return;
         }
 
         if (!isShowingDialog(FRAGMENT_PASSPHRASE)) {
-            if (SyncService.get().isEngineInitialized()) {
+            if (SyncServiceFactory.getForProfile(profile).isEngineInitialized()) {
                 displayPassphraseDialog();
             } else {
                 addSyncStateChangedListener();
@@ -80,21 +81,22 @@ public class PassphraseActivity extends AppCompatActivity
         if (mSyncStateChangedListener != null) {
             return;
         }
+        SyncService syncService = SyncServiceFactory.get();
         mSyncStateChangedListener = new SyncService.SyncStateChangedListener() {
             @Override
             public void syncStateChanged() {
-                if (SyncService.get().isEngineInitialized()) {
+                if (syncService.isEngineInitialized()) {
                     removeSyncStateChangedListener();
                     displayPassphraseDialog();
                 }
             }
         };
-        SyncService.get().addSyncStateChangedListener(mSyncStateChangedListener);
+        syncService.addSyncStateChangedListener(mSyncStateChangedListener);
     }
 
     private void removeSyncStateChangedListener() {
         if (mSyncStateChangedListener != null) {
-            SyncService.get().removeSyncStateChangedListener(mSyncStateChangedListener);
+            SyncServiceFactory.get().removeSyncStateChangedListener(mSyncStateChangedListener);
             mSyncStateChangedListener = null;
         }
     }
@@ -104,7 +106,7 @@ public class PassphraseActivity extends AppCompatActivity
     }
 
     private void displayPassphraseDialog() {
-        assert SyncService.get().isEngineInitialized();
+        assert SyncServiceFactory.get().isEngineInitialized();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.addToBackStack(null);
         PassphraseDialogFragment.newInstance(null).show(ft, FRAGMENT_PASSPHRASE);
@@ -122,7 +124,7 @@ public class PassphraseActivity extends AppCompatActivity
      */
     @Override
     public boolean onPassphraseEntered(String passphrase) {
-        if (!passphrase.isEmpty() && SyncService.get().setDecryptionPassphrase(passphrase)) {
+        if (!passphrase.isEmpty() && SyncServiceFactory.get().setDecryptionPassphrase(passphrase)) {
             // The passphrase was correct - close this activity.
             finish();
             return true;

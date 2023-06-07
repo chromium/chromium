@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.sync.SyncService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
             BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
-        mSyncService = SyncService.get();
+        mSyncService = SyncServiceFactory.get();
         mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
         mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, bookmarkUiPrefs);
         mBookmarkUiPrefs = bookmarkUiPrefs;

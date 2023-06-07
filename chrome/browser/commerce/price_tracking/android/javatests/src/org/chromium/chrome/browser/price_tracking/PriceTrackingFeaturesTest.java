@@ -27,13 +27,14 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -67,7 +68,8 @@ public class PriceTrackingFeaturesTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         when(mIdentityServicesProviderMock.getIdentityManager(any(Profile.class)))
                 .thenReturn(mIdentityManagerMock);
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncServiceMock));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> SyncServiceFactory.overrideForTests(mSyncServiceMock));
 
         setMbbStatus(true);
         setSignedInStatus(true);
@@ -77,7 +79,7 @@ public class PriceTrackingFeaturesTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.resetForTests());
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncServiceFactory.resetForTests());
         IdentityServicesProvider.setInstanceForTests(null);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(null);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);

@@ -61,12 +61,13 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckI
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -255,7 +256,7 @@ public class SafetyCheckMediatorTest {
 
     private void configureMockSyncService() {
         SyncService mockSyncService = Mockito.mock(SyncService.class);
-        SyncService.overrideForTests(mockSyncService);
+        SyncServiceFactory.overrideForTests(mockSyncService);
         when(mockSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mockSyncService.isEngineInitialized()).thenReturn(true);
         when(mockSyncService.hasSyncConsent()).thenReturn(true);

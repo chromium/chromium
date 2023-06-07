@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -552,7 +552,7 @@ class SafetyCheckMediator
                             .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                 } else {
                     PasswordManagerHelper.showPasswordCheckup(p.getContext(),
-                            PasswordCheckReferrer.SAFETY_CHECK, SyncService.get(),
+                            PasswordCheckReferrer.SAFETY_CHECK, SyncServiceFactory.get(),
                             mModalDialogManagerSupplier);
                 }
                 return true;
@@ -565,8 +565,9 @@ class SafetyCheckMediator
         } else {
             listener = (p) -> {
                 PasswordManagerHelper.showPasswordSettings(p.getContext(),
-                        ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher, SyncService.get(),
-                        mModalDialogManagerSupplier, /*managePasskeys=*/false);
+                        ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher,
+                        SyncServiceFactory.get(), mModalDialogManagerSupplier,
+                        /*managePasskeys=*/false);
                 return true;
             };
         }
@@ -706,8 +707,9 @@ class SafetyCheckMediator
     }
 
     private Optional<String> getSyncingAccount() {
-        return PasswordManagerHelper.hasChosenToSyncPasswords(SyncService.get())
-                ? Optional.of(CoreAccountInfo.getEmailFrom(SyncService.get().getAccountInfo()))
+        return PasswordManagerHelper.hasChosenToSyncPasswords(SyncServiceFactory.get())
+                ? Optional.of(
+                        CoreAccountInfo.getEmailFrom(SyncServiceFactory.get().getAccountInfo()))
                 : Optional.empty();
     }
 }

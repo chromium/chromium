@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
@@ -61,6 +61,7 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.widget.ButtonCompat;
@@ -130,7 +131,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
-    private final SyncService mSyncService = SyncService.get();
+    private SyncService mSyncService;
 
     private boolean mIsFromSigninScreen;
 
@@ -165,6 +166,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
+        Profile profile = Profile.getLastUsedRegularProfile();
+        mSyncService = SyncServiceFactory.getForProfile(profile);
+
         mIsFromSigninScreen =
                 IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false);
 
@@ -184,7 +188,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
         Preference turnOffSync = findPreference(PREF_TURN_OFF_SYNC);
 
-        Profile profile = Profile.getLastUsedRegularProfile();
         if (!mIsFromSigninScreen) {
             turnOffSync.setVisible(true);
             if (!profile.isChild()) {
@@ -724,7 +727,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     private void confirmSettings() {
         RecordUserAction.record("Signin_Signin_ConfirmAdvancedSyncSettings");
-        SyncService.get().setInitialSyncFeatureSetupComplete(
+        mSyncService.setInitialSyncFeatureSetupComplete(
                 SyncFirstSetupCompleteSource.ADVANCED_FLOW_CONFIRM);
 
         Profile profile = Profile.getLastUsedRegularProfile();

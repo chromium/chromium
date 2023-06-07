@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.sync.SyncService;
 
 /**
  * Computes for each privacy guide step whether it should be displayed or not.
@@ -17,7 +18,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     @Override
     public boolean shouldDisplayHistorySync() {
-        SyncService syncService = SyncService.get();
+        SyncService syncService = SyncServiceFactory.get();
         return syncService != null && syncService.isSyncFeatureEnabled();
     }
 

@@ -25,7 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
@@ -40,6 +40,7 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -162,7 +163,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
         mType = getMessageType(error);
         mActivity = activity;
-        SyncService.get().addSyncStateChangedListener(this);
+        SyncServiceFactory.get().addSyncStateChangedListener(this);
         SyncErrorMessageImpressionTracker.updateLastShownTime();
         recordHistogram(Action.SHOWN);
     }
@@ -213,7 +214,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             // (TAB_SWITCHED).
             SyncErrorMessageImpressionTracker.resetLastShownTime();
         }
-        SyncService.get().removeSyncStateChangedListener(this);
+        SyncServiceFactory.get().removeSyncStateChangedListener(this);
         SYNC_ERROR_MESSAGE_KEY.detachFromAllHosts(this);
 
         // This metric should be recorded only on explicit dismissal.
@@ -331,10 +332,10 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private static CoreAccountInfo getSyncConsentedAccountInfo() {
-        if (!SyncService.get().hasSyncConsent()) {
+        if (!SyncServiceFactory.get().hasSyncConsent()) {
             return null;
         }
-        return SyncService.get().getAccountInfo();
+        return SyncServiceFactory.get().getAccountInfo();
     }
 
     @VisibleForTesting

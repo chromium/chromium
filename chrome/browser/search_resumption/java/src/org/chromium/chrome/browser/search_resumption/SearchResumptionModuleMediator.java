@@ -23,12 +23,13 @@ import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.Su
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
@@ -83,7 +84,7 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
         }
         mSignInManager = IdentityServicesProvider.get().getSigninManager(profile);
         mSignInManager.addSignInStateObserver(this);
-        mSyncService = SyncService.get();
+        mSyncService = SyncServiceFactory.getForProfile(profile);
         mSyncService.addSyncStateChangedListener(this);
     }
 

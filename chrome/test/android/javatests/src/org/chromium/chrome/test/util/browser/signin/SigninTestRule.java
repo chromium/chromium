@@ -12,11 +12,12 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -110,7 +111,7 @@ public class SigninTestRule extends AccountManagerTestRule {
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
         return addTestAccountThenSigninAndEnableSync(
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get));
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
     }
 
     /**
@@ -136,7 +137,7 @@ public class SigninTestRule extends AccountManagerTestRule {
         CoreAccountInfo coreAccountInfo = addAccount(email, name);
         waitForSeeding();
         SigninTestUtil.signinAndEnableSync(coreAccountInfo,
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get));
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
         mIsSignedIn = true;
         return coreAccountInfo;
     }

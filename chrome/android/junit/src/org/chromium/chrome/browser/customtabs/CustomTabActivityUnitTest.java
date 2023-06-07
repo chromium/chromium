@@ -23,7 +23,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.sync.SyncService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +74,7 @@ public final class CustomTabActivityUnitTest {
         CustomTabsConnection.setInstanceForTesting(connection);
 
         SyncService syncService = Mockito.mock(SyncService.class);
-        SyncService.overrideForTests(syncService);
+        SyncServiceFactory.overrideForTests(syncService);
 
         enablePageInsights(testValues, connection, syncService);
         assertTrue("PageInsightsHub should be enabled", getActivity().isPageInsightsHubEnabled());

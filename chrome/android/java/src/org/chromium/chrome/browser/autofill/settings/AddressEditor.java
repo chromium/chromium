@@ -39,10 +39,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -516,7 +517,7 @@ public class AddressEditor {
     }
 
     private boolean isAddressSyncOn() {
-        SyncService service = SyncService.get();
+        SyncService service = SyncServiceFactory.get();
         if (service == null) return false;
         return service.isSyncFeatureEnabled()
                 && service.getSelectedTypes().contains(UserSelectableType.AUTOFILL);

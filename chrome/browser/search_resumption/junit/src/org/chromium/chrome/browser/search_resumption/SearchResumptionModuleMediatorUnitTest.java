@@ -50,13 +50,14 @@ import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils
 import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.SuggestionResult;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -168,7 +169,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mSignInManager).when(mIdentityServicesProvider).getSigninManager(any());
 
-        SyncService.overrideForTests(mSyncServiceMock);
+        SyncServiceFactory.overrideForTests(mSyncServiceMock);
 
         mActionTester = new UserActionTester();
     }

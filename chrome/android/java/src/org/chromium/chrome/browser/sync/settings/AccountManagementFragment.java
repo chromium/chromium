@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -45,6 +45,7 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -87,7 +88,9 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedState, String rootKey) {
-        SyncService syncService = SyncService.get();
+        mProfile = Profile.getLastUsedRegularProfile();
+
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         if (syncService != null) {
             // Prevent sync settings changes from taking effect until the user leaves this screen.
             mSyncSetupInProgressHandle = syncService.getSetupInProgressHandle();
@@ -97,8 +100,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             mGaiaServiceType =
                     getArguments().getInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, mGaiaServiceType);
         }
-
-        mProfile = Profile.getLastUsedRegularProfile();
 
         SigninMetricsUtils.logProfileAccountManagementMenu(
                 ProfileAccountManagementMetrics.VIEW, mGaiaServiceType);

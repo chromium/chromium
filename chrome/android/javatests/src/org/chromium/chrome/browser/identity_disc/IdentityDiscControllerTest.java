@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SyncConsentActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -311,7 +311,7 @@ public class IdentityDiscControllerTest {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
         CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
         SigninTestUtil.signinAndEnableSync(coreAccountInfo,
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get));
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
         String expectedContentDescription = mActivityTestRule.getActivity().getString(
                 R.string.accessibility_toolbar_btn_identity_disc_with_name, FULL_NAME);
         waitForView(allOf(withId(R.id.optional_toolbar_button),

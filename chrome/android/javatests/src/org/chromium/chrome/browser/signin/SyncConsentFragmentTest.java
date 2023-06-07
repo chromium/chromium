@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -576,10 +576,11 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().hasSyncConsent());
-            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
-            assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
-            assertTrue(SyncService.get().hasKeepEverythingSynced());
+            assertTrue(SyncServiceFactory.get().hasSyncConsent());
+            assertFalse(SyncServiceFactory.get().isInitialSyncFeatureSetupComplete());
+            assertEquals(
+                    ALL_CLANK_SYNCABLE_DATA_TYPES, SyncServiceFactory.get().getSelectedTypes());
+            assertTrue(SyncServiceFactory.get().hasKeepEverythingSynced());
         });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
@@ -607,10 +608,10 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().hasSyncConsent());
-            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
-            assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
-            assertFalse(SyncService.get().hasKeepEverythingSynced());
+            assertTrue(SyncServiceFactory.get().hasSyncConsent());
+            assertFalse(SyncServiceFactory.get().isInitialSyncFeatureSetupComplete());
+            assertEquals(HISTORY_SYNC_DATA_TYPES, SyncServiceFactory.get().getSelectedTypes());
+            assertFalse(SyncServiceFactory.get().hasKeepEverythingSynced());
         });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
@@ -642,8 +643,8 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().hasSyncConsent());
-            assertFalse(SyncService.get().isInitialSyncFeatureSetupComplete());
+            assertTrue(SyncServiceFactory.get().hasSyncConsent());
+            assertFalse(SyncServiceFactory.get().isInitialSyncFeatureSetupComplete());
         });
         // Click the cancel button to exit the activity.
         onView(withId(R.id.cancel_button)).perform(click());
@@ -712,8 +713,8 @@ public class SyncConsentFragmentTest {
         // As there is no account on the device, the set of selected types will be empty. Sync Setup
         // UI in this case does not link to the types list.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals(Set.of(), SyncService.get().getSelectedTypes());
-            assertTrue(SyncService.get().hasKeepEverythingSynced());
+            assertEquals(Set.of(), SyncServiceFactory.get().getSelectedTypes());
+            assertTrue(SyncServiceFactory.get().hasKeepEverythingSynced());
         });
     }
 
@@ -813,8 +814,8 @@ public class SyncConsentFragmentTest {
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
-            assertFalse(SyncService.get().hasKeepEverythingSynced());
+            assertEquals(HISTORY_SYNC_DATA_TYPES, SyncServiceFactory.get().getSelectedTypes());
+            assertFalse(SyncServiceFactory.get().hasKeepEverythingSynced());
         });
     }
 
@@ -840,8 +841,9 @@ public class SyncConsentFragmentTest {
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
-            assertTrue(SyncService.get().hasKeepEverythingSynced());
+            assertEquals(
+                    ALL_CLANK_SYNCABLE_DATA_TYPES, SyncServiceFactory.get().getSelectedTypes());
+            assertTrue(SyncServiceFactory.get().hasKeepEverythingSynced());
         });
     }
 

@@ -29,10 +29,11 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -75,7 +76,7 @@ public class PrivacyGuideMetricsDelegateTest {
     public void setUp() {
         Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
-        SyncService.overrideForTests(mSyncService);
+        SyncServiceFactory.overrideForTests(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
         mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);

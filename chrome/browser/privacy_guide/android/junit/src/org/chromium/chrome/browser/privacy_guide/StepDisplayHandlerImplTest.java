@@ -23,13 +23,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
@@ -67,14 +68,14 @@ public class StepDisplayHandlerImplTest {
 
         mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceNativesMock);
 
-        SyncService.overrideForTests(mSyncService);
+        SyncServiceFactory.overrideForTests(mSyncService);
         mMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSBNativesMock);
         mStepDisplayHandler = new StepDisplayHandlerImpl();
     }
 
     @After
     public void tearDown() {
-        SyncService.resetForTests();
+        SyncServiceFactory.resetForTests();
     }
 
     private void setSBState(@SafeBrowsingState int sbState) {

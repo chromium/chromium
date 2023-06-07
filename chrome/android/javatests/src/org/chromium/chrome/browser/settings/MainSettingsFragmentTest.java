@@ -76,7 +76,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
@@ -102,6 +102,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.text.SpanApplier;
@@ -293,7 +294,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     public void testSyncRowSummaryWhenNoDataTypeSynced() {
         final SyncService syncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get);
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { syncService.setSelectedTypes(false, new HashSet<>()); });
         CoreAccountInfo account = mSyncTestRule.addTestAccount();

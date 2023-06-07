@@ -89,13 +89,13 @@ public class SyncErrorCardPreferenceTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeSyncServiceImpl = new FakeSyncServiceImpl();
-            SyncService.overrideForTests(mFakeSyncServiceImpl);
+            SyncServiceFactory.overrideForTests(mFakeSyncServiceImpl);
         });
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { SyncService.resetForTests(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { SyncServiceFactory.resetForTests(); });
     }
 
     @AfterClass

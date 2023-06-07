@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -42,6 +42,7 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
 
@@ -94,7 +95,7 @@ public class BookmarkManagerCoordinatorTest {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
 
         // Setup service mocks.
-        SyncService.overrideForTests(mSyncService);
+        SyncServiceFactory.overrideForTests(mSyncService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         Mockito.doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
         Mockito.doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();

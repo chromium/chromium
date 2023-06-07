@@ -14,7 +14,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
@@ -125,7 +125,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
                         SigninAccessPoint.ACCOUNT_RENAMED, new SignInCallback() {
                             @Override
                             public void onSignInComplete() {
-                                SyncService.get().setInitialSyncFeatureSetupComplete(
+                                SyncServiceFactory.get().setInitialSyncFeatureSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
                             }
 

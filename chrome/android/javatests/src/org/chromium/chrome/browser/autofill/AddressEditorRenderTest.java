@@ -47,11 +47,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -167,7 +168,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(() -> {
             when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
             when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
-            SyncService.overrideForTests(mSyncService);
+            SyncServiceFactory.overrideForTests(mSyncService);
 
             when(mPersonalDataManager.isCountryEligibleForAccountStorage(anyString()))
                     .thenReturn(true);

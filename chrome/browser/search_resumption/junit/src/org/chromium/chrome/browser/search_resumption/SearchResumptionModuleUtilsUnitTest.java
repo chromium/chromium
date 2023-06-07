@@ -36,12 +36,13 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.SuggestionResult;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -130,7 +131,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        SyncService.overrideForTests(mSyncServiceMock);
+        SyncServiceFactory.overrideForTests(mSyncServiceMock);
 
         ShadowChromeFeatureList.sEnableScrollableMVT = true;
         ShadowChromeFeatureList.sEnableSearchResumptionModule = true;

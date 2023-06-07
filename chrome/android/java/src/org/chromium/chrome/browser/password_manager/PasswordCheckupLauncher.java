@@ -13,7 +13,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -35,7 +35,7 @@ public class PasswordCheckupLauncher {
 
         if (PasswordManagerHelper.canUseUpm()) {
             PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
-                    passwordCheckReferrer, SyncService.get(),
+                    passwordCheckReferrer, SyncServiceFactory.get(),
                     getModalDialogManagerSupplier(windowAndroid));
             return;
         }

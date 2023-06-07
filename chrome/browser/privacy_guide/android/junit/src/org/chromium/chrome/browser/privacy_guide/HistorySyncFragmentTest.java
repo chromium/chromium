@@ -29,7 +29,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
 import java.util.HashSet;
@@ -60,12 +61,12 @@ public class HistorySyncFragmentTest {
 
     @Before
     public void setUp() {
-        SyncService.overrideForTests(mSyncService);
+        SyncServiceFactory.overrideForTests(mSyncService);
     }
 
     @After
     public void tearDown() {
-        SyncService.resetForTests();
+        SyncServiceFactory.resetForTests();
         if (mScenario != null) {
             mScenario.close();
         }

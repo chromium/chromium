@@ -11,14 +11,14 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.sync.SyncService;
 
 /**
  * Provides profile specific SyncService instances.
  */
 public class SyncServiceFactory {
-    // TODO(crbug.com/1380925): Make private once all clients stop calling overrideForTests on
-    //                          SyncService directly.
-    /* package */ static @Nullable org.chromium.components.sync.SyncService sSyncServiceForTest;
+    @Nullable
+    private static SyncService sSyncServiceForTest;
 
     private SyncServiceFactory() {}
 
@@ -32,7 +32,7 @@ public class SyncServiceFactory {
      * @return The SyncService (if any) associated with the Profile.
      */
     @Nullable
-    public static org.chromium.components.sync.SyncService getForProfile(Profile profile) {
+    public static SyncService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sSyncServiceForTest != null) return sSyncServiceForTest;
         return SyncServiceFactoryJni.get().getForProfile(profile);
@@ -47,7 +47,7 @@ public class SyncServiceFactory {
      */
     @Nullable
     @Deprecated
-    public static org.chromium.components.sync.SyncService get() {
+    public static SyncService get() {
         ThreadUtils.assertOnUiThread();
         if (sSyncServiceForTest != null) return sSyncServiceForTest;
         return SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
@@ -57,7 +57,7 @@ public class SyncServiceFactory {
      * Overrides the initialization for tests. The tests should call resetForTests() at shutdown.
      */
     @VisibleForTesting
-    public static void overrideForTests(org.chromium.components.sync.SyncService syncService) {
+    public static void overrideForTests(SyncService syncService) {
         ThreadUtils.assertOnUiThread();
         sSyncServiceForTest = syncService;
         ResettersForTesting.register(() -> sSyncServiceForTest = null);
@@ -75,6 +75,6 @@ public class SyncServiceFactory {
 
     @NativeMethods
     interface Natives {
-        org.chromium.components.sync.SyncService getForProfile(Profile profile);
+        SyncService getForProfile(Profile profile);
     }
 }
