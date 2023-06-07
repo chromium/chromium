@@ -456,10 +456,6 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   mutable gfx::PointF mouse_down_post_transformed_coordinate_;
   raw_ptr<RenderWidgetHostViewBase> last_mouse_down_target_ = nullptr;
 
-  // Set to true when we first DwoC on an invalid RWHVB* in DispatchTouchEvent.
-  // Used to prevent multiple dumps.
-  bool has_dumped_ = false;
-
   // Remote end of the connection for sending delegated ink points to viz to
   // support the delegated ink trails feature.
   mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>

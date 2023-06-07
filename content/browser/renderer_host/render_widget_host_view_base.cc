@@ -45,32 +45,14 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace {
-using RenderWidgetHostViewBaseAllocMap = std::unordered_map<const void*, int>;
-base::LazyInstance<RenderWidgetHostViewBaseAllocMap>::DestructorAtExit
-    g_alloc_dealloc_tracker_map = LAZY_INSTANCE_INITIALIZER;
-}  // namespace
-
 namespace content {
-
-// static
-int RenderWidgetHostViewBase::IsValidRWHVBPointer(
-    const RenderWidgetHostViewBase* view) {
-  if (!base::Contains(g_alloc_dealloc_tracker_map.Get(),
-                      static_cast<const void*>(view))) {
-    return -1;
-  }
-  return g_alloc_dealloc_tracker_map.Get()[view];
-}
 
 RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
     : host_(RenderWidgetHostImpl::From(host)),
       // `screen_infos_` must be initialized, to permit unconditional access to
       // its current display. A placeholder ScreenInfo is used here, so the
       // first call to UpdateScreenInfo will trigger the expected updates.
-      screen_infos_(display::ScreenInfos(display::ScreenInfo())) {
-  g_alloc_dealloc_tracker_map.Get()[this]++;
-}
+      screen_infos_(display::ScreenInfos(display::ScreenInfo())) {}
 
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   DCHECK(!keyboard_locked_);
@@ -87,7 +69,6 @@ RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   // so that the |text_input_manager_| will free its state.
   if (text_input_manager_)
     text_input_manager_->Unregister(this);
-  g_alloc_dealloc_tracker_map.Get()[this]--;
 }
 
 RenderWidgetHostImpl* RenderWidgetHostViewBase::GetFocusedWidget() const {

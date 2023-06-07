@@ -848,16 +848,6 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
 
   bool is_sequence_start = !touch_target_ && target;
   if (is_sequence_start) {
-    // TODO(wjmaclean): Remove this once investigation for
-    // https://crbug.com/1197154 is complete.
-    if (RenderWidgetHostViewBase::IsValidRWHVBPointer(target) != 1 &&
-        !has_dumped_) {
-      has_dumped_ = true;
-      SCOPED_CRASH_KEY_NUMBER(
-          "DispatchTouchEvent", "ptr_status",
-          RenderWidgetHostViewBase::IsValidRWHVBPointer(target));
-      base::debug::DumpWithoutCrashing();
-    }
     touch_target_ = target;
     DCHECK(touchscreen_gesture_target_map_.find(
                touch_event.unique_touch_event_id) ==
