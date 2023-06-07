@@ -25,6 +25,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 class ManualFillingController;
@@ -41,6 +42,8 @@ class PasswordAccessoryControllerImpl
   using PasswordDriverSupplierForFocusedFrame =
       base::RepeatingCallback<password_manager::PasswordManagerDriver*(
           content::WebContents*)>;
+  using ShowMigrationWarningCallback =
+      base::RepeatingCallback<void(gfx::NativeWindow)>;
 
   PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
       delete;
@@ -83,7 +86,8 @@ class PasswordAccessoryControllerImpl
       password_manager::CredentialCache* credential_cache,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
-      PasswordDriverSupplierForFocusedFrame driver_supplier);
+      PasswordDriverSupplierForFocusedFrame driver_supplier,
+      ShowMigrationWarningCallback show_migration_warning_callback);
 
   // Returns true if the current site attached to `web_contents_` has a SECURE
   // security level.
@@ -105,7 +109,8 @@ class PasswordAccessoryControllerImpl
       password_manager::CredentialCache* credential_cache,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
-      PasswordDriverSupplierForFocusedFrame driver_supplier);
+      PasswordDriverSupplierForFocusedFrame driver_supplier,
+      ShowMigrationWarningCallback show_migration_warning_callback);
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
@@ -213,6 +218,10 @@ class PasswordAccessoryControllerImpl
   // Security level used for testing only.
   security_state::SecurityLevel security_level_for_testing_ =
       security_state::NONE;
+
+  // Callback attempting to display the migration warning when invoked.
+  // Used to facilitate injecting a mock bridge in tests.
+  ShowMigrationWarningCallback show_migration_warning_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

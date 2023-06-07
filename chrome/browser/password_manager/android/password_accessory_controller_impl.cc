@@ -295,7 +295,8 @@ void PasswordAccessoryControllerImpl::CreateForWebContents(
         base::WrapUnique(new PasswordAccessoryControllerImpl(
             web_contents, credential_cache, nullptr,
             ChromePasswordManagerClient::FromWebContents(web_contents),
-            base::BindRepeating(GetPasswordManagerDriver))));
+            base::BindRepeating(GetPasswordManagerDriver),
+            base::BindRepeating(&password_manager::ShowWarning))));
   }
 }
 
@@ -305,7 +306,8 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
     password_manager::CredentialCache* credential_cache,
     base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
-    PasswordDriverSupplierForFocusedFrame driver_supplier) {
+    PasswordDriverSupplierForFocusedFrame driver_supplier,
+    ShowMigrationWarningCallback show_migration_warning_callback) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
   DCHECK(manual_filling_controller);
@@ -315,7 +317,8 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
       UserDataKey(),
       base::WrapUnique(new PasswordAccessoryControllerImpl(
           web_contents, credential_cache, std::move(manual_filling_controller),
-          password_client, std::move(driver_supplier))));
+          password_client, std::move(driver_supplier),
+          std::move(show_migration_warning_callback))));
 }
 
 void PasswordAccessoryControllerImpl::OnOptionSelected(
@@ -472,13 +475,16 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
     password_manager::CredentialCache* credential_cache,
     base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
-    PasswordDriverSupplierForFocusedFrame driver_supplier)
+    PasswordDriverSupplierForFocusedFrame driver_supplier,
+    ShowMigrationWarningCallback show_migration_warning_callback)
     : content::WebContentsUserData<PasswordAccessoryControllerImpl>(
           *web_contents),
       credential_cache_(credential_cache),
       manual_filling_controller_(std::move(manual_filling_controller)),
       password_client_(password_client),
-      driver_supplier_(std::move(driver_supplier)) {}
+      driver_supplier_(std::move(driver_supplier)),
+      show_migration_warning_callback_(
+          std::move(show_migration_warning_callback)) {}
 
 void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
     bool saving_enabled) {
@@ -613,6 +619,12 @@ void PasswordAccessoryControllerImpl::FillSelection(
     return;
   driver->FillIntoFocusedField(selection.is_obfuscated(),
                                selection.display_text());
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
+    show_migration_warning_callback_.Run(
+        GetWebContents().GetTopLevelNativeWindow());
+  }
 }
 
 void PasswordAccessoryControllerImpl::AllPasswordsSheetDismissed() {

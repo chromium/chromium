@@ -266,7 +266,8 @@ class MockPasswordAccessoryControllerImpl
                                         credential_cache,
                                         mf_controller,
                                         password_client,
-                                        driver_supplier) {}
+                                        driver_supplier,
+                                        base::DoNothing()) {}
 
   MOCK_METHOD(void,
               RefreshSuggestionsForField,

@@ -266,7 +266,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         web_contents(), cache(), mock_manual_filling_controller_.AsWeakPtr(),
         mock_pwd_manager_client_.get(),
         base::BindRepeating(&PasswordAccessoryControllerTest::GetBaseDriver,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        show_migration_warning_callback_.Get());
 
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     controller()->SetSecurityLevelForTesting(security_level);
@@ -298,6 +299,9 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
+  base::MockCallback<
+      PasswordAccessoryControllerImpl::ShowMigrationWarningCallback>
+      show_migration_warning_callback_;
   scoped_refptr<MockPasswordStoreInterface> mock_password_store_;
   scoped_refptr<MockDeviceAuthenticator> mock_authenticator_ =
       base::MakeRefCounted<MockDeviceAuthenticator>();
@@ -1177,6 +1181,53 @@ TEST_F(PasswordAccessoryControllerTest,
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       ShowMigrationSheetOnFillingCredentialIfEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  CreateSheetController();
+
+  // Set up credentials for filling.
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
+      CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+  AccessorySheetField selected_field(
+      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
+      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
+      /*selectable=*/true);
+  EXPECT_CALL(show_migration_warning_callback_, Run);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  // Set up credentials for filling.
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
+      CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  AccessorySheetField selected_field(
+      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
+      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
+      /*selectable=*/true);
+  EXPECT_CALL(show_migration_warning_callback_, Run).Times(0);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 
 class PasswordAccessoryControllerWithTestStoreTest
