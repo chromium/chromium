@@ -155,6 +155,7 @@
     "linux-lacros-version-skew-fyi": "Ubuntu-22.04",
     "linux-local-ssd-rel-dev": "Ubuntu-22.04",
     "linux-network-sandbox-rel": "Ubuntu-22.04",
+    "linux-official": "Ubuntu-22.04",
     "linux-perfetto-rel": "Ubuntu-22.04",
     "linux-rel-jammy-dev": "Ubuntu-22.04",
     "linux-rel-no-external-ip": "Ubuntu-22.04",
