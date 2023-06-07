@@ -59,6 +59,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "media/base/media_switches.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
@@ -303,6 +304,9 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     CrasAudioHandler::Get()->RefreshNoiseCancellationState();
 
     Shell::Get()->media_notification_provider()->OnPrimaryUserSessionStarted();
+    if (base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle)) {
+      CrasAudioHandler::Get()->RefreshForceRespectUiGainsState();
+    }
   }
 }
 

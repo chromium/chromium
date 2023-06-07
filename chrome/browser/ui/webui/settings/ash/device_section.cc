@@ -34,6 +34,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/display_features.h"
@@ -790,6 +791,14 @@ bool IsListAllDisplayModesEnabled() {
   return display::features::IsListAllDisplayModesEnabled();
 }
 
+bool IsShowForceRespectUiGainsToggleEnabled() {
+  // No need to show the toggle if UI gains is not going to be ignored.
+  if (!base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle);
+}
+
 void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString keyboard_strings[] = {
       {"builtInKeyboardName", IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME},
@@ -978,6 +987,7 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioDeviceRearMicLabel", IDS_SETTINGS_AUDIO_DEVICE_REAR_MIC_LABEL},
       {"audioDeviceUsbLabel", IDS_SETTINGS_AUDIO_DEVICE_USB_LABEL},
       {"audioInputDeviceTitle", IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE},
+      {"audioInputAllowAGCTitle", IDS_SETTINGS_AUDIO_INPUT_ALLOW_AGC_TITLE},
       {"audioInputGainTitle", IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE},
       {"audioInputMuteButtonAriaLabelMuted",
        IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED},
@@ -1790,6 +1800,9 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("deviceSupportsAmbientColor",
                           DoesDeviceSupportAmbientColor());
+
+  html_source->AddBoolean("enableForceRespectUiGainsToggle",
+                          IsShowForceRespectUiGainsToggleEnabled());
 
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());

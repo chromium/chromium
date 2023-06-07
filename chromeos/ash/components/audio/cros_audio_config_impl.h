@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void SetActiveDevice(uint64_t device_id) override;
   void SetInputMuted(bool muted) override;
   void SetNoiseCancellationEnabled(bool enabled) override;
+  void SetForceRespectUiGainsEnabled(bool enabled) override;
 
   // Records the output volume percentage set by the user to metrics.
   void RecordOutputVolume();
@@ -70,6 +71,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnNoiseCancellationStateChanged() override;
+  void OnForceRespectUiGainsStateChanged() override;
 
   // Timers used to prevent the output/input volume metrics from recording each
   // time the user moves the slider while setting the desired volume.

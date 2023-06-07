@@ -105,8 +105,22 @@ class SettingsAudioElement extends SettingsAudioElementBase {
           Setting.kChargingSounds,
         ]),
       },
+
+      showAllowAGC: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableForceRespectUiGainsToggle'),
+        readonly: true,
+      },
+
+      isAllowAGCEnabled: {
+        type: Boolean,
+        observer: SettingsAudioElement.prototype.onAllowAGCEnabledChanged,
+      },
     };
   }
+
+  protected isAllowAGCEnabled: boolean;
+  protected showAllowAGC: boolean;
 
   private audioSystemProperties_: AudioSystemProperties;
   private audioSystemPropertiesObserverReceiver_:
@@ -151,6 +165,9 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     this.isNoiseCancellationSupported_ =
         !(activeInputDevice?.noiseCancellationState ===
           AudioEffectState.kNotSupported);
+    this.isAllowAGCEnabled =
+        (activeInputDevice?.forceRespectUiGainsState ===
+         AudioEffectState.kNotEnabled);
     this.outputVolume_ = this.audioSystemProperties_.outputVolumePercent;
   }
 
@@ -207,6 +224,21 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     }
 
     this.crosAudioConfig_.setNoiseCancellationEnabled(enabled);
+  }
+
+  /** Handles updates to force respect ui gains state. */
+  protected onAllowAGCEnabledChanged(
+      enabled: SettingsAudioElement['isAllowAGCEnabled'],
+      previousEnabled: SettingsAudioElement['isAllowAGCEnabled']): void {
+    // Polymer triggers change event on all assignment to
+    // `isAllowAGCEnabled` even if the value is logically unchanged.
+    // Check previous value before calling `setAllowAGCEnabled` to
+    // test if value actually updated.
+    if (previousEnabled === undefined || previousEnabled === enabled) {
+      return;
+    }
+
+    this.crosAudioConfig_.setForceRespectUiGainsEnabled(!enabled);
   }
 
   /**

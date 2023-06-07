@@ -453,6 +453,9 @@ AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {
   return base::ranges::find(node_list_, node_id, &AudioNode::id);
 }
 
-void FakeCrasAudioClient::SetForceRespectUiGains(bool force_respect_ui_gains) {}
+void FakeCrasAudioClient::SetForceRespectUiGains(
+    bool force_respect_ui_gains_enabled) {
+  force_respect_ui_gains_enabled_ = force_respect_ui_gains_enabled;
+}
 
 }  // namespace ash

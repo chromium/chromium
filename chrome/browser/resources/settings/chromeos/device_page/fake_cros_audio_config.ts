@@ -17,6 +17,7 @@ export const defaultFakeMicJack: AudioDevice = {
   isActive: true,
   deviceType: AudioDeviceType.kInternalMic,
   noiseCancellationState: AudioEffectState.kNotSupported,
+  forceRespectUiGainsState: AudioEffectState.kNotEnabled,
 };
 
 export const fakeSpeakerActive: AudioDevice = {
@@ -25,6 +26,7 @@ export const fakeSpeakerActive: AudioDevice = {
   isActive: true,
   deviceType: AudioDeviceType.kInternalSpeaker,
   noiseCancellationState: AudioEffectState.kNotSupported,
+  forceRespectUiGainsState: AudioEffectState.kNotSupported,
 };
 
 export const fakeMicJackInactive: AudioDevice = {
@@ -33,6 +35,7 @@ export const fakeMicJackInactive: AudioDevice = {
   isActive: false,
   deviceType: AudioDeviceType.kInternalSpeaker,
   noiseCancellationState: AudioEffectState.kNotSupported,
+  forceRespectUiGainsState: AudioEffectState.kNotSupported,
 };
 
 export const defaultFakeSpeaker: AudioDevice = {
@@ -41,6 +44,7 @@ export const defaultFakeSpeaker: AudioDevice = {
   isActive: false,
   deviceType: AudioDeviceType.kInternalSpeaker,
   noiseCancellationState: AudioEffectState.kNotSupported,
+  forceRespectUiGainsState: AudioEffectState.kNotSupported,
 };
 
 export const fakeInternalFrontMic: AudioDevice = {
@@ -49,6 +53,7 @@ export const fakeInternalFrontMic: AudioDevice = {
   isActive: true,
   deviceType: AudioDeviceType.kFrontMic,
   noiseCancellationState: AudioEffectState.kNotEnabled,
+  forceRespectUiGainsState: AudioEffectState.kNotEnabled,
 };
 
 export const fakeBluetoothMic: AudioDevice = {
@@ -57,6 +62,7 @@ export const fakeBluetoothMic: AudioDevice = {
   isActive: false,
   deviceType: AudioDeviceType.kBluetoothNbMic,
   noiseCancellationState: AudioEffectState.kNotSupported,
+  forceRespectUiGainsState: AudioEffectState.kNotEnabled,
 };
 
 export const fakeInternalMicActive: AudioDevice = {
@@ -65,6 +71,7 @@ export const fakeInternalMicActive: AudioDevice = {
   isActive: true,
   deviceType: AudioDeviceType.kInternalMic,
   noiseCancellationState: AudioEffectState.kNotSupported,
+  forceRespectUiGainsState: AudioEffectState.kNotEnabled,
 };
 
 export interface FakePropertiesObserverInterface {
@@ -152,6 +159,24 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
         enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
     this.audioSystemProperties.inputDevices[activeIndex]
         .noiseCancellationState = nextState;
+    this.notifyAudioSystemPropertiesUpdated();
+  }
+
+  /** Handle updating active input device force respect ui gains state. */
+  setForceRespectUiGainsEnabled(enabled: boolean): void {
+    if (!this.audioSystemProperties.inputDevices) {
+      return;
+    }
+
+    const activeIndex = this.audioSystemProperties.inputDevices.findIndex(
+        (device: AudioDevice) => device.isActive);
+    if (activeIndex === -1) {
+      return;
+    }
+    const nextState: AudioEffectState =
+        enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
+    this.audioSystemProperties.inputDevices[activeIndex]
+        .forceRespectUiGainsState = nextState;
     this.notifyAudioSystemPropertiesUpdated();
   }
 

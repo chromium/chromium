@@ -151,6 +151,8 @@ class CrosAudioConfigImplTest : public testing::Test {
     audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     audio_pref_handler_->SetNoiseCancellationState(
         /*noise_cancellation_state=*/false);
+    audio_pref_handler_->SetForceRespectUiGainsState(
+        /*force_respect_ui_gains=*/false);
     cras_audio_handler_->SetPrefHandlerForTesting(audio_pref_handler_);
     cros_audio_config_ = std::make_unique<CrosAudioConfigImpl>();
     ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
@@ -212,6 +214,12 @@ class CrosAudioConfigImplTest : public testing::Test {
   void SimulateSetNoiseCancellationEnabled(bool enabled) {
     // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetNoiseCancellationEnabled(enabled);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SimulateSetForceRespectUiGainsEnabled(bool enabled) {
+    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    remote_->SetForceRespectUiGainsEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -312,6 +320,27 @@ class CrosAudioConfigImplTest : public testing::Test {
     cras_audio_handler_->SetNoiseCancellationState(
         noise_cancellation_on,
         CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool GetForceRespectUiGainsState() {
+    return fake_cras_audio_client_->force_respect_ui_gains_enabled();
+  }
+
+  bool GetForceRespectUiGainsStatePref() {
+    return audio_pref_handler_->GetForceRespectUiGainsState();
+  }
+
+  void SetForceRespectUiGainsStatePref(bool enabled) {
+    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    audio_pref_handler_->SetForceRespectUiGainsState(
+        /*force_respect_ui_gains=*/enabled);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetForceRespectUiGainsState(bool force_respect_ui_gains_on) {
+    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    cras_audio_handler_->SetForceRespectUiGainsState(force_respect_ui_gains_on);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -620,6 +649,43 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   histogram_tester_.ExpectBucketCount(
       CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
       CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetForceRespectUiGainsState) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // By default force respect ui gains is disabled in this test.
+  ASSERT_FALSE(GetForceRespectUiGainsState());
+  ASSERT_FALSE(GetForceRespectUiGainsStatePref());
+
+  // Simulate trying to set force respect ui gains.
+  SimulateSetForceRespectUiGainsEnabled(/*enabled=*/true);
+
+  // Add input audio nodes.
+  SetAudioNodes({kInternalMic, kUsbMic});
+  SetActiveInputNodes({kInternalMicId});
+
+  ASSERT_TRUE(GetForceRespectUiGainsState());
+  ASSERT_TRUE(GetForceRespectUiGainsStatePref());
+  ASSERT_EQ(
+      mojom::AudioEffectState::kEnabled,
+      fake_observer->GetInputAudioDevice(1)->force_respect_ui_gains_state);
+
+  // Change active node does not change force respect ui gains state.
+  SetActiveInputNodes({kUsbMicId});
+  ASSERT_EQ(
+      mojom::AudioEffectState::kEnabled,
+      fake_observer->GetInputAudioDevice(1)->force_respect_ui_gains_state);
+
+  // Turn force respect ui gains off.
+  SetActiveInputNodes({kInternalMicId});
+  SimulateSetForceRespectUiGainsEnabled(/*enabled=*/false);
+
+  ASSERT_FALSE(GetForceRespectUiGainsState());
+  ASSERT_FALSE(GetForceRespectUiGainsStatePref());
+  ASSERT_EQ(
+      mojom::AudioEffectState::kNotEnabled,
+      fake_observer->GetInputAudioDevice(1)->force_respect_ui_gains_state);
 }
 
 TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {

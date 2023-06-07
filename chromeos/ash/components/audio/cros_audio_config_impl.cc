@@ -85,6 +85,17 @@ mojom::AudioEffectState GetNoiseCancellationState(const AudioDevice& device) {
              : mojom::AudioEffectState::kNotEnabled;
 }
 
+// Determines the correct `mojom::AudioEffectState` for an audio device
+mojom::AudioEffectState GetForceRespectUiGainsState(const AudioDevice& device) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  CHECK(audio_handler);
+
+  // Get current device wide preference state from `CrasAudioHandler`.
+  return audio_handler->GetForceRespectUiGainsState()
+             ? mojom::AudioEffectState::kEnabled
+             : mojom::AudioEffectState::kNotEnabled;
+}
+
 void RecordMuteStateChanged(const char* histogram_name, bool muted) {
   base::UmaHistogramEnumeration(
       histogram_name,
@@ -139,6 +150,8 @@ mojom::AudioDevicePtr GenerateMojoAudioDevice(const AudioDevice& device) {
   mojo_device->is_active = device.active;
   mojo_device->device_type = ComputeDeviceType(device.type);
   mojo_device->noise_cancellation_state = GetNoiseCancellationState(device);
+  mojo_device->force_respect_ui_gains_state =
+      GetForceRespectUiGainsState(device);
   return mojo_device;
 }
 
@@ -338,6 +351,13 @@ void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
   base::UmaHistogramBoolean(kNoiseCancellationEnabledHistogramName, enabled);
 }
 
+void CrosAudioConfigImpl::SetForceRespectUiGainsEnabled(bool enabled) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  CHECK(audio_handler);
+
+  audio_handler->SetForceRespectUiGainsState(enabled);
+}
+
 void CrosAudioConfigImpl::RecordOutputVolume() {
   base::UmaHistogramExactLinear(kOutputVolumeChangeHistogramName,
                                 last_set_output_volume_,
@@ -393,6 +413,10 @@ void CrosAudioConfigImpl::OnInputMutedByMicrophoneMuteSwitchChanged(
 }
 
 void CrosAudioConfigImpl::OnNoiseCancellationStateChanged() {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
+void CrosAudioConfigImpl::OnForceRespectUiGainsStateChanged() {
   NotifyObserversAudioSystemPropertiesChanged();
 }
 

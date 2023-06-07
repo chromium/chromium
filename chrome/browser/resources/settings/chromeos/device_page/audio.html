@@ -202,6 +202,15 @@
             aria-labelledby="audioInputNoiseCancellationLabel">
         </cr-toggle>
       </div>
+      <div id="audioInputAllowAGCSubsection" class="settings-box"
+          hidden="[[!showAllowAGC]]">
+        <div id="audioInputAllowAGCLabel" class="settings-box-text start">
+          $i18n{audioInputAllowAGCTitle}
+        </div>
+        <cr-toggle id="audioInputAllowAGCToggle"
+            checked="{{isAllowAGCEnabled}}">
+        </cr-toggle>
+      </div>
     </div>
   </div>
   <settings-toggle-button hidden$="[[!systemSoundsEnabled_]]"

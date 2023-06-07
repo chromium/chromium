@@ -68,6 +68,11 @@ struct AudioDevice {
 
   // The state of the noise cancellation audio effect.
   AudioEffectState noise_cancellation_state;
+
+  // The state of the force respect ui gains.
+  // If ignore ui gains flag is set, users can force to respect ui gains by
+  // setting it to true.
+  AudioEffectState force_respect_ui_gains_state;
 };
 
 // Represents the audio state of the Audio system.
@@ -135,4 +140,9 @@ interface CrosAudioConfig {
   // different input devices, so changing the active input device will keep the
   // enabled state from the previous active input device.
   SetNoiseCancellationEnabled(bool enabled);
+
+  // Sets whether force respect ui gains is enabled or not. This is shared
+  // between different input devices, so changing the active input device will
+  // keep the enabled state from the previous active input device.
+  SetForceRespectUiGainsEnabled(bool enabled);
 };
