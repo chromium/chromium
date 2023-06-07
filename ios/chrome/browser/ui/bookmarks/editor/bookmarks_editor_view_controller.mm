@@ -323,7 +323,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksEditorDeletedBookmark"));
   [self.mutator deleteBookmark];
-  [self.delegate bookmarkEditorWantsDismissal:self];
 }
 
 - (void)moveBookmark {

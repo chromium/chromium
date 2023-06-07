@@ -405,19 +405,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+       willDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
+  if (_folder->HasAncestor(node)) {
+    _folder = nullptr;
+    [self dismiss];
+  } else if (_parentFolder->HasAncestor(node)) {
+    // This might happen when the user has changed `_parentFolder` but has not
+    // commited the changes by pressing done. And in the background the chosen
+    // folder was deleted.
+    _parentFolder = model->mobile_node();
+    [self updateParentFolderState];
+  }
+}
+
 - (void)bookmarkModel:(BookmarkModel*)model
         didDeleteNode:(const BookmarkNode*)node
            fromFolder:(const BookmarkNode*)folder {
-  if (node == _parentFolder) {
-    _parentFolder = NULL;
-    [self updateParentFolderState];
-    return;
-  }
-  if (node == _folder) {
-    _folder = NULL;
-    _editingExistingFolder = NO;
-    [self updateEditingState];
-  }
+  // No-op. Bookmark deletion handled in
+  // `bookmarkModel:willDeleteNode:fromFolder:`
 }
 
 - (void)bookmarkModelRemovedAllNodes:(BookmarkModel*)model {
@@ -425,8 +432,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;  // The current parent folder is still valid.
   }
 
-  _parentFolder = NULL;
-  [self updateParentFolderState];
+  [self dismiss];
 }
 
 #pragma mark - BookmarkTextFieldItemDelegate
