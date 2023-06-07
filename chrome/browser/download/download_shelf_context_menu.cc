@@ -207,6 +207,7 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     // These commands are not supported on the context menu.
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::MAX:
       NOTREACHED();
       break;

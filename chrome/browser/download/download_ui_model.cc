@@ -633,6 +633,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
       return true;
   }
   NOTREACHED();
@@ -664,6 +665,7 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
       return false;
   }
   return false;
@@ -717,6 +719,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
       break;
   }
 }

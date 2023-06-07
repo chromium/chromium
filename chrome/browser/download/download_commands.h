@@ -38,6 +38,8 @@ class DownloadCommands {
     BYPASS_DEEP_SCANNING,  // Bypass the prompt to deep scan.
     REVIEW,                // Show enterprise download review dialog.
     RETRY,                 // Retry the download.
+    CANCEL_DEEP_SCAN,      // Cancel the deep scan, returning to a prompt for
+                           // scanning.
     MAX
   };
 

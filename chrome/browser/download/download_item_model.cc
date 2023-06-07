@@ -749,6 +749,7 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
   NOTREACHED();
@@ -790,6 +791,7 @@ bool DownloadItemModel::IsCommandChecked(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
       return false;
   }
   return false;
@@ -901,7 +903,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::RETRY:
       DownloadUIModel::ExecuteCommand(download_commands, command);
       break;
-    case DownloadCommands::DEEP_SCAN:
+    case DownloadCommands::DEEP_SCAN: {
       safe_browsing::SafeBrowsingService* sb_service =
           g_browser_process->safe_browsing_service();
       if (!sb_service)
@@ -938,6 +940,20 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
           "SBClientDownload.DeepScanEvent",
           safe_browsing::DeepScanEvent::kPromptAccepted);
       break;
+    }
+    case DownloadCommands::CANCEL_DEEP_SCAN: {
+      DownloadCoreService* download_core_service =
+          DownloadCoreServiceFactory::GetForBrowserContext(
+              content::DownloadItemUtils::GetBrowserContext(download_));
+      DCHECK(download_core_service);
+      ChromeDownloadManagerDelegate* delegate =
+          download_core_service->GetDownloadManagerDelegate();
+      DCHECK(delegate);
+      delegate->CheckClientDownloadDone(
+          download_->GetId(),
+          safe_browsing::DownloadCheckResult::PROMPT_FOR_SCANNING);
+      break;
+    }
   }
 }
 
