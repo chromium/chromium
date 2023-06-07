@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/page_size.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
