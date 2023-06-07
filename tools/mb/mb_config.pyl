@@ -249,6 +249,7 @@
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
       'linux-code-coverage': 'clang_code_coverage_reclient',
+      'linux-fuzz-coverage': 'linux_fuzz_coverage',
       'linux-js-code-coverage': 'js_coverage_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage_reclient',
       'mac-code-coverage': 'clang_code_coverage_reclient',
@@ -2565,7 +2566,6 @@
     'developer': [
       'developer', 'reclient',
     ],
-
     'fuchsia_clang_code_coverage_reclient': [
       'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
       'use_clang_coverage',
@@ -3112,6 +3112,11 @@
 
     'linux_cfm_release_trybot_reclient': [
       'cfm', 'release_trybot_reclient', 'chromeos',
+    ],
+
+    'linux_fuzz_coverage':[
+      'use_clang_coverage', 'shared', 'mojo_fuzzer', 'libfuzzer', 'dcheck_off', 'disable_nacl',
+      'no_reclient', 'chromeos_codecs', 'pdf_xfa', 'goma'
     ],
 
     'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient': [
