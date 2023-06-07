@@ -78,8 +78,6 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -1444,20 +1442,16 @@ enum HeaderBehaviour {
 
 // The height of the primary toolbar with the top safe area inset included.
 - (CGFloat)primaryToolbarHeightWithInset {
-  UIView* primaryToolbar =
-      self.toolbarCoordinator.primaryToolbarViewController.view;
-  CGFloat intrinsicHeight = primaryToolbar.intrinsicContentSize.height;
-  if (!IsSplitToolbarMode(self)) {
-    // When the adaptive toolbar is unsplit, add a margin.
-    intrinsicHeight += kTopToolbarUnsplitMargin;
-  }
+  CGFloat height = self.toolbarCoordinator.expandedPrimaryToolbarHeight;
   // If the primary toolbar is not the topmost header, it does not overlap with
   // the unsafe area.
   // TODO(crbug.com/806437): Update implementation such that this calculates the
   // topmost header's height.
+  UIView* primaryToolbar =
+      self.toolbarCoordinator.primaryToolbarViewController.view;
   UIView* topmostHeader = [self.headerViews firstObject].view;
   if (primaryToolbar != topmostHeader)
-    return intrinsicHeight;
+    return height;
   // If the primary toolbar is topmost, subtract the height of the portion of
   // the unsafe area.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.top;
@@ -1465,20 +1459,19 @@ enum HeaderBehaviour {
   // The topmost header is laid out `headerOffset` from the top of `view`, so
   // subtract that from the unsafe height.
   unsafeHeight -= self.headerOffset;
-  return intrinsicHeight + unsafeHeight;
+  return height + unsafeHeight;
 }
 
 // The height of the secondary toolbar with the bottom safe area inset included.
 // Returns 0 if the toolbar should be hidden.
 - (CGFloat)secondaryToolbarHeightWithInset {
-  if (!IsSplitToolbarMode(self))
-    return 0;
-
-  UIView* secondaryToolbar =
-      self.toolbarCoordinator.secondaryToolbarViewController.view;
+  CGFloat height = self.toolbarCoordinator.expandedSecondaryToolbarHeight;
+  if (!height) {
+    return 0.0;
+  }
   // Add the safe area inset to the toolbar height.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.bottom;
-  return secondaryToolbar.intrinsicContentSize.height + unsafeHeight;
+  return height + unsafeHeight;
 }
 
 - (void)addConstraintsToTabStrip {
@@ -2381,8 +2374,19 @@ enum HeaderBehaviour {
 // area.
 - (CGFloat)collapsedTopToolbarHeight {
   return self.rootSafeAreaInsets.top +
-         ToolbarCollapsedHeight(
-             self.traitCollection.preferredContentSizeCategory);
+         self.toolbarCoordinator.collapsedPrimaryToolbarHeight;
+}
+
+// The minimum amount by which the bottom toolbar overlaps the browser content
+// area.
+- (CGFloat)collapsedBottomToolbarHeight {
+  CGFloat height = self.toolbarCoordinator.collapsedSecondaryToolbarHeight;
+  if (!height) {
+    return 0.0;
+  }
+  // Height is non-zero only when bottom omnibox is enabled.
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  return self.rootSafeAreaInsets.bottom + height;
 }
 
 // The maximum amount by which the top toolbar overlaps the browser content
@@ -2399,7 +2403,8 @@ enum HeaderBehaviour {
 - (void)updateToolbarState {
   _toolbarUIState.collapsedTopToolbarHeight = [self collapsedTopToolbarHeight];
   _toolbarUIState.expandedTopToolbarHeight = [self expandedTopToolbarHeight];
-  _toolbarUIState.collapsedBottomToolbarHeight = 0.0;
+  _toolbarUIState.collapsedBottomToolbarHeight =
+      [self collapsedBottomToolbarHeight];
   _toolbarUIState.expandedBottomToolbarHeight =
       [self secondaryToolbarHeightWithInset];
 }

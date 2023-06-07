@@ -71,6 +71,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",

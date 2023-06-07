@@ -56,23 +56,6 @@
 /// YES when a prerendered webstate is being inserted into a webStateList.
 - (BOOL)isLoadingPrerenderer;
 
-#pragma mark ViewRevealing
-
-/// A reference to the view controller that implements the view revealing
-/// vertical pan handler delegate methods.
-- (id<ViewRevealingAnimatee>)viewRevealingAnimatee;
-/// Sets the pan gesture handler for the view controller that implements the
-/// view revealing.
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler;
-
-#pragma mark SnapshotProviding
-
-/// Returns the snapshop provider of primary toolbar.
-- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider;
-/// Returns the snapshop provider of secondary toolbar.
-- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider;
-
 #pragma mark Omnibox and LocationBar
 
 /// Coordinates the location bar focusing/defocusing. For example, initiates
@@ -82,6 +65,34 @@
 - (BOOL)isOmniboxFirstResponder;
 /// Whether the omnibox popup is currently presented.
 - (BOOL)showingOmniboxPopup;
+
+#pragma mark SnapshotProviding
+
+/// Returns the snapshop provider of primary toolbar.
+- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider;
+/// Returns the snapshop provider of secondary toolbar.
+- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider;
+
+#pragma mark ToolbarHeightProviding
+
+/// The minimum height of the primary toolbar.
+- (CGFloat)collapsedPrimaryToolbarHeight;
+/// The maximum height of the primary toolbar.
+- (CGFloat)expandedPrimaryToolbarHeight;
+/// The minimum height of the secondary toolbar.
+- (CGFloat)collapsedSecondaryToolbarHeight;
+/// The maximum height of the secondary toolbar.
+- (CGFloat)expandedSecondaryToolbarHeight;
+
+#pragma mark ViewRevealing
+
+/// A reference to the view controller that implements the view revealing
+/// vertical pan handler delegate methods.
+- (id<ViewRevealingAnimatee>)viewRevealingAnimatee;
+/// Sets the pan gesture handler for the view controller that implements the
+/// view revealing.
+- (void)setPanGestureHandler:
+    (ViewRevealingVerticalPanHandler*)panGestureHandler;
 
 @end
 

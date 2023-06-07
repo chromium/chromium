@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinatee.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
@@ -210,28 +212,6 @@
   return _prerenderService && _prerenderService->IsLoadingPrerender();
 }
 
-#pragma mark ViewRevealing
-
-- (id<ViewRevealingAnimatee>)viewRevealingAnimatee {
-  CHECK(self.primaryToolbarCoordinator.animatee);
-  return self.primaryToolbarCoordinator.animatee;
-}
-
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler {
-  [self.primaryToolbarCoordinator setPanGestureHandler:panGestureHandler];
-}
-
-#pragma mark SnapshotProviding
-
-- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider {
-  return self.primaryToolbarCoordinator;
-}
-
-- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider {
-  return self.secondaryToolbarCoordinator;
-}
-
 #pragma mark Omnibox and LocationBar
 
 - (void)transitionToLocationBarFocusedState:(BOOL)focused {
@@ -254,6 +234,58 @@
 
 - (BOOL)showingOmniboxPopup {
   return [self.locationBarCoordinator showingOmniboxPopup];
+}
+
+#pragma mark SnapshotProviding
+
+- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider {
+  return self.primaryToolbarCoordinator;
+}
+
+- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider {
+  return self.secondaryToolbarCoordinator;
+}
+
+#pragma mark ToolbarHeightProviding
+
+- (CGFloat)collapsedPrimaryToolbarHeight {
+  return ToolbarCollapsedHeight(
+      self.traitEnvironment.traitCollection.preferredContentSizeCategory);
+}
+
+- (CGFloat)expandedPrimaryToolbarHeight {
+  CGFloat height =
+      self.primaryToolbarViewController.view.intrinsicContentSize.height;
+  if (!IsSplitToolbarMode(self.traitEnvironment)) {
+    // When the adaptive toolbar is unsplit, add a margin.
+    height += kTopToolbarUnsplitMargin;
+  }
+  return height;
+}
+
+- (CGFloat)collapsedSecondaryToolbarHeight {
+  return 0.0;
+}
+
+- (CGFloat)expandedSecondaryToolbarHeight {
+  if (!IsSplitToolbarMode(self.traitEnvironment)) {
+    return 0.0;
+  }
+  CGFloat height =
+      self.secondaryToolbarViewController.view.intrinsicContentSize.height;
+  return height;
+}
+
+#pragma mark ViewRevealing
+
+- (id<ViewRevealingAnimatee>)viewRevealingAnimatee {
+  CHECK(self.primaryToolbarCoordinator.animatee);
+  return self.primaryToolbarCoordinator.animatee;
+}
+
+- (void)setPanGestureHandler:
+    (ViewRevealingVerticalPanHandler*)panGestureHandler {
+  [self.primaryToolbarCoordinator setPanGestureHandler:panGestureHandler];
 }
 
 #pragma mark - FakeboxFocuser
