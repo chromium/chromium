@@ -38,9 +38,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -69,12 +71,16 @@ public class PageInsightsCoordinatorTest {
     private ArgumentCaptor<Callback<Tab>> mTabCallbackCaptor;
     @Captor
     private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor
+    private ArgumentCaptor<BottomSheetObserver> mBottomUiObserverCaptor;
     @Mock
     private Tab mTab;
     @Mock
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock
     private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock
+    private BottomSheetController mBottomUiController;
 
     private PageInsightsCoordinator mPageInsightsCoordinator;
     private ManagedBottomSheetController mPageInsightsController;
@@ -117,8 +123,9 @@ public class PageInsightsCoordinatorTest {
                     initializedCallback, activity.getWindow(),
                     KeyboardVisibilityDelegate.getInstance(), () -> rootView());
         });
-        mPageInsightsCoordinator = new PageInsightsCoordinator(activity, mTabProvider,
-                mPageInsightsController, mBrowserControlsStateProvider, mBrowserControlsSizer);
+        mPageInsightsCoordinator =
+                new PageInsightsCoordinator(activity, mTabProvider, mPageInsightsController,
+                        mBottomUiController, mBrowserControlsStateProvider, mBrowserControlsSizer);
         mTestSupport = new BottomSheetTestSupport(mPageInsightsController);
         TestThreadUtils.runOnUiThreadBlocking(mPageInsightsCoordinator::launch);
         waitForAnimationToFinish();
@@ -161,6 +168,13 @@ public class PageInsightsCoordinatorTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mTabObserverCaptor.getValue().onPageLoadFinished(mTab, null));
         waitForAnimationToFinish();
+
+        // The very first page load should be kept.
+        assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mTabObserverCaptor.getValue().onPageLoadFinished(mTab, null));
+        waitForAnimationToFinish();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
     }
 
@@ -179,5 +193,42 @@ public class PageInsightsCoordinatorTest {
                         -> mTestSupport.setSheetOffsetFromBottom(
                                 peekHeight / 2, StateChangeReason.SWIPE));
         verify(mBrowserControlsSizer).setBottomControlsHeight(eq(0), eq(0));
+    }
+
+    @Test
+    @MediumTest
+    public void testHideWhenOtherBottomUiOpens() throws Exception {
+        createPageInsightsCoordinator();
+
+        // Invoke |onBottomUiStateChanged| directly - Contextual search
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPageInsightsCoordinator.onBottomUiStateChanged(true));
+        waitForAnimationToFinish();
+        assertEquals("Sheet should be hidden", SheetState.HIDDEN,
+                mPageInsightsController.getSheetState());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPageInsightsCoordinator.onBottomUiStateChanged(false));
+        waitForAnimationToFinish();
+        assertEquals("Sheet should be restored", SheetState.PEEK,
+                mPageInsightsController.getSheetState());
+
+        // Other bottom sheets
+        verify(mBottomUiController).addObserver(mBottomUiObserverCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mBottomUiObserverCaptor.getValue().onSheetStateChanged(
+                                SheetState.PEEK, /*unused*/ 0));
+        waitForAnimationToFinish();
+        assertEquals("Sheet should be hidden", SheetState.HIDDEN,
+                mPageInsightsController.getSheetState());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mBottomUiObserverCaptor.getValue().onSheetStateChanged(
+                                SheetState.HIDDEN, /*unused*/ 0));
+        waitForAnimationToFinish();
+        assertEquals("Sheet should be restored", SheetState.PEEK,
+                mPageInsightsController.getSheetState());
     }
 }

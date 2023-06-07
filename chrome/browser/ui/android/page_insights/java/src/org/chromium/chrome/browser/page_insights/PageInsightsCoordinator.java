@@ -13,6 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 
 /**
@@ -24,9 +25,9 @@ public class PageInsightsCoordinator {
 
     private final ObservableSupplier<Tab> mTabProvider;
     private final ManagedBottomSheetController mBottomSheetController;
+    private final BottomSheetController mBottomUiController;
     private final BrowserControlsStateProvider mControlsStateProvider;
     private final BrowserControlsSizer mBrowserControlsSizer;
-
     private PageInsightsMediator mMediator;
     private PageInsightsSheetContent mSheetContent;
 
@@ -38,11 +39,13 @@ public class PageInsightsCoordinator {
      */
     public PageInsightsCoordinator(Context context, ObservableSupplier<Tab> tabProvider,
             ManagedBottomSheetController bottomSheetController,
+            BottomSheetController bottomUiController,
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer) {
         mContext = context;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
+        mBottomUiController = bottomUiController;
         mControlsStateProvider = controlsStateProvider;
         mBrowserControlsSizer = browserControlsSizer;
     }
@@ -55,8 +58,9 @@ public class PageInsightsCoordinator {
             mSheetContent = new PageInsightsSheetContent(mContext);
         }
         if (mMediator == null) {
-            mMediator = new PageInsightsMediator(mSheetContent, mBottomSheetController,
-                    mTabProvider, mControlsStateProvider, mBrowserControlsSizer);
+            mMediator =
+                    new PageInsightsMediator(mSheetContent, mTabProvider, mBottomSheetController,
+                            mBottomUiController, mControlsStateProvider, mBrowserControlsSizer);
         }
         mMediator.requestShowContent();
     }
@@ -67,6 +71,21 @@ public class PageInsightsCoordinator {
      */
     public void initView(View bottomSheetContainer) {
         mMediator.initView(bottomSheetContainer);
+    }
+
+    /**
+     * Notify other bottom UI state is updated. Page insight should be hidden or restored
+     * accordingly.
+     * @param opened {@code true} if other bottom UI just opened; {@code false} if closed.
+     */
+    public void onBottomUiStateChanged(boolean opened) {
+        mMediator.onBottomUiStateChanged(opened);
+    }
+
+    /** Destroy PageInsights component. */
+    public void destroy() {
+        assert mMediator != null;
+        mMediator.destroy();
     }
 
     @VisibleForTesting

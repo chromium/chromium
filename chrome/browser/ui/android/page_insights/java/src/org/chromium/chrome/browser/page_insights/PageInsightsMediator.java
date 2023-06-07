@@ -10,15 +10,18 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.url.GURL;
 
@@ -36,9 +39,17 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final PageInsightsSheetContent mSheetContent;
     private final ManagedBottomSheetController mSheetController;
 
+    // BottomSheetController for other bottom sheet UIs.
+    private final BottomSheetController mBottomUiController;
+
+    // Observers other bottom sheet UI state.
+    private final BottomSheetObserver mBottomUiObserver;
+
     // Bottom browser controls resizer. Used to resize web contents to move up bottom-aligned
     // elements such as cookie dialog.
     private final BrowserControlsSizer mBrowserControlsSizer;
+
+    private final BrowserControlsStateProvider mControlsStateProvider;
 
     // Browser controls observer. Monitors the browser controls offset changes to scroll
     // away the bottom sheet in sync with the controls.
@@ -54,16 +65,25 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     // if the size hasn't changed since.
     private int mCachedSheetHeight;
 
+    // Whether the sheet was hidden due to another bottom sheet UI, and needs to be restored
+    // when notified when the UI was closed.
+    private boolean mShouldRestore;
+
+    private boolean mLoadingFirstPage;
+
     public PageInsightsMediator(PageInsightsSheetContent sheetContent,
-            ManagedBottomSheetController bottomSheetController,
             ObservableSupplier<Tab> tabObservable,
+            ManagedBottomSheetController bottomSheetController,
+            BottomSheetController bottomUiController,
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer) {
         mSheetContent = sheetContent;
         mSheetController = bottomSheetController;
+        mBottomUiController = bottomUiController;
         tabObservable.addObserver(tab -> {
             if (tab != null) tab.addObserver(this);
         });
+        mLoadingFirstPage = true;
         mBrowserControlsSizer = browserControlsSizer;
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
             @Override
@@ -75,6 +95,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         };
         controlsStateProvider.addObserver(mBrowserControlsObserver);
         bottomSheetController.addObserver(this);
+        mBottomUiObserver = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetStateChanged(@SheetState int newState, int reason) {
+                onBottomUiStateChanged(newState >= SheetState.PEEK);
+            };
+        };
+        bottomUiController.addObserver(mBottomUiObserver);
+        mControlsStateProvider = controlsStateProvider;
     }
 
     void initView(View bottomSheetContainer) {
@@ -86,11 +114,36 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         setCornerRadiusPx(0);
     }
 
+    void onBottomUiStateChanged(boolean opened) {
+        if (opened && shouldHideContent()) {
+            mSheetController.hideContent(mSheetContent, true);
+            mShouldRestore = true;
+        } else if (!opened && mShouldRestore) {
+            mSheetController.requestShowContent(mSheetContent, true);
+            mShouldRestore = false;
+        }
+    }
+
+    private boolean shouldHideContent() {
+        // See if we need to hide the sheet content temporarily while another bottom UI is
+        // launched. No need to hide if not in peek/full state or in scrolled-away state,
+        // hence not visible.
+        return mSheetController.getSheetState() >= SheetState.PEEK && !isInScrolledAwayState();
+    }
+
+    private boolean isInScrolledAwayState() {
+        return !MathUtils.areFloatsEqual(mControlsStateProvider.getBrowserControlHiddenRatio(), 0f);
+    }
+
     // TabObserver
 
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
         // Close the sheet when a new page is loaded.
+        if (mLoadingFirstPage) {
+            mLoadingFirstPage = false;
+            return;
+        }
         mSheetController.hideContent(mSheetContent, true);
     }
 
@@ -148,6 +201,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     @Override
     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
+
+    void destroy() {
+        mBottomUiController.removeObserver(mBottomUiObserver);
+    }
 
     @VisibleForTesting
     float getCornerRadiusForTesting() {

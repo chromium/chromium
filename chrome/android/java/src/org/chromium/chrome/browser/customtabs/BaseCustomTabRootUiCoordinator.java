@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -99,6 +101,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @Nullable DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
 
     private @Nullable PageInsightsCoordinator mPageInsightsCoordinator;
+    private @Nullable ContextualSearchObserver mContextualSearchObserver;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -285,7 +288,22 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         controller.setAccessibilityUtil(ChromeAccessibilityUtil.get());
 
         mPageInsightsCoordinator = new PageInsightsCoordinator(mActivity, mActivityTabProvider,
-                controller, mBrowserControlsManager, mBrowserControlsManager);
+                controller, getBottomSheetController(), mBrowserControlsManager,
+                mBrowserControlsManager);
+
+        mContextualSearchObserver = new ContextualSearchObserver() {
+            @Override
+            public void onShowContextualSearch(
+                    @Nullable GSAContextDisplaySelection selectionContext) {
+                mPageInsightsCoordinator.onBottomUiStateChanged(true);
+            }
+
+            @Override
+            public void onHideContextualSearch() {
+                mPageInsightsCoordinator.onBottomUiStateChanged(false);
+            }
+        };
+        mContextualSearchManagerSupplier.get().addObserver(mContextualSearchObserver);
     }
 
     @Nullable
@@ -400,6 +418,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
 
         mCustomTabHeightStrategy.destroy();
+
+        if (mContextualSearchObserver != null && mContextualSearchManagerSupplier.get() != null) {
+            mContextualSearchManagerSupplier.get().removeObserver(mContextualSearchObserver);
+            mContextualSearchObserver = null;
+        }
+
+        if (mPageInsightsCoordinator != null) {
+            mPageInsightsCoordinator.destroy();
+            mPageInsightsCoordinator = null;
+        }
     }
 
     /**
