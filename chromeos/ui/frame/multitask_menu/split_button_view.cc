@@ -195,6 +195,10 @@ void SplitButtonView::UpdateButtons(bool is_portrait_mode, bool is_reversed) {
       GetA11yName(type_, /*left_top=*/is_reversed, is_portrait_mode));
 }
 
+views::Button* SplitButtonView::GetLeftTopButton() {
+  return left_top_button_;
+}
+
 views::Button* SplitButtonView::GetRightBottomButton() {
   return right_bottom_button_;
 }

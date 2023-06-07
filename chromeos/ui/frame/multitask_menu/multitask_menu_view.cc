@@ -5,6 +5,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
@@ -199,10 +200,10 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
   if (buttons & kHalfSplit) {
     auto half_button = std::make_unique<SplitButtonView>(
         SplitButtonView::SplitButtonType::kHalfButtons,
-        base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
+        base::BindRepeating(&MultitaskMenuView::HalfButtonPressed,
                             base::Unretained(this)),
         window, is_portrait_mode);
-    half_button_for_testing_ = half_button.get();
+    half_button_ = half_button.get();
     AddChildView(CreateButtonContainer(std::move(half_button),
                                        IDS_MULTITASK_MENU_HALF_BUTTON_NAME));
   }
@@ -232,7 +233,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
         MultitaskButton::Type::kFull, is_portrait_mode,
         /*paint_as_active=*/fullscreened,
         l10n_util::GetStringUTF16(message_id));
-    full_button_for_testing_ = full_button.get();
+    full_button_ = full_button.get();
     AddChildView(CreateButtonContainer(std::move(full_button), message_id));
   }
 
@@ -247,7 +248,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
                             base::Unretained(this)),
         MultitaskButton::Type::kFloat, is_portrait_mode,
         /*paint_as_active=*/floated, l10n_util::GetStringUTF16(message_id));
-    float_button_for_testing_ = float_button.get();
+    float_button_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button), message_id));
   }
 
@@ -256,6 +257,78 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
 
 MultitaskMenuView::~MultitaskMenuView() {
   event_handler_.reset();
+}
+
+void MultitaskMenuView::OnSizeButtonDrag(
+    const gfx::Point& event_screen_location) {
+  auto update_button_state = [event_screen_location](views::Button* button) {
+    if (!button || !button->GetEnabled()) {
+      return;
+    }
+
+    const views::Button::ButtonState state =
+        button->GetBoundsInScreen().Contains(event_screen_location)
+            ? views::Button::STATE_HOVERED
+            : views::Button::STATE_NORMAL;
+    button->SetState(state);
+  };
+
+  update_button_state(full_button_);
+  update_button_state(float_button_);
+
+  if (half_button_) {
+    update_button_state(half_button_->GetLeftTopButton());
+    update_button_state(half_button_->GetRightBottomButton());
+  }
+  if (partial_button_) {
+    update_button_state(partial_button_->GetLeftTopButton());
+    update_button_state(partial_button_->GetRightBottomButton());
+  }
+}
+
+bool MultitaskMenuView::OnSizeButtonRelease(
+    const gfx::Point& event_screen_location) {
+  auto event_on_button = [event_screen_location](views::Button* button) {
+    return button && button->GetEnabled() &&
+           button->GetBoundsInScreen().Contains(event_screen_location);
+  };
+
+  // For multitask buttons, if they contain the release events run their
+  // callback.
+  if (event_on_button(full_button_)) {
+    FullScreenButtonPressed();
+    return true;
+  }
+  if (event_on_button(float_button_)) {
+    FloatButtonPressed();
+    return true;
+  }
+
+  // For split buttons, check the individual buttons.
+  if (half_button_) {
+    if (event_on_button(half_button_->GetLeftTopButton())) {
+      HalfButtonPressed(GetSnapDirectionForWindow(window_, /*left_top=*/true));
+      return true;
+    }
+    if (event_on_button(half_button_->GetRightBottomButton())) {
+      HalfButtonPressed(GetSnapDirectionForWindow(window_, /*left_top=*/false));
+      return true;
+    }
+  }
+  if (partial_button_) {
+    if (event_on_button(partial_button_->GetLeftTopButton())) {
+      PartialButtonPressed(
+          GetSnapDirectionForWindow(window_, /*left_top=*/true));
+      return true;
+    }
+    if (event_on_button(partial_button_->GetRightBottomButton())) {
+      PartialButtonPressed(
+          GetSnapDirectionForWindow(window_, /*left_top=*/false));
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void MultitaskMenuView::AddedToWidget() {
@@ -309,7 +382,7 @@ void MultitaskMenuView::SetSkipMouseOutDelayForTesting(bool val) {
   g_skip_mouse_out_delay_for_testing = val;
 }
 
-void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {
+void MultitaskMenuView::HalfButtonPressed(SnapDirection direction) {
   SnapController::Get()->CommitSnap(
       window_, direction, kDefaultSnapRatio,
       SnapController::SnapRequestSource::kWindowLayoutMenu);

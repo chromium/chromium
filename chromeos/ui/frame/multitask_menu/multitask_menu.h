@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -34,11 +35,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   MultitaskMenu& operator=(const MultitaskMenu&) = delete;
   ~MultitaskMenu() override;
 
-  MultitaskMenuView* multitask_menu_view_for_testing() {
+  MultitaskMenuView* multitask_menu_view() {
     return multitask_menu_view_.get();
   }
 
   void HideBubble();
+
+  base::WeakPtr<MultitaskMenu> GetWeakPtr();
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -46,11 +49,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
  private:
-  raw_ptr<views::Widget> bubble_widget_ = nullptr;
-
   raw_ptr<MultitaskMenuView> multitask_menu_view_ = nullptr;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+
+  base::WeakPtrFactory<MultitaskMenu> weak_factory_{this};
 };
 
 }  // namespace chromeos

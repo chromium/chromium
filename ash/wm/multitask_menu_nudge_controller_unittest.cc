@@ -179,12 +179,8 @@ TEST_F(MultitaskMenuNudgeControllerTest,
       static_cast<chromeos::MultitaskMenu*>(delegate->AsDialogDelegate());
 
   // After floating the window from the multitask menu, there is no crash.
-  GetEventGenerator()->MoveMouseTo(
-      multitask_menu->multitask_menu_view_for_testing()
-          ->float_button_for_testing()
-          ->GetBoundsInScreen()
-          .CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(
+      multitask_menu->multitask_menu_view()->float_button_for_testing());
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
 }
 

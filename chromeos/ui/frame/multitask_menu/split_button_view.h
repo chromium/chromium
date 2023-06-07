@@ -6,9 +6,8 @@
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
-
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -43,6 +42,7 @@ class SplitButtonView : public views::BoxLayoutView {
   // will be updated in MultitaskMenuView.
   void UpdateButtons(bool is_portrait_mode, bool is_reversed);
 
+  views::Button* GetLeftTopButton();
   views::Button* GetRightBottomButton();
 
  private:

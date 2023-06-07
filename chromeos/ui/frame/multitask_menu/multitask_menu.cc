@@ -95,6 +95,10 @@ void MultitaskMenu::HideBubble() {
   widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
+base::WeakPtr<MultitaskMenu> MultitaskMenu::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void MultitaskMenu::OnDisplayTabletStateChanged(display::TabletState state) {
   if (state == display::TabletState::kEnteringTabletMode)
     HideBubble();
