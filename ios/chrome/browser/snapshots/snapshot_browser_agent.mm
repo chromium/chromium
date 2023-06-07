@@ -49,10 +49,8 @@ void SnapshotBrowserAgent::WebStateListChanged(
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
-      SnapshotTabHelper::FromWebState(replace_change.replaced_web_state())
-          ->SetSnapshotCache(nil);
-      SnapshotTabHelper::FromWebState(replace_change.inserted_web_state())
-          ->SetSnapshotCache(snapshot_cache_);
+      DetachWebState(replace_change.replaced_web_state());
+      InsertWebState(replace_change.inserted_web_state());
       break;
     }
   }
@@ -62,28 +60,25 @@ void SnapshotBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                               web::WebState* web_state,
                                               int index,
                                               bool activating) {
-  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(snapshot_cache_);
+  InsertWebState(web_state);
 }
 
 void SnapshotBrowserAgent::WebStateDetachedAt(WebStateList* web_state_list,
                                               web::WebState* web_state,
                                               int index) {
-  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(nil);
+  DetachWebState(web_state);
 }
 
 void SnapshotBrowserAgent::WillBeginBatchOperation(
     WebStateList* web_state_list) {
   for (int i = 0; i < web_state_list->count(); ++i) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(nil);
+    DetachWebState(web_state_list->GetWebStateAt(i));
   }
 }
 
 void SnapshotBrowserAgent::BatchOperationEnded(WebStateList* web_state_list) {
   for (int i = 0; i < web_state_list->count(); ++i) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(
-        snapshot_cache_);
+    InsertWebState(web_state_list->GetWebStateAt(i));
   }
 }
 
@@ -103,6 +98,14 @@ void SnapshotBrowserAgent::PerformStorageMaintenance() {
 
 void SnapshotBrowserAgent::RemoveAllSnapshots() {
   [snapshot_cache_ removeAllImages];
+}
+
+void SnapshotBrowserAgent::InsertWebState(web::WebState* web_state) {
+  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(snapshot_cache_);
+}
+
+void SnapshotBrowserAgent::DetachWebState(web::WebState* web_state) {
+  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(nil);
 }
 
 void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
