@@ -16,6 +16,7 @@
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/status_area_animation_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
@@ -107,11 +108,41 @@ void NotificationIconTrayItemView::SetNotification(
   image_view()->SetTooltipText(notification->title());
 }
 
+void NotificationIconTrayItemView::MaybeReset() {
+  if (!features::IsQsRevampEnabled()) {
+    Reset();
+    return;
+  }
+  if ((!target_visible() && IsAnimating()) ||
+      shelf()
+          ->status_area_widget()
+          ->animation_controller()
+          ->is_hide_animation_scheduled()) {
+    return;
+  }
+  Reset();
+}
+
 void NotificationIconTrayItemView::Reset() {
   notification_id_ = std::string();
   notification_.reset();
   image_view()->SetImage(gfx::ImageSkia());
   image_view()->SetTooltipText(std::u16string());
+}
+
+void NotificationIconTrayItemView::ImmediatelyUpdateVisibility() {
+  TrayItemView::ImmediatelyUpdateVisibility();
+  if (features::IsQsRevampEnabled() && !target_visible()) {
+    Reset();
+  }
+}
+
+void NotificationIconTrayItemView::AnimationEnded(
+    const gfx::Animation* animation) {
+  TrayItemView::AnimationEnded(animation);
+  if (features::IsQsRevampEnabled() && !target_visible()) {
+    Reset();
+  }
 }
 
 const std::u16string& NotificationIconTrayItemView::GetAccessibleNameString()
@@ -281,8 +312,10 @@ void NotificationIconsController::UpdateNotificationIcons() {
   first_unused_item_index_ = std::distance(tray_items_.rbegin(), tray_it);
 
   for (; tray_it != tray_items_.rend(); ++tray_it) {
-    (*tray_it)->Reset();
+    // Note: It is important to set the visibility before resetting so that the
+    // icon image does not disappear while the tray item is still visible.
     (*tray_it)->SetVisible(false);
+    (*tray_it)->MaybeReset();
   }
 
   if (separator_) {

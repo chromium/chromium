@@ -237,13 +237,13 @@ TEST_F(NotificationCenterTrayTest, DoNotDisturbIconVisibility) {
 
 TEST_F(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
   test_api()->AddPinnedNotification();
-  EXPECT_TRUE(test_api()->IsPinnedIconShown());
+  EXPECT_TRUE(test_api()->IsNotificationIconShown());
 
   message_center::MessageCenter::Get()->SetQuietMode(true);
-  EXPECT_FALSE(test_api()->IsPinnedIconShown());
+  EXPECT_FALSE(test_api()->IsNotificationIconShown());
 
   message_center::MessageCenter::Get()->SetQuietMode(false);
-  EXPECT_TRUE(test_api()->IsPinnedIconShown());
+  EXPECT_TRUE(test_api()->IsNotificationIconShown());
 }
 
 TEST_F(NotificationCenterTrayTest, NoPrivacyIndicators) {
@@ -324,7 +324,8 @@ TEST_F(NotificationCenterTrayTest,
 
   // Verify that the secondary display's notification center tray shows an icon
   // for the pinned notification and not the `NotificationCounterView`.
-  ASSERT_TRUE(test_api()->IsPinnedIconShownOnDisplay(secondary_display_id));
+  ASSERT_TRUE(
+      test_api()->IsNotificationIconShownOnDisplay(secondary_display_id));
   ASSERT_FALSE(secondary_notification_counter_view->GetVisible());
 
   // Go to the lock screen.
@@ -371,7 +372,7 @@ TEST_F(NotificationCenterTrayNoPopupsTest,
 
   // Verify that both the notification counter as well as an icon for the pinned
   // notification are visible in the notification center tray.
-  ASSERT_TRUE(test_api()->IsPinnedIconShown());
+  ASSERT_TRUE(test_api()->IsNotificationIconShown());
   ASSERT_TRUE(test_api()->IsNotificationCounterShown());
 
   // Add a secondary display.
@@ -381,7 +382,8 @@ TEST_F(NotificationCenterTrayNoPopupsTest,
   // Verify that both the notification counter as well as an icon for the pinned
   // notification are visible in the secondary display's notification center
   // tray.
-  EXPECT_TRUE(test_api()->IsPinnedIconShownOnDisplay(secondary_display_id));
+  EXPECT_TRUE(
+      test_api()->IsNotificationIconShownOnDisplay(secondary_display_id));
   EXPECT_TRUE(
       test_api()->IsNotificationCounterShownOnDisplay(secondary_display_id));
 }

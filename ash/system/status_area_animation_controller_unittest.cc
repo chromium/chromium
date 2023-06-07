@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -222,6 +223,98 @@ TEST_F(StatusAreaAnimationControllerTest,
   // Verify that the notification counter is not visible.
   EXPECT_FALSE(notification_counter()->GetVisible());
   EXPECT_EQ(notification_counter()->layer()->opacity(), 0);
+}
+
+// Tests that `NotificationIconTrayItemView`s are not reset until the end of the
+// `NotificationCenterTray`'s hide animation. This was added for b/284991444.
+TEST_F(StatusAreaAnimationControllerTest,
+       NotificationIconNotResetWhileNotificationTrayHideAnimationRunning) {
+  // Note that animations still finish immediately at this stage of the test.
+
+  // Add a critical warning system notification.
+  auto id = test_api->AddCriticalWarningSystemNotification();
+  auto* notification_icon = test_api->GetNotificationIconForId(id);
+  CHECK(notification_icon);
+  auto icon_image = notification_icon->image_view()->GetImage();
+
+  // Verify that the notification icon is showing in the notification tray, and
+  // that the tray is finished animating.
+  ASSERT_TRUE(test_api->IsNotificationIconShown());
+  ASSERT_TRUE(test_api->IsTrayShown());
+  ASSERT_FALSE(test_api->IsTrayAnimating());
+
+  // Set the animation duration scale to some small non-zero value for the rest
+  // of the test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove the notification to start the notification tray's hide animation.
+  test_api->RemoveNotification(id);
+  ASSERT_TRUE(test_api->IsTrayAnimating());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetTargetVisibility());
+  ASSERT_EQ(test_api->GetTray()->layer()->GetTargetOpacity(), 0);
+
+  // Verify that the notification icon has not been reset yet.
+  EXPECT_TRUE(icon_image.BackedBySameObjectAs(
+      notification_icon->image_view()->GetImage()));
+
+  // Wait for the notification tray to finish its hide animation.
+  ui::LayerAnimationStoppedWaiter notification_center_tray_waiter;
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->IsTrayAnimating());
+
+  // Verify that the notification icon has been reset.
+  EXPECT_TRUE(notification_icon->image_view()->GetImage().BackedBySameObjectAs(
+      gfx::ImageSkia()));
+}
+
+// Tests that `NotificationIconTrayItemView`s are not reset until the end of
+// their hide animation. This was added for b/284991444.
+TEST_F(StatusAreaAnimationControllerTest,
+       NotificationIconNotResetWhileHideAnimationRunning) {
+  // Note that animations still finish immediately at this stage of the test.
+
+  // Add a standard notification as well as a critical warning system
+  // notification.
+  test_api->AddNotification();
+  auto id = test_api->AddCriticalWarningSystemNotification();
+  auto* notification_icon = test_api->GetNotificationIconForId(id);
+  CHECK(notification_icon);
+  auto icon_image = notification_icon->image_view()->GetImage();
+
+  // Verify that both the notification counter and a notification icon are
+  // showing in the notification tray, and that the tray is finished animating.
+  ASSERT_TRUE(test_api->IsNotificationCounterShown());
+  ASSERT_TRUE(test_api->IsNotificationIconShown());
+  ASSERT_TRUE(test_api->IsTrayShown());
+  ASSERT_FALSE(test_api->IsTrayAnimating());
+
+  // Set the animation duration scale to some small non-zero value for the
+  // rest of the test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove the critical warning system notification to start the notification
+  // icon's hide animation (note that the notification tray should remain
+  // visible due to the presence of the standard notification).
+  test_api->RemoveNotification(id);
+  ASSERT_FALSE(test_api->IsTrayAnimating());
+  ASSERT_FALSE(test_api->IsNotificationCounterAnimating());
+  ASSERT_TRUE(notification_icon->IsAnimating());
+  ASSERT_FALSE(notification_icon->target_visible_for_testing());
+
+  // Verify that the notification icon has not been reset yet.
+  EXPECT_TRUE(icon_image.BackedBySameObjectAs(
+      notification_icon->image_view()->GetImage()));
+
+  // End the notification icon's hide animation.
+  auto* icon_animation = notification_icon->animation_for_testing();
+  icon_animation->End();
+  ASSERT_FALSE(notification_icon->IsAnimating());
+
+  // Verify that the notification icon has been reset.
+  EXPECT_TRUE(notification_icon->image_view()->GetImage().BackedBySameObjectAs(
+      gfx::ImageSkia()));
 }
 
 // Tests that the notification center tray's `TrayItemView`s' animations are

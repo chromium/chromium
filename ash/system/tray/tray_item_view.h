@@ -157,13 +157,19 @@ class ASH_EXPORT TrayItemView : public views::View,
     return disable_animation_count_ == 0u;
   }
 
+  // views::AnimationDelegateViews.
+  void AnimationEnded(const gfx::Animation* animation) override;
+
+  bool target_visible() { return target_visible_; }
+
+  const Shelf* shelf() { return shelf_; }
+
  private:
   // views::View.
   void ChildPreferredSizeChanged(View* child) override;
 
   // views::AnimationDelegateViews.
   void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
   // Return true if the animation is in resize animation stage, which

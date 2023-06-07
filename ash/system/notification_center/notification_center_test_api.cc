@@ -19,6 +19,7 @@
 #include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
@@ -126,6 +127,21 @@ std::string NotificationCenterTestApi::AddSystemNotification() {
       GURL(), notifier_id, optional_fields);
 }
 
+std::string NotificationCenterTestApi::AddCriticalWarningSystemNotification() {
+  const auto id = GenerateNotificationId();
+  message_center::NotifierId notifier_id;
+  notifier_id.type = message_center::NotifierType::SYSTEM_COMPONENT;
+  auto notification =
+      CreateNotification(id, u"test_title", u"test_message", ui::ImageModel(),
+                         base::EmptyString16(), GURL(), notifier_id,
+                         message_center::RichNotificationData());
+  notification->set_system_notification_warning_level(
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+  return id;
+}
+
 void NotificationCenterTestApi::RemoveNotification(const std::string& id) {
   message_center::MessageCenter::Get()->RemoveNotification(id,
                                                            /*by_user=*/true);
@@ -148,11 +164,12 @@ bool NotificationCenterTestApi::IsNotificationCounterShownOnDisplay(
   return GetNotificationCounterOnDisplay(display_id)->GetVisible();
 }
 
-bool NotificationCenterTestApi::IsPinnedIconShown() {
-  return IsPinnedIconShownOnDisplay(primary_display_id_);
+bool NotificationCenterTestApi::IsNotificationIconShown() {
+  return IsNotificationIconShownOnDisplay(primary_display_id_);
 }
 
-bool NotificationCenterTestApi::IsPinnedIconShownOnDisplay(int64_t display_id) {
+bool NotificationCenterTestApi::IsNotificationIconShownOnDisplay(
+    int64_t display_id) {
   auto* notification_center_tray = GetTrayOnDisplay(display_id);
   CHECK(notification_center_tray);
   auto tray_items =
@@ -198,6 +215,17 @@ bool NotificationCenterTestApi::IsDoNotDisturbIconShown() {
   return notification_center_tray_->notification_icons_controller_
       ->quiet_mode_view()
       ->GetVisible();
+}
+
+NotificationIconTrayItemView*
+NotificationCenterTestApi::GetNotificationIconForId(const std::string& id) {
+  auto tray_items =
+      notification_center_tray_->notification_icons_controller_->tray_items();
+  auto tray_item_iter = base::ranges::find_if(
+      tray_items, [&id](NotificationIconTrayItemView* tray_item) {
+        return tray_item->GetNotificationId() == id;
+      });
+  return tray_item_iter == tray_items.end() ? nullptr : *tray_item_iter;
 }
 
 NotificationCounterView* NotificationCenterTestApi::GetNotificationCounter() {

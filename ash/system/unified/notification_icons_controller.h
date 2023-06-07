@@ -45,8 +45,15 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   // Set the image and tooltip for the view according to the notification.
   void SetNotification(message_center::Notification* notification);
 
-  // Reset notification pointer, id, image and tooltip text.
-  void Reset();
+  // Calls `Reset()` immediately or does nothing according to the following
+  // flow:
+  //   1. If the QS revamp is not enabled then `Reset()` is called immediately.
+  //   2. Otherwise, if this tray item is currently running its hide animation,
+  //      or if the `NotificationCenterTray` it belongs to is running its hide
+  //      animation, then this does nothing (because `Reset()` will be called
+  //      at the end of the relevant animation).
+  //   3. Otherwise, `Reset()` is still called immediately.
+  void MaybeReset();
 
   // Returns a string describing the current state for accessibility.
   const std::u16string& GetAccessibleNameString() const;
@@ -58,9 +65,14 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   const char* GetClassName() const override;
   void OnThemeChanged() override;
   void UpdateLabelOrImageViewColor(bool active) override;
+  void ImmediatelyUpdateVisibility() override;
+  void AnimationEnded(const gfx::Animation* animation) override;
 
  private:
   void UpdateImageViewColor();
+
+  // Resets notification pointer, id, image and tooltip text.
+  void Reset();
 
   // Store the id to make sure we still have it when notification is removed and
   // goes out of scope.
