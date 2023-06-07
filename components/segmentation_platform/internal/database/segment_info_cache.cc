@@ -27,18 +27,32 @@ absl::optional<SegmentInfo> SegmentInfoCache::GetSegmentInfo(
 
 std::unique_ptr<SegmentInfoCache::SegmentInfoList>
 SegmentInfoCache::GetSegmentInfoForSegments(
-    const base::flat_set<SegmentId>& segment_ids) const {
+    const base::flat_set<SegmentId>& segment_ids,
+    ModelSource model_source) const {
   std::unique_ptr<SegmentInfoCache::SegmentInfoList> segments_found =
       std::make_unique<SegmentInfoCache::SegmentInfoList>();
   for (SegmentId target : segment_ids) {
-    absl::optional<SegmentInfo> info =
-        GetSegmentInfo(target, ModelSource::SERVER_MODEL_SOURCE);
+    absl::optional<SegmentInfo> info = GetSegmentInfo(target, model_source);
     if (info.has_value()) {
       segments_found->emplace_back(
           std::make_pair(target, std::move(info.value())));
     }
   }
   return segments_found;
+}
+
+std::unique_ptr<SegmentInfoCache::SegmentInfoList>
+SegmentInfoCache::GetSegmentInfoForBothModels(
+    const base::flat_set<SegmentId>& segment_ids) const {
+  auto server_model_segments_found =
+      GetSegmentInfoForSegments(segment_ids, ModelSource::SERVER_MODEL_SOURCE);
+  auto default_model_segments_found =
+      GetSegmentInfoForSegments(segment_ids, ModelSource::DEFAULT_MODEL_SOURCE);
+  // Move the contents of second list into first one.
+  std::move(std::begin(*default_model_segments_found),
+            std::end(*default_model_segments_found),
+            std::back_inserter(*server_model_segments_found));
+  return server_model_segments_found;
 }
 
 void SegmentInfoCache::UpdateSegmentInfo(

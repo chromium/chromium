@@ -59,6 +59,11 @@ class SegmentInfoDatabase {
       const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback);
 
+  // Called to get metadata for a given list of both server and default model
+  // segments.
+  virtual std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
+  GetSegmentInfoForBothModels(const base::flat_set<SegmentId>& segment_ids);
+
   // Called to get the metadata for a given segment. ModelSource defines whether
   // to give metadata from server/default models for the given segment.
   virtual void GetSegmentInfo(SegmentId segment_id,

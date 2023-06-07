@@ -48,10 +48,17 @@ void SegmentInfoDatabase::Initialize(SuccessCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
+SegmentInfoDatabase::GetSegmentInfoForBothModels(
+    const base::flat_set<SegmentId>& segment_ids) {
+  return cache_->GetSegmentInfoForBothModels(segment_ids);
+}
+
 void SegmentInfoDatabase::GetSegmentInfoForSegments(
     const base::flat_set<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback) {
-  auto segments_found = cache_->GetSegmentInfoForSegments(segment_ids);
+  auto segments_found = cache_->GetSegmentInfoForSegments(
+      segment_ids, ModelSource::SERVER_MODEL_SOURCE);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

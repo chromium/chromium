@@ -226,6 +226,35 @@ TEST_F(SegmentInfoDatabaseTest, Get) {
   EXPECT_EQ(kSegmentId, get_segment_result_->segment_id());
 }
 
+TEST_F(SegmentInfoDatabaseTest, GetSegmentInfoForBothModels) {
+  // Initialize DB with entry for both server and default model.
+  db_entries_.insert(
+      std::make_pair(ToString(kSegmentId, kServerModelSource),
+                     CreateSegment(kSegmentId, kServerModelSource)));
+
+  db_entries_.insert(
+      std::make_pair(ToString(kSegmentId, kDefaultModelSource),
+                     CreateSegment(kSegmentId, kDefaultModelSource)));
+  SetUpDB();
+
+  segment_db_->Initialize(base::DoNothing());
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  db_->LoadCallback(true);
+  VerifyDb({std::make_pair(kSegmentId, kServerModelSource),
+            std::make_pair(kSegmentId, kDefaultModelSource)});
+
+  // Get all segments.
+  std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments =
+      segment_db_->GetSegmentInfoForBothModels({kSegmentId});
+
+  EXPECT_EQ(2u, segments->size());
+  EXPECT_EQ(kSegmentId, segments->at(0).first);
+  EXPECT_EQ(kServerModelSource, segments->at(0).second.model_source());
+
+  EXPECT_EQ(kSegmentId, segments->at(1).first);
+  EXPECT_EQ(kDefaultModelSource, segments->at(1).second.model_source());
+}
+
 TEST_F(SegmentInfoDatabaseTest, Update) {
   // Initialize DB with one entry.
   db_entries_.insert(

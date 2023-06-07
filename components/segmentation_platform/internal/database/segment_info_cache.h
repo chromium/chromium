@@ -39,10 +39,17 @@ class SegmentInfoCache {
   absl::optional<SegmentInfo> GetSegmentInfo(SegmentId segment_id,
                                              ModelSource model_source) const;
 
-  // Returns list of segment info for list of `segment_ids` found in the cache.
-  // If segment info is not found for a segment id, nothing is returned for it.
-  // This only returns segment info list for server side segments.
+  // Returns list of segment info for list of `segment_ids` found in the cache
+  // based on `model_source`. If segment info is not found for a segment id,
+  // nothing is returned for it.
   std::unique_ptr<SegmentInfoList> GetSegmentInfoForSegments(
+      const base::flat_set<SegmentId>& segment_ids,
+      ModelSource model_source) const;
+
+  // Returns list of segment info for list of `segment_ids` found in the cache
+  // for both server and default model segments. If segment info is not found
+  // for a segment id, nothing is returned for it.
+  std::unique_ptr<SegmentInfoList> GetSegmentInfoForBothModels(
       const base::flat_set<SegmentId>& segment_ids) const;
 
   // Updates cache with `segment_info` for a `segment_id` based on
