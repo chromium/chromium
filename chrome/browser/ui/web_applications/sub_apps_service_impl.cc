@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/sub_app_install_command.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -93,17 +92,6 @@ AddOptionsFromMojo(
   return sub_apps;
 }
 
-SubAppsServiceImpl::AddResultsMojo AddResultsToMojo(
-    const SubAppsServiceImpl::AddResults& add_results) {
-  SubAppsServiceImpl::AddResultsMojo add_results_mojo;
-  for (const auto& [manifest_id, result_code] : add_results) {
-    CHECK(manifest_id.is_valid());
-    add_results_mojo.emplace_back(SubAppsServiceAddResult::New(
-        ConvertUrlToPath(manifest_id), result_code));
-  }
-  return add_results_mojo;
-}
-
 WebAppProvider* GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
   auto* const initiator_web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host);
@@ -118,9 +106,16 @@ const AppId* GetAppId(content::RenderFrameHost& render_frame_host) {
   return WebAppTabHelper::GetAppId(initiator_web_contents);
 }
 
-void OnAdd(SubAppsServiceImpl::AddCallback result_callback,
-           SubAppsServiceImpl::AddResults results) {
-  std::move(result_callback).Run(AddResultsToMojo(results));
+blink::mojom::SubAppsServiceResultCode InstallResultCodeToMojo(
+    webapps::InstallResultCode install_result_code) {
+  switch (install_result_code) {
+    // Success result codes.
+    case webapps::InstallResultCode::kSuccessNewInstall:
+    case webapps::InstallResultCode::kSuccessAlreadyInstalled:
+      return blink::mojom::SubAppsServiceResultCode::kSuccess;
+    default:
+      return blink::mojom::SubAppsServiceResultCode::kFailure;
+  }
 }
 
 }  // namespace
@@ -131,6 +126,9 @@ SubAppsServiceImpl::SubAppsServiceImpl(
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
 SubAppsServiceImpl::~SubAppsServiceImpl() = default;
+
+SubAppsServiceImpl::AddCallInfo::AddCallInfo() = default;
+SubAppsServiceImpl::AddCallInfo::~AddCallInfo() = default;
 
 // static
 void SubAppsServiceImpl::CreateIfAllowed(
@@ -167,18 +165,30 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
+  // Assign id to this add call
+  int add_call_id = next_add_call_id_++;
+  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+  add_call_info.mojo_callback = std::move(result_callback);
+
   const AppId* parent_app_id = GetAppId(render_frame_host());
-  // Verify that the calling app is installed itself. This check is done here
-  // and not in `CreateIfAllowed` because of a potential race between doing the
-  // check there and then running the current function, and the parent app being
-  // installed/uninstalled.
-  if (!parent_app_id) {
+  // Verify that the calling app is installed itself and is not a sub app
+  // itself. This check is done here and not in `CreateIfAllowed` because of a
+  // potential race between doing the check there and then running the current
+  // function, and the parent app being installed/uninstalled.
+  if (!parent_app_id || provider->registrar_unsafe()
+                            .GetAppById(*parent_app_id)
+                            ->IsSubAppInstalledApp()) {
     std::vector<SubAppsServiceAddResultPtr> result;
     for (const auto& sub_app : sub_apps_to_add) {
       result.emplace_back(SubAppsServiceAddResult::New(
           sub_app->manifest_id_path, SubAppsServiceResultCode::kFailure));
     }
-    return std::move(result_callback).Run(/*mojom_results=*/std::move(result));
+    return std::move(add_call_info.mojo_callback)
+        .Run(/*mojom_results=*/std::move(result));
+  }
+
+  if (sub_apps_to_add.empty()) {
+    return std::move(add_call_info.mojo_callback).Run(/*mojom_results=*/{});
   }
 
   base::expected<std::vector<std::pair<ManifestId, GURL>>, std::string>
@@ -189,14 +199,115 @@ void SubAppsServiceImpl::Add(
     return ReportBadMessageAndDeleteThis(add_options.error());
   }
 
-  auto install_command = std::make_unique<SubAppInstallCommand>(
-      *parent_app_id, add_options.value(),
-      base::BindOnce(&OnAdd, std::move(result_callback)),
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()),
-      std::make_unique<WebAppUrlLoader>(),
-      std::make_unique<WebAppDataRetriever>());
+  CHECK(AreWebAppsUserInstallable(
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext())));
 
-  provider->command_manager().ScheduleCommand(std::move(install_command));
+  CollectInstallData(add_call_id, add_options.value());
+}
+
+void SubAppsServiceImpl::CollectInstallData(
+    int add_call_id,
+    std::vector<std::pair<ManifestId, GURL>> requested_installs) {
+  const auto install_info_collector = base::BarrierCallback<
+      std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>(
+      requested_installs.size(),
+      base::BindOnce(&SubAppsServiceImpl::ProcessInstallData,
+                     weak_ptr_factory_.GetWeakPtr(), add_call_id));
+
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  // Schedule data collection for each requested install
+  for (const auto& [manifest_id, url_to_load] : requested_installs) {
+    // Check if app is already installed as a sub app
+    if (provider->registrar_unsafe().WasInstalledBySubApp(
+            GenerateAppIdFromManifestId(manifest_id))) {
+      add_call_info_[add_call_id].results.emplace_back(
+          SubAppsServiceAddResult::New(
+              ConvertUrlToPath(manifest_id),
+              blink::mojom::SubAppsServiceResultCode::kSuccess));
+      install_info_collector.Run(std::pair(GURL(), nullptr));
+      continue;
+    }
+
+    provider->scheduler().FetchInstallInfoFromInstallUrl(
+        manifest_id, url_to_load,
+        base::BindOnce(
+            [](ManifestId manifest_app_id,
+               std::unique_ptr<WebAppInstallInfo> install_info) {
+              return std::pair(manifest_app_id, std::move(install_info));
+            },
+            manifest_id)
+            .Then(install_info_collector));
+  }
+}
+
+void SubAppsServiceImpl::ProcessInstallData(
+    int add_call_id,
+    std::vector<std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>
+        install_data) {
+  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+  const AppId* parent_app_id = GetAppId(render_frame_host());
+
+  for (auto& [manifest_id, install_info] : install_data) {
+    // If manifest_id is empty, the app was already installed and no install
+    // info was collected
+    if (!manifest_id.is_valid()) {
+      continue;
+    }
+
+    if (install_info) {
+      install_info->parent_app_id = *parent_app_id;
+      install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+      add_call_info.install_infos.emplace_back(std::move(install_info));
+    } else {
+      // Log error if install info could not be loaded
+      add_call_info.results.emplace_back(SubAppsServiceAddResult::New(
+          ConvertUrlToPath(manifest_id),
+          blink::mojom::SubAppsServiceResultCode::kFailure));
+    }
+  }
+  ScheduleSubAppInstalls(add_call_id);
+}
+
+void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
+  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+
+  const auto install_results_collector = base::BarrierCallback<
+      std::tuple<ManifestId, AppId, webapps::InstallResultCode>>(
+      add_call_info.install_infos.size(),
+      base::BindOnce(&SubAppsServiceImpl::FinishAddCall,
+                     weak_ptr_factory_.GetWeakPtr(), add_call_id));
+
+  // Schedule install for each install_info that was collected
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  for (auto& install_info : add_call_info.install_infos) {
+    ManifestId manifest_id = install_info->manifest_id;
+    provider->scheduler().InstallFromInfo(
+        std::move(install_info), /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::SUB_APP,
+        base::BindOnce(
+            [](ManifestId manifest_id, const AppId& app_id,
+               webapps::InstallResultCode result_code) {
+              return std::tuple(manifest_id, app_id, result_code);
+            },
+            manifest_id)
+            .Then(install_results_collector));
+  }
+}
+
+void SubAppsServiceImpl::FinishAddCall(
+    int add_call_id,
+    std::vector<std::tuple<ManifestId, AppId, webapps::InstallResultCode>>
+        install_results) {
+  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+
+  for (const auto& [manifest_id, app_id, result_code] : install_results) {
+    add_call_info.results.emplace_back(SubAppsServiceAddResult::New(
+        ConvertUrlToPath(manifest_id), InstallResultCodeToMojo(result_code)));
+  }
+
+  std::move(add_call_info.mojo_callback).Run(std::move(add_call_info.results));
+
+  add_call_info_.erase(add_call_id);
 }
 
 void SubAppsServiceImpl::List(ListCallback result_callback) {
