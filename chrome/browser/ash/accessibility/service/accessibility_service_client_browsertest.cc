@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
@@ -17,13 +18,174 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
-#include "services/accessibility/public/mojom/tts.mojom-shared.h"
+#include "services/accessibility/public/mojom/tts.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 
 using ax::mojom::AssistiveTechnologyType;
 
 namespace ash {
+
+namespace {
+// Matches max utterance from the TTS extension API.
+const int kMaxUtteranceLength = 32768;
+
+// TtsUtteranceClient that will pass along TtsEvents to a repeating callback.
+class TtsUtteranceClientImpl : public ax::mojom::TtsUtteranceClient {
+ public:
+  TtsUtteranceClientImpl(
+      mojo::PendingReceiver<ax::mojom::TtsUtteranceClient> pending_receiver,
+      base::RepeatingCallback<void(ax::mojom::TtsEventPtr)> event_callback)
+      : receiver_(this, std::move(pending_receiver)),
+        callback_(std::move(event_callback)) {}
+
+  TtsUtteranceClientImpl(const TtsUtteranceClientImpl&) = delete;
+  TtsUtteranceClientImpl& operator=(const TtsUtteranceClientImpl&) = delete;
+  ~TtsUtteranceClientImpl() override {}
+
+  void OnEvent(ax::mojom::TtsEventPtr event) override {
+    callback_.Run(std::move(event));
+  }
+
+ private:
+  mojo::Receiver<ax::mojom::TtsUtteranceClient> receiver_;
+  base::RepeatingCallback<void(ax::mojom::TtsEventPtr)> callback_;
+};
+
+// Mock TtsPlatform that can keep some state about an utterance and
+// send events.
+class MockTtsPlatformImpl : public content::TtsPlatform {
+ public:
+  MockTtsPlatformImpl() {
+    content::TtsController::SkipAddNetworkChangeObserverForTests(true);
+    content::TtsController::GetInstance()->SetTtsPlatform(this);
+  }
+
+  MockTtsPlatformImpl(const MockTtsPlatformImpl&) = delete;
+  MockTtsPlatformImpl& operator=(const MockTtsPlatformImpl&) = delete;
+  ~MockTtsPlatformImpl() {
+    content::TtsController::GetInstance()->SetTtsPlatform(
+        content::TtsPlatform::GetInstance());
+  }
+
+  // content::TtsPlatform:
+  bool PlatformImplSupported() override { return true; }
+
+  bool PlatformImplInitialized() override { return true; }
+
+  void WillSpeakUtteranceWithVoice(
+      content::TtsUtterance* utterance,
+      const content::VoiceData& voice_data) override {}
+
+  void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override {
+  }
+
+  void ClearError() override { error_ = ""; }
+
+  void SetError(const std::string& error) override { error_ = error; }
+
+  std::string GetError() override { return error_; }
+
+  void Speak(int utterance_id,
+             const std::string& utterance,
+             const std::string& lang,
+             const content::VoiceData& voice,
+             const content::UtteranceContinuousParameters& params,
+             base::OnceCallback<void(bool)> speech_started_callback) override {
+    utterance_id_ = utterance_id;
+    utterance_ = utterance;
+    content::TtsController::GetInstance()->OnTtsEvent(
+        utterance_id, /*event_type=*/content::TTS_EVENT_START, /*char_index=*/0,
+        /*length=*/static_cast<int>(utterance.size()),
+        /*error_message=*/std::string());
+    if (next_utterance_error_.empty()) {
+      std::move(speech_started_callback).Run(true);
+      return;
+    }
+    SetError(next_utterance_error_);
+    next_utterance_error_ = "";
+    content::TtsController::GetInstance()->OnTtsEvent(
+        utterance_id, /*event_type=*/content::TTS_EVENT_ERROR, /*char_index=*/0,
+        /*length=*/-1, /*error_message=*/GetError());
+    std::move(speech_started_callback).Run(false);
+  }
+
+  bool StopSpeaking() override {
+    if (utterance_id_ != -1) {
+      content::TtsController::GetInstance()->OnTtsEvent(
+          utterance_id_, /*event_type*/ content::TTS_EVENT_INTERRUPTED,
+          /*char_index=*/0, /*length=*/0, /*error_message=*/"");
+      utterance_id_ = -1;
+      utterance_ = "";
+      return true;
+    }
+    return false;
+  }
+
+  void Pause() override {
+    content::TtsController::GetInstance()->OnTtsEvent(
+        utterance_id_, /*event_type=*/content::TTS_EVENT_PAUSE,
+        /*char_index=*/3, /*length=*/4, /*error_message=*/"");
+  }
+
+  void Resume() override {
+    content::TtsController::GetInstance()->OnTtsEvent(
+        utterance_id_, /*event_type=*/content::TTS_EVENT_RESUME,
+        /*char_index=*/3, /*length=*/4, /*error_message=*/"");
+  }
+
+  bool IsSpeaking() override { return utterance_id_ != -1; }
+
+  void GetVoices(std::vector<content::VoiceData>* voices) override {
+    voices->emplace_back();
+    content::VoiceData& voice = voices->back();
+    voice.native = true;
+    voice.name = "TestyMcTestFace";
+    voice.engine_id = extension_misc::kGoogleSpeechSynthesisExtensionId;
+    voice.events.insert(content::TTS_EVENT_END);
+    voice.events.insert(content::TTS_EVENT_START);
+    voice.events.insert(content::TTS_EVENT_PAUSE);
+    voice.events.insert(content::TTS_EVENT_RESUME);
+    voice.events.insert(content::TTS_EVENT_INTERRUPTED);
+    voice.events.insert(content::TTS_EVENT_WORD);
+    voice.events.insert(content::TTS_EVENT_SENTENCE);
+    voice.events.insert(content::TTS_EVENT_MARKER);
+    voice.events.insert(content::TTS_EVENT_CANCELLED);
+    voice.events.insert(content::TTS_EVENT_ERROR);
+  }
+
+  void Shutdown() override {}
+
+  void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override {
+  }
+
+  void RefreshVoices() override {}
+
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
+    return nullptr;
+  }
+
+  // Methods for testing.
+  void SendEvent(content::TtsEventType event_type,
+                 int char_index,
+                 int length,
+                 const std::string& error_message) {
+    ASSERT_NE(utterance_id_, -1);
+    content::TtsController::GetInstance()->OnTtsEvent(
+        utterance_id_, event_type, char_index, length, error_message);
+  }
+  void SetNextUtteranceError(const std::string& error) {
+    next_utterance_error_ = error;
+  }
+
+ private:
+  std::string utterance_ = "";
+  int utterance_id_ = -1;
+  std::string error_ = "";
+  std::string next_utterance_error_ = "";
+};
+
+}  // namespace
 
 // Tests for the AccessibilityServiceClientTest using a fake service
 // implemented in FakeAccessibilityService.
@@ -38,6 +200,11 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitAndEnableFeature(features::kAccessibilityService);
+  }
+
+  void SetUp() override {
+    content::TtsController::SkipAddNetworkChangeObserverForTests(true);
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -64,12 +231,40 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
 
   bool ServiceIsBound() { return fake_service_->IsBound(); }
 
-  void ToggleAutomationEnabled(AccessibilityServiceClient& client,
+  void ToggleAutomationEnabled(AccessibilityServiceClient* client,
                                bool enabled) {
     if (enabled)
-      client.automation_client_->Enable(base::DoNothing());
+      client->automation_client_->Enable(base::DoNothing());
     else
-      client.automation_client_->Disable();
+      client->automation_client_->Disable();
+  }
+
+  std::unique_ptr<AccessibilityServiceClient> TurnOnAccessibilityService(
+      AssistiveTechnologyType type) {
+    auto client = std::make_unique<AccessibilityServiceClient>();
+    client->SetProfile(browser()->profile());
+    switch (type) {
+      case ax::mojom::AssistiveTechnologyType::kChromeVox:
+        client->SetChromeVoxEnabled(true);
+        break;
+      case ax::mojom::AssistiveTechnologyType::kSelectToSpeak:
+        client->SetSelectToSpeakEnabled(true);
+        break;
+      case ax::mojom::AssistiveTechnologyType::kSwitchAccess:
+        client->SetSwitchAccessEnabled(true);
+        break;
+      case ax::mojom::AssistiveTechnologyType::kAutoClick:
+        client->SetAutoclickEnabled(true);
+        break;
+      case ax::mojom::AssistiveTechnologyType::kMagnifier:
+        client->SetMagnifierEnabled(true);
+        break;
+      case ax::mojom::AssistiveTechnologyType::kDictation:
+        client->SetDictationEnabled(true);
+        break;
+    }
+    EXPECT_TRUE(ServiceHasATEnabled(type));
+    return client;
   }
 
   // Unowned.
@@ -194,12 +389,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                        SendsAutomationToTheService) {
-  AccessibilityServiceClient client;
-  client.SetProfile(browser()->profile());
   // Enable an assistive technology. The service will not be started until
   // some AT needs it.
-  client.SetChromeVoxEnabled(true);
-  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
 
   // The service may bind multiple Automations to the AutomationClient.
   for (int i = 0; i < 3; i++) {
@@ -207,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   }
 
   // TODO(crbug.com/1355633): Replace once mojom to Enable lands.
-  ToggleAutomationEnabled(client, true);
+  ToggleAutomationEnabled(client.get(), true);
   // Enable can be called multiple times (once for each bound Automation)
   // with no bad effects.
   // fake_service_->AutomationClientEnable(true);
@@ -216,19 +408,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   fake_service_->WaitForAutomationEvents();
 
   // TODO(crbug.com/1355633): Replace once mojom to Disable lands.
-  ToggleAutomationEnabled(client, false);
+  ToggleAutomationEnabled(client.get(), false);
   // Disabling multiple times has no bad effect.
   // fake_service_->AutomationClientEnable(false);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {
-  AccessibilityServiceClient client;
-  test::SpeechMonitor sm;
-  client.SetProfile(browser()->profile());
-  // Enable some assistive technology. The service will not be started until
-  // some AT needs it.
-  client.SetSelectToSpeakEnabled(true);
-  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  MockTtsPlatformImpl tts_platform;
 
   fake_service_->BindAnotherTts();
 
@@ -236,14 +424,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {
   fake_service_->RequestTtsVoices(base::BindLambdaForTesting(
       [&waiter](std::vector<ax::mojom::TtsVoicePtr> voices) {
         waiter.Quit();
-        ASSERT_GT(voices.size(), 0u);
+        ASSERT_EQ(voices.size(), 1u);
         auto& voice = voices[0];
-        EXPECT_EQ(voice->voice_name, "SpeechMonitor");
+        EXPECT_EQ(voice->voice_name, "TestyMcTestFace");
         EXPECT_EQ(voice->engine_id,
                   extension_misc::kGoogleSpeechSynthesisExtensionId);
         ASSERT_TRUE(voice->event_types);
-        ASSERT_EQ(voice->event_types.value().size(), 1u);
-        EXPECT_EQ(voice->event_types.value()[0], ax::mojom::TtsEventType::kEnd);
+        ASSERT_EQ(voice->event_types.value().size(), 10u);
+        // Spot check.
+        EXPECT_EQ(voice->event_types.value()[0],
+                  ax::mojom::TtsEventType::kStart);
+        EXPECT_EQ(voice->event_types.value()[1], ax::mojom::TtsEventType::kEnd);
       }));
   waiter.Run();
 
@@ -251,6 +442,198 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {
   for (int i = 0; i < 2; i++) {
     fake_service_->BindAnotherTts();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsSpeakSimple) {
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  test::SpeechMonitor sm;
+
+  fake_service_->BindAnotherTts();
+  fake_service_->RequestSpeak("Hello, world", base::DoNothing());
+  sm.ExpectSpeech("Hello, world");
+  sm.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsSendsStartEndEvents) {
+  test::SpeechMonitor sm;
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherTts();
+
+  base::RunLoop waiter;
+  int start_count = 0;
+  int end_count = 0;
+  std::string text = "Hello, world";
+
+  // This callback is called on tts events.
+  // See SpeechMonitor for when tts events are sent.
+  base::RepeatingCallback<void(ax::mojom::TtsEventPtr event)> callback =
+      base::BindLambdaForTesting([&waiter, &start_count, &end_count,
+                                  &text](ax::mojom::TtsEventPtr event) {
+        if (event->type == ax::mojom::TtsEventType::kStart) {
+          start_count++;
+          EXPECT_EQ(end_count, 0);
+          EXPECT_EQ(0, event->char_index);
+          EXPECT_FALSE(event->is_final);
+        } else if (event->type == ax::mojom::TtsEventType::kEnd) {
+          end_count++;
+          EXPECT_EQ(start_count, 1);
+          EXPECT_EQ(static_cast<int>(text.size()), event->char_index);
+          EXPECT_TRUE(event->is_final);
+          waiter.Quit();
+        }
+      });
+
+  std::unique_ptr<TtsUtteranceClientImpl> utterance_client;
+  fake_service_->RequestSpeak(
+      text,
+      base::BindLambdaForTesting(
+          [&utterance_client, &callback](ax::mojom::TtsSpeakResultPtr result) {
+            EXPECT_EQ(result->error, ax::mojom::TtsError::kNoError);
+            utterance_client = std::make_unique<TtsUtteranceClientImpl>(
+                std::move(result->utterance_client), std::move(callback));
+          }));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsPauseResume) {
+  MockTtsPlatformImpl tts_platform;
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  fake_service_->BindAnotherTts();
+
+  base::RunLoop waiter;
+  int start_count = 0;
+  int pause_count = 0;
+  int resume_count = 0;
+  int interrupted_count = 0;
+  std::string text = "Hello, world";
+
+  // This callback is called on tts events.
+  base::RepeatingCallback<void(ax::mojom::TtsEventPtr event)> callback =
+      base::BindLambdaForTesting(
+          [&waiter, &start_count, &pause_count, &resume_count,
+           &interrupted_count](ax::mojom::TtsEventPtr event) {
+            if (event->type == ax::mojom::TtsEventType::kStart) {
+              start_count++;
+              EXPECT_EQ(pause_count, 0);
+              EXPECT_EQ(resume_count, 0);
+              EXPECT_EQ(interrupted_count, 0);
+              EXPECT_EQ(0, event->char_index);
+              EXPECT_FALSE(event->is_final);
+            } else if (event->type == ax::mojom::TtsEventType::kPause) {
+              pause_count++;
+              EXPECT_EQ(resume_count, 0);
+              EXPECT_EQ(interrupted_count, 0);
+              EXPECT_FALSE(event->is_final);
+            } else if (event->type == ax::mojom::TtsEventType::kResume) {
+              resume_count++;
+              EXPECT_EQ(interrupted_count, 0);
+              EXPECT_FALSE(event->is_final);
+            } else if (event->type == ax::mojom::TtsEventType::kInterrupted) {
+              interrupted_count++;
+              EXPECT_TRUE(event->is_final);
+              waiter.Quit();
+            }
+          });
+
+  std::unique_ptr<TtsUtteranceClientImpl> utterance_client;
+  fake_service_->RequestSpeak(
+      text,
+      base::BindLambdaForTesting([&utterance_client, &callback,
+                                  this](ax::mojom::TtsSpeakResultPtr result) {
+        ASSERT_EQ(result->error, ax::mojom::TtsError::kNoError);
+        utterance_client = std::make_unique<TtsUtteranceClientImpl>(
+            std::move(result->utterance_client), std::move(callback));
+        fake_service_->RequestPause();
+        fake_service_->RequestResume();
+        fake_service_->RequestStop();
+      }));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsIsSpeaking) {
+  MockTtsPlatformImpl tts_platform;
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherTts();
+
+  base::RunLoop waiter;
+  std::string text = "Hello, world";
+
+  fake_service_->RequestSpeak(
+      text, base::BindLambdaForTesting(
+                [&waiter, this](ax::mojom::TtsSpeakResultPtr result) {
+                  ASSERT_EQ(result->error, ax::mojom::TtsError::kNoError);
+                  fake_service_->IsTtsSpeaking(
+                      base::BindLambdaForTesting([&waiter](bool is_speaking) {
+                        EXPECT_TRUE(is_speaking);
+                        waiter.Quit();
+                      }));
+                }));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsIsNotSpeaking) {
+  MockTtsPlatformImpl tts_platform;
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  fake_service_->BindAnotherTts();
+
+  base::RunLoop waiter;
+
+  fake_service_->IsTtsSpeaking(
+      base::BindLambdaForTesting([&waiter](bool is_speaking) {
+        EXPECT_FALSE(is_speaking);
+        waiter.Quit();
+      }));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsMaxUtteranceError) {
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  fake_service_->BindAnotherTts();
+  base::RunLoop waiter;
+
+  fake_service_->RequestSpeak(
+      std::string(kMaxUtteranceLength + 1, 'a'),
+      base::BindLambdaForTesting([&waiter](
+                                     ax::mojom::TtsSpeakResultPtr result) {
+        EXPECT_EQ(result->error, ax::mojom::TtsError::kErrorUtteranceTooLong);
+        waiter.Quit();
+      }));
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsUtteranceError) {
+  MockTtsPlatformImpl tts_platform;
+  tts_platform.SetNextUtteranceError("One does not simply walk into Mordor");
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherTts();
+
+  base::RunLoop waiter;
+
+  // This callback is called on tts events.
+  base::RepeatingCallback<void(ax::mojom::TtsEventPtr event)> callback =
+      base::BindLambdaForTesting([&waiter](ax::mojom::TtsEventPtr event) {
+        if (event->type == ax::mojom::TtsEventType::kStart) {
+          return;
+        }
+        EXPECT_EQ(event->type, ax::mojom::TtsEventType::kError);
+        EXPECT_EQ(event->error_message, "One does not simply walk into Mordor");
+        waiter.Quit();
+      });
+
+  std::unique_ptr<TtsUtteranceClientImpl> utterance_client;
+  fake_service_->RequestSpeak(
+      "All we have to decide is what to do with the time that is given to us.",
+      base::BindLambdaForTesting(
+          [&utterance_client, &callback](ax::mojom::TtsSpeakResultPtr result) {
+            utterance_client = std::make_unique<TtsUtteranceClientImpl>(
+                std::move(result->utterance_client), std::move(callback));
+          }));
+  waiter.Run();
 }
 
 }  // namespace ash

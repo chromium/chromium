@@ -86,6 +86,23 @@ class FakeAccessibilityService
   // Waits for Automation events to come in.
   void WaitForAutomationEvents();
 
+  // Sends a request for speech.
+  void RequestSpeak(
+      const std::string& utterance,
+      base::OnceCallback<void(ax::mojom::TtsSpeakResultPtr)> callback);
+
+  // Sends a request to stop speech.
+  void RequestStop();
+
+  // Sends a request to pause speech.
+  void RequestPause();
+
+  // Sends a request to resume speech.
+  void RequestResume();
+
+  // Asks if speech is in progress.
+  void IsTtsSpeaking(base::OnceCallback<void(bool)> callback);
+
   // Sends a request from the service for the TTS voices list.
   void RequestTtsVoices(ax::mojom::Tts::GetVoicesCallback callback);
 

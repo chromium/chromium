@@ -2,6 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * One TtsEventObserver is created for each utterance (for each call to
+ * chrome.tts.Speak that didn't result in an error).
+ * @implements {ax.mojom.TtsUtteranceClientInterface}
+ */
+class TtsEventObserver {
+  constructor(pendingReceiver, callback) {
+    this.receiver_ = new ax.mojom.TtsUtteranceClientReceiver(this);
+    this.receiver_.$.bindHandle(pendingReceiver.handle);
+    this.callback_ = callback;
+  }
+
+  /** @override */
+  onEvent(ttsEvent) {
+    if (this.callback_) {
+      this.callback_(ttsEvent);
+    }
+  }
+}
+
 // Massages the tts mojo into the chrome.tts extension API surface used
 // by a11y component extensions.
 // TODO(b:277221897): Compile and type-check this.
@@ -10,6 +30,83 @@ class AtpTts {
   constructor() {
     const TtsApi = ax.mojom.Tts;
     this.remote_ = TtsApi.getRemote();
+
+    /** @private Set<!TtsEventObserver> */
+    this.ttsEventObservers_ = new Set();
+  }
+
+  /**
+   * Speaks the given `utterance`.
+   * This is not async because the TTS extension does not use async calls,
+   * so callers do not expect to be blocked awaiting speak to finish.
+   * @param {string} utterance
+   * @param {chrome.tts.TtsOptions} ttsOptions
+   */
+  speak(utterance, ttsOptions) {
+    // TODO(b:277221897): Parse and pass in ttsOptions.
+    this.remote_.speak(utterance).then(speakResult => {
+      if (speakResult.result.error != ax.mojom.TtsError.kNoError) {
+        console.error(
+            'Error when trying to speak', utterance,
+            speakResult.result.error);
+        return;
+      }
+      if (!speakResult.result.utteranceClient) {
+        console.error(
+            'UtteranceClient was unexpectedly missing from TtsSpeakResult.');
+        return;
+      }
+      const ttsEventObserver = new TtsEventObserver(
+          speakResult.result.utteranceClient, (ttsEvent) => {
+            if (ttsOptions.onEvent) {
+              let type = AtpTts.eventTypeToString_(ttsEvent.type);
+              ttsOptions.onEvent({
+                type,
+                charIndex: ttsEvent.charIndex,
+                length: ttsEvent.length,
+                errorMessage: ttsEvent.errorMessage
+              });
+            }
+            if (ttsEvent.isFinal) {
+              // There will be no more events. Delete this observer from
+              // observers.
+              this.ttsEventObservers_.delete(ttsEventObserver);
+            }
+          });
+      this.ttsEventObservers_.add(ttsEventObserver);
+    });
+  }
+
+  /**
+   * Stops any current speech and flushes the queue of any pending utterances.
+   * In addition, if speech was paused, it will now be un-paused for the next
+   * call to speak.
+   */
+  stop() {
+    this.remote_.stop();
+  }
+
+  /**
+   * Pauses speech synthesis, potentially in the middle of an utterance. A call
+   * to resume or stop will un-pause speech.
+   */
+  pause() {
+    this.remote_.pause();
+  }
+
+  /**
+   * If speech was paused, resumes speaking where it left off.
+   */
+  resume() {
+    this.remote_.resume();
+  }
+
+  /**
+   * Checks whether the engine is currently speaking.
+   * @param {function(boolean): void} callback
+   */
+  isSpeaking(callback) {
+    this.remote_.isSpeaking().then(response => callback(response.speaking));
   }
 
   /**

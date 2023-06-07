@@ -114,8 +114,44 @@ void FakeAccessibilityService::WaitForAutomationEvents() {
   runner.Run();
 }
 
+void FakeAccessibilityService::RequestSpeak(
+    const std::string& utterance,
+    base::OnceCallback<void(ax::mojom::TtsSpeakResultPtr)> callback) {
+  CHECK_EQ(tts_remotes_.size(), 1u);
+  for (auto& tts_client : tts_remotes_) {
+    tts_client->Speak(utterance, std::move(callback));
+  }
+}
+
+void FakeAccessibilityService::RequestStop() {
+  for (auto& tts_client : tts_remotes_) {
+    tts_client->Stop();
+  }
+}
+
+void FakeAccessibilityService::RequestPause() {
+  for (auto& tts_client : tts_remotes_) {
+    tts_client->Pause();
+  }
+}
+
+void FakeAccessibilityService::RequestResume() {
+  for (auto& tts_client : tts_remotes_) {
+    tts_client->Resume();
+  }
+}
+
+void FakeAccessibilityService::IsTtsSpeaking(
+    base::OnceCallback<void(bool)> callback) {
+  CHECK_EQ(tts_remotes_.size(), 1u);
+  for (auto& tts_client : tts_remotes_) {
+    tts_client->IsSpeaking(std::move(callback));
+  }
+}
+
 void FakeAccessibilityService::RequestTtsVoices(
     ax::mojom::Tts::GetVoicesCallback callback) {
+  CHECK_EQ(tts_remotes_.size(), 1u);
   for (auto& tts_client : tts_remotes_) {
     tts_client->GetVoices(std::move(callback));
   }

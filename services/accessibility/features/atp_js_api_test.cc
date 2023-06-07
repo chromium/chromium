@@ -170,4 +170,172 @@ TEST_F(TtsJSApiTest, TtsGetVoices) {
   WaitForJSTestComplete();
 }
 
+// Tests chrome.tts.speak in JS ends up with a call to the
+// TTS client in C++, and that callbacks from the TTS client in
+// C++ are received as events in JS. Also ensures that ordering
+// is consistent: if start is sent before end in C++, it should
+// be received before end in JS.
+TEST_F(TtsJSApiTest, TtsSpeakWithStartAndEndEvents) {
+  client_->SetTtsSpeakCallback(
+      base::BindLambdaForTesting([this](const std::string& text) {
+        EXPECT_EQ(text, "Hello, world");
+        auto start_event = ax::mojom::TtsEvent::New();
+        start_event->type = mojom::TtsEventType::kStart;
+        auto end_event = ax::mojom::TtsEvent::New();
+        end_event->type = mojom::TtsEventType::kEnd;
+        client_->SendTtsUtteranceEvent(std::move(start_event));
+        client_->SendTtsUtteranceEvent(std::move(end_event));
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    let receivedStart = false;
+    const onEvent = (ttsEvent) => {
+      if (ttsEvent.type === 'end') {
+        remote.testComplete(
+            /*success=*/receivedStart);
+      } else if (ttsEvent.type === 'start') {
+        receivedStart = true;
+      }
+    };
+    const options = { onEvent };
+    chrome.tts.speak('Hello, world', options);
+  )JS");
+  WaitForJSTestComplete();
+}
+
+TEST_F(TtsJSApiTest, TtsSpeaksNumbers) {
+  base::RunLoop waiter;
+  client_->SetTtsSpeakCallback(
+      base::BindLambdaForTesting([&waiter](const std::string& text) {
+        EXPECT_EQ(text, "42");
+        waiter.Quit();
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.tts.speak('42');
+  )JS");
+  waiter.Run();
+}
+
+TEST_F(TtsJSApiTest, TtsSpeakPauseResumeStopEvents) {
+  client_->SetTtsSpeakCallback(
+      base::BindLambdaForTesting([this](const std::string& text) {
+        EXPECT_EQ(text, "Green is the loneliest color");
+        auto start_event = ax::mojom::TtsEvent::New();
+        start_event->type = mojom::TtsEventType::kStart;
+        client_->SendTtsUtteranceEvent(std::move(start_event));
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    let receivedStart = false;
+    let receivedPause = false;
+    let receivedResume = false;
+    // Start creates a request to pause,
+    // pause creates a request to resume,
+    // resume creates a request to stop,
+    // stop causes interrupted, which ends the test.
+    const onEvent = (ttsEvent) => {
+      if (ttsEvent.type === 'start') {
+        receivedStart = true;
+        chrome.tts.pause();
+      } else if (ttsEvent.type === 'pause') {
+        receivedPause = true;
+        chrome.tts.resume();
+      } else if (ttsEvent.type === 'resume') {
+        receivedResume = true;
+        chrome.tts.stop();
+      } else if (ttsEvent.type === 'interrupted') {
+        remote.testComplete(
+            /*success=*/receivedStart && receivedPause && receivedResume);
+      } else {
+        console.error('Unexpected event type', ttsEvent.type);
+        remote.testComplete(
+            /*success=*/false);
+      }
+    };
+    const options = { onEvent };
+    chrome.tts.speak('Green is the loneliest color', options);
+  )JS");
+  WaitForJSTestComplete();
+}
+
+// Test that parameters can be sent in an event.
+TEST_F(TtsJSApiTest, TtsEventPassesParams) {
+  client_->SetTtsSpeakCallback(
+      base::BindLambdaForTesting([this](const std::string& text) {
+        EXPECT_EQ(text, "Hello, world");
+        auto start_event = ax::mojom::TtsEvent::New();
+        start_event->type = mojom::TtsEventType::kStart;
+        start_event->error_message = "Off by one";
+        start_event->length = 10;
+        start_event->char_index = 5;
+        client_->SendTtsUtteranceEvent(std::move(start_event));
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const onEvent = (ttsEvent) => {
+      if (ttsEvent.type === 'start') {
+        let success = ttsEvent.charIndex === 5 &&
+          ttsEvent.length === 10 && ttsEvent.errorMessage === 'Off by one';
+        remote.testComplete(success);
+      }
+    };
+    const options = { onEvent };
+    chrome.tts.speak('Hello, world', options);
+  )JS");
+  WaitForJSTestComplete();
+}
+
+TEST_F(TtsJSApiTest, TtsIsSpeaking) {
+  client_->SetTtsSpeakCallback(
+      base::BindLambdaForTesting([this](const std::string& text) {
+        EXPECT_EQ(text, "Pie in the sky");
+        auto start_event = ax::mojom::TtsEvent::New();
+        start_event->type = mojom::TtsEventType::kStart;
+        client_->SendTtsUtteranceEvent(std::move(start_event));
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const onEvent = (ttsEvent) => {
+      // Now TTS should be speaking.
+      chrome.tts.isSpeaking(secondSpeaking => {
+        remote.testComplete(/*success=*/secondSpeaking);
+      });
+    };
+    const options = { onEvent };
+    chrome.tts.isSpeaking(isSpeaking => {
+      // The first time, TTS should not be speaking.
+      if (isSpeaking) {
+        remote.testComplete(/*success=*/false);
+      }
+      chrome.tts.speak('Pie in the sky', options);
+    });
+  )JS");
+  WaitForJSTestComplete();
+}
+
+TEST_F(TtsJSApiTest, TtsUtteranceError) {
+  client_->SetTtsSpeakCallback(
+      base::BindLambdaForTesting([this](const std::string& text) {
+        EXPECT_EQ(text, "No man can kill me");
+        auto error_event = ax::mojom::TtsEvent::New();
+        error_event->type = mojom::TtsEventType::kError;
+        error_event->error_message = "I am no man";
+        client_->SendTtsUtteranceEvent(std::move(error_event));
+      }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const onEvent = (ttsEvent) => {
+      const success = ttsEvent.type == 'error' &&
+          ttsEvent.errorMessage === 'I am no man';
+      remote.testComplete(success);
+    };
+    const options = { onEvent };
+    chrome.tts.isSpeaking(isSpeaking => {
+      chrome.tts.speak('No man can kill me', options);
+    });
+  )JS");
+  WaitForJSTestComplete();
+}
+
 }  // namespace ax

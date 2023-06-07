@@ -29,6 +29,49 @@ void FakeServiceClient::BindTts(
   }
 }
 
+void FakeServiceClient::Speak(const std::string& utterance,
+                              SpeakCallback callback) {
+  auto result = mojom::TtsSpeakResult::New();
+  result->error = mojom::TtsError::kNoError;
+  result->utterance_client = tts_utterance_client_.BindNewPipeAndPassReceiver();
+  std::move(callback).Run(std::move(result));
+  if (tts_speak_callback_) {
+    tts_speak_callback_.Run(utterance);
+  }
+}
+
+void FakeServiceClient::Stop() {
+  if (!tts_utterance_client_.is_bound()) {
+    return;
+  }
+  auto event = mojom::TtsEvent::New();
+  event->type = mojom::TtsEventType::kInterrupted;
+  tts_utterance_client_->OnEvent(std::move(event));
+  tts_utterance_client_.reset();
+}
+
+void FakeServiceClient::Pause() {
+  if (!tts_utterance_client_.is_bound()) {
+    return;
+  }
+  auto event = mojom::TtsEvent::New();
+  event->type = mojom::TtsEventType::kPause;
+  tts_utterance_client_->OnEvent(std::move(event));
+}
+
+void FakeServiceClient::Resume() {
+  if (!tts_utterance_client_.is_bound()) {
+    return;
+  }
+  auto event = mojom::TtsEvent::New();
+  event->type = mojom::TtsEventType::kResume;
+  tts_utterance_client_->OnEvent(std::move(event));
+}
+
+void FakeServiceClient::IsSpeaking(IsSpeakingCallback callback) {
+  std::move(callback).Run(tts_utterance_client_.is_bound());
+}
+
 void FakeServiceClient::GetVoices(GetVoicesCallback callback) {
   std::vector<ax::mojom::TtsVoicePtr> voices;
 
@@ -81,6 +124,17 @@ void FakeServiceClient::SetTtsBoundClosure(base::OnceClosure closure) {
 bool FakeServiceClient::TtsIsBound() const {
   return tts_receivers_.size();
 }
+
+void FakeServiceClient::SetTtsSpeakCallback(
+    base::RepeatingCallback<void(const std::string&)> callback) {
+  tts_speak_callback_ = std::move(callback);
+}
+
+void FakeServiceClient::SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event) {
+  CHECK(tts_utterance_client_.is_bound());
+  tts_utterance_client_->OnEvent(std::move(tts_event));
+}
+
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
 bool FakeServiceClient::AccessibilityServiceClientIsBound() const {
