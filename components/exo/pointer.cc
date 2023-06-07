@@ -27,6 +27,7 @@
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -38,6 +39,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -71,16 +73,6 @@ const float kForceGranularity = 1e-2f;
 // degrees, used to limit sending noisy values.
 const float kTiltGranularity = 1.f;
 
-display::ManagedDisplayInfo GetCaptureDisplayInfo() {
-  display::ManagedDisplayInfo capture_info;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-    const auto& info = WMHelper::GetInstance()->GetDisplayInfo(display.id());
-    if (info.device_scale_factor() >= capture_info.device_scale_factor())
-      capture_info = info;
-  }
-  return capture_info;
-}
-
 int GetContainerIdForMouseCursor() {
   return ash::kShellWindowId_MouseCursorContainer;
 }
@@ -95,7 +87,6 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
       delegate_(delegate),
       seat_(seat),
       cursor_(ui::mojom::CursorType::kNull),
-      capture_scale_(GetCaptureDisplayInfo().device_scale_factor()),
       cursor_capture_source_id_(base::UnguessableToken::Create()) {
   WMHelper* helper = WMHelper::GetInstance();
   // TODO(sky): CursorClient does not exist in mash
@@ -747,8 +738,6 @@ void Pointer::OnCursorSizeChanged(ui::CursorSize cursor_size) {
 
 void Pointer::OnCursorDisplayChanged(const display::Display& display) {
   UpdatePointerSurface(root_surface());
-  auto info = GetCaptureDisplayInfo();
-  capture_scale_ = info.device_scale_factor();
 
   auto* cursor_client = WMHelper::GetInstance()->GetCursorClient();
   DCHECK(cursor_client);
@@ -884,14 +873,7 @@ void Pointer::CaptureCursor(const gfx::Point& hotspot) {
   // Submit compositor frame to be captured.
   SubmitCompositorFrame();
 
-  // Surface size is in DIPs, while layer size is in pseudo-DIP units that
-  // depend on the DSF of the display mode. Scale the layer to capture the
-  // surface at a constant pixel size, regardless of the primary display's
-  // display mode DSF.
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  float scale = capture_scale_ / display.device_scale_factor();
-  host_window()->SetTransform(gfx::GetScaleTransform(gfx::Point(), scale));
-
+  cursor_capture_weak_ptr_factory_.InvalidateWeakPtrs();
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
           viz::CopyOutputRequest::ResultFormat::RGBA,
@@ -903,7 +885,19 @@ void Pointer::CaptureCursor(const gfx::Point& hotspot) {
       base::SequencedTaskRunner::GetCurrentDefault());
 
   request->set_source(cursor_capture_source_id_);
-  host_window()->layer()->RequestCopyOfOutput(std::move(request));
+
+  // host_window()->layer()->RequestCopyOfOutput() would not work correctly
+  // when the host window's bounds change. When host window's bounds change,
+  // a new surface local id is allocated and will then update the layer's
+  // surface id via aura::Window::OnFirstSurfaceActivation. However
+  // OnFirstSurfaceActivation doesn't necessarily always happen before
+  // root frame sink's BeginFrame, and this would cause wrong surface id
+  // when requesting copy of output. See http://crbug.com/1448598.
+  // Thus, we use host window's surface id for requesting copy of output.
+  aura::Env::GetInstance()
+      ->context_factory()
+      ->GetHostFrameSinkManager()
+      ->RequestCopyOfOutput(host_window()->GetSurfaceId(), std::move(request));
 }
 
 void Pointer::OnCursorCaptured(const gfx::Point& hotspot,
@@ -929,8 +923,6 @@ void Pointer::UpdateCursor() {
 
   if (cursor_ == ui::mojom::CursorType::kCustom) {
     SkBitmap bitmap = cursor_bitmap_;
-    gfx::Point hotspot =
-        gfx::ScaleToFlooredPoint(cursor_hotspot_, capture_scale_);
 
     // TODO(oshima|weidongg): Add cutsom cursor API to handle size/display
     // change without explicit management like this. https://crbug.com/721601.
@@ -939,8 +931,9 @@ void Pointer::UpdateCursor() {
     const display::Display& display = cursor_client->GetDisplay();
     const float resource_scale_factor = ui::GetScaleForResourceScaleFactor(
         ui::GetSupportedResourceScaleFactor(display.device_scale_factor()));
-    const float scale = resource_scale_factor / capture_scale_;
-
+    const float scale = resource_scale_factor / GetScaleFactor();
+    gfx::Point hotspot =
+        gfx::ScaleToFlooredPoint(cursor_hotspot_, GetScaleFactor());
     // Use panel_rotation() rather than "natural" rotation, as it actually
     // relates to the hardware you're about to draw the cursor bitmap on.
     wm::ScaleAndRotateCursorBitmapAndHotpoint(scale, display.panel_rotation(),

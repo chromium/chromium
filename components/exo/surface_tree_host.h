@@ -166,14 +166,14 @@ class SurfaceTreeHost : public SurfaceDelegate,
     return client_submits_surfaces_in_pixel_coordinates_;
   }
 
+  // If the client has submitted a scale factor, we use that. Otherwise we use
+  // the host window's layer's scale factor.
+  float GetScaleFactor();
+
  private:
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
 
   void HandleContextLost();
-
-  // If the client has submitted a scale factor, we use that. Otherwise we use
-  // the host window's layer's scale factor.
-  float GetScaleFactor();
 
   void CleanUpCallbacks();
 
