@@ -32,14 +32,12 @@
 
 namespace blink {
 
-template <typename CharacterType>
-static unsigned ParsePositiveDouble(const CharacterType* string,
-                                    const CharacterType* end,
+static unsigned ParsePositiveDouble(const LChar* string,
+                                    const LChar* end,
                                     double& value);
 
-template <typename CharacterType>
-static bool ParseDoubleWithPrefix(const CharacterType* string,
-                                  const CharacterType* end,
+static bool ParseDoubleWithPrefix(const LChar* string,
+                                  const LChar* end,
                                   double& value);
 
 static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
@@ -170,8 +168,7 @@ static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
   return CSSNumericLiteralValue::Create(number, unit);
 }
 
-template <typename CharacterType>
-static inline bool ParseSimpleAngle(const CharacterType* characters,
+static inline bool ParseSimpleAngle(const LChar* characters,
                                     unsigned length,
                                     CSSPrimitiveValue::UnitType& unit,
                                     double& number) {
@@ -257,9 +254,7 @@ static inline bool ColorPropertyAllowsQuirkyColor(CSSPropertyID property_id) {
 }
 
 // Returns the number of initial characters which form a valid double.
-template <typename CharacterType>
-static unsigned FindLengthOfValidDouble(const CharacterType* string,
-                                        const CharacterType* end) {
+static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
   int length = static_cast<int>(end - string);
   if (length < 1) {
     return 0;
@@ -289,9 +284,8 @@ static unsigned FindLengthOfValidDouble(const CharacterType* string,
 // character, _or_ an HTML space.
 // Otherwise: Checks whether string[pos] is the given character.
 // Returns false if pos is past the end of the string.
-template <typename CharacterType>
-static bool ContainsCharAtPos(const CharacterType* string,
-                              const CharacterType* end,
+static bool ContainsCharAtPos(const LChar* string,
+                              const LChar* end,
                               int pos,
                               char ch,
                               bool also_accept_whitespace) {
@@ -312,9 +306,8 @@ static bool ContainsCharAtPos(const CharacterType* string,
 //
 // It also does not support exponential notation (e.g. “100e3”), which means
 // that such cases go through the slow path.
-template <typename CharacterType>
-static bool ParseDoubleWithPrefix(const CharacterType* string,
-                                  const CharacterType* end,
+static bool ParseDoubleWithPrefix(const LChar* string,
+                                  const LChar* end,
                                   double& value) {
   while (string < end && IsHTMLSpace(*string)) {
     ++string;
@@ -343,9 +336,8 @@ static bool ParseDoubleWithPrefix(const CharacterType* string,
 //
 // NOTE: Digits after the seventh decimal are ignored, potentially leading
 // to accuracy issues. (All digits _before_ the decimal points are used.)
-template <typename CharacterType>
-static unsigned ParsePositiveDouble(const CharacterType* string,
-                                    const CharacterType* end,
+static unsigned ParsePositiveDouble(const LChar* string,
+                                    const LChar* end,
                                     double& value) {
   unsigned length = FindLengthOfValidDouble(string, end);
   if (length == 0) {
@@ -384,15 +376,14 @@ static unsigned ParsePositiveDouble(const CharacterType* string,
 
 // Parse a float and clamp it upwards to max_value. Optimized for having
 // no decimal part.
-template <typename CharacterType>
-static bool ParseFloatWithMaxValue(const CharacterType*& string,
-                                   const CharacterType* end,
+static bool ParseFloatWithMaxValue(const LChar*& string,
+                                   const LChar* end,
                                    int max_value,
                                    double& value,
                                    bool& negative) {
   value = 0.0;
-  const CharacterType* current = string;
-  while (current != end && IsHTMLSpace<CharacterType>(*current)) {
+  const LChar* current = string;
+  while (current != end && IsHTMLSpace(*current)) {
     current++;
   }
   if (current != end && *current == '-') {
@@ -457,14 +448,13 @@ enum TerminatorStatus {
 
 }  // namespace
 
-template <typename CharacterType>
-static bool SkipToTerminator(const CharacterType*& string,
-                             const CharacterType* end,
+static bool SkipToTerminator(const LChar*& string,
+                             const LChar* end,
                              const char terminator,
                              TerminatorStatus& terminator_status) {
-  const CharacterType* current = string;
+  const LChar* current = string;
 
-  while (current != end && IsHTMLSpace<CharacterType>(*current)) {
+  while (current != end && IsHTMLSpace(*current)) {
     current++;
   }
 
@@ -497,18 +487,16 @@ static bool SkipToTerminator(const CharacterType*& string,
   return true;
 }
 
-template <typename CharacterType>
-static bool ParseColorNumberOrPercentage(const CharacterType*& string,
-                                         const CharacterType* end,
+static bool ParseColorNumberOrPercentage(const LChar*& string,
+                                         const LChar* end,
                                          const char terminator,
                                          TerminatorStatus& terminator_status,
                                          CSSPrimitiveValue::UnitType& expect,
                                          int& value) {
-  const CharacterType* current = string;
+  const LChar* current = string;
   double local_value;
   bool negative = false;
-  if (!ParseFloatWithMaxValue<CharacterType>(current, end, 255, local_value,
-                                             negative)) {
+  if (!ParseFloatWithMaxValue(current, end, 255, local_value, negative)) {
     return false;
   }
   if (current == end) {
@@ -546,16 +534,14 @@ static bool ParseColorNumberOrPercentage(const CharacterType*& string,
 
 // Parses a percentage (including the % sign), clamps it and converts it to
 // 0.0..1.0.
-template <typename CharacterType>
-static bool ParsePercentage(const CharacterType*& string,
-                            const CharacterType* end,
+static bool ParsePercentage(const LChar*& string,
+                            const LChar* end,
                             const char terminator,
                             TerminatorStatus& terminator_status,
                             double& value) {
-  const CharacterType* current = string;
+  const LChar* current = string;
   bool negative = false;
-  if (!ParseFloatWithMaxValue<CharacterType>(current, end, 100, value,
-                                             negative)) {
+  if (!ParseFloatWithMaxValue(current, end, 100, value, negative)) {
     return false;
   }
 
@@ -578,9 +564,7 @@ static bool ParsePercentage(const CharacterType*& string,
   return true;
 }
 
-template <typename CharacterType>
-static inline bool IsTenthAlpha(const CharacterType* string,
-                                const wtf_size_t length) {
+static inline bool IsTenthAlpha(const LChar* string, const wtf_size_t length) {
   // "0.X"
   if (length == 3 && string[0] == '0' && string[1] == '.' &&
       IsASCIIDigit(string[2])) {
@@ -595,12 +579,11 @@ static inline bool IsTenthAlpha(const CharacterType* string,
   return false;
 }
 
-template <typename CharacterType>
-static inline bool ParseAlphaValue(const CharacterType*& string,
-                                   const CharacterType* end,
+static inline bool ParseAlphaValue(const LChar*& string,
+                                   const LChar* end,
                                    const char terminator,
                                    int& value) {
-  while (string != end && IsHTMLSpace<CharacterType>(*string)) {
+  while (string != end && IsHTMLSpace(*string)) {
     string++;
   }
 
@@ -718,9 +701,7 @@ static inline bool MatchesCaseInsensitiveLiteral2(const LChar* a,
   return (av | mask) == bv;
 }
 
-template <typename CharacterType>
-static inline bool MightBeRGBOrRGBA(const CharacterType* characters,
-                                    unsigned length) {
+static inline bool MightBeRGBOrRGBA(const LChar* characters, unsigned length) {
   if (length < 5) {
     return false;
   }
@@ -729,9 +710,7 @@ static inline bool MightBeRGBOrRGBA(const CharacterType* characters,
           (characters[3] == 'a' && characters[4] == '('));
 }
 
-template <typename CharacterType>
-static inline bool MightBeHSLOrHSLA(const CharacterType* characters,
-                                    unsigned length) {
+static inline bool MightBeHSLOrHSLA(const LChar* characters, unsigned length) {
   if (length < 5) {
     return false;
   }
@@ -740,9 +719,8 @@ static inline bool MightBeHSLOrHSLA(const CharacterType* characters,
           (characters[3] == 'a' && characters[4] == '('));
 }
 
-template <typename CharacterType>
 static bool FastParseColorInternal(Color& color,
-                                   const CharacterType* characters,
+                                   const LChar* characters,
                                    unsigned length,
                                    bool quirks_mode) {
   if (length >= 4 && characters[0] == '#') {
@@ -758,8 +736,8 @@ static bool FastParseColorInternal(Color& color,
   // rgb() and rgba() have the same syntax.
   if (MightBeRGBOrRGBA(characters, length)) {
     int length_to_add = (characters[3] == 'a') ? 5 : 4;
-    const CharacterType* current = characters + length_to_add;
-    const CharacterType* end = characters + length;
+    const LChar* current = characters + length_to_add;
+    const LChar* end = characters + length;
     int red;
     int green;
     int blue;
@@ -821,8 +799,8 @@ static bool FastParseColorInternal(Color& color,
 
   if (MightBeHSLOrHSLA(characters, length)) {
     int length_to_add = (characters[3] == 'a') ? 5 : 4;
-    const CharacterType* current = characters + length_to_add;
-    const CharacterType* end = characters + length;
+    const LChar* current = characters + length_to_add;
+    const LChar* end = characters + length;
     bool should_have_alpha = false;
 
     // Skip any whitespace before the hue.
@@ -832,7 +810,7 @@ static bool FastParseColorInternal(Color& color,
 
     // Find the end of the hue. This isn't optimal, but allows us to reuse
     // ParseAngle() cleanly.
-    const CharacterType* hue_end = current;
+    const LChar* hue_end = current;
     while (hue_end != end && !IsHTMLSpace(*hue_end) && *hue_end != ',') {
       hue_end++;
     }
@@ -957,16 +935,18 @@ static ParseColorResult ParseColor(CSSPropertyID property_id,
   // Fast path for hex colors and rgb()/rgba()/hsl()/hsla() colors.
   // Note that ParseColor may be called from external contexts,
   // i.e., when parsing style sheets, so we need the Unicode path here.
-  const bool parsed =
-      WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-        return FastParseColorInternal(out_color, chars, length, quirks_mode);
-      });
+  const bool parsed = FastParseColorInternal(out_color, string.Characters8(),
+                                             string.length(), quirks_mode);
   return parsed ? ParseColorResult::kColor : ParseColorResult::kFailure;
 }
 
 ParseColorResult CSSParserFastPaths::ParseColor(const String& string,
                                                 CSSParserMode parser_mode,
                                                 Color& color) {
+  if (!string.Is8Bit()) {
+    // See comment on MaybeParseValue().
+    return ParseColorResult::kFailure;
+  }
   CSSValueID color_id;
   return blink::ParseColor(CSSPropertyID::kColor, string, parser_mode, color,
                            color_id);
@@ -1842,9 +1822,7 @@ static CSSFunctionValue* ParseSimpleTransformValue(const LChar*& pos,
   return nullptr;
 }
 
-template <typename CharType>
-static bool TransformCanLikelyUseFastPath(const CharType* chars,
-                                          unsigned length) {
+static bool TransformCanLikelyUseFastPath(const LChar* chars, unsigned length) {
   // Very fast scan that attempts to reject most transforms that couldn't
   // take the fast path. This avoids doing the malloc and string->double
   // conversions in parseSimpleTransformValue only to discard them when we
