@@ -367,7 +367,7 @@ template("chrome_common_apk_or_module_tmpl") {
 
         # Resources config for blocklisting resource names from obfuscation
         resources_config_paths = [ "//chrome/android/aapt2.config" ]
-        if (_is_monochrome || _is_trichrome) {
+        if (_is_monochrome) {
           resources_config_paths += [ "//android_webview/aapt2.config" ]
         }
         if (defined(invoker.resources_config_paths)) {

@@ -347,6 +347,10 @@ template("system_webview_apk_or_module_tmpl") {
       # parallel by adding dependencies between them (adds around 10-20
       # seconds on my machine).
       strip_unused_resources = is_official_build
+
+      # An aapt2 config file to exempt some webview resources from resource
+      # optimizations.
+      resources_config_paths = [ "//android_webview/aapt2.config" ]
     }
 
     if (!_is_bundle_module) {
