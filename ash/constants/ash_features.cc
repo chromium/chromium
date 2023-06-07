@@ -1430,6 +1430,12 @@ BASE_FEATURE(kLacrosProfileBackwardMigration,
              "LacrosProfileBackwardMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, ash-chrome works as if Lacros SxS mode and Primary mode are
+// removed. This is kill-switch just in case of accident.
+BASE_FEATURE(kLacrosSxSPrimaryRemove,
+             "LacrosSxSPrimaryRemove",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the Language Pack corresponding to the application locale is
 // downloaded and installed during OOBE. This pre-fetching is aimed at improving
 // user experience so that they have language resources available as early as

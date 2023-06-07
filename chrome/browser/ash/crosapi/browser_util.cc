@@ -189,9 +189,11 @@ bool IsLacrosAllowedInternal(const User* user,
   switch (lacros_availability) {
     case LacrosAvailability::kLacrosDisallowed:
       return false;
-    case LacrosAvailability::kUserChoice:
     case LacrosAvailability::kSideBySide:
     case LacrosAvailability::kLacrosPrimary:
+      return !base::FeatureList::IsEnabled(
+          ash::features::kLacrosSxSPrimaryRemove);
+    case LacrosAvailability::kUserChoice:
     case LacrosAvailability::kLacrosOnly:
       return true;
   }
@@ -219,6 +221,27 @@ LacrosMode GetLacrosModeInternal(const User* user,
       // If migration has not been completed, do not enable lacros.
       return LacrosMode::kDisabled;
     }
+  }
+
+  if (base::FeatureList::IsEnabled(ash::features::kLacrosSxSPrimaryRemove)) {
+    switch (lacros_availability) {
+      case LacrosAvailability::kUserChoice:
+        break;
+      case LacrosAvailability::kLacrosDisallowed:
+        NOTREACHED();  // Guarded by IsLacrosAllowedInternal.
+        return LacrosMode::kDisabled;
+      case LacrosAvailability::kSideBySide:
+      case LacrosAvailability::kLacrosPrimary:
+        return LacrosMode::kDisabled;
+      case LacrosAvailability::kLacrosOnly:
+        return LacrosMode::kOnly;
+    }
+
+    if (base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
+      return LacrosMode::kOnly;
+    }
+
+    return LacrosMode::kDisabled;
   }
 
   // Lacros-chrome will always be the primary browser if Lacros is enabled
