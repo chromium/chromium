@@ -44,10 +44,8 @@ SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
     template_url_service_observation_.Observe(template_url_service);
   }
   // Only start observing tab changes if google is the default search provider.
-  dsp_is_google_ = search::DefaultSearchProviderIsGoogle(browser_->profile());
-  csc_enabled_via_policy_ =
-      companion::IsCompanionFeatureEnabledByPolicy(pref_service_);
-  if (DoCompanionRuntimeChecksPass()) {
+  if (companion::IsSearchInCompanionSidePanelSupported(browser)) {
+    is_currently_observing_tab_changes_ = true;
     browser_->tab_strip_model()->AddObserver(this);
     CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
   }
@@ -73,10 +71,7 @@ bool SearchCompanionSidePanelCoordinator::IsSupported(
   }
 
   if (include_runtime_checks) {
-    if (!search::DefaultSearchProviderIsGoogle(profile) ||
-        !companion::IsCompanionFeatureEnabledByPolicy(profile->GetPrefs())) {
-      return false;
-    }
+    return companion::IsSearchInCompanionSidePanelSupportedForProfile(profile);
   }
   return true;
 }
@@ -147,12 +142,6 @@ void SearchCompanionSidePanelCoordinator::
 }
 
 void SearchCompanionSidePanelCoordinator::OnTemplateURLServiceChanged() {
-  bool was_csc_enabled = DoCompanionRuntimeChecksPass();
-  dsp_is_google_ = search::DefaultSearchProviderIsGoogle(browser_->profile());
-  if (was_csc_enabled == DoCompanionRuntimeChecksPass()) {
-    return;
-  }
-
   UpdateCompanionAvailabilityInSidePanel();
 }
 
@@ -166,15 +155,23 @@ void SearchCompanionSidePanelCoordinator::
       browser_view->toolbar()->side_panel_container();
 
   // Update existence of companion entry points based on changes.
-  if (DoCompanionRuntimeChecksPass()) {
+  if (companion::IsSearchInCompanionSidePanelSupported(browser_) &&
+      !is_currently_observing_tab_changes_) {
+    is_currently_observing_tab_changes_ = true;
     container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
                                        name(), icon());
     browser_->tab_strip_model()->AddObserver(this);
     CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
-  } else {
+    return;
+  }
+
+  if (!companion::IsSearchInCompanionSidePanelSupported(browser_) &&
+      is_currently_observing_tab_changes_) {
+    is_currently_observing_tab_changes_ = false;
     container->RemovePinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion);
     browser_->tab_strip_model()->RemoveObserver(this);
     DeregisterEntriesForExistingWebContents(browser_->tab_strip_model());
+    return;
   }
 }
 
@@ -228,17 +225,7 @@ void SearchCompanionSidePanelCoordinator::OnPolicyPrefChanged() {
     return;
   }
 
-  bool was_csc_enabled = DoCompanionRuntimeChecksPass();
-  csc_enabled_via_policy_ =
-      companion::IsCompanionFeatureEnabledByPolicy(pref_service_);
-  if (was_csc_enabled == DoCompanionRuntimeChecksPass()) {
-    return;
-  }
   UpdateCompanionAvailabilityInSidePanel();
-}
-
-bool SearchCompanionSidePanelCoordinator::DoCompanionRuntimeChecksPass() const {
-  return dsp_is_google_ && csc_enabled_via_policy_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);
