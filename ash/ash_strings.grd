@@ -1556,6 +1556,9 @@ Style notes:
         off
       </message>
        <!--  Video Conference bubble  -->
+      <message name="IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME" desc="The accessible name and tooltip for the video conference bubble, and the button which lives in the tray that shows the bubble.">
+         Video Call Controls
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT" desc="The summary text in the return to app panel of the video conference panel, specifying how many video conferencing apps are in used.">
         Used by <ph name="APP_COUNT">$1<ex>2</ex></ph> apps
       </message>
