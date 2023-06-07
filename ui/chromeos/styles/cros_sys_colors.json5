@@ -398,6 +398,10 @@
       light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
       dark: 'rgba($cros.ref.neutral99.rgb, 0.1)',
     },
+    'inverse-hover-on-subtle': {
+      light: 'rgba($cros.ref.neutral99.rgb, 0.1)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+    },
     'ripple-primary': {
       light: 'rgba($cros.ref.primary70.rgb, 0.32)',
       dark: 'rgba($cros.ref.primary60.rgb, 0.32)',
@@ -434,6 +438,10 @@
     'focus-ring': {
       light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',
+    },
+    'inverse-focus-ring': {
+      light: '$cros.ref.primary80',
+      dark: '$cros.ref.primary40',
     },
     'focus-ring-on-primary-container': {
       light: '$cros.ref.primary40',
