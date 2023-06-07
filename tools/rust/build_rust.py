@@ -334,6 +334,13 @@ def CargoVendor(cargo_bin):
             print('Failed cargo vendor, retrying...')
             continue
         else:
+            print(
+                'NOTE: Our cargo vendor step mimics the behaviour of upstream '
+                'bootstrap/dist.rs which is used to build the nightly tarball. '
+                'Any changes to that file may need to be reflected in '
+                'build_rust.py in order for our vendor step to succeed. See '
+                'the link in the roll CL description to quickly see changes to '
+                'the bootstrap/dist.rs file.')
             sys.exit(1)
 
     # Make a `.cargo/config.toml` the points to the `vendor` directory for all
