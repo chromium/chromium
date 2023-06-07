@@ -900,6 +900,8 @@ void WizardController::ShowWelcomeScreen() {
 
 void WizardController::ShowQuickStartScreen() {
   CHECK(wizard_context_->quick_start_enabled);
+  GetScreen<QuickStartScreen>()->SetFlowState(
+      QuickStartScreen::FlowState::INITIAL);
   SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
 }
 
@@ -1207,7 +1209,8 @@ void WizardController::OnUserCreationScreenExit(
     case UserCreationScreen::Result::CONTINUE_QUICK_START_FLOW:
       CHECK(wizard_context_->quick_start_enabled &&
             wizard_context_->quick_start_setup_ongoing);
-      GetScreen<QuickStartScreen>()->AttemptGoogleAccountTransfer();
+      GetScreen<QuickStartScreen>()->SetFlowState(
+          QuickStartScreen::FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
       AdvanceToScreen(QuickStartView::kScreenId);
       break;
     case UserCreationScreen::Result::CHILD_SIGNIN:

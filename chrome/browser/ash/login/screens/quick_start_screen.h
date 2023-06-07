@@ -21,6 +21,14 @@ class QuickStartScreen
  public:
   using TView = QuickStartView;
 
+  // State of the flow when the screen is shown.
+  enum class FlowState {
+    INITIAL,
+    RESUMING_AFTER_CRITICAL_UPDATE,
+    CONTINUING_AFTER_ENROLLMENT_CHECKS,
+    UNKNOWN,
+  };
+
   enum class Result { CANCEL, WIFI_CONNECTED };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
@@ -35,7 +43,9 @@ class QuickStartScreen
 
   static std::string GetResultString(Result result);
 
-  void AttemptGoogleAccountTransfer();
+  // Sets the flow state that determines the actions that will be performed when
+  // the screen is shown.
+  void SetFlowState(FlowState flow_state);
 
  private:
   // BaseScreen:
@@ -59,6 +69,7 @@ class QuickStartScreen
   // MultideviceSetupScreen.
   void SavePhoneInstanceID();
 
+  FlowState flow_state_ = FlowState::UNKNOWN;
   std::string discoverable_name_;
   base::WeakPtr<TView> view_;
   ScreenExitCallback exit_callback_;

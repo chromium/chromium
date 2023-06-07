@@ -62,17 +62,31 @@ void QuickStartScreen::ShowImpl() {
     bootstrap_controller_ =
         LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
     bootstrap_controller_->AddObserver(this);
-    bootstrap_controller_->StartAdvertising();
     DetermineDiscoverableName();
+  }
+
+  switch (flow_state_) {
+    case FlowState::INITIAL:
+      bootstrap_controller_->StartAdvertising();
+      break;
+    case FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
+      bootstrap_controller_->AttemptGoogleAccountTransfer();
+      break;
+    case FlowState::RESUMING_AFTER_CRITICAL_UPDATE:
+    case FlowState::UNKNOWN:
+      NOTREACHED();
+      break;
   }
 }
 
-void QuickStartScreen::AttemptGoogleAccountTransfer() {
-  CHECK(bootstrap_controller_);
-  bootstrap_controller_->AttemptGoogleAccountTransfer();
+void QuickStartScreen::SetFlowState(FlowState flow_state) {
+  flow_state_ = flow_state;
 }
 
 void QuickStartScreen::HideImpl() {
+  if (bootstrap_controller_) {
+    bootstrap_controller_->RemoveObserver(this);
+  }
   bootstrap_controller_.reset();
 }
 
