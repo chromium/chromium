@@ -98,6 +98,7 @@ class MessagePumpLibeventTest : public testing::Test,
   }
 
   int pipefds_[2];
+  static constexpr char null_byte_ = 0;
   std::unique_ptr<test::SingleThreadTaskEnvironment> task_environment_;
 
  private:
@@ -272,9 +273,8 @@ TEST_P(MessagePumpLibeventTest, QuitWatcher) {
                             &controller, &delegate);
 
   // Make the IO thread wait for |event| before writing to pipefds[1].
-  const char buf = 0;
   WaitableEventWatcher::EventCallback write_fd_task =
-      BindOnce(&WriteFDWrapper, pipefds_[1], &buf, 1);
+      BindOnce(&WriteFDWrapper, pipefds_[1], &null_byte_, 1);
   io_runner()->PostTask(
       FROM_HERE, BindOnce(IgnoreResult(&WaitableEventWatcher::StartWatching),
                           Unretained(watcher.get()), &event,
