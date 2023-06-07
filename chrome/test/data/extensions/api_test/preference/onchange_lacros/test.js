@@ -20,19 +20,19 @@ function listenUntil(event, expected) {
 var af = chrome.accessibilityFeatures;
 chrome.test.runTests([
   function changeDefault() {
-    listenUntil(af.autoclick.onChange, {
+    listenUntil(af.focusHighlight.onChange, {
       value: false,
       levelOfControl: 'controlled_by_this_extension'
     });
-    af.autoclick.set({
+    af.focusHighlight.set({
       value:false
     }, chrome.test.callbackPass());
   },
   function clearDefault() {
-    listenUntil(af.autoclick.onChange, {
+    listenUntil(af.focusHighlight.onChange, {
       value: false,
       levelOfControl: 'controllable_by_this_extension'
     });
-    af.autoclick.clear({}, chrome.test.callbackPass());
+    af.focusHighlight.clear({}, chrome.test.callbackPass());
   }
 ]);
