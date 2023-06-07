@@ -95,7 +95,74 @@ use-case, e.g. enforce network policies.
 
 ### Network Stack
 
-TODO: Discuss network\_handler.h / the network stack.
+The network stack on the Software side of ChromeOS is initialized by the
+[`NetworkHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_handler.h;drc=44c626ecbc2cd37a10dae35466e404c0e7333ee5)
+singleton. Beyond this initialization, `NetworkHandler` provides minimal APIs
+except a comprehensive set of accessors that can be used to retrieve any of the
+other more targeted network singletons e.g. `NetworkMetadataStore`.
+
+Example of using `NetworkHandler` to retrieve one of these other singletons:
+```
+  if (NetworkHandler::IsInitialized()) {
+    NetworkMetadataStore* network_metadata_store =
+        NetworkHandler::Get()->network_metadata_store();
+    ...
+  }
+```
+
+#### Testing
+
+Testings involving the ChromeOS networking stack have multiple solutions
+available, and when writing tests it is important to be aware of these different
+solutions for both consistency with other tests as well as ease of
+implementation and maintenance.
+
+For tests that involve code that directly calls `NetworkHandler::Get()`, the
+[`NetworkHandlerTestHelper`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_handler_test_helper.h;drc=614b0b49c9e734fa7f6632df48542891b9f7f92a)
+class will be be required. When instantiated, this class will handle the
+initialization of Shill and Hermes DBus clients, and the `NetworkHandler`
+singleton. Beyond this initialization, `NetworkHandlerTestHelper` also extends
+the
+[`NetworkTestHelperBase`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_test_helper_base.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+class and provides many helper functions to simplify testing. There are many
+examples of tests that take this approach throughout the
+[`//chromeos/ash/components/network/`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/;drc=c338105b7b1b73ed02eba32eed2fb864477d2bf9)
+directory.
+
+For tests that do not need `NetworkHandler::Get()`, and instead only need
+[`NetworkStateHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+and/or
+[`NetworkDeviceHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_device_handler.h;drc=710fdab691deb78c181b67e0d74d34d623476b6e),
+the
+[`NetworkStateTestHelper`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_test_helper.h;drc=d80ebc30e3187f73e29019f2abc98b0c9bf9cdf8)
+class should be used. This class is much more lightweight, and while it will
+still initialize the Shill and Hermes DBus clients it will **not** initialize
+the `NetworkHandler` singleton and the entire networking stack. The
+`NetworkStateTestHelper` also extends `NetworkTestHelperBase` so the same helper
+functions will still be available. There are many examples of tests that take
+this approach throughout the `//chromeos/ash/components/network/` directory.
+
+Tests that do not require the entire networking stack or the Shill and Hermes
+DBus clients should opt to instantiate only the necessary classes and/or fakes
+that they depend on. This case is much more situational and often tests will end
+up looking quite different depending on the exact requirements and code
+location.
+
+##### Tests within //ash/system/network
+
+The tests within `//ash/system/network` typically don't use the same classes
+mentioned above. This difference is due to the
+[`TrayNetworkStateModel`](https://source.chromium.org/chromium/chromium/src/+/main:ash/system/network/tray_network_state_model.h;drc=b8c7dcc70eebd36c4b68be590ca7b5654955002d)
+which acts as a data model of all things related to networking that the system
+UI, e.g. the Quick Settings and toolbar, are interested in. However, even the
+`TrayNetworkStateModel` singleton does not directly use the network stack
+discussed above and instead relies on the mojo
+[`CrosNetworkConfig`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/services/network_config/public/mojom/cros_network_config.mojom;l=1147-1327;drc=28eec300d12693725de66c979962d9b8a4209a7d)
+interface. While this class does directly use the network stack discussed above,
+there are enough layers of abstraction that it would be far too painful to test
+using the entire networking stack. Instead, these tests use
+[`FakeCrosNetworkConfig`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_config/public/cpp/fake_cros_network_config.h;drc=5e476d249f1b36460280115db38fdc37b1c37128)
+to directly configure the state of all things networking.
 
 ### Network States
 
@@ -152,7 +219,7 @@ Example of retrieving and iterating over `NetworkState` objects:
 
 TODO: Discuss network\_configuration\_handler.h and friends.
 
-### `Device State`s
+### Device State
 
 [`DeviceState`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/device_state.h;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094)
 is a Chrome-layer cached representation of a Shill "Device". Similar to
