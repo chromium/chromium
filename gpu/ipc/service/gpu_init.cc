@@ -1028,24 +1028,6 @@ bool GpuInit::InitializeVulkan() {
   if (!vulkan_implementation_)
     return false;
 
-  const base::FeatureParam<std::string> disable_patterns(
-      &features::kVulkan, "disable_by_gl_renderer",
-      "*Mali-G?? M*" /* https://crbug.com/1183702 */);
-  if (MatchGLInfo(gpu_info_.gl_renderer, disable_patterns.Get()))
-    return false;
-
-  const base::FeatureParam<std::string> disable_driver_patterns(
-      &features::kVulkan, "disable_by_gl_driver",
-#if BUILDFLAG(IS_ANDROID)
-      "324.0|331.0|334.0|378.0|415.0|420.0|444.0" /* https://crbug.com/1246857
-                                                   */
-#else
-      ""
-#endif
-  );
-  if (MatchGLInfo(gpu_info_.gpu.driver_version, disable_driver_patterns.Get()))
-    return false;
-
   const base::FeatureParam<std::string> force_enable_patterns(
       &features::kVulkan, "force_enable_by_gl_renderer", "");
   forced_native |=

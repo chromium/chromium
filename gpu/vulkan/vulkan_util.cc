@@ -13,13 +13,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "gpu/config/gpu_info.h"  // nogncheck
+#include "gpu/config/gpu_info.h"  //nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "gpu/config/gpu_finch_features.h"  //nogncheck
 #endif
 
 #define GL_NONE 0x00
@@ -38,6 +39,18 @@ namespace gpu {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
+
+bool IsDeviceBlocked(base::StringPiece field, base::StringPiece block_list) {
+  auto disable_patterns = base::SplitString(
+      block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& disable_pattern : disable_patterns) {
+    if (base::MatchPattern(field, disable_pattern)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   base::StringPiece manufacturer(build_info->manufacturer());
@@ -54,6 +67,31 @@ int GetEMUIVersion() {
 
   return version;
 }
+
+bool IsBlockedByBuildInfo() {
+  const char* kBlockListByHardware = "mt*";
+  const char* kBlockListByBrand = "HONOR";
+  const char* kBlockListByDevice = "OP4863|OP4883";
+  const char* kBlockListByBoard =
+      "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk";
+
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  if (IsDeviceBlocked(build_info->hardware(), kBlockListByHardware)) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->brand(), kBlockListByBrand)) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->device(), kBlockListByDevice)) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->board(), kBlockListByBoard)) {
+    return true;
+  }
+
+  return false;
+}
+
 #endif
 }
 
@@ -206,6 +244,10 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   return true;
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
+  if (IsBlockedByBuildInfo()) {
+    return false;
+  }
+
   if (vulkan_info.physical_devices.empty())
     return false;
 
@@ -218,12 +260,31 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       return true;
   }
 
+  const base::FeatureParam<std::string> disable_patterns(
+      &features::kVulkan, "disable_by_gl_renderer", "");
+
+  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_patterns.Get())) {
+    return false;
+  }
+
+  const base::FeatureParam<std::string> disable_driver_patterns(
+      &features::kVulkan, "disable_by_gl_driver", "");
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                      disable_driver_patterns.Get())) {
+    return false;
+  }
+
   if (device_info.properties.vendorID == kVendorARM) {
     int emui_version = GetEMUIVersion();
     // TODO(crbug.com/1096222) Display problem with Huawei EMUI < 11 and Honor
     // devices with Mali GPU. The Mali driver version is < 19.0.0.
     if (device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0) &&
         emui_version < 11) {
+      return false;
+    }
+
+    // https://crbug.com/1183702
+    if (IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*")) {
       return false;
     }
 
@@ -248,8 +309,14 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     }
   }
 
-  // https:://crbug.com/1165783: Performance is not yet as good as GL.
   if (device_info.properties.vendorID == kVendorQualcomm) {
+    // https://crbug.com/1246857
+    if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                        "324.0|331.0|334.0|378.0|415.0|420.0|444.0")) {
+      return false;
+    }
+
+    // https:://crbug.com/1165783: Performance is not yet as good as GL.
     if (device_info.properties.deviceName ==
         base::StringPiece("Adreno (TM) 630"))
       return true;

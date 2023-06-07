@@ -271,13 +271,13 @@ BASE_FEATURE(kWebGPUBlobCache, "WebGPUBlobCache", WEBGPU_ENABLED);
 #if BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByHardware{
-    &kVulkan, "BlockListByHardware", "mt*"};
+    &kVulkan, "BlockListByHardware", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByBrand{
-    &kVulkan, "BlockListByBrand", "HONOR"};
+    &kVulkan, "BlockListByBrand", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByDevice{
-    &kVulkan, "BlockListByDevice", "OP4863|OP4883"};
+    &kVulkan, "BlockListByDevice", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildId{
     &kVulkan, "BlockListByAndroidBuildId", ""};
@@ -289,8 +289,7 @@ const base::FeatureParam<std::string> kVulkanBlockListByModel{
     &kVulkan, "BlockListByModel", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByBoard{
-    &kVulkan, "BlockListByBoard",
-    "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk"};
+    &kVulkan, "BlockListByBoard", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
     &kVulkan, "BlockListByAndroidBuildFP", ""};
