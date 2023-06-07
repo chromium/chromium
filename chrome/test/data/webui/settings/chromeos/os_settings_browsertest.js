@@ -192,7 +192,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
  ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementPage', 'app_management/app_management_page_tests.js'],
- ['AppManagementReducers', 'app_management/reducers_test.js'],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
@@ -503,6 +502,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsAppsPageAppManagementPagePwaDetailView',
    'os_apps_page/app_management_page/pwa_detail_view_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageReducers',
+   'os_apps_page/app_management_page/reducers_test.js'
  ],
  [
    'OsAppsPageAppManagementPageResizeLockItem',

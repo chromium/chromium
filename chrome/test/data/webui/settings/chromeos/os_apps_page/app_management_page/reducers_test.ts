@@ -2,22 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addApp, changeApp, reduceAction, removeApp, updateApps, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
+
+import {addApp, AppManagementPageState, changeApp, reduceAction, removeApp, updateApps, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createApp} from './test_util.js';
+import {createApp} from '../../app_management/test_util.js';
 
-suite('app state', function() {
-  let apps;
+suite('app state', () => {
+  let apps: Record<string, App>;
 
-  setup(function() {
+  setup(() => {
     apps = {
-      '1': createApp('1'),
-      '2': createApp('2'),
+      '1': createApp('1', {}),
+      '2': createApp('2', {}),
     };
   });
 
-  test('updates when an app is added', function() {
+  test('updates when an app is added', () => {
     const newApp = createApp('3', {type: 1, title: 'a'});
     const action = addApp(newApp);
     apps = updateApps(apps, action);
@@ -34,47 +38,50 @@ suite('app state', function() {
     assertEquals('a', app.title);
   });
 
-  test('updates when an app is changed', function() {
+  test('updates when an app is changed', () => {
     const changedApp = createApp('2', {type: 1, title: 'a'});
     const action = changeApp(changedApp);
     apps = updateApps(apps, action);
 
     // Check that app has changed.
     const app = apps['2'];
+    assertTrue(!!app);
     assertEquals(1, app.type);
     assertEquals('a', app.title);
 
     // Check that number of apps hasn't changed.
-    assertEquals(Object.keys(apps).length, 2);
+    assertEquals(2, Object.keys(apps).length);
   });
 
-  test('updates when an app is removed', function() {
+  test('updates when an app is removed', () => {
     const action = removeApp('1');
     apps = updateApps(apps, action);
 
     // Check that app is removed.
-    assertFalse(!!apps['1']);
+    assertEquals(undefined, apps['1']);
 
     // Check that other app is unaffected.
     assertTrue(!!apps['2']);
   });
 });
 
-suite('selected app id', function() {
-  let state;
+suite('selected app id', () => {
+  let state: AppManagementPageState;
 
-  setup(function() {
-    state = createInitialState([
-      createApp('1'),
-      createApp('2'),
-    ]);
+  setup(() => {
+    state = createInitialState(
+        [
+          createApp('1', {}),
+          createApp('2', {}),
+        ],
+        {});
   });
 
-  test('initial state has no selected app', function() {
-    assertEquals(null, state.selectedAppId);
+  test('initial state has no selected app', () => {
+    assertNull(state.selectedAppId);
   });
 
-  test('updates selected app id', function() {
+  test('updates selected app id', () => {
     let action = updateSelectedAppId('1');
     state = reduceAction(state, action);
     assertEquals('1', state.selectedAppId);
@@ -85,16 +92,16 @@ suite('selected app id', function() {
 
     action = updateSelectedAppId(null);
     state = reduceAction(state, action);
-    assertEquals(null, state.selectedAppId);
+    assertNull(state.selectedAppId);
   });
 
-  test('removing an app resets selected app id', function() {
-    let action = updateSelectedAppId('1');
-    state = reduceAction(state, action);
+  test('removing an app resets selected app id', () => {
+    const selectAction = updateSelectedAppId('1');
+    state = reduceAction(state, selectAction);
     assertEquals('1', state.selectedAppId);
 
-    action = removeApp('1');
-    state = reduceAction(state, action);
-    assertEquals(null, state.selectedAppId);
+    const removeAction = removeApp('1');
+    state = reduceAction(state, removeAction);
+    assertNull(state.selectedAppId);
   });
 });

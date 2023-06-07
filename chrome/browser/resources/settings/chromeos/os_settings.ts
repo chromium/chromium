@@ -156,7 +156,7 @@ export {addApp, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentA
 export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
 export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
 export {reduceAction, updateApps} from './os_apps_page/app_management_page/reducers.js';
-export {AppManagementStore} from './os_apps_page/app_management_page/store.js';
+export {AppManagementPageState, AppManagementStore} from './os_apps_page/app_management_page/store.js';
 export {AppManagementStoreMixin} from './os_apps_page/app_management_page/store_mixin.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
