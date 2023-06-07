@@ -6887,8 +6887,6 @@ ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
     if (pdf_ocr_controller && pdf_ocr_controller->IsEnabled()) {
       ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
     }
-    // TODO(crbug.com/1393069): Destroy PdfOcrController when unused (i.e.
-    // when a screen reader gets turned off later).
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   return ax_mode;

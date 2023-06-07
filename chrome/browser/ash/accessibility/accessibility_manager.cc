@@ -676,8 +676,6 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
       // Create PdfOcrController when both the PDF OCR feature flag and
       // Chromevox are enabled.
       ::screen_ai::PdfOcrControllerFactory::GetForProfile(profile());
-      // TODO(crbug.com/1393069): Destroy `PdfOcrController` when no longer
-      // needed.
     }
   }
 

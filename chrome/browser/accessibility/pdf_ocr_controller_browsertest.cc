@@ -107,7 +107,7 @@ class PdfOcrControllerBrowserTest : public PDFExtensionTestBase {
   }
 };
 
-// TODO(crbug.com/1393069): Fix flakiness.
+// TODO(crbug.com/1443345): Fix flakiness.
 // Enabling PDF OCR should affect the accessibility mode of a new WebContents
 // of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
   }
 }
 
-// TODO(crbug.com/1393069): Fix flakiness.
+// TODO(crbug.com/1443345): Fix flakiness.
 // Enabling PDF OCR should affect the accessibility mode of an exiting
 // WebContents of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,

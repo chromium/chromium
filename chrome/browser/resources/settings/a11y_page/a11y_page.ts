@@ -212,8 +212,6 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private onPdfOcrChange_(event: Event) {
     const pdfOcrOn = (event.target as SettingsToggleButtonElement).checked;
     if (pdfOcrOn) {
-      // TODO(crbug.com/1393069): Downloads a pdf ocr model if not yet
-      // downloaded.
       console.error(
           'Need to check a pdf ocr model and download it if necessary');
     }

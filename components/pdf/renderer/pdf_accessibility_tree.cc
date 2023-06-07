@@ -454,7 +454,7 @@ std::unique_ptr<ui::AXNodeData> CreateNode(
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(crbug.com/1393069): Need to test this status node with screen readers
+// TODO(crbug.com/1442928): Need to test this status node with screen readers
 // on other desktop platforms, such as Windows, macOS, and Linux, as well as in
 // the embedded PDF case.
 std::unique_ptr<ui::AXNodeData> CreateStatusNode(
@@ -1964,8 +1964,9 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
   if (ocr_service_) {
     return;
   }
-  // TODO(crbug.com/1393069): Ensure that ui::AXMode::kPDFOcr is set in the
-  // AXMode only when both the PDF OCR pref and screen reader are on.
+  // TODO(crbug.com/1443341): Ensure that ui::AXMode::kPDFOcr is set in the
+  // AXMode on Windows, Linux, and macOS only when both the PDF OCR pref and
+  // screen reader are on.
   CreateOcrService();
   always_load_or_reload_accessibility = true;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

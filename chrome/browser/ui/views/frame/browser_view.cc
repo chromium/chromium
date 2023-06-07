@@ -776,8 +776,6 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
       if (features::IsPdfOcrEnabled()) {
         screen_ai::PdfOcrControllerFactory::GetForProfile(
             browser_view_->GetProfile());
-        // TODO(crbug.com/1393069): Destroy `PdfOcrController` when no longer
-        // needed.
       }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     }
