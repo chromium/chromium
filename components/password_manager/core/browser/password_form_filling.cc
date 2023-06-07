@@ -26,6 +26,8 @@ using autofill::PasswordAndMetadata;
 using autofill::PasswordFormFillData;
 using url::Origin;
 using Logger = autofill::SavePasswordProgressLogger;
+using password_manager_util::GetMatchType;
+using GetLoginMatchType = password_manager_util::GetLoginMatchType;
 
 namespace password_manager {
 
@@ -65,10 +67,6 @@ bool IsFillOnAccountSelectFeatureEnabled() {
       password_manager::features::kFillOnAccountSelect);
 }
 #endif
-
-bool IsPublicSuffixMatchOrAffiliationBasedMatch(const PasswordForm& form) {
-  return form.is_public_suffix_match || form.is_affiliation_based_match;
-}
 
 void Autofill(PasswordManagerClient* client,
               PasswordManagerDriver* driver,
@@ -173,23 +171,27 @@ LikelyFormFilling SendFillInformationToRenderer(
   // current password field, no filling attempt will be made. In this case the
   // renderer won't treat this as the "first filling" and won't record metrics
   // accordingly. The browser should not do that either.
-  const bool no_sign_in_form =
+  const bool not_sign_in_form =
       !observed_form.HasPasswordElement() && !observed_form.IsSingleUsername();
 
-  if (preferred_match) {
-    using FormType = PasswordFormMetricsRecorder::MatchedFormType;
-    FormType preferred_form_type = FormType::kExactMatch;
-    if (preferred_match->is_affiliation_based_match) {
-      preferred_form_type =
-          IsValidAndroidFacetURI(preferred_match->signon_realm)
-              ? FormType::kAffiliatedApp
-              : FormType::kAffiliatedWebsites;
-    } else if (preferred_match->is_public_suffix_match) {
-      preferred_form_type = FormType::kPublicSuffixMatch;
+  if (preferred_match && !not_sign_in_form) {
+    using FormMatchType =
+        password_manager::PasswordFormMetricsRecorder::MatchedFormType;
+    switch (GetMatchType(*preferred_match)) {
+      case GetLoginMatchType::kExact:
+        metrics_recorder->RecordMatchedFormType(FormMatchType::kExactMatch);
+        break;
+      case GetLoginMatchType::kAffiliated:
+        metrics_recorder->RecordMatchedFormType(
+            IsValidAndroidFacetURI(preferred_match->signon_realm)
+                ? FormMatchType::kAffiliatedApp
+                : FormMatchType::kAffiliatedWebsites);
+        break;
+      case GetLoginMatchType::kPSL:
+        metrics_recorder->RecordMatchedFormType(
+            FormMatchType::kPublicSuffixMatch);
+        break;
     }
-
-    if (!no_sign_in_form)
-      metrics_recorder->RecordMatchedFormType(preferred_form_type);
   }
 
 // This metric will always record kReauthRequired on iOS and Android. So we can
@@ -212,15 +214,17 @@ LikelyFormFilling SendFillInformationToRenderer(
                  ->IsBiometricAuthenticationBeforeFillingEnabled()) {
     wait_for_username_reason = WaitForUsernameReason::kBiometricAuthentication;
 #endif
-  } else if (preferred_match && preferred_match->is_affiliation_based_match &&
+  } else if (preferred_match &&
+             GetMatchType(*preferred_match) == GetLoginMatchType::kAffiliated &&
              !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
     wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
-  } else if (preferred_match && preferred_match->is_public_suffix_match) {
+  } else if (preferred_match &&
+             GetMatchType(*preferred_match) == GetLoginMatchType::kPSL) {
     wait_for_username_reason = WaitForUsernameReason::kPublicSuffixMatch;
   } else if (!IsSameOrigin(client->GetLastCommittedOrigin(),
                            GURL(observed_form.signon_realm))) {
     wait_for_username_reason = WaitForUsernameReason::kCrossOriginIframe;
-  } else if (no_sign_in_form) {
+  } else if (not_sign_in_form) {
     // If the parser did not find a current password element, don't fill.
     wait_for_username_reason = WaitForUsernameReason::kFormNotGoodForFilling;
   } else if (observed_form.HasUsernameElement() &&
@@ -241,7 +245,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant
   // for filling. The renderer won't record a "FirstFillingResult" either.
-  if (!no_sign_in_form) {
+  if (!not_sign_in_form) {
     metrics_recorder->RecordFirstWaitForUsernameReason(
         wait_for_username_reason);
   }
@@ -307,7 +311,7 @@ PasswordFormFillData CreatePasswordFormFillData(
   result.preferred_login.uses_account_store =
       preferred_match.IsUsingAccountStore();
 
-  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match) ||
+  if (GetMatchType(preferred_match) != GetLoginMatchType::kExact ||
       !IsSameOrigin(main_frame_origin, form_on_page.url)) {
     // If the origins of the |preferred_match|, the main frame and the form's
     // frame differ, then show the origin of the match.
@@ -325,7 +329,7 @@ PasswordFormFillData CreatePasswordFormFillData(
     value.password_value = match->password_value;
     value.uses_account_store = match->IsUsingAccountStore();
 
-    if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match)) {
+    if (GetMatchType(*match) != GetLoginMatchType::kExact) {
       value.realm = GetPreferredRealm(*match);
     } else if (!IsSameOrigin(main_frame_origin, match->url)) {
       // If the suggestion is for a cross-origin iframe, display the origin of
