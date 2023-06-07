@@ -38,6 +38,8 @@ class SidePanel : public views::AccessiblePaneView,
   bool IsRightAligned();
   gfx::Size GetMinimumSize() const override;
 
+  void AddHeaderView(std::unique_ptr<views::View> view);
+
   // Gets the upper bound of the content area size if the side panel is shown
   // right now. If the side panel is not showing, returns the minimum width
   // and browser view height minus the padding insets. The actual content
@@ -65,6 +67,8 @@ class SidePanel : public views::AccessiblePaneView,
   const raw_ptr<View> border_view_;
   const raw_ptr<BrowserView> browser_view_;
   const raw_ptr<View> resize_area_;
+
+  raw_ptr<views::View> header_view_ = nullptr;
 
   // -1 if a side panel resize is not in progress, otherwise the width of the
   // side panel when the current resize was initiated.
