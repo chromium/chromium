@@ -19,6 +19,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
@@ -191,6 +192,14 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             UsbNotificationManager.updateUsbNotificationForTab(ContextUtils.getApplicationContext(),
                     UsbNotificationService.class, mTab.getId(), mTab.getWebContents(),
                     mTab.getUrl(), mTab.isIncognito());
+            if (BackPressManager.isEnabled()) {
+                RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+                while (observers.hasNext()) observers.next().onTabNavigationStateInvalidated();
+            }
+        }
+        if ((flags & InvalidateTypes.LOAD) != 0 && BackPressManager.isEnabled()) {
+            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            while (observers.hasNext()) observers.next().onLoadNavigationStateInvalidated();
         }
         if ((flags & InvalidateTypes.TITLE) != 0) {
             // Update cached title then notify observers.

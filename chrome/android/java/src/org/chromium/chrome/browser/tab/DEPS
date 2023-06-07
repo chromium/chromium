@@ -54,6 +54,7 @@ include_rules = [
   "+components/browser_ui/widget/android",
   "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
   "+content/public/android/java/src/org/chromium/content_public",
+  "+chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java",
 ]
 
 specific_include_rules = {

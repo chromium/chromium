@@ -856,6 +856,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     updateButtonStatus();
                 }
             }
+
+            @Override
+            public void onTabNavigationStateInvalidated() {
+                onBackPressStateChanged();
+            }
+
+            @Override
+            public void onLoadNavigationStateInvalidated() {
+                onBackPressStateChanged();
+            }
         };
 
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
@@ -2175,10 +2185,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             var layout = mLayoutStateProviderSupplier.hasValue()
                     ? mLayoutStateProviderSupplier.get().getActiveLayoutType()
                     : LayoutType.NONE;
-            var msg = String.format("BottomCtrl %s %s; actTab %s, urlBarTab %s, sTab %s, layout %s",
-                    bc,
+            var msg = String.format(
+                    "BottomCtrl %s %s; actTab %s %s; urlBarTab %s, sTab %s, layout %s", bc,
                     bc != null && Boolean.TRUE.equals(bc.getHandleBackPressChangedSupplier().get()),
-                    tab, mLocationBarModel.getTab(), t2, layout);
+                    tab, tab.getWebContents(), mLocationBarModel.getTab(), t2, layout);
             assert false : msg;
         }
         onBackPressStateChanged();

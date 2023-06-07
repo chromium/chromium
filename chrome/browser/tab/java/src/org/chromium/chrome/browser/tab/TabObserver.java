@@ -337,4 +337,16 @@ public interface TabObserver {
      * @param scrolling {@code true} if scrolling started; {@code false} if stopped.
      */
     void onContentViewScrollingStateChanged(boolean scrolling);
+
+    /**
+     * Back press refactor related. Called when navigation state is invalidated by
+     * {@link org.chromium.content_public.browser.InvalidateTypes.TAB}.
+     */
+    void onTabNavigationStateInvalidated();
+
+    /**
+     * Back press refactor related. Called when navigation state is invalidated by
+     * {@link org.chromium.content_public.browser.InvalidateTypes.LOAD}.
+     */
+    void onLoadNavigationStateInvalidated();
 }

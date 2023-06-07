@@ -144,4 +144,10 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onContentViewScrollingStateChanged(boolean scrolling) {}
+
+    @Override
+    public void onTabNavigationStateInvalidated() {}
+
+    @Override
+    public void onLoadNavigationStateInvalidated() {}
 }
