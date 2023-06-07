@@ -353,7 +353,7 @@ static unsigned ParsePositiveDouble(const LChar* string,
     if (string[position] == '.') {
       break;
     }
-    local_value = local_value * 10 + string[position] - '0';
+    local_value = local_value * 10 + (string[position] - '0');
   }
 
   if (++position == length) {
@@ -366,7 +366,7 @@ static unsigned ParsePositiveDouble(const LChar* string,
 
   const double kMaxScale = 10000000;
   while (position < length && scale < kMaxScale) {
-    fraction = fraction * 10 + string[position++] - '0';
+    fraction = fraction * 10 + (string[position++] - '0');
     scale *= 10;
   }
 
@@ -396,7 +396,7 @@ ALWAYS_INLINE static bool ParseFloatWithMaxValue(const LChar*& string,
     return false;
   }
   while (current != end && IsASCIIDigit(*current)) {
-    double new_value = value * 10 + *current++ - '0';
+    double new_value = value * 10 + (*current++ - '0');
     if (new_value >= max_value) {
       // Clamp values at 255 or 100 (depending on the caller).
       value = max_value;
