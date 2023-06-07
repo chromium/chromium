@@ -217,8 +217,6 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
                 __uuidof(IPolicyStatus2User),
                 __uuidof(IPolicyStatus3User),
                 __uuidof(IPolicyStatusValueUser),
-                __uuidof(IProcessLauncherUser),
-                __uuidof(IProcessLauncher2User),
             };
           case UpdaterScope::kSystem:
             return {
@@ -239,8 +237,8 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
                 __uuidof(IPolicyStatus2System),
                 __uuidof(IPolicyStatus3System),
                 __uuidof(IPolicyStatusValueSystem),
-                __uuidof(IProcessLauncherSystem),
-                __uuidof(IProcessLauncher2System),
+                __uuidof(IProcessLauncher),
+                __uuidof(IProcessLauncher2),
             };
         }
       }(),
@@ -256,8 +254,6 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
           __uuidof(IPolicyStatus2),
           __uuidof(IPolicyStatus3),
           __uuidof(IPolicyStatusValue),
-          __uuidof(IProcessLauncher),
-          __uuidof(IProcessLauncher2),
       });
 }
 
@@ -469,11 +465,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
           {__uuidof(IPolicyStatusValueUser), kUpdaterLegacyIndex},
           {__uuidof(IPolicyStatusValueSystem), kUpdaterLegacyIndex},
           {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},
-          {__uuidof(IProcessLauncherUser), kUpdaterLegacyIndex},
-          {__uuidof(IProcessLauncherSystem), kUpdaterLegacyIndex},
           {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
-          {__uuidof(IProcessLauncher2User), kUpdaterLegacyIndex},
-          {__uuidof(IProcessLauncher2System), kUpdaterLegacyIndex},
       }};
   auto index = kTypeLibIndexes->find(iid);
   CHECK(index != kTypeLibIndexes->end());
