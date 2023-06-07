@@ -4,12 +4,10 @@
 
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
-#include "components/media_router/common/providers/cast/channel/libcast_socket_service.h"
 #include "components/media_router/common/providers/cast/channel/logger.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,16 +16,9 @@ using content::BrowserThread;
 
 namespace cast_channel {
 
-BASE_FEATURE(kLibcastSocketService,
-             "LibcastSocketService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // static
 CastSocketService* CastSocketService::GetInstance() {
-  static CastSocketService* service =
-      base::FeatureList::IsEnabled(kLibcastSocketService)
-          ? static_cast<CastSocketService*>(new LibcastSocketService())
-          : static_cast<CastSocketService*>(new CastSocketServiceImpl());
+  static CastSocketService* service = new CastSocketServiceImpl();
   return service;
 }
 
