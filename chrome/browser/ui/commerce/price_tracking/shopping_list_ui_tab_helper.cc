@@ -305,11 +305,8 @@ void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
   if (!cluster_id_for_page_.has_value())
     return;
 
-  const bookmarks::BookmarkNode* bookmark_node =
-      bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
-          web_contents()->GetLastCommittedURL());
-  commerce::IsBookmarkPriceTracked(
-      shopping_service_, bookmark_model_, bookmark_node,
+  shopping_service_->IsClusterIdTrackedByUser(
+      cluster_id_for_page_.value(),
       base::BindOnce(
           [](base::WeakPtr<ShoppingListUiTabHelper> helper, bool is_tracked) {
             if (!helper) {

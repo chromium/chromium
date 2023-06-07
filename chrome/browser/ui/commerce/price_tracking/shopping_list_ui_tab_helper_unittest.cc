@@ -166,6 +166,7 @@ TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
   shopping_service_->SetIsSubscribedCallbackValue(true);
+  shopping_service_->SetIsClusterIdTrackedByUserResponse(true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 
@@ -177,6 +178,7 @@ TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {
 
   // Now assume the user has unsubscribed again.
   shopping_service_->SetIsSubscribedCallbackValue(false);
+  shopping_service_->SetIsClusterIdTrackedByUserResponse(false);
   tab_helper_->OnUnsubscribe(CreateUserTrackedSubscription(kClusterId), true);
   base::RunLoop().RunUntilIdle();
 
@@ -243,6 +245,7 @@ TEST_F(ShoppingListUiTabHelperTest,
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
   shopping_service_->SetIsSubscribedCallbackValue(false);
+  shopping_service_->SetIsClusterIdTrackedByUserResponse(false);
   shopping_service_->SetSubscribeCallbackValue(true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
@@ -256,6 +259,7 @@ TEST_F(ShoppingListUiTabHelperTest,
                 testing::_))
       .Times(1);
 
+  shopping_service_->SetIsClusterIdTrackedByUserResponse(true);
   tab_helper_->SetPriceTrackingState(true, true, base::DoNothing());
   ASSERT_TRUE(GetPendingTrackingStateForTesting().has_value());
   ASSERT_TRUE(GetPendingTrackingStateForTesting().value());
