@@ -412,6 +412,7 @@ class EgtestsApp(GTestsApp):
       # Module data specific to EG2 tests
       module_data['IsUITestBundle'] = True
       module_data['IsXCTRunnerHostedTestBundle'] = True
+      module_data['SystemAttachmentLifetime'] = 'keepAlways'
       module_data['UITargetAppPath'] = '%s' % self.host_app_path
       module_data['UITargetAppBundleIdentifier'] = get_bundle_id(
           self.host_app_path)
