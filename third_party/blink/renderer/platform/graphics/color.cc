@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
+#include <cmath>
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -191,13 +192,11 @@ Color Color::FromColorSpace(ColorSpace color_space,
   result.param2_ = param2.value_or(0.f);
   result.alpha_ = ClampTo(alpha.value_or(0.f), 0.f, 1.f);
 
-  if (color_space == ColorSpace::kLab || color_space == ColorSpace::kOklab ||
-      color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch) {
+  if (IsLightnessFirstComponent(color_space) && !isnan(result.param0_)) {
     // param0_ is luminance which cannot be negative or above 100%.
     result.param0_ = std::min(100.f, std::max(result.param0_, 0.f));
   }
-  if (color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch) {
-    // param1_ is chroma, which cannot be negative.
+  if (IsChromaSecondComponent(color_space)) {
     result.param1_ = std::max(result.param1_, 0.f);
   }
 
@@ -305,13 +304,6 @@ void Color::CarryForwardAnalogousMissingComponents(
            color_space == Color::ColorSpace::kSRGBLegacy;
   };
 
-  auto IsLightnessFirstComponent = [](Color::ColorSpace color_space) {
-    return color_space == Color::ColorSpace::kLab ||
-           color_space == Color::ColorSpace::kOklab ||
-           color_space == Color::ColorSpace::kLch ||
-           color_space == Color::ColorSpace::kOklch;
-  };
-
   const auto cur_color_space = color.GetColorSpace();
   if (cur_color_space == prev_color_space) {
     return;
@@ -416,8 +408,7 @@ Color Color::InterpolateColors(
       (color1.param2_is_none_ || color2.param2_is_none_)
           ? HandleNoneInterpolation(color1.param2_, color1.param2_is_none_,
                                     color2.param2_, color2.param2_is_none_)
-      : (interpolation_space == ColorSpace::kLch ||
-         interpolation_space == ColorSpace::kOklch)
+      : (IsChromaSecondComponent(interpolation_space))
           ? HueInterpolation(color1.param2_, color2.param2_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param2_, color2.param2_, percentage);
@@ -703,8 +694,9 @@ float Color::PremultiplyColor() {
   if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
     param0_ = param0_ * alpha_;
   param1_ = param1_ * alpha_;
-  if (color_space_ != ColorSpace::kLch && color_space_ != ColorSpace::kOklch)
+  if (!IsChromaSecondComponent(color_space_)) {
     param2_ = param2_ * alpha_;
+  }
   alpha_ = 1.0f;
   return alpha;
 }
@@ -719,8 +711,9 @@ void Color::UnpremultiplyColor() {
   if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
     param0_ = param0_ / alpha_;
   param1_ = param1_ / alpha_;
-  if (color_space_ != ColorSpace::kLch && color_space_ != ColorSpace::kOklch)
+  if (!IsChromaSecondComponent(color_space_)) {
     param2_ = param2_ / alpha_;
+  }
 }
 
 // static
@@ -889,6 +882,25 @@ static String SerializeLegacyColorAsCSSColor(SkColor4f color) {
   return result.ToString();
 }
 
+static String ColorParamToString(float param) {
+  StringBuilder result;
+  if (!isfinite(param)) {
+    // https://www.w3.org/TR/css-values-4/#calc-serialize
+    result.Append("calc(");
+    if (isinf(param)) {
+      // "Infinity" gets capitalized, so we can't use AppendNumber().
+      (param < 0) ? result.Append("-infinity") : result.Append("infinity");
+    } else {
+      result.AppendNumber(param);
+    }
+    result.Append(")");
+    return result.ToString();
+  }
+
+  result.AppendNumber(param);
+  return result.ToString();
+}
+
 String Color::SerializeAsCSSColor() const {
   if (IsLegacyColor()) {
     return SerializeLegacyColorAsCSSColor(toSkColor4f());
@@ -896,8 +908,7 @@ String Color::SerializeAsCSSColor() const {
 
   StringBuilder result;
   result.ReserveCapacity(28);
-  if (color_space_ == ColorSpace::kLab || color_space_ == ColorSpace::kOklab ||
-      color_space_ == ColorSpace::kLch || color_space_ == ColorSpace::kOklch) {
+  if (IsLightnessFirstComponent(color_space_)) {
     result.Append(ColorSpaceToString(color_space_));
     result.Append("(");
   } else {
@@ -912,11 +923,14 @@ String Color::SerializeAsCSSColor() const {
     p0 /= 100.0f;
   }
 
-  param0_is_none_ ? result.Append("none") : result.AppendNumber(p0);
+  param0_is_none_ ? result.Append("none")
+                  : result.Append(ColorParamToString(p0));
   result.Append(" ");
-  param1_is_none_ ? result.Append("none") : result.AppendNumber(param1_);
+  param1_is_none_ ? result.Append("none")
+                  : result.Append(ColorParamToString(param1_));
   result.Append(" ");
-  param2_is_none_ ? result.Append("none") : result.AppendNumber(param2_);
+  param2_is_none_ ? result.Append("none")
+                  : result.Append(ColorParamToString(param2_));
 
   if (alpha_ != 1.0 || alpha_is_none_) {
     result.Append(" / ");
@@ -1204,10 +1218,7 @@ String Color::SerializeInterpolationSpace(
       break;
   }
 
-  if (color_space == Color::ColorSpace::kLch ||
-      color_space == Color::ColorSpace::kOklch ||
-      color_space == Color::ColorSpace::kHSL ||
-      color_space == Color::ColorSpace::kHWB) {
+  if (ColorSpaceHasHue(color_space)) {
     switch (hue_interpolation_method) {
       case Color::HueInterpolationMethod::kDecreasing:
         result.Append(" decreasing hue");
@@ -1225,6 +1236,23 @@ String Color::SerializeInterpolationSpace(
   }
 
   return result.ReleaseString();
+}
+
+void Color::ResolveNonFiniteValues() {
+  // Lightness is clamped to [0, 100]
+  if (IsLightnessFirstComponent(color_space_) && isinf(param0_)) {
+    param0_ = (param0_ > 0.0f) ? 100.0f : 0.0f;
+  }
+
+  if (IsChromaSecondComponent(color_space_) && isinf(param1_) &&
+      param1_ < 0.0f) {
+    param1_ = 0.0f;
+  }
+
+  // Parsed values are `calc(NaN)` but computed values are 0 for NaN.
+  param0_ = isnan(param0_) ? 0.0f : param0_;
+  param1_ = isnan(param1_) ? 0.0f : param1_;
+  param2_ = isnan(param2_) ? 0.0f : param2_;
 }
 
 std::ostream& operator<<(std::ostream& os, const Color& color) {

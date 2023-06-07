@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -1898,9 +1899,11 @@ static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
     } else if (CSSPrimitiveValue* value = ConsumeNumber(
                    args, context, CSSPrimitiveValue::ValueRange::kAll);
                value) {
-      lightness =
-          std::min(100.0, std::max(0.0, value->GetDoubleValue()) *
-                              (function_id == CSSValueID::kLab ? 1.0 : 100.0));
+      lightness = value->GetDoubleValueWithoutClamping();
+      if (isfinite(lightness.value())) {
+        lightness = std::min(100.0, std::max(0.0, lightness.value())) *
+                    (function_id == CSSValueID::kLab ? 1.0 : 100.0);
+      }
     } else {
       return false;
     }
@@ -1922,7 +1925,7 @@ static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
     } else if (CSSPrimitiveValue* value = ConsumeNumber(
                    args, context, CSSPrimitiveValue::ValueRange::kAll);
                value) {
-      i = value->GetDoubleValue();
+      i = value->GetDoubleValueWithoutClamping();
     } else {
       return false;
     }
@@ -1956,9 +1959,13 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
     } else if (CSSPrimitiveValue* value = ConsumeNumber(
                    args, context, CSSPrimitiveValue::ValueRange::kAll);
                value) {
-      lightness =
-          std::min(100.0, std::max(0.0, value->GetDoubleValue()) *
-                              (function_id == CSSValueID::kLch ? 1.0 : 100.0));
+      lightness = value->GetDoubleValueWithoutClamping();
+      if (isfinite(lightness.value())) {
+        lightness = std::min(
+            100.0,
+            std::max(0.0, lightness.value() *
+                              (function_id == CSSValueID::kLch ? 1.0 : 100.0)));
+      }
     } else {
       return false;
     }
@@ -1978,7 +1985,10 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
     } else if (CSSPrimitiveValue* value = ConsumeNumber(
                    args, context, CSSPrimitiveValue::ValueRange::kAll);
                value) {
-      chroma = std::max(0.0, value->GetDoubleValue());
+      chroma = value->GetDoubleValueWithoutClamping();
+      if (isfinite(chroma.value())) {
+        chroma = std::max(0.0, chroma.value());
+      }
     } else {
       return false;
     }
@@ -2198,7 +2208,7 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
     CSSPrimitiveValue* value =
         ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
     if (value) {
-      param = value->GetDoubleValue();
+      param = value->GetDoubleValueWithoutClamping();
       continue;
     }
 

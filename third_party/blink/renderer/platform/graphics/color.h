@@ -132,6 +132,17 @@ class PLATFORM_EXPORT Color {
            color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch;
   }
 
+  static bool IsChromaSecondComponent(ColorSpace color_space) {
+    return color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch;
+  }
+
+  static bool ColorSpaceHasHue(ColorSpace color_space) {
+    return color_space == Color::ColorSpace::kLch ||
+           color_space == Color::ColorSpace::kOklch ||
+           color_space == Color::ColorSpace::kHSL ||
+           color_space == Color::ColorSpace::kHWB;
+  }
+
   // The default constructor creates a transparent color.
   constexpr Color()
       : param0_is_none_(0),
@@ -341,6 +352,12 @@ class PLATFORM_EXPORT Color {
 
   ColorSpace GetColorSpace() const { return color_space_; }
   void ConvertToColorSpace(ColorSpace destination_color_space);
+
+  // Colors can parse calc(NaN) and calc(Infinity). At computed value time this
+  // function is called which resolves all NaNs to zero and +/-infinities to
+  // maximum/minimum values, if they exist.
+  // See https://github.com/w3c/csswg-drafts/issues/8629
+  void ResolveNonFiniteValues();
 
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorMixNone);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorInterpolation);
