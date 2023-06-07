@@ -8,8 +8,11 @@ for more details on the presubmit API built into depot_tools.
 """
 
 import copy
+import glob
 import io
+import itertools
 import json
+import re
 import sys
 
 from collections import OrderedDict
@@ -22,6 +25,8 @@ VALID_EXPERIMENT_KEYS = [
 
 FIELDTRIAL_CONFIG_FILE_NAME = 'fieldtrial_testing_config.json'
 
+BASE_FEATURE_PATTERN = r"BASE_FEATURE\((.*?),(.*?),(.*?)\);"
+BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN, flags=re.MULTILINE+re.DOTALL)
 
 def PrettyPrint(contents):
   """Pretty prints a fieldtrial configuration.
@@ -321,6 +326,94 @@ def CheckDuplicatedFeatures(new_json_data, old_json_data, message_type):
                   'studies: %s' % ', '.join(duplicated_features_strings))
   ]
 
+
+def _FindDeclaredFeatures(input_api):
+  """Finds all declared feature names in the source code.
+
+  This function will scan all *.cc and *.mm files and look for features
+  defined with the BASE_FEATURE macro. It will extract the feature names.
+
+  Args:
+    input_api: InputApi instance for opening files
+  Returns:
+    Set of defined feature names in the source tree.
+  """
+  # Features are supposed to be defined in .cc files.
+  cc_glob = input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                   "**/*.cc")
+  cc_files = glob.iglob(cc_glob, recursive=True)
+
+  # Additional features for iOS can be found in mm files.
+  mm_glob = input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                   "ios/**/*.mm")
+  mm_files = glob.iglob(mm_glob, recursive=True)
+
+  def find_features_in_file(filepath):
+    file_contents = input_api.ReadFile(filepath)
+    matches = BASE_FEATURE_RE.finditer(file_contents)
+    # Remove whitespace and surrounding " from the second argument
+    # which is the feature name.
+    return [m.group(2).strip().strip('"') for m in matches]
+
+  found_features = map(find_features_in_file,
+                       itertools.chain(cc_files, mm_files))
+
+  feature_names = set()
+  for feature_list in found_features:
+    feature_names.update(feature_list)
+  return feature_names
+
+
+def CheckUndeclaredFeatures(input_api, json_data, changed_lines, message_type):
+  """Checks that feature names are all valid declared features.
+
+  There have been more than one instance of developers accidentally mistyping
+  a feature name in the fieldtrial_testng_config.json file, which leads
+  to the config silently doing nothing.
+
+  This check aims to catch these errors by validating that the feature name
+  is defined somewhere in the Chrome source code.
+
+  Args:
+    input_api: Presubmit InputApi
+    json_data: The parsed fieldtrial_testing_config.json
+    changed_lines: The AffectedFile.ChangedContents() of the json file
+    message_type: Validation message constructor
+
+  Returns:
+    List of validation messages - empty if there are no errors.
+  """
+  declared_features = _FindDeclaredFeatures(input_api)
+
+  if not declared_features:
+    return [message_type("Presubmit unable to find any declared flags "
+                         "in source. Please check PRESUBMIT.py for errors.")]
+
+  messages = []
+  # Join all changed lines into a single string. This will be used to check
+  # if feature names are present in the changed lines by substring search.
+  changed_contents = " ".join([x[1].strip() for x in changed_lines])
+  for study_name in json_data:
+    study = json_data[study_name]
+    for config in study:
+      features = set(_GetStudyConfigFeatures(config))
+      # Determine if a study has been touched by the current change by checking
+      # if any of the features are part of the changed lines of the file.
+      # This limits the noise from old configs that are no longer valid.
+      probably_affected = False
+      for feature in features:
+        if feature in changed_contents:
+          probably_affected = True
+          break
+
+      if probably_affected and not declared_features.issuperset(features):
+        missing_features = features - declared_features
+        messages.append(message_type("Study %s contains undeclared features %s"
+                                         % (study_name, missing_features)))
+
+  return messages
+
+
 def CommonChecks(input_api, output_api):
   affected_files = input_api.AffectedFiles(
       include_deletes=False,
@@ -350,6 +443,11 @@ def CommonChecks(input_api, output_api):
           json_data,
           input_api.json.loads('\n'.join(f.OldContents())),
           output_api.PresubmitError)
+      if result:
+        return result
+      result = CheckUndeclaredFeatures(input_api, json_data,
+                                       f.ChangedContents(),
+                                       output_api.PresubmitError)
       if result:
         return result
     except ValueError:
