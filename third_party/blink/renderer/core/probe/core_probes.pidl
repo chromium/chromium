@@ -199,6 +199,7 @@ interface CoreProbes {
   void PlayersCreated(ExecutionContext* context, const Vector<WebString>& players);
   void SetDevToolsIds(CoreProbeSink*, ResourceRequest& request, const FetchInitiatorInfo&);
   void DidMutateStyleSheet(Document*, CSSStyleSheet* style_sheet);
+  void GetTextPosition(Document*, wtf_size_t offset, const String* text, TextPosition* result);
   void LocalFontsEnabled(ExecutionContext*, bool* result);
   void DidUpdateComputedStyle([Keep] Element*, const ComputedStyle* old_style, const ComputedStyle* new_style);
   void GetDisabledImageTypes(ExecutionContext*, HashSet<String>* result);

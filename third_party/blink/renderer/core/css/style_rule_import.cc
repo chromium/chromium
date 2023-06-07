@@ -160,6 +160,9 @@ void StyleRuleImport::RequestStyleSheet() {
   Referrer referrer = parser_context->GetReferrer();
   ResourceLoaderOptions options(parser_context->JavascriptWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  if (position_hint_) {
+    options.initiator_info.position = *position_hint_;
+  }
   options.initiator_info.referrer = referrer.referrer;
   ResourceRequest resource_request(abs_url);
   resource_request.SetReferrerString(referrer.referrer);

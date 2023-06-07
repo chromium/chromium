@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 using std::swap;
 
@@ -372,8 +374,8 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
   bool first_rule_valid = parser.ConsumeRuleList(
       stream, kTopLevelRuleList, CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr,
-      [&style_sheet, &result, allow_import_rules,
-       context](StyleRuleBase* rule) {
+      [&style_sheet, &result, &string, allow_import_rules, context](
+          StyleRuleBase* rule, wtf_size_t offset) {
         if (rule->IsCharsetRule()) {
           return;
         }
@@ -382,7 +384,15 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
             result = ParseSheetResult::kHasUnallowedImportRule;
             return;
           }
+
+          Document* document = style_sheet->AnyOwnerDocument();
+          if (document) {
+            TextPosition position = TextPosition::MinimumPosition();
+            probe::GetTextPosition(document, offset, &string, &position);
+            To<StyleRuleImport>(rule)->SetPositionHint(position);
+          }
         }
+
         style_sheet->ParserAppendRule(rule);
       });
   style_sheet->SetHasSyntacticallyValidCSSHeader(first_rule_valid);
@@ -493,14 +503,15 @@ void CSSParserImpl::ParseStyleSheetForInspector(const String& string,
   parser.observer_ = &observer;
   CSSTokenizer tokenizer(string);
   CSSParserTokenStream stream(tokenizer);
-  bool first_rule_valid = parser.ConsumeRuleList(
-      stream, kTopLevelRuleList, CSSNestingType::kNone,
-      /*parent_rule_for_nesting=*/nullptr, [&style_sheet](StyleRuleBase* rule) {
-        if (rule->IsCharsetRule()) {
-          return;
-        }
-        style_sheet->ParserAppendRule(rule);
-      });
+  bool first_rule_valid =
+      parser.ConsumeRuleList(stream, kTopLevelRuleList, CSSNestingType::kNone,
+                             /*parent_rule_for_nesting=*/nullptr,
+                             [&style_sheet](StyleRuleBase* rule, wtf_size_t) {
+                               if (rule->IsCharsetRule()) {
+                                 return;
+                               }
+                               style_sheet->ParserAppendRule(rule);
+                             });
   style_sheet->SetHasSyntacticallyValidCSSHeader(first_rule_valid);
 }
 
@@ -583,6 +594,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
   bool seen_rule = false;
   bool first_rule_valid = false;
   while (!stream.AtEnd()) {
+    wtf_size_t offset = stream.Offset();
     StyleRuleBase* rule = nullptr;
     switch (stream.UncheckedPeek().GetType()) {
       case kWhitespaceToken:
@@ -610,7 +622,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
     }
     if (rule) {
       allowed_rules = ComputeNewAllowedRules(allowed_rules, rule);
-      callback(rule);
+      callback(rule, offset);
     }
   }
 
@@ -1029,9 +1041,9 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
       rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
     }
   } else {
-    ConsumeRuleList(stream, kRegularRuleList, nesting_type,
-                    parent_rule_for_nesting,
-                    [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+    ConsumeRuleList(
+        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
+        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
   }
 
   if (observer_) {
@@ -1096,9 +1108,9 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
       rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
     }
   } else {
-    ConsumeRuleList(stream, kRegularRuleList, nesting_type,
-                    parent_rule_for_nesting,
-                    [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+    ConsumeRuleList(
+        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
+        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
   }
 
   if (observer_) {
@@ -1150,9 +1162,9 @@ StyleRuleStartingStyle* CSSParserImpl::ConsumeStartingStyleRule(
       rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
     }
   } else {
-    ConsumeRuleList(stream, kRegularRuleList, nesting_type,
-                    parent_rule_for_nesting,
-                    [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+    ConsumeRuleList(
+        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
+        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
   }
 
   if (observer_) {
@@ -1233,7 +1245,7 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
   ConsumeRuleList(
       stream, kKeyframesRuleList, CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr,
-      [keyframe_rule](StyleRuleBase* keyframe) {
+      [keyframe_rule](StyleRuleBase* keyframe, wtf_size_t) {
         keyframe_rule->ParserAppendKeyframe(To<StyleRuleKeyframe>(keyframe));
       });
   keyframe_rule->SetName(name);
@@ -1385,14 +1397,15 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
   // ConsumeRuleList returns true only if the first rule is true, but we need to
   // be more generous with the internals of what's inside a font feature value
   // declaration, e.g. inside a @stylsitic, @styleset, etc.
-  if (ConsumeRuleList(stream, kFontFeatureRuleList, CSSNestingType::kNone,
-                      /*parent_rule_for_nesting=*/nullptr,
-                      [&feature_rules, &had_valid_rules](StyleRuleBase* rule) {
-                        if (rule) {
-                          had_valid_rules = true;
-                        }
-                        feature_rules.push_back(To<StyleRuleFontFeature>(rule));
-                      }) ||
+  if (ConsumeRuleList(
+          stream, kFontFeatureRuleList, CSSNestingType::kNone,
+          /*parent_rule_for_nesting=*/nullptr,
+          [&feature_rules, &had_valid_rules](StyleRuleBase* rule, wtf_size_t) {
+            if (rule) {
+              had_valid_rules = true;
+            }
+            feature_rules.push_back(To<StyleRuleFontFeature>(rule));
+          }) ||
       had_valid_rules) {
     // https://drafts.csswg.org/css-fonts-4/#font-feature-values-syntax
     // "Specifying the same <font-feature-value-type> more than once is valid;
@@ -1594,9 +1607,10 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
   }
 
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList, CSSNestingType::kScope,
-                  style_scope->RuleForNesting(),
-                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  ConsumeRuleList(
+      stream, kRegularRuleList, CSSNestingType::kScope,
+      style_scope->RuleForNesting(),
+      [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1667,9 +1681,9 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
       rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
     }
   } else {
-    ConsumeRuleList(stream, kRegularRuleList, nesting_type,
-                    parent_rule_for_nesting,
-                    [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+    ConsumeRuleList(
+        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
+        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
   }
 
   if (observer_) {
@@ -1745,9 +1759,10 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
   }
 
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList, CSSNestingType::kNone,
-                  /*parent_rule_for_nesting=*/nullptr,
-                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  ConsumeRuleList(
+      stream, kRegularRuleList, CSSNestingType::kNone,
+      /*parent_rule_for_nesting=*/nullptr,
+      [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1797,7 +1812,8 @@ StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
   ConsumeRuleList(
       stream, kPositionFallbackRuleList, CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr,
-      [position_fallback_rule, has_max_length](StyleRuleBase* try_rule) {
+      [position_fallback_rule, has_max_length](StyleRuleBase* try_rule,
+                                               wtf_size_t) {
         if (!has_max_length || position_fallback_rule->TryRules().size() <
                                    kPositionFallbackRuleMaxLength) {
           position_fallback_rule->ParserAppendTryRule(

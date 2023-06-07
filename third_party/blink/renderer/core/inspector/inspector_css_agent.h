@@ -143,6 +143,9 @@ class CORE_EXPORT InspectorCSSAgent final
   void SetCoverageEnabled(bool);
   void WillChangeStyleElement(Element*);
   void DidMutateStyleSheet(CSSStyleSheet* css_style_sheet);
+  void GetTextPosition(wtf_size_t offset,
+                       const String* text,
+                       TextPosition* result);
   void LocalFontsEnabled(bool* result);
 
   void enable(std::unique_ptr<EnableCallback>) override;

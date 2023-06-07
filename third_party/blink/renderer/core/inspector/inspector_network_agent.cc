@@ -1688,6 +1688,12 @@ InspectorNetworkAgent::BuildInitiatorObject(
         protocol::Network::Initiator::create()
             .setType(protocol::Network::Initiator::TypeEnum::Parser)
             .build();
+    if (initiator_info.position != TextPosition::BelowRangePosition()) {
+      initiator_object->setLineNumber(
+          initiator_info.position.line_.ZeroBasedInt());
+      initiator_object->setColumnNumber(
+          initiator_info.position.column_.ZeroBasedInt());
+    }
     initiator_object->setUrl(initiator_info.referrer);
     return initiator_object;
   }
@@ -1706,6 +1712,12 @@ InspectorNetworkAgent::BuildInitiatorObject(
           protocol::Network::Initiator::create()
               .setType(protocol::Network::Initiator::TypeEnum::Script)
               .build();
+      if (initiator_info.position != TextPosition::BelowRangePosition()) {
+        initiator_object->setLineNumber(
+            initiator_info.position.line_.ZeroBasedInt());
+        initiator_object->setColumnNumber(
+            initiator_info.position.column_.ZeroBasedInt());
+      }
       initiator_object->setStack(std::move(current_stack_trace));
       return initiator_object;
     }

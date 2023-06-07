@@ -61,6 +61,7 @@
       probes: [
         "ActiveStyleSheetsUpdated",
         "DidMutateStyleSheet",
+        "GetTextPosition",
         "DocumentDetached",
         "FontsUpdated",
         "ForcePseudoState",
