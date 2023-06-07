@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <ostream>
 #include <set>
 #include <vector>
 
@@ -351,6 +352,8 @@ class WaylandWindow : public PlatformWindow,
   // Clears the state of the |frame_manager_| when the GPU channel is
   // destroyed.
   void OnChannelDestroyed();
+
+  virtual void DumpState(std::ostream& out) const;
 
 #if DCHECK_IS_ON()
   void disable_null_target_dcheck_for_testing() {

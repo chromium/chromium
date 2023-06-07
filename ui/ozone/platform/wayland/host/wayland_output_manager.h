@@ -5,13 +5,13 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_OUTPUT_MANAGER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_OUTPUT_MANAGER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "ui/ozone/platform/wayland/common/wayland_object.h"
-
 #include <memory>
+#include <ostream>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 
@@ -58,6 +58,8 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   const OutputList& GetAllOutputs() const;
 
   WaylandScreen* wayland_screen() const { return wayland_screen_.get(); }
+
+  void DumpState(std::ostream& out) const;
 
  private:
   // WaylandOutput::Delegate:

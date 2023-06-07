@@ -24,6 +24,7 @@
 #include "ui/events/platform/scoped_event_dispatcher.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
@@ -212,6 +213,25 @@ bool WaylandDataDragController::ShouldReleaseCaptureForDrag(
   // For a window dragging session, we must not release capture to be able to
   // handle window dragging even when dragging out of the window.
   return !IsWindowDraggingSession(*data);
+}
+
+void WaylandDataDragController::DumpState(std::ostream& out) const {
+  constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
+      {{State::kIdle, "idle"},
+       {State::kStarted, "started"},
+       {State::kTransferring, "transferring"}});
+  out << "WaylandDataDragController: state="
+      << GetMapValueOrDefault(kStateToString, state_)
+      << ", drag_source=" << !!drag_source_
+      << ", data_source=" << !!data_source_
+      << ", origin_window=" << GetWindowName(origin_window_)
+      << ", current_window=" << GetWindowName(window_)
+      << ", unprocessed_mime_types=" << ListToString(unprocessed_mime_types_)
+      << ", last_drag_location=" << last_drag_location_.ToString()
+      << ", is_leave_pending=" << is_leave_pending_
+      << ", icon_surface_bufer_scale=" << icon_surface_buffer_scale_
+      << ", pending_icon_offset=" << pending_icon_offset_.ToString()
+      << ", current_icon_offset=" << current_icon_offset_.ToString();
 }
 
 // Sessions initiated from Chromium, will have |data_source_| set. In which

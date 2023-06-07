@@ -616,6 +616,46 @@ const gfx::PointF WaylandConnection::MaybeConvertLocation(
   return converted;
 }
 
+void WaylandConnection::DumpState(std::ostream& out) const {
+  out << "available globals:";
+  for (const auto& pair : available_globals_) {
+    out << pair.first << ',';
+  }
+  out << std::endl;
+
+  if (event_source_) {
+    event_source_->DumpState(out);
+    out << std::endl;
+  }
+  window_manager_.DumpState(out);
+  out << std::endl;
+
+  if (window_drag_controller_) {
+    window_drag_controller_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (data_drag_controller_) {
+    data_drag_controller_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (cursor_position_) {
+    cursor_position_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (output_manager_) {
+    output_manager_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (zaura_output_manager_) {
+    zaura_output_manager_->DumpState(out);
+    out << std::endl;
+  }
+}
+
 bool WaylandConnection::ShouldUseOverlayDelegation() const {
   return IsWaylandOverlayDelegationEnabled() && !overlay_delegation_disabled_;
 }

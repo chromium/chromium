@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/gtk_surface1.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
@@ -913,6 +914,21 @@ void WaylandToplevelWindow::SetSystemModal(bool modal) {
   system_modal_ = modal;
   if (shell_toplevel_)
     shell_toplevel_->SetSystemModal(modal);
+}
+
+void WaylandToplevelWindow::DumpState(std::ostream& out) const {
+  WaylandWindow::DumpState(out);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  out << ", is_immersive_fullscreen=" << ToBoolString(is_immersive_fullscreen_);
+#endif
+  out << ", title=" << window_title_
+      << ", is_active=" << ToBoolString(is_active_)
+      << ", restore_session_id=" << restore_session_id_;
+  if (restore_window_id_source_) {
+    out << ", source=" << *restore_window_id_source_;
+  }
+  out << ", persistable=" << ToBoolString(persistable_)
+      << ", system_modal=" << ToBoolString(system_modal_);
 }
 
 void WaylandToplevelWindow::UpdateSystemModal() {

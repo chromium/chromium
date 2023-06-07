@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 
+#include <functional>
 #include <memory>
 
 #include "base/check.h"
@@ -31,6 +32,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
@@ -41,6 +43,33 @@
 namespace ui {
 
 namespace {
+
+constexpr auto kPointerToStringMap = base::MakeFixedFlatMap<int, const char*>({
+    {EF_LEFT_MOUSE_BUTTON, "Left"},
+    {EF_MIDDLE_MOUSE_BUTTON, "Middle"},
+    {EF_RIGHT_MOUSE_BUTTON, "Right"},
+    {EF_BACK_MOUSE_BUTTON, "Back"},
+    {EF_FORWARD_MOUSE_BUTTON, "Forward"},
+});
+
+constexpr auto kModifierToStringMap = base::MakeFixedFlatMap<int, const char*>({
+    {ui::EF_SHIFT_DOWN, "Shift"},
+    {ui::EF_CONTROL_DOWN, "Control"},
+    {ui::EF_ALT_DOWN, "Alt"},
+    {ui::EF_COMMAND_DOWN, "Command"},
+    {ui::EF_ALTGR_DOWN, "AltGr"},
+    {ui::EF_MOD3_DOWN, "Mod3"},
+    {ui::EF_CAPS_LOCK_ON, "CapsLock"},
+    {ui::EF_NUM_LOCK_ON, "NumLock"},
+});
+
+std::string ToPointerFlagsString(int flags) {
+  return ToMatchingKeyMaskString(flags, kPointerToStringMap);
+}
+
+std::string ToKeyboardModifierStrings(int modifiers) {
+  return ToMatchingKeyMaskString(modifiers, kModifierToStringMap);
+}
 
 bool HasAnyPointerButtonFlag(int flags) {
   return (flags & (EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON |
@@ -129,12 +158,25 @@ WaylandEventSource::PointerScrollData::operator=(const PointerScrollData&) =
 WaylandEventSource::PointerScrollData&
 WaylandEventSource::PointerScrollData::operator=(PointerScrollData&&) = default;
 
+void WaylandEventSource::PointerScrollData::DumpState(std::ostream& out) const {
+  if (axis_source) {
+    out << "axis_source=" << *axis_source;
+  }
+  out << ", d=(" << dx << ", " << dy << "), dt=" << dt
+      << ", is_axis_stop=" << ToBoolString(is_axis_stop);
+}
+
 // WaylandEventSource::FrameData implementation
 WaylandEventSource::FrameData::FrameData(const Event& e,
                                          base::OnceCallback<void()> cb)
     : event(e.Clone()), completion_cb(std::move(cb)) {}
 
 WaylandEventSource::FrameData::~FrameData() = default;
+
+void WaylandEventSource::FrameData::DumpState(std::ostream& out) const {
+  out << "event=" << (event ? event->ToString() : "none")
+      << ", callback=" << !!completion_cb;
+}
 
 // WaylandEventSource implementation
 
@@ -388,6 +430,38 @@ void WaylandEventSource::OnResetPointerFlags() {
 
 void WaylandEventSource::RoundTripQueue() {
   event_watcher_->RoundTripQueue();
+}
+
+void WaylandEventSource::DumpState(std::ostream& out) const {
+  out << "WaylandEventSource: " << std::endl;
+  out << "  pointer_location=" << pointer_location_.ToString()
+      << ", flags=" << ToPointerFlagsString(pointer_flags_)
+      << ", last button pressed=" << last_pointer_button_pressed_
+      << ", keyboard modifiers="
+      << ToKeyboardModifierStrings(keyboard_modifiers_) << std::endl;
+  if (relative_pointer_location_) {
+    out << "  relative_poniter_location="
+        << relative_pointer_location_->ToString() << std::endl;
+  }
+
+  size_t i = 0;
+  for (const auto& frame_data : pointer_frames_) {
+    out << "  pointer_frame[" << i++ << "]=";
+    frame_data->DumpState(out);
+    out << std::endl;
+  }
+  i = 0;
+  for (const auto& frame_data : touch_frames_) {
+    out << "  touch_frame[" << i++ << "]=";
+    frame_data->DumpState(out);
+    out << std::endl;
+  }
+  i = 0;
+  for (const auto& scroll_data : pointer_scroll_data_set_) {
+    out << "  point_scroll_data[" << i++ << "]=";
+    scroll_data.DumpState(out);
+    out << std::endl;
+  }
 }
 
 const gfx::PointF& WaylandEventSource::GetPointerLocation() const {

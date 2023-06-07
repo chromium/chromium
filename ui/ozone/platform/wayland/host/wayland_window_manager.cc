@@ -240,15 +240,26 @@ gfx::AcceleratedWidget WaylandWindowManager::AllocateAcceleratedWidget() {
   return ++last_accelerated_widget_;
 }
 
+void WaylandWindowManager::DumpState(std::ostream& out) const {
+  int i = 0;
+  out << "WaylandWindowManager:" << std::endl;
+  for (const auto& window : window_map_) {
+    out << "  wayland_window[" << i++ << "]:";
+    window.second->DumpState(out);
+    out << std::endl;
+  }
+}
+
 std::vector<WaylandWindow*> WaylandWindowManager::GetAllWindows() const {
   std::vector<WaylandWindow*> result;
-  for (auto entry : window_map_)
+  for (auto& entry : window_map_) {
     result.push_back(entry.second);
+  }
   return result;
 }
 
 bool WaylandWindowManager::IsWindowValid(const WaylandWindow* window) const {
-  for (auto pair : window_map_) {
+  for (auto& pair : window_map_) {
     if (pair.second == window)
       return true;
   }

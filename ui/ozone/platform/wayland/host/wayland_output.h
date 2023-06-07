@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_OUTPUT_H_
 
 #include <cstdint>
+#include <ostream>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -83,6 +84,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
     int32_t logical_transform = 0;
     std::string name;
     std::string description;
+
+    void DumpState(std::ostream& out) const;
   };
 
   class Delegate {
@@ -128,6 +131,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   void SetScaleFactorForTesting(float scale_factor);
 
   void TriggerDelegateNotifications();
+
+  void DumpState(std::ostream& out) const;
 
   void set_delegate_for_testing(Delegate* delegate) { delegate_ = delegate; }
   XDGOutput* xdg_output_for_testing() { return xdg_output_.get(); }

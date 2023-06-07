@@ -7,6 +7,7 @@
 
 #include <time.h>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -338,6 +339,8 @@ class WaylandConnection {
 
   const gfx::PointF MaybeConvertLocation(const gfx::PointF& location,
                                          const WaylandWindow* window) const;
+
+  void DumpState(std::ostream& out) const;
 
  private:
   friend class WaylandConnectionTestApi;

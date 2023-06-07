@@ -343,6 +343,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual std::unique_ptr<PlatformUserInputMonitor> GetPlatformUserInputMonitor(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
 
+  virtual void DumpState(std::ostream& out) const {}
+
  protected:
   bool has_initialized_ui() const { return initialized_ui_; }
   bool has_initialized_gpu() const { return initialized_gpu_; }

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iosfwd>
 #include <memory>
+#include <ostream>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -90,6 +91,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // This is true if the `data_source_` exists (the session ends when this is
   // destroyed).
   bool IsActiveDragAndDropSession() const;
+
+  void DumpState(std::ostream& out) const;
 
   // Makes IsExtendedDragAvailable() always return true.
   void set_extended_drag_available_for_testing(bool available) {

@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <ostream>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -112,6 +113,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // Returns false iff the data is for a window dragging session.
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const;
+
+  void DumpState(std::ostream& out) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);

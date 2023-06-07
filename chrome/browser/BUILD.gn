@@ -4629,7 +4629,13 @@ static_library("browser") {
       ]
     }
   }
-
+  if (is_chromeos_lacros) {
+    assert(enable_system_notifications)
+    sources += [
+      "feedback/system_logs/log_sources/ozone_wayland_state_dump_source.cc",
+      "feedback/system_logs/log_sources/ozone_wayland_state_dump_source.h",
+    ]
+  }
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
     sources += [

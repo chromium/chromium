@@ -38,6 +38,7 @@
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
+#include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -331,6 +332,39 @@ void WaylandWindow::OnChannelDestroyed() {
   frame_manager_->RecordFrame(
       std::make_unique<WaylandFrame>(root_surface(), wl::WaylandOverlayConfig(),
                                      std::move(subsurfaces_to_overlays)));
+}
+
+void WaylandWindow::DumpState(std::ostream& out) const {
+  constexpr auto kWindowTypeToString =
+      base::MakeFixedFlatMap<PlatformWindowType, const char*>(
+          {{PlatformWindowType::kWindow, "window"},
+           {PlatformWindowType::kPopup, "popup"},
+           {PlatformWindowType::kMenu, "menu"},
+           {PlatformWindowType::kTooltip, "tooltip"},
+           {PlatformWindowType::kDrag, "drag"},
+           {PlatformWindowType::kBubble, "bubble"}});
+  out << "type=" << GetMapValueOrDefault(kWindowTypeToString, type_)
+      << ", bounds_in_dip=" << GetBoundsInDIP().ToString()
+      << ", bounds_in_pixels=" << GetBoundsInPixels().ToString()
+      << ", restore_bounds_dip=" << restored_bounds_dip_.ToString()
+      << ", overlay_delegation="
+      << (wayland_overlay_delegation_enabled_ ? "enabled" : "disabled");
+  if (frame_insets_px_) {
+    out << ", frame_insets=" << frame_insets_px_->ToString();
+  }
+  if (has_touch_focus_) {
+    out << ", has_touch_focus";
+  }
+  out << ", ui_scale=" << ui_scale_;
+  constexpr auto kOpacityToString =
+      base::MakeFixedFlatMap<PlatformWindowOpacity, const char*>(
+          {{PlatformWindowOpacity::kInferOpacity, "infer"},
+           {PlatformWindowOpacity::kOpaqueWindow, "opaque"},
+           {PlatformWindowOpacity::kTranslucentWindow, "translucent"}});
+  out << ", opacity=" << GetMapValueOrDefault(kOpacityToString, opacity_);
+  if (shutting_down_) {
+    out << ", shutting_down";
+  }
 }
 
 bool WaylandWindow::SupportsConfigureMinimizedState() const {

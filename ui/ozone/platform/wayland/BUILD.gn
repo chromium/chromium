@@ -48,6 +48,7 @@ source_set("wayland") {
     "gpu/wayland_surface_factory.cc",
     "gpu/wayland_surface_factory.h",
     "gpu/wayland_surface_gpu.h",
+    "host/dump_util.h",
     "host/fractional_scale_manager.cc",
     "host/fractional_scale_manager.h",
     "host/gtk_primary_selection_device.cc",

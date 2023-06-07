@@ -400,6 +400,12 @@ class OzonePlatformWayland : public OzonePlatform,
         gpu_task_runner);
   }
 
+  void DumpState(std::ostream& out) const override {
+    if (connection_) {
+      connection_->DumpState(out);
+    }
+  }
+
   void CreateWaylandBufferManagerGpuBinding(
       mojo::PendingReceiver<ozone::mojom::WaylandBufferManagerGpu> receiver) {
     buffer_manager_->AddBindingWaylandBufferManagerGpu(std::move(receiver));

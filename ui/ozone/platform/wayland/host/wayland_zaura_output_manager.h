@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_OUTPUT_MANAGER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_OUTPUT_MANAGER_H_
 
+#include <ostream>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -51,6 +53,8 @@ class WaylandZAuraOutputManager
   void RemoveOutputMetrics(WaylandOutput::Id output_id);
 
   zaura_output_manager* wl_object() { return obj_.get(); }
+
+  void DumpState(std::ostream& out) const;
 
  private:
   WaylandOutput::Id GetId(wl_output* output) const;

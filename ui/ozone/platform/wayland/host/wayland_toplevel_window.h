@@ -5,6 +5,9 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
+#include <memory>
+#include <ostream>
+
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -189,6 +192,8 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // SystemModalExtension:
   void SetSystemModal(bool modal) override;
+
+  void DumpState(std::ostream& out) const override;
 
  private:
   // WaylandWindow protected overrides:

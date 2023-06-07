@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -526,5 +527,29 @@ display::TabletState WaylandScreen::GetTabletState() const {
   return tablet_state_;
 }
 #endif
+
+void WaylandScreen::DumpState(std::ostream& out) const {
+  out << "WaylandScreen:" << std::endl;
+  for (const auto& display : display_list_.displays()) {
+    out << "  display[" << display.id() << "]:" << display.ToString()
+        << std::endl;
+  }
+  out << "  id_map=";
+  for (const auto& id_pair : display_id_map_) {
+    out << "[" << id_pair.second << ":" << id_pair.first << "] ";
+  }
+  out << std::endl;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  constexpr auto kTabletStateToStringMap =
+      base::MakeFixedFlatMap<display::TabletState, const char*>(
+          {{display::TabletState::kInClamshellMode, "clamshell"},
+           {display::TabletState::kEnteringTabletMode, "entering_tablet"},
+           {display::TabletState::kInTabletMode, "tablet"},
+           {display::TabletState::kExitingTabletMode, "exiting_tablet"}});
+  out << "  tablet_state="
+      << GetMapValueOrDefault(kTabletStateToStringMap, tablet_state_);
+#endif
+  out << ", screen_saver_suspension_count=" << screen_saver_suspension_count_;
+}
 
 }  // namespace ui

@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
@@ -630,6 +631,27 @@ bool WaylandWindowDragController::IsExtendedDragAvailable() const {
 
 bool WaylandWindowDragController::IsActiveDragAndDropSession() const {
   return !!data_source_;
+}
+
+void WaylandWindowDragController::DumpState(std::ostream& out) const {
+  constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
+      {{State::kIdle, "idle"},
+       {State::kAttached, "attached"},
+       {State::kDetached, "detached"},
+       {State::kDropped, "dropped"},
+       {State::kCancelled, "canceled"},
+       {State::kAttaching, "attaching"}});
+
+  out << "WaylandWindowDragController:"
+      << " state=" << GetMapValueOrDefault(kStateToString, state_)
+      << ", drag_offset=" << drag_offset_.ToString()
+      << ", pointer_position=" << pointer_location_.ToString()
+      << ", data_source=" << !!data_source_
+      << ", dragged_window=" << GetWindowName(dragged_window_.get())
+      << ", pointer_grab_owner=" << GetWindowName(pointer_grab_owner_.get())
+      << ", origin_window=" << GetWindowName(origin_window_.get())
+      << ", drag_target_window=" << GetWindowName(drag_target_window_.get())
+      << ", nested_dispatcher=" << !!nested_dispatcher_;
 }
 
 bool WaylandWindowDragController::IsExtendedDragAvailableInternal() const {
