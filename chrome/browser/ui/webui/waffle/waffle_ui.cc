@@ -26,6 +26,8 @@ WaffleUI::WaffleUI(content::WebUI* web_ui)
       chrome::kChromeUIWaffleHost);
 
   source->AddLocalizedString("title", IDS_WAFFLE_PAGE_TITLE);
+  source->AddLocalizedString("firstButton", IDS_WAFFLE_FIRST_BUTTON_TITLE);
+  source->AddLocalizedString("secondButton", IDS_WAFFLE_SECOND_BUTTON_TITLE);
 
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);

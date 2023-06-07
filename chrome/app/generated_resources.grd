@@ -15142,6 +15142,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
         translateable="false">
         Want a Waffle?
       </message>
+      <message name="IDS_WAFFLE_FIRST_BUTTON_TITLE" desc="The title of the first button of the Waffle page."
+        translateable="false">
+        First button
+      </message>
+      <message name="IDS_WAFFLE_SECOND_BUTTON_TITLE" desc="The title of the second button of the Waffle page."
+        translateable="false">
+        Second button
+      </message>
     </if>
   </messages>
 </release>

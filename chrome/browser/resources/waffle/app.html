@@ -20,6 +20,25 @@
     right: 0;
   }
 
+  #button-container {
+    bottom: 0;
+    display: flex;
+    position: absolute;
+    width: 100%;
+  }
+
+  cr-button {
+    margin: 25px;
+  }
+
+  #first-button {
+    margin-inline-end: auto;
+  }
+
+  #second-button {
+    margin-inline-start: auto;
+  }
+
   @media (prefers-color-scheme: dark) {
     #left-illustration {
       content: url(images/left_illustration_dark.svg);
@@ -33,3 +52,8 @@
 
 <img id="left-illustration" alt="">
 <img id="right-illustration" alt="">
+<div id="button-container">
+  <cr-button id="first-button">$i18n{firstButton}</cr-button>
+  <cr-button id="second-button" class="action-button" disabled>
+      $i18n{secondButton}</cr-button>
+</div>
