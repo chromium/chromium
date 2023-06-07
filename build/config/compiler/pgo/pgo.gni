@@ -24,10 +24,7 @@ declare_args() {
       # obsolete.
       (is_high_end_android || is_win || is_mac || is_fuchsia ||
        (is_linux && !is_castos) ||
-       # TODO(crbug.com/1435082): Currently arm boards are not working.
-       # Enable this for arm boards, once the lab set up is fixed.
-       (is_chromeos_lacros && is_chromeos_device && target_cpu != "arm" &&
-        target_cpu != "arm64"))) {
+       (is_chromeos_lacros && is_chromeos_device))) {
     chrome_pgo_phase = 2
   }
 
