@@ -13,9 +13,11 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {constants} from '../../foreground/js/constants.js';
+import {getStore} from '../../state/store.js';
 
 import {promisify} from './api.js';
 import {createDOMError} from './dom_utils.js';
@@ -1550,6 +1552,26 @@ util.isOneDriveId = (providerId) => {
  */
 util.isOneDrive = (volumeInfo) => {
   return util.isOneDriveId(volumeInfo?.providerId);
+};
+
+/**
+ * Return true if the volume with |volumeInfo| is an interactive volume.
+ * @param {VolumeInfo} volumeInfo
+ * @return {boolean}
+ */
+util.isInteractiveVolume = (volumeInfo) => {
+  const state = /** @type {State} */ (getStore().getState());
+  const volumes = state.volumes;
+  if (!volumes) {
+    console.error('Expected volumes to exist in the store.');
+    return true;
+  }
+  const volume = volumes[volumeInfo.volumeId];
+  if (!volume) {
+    console.error('Expected volume to be in the store.');
+    return true;
+  }
+  return volume.isInteractive;
 };
 
 /**

@@ -31,7 +31,7 @@ function createMyFilesDataWithEntryList(): FileData {
 }
 
 /** Generate MyFiles entry with real volume entry. */
-function createMyFilesDataWithVolumeEntry():
+export function createMyFilesDataWithVolumeEntry():
     {fileData: FileData, volumeInfo: VolumeInfo} {
   const {volumeManager} = window.fileManager;
   const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(

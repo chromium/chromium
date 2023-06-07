@@ -316,8 +316,8 @@ CommandUtil.isFromSelectionMenu = event => {
 };
 
 /**
- * If entry is fake/invalid/root, we don't show menu items intended for regular
- * entries.
+ * If entry is fake/invalid/non-interactive/root, we don't show menu items
+ * intended for regular entries.
  * @param {!VolumeManager} volumeManager
  * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
  * @return {boolean} True if we should show the menu items for regular entries.
@@ -335,6 +335,12 @@ CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
 
   const volumeInfo = volumeManager.getVolumeInfo(entry);
   if (!volumeInfo) {
+    return false;
+  }
+
+  // If the entry belongs to a non-interactive volume, hide context menu
+  // entries.
+  if (!util.isInteractiveVolume(volumeInfo)) {
     return false;
   }
 
@@ -480,6 +486,40 @@ CommandUtil.getEventEntry = (event, fileManager) => {
     entry = fileManager.directoryModel.getCurrentDirEntry();
   }
   return entry;
+};
+
+
+
+/**
+ * Returns true if the current volume is interactive.
+ * @param {!CommandHandlerDeps} fileManager file manager
+ *     command handler.
+ * @returns {boolean}
+ */
+CommandUtil.currentVolumeIsInteractive = fileManager => {
+  const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
+  if (!volumeInfo) {
+    return true;
+  }
+  return util.isInteractiveVolume(volumeInfo);
+};
+
+
+/**
+ * Returns true if any entry belongs to a non-interactive volume.
+ * @param {!Array<!Entry>} entries
+ * @param {!CommandHandlerDeps} fileManager file manager
+ *     command handler.
+ * @returns {boolean}
+ */
+CommandUtil.containsNonInteractiveEntry = (entries, fileManager) => {
+  return entries.some(entry => {
+    const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+    if (!volumeInfo) {
+      return false;
+    }
+    return util.isInteractiveVolume(volumeInfo);
+  });
 };
 
 
@@ -1027,9 +1067,18 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
       event.command.setHidden(true);
       return;
     }
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // If there is a selected entry on a non-interactive volume, remove
+    // new-folder command.
+    if (entries.length > 0 &&
+        !CommandUtil.containsNonInteractiveEntry(entries, fileManager)) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    }
     if (event.target instanceof DirectoryItem ||
         event.target instanceof DirectoryTree) {
-      const entry = CommandUtil.getCommandEntry(fileManager, event.target);
+      const entry = entries[0];
       if (!entry || util.isFakeEntry(entry) ||
           util.isTeamDrivesGrandRoot(entry)) {
         event.canExecute = false;
@@ -1042,6 +1091,14 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
           CommandUtil.hasCapability(fileManager, [entry], 'canAddChildren');
       event.command.setHidden(false);
     } else {
+      // If blank space was clicked and current volume is non-interactive,
+      // remove new-folder command.
+      if (entries == 0 &&
+          !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+        event.canExecute = false;
+        event.command.setHidden(true);
+        return;
+      }
       const directoryModel = fileManager.directoryModel;
       const directoryEntry = fileManager.getCurrentDirectoryEntry();
       event.canExecute = !fileManager.directoryModel.isReadOnly() &&
@@ -1187,7 +1244,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
-    // If entries contain fake or root entry, remove delete option.
+    // If entries contain fake, non-interactive or root entry, remove delete
+    // option.
     if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager))) {
       event.canExecute = false;
@@ -1239,8 +1297,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
    * @public
    */
   deleteEntries(entries, fileManager, permanentlyDelete, dialog = null) {
-    // Verify that the entries are not fake or root entries, and that they
-    // can be deleted.
+    // Verify that the entries are not fake, non-interactive or root entries,
+    // and that they can be deleted.
     if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager)) ||
         !this.canDeleteEntries_(entries, fileManager)) {
@@ -1331,8 +1389,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
    * @public
    */
   canDeleteEntries(entries, fileManager) {
-    // Verify that the entries are not fake or root entries, and that they
-    // can be deleted.
+    // Verify that the entries are not fake, non-interactive or root entries,
+    // and that they can be deleted.
     if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager)) ||
         !this.canDeleteEntries_(entries, fileManager)) {
@@ -1535,6 +1593,23 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
     // Hide this command if only one folder is selected.
     event.command.setHidden(
         !!CommandUtil.getOnlyOneSelectedDirectory(fileManager.getSelection()));
+
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // If there is a selected entry on a non-interactive volume, remove paste
+    // command.
+    if (entries.length > 0 &&
+        !CommandUtil.containsNonInteractiveEntry(entries, fileManager)) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    } else if (
+        entries == 0 && !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+      // If blank space was clicked and current volume is non-interactive,
+      // remove paste command.
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    }
   }
 })();
 
@@ -1649,6 +1724,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       return;
     }
 
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const target = event.target;
     const volumeManager = fileManager.volumeManager;
     command.setHidden(false);
@@ -1664,6 +1740,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
         return false;
       }
 
+      // If entry is fake, non-interactive or root, remove cut/copy option.
       if (!CommandUtil.shouldShowMenuItemsForEntry(volumeManager, entry)) {
         command.setHidden(true);
         return false;
@@ -1699,9 +1776,19 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
         return false;
       }
 
+      // If entries contain fake, non-interactive or root entry, remove cut/copy
+      // option.
       if (!fileManager.getSelection().entries.every(
               CommandUtil.shouldShowMenuItemsForEntry.bind(
                   null, volumeManager))) {
+        command.setHidden(true);
+        return false;
+      }
+
+      // If blank space was clicked and current volume is non-interactive,
+      // remove cut/copy command.
+      if (entries == 0 &&
+          !CommandUtil.currentVolumeIsInteractive(fileManager)) {
         command.setHidden(true);
         return false;
       }
