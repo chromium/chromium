@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_new_tab_page_field_trial_H_
-#define IOS_CHROME_BROWSER_UI_NTP_new_tab_page_field_trial_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FIELD_TRIAL_H_
+#define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FIELD_TRIAL_H_
 
 #import "base/metrics/field_trial.h"
 #import "components/variations/variations_associated_data.h"
@@ -33,4 +33,4 @@ void CreateNewTabPageFieldTrialForTesting(
 
 }  // namespace new_tab_page_field_trial
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_new_tab_page_field_trial_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FIELD_TRIAL_H_
