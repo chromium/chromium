@@ -89542,6 +89542,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Database Disabled">
     The database failed to bootstrap.
   </int>
+  <int value="9" label="Storage key error">
+    Deserialization failed on a storage key.
+  </int>
 </enum>
 
 <enum name="QuotaOriginTypes">

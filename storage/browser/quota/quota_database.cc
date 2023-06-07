@@ -136,7 +136,7 @@ QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
   absl::optional<StorageKey> storage_key =
       StorageKey::Deserialize(statement.ColumnString(1));
   if (!storage_key.has_value()) {
-    return base::unexpected(QuotaError::kNotFound);
+    return base::unexpected(QuotaError::kStorageKeyError);
   }
 
   return BucketInfo(
@@ -572,7 +572,7 @@ QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::GetBucketInfoForTest(
   absl::optional<StorageKey> storage_key =
       StorageKey::Deserialize(statement.ColumnString(1));
   if (!storage_key.has_value()) {
-    return base::unexpected(QuotaError::kNotFound);
+    return base::unexpected(QuotaError::kStorageKeyError);
   }
 
   mojom::BucketTableEntryPtr entry =
@@ -656,6 +656,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
     absl::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value()) {
+      // TODO(estade): this row needs to be deleted.
       continue;
     }
 
