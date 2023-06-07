@@ -52,7 +52,8 @@ TEST(V8PlatformPageAllocatorTest, VerifyGetPageConfig) {
 
   CHECK_EQ(sut.GetPageConfigPermissionsForTesting(
                v8::PageAllocator::kNoAccessWillJitLater),
-           partition_alloc::PageAccessibilityConfiguration::kInaccessible);
+           partition_alloc::PageAccessibilityConfiguration::
+               kInaccessibleWillJitLater);
 }
 
 #if defined(ARCH_CPU_ARM64) && (OS_LINUX || OS_ANDROID)

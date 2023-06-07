@@ -20,6 +20,10 @@ namespace partition_alloc {
 struct PageAccessibilityConfiguration {
   enum Permissions {
     kInaccessible,
+    // This flag is valid only with AllocPages(), where in creates kInaccessible
+    // pages that may later be re-mapped as executable, on platforms which
+    // distinguish never-executable and maybe-executable pages.
+    kInaccessibleWillJitLater,
     kRead,
     kReadWrite,
     // This flag is mapped to kReadWrite on systems that

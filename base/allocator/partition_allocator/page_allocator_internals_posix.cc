@@ -36,6 +36,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return PROT_READ | PROT_WRITE | PROT_EXEC;
     case PageAccessibilityConfiguration::kInaccessible:
+    case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
       return PROT_NONE;
   }
 }

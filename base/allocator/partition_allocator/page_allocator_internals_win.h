@@ -94,10 +94,10 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return PAGE_EXECUTE_READWRITE;
     case PageAccessibilityConfiguration::kInaccessible:
+    case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
       return PAGE_NOACCESS;
-    default:
-      PA_NOTREACHED();
   }
+  PA_NOTREACHED();
 }
 
 uintptr_t SystemAllocPagesInternal(

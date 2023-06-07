@@ -67,10 +67,11 @@ const char* PageTagToName(PageTag tag) {
       return "cr_chromium";
     case PageTag::kV8:
       return "cr_v8";
-    default:
-      PA_DCHECK(false);
-      return "";
+    case PageTag::kFirst:
+    case PageTag::kSimulation:
+      PA_NOTREACHED();
   }
+  PA_NOTREACHED();
 }
 
 zx_vm_option_t PageAccessibilityToZxVmOptions(
@@ -87,10 +88,10 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
     case PageAccessibilityConfiguration::kInaccessible:
+    case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
       return 0;
-    default:
-      PA_NOTREACHED();
-  }
+  };
+  PA_NOTREACHED();
 }
 
 }  // namespace
@@ -121,7 +122,10 @@ uintptr_t SystemAllocPagesInternal(
   // fatal.
   PA_ZX_DCHECK(status == ZX_OK, status);
 
-  if (page_tag == PageTag::kV8) {
+  if (accessibility.permissions ==
+          PageAccessibilityConfiguration::kInaccessibleWillJitLater ||
+      accessibility.permissions ==
+          PageAccessibilityConfiguration::kReadWriteExecute) {
     // V8 uses JIT. Call zx_vmo_replace_as_executable() to allow code execution
     // in the new VMO.
     status = vmo.replace_as_executable(VmexResource(), &vmo);

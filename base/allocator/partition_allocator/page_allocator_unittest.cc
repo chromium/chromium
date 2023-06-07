@@ -622,6 +622,43 @@ TEST(PartitionAllocPageAllocatorTest, MappedPagesAccounting) {
   }
 }
 
+TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
+  // Verify that kInaccessibleWillJitLater allows read/write, and read/execute
+  // permissions to be set.
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessibleWillJitLater),
+                 PageTag::kChromium);
+  EXPECT_TRUE(
+      TrySetSystemPagesAccess(buffer, PageAllocationGranularity(),
+                              PageAccessibilityConfiguration(
+                                  PageAccessibilityConfiguration::kReadWrite)));
+  EXPECT_TRUE(TrySetSystemPagesAccess(
+      buffer, PageAllocationGranularity(),
+      PageAccessibilityConfiguration(
+          PageAccessibilityConfiguration::kReadExecute)));
+  FreePages(buffer, PageAllocationGranularity());
+}
+
+TEST(PartitionAllocPageAllocatorTest, AllocReadWriteExecute) {
+  // Verify that kReadWriteExecute is similarly functional.
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteExecute),
+                 PageTag::kChromium);
+  EXPECT_TRUE(
+      TrySetSystemPagesAccess(buffer, PageAllocationGranularity(),
+                              PageAccessibilityConfiguration(
+                                  PageAccessibilityConfiguration::kReadWrite)));
+  EXPECT_TRUE(TrySetSystemPagesAccess(
+      buffer, PageAllocationGranularity(),
+      PageAccessibilityConfiguration(
+          PageAccessibilityConfiguration::kReadExecute)));
+  FreePages(buffer, PageAllocationGranularity());
+}
+
 }  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

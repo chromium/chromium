@@ -3943,8 +3943,12 @@ test("base_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
 
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/logger.shard.test-cml" ]
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/logger.shard.test-cml",
+
+      # Required by PartitionAllocPageAllocatorTest tests with exec capability.
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+    ]
   }
 
   if (!is_fuchsia && !is_ios) {

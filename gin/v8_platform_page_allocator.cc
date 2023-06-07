@@ -38,11 +38,8 @@ GetPagePermissions(v8::PageAllocator::Permission permission) {
       return ::partition_alloc::PageAccessibilityConfiguration::kReadExecute;
 #endif
     case v8::PageAllocator::Permission::kNoAccessWillJitLater:
-      // We could use this information to conditionally set the MAP_JIT flag
-      // on Mac-arm64; however this permissions value is intended to be a
-      // short-term solution, so we continue to set MAP_JIT for all V8 pages
-      // for now.
-      return ::partition_alloc::PageAccessibilityConfiguration::kInaccessible;
+      return ::partition_alloc::PageAccessibilityConfiguration::
+          kInaccessibleWillJitLater;
     default:
       DCHECK_EQ(v8::PageAllocator::Permission::kNoAccess, permission);
       return ::partition_alloc::PageAccessibilityConfiguration::kInaccessible;
@@ -83,7 +80,7 @@ void* PageAllocator::AllocatePages(void* address,
   partition_alloc::PageAccessibilityConfiguration config =
       GetPageConfig(permissions);
   return partition_alloc::AllocPages(address, length, alignment, config,
-                                     partition_alloc::PageTag::kV8);
+                                     ::partition_alloc::PageTag::kV8);
 }
 
 bool PageAllocator::FreePages(void* address, size_t length) {

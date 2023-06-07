@@ -186,7 +186,9 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
   // into this capability by specifying the "com.apple.security.cs.allow-jit"
   // code signing entitlement and allocating the region with the MAP_JIT flag.
   static const bool kUseMapJit = UseMapJit();
-  if (page_tag == PageTag::kV8 && kUseMapJit) {
+  if (accessibility.permissions ==
+          PageAccessibilityConfiguration::kInaccessibleWillJitLater &&
+      kUseMapJit) {
     map_flags |= MAP_JIT;
   }
 #endif
