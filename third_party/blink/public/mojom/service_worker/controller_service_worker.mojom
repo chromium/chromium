@@ -93,11 +93,10 @@ struct ControllerServiceWorkerInfo {
   // Experimental feature (crbug.com/1371756).
   // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
   //
-  // The static routing API allows flexible routings to pages under the
-  // ServiceWorker control. If the routes are well configured, this brings the
-  // performance improvement to the pages under the ServiceWorker control.
-  //
-  // This router rules is used for routing subresourcecs in the renderer-side.
+  // Declarative rules for routing requests without requiring a live
+  // ServiceWorker. These are non-null only when passing the ServiceWorker
+  // info to commit a navigation; the static rules here will be used to route
+  // subresource requests in the newly-committed Document.
   ServiceWorkerRouterRules? router_rules;
 
   // Non-null iff there is a controller and it has a fetch event handler.
