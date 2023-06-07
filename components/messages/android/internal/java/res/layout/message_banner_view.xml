@@ -100,14 +100,4 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:visibility="gone" />
 
-    <ProgressBar
-        style="@style/ProgressBarStyle"
-        android:id="@+id/message_primary_progress_spinner"
-        android:indeterminate="true"
-        android:maxWidth="@dimen/message_primary_button_max_width"
-        android:minWidth="@dimen/button_min_width"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/message_progress_spinner_height"
-        android:layout_gravity="center_vertical"
-        android:visibility="gone" />
 </org.chromium.components.messages.MessageBannerView>

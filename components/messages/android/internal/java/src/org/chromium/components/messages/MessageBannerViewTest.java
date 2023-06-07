@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -251,9 +252,6 @@ public class MessageBannerViewTest {
 
         Assert.assertEquals(View.GONE,
                 mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
     }
 
     /**
@@ -278,9 +276,6 @@ public class MessageBannerViewTest {
 
         Assert.assertEquals(View.GONE,
                 mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
     }
 
     /**
@@ -305,9 +300,6 @@ public class MessageBannerViewTest {
 
         Assert.assertEquals(View.GONE,
                 mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
     }
 
     /**
@@ -337,11 +329,9 @@ public class MessageBannerViewTest {
                     propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         });
 
-        Assert.assertEquals(View.VISIBLE,
-                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
+        var primaryButton = mMessageBannerView.findViewById(R.id.message_primary_button);
+        Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+        Assert.assertFalse(primaryButton.getBackground() instanceof CircularProgressDrawable);
 
         onView(withId(R.id.message_primary_button)).perform(click());
         Mockito.verify(mPrimaryActionCallback).run();
@@ -377,11 +367,9 @@ public class MessageBannerViewTest {
             propertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_TEXT);
         });
 
-        Assert.assertEquals(View.VISIBLE,
-                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
+        var primaryButton = mMessageBannerView.findViewById(R.id.message_primary_button);
+        Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+        Assert.assertFalse(primaryButton.getBackground() instanceof CircularProgressDrawable);
 
         onView(withId(R.id.message_primary_button)).perform(click());
         Mockito.verify(mPrimaryActionCallback).run();
@@ -405,11 +393,9 @@ public class MessageBannerViewTest {
                     propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         });
 
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.VISIBLE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
+        var primaryButton = mMessageBannerView.findViewById(R.id.message_primary_button);
+        Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+        Assert.assertTrue(primaryButton.getBackground() instanceof CircularProgressDrawable);
     }
 
     /**
@@ -442,11 +428,9 @@ public class MessageBannerViewTest {
                     PrimaryWidgetAppearance.PROGRESS_SPINNER);
         });
 
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.VISIBLE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
+        var primaryButton = mMessageBannerView.findViewById(R.id.message_primary_button);
+        Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+        Assert.assertTrue(primaryButton.getBackground() instanceof CircularProgressDrawable);
     }
 
     /**
@@ -476,11 +460,9 @@ public class MessageBannerViewTest {
                     propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         });
 
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.VISIBLE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
+        var primaryButton = mMessageBannerView.findViewById(R.id.message_primary_button);
+        Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+        Assert.assertTrue(primaryButton.getBackground() instanceof CircularProgressDrawable);
     }
 
     /**
@@ -502,9 +484,6 @@ public class MessageBannerViewTest {
 
         Assert.assertEquals(View.GONE,
                 mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
     }
 
     /**
@@ -532,11 +511,9 @@ public class MessageBannerViewTest {
                     propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         });
 
-        Assert.assertEquals(View.VISIBLE,
-                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
-        Assert.assertEquals(View.GONE,
-                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
-                        .getVisibility());
+        var primaryButton = mMessageBannerView.findViewById(R.id.message_primary_button);
+        Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+        Assert.assertFalse(primaryButton.getBackground() instanceof CircularProgressDrawable);
 
         onView(withId(R.id.message_primary_button)).perform(click());
         Mockito.verify(mPrimaryActionCallback).run();
