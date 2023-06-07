@@ -622,13 +622,9 @@ suite('PrivacySandboxDialogNoticeROW', function() {
     await browserProxy.whenCalled('showDialog');
   });
 
-  test('moreButton', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
+  // TODO(crbug.com/1432915, crbug.com/1432915): various more button test
+  // issues. Re-enable once resolved.
+  test.skip('moreButton', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     await flushTasks();
@@ -689,12 +685,6 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('ackClicked', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     testClickButton('#ackButton', page);
@@ -703,12 +693,6 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('settingsClicked', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     testClickButton('#settingsButton', page);
@@ -717,12 +701,6 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('learnMoreClicked', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     // TODO(crbug.com/1378703): Test scrolling behaviour.

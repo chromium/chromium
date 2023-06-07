@@ -29,15 +29,32 @@ var PrivacySandboxDialogSmallWindowTest = class extends PolymerTest {
   }
 };
 
-// TODO(https://crbug.com/1446188): Re-enable the test.
-GEN('#if BUILDFLAG(IS_MAC)');
-GEN('# define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('# define MAYBE_All All');
-GEN('#endif');
+TEST_F('PrivacySandboxDialogSmallWindowTest', 'Consent', function() {
+  runMochaSuite('PrivacySandboxDialogConsent');
+});
 
-TEST_F('PrivacySandboxDialogSmallWindowTest', 'MAYBE_All', function() {
-  mocha.run();
+TEST_F('PrivacySandboxDialogSmallWindowTest', 'Notice', function() {
+  runMochaSuite('PrivacySandboxDialogNotice');
+});
+
+TEST_F('PrivacySandboxDialogSmallWindowTest', 'Combined', function() {
+  runMochaSuite('PrivacySandboxDialogCombined');
+});
+
+TEST_F('PrivacySandboxDialogSmallWindowTest', 'NoticeEEA', function() {
+  runMochaSuite('PrivacySandboxDialogNoticeEEA');
+});
+
+TEST_F('PrivacySandboxDialogSmallWindowTest', 'NoticeROW', function() {
+  runMochaSuite('PrivacySandboxDialogNoticeROW');
+});
+
+TEST_F('PrivacySandboxDialogSmallWindowTest', 'Restricted', function() {
+  runMochaSuite('PrivacySandboxDialogNoticeRestricted');
+});
+
+TEST_F('PrivacySandboxDialogSmallWindowTest', 'Mixin', function() {
+  runMochaSuite('PrivacySandboxDialogMixin');
 });
 
 var PrivacySandboxDialogBigWindowTest = class extends PolymerTest {
@@ -57,6 +74,30 @@ var PrivacySandboxDialogBigWindowTest = class extends PolymerTest {
   }
 };
 
-TEST_F('PrivacySandboxDialogBigWindowTest', 'MAYBE_All', function() {
-  mocha.run();
+TEST_F('PrivacySandboxDialogBigWindowTest', 'Consent', function() {
+  runMochaSuite('PrivacySandboxDialogConsent');
+});
+
+TEST_F('PrivacySandboxDialogBigWindowTest', 'Notice', function() {
+  runMochaSuite('PrivacySandboxDialogNotice');
+});
+
+TEST_F('PrivacySandboxDialogBigWindowTest', 'Combined', function() {
+  runMochaSuite('PrivacySandboxDialogCombined');
+});
+
+TEST_F('PrivacySandboxDialogBigWindowTest', 'NoticeEEA', function() {
+  runMochaSuite('PrivacySandboxDialogNoticeEEA');
+});
+
+TEST_F('PrivacySandboxDialogBigWindowTest', 'NoticeROW', function() {
+  runMochaSuite('PrivacySandboxDialogNoticeROW');
+});
+
+TEST_F('PrivacySandboxDialogBigWindowTest', 'Restricted', function() {
+  runMochaSuite('PrivacySandboxDialogNoticeRestricted');
+});
+
+TEST_F('PrivacySandboxDialogBigWindowTest', 'Mixin', function() {
+  runMochaSuite('PrivacySandboxDialogMixin');
 });
