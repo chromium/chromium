@@ -1421,19 +1421,19 @@
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "deprecate-alt-click",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "deprecate-old-keyboard-shortcuts-accelerator",
     "owners": [ "zentaro", "jimmyxgong", "cambickel",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "deprecated-external-picker-function",
@@ -1617,7 +1617,7 @@
   {
     "name": "display-alignment-assistance",
     "owners": [ "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "display-sync-errors-refactor",
