@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <memory>
 
 #include "api.h"
 #include "ipcz/api_object.h"
@@ -13,6 +14,7 @@
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link_memory.h"
+#include "ipcz/parcel.h"
 #include "ipcz/parcel_wrapper.h"
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
@@ -167,41 +169,29 @@ IpczResult Put(IpczHandle portal_handle,
 IpczResult BeginPut(IpczHandle portal_handle,
                     IpczBeginPutFlags flags,
                     const void* options,
+                    void** data,
                     size_t* num_bytes,
-                    void** data) {
+                    IpczTransaction* transaction) {
   ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal || !data) {
+  if (!portal || !transaction) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-
-  size_t dummy_num_bytes = 0;
-  if (!num_bytes) {
-    num_bytes = &dummy_num_bytes;
-  }
-  return portal->BeginPut(flags, *num_bytes, *data);
+  return portal->BeginPut(flags, data, num_bytes, transaction);
 }
 
 IpczResult EndPut(IpczHandle portal_handle,
-                  const void* data,
+                  IpczTransaction transaction,
                   size_t num_bytes_produced,
                   const IpczHandle* handles,
                   size_t num_handles,
                   IpczEndPutFlags flags,
                   const void* options) {
   ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal || !data) {
+  if (!portal || !transaction || (num_handles > 0 && !handles)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-  if (num_handles > 0 && !handles) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
-  if (flags & IPCZ_END_PUT_ABORT) {
-    return portal->AbortPut(data);
-  }
-
-  return portal->CommitPut(data, num_bytes_produced,
-                           absl::MakeSpan(handles, num_handles));
+  return portal->EndPut(transaction, num_bytes_produced,
+                        absl::MakeSpan(handles, num_handles), flags);
 }
 
 IpczResult Get(IpczHandle source,

@@ -11,6 +11,7 @@
 #include "ipcz/api_object.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel.h"
+#include "ipcz/pending_transaction_set.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,12 +52,13 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
   IpczResult Put(absl::Span<const uint8_t> data,
                  absl::Span<const IpczHandle> handles);
   IpczResult BeginPut(IpczBeginPutFlags flags,
-                      size_t& num_data_bytes,
-                      void*& data);
-  IpczResult CommitPut(const void* data,
-                       size_t num_data_bytes_produced,
-                       absl::Span<const IpczHandle> handles);
-  IpczResult AbortPut(const void* data);
+                      void** data,
+                      size_t* num_bytes,
+                      IpczTransaction* transaction);
+  IpczResult EndPut(IpczTransaction transaction,
+                    size_t num_bytes_produced,
+                    absl::Span<const IpczHandle> handles,
+                    IpczEndPutFlags flags);
 
   IpczResult Get(IpczGetFlags flags,
                  void* data,
@@ -78,14 +80,8 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
   const Ref<Router> router_;
 
   absl::Mutex mutex_;
-
+  PendingTransactionSet pending_puts_ ABSL_GUARDED_BY(mutex_);
   bool in_two_phase_get_ ABSL_GUARDED_BY(mutex_) = false;
-
-  // Tracks parcels being built for two-phase put operations. The most common
-  // case is a single concurrent put, so this case is optimized to store an
-  // inlined Parcel object with no hash table.
-  using PendingParcelMap = absl::flat_hash_map<const void*, Parcel>;
-  absl::variant<absl::monostate, Parcel, PendingParcelMap> pending_parcels_;
 };
 
 }  // namespace ipcz

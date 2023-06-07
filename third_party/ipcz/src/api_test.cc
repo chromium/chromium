@@ -328,45 +328,48 @@ TEST_F(APITest, BeginEndPutFailure) {
   constexpr size_t kPutSize = 64;
   size_t num_bytes = kPutSize;
   void* data;
+  IpczTransaction transaction;
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().BeginPut(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr,
-                            &num_bytes, &data));
+            ipcz().BeginPut(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, &data,
+                            &num_bytes, &transaction));
 
-  // Null data.
-  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &num_bytes, nullptr));
+  // Null transaction.
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &data, &num_bytes, nullptr));
 
   // Start a put transaction to test EndPut().
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &num_bytes, &data));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &data,
+                                            &num_bytes, &transaction));
 
   // Invalid portal.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().EndPut(IPCZ_INVALID_HANDLE, data, 0, nullptr, 0,
+            ipcz().EndPut(IPCZ_INVALID_HANDLE, transaction, 0, nullptr, 0,
                           IPCZ_NO_FLAGS, nullptr));
 
-  // Invalid data address.
+  // Invalid transaction.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().EndPut(a, nullptr, 0, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+            ipcz().EndPut(a, 0, 0, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
 
   // Non-zero number of handles, but null handle buffer.
-  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().EndPut(a, data, 0, nullptr, 1, IPCZ_NO_FLAGS, nullptr));
-
-  // Oversized data.
   EXPECT_EQ(
       IPCZ_RESULT_INVALID_ARGUMENT,
-      ipcz().EndPut(a, data, kPutSize * 2, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+      ipcz().EndPut(a, transaction, 0, nullptr, 1, IPCZ_NO_FLAGS, nullptr));
+
+  // Oversized data.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().EndPut(a, transaction, kPutSize * 2, nullptr, 0,
+                          IPCZ_NO_FLAGS, nullptr));
 
   // Invalid handle attachment.
   IpczHandle invalid_handle = IPCZ_INVALID_HANDLE;
-  EXPECT_EQ(
-      IPCZ_RESULT_INVALID_ARGUMENT,
-      ipcz().EndPut(a, data, 0, &invalid_handle, 1, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().EndPut(a, transaction, 0, &invalid_handle, 1, IPCZ_NO_FLAGS,
+                          nullptr));
 
   // Commit it.
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndPut(a, data, 0, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, transaction, 0, nullptr, 0,
+                                          IPCZ_NO_FLAGS, nullptr));
 
   CloseAll({a, b, node});
 }
@@ -435,11 +438,13 @@ TEST_F(APITest, TwoPhasePutGet) {
   constexpr std::string_view kMessage = "ipcz!";
   size_t num_bytes = kMessage.size();
   void* out_data;
+  IpczTransaction transaction;
   EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &num_bytes, &out_data));
+            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data, &num_bytes,
+                            &transaction));
   EXPECT_EQ(kMessage.size(), num_bytes);
   memcpy(out_data, kMessage.data(), kMessage.size());
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, out_data, num_bytes, nullptr, 0,
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, transaction, num_bytes, nullptr, 0,
                                           IPCZ_NO_FLAGS, nullptr));
 
   const void* in_data;
@@ -477,39 +482,45 @@ TEST_F(APITest, OverlappedTwoPhasePuts) {
 
   size_t num_bytes1 = kMessage1.size();
   void* out_data1;
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr,
-                                            &num_bytes1, &out_data1));
+  IpczTransaction transaction1;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data1, &num_bytes1,
+                            &transaction1));
   EXPECT_EQ(kMessage1.size(), num_bytes1);
   memcpy(out_data1, kMessage1.data(), kMessage1.size());
 
   size_t num_bytes2 = kMessage2.size();
   void* out_data2;
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr,
-                                            &num_bytes2, &out_data2));
+  IpczTransaction transaction2;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data2, &num_bytes2,
+                            &transaction2));
   EXPECT_EQ(kMessage2.size(), num_bytes2);
   memcpy(out_data2, kMessage2.data(), kMessage2.size());
 
   size_t num_bytes3 = kMessage3.size();
   void* out_data3;
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr,
-                                            &num_bytes3, &out_data3));
+  IpczTransaction transaction3;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data3, &num_bytes3,
+                            &transaction3));
   EXPECT_EQ(kMessage3.size(), num_bytes3);
   memcpy(out_data3, kMessage3.data(), kMessage3.size());
 
   // Complete them out-of-order. They should arrive in the order in which they
   // were completed rather than the order in which they were started.
 
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, out_data3, num_bytes3, nullptr, 0,
-                                          IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, out_data1, num_bytes1, nullptr, 0,
-                                          IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, out_data2, num_bytes2, nullptr, 0,
-                                          IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, transaction3, num_bytes3, nullptr,
+                                          0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, transaction1, num_bytes1, nullptr,
+                                          0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, transaction2, num_bytes2, nullptr,
+                                          0, IPCZ_NO_FLAGS, nullptr));
 
   // Also for good measure attempt to terminate a transaction twice.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().EndPut(a, out_data1, num_bytes1, nullptr, 0, IPCZ_NO_FLAGS,
-                          nullptr));
+            ipcz().EndPut(a, transaction1, num_bytes1, nullptr, 0,
+                          IPCZ_NO_FLAGS, nullptr));
 
   char message[16] = {};
   size_t num_bytes = std::size(message);

@@ -284,6 +284,8 @@ ipcz_source_set("impl") {
     "ipcz/parcel.cc",
     "ipcz/parcel_queue.cc",
     "ipcz/parcel_wrapper.cc",
+    "ipcz/pending_transaction_set.cc",
+    "ipcz/pending_transaction_set.h",
     "ipcz/portal.cc",
     "ipcz/ref_counted_fragment.cc",
     "ipcz/remote_router_link.cc",
