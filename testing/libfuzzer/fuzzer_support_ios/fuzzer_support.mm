@@ -21,21 +21,11 @@
 static int g_argc;
 static char** g_argv;
 
-namespace fuzzer {
-typedef int (*UserCallback)(const uint8_t* Data, size_t Size);
-int FuzzerDriver(int* argc, char*** argv, UserCallback Callback);
-}  // namespace fuzzer
-
 namespace {
-// TODO(crbug.com/1261537): Remove this when the function is provided by
-// libFuzzer.
-extern "C" __attribute__((visibility("default"))) int LLVMFuzzerRunDriver(
-    int* argc,
-    char*** argv,
-    int (*UserCb)(const uint8_t* Data, size_t Size)) {
-  return fuzzer::FuzzerDriver(argc, argv, UserCb);
-}
-
+extern "C" int LLVMFuzzerRunDriver(int* argc,
+                                   char*** argv,
+                                   int (*UserCb)(const uint8_t* Data,
+                                                 size_t Size));
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
 
 void PopulateUIWindow(UIWindow* window) {
@@ -52,7 +42,7 @@ void PopulateUIWindow(UIWindow* window) {
   // root view controller. Set an empty one here.
   [window setRootViewController:[[UIViewController alloc] init]];
 }
-}
+}  // namespace
 
 @interface UIApplication (Testing)
 - (void)_terminateWithStatus:(int)status;
