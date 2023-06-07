@@ -4927,7 +4927,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "ci_only": true,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4967,7 +4966,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "ci_only": true,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6089,7 +6087,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "ci_only": true,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6129,7 +6126,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "ci_only": true,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

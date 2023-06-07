@@ -4395,9 +4395,6 @@
       # Removed from V8 builders since WebGL 1 should provide reasonable
       # upstream test coverage without the capacity hit from WebGL 2.
       'Mac V8 FYI Release (Intel)',
-      # crbug.com/1450207 corrupt Metal shader cache
-      'mac-angle-chromium-intel',
-      'Mac FYI Release (Intel)',
     ],
     'modifications': {
       'Mac FYI ASAN (Intel)': {
@@ -4501,9 +4498,6 @@
       'Mac FYI Retina ASAN (AMD)',
       # crbug.com/1158857: re-enable when switching to Metal by default.
       'Mac FYI Retina Release (NVIDIA)',
-      # crbug.com/1450207 corrupt Metal shader cache
-      'mac-angle-chromium-intel',
-      'Mac FYI Release (Intel)',
     ],
     'modifications': {
       'Mac FYI ASAN (Intel)': {
@@ -4647,13 +4641,6 @@
       'Dawn Android arm64 Release (Pixel 6)': {
         'ci_only': True,
       },
-      # crbug.com/1450207 corrupt Metal shader cache
-      'Dawn Mac x64 DEPS Release (Intel)': {
-        'ci_only': True,
-      },
-      'Dawn Mac x64 Release (Intel)': {
-        'ci_only': True,
-      },
       # These tests must run with a GPU.
       'linux-code-coverage': {
         'swarming': {
@@ -4734,13 +4721,6 @@
         'ci_only': True,
       },
       'Dawn Linux x64 Release (Intel UHD 630)': {
-        'ci_only': True,
-      },
-      # crbug.com/1450207 corrupt Metal shader cache
-      'Dawn Mac x64 DEPS Release (Intel)': {
-        'ci_only': True,
-      },
-      'Dawn Mac x64 Release (Intel)': {
         'ci_only': True,
       },
     },
