@@ -424,7 +424,7 @@ def StartGomaAndGetGomaCCPath():
 
 
 def DownloadPinnedClang():
-  PINNED_CLANG_VERSION = 'llvmorg-16-init-3375-gfed71b04-1'
+  PINNED_CLANG_VERSION = 'llvmorg-17-init-12166-g7586aeab-3'
   DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
                            PINNED_CLANG_VERSION)
 
