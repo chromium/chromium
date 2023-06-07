@@ -13,7 +13,7 @@ import {getTemplate} from './supported_links_dialog.html.js';
 
 const AppManagementSupportedLinksDialogElementBase = I18nMixin(PolymerElement);
 
-class AppManagementSupportedLinksDialogElement extends
+export class AppManagementSupportedLinksDialogElement extends
     AppManagementSupportedLinksDialogElementBase {
   static get is() {
     return 'app-management-supported-links-dialog';

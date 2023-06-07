@@ -2,19 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://os-settings/lazy_load.js';
 
+import {AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {setupFakeHandler, replaceStore, replaceBody, isHidden} from './test_util.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import {isHidden, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-supported-links-item>', () => {
-  let supportedLinksItem;
-  let fakeHandler;
+  let supportedLinksItem: AppManagementSupportedLinksItemElement;
+  let fakeHandler: FakePageHandler;
 
   setup(() => {
-    PolymerTest.clearBody();
     fakeHandler = setupFakeHandler();
     replaceStore();
 
@@ -22,7 +27,11 @@ suite('<app-management-supported-links-item>', () => {
         document.createElement('app-management-supported-links-item');
   });
 
-  test('PWA - preferred -> browser', async function() {
+  teardown(() => {
+    supportedLinksItem.remove();
+  });
+
+  test('PWA - preferred -> browser', async () => {
     const pwaOptions = {
       type: AppType.kWeb,
       isPreferredApp: true,
@@ -44,24 +53,29 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertEquals(
-        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
-        'preferred');
+    let radioGroup =
+        supportedLinksItem.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('preferred', radioGroup.selected);
 
-    await supportedLinksItem.shadowRoot.querySelector('#browserRadioButton')
-        .click();
+    const browserRadioButton =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#browserRadioButton');
+    assertTrue(!!browserRadioButton);
+    await browserRadioButton.click();
     await fakeHandler.whenCalled('setPreferredApp');
     await flushTasks();
 
-    assertFalse(
-        AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
+    const selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    assertTrue(!!selectedApp);
+    assertFalse(selectedApp.isPreferredApp);
 
-    assertEquals(
-        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
-        'browser');
+    radioGroup = supportedLinksItem.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('browser', radioGroup.selected);
   });
 
-  test('ARC - browser -> preferred', async function() {
+  test('ARC - browser -> preferred', async () => {
     const arcOptions = {
       type: AppType.kArc,
       isPreferredApp: false,
@@ -83,24 +97,29 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertEquals(
-        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
-        'browser');
+    let radioGroup =
+        supportedLinksItem.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('browser', radioGroup.selected);
 
-    await supportedLinksItem.shadowRoot.querySelector('#preferredRadioButton')
-        .click();
+    const preferredRadioButton =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#preferredRadioButton');
+    assertTrue(!!preferredRadioButton);
+    await preferredRadioButton.click();
     await fakeHandler.whenCalled('setPreferredApp');
     await flushTasks();
 
-    assertTrue(
-        AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
+    const selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    assertTrue(!!selectedApp);
+    assertTrue(selectedApp.isPreferredApp);
 
-    assertEquals(
-        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
-        'preferred');
+    radioGroup = supportedLinksItem.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('preferred', radioGroup.selected);
   });
 
-  test('No supported links', async function() {
+  test('No supported links', async () => {
     const pwaOptions = {
       type: AppType.kWeb,
       isPreferredApp: false,  // Cannot be preferred app if there are no links.
@@ -125,7 +144,7 @@ suite('<app-management-supported-links-item>', () => {
     assertTrue(isHidden(supportedLinksItem));
   });
 
-  test('Window/tab mode', async function() {
+  test('Window/tab mode', async () => {
     const options = {
       type: AppType.kWeb,
       isPreferredApp: true,
@@ -148,13 +167,17 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
-    assertTrue(!!supportedLinksItem.shadowRoot.querySelector(
+    assertTrue(!!supportedLinksItem.shadowRoot!.querySelector(
         '#disabledExplanationText'));
-    assertTrue(
-        !!supportedLinksItem.shadowRoot.querySelector('#radioGroup').disabled);
+
+    const radioGroup =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioGroupElement>(
+            '#radioGroup');
+    assertTrue(!!radioGroup);
+    assertTrue(!!radioGroup.disabled);
   });
 
-  test('can open and close supported link list dialog', async function() {
+  test('can open and close supported link list dialog', async () => {
     const supportedLink = 'google.com';
     const pwaOptions = {
       type: AppType.kWeb,
@@ -178,44 +201,52 @@ suite('<app-management-supported-links-item>', () => {
     await flushTasks();
 
     let supportedLinksDialog =
-        supportedLinksItem.shadowRoot.querySelector('#dialog');
-    assertEquals(null, supportedLinksDialog);
+        supportedLinksItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
+    assertNull(supportedLinksDialog);
 
     // Open dialog.
-    const heading = supportedLinksItem.shadowRoot.querySelector('#heading');
-    heading.shadowRoot.querySelector('a').click();
+    const heading = supportedLinksItem.shadowRoot!.querySelector('#heading');
+    assertTrue(!!heading);
+    const link = heading.shadowRoot!.querySelector('a');
+    assertTrue(!!link);
+    link.click();
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
     supportedLinksDialog =
-        supportedLinksItem.shadowRoot.querySelector('#dialog');
+        supportedLinksItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
     assertTrue(!!supportedLinksDialog);
     const innerDialog =
-        supportedLinksDialog.shadowRoot.querySelector('#dialog');
+        supportedLinksDialog.shadowRoot!.querySelector<HTMLDialogElement>(
+            '#dialog');
+    assertTrue(!!innerDialog);
     assertTrue(innerDialog.open);
 
     // Confirm google.com shows up.
-    assertEquals(
-        supportedLinksDialog.shadowRoot.querySelector('#list')
-            .getElementsByClassName('list-item')[0]
-            .innerText,
-        supportedLink);
+    const list = supportedLinksDialog.shadowRoot!.querySelector('#list');
+    assertTrue(!!list);
+    const item = list.getElementsByClassName('list-item')[0] as HTMLElement;
+    assertTrue(!!item);
+    assertEquals(supportedLink, item.innerText);
 
     // Close dialog.
-    innerDialog.shadowRoot.querySelector('#close').click();
+    const closeButton =
+        innerDialog.shadowRoot!.querySelector<HTMLButtonElement>('#close');
+    assertTrue(!!closeButton);
+    closeButton.click();
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
     // Wait for the stamped dialog to be destroyed.
     await waitAfterNextRender(supportedLinksDialog);
     supportedLinksDialog =
-        supportedLinksItem.shadowRoot.querySelector('#dialog');
-    assertEquals(null, supportedLinksDialog);
+        supportedLinksItem.shadowRoot!.querySelector('#dialog');
+    assertNull(supportedLinksDialog);
   });
 
   // TODO(crbug/1253891): Race condition when closing the dialog makes this test
   // flaky.
-  test.skip('overlap dialog is shown and cancelled', async function() {
+  test.skip('overlap dialog is shown and cancelled', async () => {
     const pwaOptions = {
       type: AppType.kWeb,
       isPreferredApp: false,
@@ -239,40 +270,51 @@ suite('<app-management-supported-links-item>', () => {
 
     // Pre-test checks
     let overlapDialog = supportedLinksItem.querySelector('#overlapDialog');
-    assertEquals(null, overlapDialog);
-    assertTrue(
-        supportedLinksItem.shadowRoot.querySelector('#browserRadioButton')
-            .checked);
+    assertNull(overlapDialog);
+
+    const browserRadioButton =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#browserRadioButton');
+    assertTrue(!!browserRadioButton);
+    assertTrue(browserRadioButton.checked);
 
     // Open dialog
     const promise = fakeHandler.whenCalled('getOverlappingPreferredApps');
-    await supportedLinksItem.shadowRoot.querySelector('#preferredRadioButton')
-        .click();
+    const preferredRadioButton =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#preferredRadioButton');
+    assertTrue(!!preferredRadioButton);
+    await preferredRadioButton.click();
     await promise;
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
     overlapDialog =
-        supportedLinksItem.shadowRoot.querySelector('#overlapDialog');
+        supportedLinksItem.shadowRoot!.querySelector('#overlapDialog');
     assertTrue(!!overlapDialog);
 
     // Close dialog
-    overlapDialog.shadowRoot.querySelector('#cancel').click();
+    const cancelButton =
+        overlapDialog.shadowRoot!.querySelector<HTMLButtonElement>('#cancel');
+    assertTrue(!!cancelButton);
+    cancelButton.click();
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
     overlapDialog =
-        supportedLinksItem.shadowRoot.querySelector('#overlapDialog');
-    assertEquals(null, overlapDialog);
+        supportedLinksItem.shadowRoot!.querySelector('#overlapDialog');
+    assertNull(overlapDialog);
 
-    assertFalse(
-        AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
-    assertEquals(
-        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
-        'browser');
+    const selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    assertTrue(!!selectedApp);
+    assertFalse(selectedApp.isPreferredApp);
+    const radioGroup =
+        supportedLinksItem.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('browser', radioGroup.selected);
   });
 
-  test('overlap dialog is shown and accepted', async function() {
+  test('overlap dialog is shown and accepted', async () => {
     const pwaOptions = {
       type: AppType.kWeb,
       isPreferredApp: false,
@@ -295,38 +337,49 @@ suite('<app-management-supported-links-item>', () => {
     await flushTasks();
 
     // Pre-test checks
-    assertFalse(!!supportedLinksItem.querySelector('#overlapDialog'));
-    assertTrue(
-        supportedLinksItem.shadowRoot.querySelector('#browserRadioButton')
-            .checked);
+    assertNull(supportedLinksItem.querySelector('#overlapDialog'));
+    const browserRadioButton =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#browserRadioButton');
+    assertTrue(!!browserRadioButton);
+    assertTrue(browserRadioButton.checked);
 
     // Open dialog
     let promise = fakeHandler.whenCalled('getOverlappingPreferredApps');
-    await supportedLinksItem.shadowRoot.querySelector('#preferredRadioButton')
-        .click();
+    const preferredRadioButton =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#preferredRadioButton');
+    assertTrue(!!preferredRadioButton);
+    await preferredRadioButton.click();
     await promise;
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
-    assertTrue(!!supportedLinksItem.shadowRoot.querySelector('#overlapDialog'));
+    assertTrue(
+        !!supportedLinksItem.shadowRoot!.querySelector('#overlapDialog'));
 
     // Accept change
     promise = fakeHandler.whenCalled('setPreferredApp');
-    supportedLinksItem.shadowRoot.querySelector('#overlapDialog')
-        .$.change.click();
+    const overlapDialog = supportedLinksItem.shadowRoot!.querySelector<
+        AppManagementSupportedLinksOverlappingAppsDialogElement>(
+        '#overlapDialog');
+    assertTrue(!!overlapDialog);
+    overlapDialog.$.dialog.close();
     await promise;
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
-    assertFalse(
-        !!supportedLinksItem.shadowRoot.querySelector('#overlapDialog'));
-    assertTrue(
-        AppManagementStore.getInstance().data.apps[app.id].isPreferredApp);
-    assertEquals(
-        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
-        'preferred');
+    assertNull(supportedLinksItem.shadowRoot!.querySelector('#overlapDialog'));
+
+    const selectedApp = AppManagementStore.getInstance().data.apps[app.id];
+    assertTrue(!!selectedApp);
+    assertTrue(selectedApp.isPreferredApp);
+    const radioGroup =
+        supportedLinksItem.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('preferred', radioGroup.selected);
   });
 
-  test('overlap warning isnt shown when not selected', async function() {
+  test('overlap warning isnt shown when not selected', async () => {
     const pwaOptions1 = {
       type: AppType.kWeb,
       isPreferredApp: true,
@@ -353,11 +406,10 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
 
-    assertFalse(
-        !!supportedLinksItem.shadowRoot.querySelector('#overlapWarning'));
+    assertNull(supportedLinksItem.shadowRoot!.querySelector('#overlapWarning'));
   });
 
-  test('overlap warning is shown', async function() {
+  test('overlap warning is shown', async () => {
     const pwaOptions1 = {
       type: AppType.kWeb,
       isPreferredApp: false,
@@ -387,6 +439,6 @@ suite('<app-management-supported-links-item>', () => {
     await flushTasks();
 
     assertTrue(
-        !!supportedLinksItem.shadowRoot.querySelector('#overlapWarning'));
+        !!supportedLinksItem.shadowRoot!.querySelector('#overlapWarning'));
   });
 });

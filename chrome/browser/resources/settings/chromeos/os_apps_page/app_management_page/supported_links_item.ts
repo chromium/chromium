@@ -30,7 +30,7 @@ import {AppManagementSupportedLinksOverlappingAppsDialogElement} from './support
 type PreferenceType = 'preferred'|'browser';
 const PREFERRED_APP_PREF = 'preferred' as const;
 
-interface AppManagementSupportedLinksItemElement {
+export interface AppManagementSupportedLinksItemElement {
   $: {
     heading: LocalizedLinkElement,
     preferredRadioButton: CrRadioButtonElement,
@@ -41,7 +41,7 @@ interface AppManagementSupportedLinksItemElement {
 const AppManagementSupportedLinksItemElementBase =
     AppManagementStoreMixin(I18nMixin(PolymerElement));
 
-class AppManagementSupportedLinksItemElement extends
+export class AppManagementSupportedLinksItemElement extends
     AppManagementSupportedLinksItemElementBase {
   static get is() {
     return 'app-management-supported-links-item';

@@ -80,6 +80,7 @@ import './os_apps_page/app_management_page/pin_to_shelf_item.js';
 import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 import './os_apps_page/app_management_page/pwa_detail_view.js';
 import './os_apps_page/app_management_page/sub_apps_item.js';
+import './os_apps_page/app_management_page/supported_links_item.js';
 import './os_files_page/google_drive_subpage.js';
 import './os_files_page/google_drive_confirmation_dialog.js';
 import './os_files_page/one_drive_subpage.js';
@@ -164,6 +165,8 @@ export {AppManagementPluginVmDetailViewElement} from './os_apps_page/app_managem
 export {AppManagementPwaDetailViewElement} from './os_apps_page/app_management_page/pwa_detail_view.js';
 export {AppManagementResizeLockItemElement} from './os_apps_page/app_management_page/resize_lock_item.js';
 export {AppManagementSubAppsItemElement} from './os_apps_page/app_management_page/sub_apps_item.js';
+export {AppManagementSupportedLinksItemElement} from './os_apps_page/app_management_page/supported_links_item.js';
+export {AppManagementSupportedLinksOverlappingAppsDialogElement} from './os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {SettingsOneDriveSubpageElement} from './os_files_page/one_drive_subpage.js';

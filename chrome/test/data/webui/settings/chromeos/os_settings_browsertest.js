@@ -193,10 +193,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementPage', 'app_management/app_management_page_tests.js'],
  ['AppManagementReducers', 'app_management/reducers_test.js'],
- [
-   'AppManagementSupportedLinksItem',
-   'app_management/supported_links_item_test.js',
- ],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
@@ -511,6 +507,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsAppsPageAppManagementPageResizeLockItem',
    'os_apps_page/app_management_page/resize_lock_item_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageSupportedLinksItem',
+   'os_apps_page/app_management_page/supported_links_item_test.js',
  ],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [

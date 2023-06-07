@@ -53,7 +53,6 @@ import './os_apps_page/app_management_page/app_management_cros_shared_style.css.
 import './os_apps_page/app_management_page/app_management_cros_shared_vars.css.js';
 import './os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js';
 import './os_apps_page/app_management_page/supported_links_dialog.js';
-import './os_apps_page/app_management_page/supported_links_item.js';
 import './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 import './os_apps_page/os_apps_page.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';
