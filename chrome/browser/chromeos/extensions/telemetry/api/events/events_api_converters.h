@@ -40,6 +40,9 @@ api::os_events::SdCardEventInfo UncheckedConvertPtr(
 api::os_events::PowerEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryPowerEventInfoPtr ptr);
 
+api::os_events::StylusGarageEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryStylusGarageEventInfoPtr ptr);
+
 absl::optional<uint32_t> UncheckedConvertPtr(
     crosapi::mojom::UInt32ValuePtr ptr);
 
@@ -80,6 +83,9 @@ api::os_events::SdCardEvent Convert(
 
 api::os_events::PowerEvent Convert(
     crosapi::mojom::TelemetryPowerEventInfo::State state);
+
+api::os_events::StylusGarageEvent Convert(
+    crosapi::mojom::TelemetryStylusGarageEventInfo::State state);
 
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input);

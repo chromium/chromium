@@ -439,9 +439,9 @@ struct StylusGarageEventInfo {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
     // Stylus inserted into the garage.
-    kInsert,
+    kInserted,
     // Stylus removed from the garage.
-    kRemove,
+    kRemoved,
   };
 
   State state@0;

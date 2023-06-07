@@ -43,6 +43,9 @@ crosapi::mojom::TelemetrySdCardEventInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryPowerEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::PowerEventInfoPtr input);
 
+crosapi::mojom::TelemetryStylusGarageEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusGarageEventInfoPtr input);
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input);
 
@@ -98,6 +101,9 @@ crosapi::mojom::TelemetrySdCardEventInfo::State Convert(
 
 crosapi::mojom::TelemetryPowerEventInfo::State Convert(
     cros_healthd::mojom::PowerEventInfo::State input);
+
+crosapi::mojom::TelemetryStylusGarageEventInfo::State Convert(
+    cros_healthd::mojom::StylusGarageEventInfo::State input);
 
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input);

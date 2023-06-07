@@ -250,6 +250,22 @@ TEST(TelemetryEventServiceConvertersTest,
 }
 
 TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryStylusGarageEventInfo_State) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::StylusGarageEventInfo::State::
+                        kUnmappedEnumField),
+            crosapi::mojom::TelemetryStylusGarageEventInfo::State::
+                kUnmappedEnumField);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::StylusGarageEventInfo::State::kInserted),
+      crosapi::mojom::TelemetryStylusGarageEventInfo::State::kInserted);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::StylusGarageEventInfo::State::kRemoved),
+      crosapi::mojom::TelemetryStylusGarageEventInfo::State::kRemoved);
+}
+
+TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryAudioJackEventInfo_DeviceType) {
   EXPECT_EQ(Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::
                         kUnmappedEnumField),
@@ -319,6 +335,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
   EXPECT_EQ(
       Convert(crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic),
       cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage),
+            cros_healthd::mojom::EventCategoryEnum::kStylusGarage);
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardInfo) {
@@ -502,6 +521,17 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryPowerEventInfoPtr) {
   EXPECT_EQ(ConvertStructPtr(std::move(input)),
             crosapi::mojom::TelemetryPowerEventInfo::New(
                 crosapi::mojom::TelemetryPowerEventInfo::State::kAcInserted));
+}
+
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryStylusGarageEventInfoPtr) {
+  auto input = cros_healthd::mojom::StylusGarageEventInfo::New();
+  input->state = cros_healthd::mojom::StylusGarageEventInfo::State::kInserted;
+
+  EXPECT_EQ(
+      ConvertStructPtr(std::move(input)),
+      crosapi::mojom::TelemetryStylusGarageEventInfo::New(
+          crosapi::mojom::TelemetryStylusGarageEventInfo::State::kInserted));
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {

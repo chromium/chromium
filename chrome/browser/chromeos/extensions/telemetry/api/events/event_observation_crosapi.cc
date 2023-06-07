@@ -104,7 +104,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
         break;
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
-          kKeyboardDiagnosticEventInfo:
+          kKeyboardDiagnosticEventInfo: {
         base::Value::List args;
         args.Append(converters::ConvertStructPtr<
                         api::os_events::KeyboardDiagnosticEventInfo>(
@@ -116,6 +116,20 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             api::os_events::OnKeyboardDiagnosticEvent::kEventName,
             std::move(args), browser_context_);
         break;
+      }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kStylusGarageEventInfo: {
+        base::Value::List args;
+        args.Append(
+            converters::ConvertStructPtr<api::os_events::StylusGarageEventInfo>(
+                std::move(info->get_stylus_garage_event_info()))
+                .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_STYLUS_GARAGE_EVENT,
+            api::os_events::OnStylusGarageEvent::kEventName, std::move(args),
+            browser_context_);
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)

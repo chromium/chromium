@@ -431,6 +431,28 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckStylusGarageApiWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function stylusGarageNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onStylusGarageEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class PendingApprovalTelemetryExtensionEventsApiBrowserTest
     : public TelemetryExtensionEventsApiBrowserTest {
  public:
@@ -651,6 +673,41 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
 
   EXPECT_TRUE(is_diagnostic_app_open);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckStylusGarageApiWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto stylus_garage_info =
+            crosapi::TelemetryStylusGarageEventInfo::New();
+        stylus_garage_info->state =
+            crosapi::TelemetryStylusGarageEventInfo::State::kInserted;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kStylusGarage,
+            crosapi::TelemetryEventInfo::NewStylusGarageEventInfo(
+                std::move(stylus_garage_info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onStylusGarageEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'inserted'
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("stylus_garage");
+      }
+    ]);
+  )");
 }
 
 }  // namespace chromeos

@@ -11,7 +11,8 @@ namespace os.events {
         usb,
         sd_card,
         power,
-        keyboard_diagnostic
+        keyboard_diagnostic,
+        stylus_garage
     };
 
     enum EventSupportStatus {
@@ -180,6 +181,13 @@ namespace os.events {
         os_resume
     };
 
+    enum StylusGarageEvent {
+        // Stylus inserted into the garage.
+        inserted,
+        // Stylus removed from the garage.
+        removed
+    };
+
     dictionary AudioJackEventInfo {
         AudioJackEvent? event;
         AudioJackDeviceType? deviceType;
@@ -210,6 +218,10 @@ namespace os.events {
 
     dictionary PowerEventInfo {
         PowerEvent? event;
+    };
+
+    dictionary StylusGarageEventInfo {
+        StylusGarageEvent? event;
     };
 
     callback VoidCallback = void();
@@ -254,5 +266,8 @@ namespace os.events {
 
         // Informs the extension that a `Power` event occured.
         static void onPowerEvent(PowerEventInfo event_info);
+
+        // Informs the extension that a `Stylus Garage` event occured.
+        static void onStylusGarageEvent(StylusGarageEventInfo event_info);
     };
 };

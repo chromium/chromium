@@ -543,6 +543,7 @@ enum HistogramValue {
   DESK_EVENTS_ON_DESK_REMOVED = 521,
   DESK_EVENTS_ON_DESK_SWITCHED = 522,
   SMART_CARD_PROVIDER_PRIVATE_ON_SET_ATTRIB_REQUESTED = 523,
+  OS_EVENTS_ON_STYLUS_GARAGE_EVENT = 524,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -76,6 +76,12 @@ crosapi::mojom::TelemetryPowerEventInfoPtr UncheckedConvertPtr(
   return crosapi::mojom::TelemetryPowerEventInfo::New(Convert(input->state));
 }
 
+crosapi::mojom::TelemetryStylusGarageEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::StylusGarageEventInfoPtr input) {
+  return crosapi::mojom::TelemetryStylusGarageEventInfo::New(
+      Convert(input->state));
+}
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input) {
   switch (input->which()) {
@@ -104,6 +110,10 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
       return crosapi::mojom::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
           ConvertStructPtr(
               std::move(input->get_keyboard_diagnostic_event_info())));
+    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
+        kStylusGarageEventInfo:
+      return crosapi::mojom::TelemetryEventInfo::NewStylusGarageEventInfo(
+          ConvertStructPtr(std::move(input->get_stylus_garage_event_info())));
     default:
       LOG(WARNING) << "Got event for unsupported category";
       return nullptr;
@@ -391,6 +401,20 @@ crosapi::mojom::TelemetryPowerEventInfo::State Convert(
   NOTREACHED();
 }
 
+crosapi::mojom::TelemetryStylusGarageEventInfo::State Convert(
+    cros_healthd::mojom::StylusGarageEventInfo::State input) {
+  switch (input) {
+    case cros_healthd::mojom::StylusGarageEventInfo_State::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryStylusGarageEventInfo::State::
+          kUnmappedEnumField;
+    case cros_healthd::mojom::StylusGarageEventInfo_State::kInserted:
+      return crosapi::mojom::TelemetryStylusGarageEventInfo::State::kInserted;
+    case cros_healthd::mojom::StylusGarageEventInfo_State::kRemoved:
+      return crosapi::mojom::TelemetryStylusGarageEventInfo::State::kRemoved;
+  }
+  NOTREACHED();
+}
+
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input) {
   switch (input) {
@@ -425,6 +449,8 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kPower;
     case crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic:
       return cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage:
+      return cros_healthd::mojom::EventCategoryEnum::kStylusGarage;
   }
   NOTREACHED();
 }

@@ -117,6 +117,15 @@ cx_events::PowerEventInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_events::StylusGarageEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryStylusGarageEventInfoPtr ptr) {
+  cx_events::StylusGarageEventInfo result;
+
+  result.event = Convert(ptr->state);
+
+  return result;
+}
+
 absl::optional<uint32_t> UncheckedConvertPtr(crosapi::UInt32ValuePtr ptr) {
   return ptr->value;
 }
@@ -335,6 +344,19 @@ cx_events::PowerEvent Convert(crosapi::TelemetryPowerEventInfo::State state) {
   NOTREACHED();
 }
 
+cx_events::StylusGarageEvent Convert(
+    crosapi::TelemetryStylusGarageEventInfo::State state) {
+  switch (state) {
+    case crosapi::TelemetryStylusGarageEventInfo_State::kUnmappedEnumField:
+      return cx_events::StylusGarageEvent::kNone;
+    case crosapi::TelemetryStylusGarageEventInfo_State::kInserted:
+      return cx_events::StylusGarageEvent::kInserted;
+    case crosapi::TelemetryStylusGarageEventInfo_State::kRemoved:
+      return cx_events::StylusGarageEvent::kRemoved;
+  }
+  NOTREACHED();
+}
+
 crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
   switch (input) {
     case cx_events::EventCategory::kNone:
@@ -351,6 +373,8 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
       return crosapi::TelemetryEventCategoryEnum::kPower;
     case cx_events::EventCategory::kKeyboardDiagnostic:
       return crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic;
+    case cx_events::EventCategory::kStylusGarage:
+      return crosapi::TelemetryEventCategoryEnum::kStylusGarage;
   }
   NOTREACHED();
 }

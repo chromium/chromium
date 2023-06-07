@@ -139,9 +139,28 @@ struct TelemetryPowerEventInfo {
   State state@0;
 };
 
+// Stylus garage event info. This is emitted when the stylus is inserted into or
+// removed from the garage.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryStylusGarageEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Stylus inserted into the garage.
+    kInserted,
+    // Stylus removed from the garage.
+    kRemoved,
+  };
+
+  State state@0;
+};
+
 // Union of event info.
 //
-// NextMinVersion: 6, NextIndex: 7
+// NextMinVersion: 7, NextIndex: 8
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -160,11 +179,13 @@ union TelemetryEventInfo {
   // Keyboard diagnostic event info.
   [MinVersion=5] TelemetryKeyboardDiagnosticEventInfo
       keyboard_diagnostic_event_info@6;
+  // Stylus garage event info.
+  [MinVersion=6] TelemetryStylusGarageEventInfo stylus_garage_event_info@7;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 6, NextIndex: 7
+// NextMinVersion: 7, NextIndex: 8
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -175,6 +196,7 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=3] kSdCard = 4,
   [MinVersion=4] kPower = 5,
   [MinVersion=5] kKeyboardDiagnostic = 6,
+  [MinVersion=6] kStylusGarage = 7,
 };
 
 // Implemented by clients who desire events.

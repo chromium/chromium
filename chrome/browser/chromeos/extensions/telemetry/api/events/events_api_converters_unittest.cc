@@ -256,6 +256,19 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertPowerState) {
             cx_events::PowerEvent::kOsResume);
 }
 
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertStylusGarageState) {
+  EXPECT_EQ(
+      Convert(
+          crosapi::TelemetryStylusGarageEventInfo::State::kUnmappedEnumField),
+      cx_events::StylusGarageEvent::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryStylusGarageEventInfo::State::kInserted),
+            cx_events::StylusGarageEvent::kInserted);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryStylusGarageEventInfo::State::kRemoved),
+            cx_events::StylusGarageEvent::kRemoved);
+}
+
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(cx_events::EventCategory::kNone),
             crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField);
@@ -277,6 +290,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kKeyboardDiagnostic),
             crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic);
+
+  EXPECT_EQ(Convert(cx_events::EventCategory::kStylusGarage),
+            crosapi::TelemetryEventCategoryEnum::kStylusGarage);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertKeyboardInfo) {
@@ -462,6 +478,17 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertPowerEventInfo) {
   auto result = ConvertStructPtr<cx_events::PowerEventInfo>(std::move(input));
 
   EXPECT_EQ(result.event, cx_events::PowerEvent::kAcInserted);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertStylusGarageEventInfo) {
+  auto input = crosapi::TelemetryStylusGarageEventInfo::New();
+  input->state = crosapi::TelemetryStylusGarageEventInfo::State::kInserted;
+
+  auto result =
+      ConvertStructPtr<cx_events::StylusGarageEventInfo>(std::move(input));
+
+  EXPECT_EQ(result.event, cx_events::StylusGarageEvent::kInserted);
 }
 
 }  // namespace chromeos::converters
