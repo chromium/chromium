@@ -179,7 +179,9 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         // For Android's share sheet, only use copy image for web share.
         // TODO(crbug/1448944): Exclude the copy action from Context menu instead.
         if (mChromeShareExtras != null
-                && mChromeShareExtras.getDetailedContentType() == DetailedContentType.WEB_SHARE) {
+                && (mChromeShareExtras.getDetailedContentType() == DetailedContentType.WEB_SHARE
+                        || mChromeShareExtras.getDetailedContentType()
+                                == DetailedContentType.SCREENSHOT)) {
             mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(false));
         }
         mOrderedFirstPartyOptions.add(createCopyImageWithLinkFirstPartyOption());

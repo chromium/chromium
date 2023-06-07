@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.Activity;
@@ -70,19 +71,23 @@ import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowShareImageFileUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
+import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
+import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
+import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -606,6 +611,55 @@ public class AndroidShareSheetControllerUnitTest {
                 "Sharing text should be empty.", shareIntent.getStringExtra(Intent.EXTRA_TEXT));
     }
 
+    @Test
+    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class,
+                    ShadowLongScreenshotsCoordinator.class})
+    public void
+    chooseLongScreenShot() throws CanceledException {
+        ShadowLongScreenshotsCoordinator.sMockInstance =
+                Mockito.mock(LongScreenshotsCoordinator.class);
+
+        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setFileContentType("text/plain")
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        assertCustomActions(intent, R.string.sharing_long_screenshot,
+                R.string.print_share_activity_title, R.string.sharing_send_tab_to_self,
+                R.string.qr_code_share_icon_label);
+        chooseCustomAction(intent, R.string.sharing_long_screenshot);
+
+        verify(mTracker).notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
+        verify(ShadowLongScreenshotsCoordinator.sMockInstance).captureScreenshot();
+
+        ShadowLongScreenshotsCoordinator.sMockInstance = null;
+    }
+
+    @Test
+    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
+    public void shareScreenshot() {
+        Uri testImageUri = Uri.parse("content://test.screenshot.uri");
+        // Build the same params and share extras as sharing a long screenshot
+        ShareParams params = new ShareParams.Builder(mWindow, "title", /*url=*/"")
+                                     .setSingleImageUri(testImageUri)
+                                     .setFileContentType("image/png")
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setContentUrl(new GURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .setDetailedContentType(ChromeShareExtras.DetailedContentType.SCREENSHOT)
+                        .build();
+
+        mController.showThirdPartyShareSheet(params, chromeShareExtras, 1L);
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        assertCustomActions(
+                intent, R.string.sharing_copy_image, R.string.sharing_copy_image_with_link);
+    }
+
     private void setFaviconToFetchForTest(Bitmap favicon) {
         doAnswer(invocation -> {
             FaviconHelper.FaviconImageCallback callback = invocation.getArgument(4);
@@ -758,6 +812,19 @@ public class AndroidShareSheetControllerUnitTest {
         protected static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid) {
             sLastUrl = url;
             return Mockito.mock(QrCodeDialog.class);
+        }
+    }
+
+    @Implements(LongScreenshotsCoordinator.class)
+    static class ShadowLongScreenshotsCoordinator {
+        static LongScreenshotsCoordinator sMockInstance;
+
+        @Implementation
+        public static LongScreenshotsCoordinator create(Activity activity, Tab tab, String shareUrl,
+                ChromeOptionShareCallback chromeOptionShareCallback,
+                BottomSheetController sheetController,
+                ImageEditorModuleProvider imageEditorModuleProvider) {
+            return sMockInstance;
         }
     }
 }
