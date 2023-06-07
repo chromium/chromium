@@ -369,7 +369,7 @@ void ShoppingListUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
       SidePanelEntry::Id::kShoppingInsights,
       l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE),
       ui::ImageModel::FromVectorIcon(vector_icons::kShoppingBagIcon,
-                                     ui::kColorIcon),
+                                     ui::kColorIcon, /*icon_size=*/16),
       base::BindRepeating(
           &ShoppingListUiTabHelper::CreateShoppingInsightsWebView,
           base::Unretained(this)));
