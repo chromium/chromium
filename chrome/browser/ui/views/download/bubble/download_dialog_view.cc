@@ -168,6 +168,7 @@ DownloadDialogView::DownloadDialogView(
     : navigation_handler_(std::move(navigation_handler)),
       browser_(std::move(browser)) {
   AddHeader();
+  MaybeAddOtrInfoRow(browser_.get());
   BuildAndAddScrollView(browser_, std::move(bubble_controller),
                         navigation_handler_, std::move(rows),
                         DefaultPreferredWidth());

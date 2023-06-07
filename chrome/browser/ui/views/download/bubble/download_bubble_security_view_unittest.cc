@@ -93,8 +93,7 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
             bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
             bubble_delegate_));
 
-    row_list_view_ =
-        std::make_unique<DownloadBubbleRowListView>(browser_->AsWeakPtr());
+    row_list_view_ = std::make_unique<DownloadBubbleRowListView>();
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     row_view_ = std::make_unique<DownloadBubbleRowView>(

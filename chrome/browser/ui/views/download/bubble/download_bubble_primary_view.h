@@ -45,6 +45,10 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
 
   int DefaultPreferredWidth() const;
 
+  // Maybe show the banner informing the user that any files downloaded
+  // in OTR mode are visible to anyone on the device.
+  void MaybeAddOtrInfoRow(Browser* browser);
+
   // Log the histogram for how long the bubble was visible.
   void LogVisibleTimeMetrics() const;
   virtual base::StringPiece GetVisibleTimeHistogramName() const = 0;

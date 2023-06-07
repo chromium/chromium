@@ -49,8 +49,7 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
 
     DownloadToolbarButtonView* button =
         browser_view()->toolbar()->download_button();
-    row_list_view_ =
-        std::make_unique<DownloadBubbleRowListView>(browser()->AsWeakPtr());
+    row_list_view_ = std::make_unique<DownloadBubbleRowListView>();
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     row_view_ = std::make_unique<DownloadBubbleRowView>(

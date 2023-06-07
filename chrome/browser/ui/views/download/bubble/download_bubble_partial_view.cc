@@ -205,6 +205,8 @@ DownloadBubblePartialView::DownloadBubblePartialView(
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
     base::OnceClosure on_interacted_closure)
     : on_interacted_closure_(std::move(on_interacted_closure)) {
+  MaybeAddOtrInfoRow(browser.get());
+
   Profile* profile = browser->profile();
   const int impressions =
       download::DownloadBubblePartialViewImpressions(profile) + 1;
