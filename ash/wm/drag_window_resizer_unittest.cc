@@ -28,8 +28,12 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -866,6 +870,98 @@ TEST_F(DragWindowResizerTest, MoveWindowAcrossDisplays) {
               aura::Env::GetInstance()->last_mouse_location().ToString());
     resizer->CompleteDrag();
   }
+}
+
+// Regression test for animation / window drag race condition that can result
+// in windows finishing a drag in an invisible state (see crbug.com/1430664).
+TEST_F(DragWindowResizerTest, DragWindowControllerLatchesTargetOpacity) {
+  // We must test with at least two displays as the DragWindowController is only
+  // created for two or more displays (see DragWindowResizer::Drag).
+  UpdateDisplay("800x600,800x600");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(2U, root_windows.size());
+
+  TestLayerDelegate delegate;
+  window_->layer()->set_delegate(&delegate);
+  window_->SetBoundsInScreen(gfx::Rect(0, 0, 50, 60),
+                             display::Screen::GetScreen()->GetPrimaryDisplay());
+  EXPECT_EQ(root_windows[0], window_->GetRootWindow());
+
+  // Setup the animator such that opacity transitions take non-zero time.
+  constexpr auto kTransitionDuration = base::Seconds(3);
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  ui::LayerAnimatorTestController test_controller(
+      ui::LayerAnimator::CreateImplicitAnimator());
+  ui::ScopedLayerAnimationSettings layer_animation_settings(
+      test_controller.animator());
+  layer_animation_settings.SetTransitionDuration(kTransitionDuration);
+  window_->layer()->SetAnimator(test_controller.animator());
+  test_controller.StartThreadedAnimationsIfNeeded();
+
+  // The window's layer opacity will initially be set to 1.
+  EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
+  EXPECT_FLOAT_EQ(1.0f, window_->layer()->GetTargetOpacity());
+
+  {
+    // Set the target opacity to 0 and run the animation until this is reflected
+    // on the layer itself. Opacity animation uses threaded animation.
+    // Explicitly stop the animation because threaded animation may have started
+    // a bit later. `kTransitionDuration` may not be quite enough to reach the
+    // end.
+    window_->layer()->SetOpacity(0);
+    EXPECT_FLOAT_EQ(0, window_->layer()->GetTargetOpacity());
+    EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
+    test_controller.Step(kTransitionDuration);
+    window_->layer()->GetAnimator()->StopAnimating();
+    EXPECT_FLOAT_EQ(0, window_->layer()->GetTargetOpacity());
+    EXPECT_FLOAT_EQ(0, window_->layer()->opacity());
+
+    // Hold the center of the window so that the window doesn't stick to the
+    // edge when dragging around the edge of the display.
+    std::unique_ptr<WindowResizer> resizer(
+        CreateDragWindowResizer(window_.get(), gfx::Point(25, 30), HTCAPTION));
+    ASSERT_TRUE(resizer.get());
+    DragWindowResizer* drag_resizer = DragWindowResizer::instance_;
+    ASSERT_TRUE(drag_resizer);
+    EXPECT_FALSE(drag_resizer->drag_window_controller_.get());
+
+    // Set up the drag by setting the dragged window's target opacity to 1. This
+    // should not be immediately reflected in the layer's reported opacity.
+    window_->layer()->SetOpacity(1.0f);
+    EXPECT_FLOAT_EQ(1.0f, window_->layer()->GetTargetOpacity());
+    EXPECT_FLOAT_EQ(0, window_->layer()->opacity());
+
+    // Start the drag. Although the layer's reported opacity is 0 the controller
+    // should latch the target opacity of 1. The drag will begin by setting the
+    // target opacity to 1.
+    ASSERT_EQ(display::Screen::GetScreen()
+                  ->GetDisplayNearestWindow(root_windows[0])
+                  .id(),
+              Shell::Get()->cursor_manager()->GetDisplay().id());
+    resizer->Drag(CalculateDragPoint(*resizer, 10, 10), 0);
+    DragWindowController* controller =
+        drag_resizer->drag_window_controller_.get();
+    EXPECT_FLOAT_EQ(1.0f, controller->old_opacity_for_testing());
+    EXPECT_FLOAT_EQ(1.0f, window_->layer()->GetTargetOpacity());
+
+    // Simulate animation to a target opacity of 0 after the drag begins, which
+    // may occur during the window drag session.
+    window_->layer()->SetOpacity(0);
+    test_controller.Step(kTransitionDuration);
+    window_->layer()->GetAnimator()->StopAnimating();
+    EXPECT_FLOAT_EQ(0, window_->layer()->GetTargetOpacity());
+    EXPECT_FLOAT_EQ(0, window_->layer()->opacity());
+  }
+
+  // Regardless of the state of the layer opacity animation that occurred during
+  // the drag session, the window's layer should be restored to the target
+  // opacity of 1 after the drag session ends.
+  EXPECT_FLOAT_EQ(1.0f, window_->layer()->GetTargetOpacity());
+  test_controller.Step(kTransitionDuration);
+  window_->layer()->GetAnimator()->StopAnimating();
+  EXPECT_FLOAT_EQ(1.0f, window_->layer()->GetTargetOpacity());
+  EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
 }
 
 }  // namespace ash

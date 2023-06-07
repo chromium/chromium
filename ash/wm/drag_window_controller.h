@@ -41,6 +41,8 @@ class ASH_EXPORT DragWindowController {
   // updates the opacity of the original window.
   void Update();
 
+  float old_opacity_for_testing() const { return old_opacity_; }
+
  private:
   class DragWindowDetails;
   FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest, DragWindowController);
