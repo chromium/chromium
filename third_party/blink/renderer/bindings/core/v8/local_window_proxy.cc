@@ -519,10 +519,12 @@ void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Object> document_wrapper =
       world_->DomDataStore().Get(document, GetIsolate());
-  document_wrapper
-      ->SetAccessor(GetIsolate()->GetCurrentContext(),
-                    V8String(GetIsolate(), name), Getter)
-      .ToChecked();
+  // Squash the exception and ignore a Nothing result, as a failure to
+  // (re)define a non-configurable property based on name attribute should
+  // not be fatal.
+  v8::TryCatch try_block(GetIsolate());
+  std::ignore = document_wrapper->SetAccessor(
+      GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name), Getter);
 }
 
 void LocalWindowProxy::NamedItemRemoved(HTMLDocument* document,
