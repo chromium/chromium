@@ -97,6 +97,8 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/populate_enums.py",
     "//tools/metrics/histograms/pretty_print.py",
     "//tools/metrics/histograms/pretty_print_test.py",
+    "//tools/metrics/histograms/validate_token.py",
+    "//tools/metrics/histograms/validate_token_test.py",
 
     "//tools/metrics/structured/codegen_unittest.py",
     "//tools/metrics/structured/model_unittest.py",

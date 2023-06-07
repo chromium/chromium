@@ -24,6 +24,18 @@ def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
     results.append(output_api.PresubmitError(error_msg))
 
 
+def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
+  """Validates histogram tokens in specified file."""
+  exit_code = input_api.subprocess.call(
+      [input_api.python3_executable, 'validate_token.py', rel_path], cwd=cwd)
+
+  if exit_code != 0:
+    error_msg = (
+        '%s contains histogram(s) using <variants> not defined in the file, '
+        'please run validate_token.py %s to fix.' % (rel_path, rel_path))
+  results.append(output_api.PresubmitError(error_msg))
+
+
 def GetValidateHistogramsError(input_api, output_api, cwd, results):
   """Validates histograms format and index file."""
   exit_code = input_api.subprocess.call(
@@ -72,6 +84,7 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
   elif ('histograms.xml' in filepath
         or 'histogram_suffixes_list.xml' in filepath):
     GetPrettyPrintErrors(input_api, output_api, cwd, filepath, results)
+    GetTokenErrors(input_api, output_api, cwd, filepath, results)
     return True
 
   # If the changed file is enums.xml, pretty-print it.
