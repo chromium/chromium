@@ -97,6 +97,14 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(!allocate_gpu_memory_buffers_ ||
            mode == VideoDecodeAccelerator::TextureAllocationMode::
                        kDoNotAllocateGLTextures);
+#if BUILDFLAG(IS_APPLE)
+    // GL texture allocation is not supported (and never requested) on Apple
+    // platforms: see
+    // VideoDecodeAccelerator::GetSharedImageTextureAllocationMode(), which is
+    // where the value of `mode` that is passed in to this method comes from.
+    CHECK_EQ(mode, VideoDecodeAccelerator::TextureAllocationMode::
+                       kDoNotAllocateGLTextures);
+#endif
 
     // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
     // called with the context current.
@@ -112,6 +120,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         picture_buffers_and_gmbs;
     for (uint32_t i = 0; i < count; i++) {
       PictureBufferData picture_data = {pixel_format, texture_size};
+#if !BUILDFLAG(IS_APPLE)
       if (mode ==
           VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
         for (uint32_t j = 0; j < planes; j++) {
@@ -145,6 +154,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
               gpu::SyncToken(), texture_target);
         }
       }
+#endif  // !BUILDFLAG(IS_APPLE)
 
       gfx::GpuMemoryBufferHandle gmb_handle;
       if (allocate_gpu_memory_buffers_) {

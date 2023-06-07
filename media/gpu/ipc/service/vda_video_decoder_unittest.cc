@@ -388,6 +388,9 @@ TEST_P(VdaVideoDecoderTest, Decode_NotifyError) {
   NotifyError(VideoDecodeAccelerator::PLATFORM_FAILURE);
 }
 
+// The below tests rely on creation of video frames from GL textures, which is
+// not supported on Apple platforms.
+#if !BUILDFLAG(IS_APPLE)
 TEST_P(VdaVideoDecoderTest, Decode_OutputAndReuse) {
   Initialize();
   int32_t bitstream_id = Decode(base::TimeDelta());
@@ -454,6 +457,7 @@ TEST_P(VdaVideoDecoderTest, Decode_Output_MaintainsAspect) {
   EXPECT_EQ(frame->coded_size(), gfx::Size(1920, 1088));
   EXPECT_EQ(frame->visible_rect(), gfx::Rect(320, 240));
 }
+#endif  // !BUILDFLAG(IS_APPLE)
 
 TEST_P(VdaVideoDecoderTest, Flush) {
   Initialize();
