@@ -59845,6 +59845,7 @@ from previous Chrome versions.
   <int value="-1620942609" label="MuteCompromisedPasswords:enabled"/>
   <int value="-1620860283" label="KioskEnableAppService:disabled"/>
   <int value="-1620804800" label="NoScriptPreviews:disabled"/>
+  <int value="-1620674887" label="LinkCrossDeviceDogFoodFeedback:disabled"/>
   <int value="-1620568042" label="FeaturePolicy:disabled"/>
   <int value="-1620425260" label="ShelfPalmRejectionSwipeOffset:disabled"/>
   <int value="-1620230777" label="StylusBatteryStatus:enabled"/>
@@ -66353,6 +66354,7 @@ from previous Chrome versions.
   <int value="1797226735" label="ImageServiceSuggestPoweredImages:enabled"/>
   <int value="1798347197"
       label="ContextualSuggestionsIPHReverseScroll:disabled"/>
+  <int value="1799380662" label="LinkCrossDeviceDogFoodFeedback:enabled"/>
   <int value="1799521026" label="LegacyTLSEnforced:disabled"/>
   <int value="1799526742" label="PreemptiveLinkToTextGeneration:disabled"/>
   <int value="1800375282" label="UseDMSAAForTiles:disabled"/>

@@ -6146,6 +6146,12 @@ const char kLimitShelfItemsToActiveDeskDescription[] =
     "Limits items on the shelf to the ones associated with windows on the "
     "active desk";
 
+const char kLinkCrossDeviceDogfoodFeedbackName[] =
+    "Enable the ChromeOS feedback tool for issues between devices";
+const char kLinkCrossDeviceDogfoodFeedbackDescription[] =
+    "When enabled, prompts a checkbox in the feedback report tool"
+    "which helps improve bug reports for cross device issues.";
+
 const char kListAllDisplayModesName[] = "List all display modes";
 const char kListAllDisplayModesDescription[] =
     "Enables listing all external displays' modes in the display settings.";
