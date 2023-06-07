@@ -6,6 +6,7 @@
 #define BASE_MEMORY_SAFE_REF_H_
 
 #include "base/check.h"
+#include "base/memory/safe_ref_traits.h"
 #include "base/memory/weak_ptr.h"
 
 #include <utility>
@@ -34,6 +35,10 @@ namespace base {
 // pointee invalid when the base::WeakPtrFactory is invalidated, in the same way
 // as base::WeakPtr does, including after a call to InvalidateWeakPtrs().
 //
+// SafeRefTraits are only meant to mark SafeRef that were found to be dangling,
+// thus one should not use this flag to disable dangling pointer detection on
+// SafeRef. This parameter is set to SafeRefTraits::kEmpty by default.
+//
 // THREAD SAFETY: SafeRef pointers (like base::WeakPtr) may only be used on the
 // sequence (or thread) where the associated base::WeakPtrFactory will be
 // invalidated and/or destroyed. They are safe to passively hold or to destroy
@@ -43,7 +48,7 @@ namespace base {
 // smart pointer abstraction which is not tied to base::WeakPtrFactory, such as
 // raw_ptr<T> from the MiraclePtr project (though perhaps a non-nullable raw_ref
 // equivalent).
-template <typename T>
+template <typename T, SafeRefTraits Traits /*= SafeRefTraits::kEmpty*/>
 class SafeRef {
  public:
   // No default constructor, since there's no null state. Use an optional
@@ -130,7 +135,7 @@ class SafeRef {
   }
 
  private:
-  template <typename U>
+  template <typename U, SafeRefTraits PassedTraits>
   friend class SafeRef;
   template <typename U>
   friend SafeRef<U> internal::MakeSafeRefFromWeakPtrInternals(
@@ -146,10 +151,13 @@ class SafeRef {
 
   internal::WeakReference ref_;
 
+  static constexpr RawPtrTraits PtrTrait = Traits == SafeRefTraits::kEmpty
+                                               ? RawPtrTraits::kEmpty
+                                               : DanglingUntriaged;
   // This pointer is only valid when ref_.is_valid() is true.  Otherwise, its
   // value is undefined (as opposed to nullptr). Unlike WeakPtr, this raw_ptr is
   // not allowed to dangle.
-  raw_ptr<T> ptr_;
+  raw_ptr<T, PtrTrait> ptr_;
 };
 
 namespace internal {

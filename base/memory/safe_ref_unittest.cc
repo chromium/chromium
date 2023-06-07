@@ -279,5 +279,25 @@ TEST(SafeRefTest, DanglingPointerDetector) {
   EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
 
+TEST(SafeRefTest, DanglingUntriaged) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+  {
+    auto with = std::make_unique<WithWeak>();
+    SafeRef<WithWeak, SafeRefDanglingUntriaged> safe(
+        with->factory.GetSafeRef());
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+
+    with.reset();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  }
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+}
+
 }  // namespace
 }  // namespace base

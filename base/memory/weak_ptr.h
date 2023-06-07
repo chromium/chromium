@@ -81,6 +81,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref_traits.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/types/pass_key.h"
@@ -91,8 +92,6 @@ namespace sequence_manager::internal {
 class TaskQueueImpl;
 }
 
-template <typename T>
-class SafeRef;
 template <typename T> class SupportsWeakPtr;
 template <typename T> class WeakPtr;
 
