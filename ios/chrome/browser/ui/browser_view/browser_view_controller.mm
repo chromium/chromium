@@ -2150,28 +2150,6 @@ enum HeaderBehaviour {
   }
 }
 
-#pragma mark - BubblePresenterDelegate
-
-- (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == _bubblePresenter);
-  return self.viewVisible;
-}
-
-- (BOOL)isTabScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == _bubblePresenter);
-
-  // If NTP exists, check if it is scrolled to top.
-  if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
-    return [self.ntpCoordinator isScrolledToTop];
-  }
-
-  CRWWebViewScrollViewProxy* scrollProxy =
-      self.currentWebState->GetWebViewProxy().scrollViewProxy;
-  CGPoint scrollOffset = scrollProxy.contentOffset;
-  UIEdgeInsets contentInset = scrollProxy.contentInset;
-  return AreCGFloatsEqual(scrollOffset.y, -contentInset.top);
-}
-
 #pragma mark - Helpers
 
 - (UIEdgeInsets)snapshotEdgeInsetsForWebState:(web::WebState*)webState {

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -587,10 +588,23 @@ const CGFloat kBubblePresentationDelay = 1;
     return NO;
   }
   // Do not present the bubble if the tab is not scrolled to the top.
-  if (![self.delegate isTabScrolledToTopForBubblePresenter:self]) {
+  if (![self isTabScrolledToTop]) {
     return NO;
   }
   return YES;
+}
+
+- (BOOL)isTabScrolledToTop {
+  // If NTP exists, check if it is scrolled to top.
+  if ([self.delegate isNTPActiveForBubblePresenter:self]) {
+    return [self.delegate isNTPScrolledToTopForBubblePresenter:self];
+  }
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  CRWWebViewScrollViewProxy* scrollProxy =
+      currentWebState->GetWebViewProxy().scrollViewProxy;
+  CGPoint scrollOffset = scrollProxy.contentOffset;
+  UIEdgeInsets contentInset = scrollProxy.contentInset;
+  return AreCGFloatsEqual(scrollOffset.y, -contentInset.top);
 }
 
 // Returns a bubble associated with an in-product help promotion if

@@ -109,6 +109,7 @@
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
+#import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
@@ -250,7 +251,8 @@ enum class ToolbarKind {
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
                                   WebContentCommands,
-                                  WebNavigationNTPDelegate>
+                                  WebNavigationNTPDelegate,
+                                  BubblePresenterDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -767,6 +769,7 @@ enum class ToolbarKind {
                         hostContentSettingsMap:settingsMap
                                   webStateList:self.browser->GetWebStateList()];
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
+  _bubblePresenter.delegate = self;
   [_dispatcher startDispatchingToTarget:_bubblePresenter
                             forProtocol:@protocol(HelpCommands)];
 
@@ -890,8 +893,6 @@ enum class ToolbarKind {
 
 - (void)updateViewControllerDependencies {
   _bookmarksCoordinator.baseViewController = self.viewController;
-
-  _bubblePresenter.delegate = self.viewController;
   _bubblePresenter.rootViewController = self.viewController;
 
   _toolbarAccessoryPresenter.baseViewController = self.viewController;
@@ -2683,6 +2684,23 @@ enum class ToolbarKind {
   [self.readingListCoordinator stop];
   self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
+}
+
+#pragma mark - BubblePresenterDelegate
+
+- (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter {
+  DCHECK(bubblePresenter == _bubblePresenter);
+  return self.viewController.viewVisible;
+}
+
+- (BOOL)isNTPActiveForBubblePresenter:(BubblePresenter*)bubblePresenter {
+  DCHECK(bubblePresenter == _bubblePresenter);
+  return self.NTPCoordinator.isNTPActiveForCurrentWebState;
+}
+
+- (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
+  DCHECK(bubblePresenter == _bubblePresenter);
+  return [self.NTPCoordinator isScrolledToTop];
 }
 
 @end

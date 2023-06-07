@@ -37,6 +37,7 @@ source_set("bubble") {
     "//ios/chrome/common",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//net",
     "//ui/base",
