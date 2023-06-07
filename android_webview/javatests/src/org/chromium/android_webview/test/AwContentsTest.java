@@ -990,26 +990,32 @@ public class AwContentsTest {
     }
 
     private void doHardwareRenderingSmokeTest(AwTestContainerView testView) throws Throwable {
-        String html = "<html>"
-                + "  <body style=\""
-                + "       padding: 0;"
-                + "       margin: 0;"
-                + "       display: grid;"
-                + "       display: grid;"
-                + "       grid-template-columns: 50% 50%;"
-                + "       grid-template-rows: 50% 50%;\">"
-                + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
-                + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
-                + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
-                + "   <div style=\"background-color: rgb(128, 128, 128);\"></div>"
-                + "  </body>"
-                + "</html>";
+        doHardwareRenderingSmokeTest(testView, 128, 128, 128);
+    }
+
+    private void doHardwareRenderingSmokeTest(AwTestContainerView testView, int r, int g, int b)
+            throws Throwable {
+        String html = String.format("<html>"
+                        + "  <body style=\""
+                        + "       padding: 0;"
+                        + "       margin: 0;"
+                        + "       display: grid;"
+                        + "       display: grid;"
+                        + "       grid-template-columns: 50%% 50%%;"
+                        + "       grid-template-rows: 50%% 50%%;\">"
+                        + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
+                        + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
+                        + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
+                        + "   <div style=\"background-color: rgb(%d, %d, %d);\"></div>"
+                        + "  </body>"
+                        + "</html>",
+                r, g, b);
         mActivityTestRule.loadDataSync(testView.getAwContents(),
                 mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
         mActivityTestRule.waitForVisualStateCallback(testView.getAwContents());
 
         int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
-                Color.rgb(0, 0, 255), Color.rgb(128, 128, 128)};
+                Color.rgb(0, 0, 255), Color.rgb(r, g, b)};
 
         GraphicsTestUtils.pollForQuadrantColors(testView, expectedQuadrantColors);
     }
@@ -1503,7 +1509,6 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1451828")
     @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackground() throws Throwable {
         mActivityTestRule.startBrowserProcess();
@@ -1533,7 +1538,7 @@ public class AwContentsTest {
         });
 
         // Rendering still works.
-        doHardwareRenderingSmokeTest(testView);
+        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertTrue(awContents.hasDrawFunctor()); });
     }
@@ -1614,7 +1619,7 @@ public class AwContentsTest {
         });
 
         // Rendering still works.
-        doHardwareRenderingSmokeTest(testView);
+        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertTrue(awContents.hasDrawFunctor()); });
     }
@@ -1622,7 +1627,6 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1451828")
     @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearFunctorOnBackgroundMemorySignal() throws Throwable {
         mActivityTestRule.startBrowserProcess();
@@ -1648,7 +1652,7 @@ public class AwContentsTest {
         });
 
         // Rendering still works.
-        doHardwareRenderingSmokeTest(testView);
+        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertTrue(awContents.hasDrawFunctor()); });
     }
