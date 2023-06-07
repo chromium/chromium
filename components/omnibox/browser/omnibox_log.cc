@@ -13,7 +13,7 @@ OmniboxLog::OmniboxLog(
     bool in_keyword_mode,
     metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
     bool is_popup_open,
-    size_t selected_index,
+    OmniboxPopupSelection selection,
     WindowOpenDisposition disposition,
     bool is_paste_and_go,
     SessionID tab_id,
@@ -30,7 +30,7 @@ OmniboxLog::OmniboxLog(
       in_keyword_mode(in_keyword_mode),
       keyword_mode_entry_method(entry_method),
       is_popup_open(is_popup_open),
-      selected_index(selected_index),
+      selection(selection),
       disposition(disposition),
       is_paste_and_go(is_paste_and_go),
       tab_id(tab_id),
@@ -43,9 +43,9 @@ OmniboxLog::OmniboxLog(
       result(result),
       final_destination_url(final_destination_url),
       is_incognito(is_incognito) {
-  DCHECK(selected_index < result.size())
-      << "The selected index should always be valid. See comments on "
-         "OmniboxLog::selected_index.";
+  DCHECK(selection.line < result.size())
+      << "The selection line index should always be valid. See comments on "
+         "OmniboxLog::selection.";
 }
 
 OmniboxLog::~OmniboxLog() {}

@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -1107,9 +1108,50 @@ std::string AutocompleteMatch::GetAdditionalInfo(
   return (i == additional_info.end()) ? std::string() : i->second;
 }
 
-metrics::OmniboxEventProto::Suggestion::ResultType
-AutocompleteMatch::AsOmniboxEventResultType() const {
+metrics::OmniboxEventProto::ProviderType
+AutocompleteMatch::GetOmniboxEventProviderType(int action_index) const {
   using metrics::OmniboxEventProto;
+
+  // Mostly the `provider` provides the provider type below, but a few
+  // action types have meaningful overrides here.
+  if (action_index >= 0 && static_cast<size_t>(action_index) < actions.size()) {
+    switch (actions[action_index]->ActionId()) {
+      case OmniboxActionId::PEDAL:
+        return OmniboxEventProto::PEDALS;
+      case OmniboxActionId::TAB_SWITCH:
+        return OmniboxEventProto::TAB_SWITCH;
+      default:
+        break;
+    }
+  }
+
+  if (provider) {
+    return provider->AsOmniboxEventProviderType();
+  }
+
+  return OmniboxEventProto::UNKNOWN_PROVIDER;
+}
+
+metrics::OmniboxEventProto::Suggestion::ResultType
+AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
+  using metrics::OmniboxEventProto;
+
+  if (action_index >= 0 && static_cast<size_t>(action_index) < actions.size()) {
+    switch (actions[action_index]->ActionId()) {
+      case OmniboxActionId::PEDAL:
+        return OmniboxEventProto::Suggestion::PEDAL;
+      case OmniboxActionId::TAB_SWITCH:
+        return OmniboxEventProto::Suggestion::TAB_SWITCH;
+      case OmniboxActionId::HISTORY_CLUSTERS:
+      case OmniboxActionId::ACTION_IN_SUGGEST:
+        // Preserve existing behavior by continuing on to use the match `type`.
+        break;
+      case OmniboxActionId::UNKNOWN:
+      case OmniboxActionId::LAST:
+        NOTREACHED();
+        break;
+    }
+  }
 
   switch (type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
@@ -1173,7 +1215,8 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::PEDAL_DEPRECATED:
-    // NULL_RESULT_MESSAGE suggestions cannot be acted upon, so no need to log.
+    // NULL_RESULT_MESSAGE suggestions cannot be acted upon, so no need to
+    // log.
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
       break;

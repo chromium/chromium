@@ -459,10 +459,10 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 void HistoryFuzzyProvider::RecordOpenMatchMetrics(
     const AutocompleteResult& result,
     const AutocompleteMatch& match_opened) {
-  if (base::Contains(result, AutocompleteProvider::TYPE_HISTORY_FUZZY,
-                     [](const AutocompleteMatch& match) {
-                       return match.provider->type();
-                     })) {
+  if (base::ranges::any_of(result, [](const AutocompleteMatch& match) {
+        return match.provider && match.provider->type() ==
+                                     AutocompleteProvider::TYPE_HISTORY_FUZZY;
+      })) {
     const bool opened_fuzzy_match = match_opened.provider->type() ==
                                     AutocompleteProvider::TYPE_HISTORY_FUZZY;
     UMA_HISTOGRAM_BOOLEAN(kMetricPrecision, opened_fuzzy_match);

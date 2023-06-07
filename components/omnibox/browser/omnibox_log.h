@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -30,7 +31,7 @@ struct OmniboxLog {
              bool in_keyword_mode,
              metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
              bool is_popup_open,
-             size_t selected_index,
+             OmniboxPopupSelection selection,
              WindowOpenDisposition disposition,
              bool is_paste_and_go,
              SessionID tab_id,
@@ -65,9 +66,10 @@ struct OmniboxLog {
   // True if the popup is open.
   bool is_popup_open;
 
-  // The index of the item selected in the dropdown list.  Set to 0 if the
-  // dropdown is closed (and therefore there is only one implicit suggestion).
-  size_t selected_index;
+  // Contains the selection used to open a match or take an action. This
+  // includes the index of the item selected in the dropdown list (or 0 if the
+  // dropdown is closed and therefore there is only one implicit suggestion).
+  OmniboxPopupSelection selection;
 
   // The disposition used to open the match. Currently, only SWITCH_TO_TAB
   // is relevant to the log; all other dispositions are treated identically.

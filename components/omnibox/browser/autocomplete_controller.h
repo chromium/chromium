@@ -279,6 +279,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                            PopupInlineAutocompleteAndTemporaryText);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitSelectedChildrenChangedAccessibilityEvent);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
+                           OpenActionSelectionLogsOmniboxEvent);
 
   // Helpers called by the constructor. These initialize the specified providers
   // and add them `providers_`. Split into 2 methods to avoid accidentally

@@ -818,8 +818,9 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
     input_.set_added_default_scheme_to_typed_url(false);
   }
 
-  OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, alternate_nav_url, text,
-            OmniboxPopupSelection::kNoMatch, match_selection_timestamp);
+  OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
+            WindowOpenDisposition::CURRENT_TAB, alternate_nav_url, text,
+            match_selection_timestamp);
 }
 
 void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
@@ -885,31 +886,12 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   } else if (selection.state ==
              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     TryDeletingPopupLine(selection.line);
-  } else if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION) {
-    // TODO(crbug.com/1408506): This is a stopgap to prevent disruption in
-    //  tab switch metrics, and can be cleanly eliminated once all actions
-    //  are fully logged omnibox events.
-    DCHECK_LT(selection.action_index, match.actions.size());
-    if (match.actions[selection.action_index]->ActionId() ==
-        OmniboxActionId::TAB_SWITCH) {
-      disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-      OpenMatch(match, disposition, GURL(), std::u16string(), selection.line,
-                timestamp);
-    } else {
-      ExecuteAction(selection, disposition, timestamp);
-    }
   } else {
-    // If the match has an action that takes over the match,
-    // execute the action instead of opening the match.
-    if (match.takeover_action) {
-      ExecuteAction(selection, disposition, timestamp);
-    } else {
-      GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
-          input_, match,
-          autocomplete_controller()->autocomplete_provider_client());
-      OpenMatch(match, disposition, alternate_nav_url, std::u16string(),
-                selection.line, timestamp);
-    }
+    GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
+        input_, match,
+        autocomplete_controller()->autocomplete_provider_client());
+    OpenMatch(selection, match, disposition, alternate_nav_url,
+              std::u16string(), timestamp);
   }
 }
 
@@ -1355,8 +1337,8 @@ void OmniboxEditModel::OpenMatchForTesting(
     const std::u16string& pasted_text,
     size_t index,
     base::TimeTicks match_selection_timestamp) {
-  OpenMatch(match, disposition, alternate_nav_url, pasted_text, index,
-            match_selection_timestamp);
+  OpenMatch(OmniboxPopupSelection(index), match, disposition, alternate_nav_url,
+            pasted_text, match_selection_timestamp);
 }
 
 bool OmniboxEditModel::MaybeStartQueryForPopup() {
@@ -2247,48 +2229,33 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
   }
 
   if (popup_view_) {
-    OpenMatch(match, disposition, alternate_nav_url, std::u16string(),
-              GetPopupSelection().line, match_selection_timestamp);
+    OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
+              disposition, alternate_nav_url, std::u16string(),
+              match_selection_timestamp);
   }
 }
 
-void OmniboxEditModel::ExecuteAction(
-    OmniboxPopupSelection selection,
-    WindowOpenDisposition disposition,
-    base::TimeTicks match_selection_timestamp) {
-  DCHECK(match_selection_timestamp != base::TimeTicks());
-  RecordActionShownForAllActions(result(), selection);
-  OmniboxAction::ExecutionContext context(
-      *(autocomplete_controller()->autocomplete_provider_client()),
-      base::BindOnce(&OmniboxClient::OnAutocompleteAccept,
-                     client()->AsWeakPtr()),
-      match_selection_timestamp, disposition);
-  const AutocompleteMatch& match = result().match_at(selection.line);
-  if (selection.state == OmniboxPopupSelection::NORMAL) {
-    DCHECK(match.takeover_action);
-    match.takeover_action->Execute(context);
-  } else {
-    DCHECK_LT(selection.action_index, match.actions.size());
-    match.actions[selection.action_index]->Execute(context);
-  }
-
-  if (view_) {
-    // This block resets omnibox to unedited state and closes popup, which
-    // may not seem necessary in cases of navigation but makes sense for
-    // taking Pedal actions in general.
-    base::AutoReset<bool> tmp(&in_revert_, true);
-    view_->RevertAll();
-  }
-}
-
-void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
+void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
+                                 AutocompleteMatch match,
                                  WindowOpenDisposition disposition,
                                  const GURL& alternate_nav_url,
                                  const std::u16string& pasted_text,
-                                 size_t index,
                                  base::TimeTicks match_selection_timestamp) {
-  // Invalid URLs such as chrome://history can end up here.
-  if (!match.destination_url.is_valid()) {
+  // If the user is executing an action, this will be non-null and some match
+  // opening and metrics behavior will be adjusted accordingly.
+  OmniboxAction* action = nullptr;
+  if (selection.state == OmniboxPopupSelection::NORMAL &&
+      match.takeover_action) {
+    DCHECK(match_selection_timestamp != base::TimeTicks());
+    action = match.takeover_action.get();
+  } else if (selection.IsAction()) {
+    DCHECK_LT(selection.action_index, match.actions.size());
+    action = match.actions[selection.action_index].get();
+  }
+
+  // Invalid URLs such as chrome://history can end up here, but that's okay
+  // if the user is executing an action instead of navigating to the URL.
+  if (!match.destination_url.is_valid() && !action) {
     return;
   }
 
@@ -2323,10 +2290,12 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
       ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
           elapsed_time_since_user_first_modified_omnibox, &match);
 
+  GURL destination_url = action ? action->getUrl() : match.destination_url;
+
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;
 
-  RecordActionShownForAllActions(result());
+  RecordActionShownForAllActions(result(), selection);
   HistoryFuzzyProvider::RecordOpenMatchMetrics(result(), match);
 
   std::u16string input_text(pasted_text);
@@ -2350,7 +2319,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // omnibox focus (because the user did not modify the omnibox), so for those
   // we set the elapsed times to something that will be ignored by
   // metrics_log.cc.  They also don't necessarily make sense if the omnibox
-  // dropdown is closed or the user used a paste-and-go action.  (In most
+  // dropdown is closed or the user used paste-and-go.  (In most
   // cases when this happens, the user never modified the omnibox.)
   const bool popup_open = PopupIsOpen();
   if (input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
@@ -2363,12 +2332,13 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // In some unusual cases, we ignore result() and instead log a fake result set
   // with a single element (|match|) and selected_index of 0. For these cases:
   //  1. If the popup is closed (there is no result set).
-  //  2. If the index is out of bounds. This should only happen if |index| is
+  //  2. If the index is out of bounds. This should only happen if
+  //  |selection.line| is
   //     kNoMatch, which can happen if the default search provider is disabled.
-  //  3. If this is a paste-and-go action (meaning the contents of the dropdown
+  //  3. If this is paste-and-go (meaning the contents of the dropdown
   //     are ignored regardless).
   const bool dropdown_ignored =
-      !popup_open || index >= result().size() || !pasted_text.empty();
+      !popup_open || selection.line >= result().size() || !pasted_text.empty();
   ACMatches fake_single_entry_matches;
   fake_single_entry_matches.push_back(match);
   AutocompleteResult fake_single_entry_result;
@@ -2386,13 +2356,14 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                           ->IsOffTheRecord();
   OmniboxLog log(
       user_text, just_deleted_text_, input_.type(), is_keyword_selected(),
-      keyword_mode_entry_method_, popup_open, dropdown_ignored ? 0 : index,
-      disposition, !pasted_text.empty(),
+      keyword_mode_entry_method_, popup_open,
+      dropdown_ignored ? OmniboxPopupSelection(0) : selection, disposition,
+      !pasted_text.empty(),
       SessionID::InvalidValue(),  // don't know tab ID; set later if appropriate
       GetPageClassification(), elapsed_time_since_user_first_modified_omnibox,
       completed_length, elapsed_time_since_last_change_to_default_match,
-      dropdown_ignored ? fake_single_entry_result : result(),
-      match.destination_url, is_incognito);
+      dropdown_ignored ? fake_single_entry_result : result(), destination_url,
+      is_incognito);
   DCHECK(dropdown_ignored ||
          (log.elapsed_time_since_user_first_modified_omnibox >=
           log.elapsed_time_since_last_change_to_default_match))
@@ -2411,8 +2382,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
 
   base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.RichAutocompletion",
                                 match.rich_autocompletion_triggered);
-  size_t ipv4_parts_count = CountNumberOfIPv4Parts(
-      user_text, match.destination_url, completed_length);
+  size_t ipv4_parts_count =
+      CountNumberOfIPv4Parts(user_text, destination_url, completed_length);
   // The histogram is collected to decide if shortened IPv4 addresses
   // like 127.1 should be deprecated.
   // Only valid IP addresses manually inputted by the user will be counted.
@@ -2447,6 +2418,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
       if (client()->ProcessExtensionKeyword(input_text, template_url, match,
                                             disposition)) {
         if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
+          base::AutoReset<bool> tmp(&in_revert_, true);
           view_->RevertAll();
         }
         return;
@@ -2476,7 +2448,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     if (ui::PageTransitionTypeIncludingQualifiersIs(
             match.transition, ui::PAGE_TRANSITION_TYPED) &&
         pasted_text.empty()) {
-      navigation_metrics::RecordOmniboxURLNavigation(match.destination_url);
+      navigation_metrics::RecordOmniboxURLNavigation(destination_url);
     }
 
     // The following histograms should be recorded for both TYPED and pasted
@@ -2485,10 +2457,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
             match.transition, ui::PAGE_TRANSITION_TYPED) ||
         ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
                                                     ui::PAGE_TRANSITION_LINK)) {
-      net::cookie_util::RecordCookiePortOmniboxHistograms(
-          match.destination_url);
+      net::cookie_util::RecordCookiePortOmniboxHistograms(destination_url);
 
-      if (match.destination_url.SchemeIsHTTPOrHTTPS()) {
+      if (destination_url.SchemeIsHTTPOrHTTPS()) {
         // Extract the typed hostname from autocomplete input for IDNA 2008
         // metrics. We can't use GURL here as it removes the deviation
         // characters that we want to measure.
@@ -2508,52 +2479,65 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     }
   }
 
+  if (action) {
+    OmniboxAction::ExecutionContext context(
+        *(autocomplete_controller()->autocomplete_provider_client()),
+        base::BindOnce(&OmniboxClient::OnAutocompleteAccept,
+                       client()->AsWeakPtr()),
+        match_selection_timestamp, disposition);
+    action->Execute(context);
+  }
+
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
     base::AutoReset<bool> tmp(&in_revert_, true);
     view_->RevertAll();  // Revert the box to its unedited state.
   }
 
-  // Track whether the destination URL sends us to a search results page
-  // using the default search provider.
-  TemplateURLService* template_url_service = client()->GetTemplateURLService();
-  if (template_url_service &&
-      template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-          match.destination_url)) {
-    base::RecordAction(
-        base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
+  if (!action) {
+    // Track whether the destination URL sends us to a search results page
+    // using the default search provider.
+    TemplateURLService* template_url_service =
+        client()->GetTemplateURLService();
+    if (template_url_service &&
+        template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+            match.destination_url)) {
+      base::RecordAction(
+          base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
 
-    // Re-use the result of the incognito check above in the experiment arm,
-    // otherwise re-compute the off the record state.
-    bool is_off_the_record =
-        use_existing_autocomplete_client_
-            ? is_incognito
-            : client()->CreateAutocompleteProviderClient()->IsOffTheRecord();
-    base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord", is_off_the_record);
-  }
+      // Re-use the result of the incognito check above in the experiment arm,
+      // otherwise re-compute the off the record state.
+      bool is_off_the_record =
+          use_existing_autocomplete_client_
+              ? is_incognito
+              : client()->CreateAutocompleteProviderClient()->IsOffTheRecord();
+      base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord",
+                                is_off_the_record);
+    }
 
-  if (match.destination_url.is_valid()) {
-    // This calls RevertAll again.
-    base::AutoReset<bool> tmp(&in_revert_, true);
+    if (destination_url.is_valid()) {
+      // This calls RevertAll again.
+      base::AutoReset<bool> tmp(&in_revert_, true);
 
-    client()->OnAutocompleteAccept(
-        match.destination_url, match.post_content.get(), disposition,
-        ui::PageTransitionFromInt(match.transition |
-                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        match.type, match_selection_timestamp,
-        input_.added_default_scheme_to_typed_url(),
-        input_.typed_url_had_http_scheme() &&
-            match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-        input_text, match,
-        VerbatimMatchForInput(
-            autocomplete_controller()->history_url_provider(),
-            autocomplete_controller()->autocomplete_provider_client(),
-            alternate_input, alternate_nav_url, false),
-        deviation_char_in_hostname);
-  }
+      client()->OnAutocompleteAccept(
+          destination_url, match.post_content.get(), disposition,
+          ui::PageTransitionFromInt(match.transition |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          match.type, match_selection_timestamp,
+          input_.added_default_scheme_to_typed_url(),
+          input_.typed_url_had_http_scheme() &&
+              match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+          input_text, match,
+          VerbatimMatchForInput(
+              autocomplete_controller()->history_url_provider(),
+              autocomplete_controller()->autocomplete_provider_client(),
+              alternate_input, alternate_nav_url, false),
+          deviation_char_in_hostname);
+    }
 
-  BookmarkModel* bookmark_model = client()->GetBookmarkModel();
-  if (bookmark_model && bookmark_model->IsBookmarked(match.destination_url)) {
-    client()->OnBookmarkLaunched();
+    BookmarkModel* bookmark_model = client()->GetBookmarkModel();
+    if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
+      client()->OnBookmarkLaunched();
+    }
   }
 }
 

@@ -17,6 +17,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
@@ -671,7 +672,7 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
     return static_cast<TestOmniboxEditModel*>(view_->model());
   }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
   TestLocationBarModel location_bar_model_;
   TestingPrefServiceSimple pref_service_;
@@ -1175,6 +1176,35 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   model()->OnPopupResultChanged();
   EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
 }
+
+// Android and iOS handle actions and metrics differently from other platforms.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
+  base::HistogramTester histogram_tester;
+  ACMatches matches;
+  for (size_t i = 0; i < 4; ++i) {
+    AutocompleteMatch match(nullptr, 1000, false,
+                            AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+    match.keyword = u"match";
+    match.allowed_to_be_default_match = true;
+    matches.push_back(match);
+  }
+  const GURL url = GURL("http://kong-foo.com");
+  matches[1].destination_url = url;
+  matches[1].provider = model()->autocomplete_controller()->search_provider();
+  matches[1].actions.push_back(base::MakeRefCounted<TabSwitchAction>(url));
+  AutocompleteResult* result = &model()->autocomplete_controller()->result_;
+  result->AppendMatches(matches);
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
+                          TestSchemeClassifier());
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
+  model()->OnPopupResultChanged();
+  model()->OpenSelection(
+      OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
+  histogram_tester.ExpectUniqueSample("Omnibox.EventCount", 1, 1);
+}
+#endif
 
 TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
   // Escape should incrementally revert temporary text, close the popup, clear

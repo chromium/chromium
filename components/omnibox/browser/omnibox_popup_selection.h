@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
-#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/prefs/pref_service.h"
+
+class AutocompleteResult;
 
 struct OmniboxPopupSelection {
   // Directions for stepping through selections. These may apply for going
@@ -94,6 +95,9 @@ struct OmniboxPopupSelection {
 
   // Returns true if this selection represents a button being focused.
   bool IsButtonFocused() const;
+
+  // Returns true if this selection represents taking an action.
+  bool IsAction() const;
 
   // Returns true if the control represented by this selection's `state` is
   // present on the match for `line` in given `result`.

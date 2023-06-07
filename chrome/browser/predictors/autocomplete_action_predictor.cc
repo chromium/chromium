@@ -369,7 +369,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   if (!log.is_popup_open || log.is_paste_and_go)
     return;
 
-  const AutocompleteMatch& match = log.result->match_at(log.selected_index);
+  const AutocompleteMatch& match = log.result->match_at(log.selection.line);
   const GURL& opened_url = match.destination_url;
 
   // Abandon the current prefetch. If it is to be used, it will be used very

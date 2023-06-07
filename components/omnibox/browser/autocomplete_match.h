@@ -486,9 +486,18 @@ struct AutocompleteMatch {
   // dictionary.  Returns the empty string if no such value exists.
   std::string GetAdditionalInfo(const std::string& property) const;
 
-  // Returns the enum equivalent to the type of this autocomplete match.
-  metrics::OmniboxEventProto::Suggestion::ResultType AsOmniboxEventResultType()
-      const;
+  // Returns the provider type selected from this match, which is by default
+  // taken from the match `provider` type but may be a (pseudo-)provider
+  // associated with one of the match's action types if one of the match's
+  // actions are chosen with `action_index`.
+  metrics::OmniboxEventProto::ProviderType GetOmniboxEventProviderType(
+      int action_index = -1) const;
+
+  // Returns the result type selected from this match, which is by default
+  // equivalent to the match type but may be one of the match's action
+  // types if one of the match's actions are chosen with `action_index`.
+  metrics::OmniboxEventProto::Suggestion::ResultType GetOmniboxEventResultType(
+      int action_index = -1) const;
 
   // Returns whether this match is a "verbatim" match: a URL navigation directly
   // to the user's input, a search for the user's input with the default search

@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/omnibox_popup_selection.h"
-#include "components/omnibox/browser/actions/omnibox_action.h"
-
-#include <algorithm>
 
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/autocomplete_result.h"
+
+#include <algorithm>
 
 const size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
@@ -36,6 +37,10 @@ bool OmniboxPopupSelection::IsChangeToKeyword(
 
 bool OmniboxPopupSelection::IsButtonFocused() const {
   return state != NORMAL && state != KEYWORD_MODE;
+}
+
+bool OmniboxPopupSelection::IsAction() const {
+  return state == FOCUSED_BUTTON_ACTION;
 }
 
 bool OmniboxPopupSelection::IsControlPresentOnMatch(
