@@ -81,7 +81,7 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
             CronetEngine.EFFECTIVE_CONNECTION_TYPE_4G;
 
     /** The value to be used to undo any previous network binding. */
-    public static final long UNBIND_NETWORK_HANDLE = -1;
+    public static final long UNBIND_NETWORK_HANDLE = CronetEngine.UNBIND_NETWORK_HANDLE;
 
     /**
      * A version of {@link CronetEngine.Builder} that exposes experimental features. Instances of
@@ -243,18 +243,6 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
     @Override
     public abstract ExperimentalUrlRequest.Builder newUrlRequestBuilder(
             String url, UrlRequest.Callback callback, Executor executor);
-
-    /**
-     * Binds the engine to the specified network handle. All requests created through this engine
-     * will use the network associated to this handle. If this network disconnects all requests will
-     * fail, the exact error will depend on the stage of request processing when the network
-     * disconnects. Network handles can be obtained through {@code Network#getNetworkHandle}. Only
-     * available starting from Android Marshmallow.
-     *
-     * @param networkHandle the network handle to bind the engine to. Specify {@link
-     * #UNBIND_NETWORK_HANDLE} to unbind.
-     */
-    public void bindToNetwork(long networkHandle) {}
 
     /**
      * Establishes a new connection to the resource specified by the {@link URL} {@code url} using

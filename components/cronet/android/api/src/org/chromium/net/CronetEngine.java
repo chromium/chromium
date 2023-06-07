@@ -84,6 +84,9 @@ public abstract class CronetEngine {
      */
     public static final int EFFECTIVE_CONNECTION_TYPE_4G = 5;
 
+    /** The value to be used to undo any previous network binding. */
+    public static final long UNBIND_NETWORK_HANDLE = -1;
+
     /**
      * A builder for {@link CronetEngine}s, which allows runtime configuration of {@code
      * CronetEngine}. Configuration options are set on the builder and then {@link #build} is called
@@ -828,6 +831,18 @@ public abstract class CronetEngine {
      * space usage may exceed this limit slightly.
      */
     public void startNetLogToDisk(String dirPath, boolean logAll, int maxSize) {}
+
+    /**
+     * Binds the engine to the specified network handle. All requests created through this engine
+     * will use the network associated to this handle. If this network disconnects all requests will
+     * fail, the exact error will depend on the stage of request processing when the network
+     * disconnects. Network handles can be obtained through {@code Network#getNetworkHandle}. Only
+     * available starting from Android Marshmallow.
+     *
+     * @param networkHandle the network handle to bind the engine to. Specify {@link
+     * #UNBIND_NETWORK_HANDLE} to unbind.
+     */
+    public void bindToNetwork(long networkHandle) {}
 
     /**
      * Returns an estimate of the effective connection type computed by the network quality
