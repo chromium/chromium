@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 
-class Browser;
 class FullscreenController;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
@@ -70,10 +69,10 @@ extern NSString* const kSideSwipeDidStopNotification;
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
 // Initializer.
-- (instancetype)initWithBrowser:(Browser*)browser
-           fullscreenController:(FullscreenController*)fullscreenController
-           snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
-                   webStateList:(WebStateList*)webStateList;
+- (instancetype)
+    initWithFullscreenController:(FullscreenController*)fullscreenController
+            snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
+                    webStateList:(WebStateList*)webStateList;
 
 // Set up swipe gesture recognizers.
 - (void)addHorizontalGesturesToView:(UIView*)view;

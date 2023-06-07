@@ -249,11 +249,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
     SnapshotBrowserAgent* snapshot_browser_agent =
         SnapshotBrowserAgent::FromBrowser(browser_.get());
-    side_swipe_mediator_ =
-        [[SideSwipeMediator alloc] initWithBrowser:browser_.get()
-                              fullscreenController:fullscreen_controller_
-                              snapshotBrowserAgent:snapshot_browser_agent
-                                      webStateList:browser_->GetWebStateList()];
+    side_swipe_mediator_ = [[SideSwipeMediator alloc]
+        initWithFullscreenController:fullscreen_controller_
+                snapshotBrowserAgent:snapshot_browser_agent
+                        webStateList:browser_->GetWebStateList()];
 
     bookmarks_coordinator_ =
         [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];

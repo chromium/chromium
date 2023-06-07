@@ -10,9 +10,6 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -43,8 +40,6 @@ NSString* const kSideSwipeWillStartNotification =
 NSString* const kSideSwipeDidStopNotification =
     @"kSideSwipeDidStopNotification";
 
-class SideSwipeMediatorBrowserRemover;
-
 namespace {
 
 enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
@@ -63,9 +58,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
                                  UIGestureRecognizerDelegate,
                                  WebStateListObserving> {
  @private
-
-  // Zeroes out `_browser` when it is destroyed.
-  std::unique_ptr<SideSwipeMediatorBrowserRemover> _browserRemover;
 
   // Side swipe view for tab navigation.
   CardSideSwipeView* _tabSideSwipeView;
@@ -112,8 +104,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
   SnapshotBrowserAgent* _snapshotBrowserAgent;
 }
 
-// Browser passed on the initializer.
-@property(nonatomic, assign) Browser* browser;
 // The current active WebState.
 @property(nonatomic, readonly) web::WebState* activeWebState;
 // The webStateList owned by the current browser.
@@ -135,29 +125,10 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 // Removes the `curtain_` and calls `completionHandler` when the curtain is
 // removed.
 - (void)dismissCurtainWithCompletionHandler:(ProceduralBlock)completionHandler;
-
 // Removes the `curtain_` if there was an active swipe, and resets
 // `inSwipe_` value.
 - (void)dismissCurtain;
-// Cleans up Browser, WebStateList, and WebState references in the instance of a
-// BrowserDestroyed BrowserObserver call.
-- (void)browserDestroyed;
 @end
-
-// A browser observer that nullifies SideSwipeMediator's pointer to browser
-// when the browser is destroyed.
-class SideSwipeMediatorBrowserRemover : public BrowserObserver {
- public:
-  SideSwipeMediatorBrowserRemover(SideSwipeMediator* controller)
-      : side_swipe_mediator_(controller) {}
-
-  void BrowserDestroyed(Browser* browser) override {
-    [side_swipe_mediator_ browserDestroyed];
-  }
-
- private:
-  __weak SideSwipeMediator* side_swipe_mediator_;
-};
 
 @implementation SideSwipeMediator
 
@@ -170,18 +141,13 @@ class SideSwipeMediatorBrowserRemover : public BrowserObserver {
 @synthesize snapshotDelegate = _snapshotDelegate;
 @synthesize tabStripDelegate = _tabStripDelegate;
 
-- (instancetype)initWithBrowser:(Browser*)browser
-           fullscreenController:(FullscreenController*)fullscreenController
-           snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
-                   webStateList:(WebStateList*)webStateList {
-  DCHECK(browser);
+- (instancetype)
+    initWithFullscreenController:(FullscreenController*)fullscreenController
+            snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
+                    webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
-    _browser = browser;
     _webStateList = webStateList;
-    _browserRemover = std::make_unique<SideSwipeMediatorBrowserRemover>(self);
-    _browser->AddObserver(_browserRemover.get());
-
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
     _webStateObserverBridge =
@@ -199,23 +165,13 @@ class SideSwipeMediatorBrowserRemover : public BrowserObserver {
 }
 
 - (void)dealloc {
-  [self browserDestroyed];
-  _fullscreenController = nullptr;
-  _snapshotBrowserAgent = nullptr;
-}
-
-- (void)browserDestroyed {
   if (self.webStateList) {
     self.webStateList->RemoveObserver(_webStateListObserver.get());
   }
-
-  if (self.browser) {
-    self.browser->RemoveObserver(_browserRemover.get());
-    self.browser = nullptr;
-  }
-
   _scopedWebStateObservation.reset();
   _webStateObserverBridge.reset();
+  _fullscreenController = nullptr;
+  _snapshotBrowserAgent = nullptr;
 }
 
 - (void)addHorizontalGesturesToView:(UIView*)view {

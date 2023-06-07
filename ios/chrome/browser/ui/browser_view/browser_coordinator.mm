@@ -781,10 +781,9 @@ enum class ToolbarKind {
   SnapshotBrowserAgent* snapshotBrowserAgent =
       SnapshotBrowserAgent::FromBrowser(self.browser);
   _sideSwipeMediator = [[SideSwipeMediator alloc]
-           initWithBrowser:self.browser
-      fullscreenController:_fullscreenController
-      snapshotBrowserAgent:snapshotBrowserAgent
-              webStateList:self.browser->GetWebStateList()];
+      initWithFullscreenController:_fullscreenController
+              snapshotBrowserAgent:snapshotBrowserAgent
+                      webStateList:self.browser->GetWebStateList()];
   [_sideSwipeMediator setSnapshotDelegate:self];
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.primaryToolbarSnapshotProvider =

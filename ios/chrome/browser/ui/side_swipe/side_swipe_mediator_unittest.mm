@@ -66,11 +66,10 @@ class SideSwipeMediatorTest : public PlatformTest {
         FullscreenController::FromBrowser(browser_.get());
     SnapshotBrowserAgent* snapshot_browser_agent =
         SnapshotBrowserAgent::FromBrowser(browser_.get());
-    side_swipe_mediator_ =
-        [[SideSwipeMediator alloc] initWithBrowser:browser_.get()
-                              fullscreenController:fullscreen_controller
-                              snapshotBrowserAgent:snapshot_browser_agent
-                                      webStateList:browser_->GetWebStateList()];
+    side_swipe_mediator_ = [[SideSwipeMediator alloc]
+        initWithFullscreenController:fullscreen_controller
+                snapshotBrowserAgent:snapshot_browser_agent
+                        webStateList:browser_->GetWebStateList()];
 
     view_ = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
 
