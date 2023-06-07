@@ -58,6 +58,7 @@
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/source_stream.h"
+#include "net/filter/zstd_source_stream.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "net/http/http_content_disposition.h"
@@ -1255,6 +1256,7 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
       case SourceStream::TYPE_BROTLI:
       case SourceStream::TYPE_DEFLATE:
       case SourceStream::TYPE_GZIP:
+      case SourceStream::TYPE_ZSTD:
         if (request_->accepted_stream_types() &&
             !request_->accepted_stream_types()->contains(source_type)) {
           // If the source type is disabled, we treat it
@@ -1283,6 +1285,9 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
       case SourceStream::TYPE_GZIP:
       case SourceStream::TYPE_DEFLATE:
         downstream = GzipSourceStream::Create(std::move(upstream), type);
+        break;
+      case SourceStream::TYPE_ZSTD:
+        downstream = CreateZstdSourceStream(std::move(upstream));
         break;
       case SourceStream::TYPE_NONE:
       case SourceStream::TYPE_UNKNOWN:

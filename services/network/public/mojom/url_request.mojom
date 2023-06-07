@@ -39,6 +39,7 @@ enum SourceType {
   kBrotli,
   kDeflate,
   kGzip,
+  kZstd,
   kNone,
   kUnknown,
 };

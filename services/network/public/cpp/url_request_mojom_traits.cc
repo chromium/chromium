@@ -44,6 +44,8 @@ EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::ToMojom(
       return network::mojom::SourceType::kDeflate;
     case net::SourceStream::SourceType::TYPE_GZIP:
       return network::mojom::SourceType::kGzip;
+    case net::SourceStream::SourceType::TYPE_ZSTD:
+      return network::mojom::SourceType::kZstd;
     case net::SourceStream::SourceType::TYPE_NONE:
       return network::mojom::SourceType::kNone;
     case net::SourceStream::SourceType::TYPE_UNKNOWN:
@@ -65,6 +67,9 @@ bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
       return true;
     case network::mojom::SourceType::kGzip:
       *out = net::SourceStream::SourceType::TYPE_GZIP;
+      return true;
+    case network::mojom::SourceType::kZstd:
+      *out = net::SourceStream::SourceType::TYPE_ZSTD;
       return true;
     case network::mojom::SourceType::kNone:
       *out = net::SourceStream::SourceType::TYPE_NONE;

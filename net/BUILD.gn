@@ -1073,6 +1073,9 @@ component("net") {
   if (disable_brotli_filter) {
     defines += [ "NET_DISABLE_BROTLI" ]
   }
+  if (disable_zstd_filter) {
+    defines += [ "NET_DISABLE_ZSTD" ]
+  }
 
   deps = [
     ":cronet_buildflags",
@@ -1625,6 +1628,19 @@ component("net") {
     ]
   } else {
     sources += [ "filter/brotli_source_stream_disabled.cc" ]
+  }
+
+  # Zstd support.
+  if (!disable_zstd_filter) {
+    sources += [
+      "filter/zstd_source_stream.cc",
+      "filter/zstd_source_stream.h",
+    ]
+  } else {
+    sources += [
+      "filter/zstd_source_stream.h",
+      "filter/zstd_source_stream_disabled.cc",
+    ]
   }
 
   if (!is_debug && !optimize_for_size) {
