@@ -4628,6 +4628,7 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="Media Style"/>
   <int value="6" label="Decorated Custom View Style"/>
   <int value="7" label="Decorated Media Custom View Style"/>
+  <int value="8" label="Call Style"/>
 </enum>
 
 <enum name="ArcOptInAction">

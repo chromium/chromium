@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 33
+// Next MinVersion: 34
 
 module arc.mojom;
 
@@ -107,6 +107,7 @@ enum ArcNotificationStyle {
   MEDIA_STYLE = 5,
   DECORATED_CUSTOM_VIEW_STYLE = 6,
   DECORATED_MEDIA_CUSTOM_VIEW_STYLE = 7,
+  [MinVersion=33] CALL_STYLE = 8,
 };
 
 struct ArcNotificationData {
