@@ -64,6 +64,8 @@ struct ChromeColor {
   skia.mojom.SkColor background;
   // The background color.
   skia.mojom.SkColor foreground;
+  // The base color.
+  skia.mojom.SkColor base;
 };
 
 // A collection of background images.

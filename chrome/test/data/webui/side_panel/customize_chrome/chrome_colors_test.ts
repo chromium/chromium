@@ -40,6 +40,7 @@ suite('ChromeColorsTest', () => {
         seed: {value: i},
         background: {value: i + 1},
         foreground: {value: i + 2},
+        base: {value: i + 3},
       });
     }
     handler.setResultFor('getChromeColors', Promise.resolve({colors}));
