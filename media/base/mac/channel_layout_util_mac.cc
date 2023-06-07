@@ -124,7 +124,6 @@ std::unique_ptr<ScopedAudioChannelLayout> ChannelLayoutToAudioChannelLayout(
     descriptions[0].mChannelLabel = kAudioChannelLabel_Mono;
     descriptions[0].mChannelFlags = kAudioChannelFlags_AllOff;
   } else {
-    CHECK_EQ(ChannelLayoutToChannelCount(input_layout), input_channels);
     for (int ch = 0; ch <= CHANNELS_MAX; ++ch) {
       const int order = ChannelOrder(input_layout, static_cast<Channels>(ch));
       if (order == -1) {
