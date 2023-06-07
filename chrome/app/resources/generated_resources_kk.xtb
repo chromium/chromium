@@ -2293,6 +2293,7 @@
 <translation id="2923234477033317484">Бұл аккаунтты өшіру</translation>
 <translation id="2923644930701689793">Телефон камерасының суреттер қалтасына кіру</translation>
 <translation id="292371311537977079">Chrome параметрлері</translation>
+<translation id="2925658782192398150">Аяқталды, ешқандай мәселе табылмады.</translation>
 <translation id="2926085873880284723">Әдепкі таңбашаларды қалпына келтіру</translation>
 <translation id="2926620265753325858">"<ph name="DEVICE_NAME" />" құрылғысына қолдау көрсетілмейді.</translation>
 <translation id="2927017729816812676">Кэш жады</translation>
@@ -2553,7 +2554,7 @@
 <translation id="3159493096109238499">Қоңыр сарғыш</translation>
 <translation id="3159978855457658359">Құрылғы атауын өзгерту</translation>
 <translation id="3160928651883997588">VPN параметрлері</translation>
-<translation id="3161522574479303604">Барлық тілдер</translation>
+<translation id="3161522574479303604">Барлық тіл</translation>
 <translation id="3162853326462195145">Оқу аккаунты</translation>
 <translation id="3162899666601560689">Сайттар шолуды жақсарту (мысалы, аккаунттан шығармау не сатып алу себетіңіздегі нәрселерді есте сақтау) үшін cookie файлдарын пайдалана алады.</translation>
 <translation id="3163201441334626963">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /></translation>
@@ -3743,6 +3744,7 @@
 <translation id="42126664696688958">Экспорттау</translation>
 <translation id="42137655013211669">Бұл ресурсқа кіруге сервер тыйым салған.</translation>
 <translation id="4214192212360095377">Қазір өшіру</translation>
+<translation id="4217558091331485702">Ашпас бұрын сканерлеу</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4218081191298393750">Бұл қойынды индикаторының дыбысын өшіру үшін динамик белгішесін басыңыз.</translation>
 <translation id="4220648711404560261">Іске қосу кезінде қате шықты.</translation>
