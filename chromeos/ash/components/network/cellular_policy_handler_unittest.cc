@@ -273,10 +273,61 @@ class CellularPolicyHandlerTest : public testing::Test {
     task_environment_.FastForwardBy(delay);
   }
 
+ protected:
+  // This struct is used to simplify checking the metrics associated with the
+  // tests below.
+  struct ExpectedHistogramState {
+    size_t success_initial_count = 0u;
+    size_t success_retry_count = 0u;
+    size_t inhibit_failed_initial_count = 0u;
+    size_t inhibit_failed_retry_count = 0u;
+    size_t hermes_install_failed_initial_count = 0u;
+    size_t hermes_install_failed_retry_count = 0u;
+  };
+
+  void CheckHistogram(const char* histogram,
+                      size_t success_count,
+                      size_t inhibit_failed_count,
+                      size_t hermes_install_failed_count) {
+    using InstallESimProfileResult =
+        CellularESimInstaller::InstallESimProfileResult;
+    histogram_tester_.ExpectBucketCount(histogram,
+                                        InstallESimProfileResult::kSuccess,
+                                        /*expected_count=*/success_count);
+    histogram_tester_.ExpectBucketCount(
+        histogram, InstallESimProfileResult::kInhibitFailed,
+        /*expected_count=*/inhibit_failed_count);
+    histogram_tester_.ExpectBucketCount(
+        histogram, InstallESimProfileResult::kHermesInstallFailed,
+        /*expected_count=*/hermes_install_failed_count);
+  }
+
+  void CheckHistogramState(const ExpectedHistogramState& state) {
+    CheckHistogram(
+        kInstallViaPolicyOperationHistogram,
+        /*success_count=*/state.success_initial_count +
+            state.success_retry_count,
+        /*inhibit_failed_count=*/state.inhibit_failed_initial_count +
+            state.inhibit_failed_retry_count,
+        /*hermes_install_failed=*/state.hermes_install_failed_initial_count +
+            state.hermes_install_failed_retry_count);
+    CheckHistogram(
+        kInstallViaPolicyInitialOperationHistogram,
+        /*success_count=*/state.success_initial_count,
+        /*inhibit_failed_count=*/state.inhibit_failed_initial_count,
+        /*hermes_install_failed=*/state.hermes_install_failed_initial_count);
+    CheckHistogram(
+        kInstallViaPolicyRetryOperationHistogram,
+        /*success_count=*/state.success_retry_count,
+        /*inhibit_failed_count=*/state.inhibit_failed_retry_count,
+        /*hermes_install_failed=*/state.hermes_install_failed_retry_count);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
@@ -302,7 +353,6 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
                                  ->GenerateFakeActivationCode());
   // Verify esim profile get installed successfully when installing policy esim
   // with a fake SMDP address.
-  base::HistogramTester histogram_tester;
   InstallESimPolicy(policy,
                     HermesEuiccClient::Get()
                         ->GetTestInterface()
@@ -312,18 +362,7 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
   CheckShillConfiguration(/*is_installed=*/true);
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyInitialOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyRetryOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/0);
+  CheckHistogramState({.success_initial_count = 1});
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallWaitForDeviceState) {
@@ -377,14 +416,13 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
 TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
   SetupEuicc();
 
-  base::HistogramTester histogram_tester;
-
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
                                  ->GetTestInterface()
                                  ->GenerateFakeActivationCode());
 
-  // Make the first installation attempt fail due to an user error
+  // Make the first installation attempt fail due to an user error which will
+  // not result in a retry.
   HermesEuiccClient::Get()
       ->GetTestInterface()
       ->SetNextInstallProfileFromActivationCodeResult(
@@ -395,15 +433,17 @@ TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
 
+  ExpectedHistogramState expected_state = {
+      .hermes_install_failed_initial_count = 1,
+  };
+  CheckHistogramState(expected_state);
+
   FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
 
-  // As this is an user error, retry shouldn't happen
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/0);
+  CheckHistogramState(expected_state);
 
-  // Make the second installation attempt fail due to a dependency error
+  // Make the second installation attempt fail due to an external error which
+  // will retry after an initial delay of 1 day.
   HermesEuiccClient::Get()
       ->GetTestInterface()
       ->SetNextInstallProfileFromActivationCodeResult(
@@ -414,15 +454,17 @@ TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
 
+  expected_state.hermes_install_failed_initial_count++;
+  CheckHistogramState(expected_state);
+
   FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
 
-  // For dependency errors, retry should happen after the wait time of one day
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
+  expected_state.success_retry_count++;
+  CheckHistogramState(expected_state);
 
-  // Make the third installation attempt fail due to an internal error
+  // Make the third installation attempt fail due to an internal error which
+  // will retry aftern an initial delay of 5 minutes with an exponential
+  // backoff.
   HermesEuiccClient::Get()
       ->GetTestInterface()
       ->SetNextInstallProfileFromActivationCodeResult(
@@ -433,20 +475,17 @@ TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
 
+  expected_state.hermes_install_failed_initial_count++;
+  CheckHistogramState(expected_state);
+
   FastForwardBy(kInstallationRetryDelayExponential);
 
-  // For internal errors, retry should follow an exponential backoff with the
-  // initial delay of 5 minutes.
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/2);
+  expected_state.success_retry_count++;
+  CheckHistogramState(expected_state);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
   SetupEuicc();
-
-  base::HistogramTester histogram_tester;
 
   // Make the first installation attempt fail, resulting in an immediate retry
   // delay of |kInstallationRetryDelay|.
@@ -465,44 +504,21 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
 
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/0);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyInitialOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyRetryOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/0);
+  ExpectedHistogramState expected_state = {
+      .hermes_install_failed_initial_count = 1,
+  };
+  CheckHistogramState(expected_state);
+
   CheckShillConfiguration(/*is_installed=*/false);
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
 
   // Fast forward by |kInstallationRetryDelay| to trigger a retry. We use some
   // buffer time since the retry mechanism doesn't happen synchronously.
   FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyInitialOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyRetryOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/0);
+
+  expected_state.success_retry_count++;
+  CheckHistogramState(expected_state);
+
   CheckShillConfiguration(/*is_installed=*/true);
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
