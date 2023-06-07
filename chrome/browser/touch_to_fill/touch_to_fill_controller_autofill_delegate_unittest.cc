@@ -229,8 +229,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth) {
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
   histogram_tester().ExpectUniqueSample(
-      "PasswordManager.FilledCredentialWasFromAndroidApp", false, 1);
-  histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.Outcome",
       TouchToFillControllerAutofillDelegate::TouchToFillOutcome::
           kCredentialFilled,
@@ -397,8 +395,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.FilledCredentialWasFromAndroidApp", false, 1);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -540,8 +536,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 2, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.FilledCredentialWasFromAndroidApp", true, 1);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
   ASSERT_EQ(1u, entries.size());

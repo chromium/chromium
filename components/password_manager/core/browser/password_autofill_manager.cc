@@ -851,7 +851,7 @@ bool PasswordAutofillManager::FillSuggestion(
     bool is_android_credential =
         FacetURI::FromPotentiallyInvalidSpec(password_and_meta_data.realm)
             .IsValidAndroidFacetURI();
-    metrics_util::LogFilledCredentialIsFromAndroidApp(is_android_credential);
+    metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
     password_manager_driver_->FillSuggestion(
         username, password_and_meta_data.password_value);
     return true;

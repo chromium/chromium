@@ -1558,10 +1558,24 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.FilledCredentialWasFromAndroidApp"
     enum="PasswordManagerFilledAndroidCredentials" expires_after="M122">
+  <obsolete>
+    Replaced in M116 by FilledCredentialWasFromAndroidApp2. The metric was
+    overrecording samples on page load.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     When a credential is filled, whether it comes from an Android app.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FilledCredentialWasFromAndroidApp2"
+    enum="PasswordManagerFilledAndroidCredentials" expires_after="M123">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    When a credential is filled automatically or from the dropdown, whether it
+    was saved from an Android app. The histogram isn't collected on Android/iOS.
   </summary>
 </histogram>
 

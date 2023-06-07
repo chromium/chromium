@@ -251,9 +251,6 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
   DCHECK(action_complete_);
   DCHECK(driver_);
 
-  password_manager::metrics_util::LogFilledCredentialIsFromAndroidApp(
-      credential.match_type() ==
-      password_manager_util::GetLoginMatchType::kAffiliated);
   driver_->KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false));
 
   driver_->FillSuggestion(credential.username(), credential.password());

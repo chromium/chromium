@@ -92,8 +92,10 @@ void Autofill(PasswordManagerClient* client,
   UMA_HISTOGRAM_BOOLEAN(
       "PasswordManager.FillSuggestionsIncludeAndroidAppCredentials",
       ContainsAndroidCredentials(fill_data));
-  metrics_util::LogFilledCredentialIsFromAndroidApp(
-      PreferredRealmIsFromAndroid(fill_data));
+  if (!wait_for_username) {
+    metrics_util::LogFilledPasswordFromAndroidApp(
+        PreferredRealmIsFromAndroid(fill_data));
+  }
   driver->SetPasswordFillData(fill_data);
 
   // Matches can be empty when there are only WebAuthn credentials available.

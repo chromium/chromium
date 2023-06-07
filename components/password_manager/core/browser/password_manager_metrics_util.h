@@ -733,7 +733,7 @@ void LogMoveUIDismissalReason(UIDismissalReason reason,
 void LogUIDisplayDisposition(UIDisplayDisposition disposition);
 
 // When a credential was filled, log whether it came from an Android app.
-void LogFilledCredentialIsFromAndroidApp(bool from_android);
+void LogFilledPasswordFromAndroidApp(bool from_android);
 
 // Log what's preventing passwords from syncing.
 void LogPasswordSyncState(PasswordSyncState state);
