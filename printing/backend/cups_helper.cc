@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -74,40 +76,43 @@ int32_t GetCopiesMax(ppd_file_t* ppd) {
   return base::StringToInt(attr->value, &ret) ? ret : kDefaultMaxCopies;
 }
 
-void GetDuplexSettings(ppd_file_t* ppd,
-                       std::vector<mojom::DuplexMode>* duplex_modes,
-                       mojom::DuplexMode* duplex_default) {
+std::pair<std::vector<mojom::DuplexMode>, mojom::DuplexMode> GetDuplexSettings(
+    ppd_file_t* ppd) {
+  std::vector<mojom::DuplexMode> duplex_modes;
+  mojom::DuplexMode duplex_default = mojom::DuplexMode::kUnknownDuplexMode;
+
   ppd_choice_t* duplex_choice = ppdFindMarkedChoice(ppd, kDuplex);
   ppd_option_t* option = ppdFindOption(ppd, kDuplex);
   if (!option)
     option = ppdFindOption(ppd, kBrotherDuplex);
 
   if (!option)
-    return;
+    return std::make_pair(std::move(duplex_modes), duplex_default);
 
   if (!duplex_choice)
     duplex_choice = ppdFindChoice(option, option->defchoice);
 
   if (ppdFindChoice(option, kDuplexNone))
-    duplex_modes->push_back(mojom::DuplexMode::kSimplex);
+    duplex_modes.push_back(mojom::DuplexMode::kSimplex);
 
   if (ppdFindChoice(option, kDuplexNoTumble))
-    duplex_modes->push_back(mojom::DuplexMode::kLongEdge);
+    duplex_modes.push_back(mojom::DuplexMode::kLongEdge);
 
   if (ppdFindChoice(option, kDuplexTumble))
-    duplex_modes->push_back(mojom::DuplexMode::kShortEdge);
+    duplex_modes.push_back(mojom::DuplexMode::kShortEdge);
 
   if (!duplex_choice)
-    return;
+    return std::make_pair(std::move(duplex_modes), duplex_default);
 
   const char* choice = duplex_choice->choice;
   if (EqualsCaseInsensitiveASCII(choice, kDuplexNone)) {
-    *duplex_default = mojom::DuplexMode::kSimplex;
+    duplex_default = mojom::DuplexMode::kSimplex;
   } else if (EqualsCaseInsensitiveASCII(choice, kDuplexTumble)) {
-    *duplex_default = mojom::DuplexMode::kShortEdge;
+    duplex_default = mojom::DuplexMode::kShortEdge;
   } else {
-    *duplex_default = mojom::DuplexMode::kLongEdge;
+    duplex_default = mojom::DuplexMode::kLongEdge;
   }
+  return std::make_pair(std::move(duplex_modes), duplex_default);
 }
 
 absl::optional<gfx::Size> ParseResolutionString(const char* input) {
@@ -138,9 +143,8 @@ absl::optional<gfx::Size> ParseResolutionString(const char* input) {
   return gfx::Size(dpi_x, dpi_y);
 }
 
-void GetResolutionSettings(ppd_file_t* ppd,
-                           std::vector<gfx::Size>* dpis,
-                           gfx::Size* default_dpi) {
+std::pair<std::vector<gfx::Size>, gfx::Size> GetResolutionSettings(
+    ppd_file_t* ppd) {
   static constexpr const char* kResolutions[] = {
       "Resolution",     "JCLResolution", "SetResolution", "CNRes_PGP",
       "HPPrintQuality", "LXResolution",  "BRResolution"};
@@ -160,6 +164,8 @@ void GetResolutionSettings(ppd_file_t* ppd,
   constexpr gfx::Size kDefaultMissingDpi(kDefaultPdfDpi, kDefaultPdfDpi);
 #endif
 
+  std::vector<gfx::Size> dpis;
+  gfx::Size default_dpi;
   if (res) {
     for (int i = 0; i < res->num_choices; i++) {
       char* choice = res->choices[i].choice;
@@ -169,9 +175,9 @@ void GetResolutionSettings(ppd_file_t* ppd,
         continue;
       }
 
-      dpis->push_back(parsed_size.value());
+      dpis.push_back(parsed_size.value());
       if (!strcmp(choice, res->defchoice)) {
-        *default_dpi = dpis->back();
+        default_dpi = dpis.back();
       }
     }
   } else {
@@ -183,16 +189,17 @@ void GetResolutionSettings(ppd_file_t* ppd,
       absl::optional<gfx::Size> parsed_size =
           ParseResolutionString(attr->value);
       if (parsed_size.has_value()) {
-        dpis->push_back(parsed_size.value());
-        *default_dpi = parsed_size.value();
+        dpis.push_back(parsed_size.value());
+        default_dpi = parsed_size.value();
       }
     }
   }
 
-  if (dpis->empty()) {
-    dpis->push_back(kDefaultMissingDpi);
-    *default_dpi = kDefaultMissingDpi;
+  if (dpis.empty()) {
+    dpis.push_back(kDefaultMissingDpi);
+    default_dpi = kDefaultMissingDpi;
   }
+  return std::make_pair(std::move(dpis), default_dpi);
 }
 
 bool GetBasicColorModelSettings(ppd_file_t* ppd,
@@ -828,8 +835,8 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
   caps.collate_default = true;
   caps.copies_max = GetCopiesMax(ppd);
 
-  GetDuplexSettings(ppd, &caps.duplex_modes, &caps.duplex_default);
-  GetResolutionSettings(ppd, &caps.dpis, &caps.default_dpi);
+  std::tie(caps.duplex_modes, caps.duplex_default) = GetDuplexSettings(ppd);
+  std::tie(caps.dpis, caps.default_dpi) = GetResolutionSettings(ppd);
 
   mojom::ColorModel cm_black = mojom::ColorModel::kUnknownColorModel;
   mojom::ColorModel cm_color = mojom::ColorModel::kUnknownColorModel;
