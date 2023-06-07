@@ -10,7 +10,6 @@ from page_sets.rendering import rendering_story
 from page_sets.rendering import story_tags
 
 TOUGH_SCROLLBAR_UMA = [
-    'Graphics.Smoothness.Checkerboarding.ScrollbarScroll',
     'Graphics.Smoothness.Checkerboarding3.ScrollbarScroll',
 ]
 
