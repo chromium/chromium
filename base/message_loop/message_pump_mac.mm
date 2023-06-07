@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import "base/message_loop/message_pump_mac.h"
 
 #import <Foundation/Foundation.h>
@@ -17,6 +15,9 @@
 #include "base/feature_list.h"
 #include "base/mac/call_with_eh_frame.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_policy.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/notreached.h"
@@ -64,7 +65,7 @@ constexpr CFTimeInterval kCFTimeIntervalMax =
     std::numeric_limits<CFTimeInterval>::max();
 
 #if !BUILDFLAG(IS_IOS)
-// Set to true if MessagePumpMac::Create() is called before NSApp is
+// Set to true if message_pump_mac::Create() is called before NSApp is
 // initialized.  Only accessed from the main thread.
 bool g_not_using_cr_app = false;
 
@@ -74,24 +75,20 @@ MessagePumpNSApplication* g_app_pump;
 
 }  // namespace
 
-// A scoper for autorelease pools created from message pump run loops.
-// Avoids dirtying up the ScopedNSAutoreleasePool interface for the rare
-// case where an autorelease pool needs to be passed in.
-class MessagePumpScopedAutoreleasePool {
+// A scoper for an optional autorelease pool.
+class OptionalAutoreleasePool {
  public:
-  explicit MessagePumpScopedAutoreleasePool(MessagePumpCFRunLoopBase* pump) :
-      pool_(pump->CreateAutoreleasePool()) {
+  explicit OptionalAutoreleasePool(MessagePumpCFRunLoopBase* pump) {
+    if (pump->ShouldCreateAutoreleasePool()) {
+      pool_.emplace();
+    }
   }
 
-  MessagePumpScopedAutoreleasePool(const MessagePumpScopedAutoreleasePool&) =
-      delete;
-  MessagePumpScopedAutoreleasePool& operator=(
-      const MessagePumpScopedAutoreleasePool&) = delete;
-
-  ~MessagePumpScopedAutoreleasePool() { [pool_ drain]; }
+  OptionalAutoreleasePool(const OptionalAutoreleasePool&) = delete;
+  OptionalAutoreleasePool& operator=(const OptionalAutoreleasePool&) = delete;
 
  private:
-  NSAutoreleasePool* pool_;
+  absl::optional<base::mac::ScopedNSAutoreleasePool> pool_;
 };
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {
@@ -238,68 +235,65 @@ void MessagePumpCFRunLoopBase::Detach() {}
 #endif  // BUILDFLAG(IS_IOS)
 
 // Must be called on the run loop thread.
-MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
-    : delegate_(nullptr),
-      timer_slack_(base::TIMER_SLACK_NONE),
-      nesting_level_(0),
-      run_nesting_level_(0),
-      deepest_nesting_level_(0),
-      keep_running_(true),
-      delegateless_work_(false) {
-  run_loop_ = CFRunLoopGetCurrent();
-  CFRetain(run_loop_);
+MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask) {
+  run_loop_.reset(CFRunLoopGetCurrent(), base::scoped_policy::RETAIN);
 
   // Set a repeating timer with a preposterous firing time and interval.  The
   // timer will effectively never fire as-is.  The firing time will be adjusted
   // as needed when ScheduleDelayedWork is called.
-  CFRunLoopTimerContext timer_context = CFRunLoopTimerContext();
+  CFRunLoopTimerContext timer_context = {0};
   timer_context.info = this;
-  delayed_work_timer_ = CFRunLoopTimerCreate(NULL,                // allocator
-                                             kCFTimeIntervalMax,  // fire time
-                                             kCFTimeIntervalMax,  // interval
-                                             0,                   // flags
-                                             0,                   // priority
-                                             RunDelayedWorkTimer,
-                                             &timer_context);
+  delayed_work_timer_.reset(
+      CFRunLoopTimerCreate(/*allocator=*/nullptr,
+                           /*fireDate=*/kCFTimeIntervalMax,
+                           /*interval=*/kCFTimeIntervalMax,
+                           /*flags=*/0,
+                           /*order=*/0,
+                           /*callout=*/RunDelayedWorkTimer,
+                           /*context=*/&timer_context));
 
-  CFRunLoopSourceContext source_context = CFRunLoopSourceContext();
+  CFRunLoopSourceContext source_context = {0};
   source_context.info = this;
   source_context.perform = RunWorkSource;
-  work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
-                                       1,     // priority
-                                       &source_context);
+  work_source_.reset(CFRunLoopSourceCreate(/*allocator=*/nullptr,
+                                           /*order=*/1,
+                                           /*context=*/&source_context));
   source_context.perform = RunNestingDeferredWorkSource;
-  nesting_deferred_work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
-                                                        0,     // priority
-                                                        &source_context);
+  nesting_deferred_work_source_.reset(
+      CFRunLoopSourceCreate(/*allocator=*/nullptr,
+                            /*order=*/0,
+                            /*context=*/&source_context));
 
-  CFRunLoopObserverContext observer_context = CFRunLoopObserverContext();
+  CFRunLoopObserverContext observer_context = {0};
   observer_context.info = this;
-  pre_wait_observer_ = CFRunLoopObserverCreate(NULL,  // allocator
-                                               kCFRunLoopBeforeWaiting,
-                                               true,  // repeat
-                                               0,     // priority
-                                               PreWaitObserver,
-                                               &observer_context);
-  after_wait_observer_ =
-      CFRunLoopObserverCreate(NULL,  // allocator
-                              kCFRunLoopAfterWaiting,
-                              true,  // repeat
-                              0,     // priority
-                              AfterWaitObserver, &observer_context);
-  pre_source_observer_ = CFRunLoopObserverCreate(NULL,  // allocator
-                                                 kCFRunLoopBeforeSources,
-                                                 true,  // repeat
-                                                 0,     // priority
-                                                 PreSourceObserver,
-                                                 &observer_context);
-  enter_exit_observer_ = CFRunLoopObserverCreate(NULL,  // allocator
-                                                 kCFRunLoopEntry |
-                                                     kCFRunLoopExit,
-                                                 true,  // repeat
-                                                 0,     // priority
-                                                 EnterExitObserver,
-                                                 &observer_context);
+  pre_wait_observer_.reset(
+      CFRunLoopObserverCreate(/*allocator=*/nullptr,
+                              /*activities=*/kCFRunLoopBeforeWaiting,
+                              /*repeats=*/true,
+                              /*order=*/0,
+                              /*callout=*/PreWaitObserver,
+                              /*context=*/&observer_context));
+  after_wait_observer_.reset(CFRunLoopObserverCreate(
+      /*allocator=*/nullptr,
+      /*activities=*/kCFRunLoopAfterWaiting,
+      /*repeats=*/true,
+      /*order=*/0,
+      /*callout=*/AfterWaitObserver,
+      /*context=*/&observer_context));
+  pre_source_observer_.reset(
+      CFRunLoopObserverCreate(/*allocator=*/nullptr,
+                              /*activities=*/kCFRunLoopBeforeSources,
+                              /*repeats=*/true,
+                              /*order=*/0,
+                              /*callout=*/PreSourceObserver,
+                              /*context=*/&observer_context));
+  enter_exit_observer_.reset(
+      CFRunLoopObserverCreate(/*allocator=*/nullptr,
+                              /*activities=*/kCFRunLoopEntry | kCFRunLoopExit,
+                              /*repeats=*/true,
+                              /*order=*/0,
+                              /*callout=*/EnterExitObserver,
+                              /*context=*/&observer_context));
   SetModeMask(initial_mode_mask);
 }
 
@@ -308,14 +302,6 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
 // same number of run loops must be running when this object is destroyed.
 MessagePumpCFRunLoopBase::~MessagePumpCFRunLoopBase() {
   SetModeMask(0);
-  CFRelease(enter_exit_observer_);
-  CFRelease(pre_source_observer_);
-  CFRelease(pre_wait_observer_);
-  CFRelease(after_wait_observer_);
-  CFRelease(nesting_deferred_work_source_);
-  CFRelease(work_source_);
-  CFRelease(delayed_work_timer_);
-  CFRelease(run_loop_);
 }
 
 // static
@@ -363,9 +349,9 @@ void MessagePumpCFRunLoopBase::SetDelegate(Delegate* delegate) {
   }
 }
 
-// Base version returns a standard NSAutoreleasePool.
-AutoreleasePoolType* MessagePumpCFRunLoopBase::CreateAutoreleasePool() {
-  return [[NSAutoreleasePool alloc] init];
+// Base version creates an autorelease pool.
+bool MessagePumpCFRunLoopBase::ShouldCreateAutoreleasePool() {
+  return true;
 }
 
 void MessagePumpCFRunLoopBase::SetModeMask(int mode_mask) {
@@ -454,7 +440,7 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   // CFRunLoopSource target that's run.  Use a local pool for any autoreleased
   // objects if the app is not currently handling a UI event to ensure they're
   // released promptly even in the absence of UI events.
-  MessagePumpScopedAutoreleasePool autorelease_pool(this);
+  OptionalAutoreleasePool autorelease_pool(this);
 
   // Pop the current work item scope as it captures any native work happening
   // *between* DoWork()'s. This DoWork() happens in sequence to that native
@@ -489,7 +475,7 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   // CFRunLoopSource target that's run.  Use a local pool for any autoreleased
   // objects if the app is not currently handling a UI event to ensure they're
   // released promptly even in the absence of UI events.
-  MessagePumpScopedAutoreleasePool autorelease_pool(this);
+  OptionalAutoreleasePool autorelease_pool(this);
   bool did_work = delegate_->DoIdleWork();
   if (did_work)
     CFRunLoopSourceSignal(work_source_);
@@ -663,7 +649,7 @@ void MessagePumpCFRunLoopBase::EnterExitRunLoop(CFRunLoopActivity activity) {
 MessagePumpCFRunLoop::MessagePumpCFRunLoop()
     : MessagePumpCFRunLoopBase(kCommonModeMask), quit_pending_(false) {}
 
-MessagePumpCFRunLoop::~MessagePumpCFRunLoop() {}
+MessagePumpCFRunLoop::~MessagePumpCFRunLoop() = default;
 
 // Called by MessagePumpCFRunLoopBase::DoRun.  If other CFRunLoopRun loops were
 // running lower on the run loop thread's stack when this object was created,
@@ -674,7 +660,7 @@ void MessagePumpCFRunLoop::DoRun(Delegate* delegate) {
   // pool management is introduced.
   int result;
   do {
-    MessagePumpScopedAutoreleasePool autorelease_pool(this);
+    OptionalAutoreleasePool autorelease_pool(this);
     result = CFRunLoopRunInMode(kCFRunLoopDefaultMode,
                                 kCFTimeIntervalMax,
                                 false);
@@ -716,24 +702,23 @@ void MessagePumpCFRunLoop::EnterExitRunLoop(CFRunLoopActivity activity) {
 
 MessagePumpNSRunLoop::MessagePumpNSRunLoop()
     : MessagePumpCFRunLoopBase(kCommonModeMask) {
-  CFRunLoopSourceContext source_context = CFRunLoopSourceContext();
+  CFRunLoopSourceContext source_context = {0};
   source_context.perform = NoOp;
-  quit_source_ = CFRunLoopSourceCreate(NULL,  // allocator
-                                       0,     // priority
-                                       &source_context);
+  quit_source_.reset(CFRunLoopSourceCreate(/*allocator=*/nullptr,
+                                           /*order=*/0,
+                                           /*context=*/&source_context));
   CFRunLoopAddSource(run_loop(), quit_source_, kCFRunLoopCommonModes);
 }
 
 MessagePumpNSRunLoop::~MessagePumpNSRunLoop() {
   CFRunLoopRemoveSource(run_loop(), quit_source_, kCFRunLoopCommonModes);
-  CFRelease(quit_source_);
 }
 
 void MessagePumpNSRunLoop::DoRun(Delegate* delegate) {
   while (keep_running()) {
     // NSRunLoop manages autorelease pools itself.
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                             beforeDate:[NSDate distantFuture]];
+    [NSRunLoop.currentRunLoop runMode:NSDefaultRunLoopMode
+                           beforeDate:NSDate.distantFuture];
   }
 }
 
@@ -745,9 +730,9 @@ bool MessagePumpNSRunLoop::DoQuit() {
 
 #if BUILDFLAG(IS_IOS)
 MessagePumpUIApplication::MessagePumpUIApplication()
-    : MessagePumpCFRunLoopBase(kCommonModeMask), run_loop_(NULL) {}
+    : MessagePumpCFRunLoopBase(kCommonModeMask) {}
 
-MessagePumpUIApplication::~MessagePumpUIApplication() {}
+MessagePumpUIApplication::~MessagePumpUIApplication() = default;
 
 void MessagePumpUIApplication::DoRun(Delegate* delegate) {
   NOTREACHED();
@@ -760,7 +745,7 @@ bool MessagePumpUIApplication::DoQuit() {
 
 void MessagePumpUIApplication::Attach(Delegate* delegate) {
   DCHECK(!run_loop_);
-  run_loop_ = new RunLoop();
+  run_loop_.emplace();
 
   CHECK(run_loop_->BeforeRun());
   SetDelegate(delegate);
@@ -772,7 +757,7 @@ void MessagePumpUIApplication::Detach() {
   DCHECK(run_loop_);
   run_loop_->AfterRun();
   SetDelegate(nullptr);
-  run_loop_ = nullptr;
+  run_loop_.reset();
 
   OnDetach();
 }
@@ -784,8 +769,9 @@ ScopedPumpMessagesInPrivateModes::ScopedPumpMessagesInPrivateModes() {
   DCHECK_EQ(kNSApplicationModalSafeModeMask, g_app_pump->GetModeMask());
   // Pumping events in private runloop modes is known to interact badly with
   // app modal windows like NSAlert.
-  if ([NSApp modalWindow])
+  if (NSApp.modalWindow) {
     return;
+  }
   g_app_pump->SetModeMask(kAllModesMask);
 }
 
@@ -799,9 +785,7 @@ int ScopedPumpMessagesInPrivateModes::GetModeMaskForTest() {
 }
 
 MessagePumpNSApplication::MessagePumpNSApplication()
-    : MessagePumpCFRunLoopBase(kNSApplicationModalSafeModeMask),
-      running_own_loop_(false),
-      quit_pending_(false) {
+    : MessagePumpCFRunLoopBase(kNSApplicationModalSafeModeMask) {
   DCHECK_EQ(nullptr, g_app_pump);
   g_app_pump = this;
 }
@@ -821,17 +805,16 @@ void MessagePumpNSApplication::DoRun(Delegate* delegate) {
   // RegisterCrApp() or RegisterBrowserCrApp().
   CHECK(NSApp);
 
-  if (![NSApp isRunning]) {
+  if (!NSApp.running) {
     running_own_loop_ = false;
     // NSApplication manages autorelease pools itself when run this way.
     [NSApp run];
   } else {
     running_own_loop_ = true;
-    NSDate* distant_future = [NSDate distantFuture];
     while (keep_running()) {
-      MessagePumpScopedAutoreleasePool autorelease_pool(this);
+      OptionalAutoreleasePool autorelease_pool(this);
       NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                          untilDate:distant_future
+                                          untilDate:NSDate.distantFuture
                                              inMode:NSDefaultRunLoopMode
                                             dequeue:YES];
       if (event) {
@@ -849,14 +832,13 @@ bool MessagePumpNSApplication::DoQuit() {
   // stop] below will apply to the modal window run loop instead. To work around
   // this, the quit is applied when we re-enter our own run loop after the
   // window is gone (see MessagePumpNSApplication::EnterExitRunLoop).
-  if (nesting_level() > run_nesting_level() &&
-      [[NSApplication sharedApplication] modalWindow] != nil) {
+  if (nesting_level() > run_nesting_level() && NSApp.modalWindow != nil) {
     quit_pending_ = true;
     return false;
   }
 
   if (!running_own_loop_) {
-    [[NSApplication sharedApplication] stop:nil];
+    [NSApp stop:nil];
   }
 
   // Send a fake event to wake the loop up.
@@ -877,19 +859,16 @@ void MessagePumpNSApplication::EnterExitRunLoop(CFRunLoopActivity activity) {
   // If we previously tried quitting while a modal window was active, check if
   // the window is gone now and we're no longer nested in a system run loop.
   if (activity == kCFRunLoopEntry && quit_pending_ &&
-      nesting_level() <= run_nesting_level() &&
-      [[NSApplication sharedApplication] modalWindow] == nil) {
+      nesting_level() <= run_nesting_level() && NSApp.modalWindow == nil) {
     quit_pending_ = false;
     if (DoQuit())
       OnDidQuit();
   }
 }
 
-MessagePumpCrApplication::MessagePumpCrApplication() {
-}
+MessagePumpCrApplication::MessagePumpCrApplication() = default;
 
-MessagePumpCrApplication::~MessagePumpCrApplication() {
-}
+MessagePumpCrApplication::~MessagePumpCrApplication() = default;
 
 // Prevents an autorelease pool from being created if the app is in the midst of
 // handling a UI event because various parts of AppKit depend on objects that
@@ -922,38 +901,19 @@ MessagePumpCrApplication::~MessagePumpCrApplication() {
 // CrApplication is responsible for setting handlingSendEvent to true just
 // before it sends the event through the event handling mechanism, and
 // returning it to its previous value once the event has been sent.
-AutoreleasePoolType* MessagePumpCrApplication::CreateAutoreleasePool() {
-  if (MessagePumpMac::IsHandlingSendEvent())
-    return nil;
-  return MessagePumpNSApplication::CreateAutoreleasePool();
-}
-
-// static
-bool MessagePumpMac::UsingCrApp() {
-  DCHECK([NSThread isMainThread]);
-
-  // If NSApp is still not initialized, then the subclass used cannot
-  // be determined.
-  DCHECK(NSApp);
-
-  // The pump was created using MessagePumpNSApplication.
-  if (g_not_using_cr_app)
+bool MessagePumpCrApplication::ShouldCreateAutoreleasePool() {
+  if (message_pump_mac::IsHandlingSendEvent()) {
     return false;
-
-  return [NSApp conformsToProtocol:@protocol(CrAppProtocol)];
+  }
+  return MessagePumpNSApplication::ShouldCreateAutoreleasePool();
 }
 
-// static
-bool MessagePumpMac::IsHandlingSendEvent() {
-  DCHECK([NSApp conformsToProtocol:@protocol(CrAppProtocol)]);
-  NSObject<CrAppProtocol>* app = static_cast<NSObject<CrAppProtocol>*>(NSApp);
-  return [app isHandlingSendEvent];
-}
 #endif  // BUILDFLAG(IS_IOS)
 
-// static
-std::unique_ptr<MessagePump> MessagePumpMac::Create() {
-  if ([NSThread isMainThread]) {
+namespace message_pump_mac {
+
+std::unique_ptr<MessagePump> Create() {
+  if (NSThread.isMainThread) {
 #if BUILDFLAG(IS_IOS)
     return std::make_unique<MessagePumpUIApplication>();
 #else
@@ -972,5 +932,32 @@ std::unique_ptr<MessagePump> MessagePumpMac::Create() {
 
   return std::make_unique<MessagePumpNSRunLoop>();
 }
+
+#if !BUILDFLAG(IS_IOS)
+
+bool UsingCrApp() {
+  DCHECK(NSThread.isMainThread);
+
+  // If NSApp is still not initialized, then the subclass used cannot
+  // be determined.
+  DCHECK(NSApp);
+
+  // The pump was created using MessagePumpNSApplication.
+  if (g_not_using_cr_app) {
+    return false;
+  }
+
+  return [NSApp conformsToProtocol:@protocol(CrAppProtocol)];
+}
+
+bool IsHandlingSendEvent() {
+  DCHECK([NSApp conformsToProtocol:@protocol(CrAppProtocol)]);
+  NSObject<CrAppProtocol>* app = static_cast<NSObject<CrAppProtocol>*>(NSApp);
+  return [app isHandlingSendEvent];
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
+
+}  // namespace message_pump_mac
 
 }  // namespace base

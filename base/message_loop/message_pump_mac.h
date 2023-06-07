@@ -23,22 +23,24 @@
 // Typically, MessagePumpNSApplication only makes sense on a Cocoa
 // application's main thread.  If a CFRunLoop-based message pump is needed on
 // any other thread, one of the other concrete subclasses is preferable.
-// MessagePumpMac::Create is defined, which returns a new NSApplication-based
+// message_pump_mac::Create is defined, which returns a new NSApplication-based
 // or NSRunLoop-based MessagePump subclass depending on which thread it is
 // called on.
 
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_MAC_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_MAC_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 
-
 #include <CoreFoundation/CoreFoundation.h>
+
 #include <memory>
 
 #include "base/containers/stack.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/timer_slack.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,24 +62,6 @@
 #endif  // defined(__OBJC__)
 
 namespace base {
-
-class RunLoop;
-
-// AutoreleasePoolType is a proxy type for autorelease pools. Its definition
-// depends on the translation unit (TU) in which this header appears. In pure
-// C++ TUs, it is defined as a forward C++ class declaration (that is never
-// defined), because autorelease pools are an Objective-C concept. In Automatic
-// Reference Counting (ARC) Objective-C TUs, it is similarly defined as a
-// forward C++ class declaration, because clang will not allow the type
-// "NSAutoreleasePool" in such TUs. Finally, in Manual Retain Release (MRR)
-// Objective-C TUs, it is a type alias for NSAutoreleasePool. In all cases, a
-// method that takes or returns an NSAutoreleasePool* can use
-// AutoreleasePoolType* instead.
-#if !defined(__OBJC__) || __has_feature(objc_arc)
-class AutoreleasePoolType;
-#else   // !defined(__OBJC__) || __has_feature(objc_arc)
-typedef NSAutoreleasePool AutoreleasePoolType;
-#endif  // !defined(__OBJC__) || __has_feature(objc_arc)
 
 class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
  public:
@@ -105,7 +89,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 
  protected:
   // Needs access to CreateAutoreleasePool.
-  friend class MessagePumpScopedAutoreleasePool;
+  friend class OptionalAutoreleasePool;
   friend class TestMessagePumpCFRunLoopBase;
 
   // Tasks will be pumped in the run loop modes described by
@@ -144,11 +128,11 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // |delegateless_work_| is true.  |delegate| can be NULL.
   void SetDelegate(Delegate* delegate);
 
-  // Return an autorelease pool to wrap around any work being performed.
-  // In some cases, CreateAutoreleasePool may return nil intentionally to
-  // preventing an autorelease pool from being created, allowing any
-  // objects autoreleased by work to fall into the current autorelease pool.
-  virtual AutoreleasePoolType* CreateAutoreleasePool();
+  // Return whether an autorelease pool should be created to wrap around any
+  // work being performed. If false is returned to prevent an autorelease pool
+  // from being created, any objects autoreleased by work will fall into the
+  // current autorelease pool.
+  virtual bool ShouldCreateAutoreleasePool();
 
   // Enable and disable entries in |enabled_modes_| to match |mode_mask|.
   void SetModeMask(int mode_mask);
@@ -231,25 +215,25 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   void PushWorkItemScope();
 
   // The thread's run loop.
-  CFRunLoopRef run_loop_;
+  base::ScopedCFTypeRef<CFRunLoopRef> run_loop_;
 
   // The enabled modes. Posted tasks may run in any non-null entry.
   std::unique_ptr<ScopedModeEnabler> enabled_modes_[kNumModes];
 
   // The timer, sources, and observers are described above alongside their
   // callbacks.
-  CFRunLoopTimerRef delayed_work_timer_;
-  CFRunLoopSourceRef work_source_;
-  CFRunLoopSourceRef nesting_deferred_work_source_;
-  CFRunLoopObserverRef pre_wait_observer_;
-  CFRunLoopObserverRef after_wait_observer_;
-  CFRunLoopObserverRef pre_source_observer_;
-  CFRunLoopObserverRef enter_exit_observer_;
+  base::ScopedCFTypeRef<CFRunLoopTimerRef> delayed_work_timer_;
+  base::ScopedCFTypeRef<CFRunLoopSourceRef> work_source_;
+  base::ScopedCFTypeRef<CFRunLoopSourceRef> nesting_deferred_work_source_;
+  base::ScopedCFTypeRef<CFRunLoopObserverRef> pre_wait_observer_;
+  base::ScopedCFTypeRef<CFRunLoopObserverRef> after_wait_observer_;
+  base::ScopedCFTypeRef<CFRunLoopObserverRef> pre_source_observer_;
+  base::ScopedCFTypeRef<CFRunLoopObserverRef> enter_exit_observer_;
 
   // (weak) Delegate passed as an argument to the innermost Run call.
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
-  base::TimerSlack timer_slack_;
+  base::TimerSlack timer_slack_ = base::TIMER_SLACK_NONE;
 
   // Time at which `delayed_work_timer_` is set to fire.
   base::TimeTicks delayed_work_scheduled_at_ = base::TimeTicks::Max();
@@ -257,26 +241,26 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // The recursion depth of the currently-executing CFRunLoopRun loop on the
   // run loop's thread.  0 if no run loops are running inside of whatever scope
   // the object was created in.
-  int nesting_level_;
+  int nesting_level_ = 0;
 
   // The recursion depth (calculated in the same way as |nesting_level_|) of the
   // innermost executing CFRunLoopRun loop started by a call to Run.
-  int run_nesting_level_;
+  int run_nesting_level_ = 0;
 
   // The deepest (numerically highest) recursion depth encountered since the
   // most recent attempt to run nesting-deferred work.
-  int deepest_nesting_level_;
+  int deepest_nesting_level_ = 0;
 
   // Whether we should continue running application tasks. Set to false when
   // Quit() is called for the innermost run loop.
-  bool keep_running_;
+  bool keep_running_ = true;
 
   // "Delegateless" work flags are set when work is ready to be performed but
   // must wait until a delegate is available to process it.  This can happen
   // when a MessagePumpCFRunLoopBase is instantiated and work arrives without
   // any call to Run on the stack.  The Run method will check for delegateless
   // work on entry and redispatch it as needed once a delegate is available.
-  bool delegateless_work_;
+  bool delegateless_work_ = false;
 
   // Used to keep track of the native event work items processed by the message
   // pump. Made of optionals because tracking can be suspended when it's
@@ -324,7 +308,7 @@ class BASE_EXPORT MessagePumpNSRunLoop : public MessagePumpCFRunLoopBase {
   // A source that doesn't do anything but provide something signalable
   // attached to the run loop.  This source will be signalled when Quit
   // is called, to cause the loop to wake up so that it can stop.
-  CFRunLoopSourceRef quit_source_;
+  base::ScopedCFTypeRef<CFRunLoopSourceRef> quit_source_;
 };
 
 #if BUILDFLAG(IS_IOS)
@@ -350,7 +334,7 @@ class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
   void Detach() override;
 
  private:
-  RunLoop* run_loop_;
+  absl::optional<RunLoop> run_loop_;
 };
 
 #else
@@ -392,11 +376,11 @@ class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
   // -[NSApplication run] handle it.  The outermost run loop in the application
   // is managed by -[NSApplication run], inner run loops are handled by a loop
   // in DoRun.
-  bool running_own_loop_;
+  bool running_own_loop_ = false;
 
   // True if Quit() was called while a modal window was shown and needed to be
   // deferred.
-  bool quit_pending_;
+  bool quit_pending_ = false;
 };
 
 class MessagePumpCrApplication : public MessagePumpNSApplication {
@@ -409,27 +393,23 @@ class MessagePumpCrApplication : public MessagePumpNSApplication {
   ~MessagePumpCrApplication() override;
 
  protected:
-  // Returns nil if NSApp is currently in the middle of calling
-  // -sendEvent.  Requires NSApp implementing CrAppProtocol.
-  AutoreleasePoolType* CreateAutoreleasePool() override;
+  // Returns false if NSApp is currently in the middle of calling -sendEvent.
+  // Requires NSApp implementing CrAppProtocol.
+  bool ShouldCreateAutoreleasePool() override;
 };
 #endif  // BUILDFLAG(IS_IOS)
 
-class BASE_EXPORT MessagePumpMac {
- public:
-  MessagePumpMac() = delete;
-  MessagePumpMac(const MessagePumpMac&) = delete;
-  MessagePumpMac& operator=(const MessagePumpMac&) = delete;
+namespace message_pump_mac {
 
-  // If not on the main thread, returns a new instance of
-  // MessagePumpNSRunLoop.
-  //
-  // On the main thread, if NSApp exists and conforms to
-  // CrAppProtocol, creates an instances of MessagePumpCrApplication.
-  //
-  // Otherwise creates an instance of MessagePumpNSApplication using a
-  // default NSApplication.
-  static std::unique_ptr<MessagePump> Create();
+// If not on the main thread, returns a new instance of
+// MessagePumpNSRunLoop.
+//
+// On the main thread, if NSApp exists and conforms to
+// CrAppProtocol, creates an instances of MessagePumpCrApplication.
+//
+// Otherwise creates an instance of MessagePumpNSApplication using a
+// default NSApplication.
+BASE_EXPORT std::unique_ptr<MessagePump> Create();
 
 #if !BUILDFLAG(IS_IOS)
   // If a pump is created before the required CrAppProtocol is
@@ -437,13 +417,14 @@ class BASE_EXPORT MessagePumpMac {
   // UsingCrApp() returns false if the message pump was created before
   // NSApp was initialized, or if NSApp does not implement
   // CrAppProtocol.  NSApp must be initialized before calling.
-  static bool UsingCrApp();
+BASE_EXPORT bool UsingCrApp();
 
-  // Wrapper to query -[NSApp isHandlingSendEvent] from C++ code.
-  // Requires NSApp to implement CrAppProtocol.
-  static bool IsHandlingSendEvent();
+// Wrapper to query -[NSApp isHandlingSendEvent] from C++ code.
+// Requires NSApp to implement CrAppProtocol.
+BASE_EXPORT bool IsHandlingSendEvent();
 #endif  // !BUILDFLAG(IS_IOS)
-};
+
+}  // namespace message_pump_mac
 
 // Tasks posted to the message loop are posted under this mode, as well
 // as kCFRunLoopCommonModes.

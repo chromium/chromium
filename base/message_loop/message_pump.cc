@@ -48,7 +48,7 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
       if (message_pump_for_ui_factory_)
         return message_pump_for_ui_factory_();
 #if BUILDFLAG(IS_APPLE)
-      return MessagePumpMac::Create();
+      return message_pump_mac::Create();
 #elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
       // Currently NaCl and AIX don't have a UI MessagePump.
       // TODO(abarth): Figure out if we need this.
