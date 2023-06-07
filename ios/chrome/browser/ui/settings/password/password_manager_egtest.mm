@@ -2522,8 +2522,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 // Tests that adding new password credential where the username and website
 // matches with an existing credential results in showing a section alert for
 // the existing credential.
-// TODO(crbug.com/1408773): Fix failure and re-enable.
-- (void)DISABLED_testAddNewDuplicatedPasswordCredential {
+- (void)testAddNewDuplicatedPasswordCredential {
   SavePasswordForm();
 
   OpenPasswordManager();
@@ -2546,8 +2545,20 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"concrete username")];
 
-  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  // Verify Save Button is not enabled.
+  // The enabled state is set async after checking for credential duplication.
+  // Waiting until the button is not enabled.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+        assertWithMatcher:grey_not(grey_enabled())
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting Save Button to be disabled.");
 
   [PasswordSettingsAppInterface setUpMockReauthenticationModuleForAddPassword];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -2560,9 +2571,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_replaceText(@"new username")];
 
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:EditPasswordConfirmationButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
