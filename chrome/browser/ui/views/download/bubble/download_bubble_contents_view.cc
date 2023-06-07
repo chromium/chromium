@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
@@ -24,32 +25,22 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     bool primary_view_is_partial_view,
     std::vector<DownloadUIModel::DownloadUIModelPtr> primary_view_models,
-    views::BubbleDialogDelegate* bubble_delegate)
-    : primary_view_row_count_(primary_view_models.size()) {
+    views::BubbleDialogDelegate* bubble_delegate) {
+  CHECK(!primary_view_models.empty());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  std::unique_ptr<views::View> primary_view;
+  std::unique_ptr<DownloadBubblePrimaryView> primary_view;
   if (primary_view_is_partial_view) {
-    primary_view = DownloadBubblePartialView::Create(
+    primary_view = std::make_unique<DownloadBubblePartialView>(
         browser, bubble_controller, navigation_handler,
         std::move(primary_view_models),
         base::BindOnce(&DownloadBubbleNavigationHandler::OnDialogInteracted,
                        navigation_handler));
   } else {
-    std::unique_ptr<views::View> rows_with_scroll =
-        DownloadBubbleRowListView::CreateWithScroll(
-            /*is_partial_view=*/false, browser, bubble_controller,
-            navigation_handler, std::move(primary_view_models),
-            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
     primary_view = std::make_unique<DownloadDialogView>(
-        browser, std::move(rows_with_scroll), navigation_handler);
-  }
-  // The primary view can be null if there are no rows.
-  if (!primary_view) {
-    CHECK_EQ(primary_view_row_count_, 0);
-    primary_view = std::make_unique<views::View>();
+        browser, bubble_controller, navigation_handler,
+        std::move(primary_view_models));
   }
 
   primary_view_ = AddChildView(std::move(primary_view));

@@ -36,15 +36,13 @@ constexpr int kMaxHeightForRowList = 450;
 }  // namespace
 
 //  static
-std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
-    bool is_partial_view,
+std::unique_ptr<views::ScrollView> DownloadBubbleRowListView::CreateWithScroll(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
     int fixed_width) {
-  auto row_list_view =
-      std::make_unique<DownloadBubbleRowListView>(is_partial_view, browser);
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>(browser);
   for (DownloadUIModel::DownloadUIModelPtr& model : rows) {
     // raw pointer for `row_list_view` is safe as the toolbar owns the bubble,
     // which owns an individual row view. Note we need to copy rather than move
@@ -65,11 +63,8 @@ std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
 }
 
 DownloadBubbleRowListView::DownloadBubbleRowListView(
-    bool is_partial_view,
     base::WeakPtr<Browser> browser)
-    : is_partial_view_(is_partial_view),
-      creation_time_(base::Time::Now()),
-      browser_(std::move(browser)) {
+    : browser_(std::move(browser)) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetNotifyEnterExitOnChild(true);
   if (IsIncognitoInfoRowEnabled()) {
@@ -121,12 +116,7 @@ DownloadBubbleRowListView::DownloadBubbleRowListView(
   }
 }
 
-DownloadBubbleRowListView::~DownloadBubbleRowListView() {
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"Download.Bubble.", is_partial_view_ ? "Partial" : "Full",
-                    "View.VisibleTime"}),
-      base::Time::Now() - creation_time_);
-}
+DownloadBubbleRowListView::~DownloadBubbleRowListView() = default;
 
 bool DownloadBubbleRowListView::IsIncognitoInfoRowEnabled() {
   if (!browser_) {

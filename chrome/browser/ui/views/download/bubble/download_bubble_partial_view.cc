@@ -28,6 +28,9 @@
 
 namespace {
 
+constexpr char kPartialBubbleVisibleHistogramName[] =
+    "Download.Bubble.PartialView.VisibleTime";
+
 // We want the checkbox to accept gestures when users click on the label text,
 // like all other Chrome checkboxes. This ViewTargeterDelegate achieves that.
 class CheckboxTargeter : public views::ViewTargeterDelegate {
@@ -195,23 +198,6 @@ void MaybeRecordImpression(Profile* profile, int impressions) {
 
 }  // namespace
 
-// static
-std::unique_ptr<DownloadBubblePartialView> DownloadBubblePartialView::Create(
-    base::WeakPtr<Browser> browser,
-    base::WeakPtr<DownloadBubbleUIController> bubble_controller,
-    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-    base::OnceClosure on_interacted_closure) {
-  if (rows.empty()) {
-    return nullptr;
-  }
-
-  return base::WrapUnique(new DownloadBubblePartialView(
-      std::move(browser), std::move(bubble_controller),
-      std::move(navigation_handler), std::move(rows),
-      std::move(on_interacted_closure)));
-}
-
 DownloadBubblePartialView::DownloadBubblePartialView(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
@@ -219,14 +205,10 @@ DownloadBubblePartialView::DownloadBubblePartialView(
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
     base::OnceClosure on_interacted_closure)
     : on_interacted_closure_(std::move(on_interacted_closure)) {
-  SetNotifyEnterExitOnChild(true);
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
-  int preferred_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   Profile* profile = browser->profile();
   const int impressions =
       download::DownloadBubblePartialViewImpressions(profile) + 1;
+  int preferred_width = DefaultPreferredWidth();
   std::unique_ptr<SuppressBubbleSettingRow> setting_row;
   if (ShouldShowSuppressSetting(profile, impressions)) {
     setting_row = std::make_unique<SuppressBubbleSettingRow>(
@@ -236,10 +218,9 @@ DownloadBubblePartialView::DownloadBubblePartialView(
         std::max(preferred_width, setting_row->GetPreferredSize().width());
   }
 
-  AddChildView(DownloadBubbleRowListView::CreateWithScroll(
-      /*is_partial_view=*/true, std::move(browser),
-      std::move(bubble_controller), std::move(navigation_handler),
-      std::move(rows), preferred_width));
+  BuildAndAddScrollView(std::move(browser), std::move(bubble_controller),
+                        std::move(navigation_handler), std::move(rows),
+                        preferred_width);
 
   if (setting_row) {
     const int separator_spacing =
@@ -257,7 +238,14 @@ DownloadBubblePartialView::DownloadBubblePartialView(
   MaybeRecordImpression(profile, impressions);
 }
 
-DownloadBubblePartialView::~DownloadBubblePartialView() = default;
+DownloadBubblePartialView::~DownloadBubblePartialView() {
+  LogVisibleTimeMetrics();
+}
+
+base::StringPiece DownloadBubblePartialView::GetVisibleTimeHistogramName()
+    const {
+  return kPartialBubbleVisibleHistogramName;
+}
 
 void DownloadBubblePartialView::AddedToWidget() {
   auto* focus_manager = GetFocusManager();
@@ -290,5 +278,5 @@ void DownloadBubblePartialView::OnMouseEntered(const ui::MouseEvent& event) {
   OnInteracted();
 }
 
-BEGIN_METADATA(DownloadBubblePartialView, views::View)
+BEGIN_METADATA(DownloadBubblePartialView, DownloadBubblePrimaryView)
 END_METADATA

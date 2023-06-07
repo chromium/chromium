@@ -46,6 +46,9 @@
 
 namespace {
 
+constexpr char kFullBubbleVisibleHistogramName[] =
+    "Download.Bubble.FullView.VisibleTime";
+
 class ShowAllDownloadsButton : public RichHoverButton {
  public:
   explicit ShowAllDownloadsButton(
@@ -159,18 +162,25 @@ void DownloadDialogView::AddFooter() {
 
 DownloadDialogView::DownloadDialogView(
     base::WeakPtr<Browser> browser,
-    std::unique_ptr<views::View> row_list_scroll_view,
-    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler)
+    base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
+    std::vector<DownloadUIModel::DownloadUIModelPtr> rows)
     : navigation_handler_(std::move(navigation_handler)),
       browser_(std::move(browser)) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
   AddHeader();
-  AddChildView(std::move(row_list_scroll_view));
+  BuildAndAddScrollView(browser_, std::move(bubble_controller),
+                        navigation_handler_, std::move(rows),
+                        DefaultPreferredWidth());
   AddFooter();
 }
 
-DownloadDialogView::~DownloadDialogView() = default;
+DownloadDialogView::~DownloadDialogView() {
+  LogVisibleTimeMetrics();
+}
 
-BEGIN_METADATA(DownloadDialogView, views::View)
+base::StringPiece DownloadDialogView::GetVisibleTimeHistogramName() const {
+  return kFullBubbleVisibleHistogramName;
+}
+
+BEGIN_METADATA(DownloadDialogView, DownloadBubblePrimaryView)
 END_METADATA

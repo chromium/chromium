@@ -13,6 +13,7 @@
 
 class Browser;
 class DownloadBubbleNavigationHandler;
+class DownloadBubblePrimaryView;
 class DownloadBubbleRowView;
 class DownloadBubbleSecurityView;
 class DownloadBubbleUIController;
@@ -42,7 +43,7 @@ class DownloadBubbleContentsView : public views::View {
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       // Whether the primary view is the partial view.
       bool primary_view_is_partial_view,
-      // Models for rows that should go in the primary view.
+      // Models for rows that should go in the primary view. Must not be empty.
       std::vector<DownloadUIModel::DownloadUIModelPtr> primary_view_models,
       // The owning bubble's delegate.
       views::BubbleDialogDelegate* bubble_delegate);
@@ -67,14 +68,9 @@ class DownloadBubbleContentsView : public views::View {
   void SwitchToCurrentPage();
 
   // May be a DownloadBubblePartialView or a DownloadDialogView (main view).
-  // TODO(crbug.com/1450660): Make them inherit from a shared subclass of View.
-  raw_ptr<views::View> primary_view_ = nullptr;
+  raw_ptr<DownloadBubblePrimaryView> primary_view_ = nullptr;
   // The security view is hidden by default but may be switched to.
   raw_ptr<DownloadBubbleSecurityView> security_view_ = nullptr;
-
-  // Number of download rows in the primary view.
-  // TODO(crbug.com/1450660): Expose this value.
-  int primary_view_row_count_ = 0;
 
   // The currently visible page.
   Page page_ = Page::kPrimary;
