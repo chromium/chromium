@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/ash/touch_selection_menu_chromeos.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window.h"
-#include "ui/base/layout.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 

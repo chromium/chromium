@@ -15,6 +15,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/lacros/lacros_paths.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_switches.h"
 
 namespace ui {

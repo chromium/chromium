@@ -18,7 +18,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/public_buildflags.h"
-#include "ui/base/layout.h"
 
 namespace content {
 

@@ -191,9 +191,9 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                          ReadIconsCallback callback);
 
   // Reads multiple densities of the icon for each supported UI scale factor.
-  // See ui/base/layout.h. Returns null image in |callback| if no icons found
-  // for all supported UI scale factors (matches only bigger icons, no
-  // upscaling).
+  // See ui/base/resource/resource_scale_factor.h. Returns null image in
+  // `callback` if no icons found for all supported UI scale factors (matches
+  // only bigger icons, no upscaling).
   void ReadUiScaleFactorsIcons(const AppId& app_id,
                                IconPurpose purpose,
                                SquareSizeDip size_in_dip,

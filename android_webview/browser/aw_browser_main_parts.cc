@@ -62,7 +62,6 @@
 #include "net/base/network_change_notifier.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/layout.h"
 #include "ui/gl/gl_surface.h"
 
 namespace android_webview {

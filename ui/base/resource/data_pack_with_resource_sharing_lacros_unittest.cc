@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/data_pack.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace ui {
 

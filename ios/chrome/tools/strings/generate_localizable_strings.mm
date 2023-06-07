@@ -36,6 +36,7 @@
 #import "ios/chrome/tools/strings/grit_header_parsing.h"
 #import "ui/base/resource/data_pack.h"
 #import "ui/base/resource/resource_handle.h"
+#import "ui/base/resource/resource_scale_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

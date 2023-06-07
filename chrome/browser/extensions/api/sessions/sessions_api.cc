@@ -43,7 +43,6 @@
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
-#include "ui/base/layout.h"
 
 // TODO(crbug.com/1424800): Remove once the restore issue has been resolved.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

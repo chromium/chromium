@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/command_line.h"
-#include "ui/base/ui_base_switches.h"
-#endif
 
 namespace ui {
 
-TEST(LayoutTest, GetScaleFactorFromScalePartlySupported) {
+TEST(ResourceScaleFactorTest, GetResourceScaleFactorScale) {
+  EXPECT_FLOAT_EQ(1.0f, GetScaleForResourceScaleFactor(k100Percent));
+  EXPECT_FLOAT_EQ(2.0f, GetScaleForResourceScaleFactor(k200Percent));
+  EXPECT_FLOAT_EQ(3.0f, GetScaleForResourceScaleFactor(k300Percent));
+}
+
+TEST(ResourceScaleFactorTest, GetScaleFactorFromScalePartlySupported) {
   std::vector<ResourceScaleFactor> supported_factors;
   supported_factors.push_back(k100Percent);
   supported_factors.push_back(k200Percent);
@@ -30,7 +29,7 @@ TEST(LayoutTest, GetScaleFactorFromScalePartlySupported) {
   EXPECT_EQ(k200Percent, GetSupportedResourceScaleFactor(999.0f));
 }
 
-TEST(LayoutTest, GetScaleFactorFromScaleAllSupported) {
+TEST(ResourceScaleFactorTest, GetScaleFactorFromScaleAllSupported) {
   std::vector<ResourceScaleFactor> supported_factors;
   for (int factor = k100Percent; factor < NUM_SCALE_FACTORS; ++factor) {
     supported_factors.push_back(static_cast<ResourceScaleFactor>(factor));

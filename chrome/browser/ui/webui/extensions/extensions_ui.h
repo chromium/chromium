@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedMemory;

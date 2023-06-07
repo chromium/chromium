@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/win/resource_util.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace ui {
 

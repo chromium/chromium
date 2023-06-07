@@ -29,7 +29,6 @@
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/layout.h"
 #include "url/url_constants.h"
 
 namespace arc {

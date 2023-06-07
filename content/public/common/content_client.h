@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"

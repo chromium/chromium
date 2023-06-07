@@ -110,6 +110,7 @@ include_rules = [
   # These files aren't related to grd, so they're fine.
   "+ui/base/l10n/l10n_util_android.h",
   "+ui/base/l10n/l10n_util_win.h",
+  "+ui/base/resource/resource_scale_factor.h",
 
   # Content shouldn't depend on views. While we technically don't need this
   # line, since the top level DEPS doesn't allow it, we add it to make this

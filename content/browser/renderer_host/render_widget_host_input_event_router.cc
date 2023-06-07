@@ -28,7 +28,6 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/layout.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/dip_util.h"
 

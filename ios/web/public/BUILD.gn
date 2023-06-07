@@ -16,6 +16,7 @@ source_set("public") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//ui/base",
   ]
 
   deps = [
@@ -25,7 +26,6 @@ source_set("public") {
     "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/public/deprecated",
-    "//ui/base",
   ]
 
   sources = [
