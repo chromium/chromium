@@ -25,11 +25,11 @@ class WebDragDestTest : public content::RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
     content::RenderViewHostImplTestHarness::SetUp();
-    drag_dest_.reset([[WebDragDest alloc] initWithWebContentsImpl:contents()]);
+    drag_dest_ = [[WebDragDest alloc] initWithWebContentsImpl:contents()];
   }
 
   base::mac::ScopedNSAutoreleasePool pool_;
-  base::scoped_nsobject<WebDragDest> drag_dest_;
+  WebDragDest* __strong drag_dest_;
 };
 
 // Make sure nothing leaks.

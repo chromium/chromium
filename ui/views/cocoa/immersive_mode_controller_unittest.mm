@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
-#include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
 
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #import "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #import "ui/base/test/cocoa_helper.h"
@@ -344,7 +345,8 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindow) {
       mojom::ToolbarVisibilityStyle::kAutohide);
 
   // Create a popup.
-  CocoaTestHelperWindow* popup = [[CocoaTestHelperWindow alloc] init];
+  base::scoped_nsobject<CocoaTestHelperWindow> popup(
+      [[CocoaTestHelperWindow alloc] init]);
   EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
 
   // Add the popup as a child of tab_overlay.
@@ -367,7 +369,8 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
   immersive_mode_controller->FullscreenTransitionCompleted();
 
   // Create a popup.
-  CocoaTestHelperWindow* popup = [[CocoaTestHelperWindow alloc] init];
+  base::scoped_nsobject<CocoaTestHelperWindow> popup(
+      [[CocoaTestHelperWindow alloc] init]);
   EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
 
   // Add the popup as a child of overlay.

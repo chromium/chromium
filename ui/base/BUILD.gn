@@ -761,6 +761,26 @@ if (use_blink) {
   }
 }
 
+if (is_mac) {
+  # TODO(https://crbug.com/1280317): Merge back into the `test_support` target
+  # once all .mm files are ARCed.
+  source_set("test_support_arc") {
+    testonly = true
+    sources = [
+      "test/cocoa_helper.h",
+      "test/cocoa_helper.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      "//base:base",
+      "//base/test:test_config",
+      "//base/test:test_support",
+      "//testing/gtest",
+      "//ui/display",
+    ]
+  }
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
@@ -786,8 +806,6 @@ static_library("test_support") {
     sources += [
       "interaction/interaction_test_util_mac.h",
       "interaction/interaction_test_util_mac.mm",
-      "test/cocoa_helper.h",
-      "test/cocoa_helper.mm",
       "test/menu_test_observer.h",
       "test/menu_test_observer.mm",
       "test/ns_ax_tree_validator.h",
@@ -861,6 +879,10 @@ static_library("test_support") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+
+  if (is_mac) {
+    public_deps += [ ":test_support_arc" ]
+  }
 
   if (is_ios) {
     deps -= [
