@@ -34,6 +34,7 @@ void HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked() {
   const std::string host = web_contents->GetURL().host();
   PrefService* const pref_service = browser_->profile()->GetPrefs();
   high_efficiency::AddSiteToExceptionsList(pref_service, host);
+  close_action_ = HighEfficiencyBubbleActionType::kAddException;
 }
 
 void HighEfficiencyBubbleDelegate::OnDialogDestroy() {

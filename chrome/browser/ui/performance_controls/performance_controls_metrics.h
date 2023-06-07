@@ -17,7 +17,8 @@ enum class BatterySaverBubbleActionType {
 enum class HighEfficiencyBubbleActionType {
   kOpenSettings = 0,
   kDismiss = 1,
-  kMaxValue = kDismiss
+  kAddException = 2,
+  kMaxValue = kAddException
 };
 
 enum class HighEfficiencyChipState {
