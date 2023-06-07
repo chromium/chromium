@@ -276,6 +276,7 @@ config("compiler") {
   ldflags = []
   defines = []
   configs = []
+  rustflags = []
 
   # System-specific flags. If your compiler flags apply to one of the
   # categories here, add it to the associated file to keep this shared config
@@ -449,9 +450,11 @@ config("compiler") {
           "-fno-unwind-tables",
           "-fno-asynchronous-unwind-tables",
         ]
+        rustflags += [ "-Cforce-unwind-tables=no" ]
         defines += [ "NO_UNWIND_TABLES" ]
       } else {
         cflags += [ "-funwind-tables" ]
+        rustflags += [ "-Cforce-unwind-tables=yes" ]
       }
     }
   }
