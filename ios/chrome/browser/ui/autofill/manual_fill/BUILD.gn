@@ -145,6 +145,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "fallback_view_controller_unittest.mm",
     "form_observer_helper_unittest.mm",
     "full_card_requester_unittest.mm",
     "manual_fill_address+AutofillProfile_unittest.mm",
@@ -174,6 +175,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill:bridges",
     "//ios/chrome/test:test_support",
