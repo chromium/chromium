@@ -4,9 +4,11 @@
 
 #include "components/viz/host/layered_window_updater_impl.h"
 
+#include <utility>
+
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
@@ -32,7 +34,7 @@ void LayeredWindowUpdaterImpl::OnAllocatedSharedMemory(
   // Make sure |pixel_size| is sane.
   size_t expected_bytes;
   bool size_result = ResourceSizes::MaybeSizeInBytes(
-      pixel_size, ResourceFormat::RGBA_8888, &expected_bytes);
+      pixel_size, SinglePlaneFormat::kRGBA_8888, &expected_bytes);
   if (!size_result)
     return;
 

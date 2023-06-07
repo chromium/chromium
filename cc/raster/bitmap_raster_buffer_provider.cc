@@ -37,8 +37,7 @@ base::UnsafeSharedMemoryRegion AllocateSharedMemory(
       << "(format = " << format.ToString() << ")";
 
   size_t bytes = 0;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format.resource_format(),
-                                            &bytes)) {
+  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &bytes)) {
     DLOG(ERROR) << "AllocateMappedBitmap with size that overflows";
     size_t alloc_size = std::numeric_limits<int>::max();
     base::TerminateBecauseOutOfMemory(alloc_size);

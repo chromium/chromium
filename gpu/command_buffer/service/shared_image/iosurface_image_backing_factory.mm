@@ -87,8 +87,7 @@ bool IsPixelDataValid(viz::SharedImageFormat format,
   }
   // If we have initial data to upload, ensure it is sized appropriately
   size_t estimated_size;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format.resource_format(),
-                                            &estimated_size)) {
+  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size)) {
     LOG(ERROR) << "Failed to calculate SharedImage size";
     return false;
   }

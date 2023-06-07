@@ -16,7 +16,8 @@ namespace {
 
 size_t GetViewportSizeInBytes(const gfx::Size& viewport_size) {
   size_t bytes = std::numeric_limits<size_t>::max();
-  CHECK(ResourceSizes::MaybeSizeInBytes(viewport_size, RGBA_8888, &bytes));
+  CHECK(ResourceSizes::MaybeSizeInBytes(viewport_size,
+                                        SinglePlaneFormat::kRGBA_8888, &bytes));
   return bytes;
 }
 

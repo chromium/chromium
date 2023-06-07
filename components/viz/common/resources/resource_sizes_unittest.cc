@@ -145,11 +145,11 @@ TEST_F(ResourceUtilTest, SizeInBytesOverflow) {
   gfx::Size size(10, 10);
   // 10 * 16 * 10 = 1600 bits, overflows in char, but fits in int.
   signed char ignored_char;
-  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<signed char>(size, RGBA_4444,
-                                                            &ignored_char));
+  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<signed char>(
+      size, SinglePlaneFormat::kRGBA_4444, &ignored_char));
   int ignored_int;
-  EXPECT_TRUE(
-      ResourceSizes::MaybeSizeInBytes<int>(size, RGBA_4444, &ignored_int));
+  EXPECT_TRUE(ResourceSizes::MaybeSizeInBytes<int>(
+      size, SinglePlaneFormat::kRGBA_4444, &ignored_int));
 }
 
 TEST_F(ResourceUtilTest, WidthOverflowDoesNotCrash) {
@@ -159,7 +159,8 @@ TEST_F(ResourceUtilTest, WidthOverflowDoesNotCrash) {
   int bytes;
   EXPECT_FALSE(
       ResourceSizes::MaybeWidthInBytes<int>(size.width(), BGRA_8888, &bytes));
-  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<int>(size, BGRA_8888, &bytes));
+  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<int>(
+      size, SinglePlaneFormat::kBGRA_8888, &bytes));
 }
 
 // Checks that we do not incorrectly indicate that a size has overflowed when
@@ -169,7 +170,8 @@ TEST_F(ResourceUtilTest, SizeInBitsOverflowBytesOk) {
   // 8192 * 8192 * 32 = 0x80000000, overflows int.
   // Bytes are /8 and do not overflow.
   int ignored;
-  EXPECT_TRUE(ResourceSizes::MaybeSizeInBytes<int>(size, BGRA_8888, &ignored));
+  EXPECT_TRUE(ResourceSizes::MaybeSizeInBytes<int>(
+      size, SinglePlaneFormat::kBGRA_8888, &ignored));
 }
 
 // Checks that we correctly identify overflow in cases caused by rounding.
@@ -177,7 +179,8 @@ TEST_F(ResourceUtilTest, RoundingOverflows) {
   gfx::Size size(0x1FFFFFFF, 1);
   // 0x1FFFFFFF * 4 = 0x7FFFFFFC. Will overflow when rounded up.
   int ignored;
-  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<int>(size, ETC1, &ignored));
+  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<int>(
+      size, SinglePlaneFormat::kETC1, &ignored));
 }
 
 }  // namespace

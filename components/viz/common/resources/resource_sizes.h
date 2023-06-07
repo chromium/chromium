@@ -25,11 +25,12 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   // Sets the bytes result in the out parameter |bytes|.
   template <typename T>
   static bool MaybeWidthInBytes(int width, ResourceFormat format, T* bytes);
+
   // Returns true if the size is valid and fits in bytes, false otherwise.
   // Sets the bytes result in the out parameter |bytes|.
   template <typename T>
   static bool MaybeSizeInBytes(const gfx::Size& size,
-                               ResourceFormat format,
+                               SharedImageFormat format,
                                T* bytes);
 
   // Dies with a CRASH() if the width can not be represented as a positive
@@ -115,12 +116,13 @@ bool ResourceSizes::MaybeWidthInBytes(int width,
 
 template <typename T>
 bool ResourceSizes::MaybeSizeInBytes(const gfx::Size& size,
-                                     ResourceFormat format,
+                                     SharedImageFormat format,
                                      T* bytes) {
   VerifyType<T>();
   if (size.IsEmpty())
     return false;
-  return MaybeSizeInBytesInternal<T>(size, format, false, bytes);
+  return MaybeSizeInBytesInternal<T>(size, format.resource_format(), false,
+                                     bytes);
 }
 
 template <typename T>

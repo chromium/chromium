@@ -48,8 +48,7 @@ base::MappedReadOnlyRegion AllocateSharedBitmap(const gfx::Size& size,
   DCHECK(format.IsBitmapFormatSupported())
       << "(format = " << format.ToString() << ")";
   size_t bytes = 0;
-  if (!ResourceSizes::MaybeSizeInBytes(size, format.resource_format(),
-                                       &bytes)) {
+  if (!ResourceSizes::MaybeSizeInBytes(size, format, &bytes)) {
     DLOG(ERROR) << "AllocateMappedBitmap with size that overflows";
     CollectMemoryUsageAndDie(size, format, std::numeric_limits<int>::max());
   }
