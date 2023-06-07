@@ -379,7 +379,7 @@ class BookmarkManagerMediator
 
         initializeToLoadingState();
         if (!sPreventLoadingForTesting) {
-            mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
+            finishLoadingBookmarkModel();
         }
     }
 
@@ -804,6 +804,7 @@ class BookmarkManagerMediator
         return position;
     }
 
+    @SuppressWarnings("NotifyDataSetChanged")
     private void setBookmarks(List<BookmarkListEntry> bookmarkListEntryList) {
         clearHighlight();
 
@@ -829,6 +830,12 @@ class BookmarkManagerMediator
 
         for (BookmarkListEntry bookmarkListEntry : bookmarkListEntryList) {
             updateOrAdd(index++, buildBookmarkListItem(bookmarkListEntry));
+        }
+
+        if (mModelList.size() == 0 && index == 0) {
+            // Bookmarks are loaded but we have no items. The SelectableListLayout should
+            // hide the spinner, so force a notification.
+            mDragReorderableRecyclerViewAdapter.notifyDataSetChanged();
         }
 
         if (mModelList.size() > index) {
@@ -1056,6 +1063,10 @@ class BookmarkManagerMediator
         }
 
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
+    }
+
+    private void finishLoadingBookmarkModel() {
+        mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
     }
 
     @VisibleForTesting
@@ -1293,6 +1304,10 @@ class BookmarkManagerMediator
     /** Whether to prevent the bookmark model from fully loading for testing. */
     static void preventLoadingForTesting(boolean preventLoading) {
         sPreventLoadingForTesting = preventLoading;
+    }
+
+    void finishLoadingForTesting() {
+        finishLoadingBookmarkModel();
     }
 
     void clearStateStackForTesting() {

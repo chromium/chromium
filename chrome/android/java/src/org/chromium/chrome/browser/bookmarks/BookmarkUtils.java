@@ -467,7 +467,8 @@ public class BookmarkUtils {
      * Saves the last used url to preference. The saved url will be later queried by
      * {@link #getLastUsedUrl(Context)}
      */
-    static void setLastUsedUrl(Context context, String url) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void setLastUsedUrl(Context context, String url) {
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, url);
     }

@@ -688,6 +688,44 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    public void testStopSpinnerOnEmptyFolder() throws Exception {
+        // Cannot have a promo if we're going to have 0 elements in RecyclerView.
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+
+        // Force BookmarkModel to be loaded so we can get a folder id later.
+        loadBookmarkModel();
+
+        // This will cause opening the bookmarks UI to load the mobile folder.
+        runOnUiThreadBlocking(() -> {
+            BookmarkId folderId = mBookmarkModel.getMobileFolderId();
+            String prefUrl = BookmarkUiState.createFolderUrl(folderId).toString();
+            BookmarkUtils.setLastUsedUrl(mActivityTestRule.getActivity(), prefUrl);
+        });
+
+        // Prevent loading so we can verify we see the spinner initially.
+        BookmarkManagerCoordinator.preventLoadingForTesting(true);
+        openBookmarkManager();
+
+        // Loading view a child of the SelectableListLayout, not the RecyclerView.
+        View parent = (View) mItemsContainer.getParent();
+        View loadingView = parent.findViewById(R.id.loading_view);
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(loadingView.getVisibility(), Matchers.is(View.VISIBLE)));
+
+        // The idea is that the manager should now be able to figure out what rows it can populate.
+        // However if there are no rows created, because we have an empty folder, no events
+        // naturally reach the SelectableListLayout's observer. So the manager will have to manually
+        // notify.
+        BookmarkManagerCoordinator.preventLoadingForTesting(false);
+        runOnUiThreadBlocking(mBookmarkManagerCoordinator::finishLoadingForTesting);
+
+        CriteriaHelper.pollUiThread(
+                () -> { Criteria.checkThat(loadingView.getVisibility(), Matchers.is(View.GONE)); });
+    }
+
+    @Test
+    @MediumTest
     public void testEndIconVisibilityInSelectionMode() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_TITLE_A, mTestUrlA);
@@ -1969,5 +2007,12 @@ public class BookmarkTest {
         assertTrue("Found " + view.getClass() + " expected " + clazz,
                 clazz.isAssignableFrom(view.getClass()));
         return (T) view;
+    }
+
+    private void loadBookmarkModel() {
+        runOnUiThreadBlocking(() -> { mBookmarkModel.finishLoadingBookmarkModel(() -> {}); });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mBookmarkModel.isBookmarkModelLoaded(), Matchers.is(true));
+        });
     }
 }

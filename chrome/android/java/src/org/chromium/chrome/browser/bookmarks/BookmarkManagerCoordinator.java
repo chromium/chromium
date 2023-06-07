@@ -430,6 +430,10 @@ public class BookmarkManagerCoordinator
         BookmarkManagerMediator.preventLoadingForTesting(preventLoading);
     }
 
+    public void finishLoadingForTesting() {
+        mMediator.finishLoadingForTesting(); // IN-TEST
+    }
+
     public BookmarkOpener getBookmarkOpenerForTesting() {
         return mBookmarkOpener;
     }
