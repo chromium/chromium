@@ -16,9 +16,11 @@ namespace {
 
 constexpr uint64_t kGibi = 1024ull * 1024 * 1024;
 
-// Regex used for CPU checks on intel processors, this means "any 11th
-// generation or greater i{3,5,7} processor".
-constexpr char kBorealisCapableIntelCpuRegex[] = "[1-9][1-9].. Gen.*i[357]-";
+// Regex used for CPU checks on intel processors, this means "any i{3,5,7}
+// processor". e.g.:
+//  - Valid:   11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz
+//  - Invalid: Intel(R) Pentium(R) Gold 7505
+constexpr char kBorealisCapableIntelCpuRegex[] = "i[357]-";
 
 }  // namespace
 

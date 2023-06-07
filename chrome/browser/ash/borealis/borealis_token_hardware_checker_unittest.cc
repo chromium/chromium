@@ -41,7 +41,7 @@ TEST(BorealisTokenHardwareCheckerTest, Volteer) {
                   "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 2, ""),
             AllowStatus::kHardwareChecksFailed);
   EXPECT_EQ(check("volteer", "lindar",
-                  "10th Gen Intel(R) Core(TM) i5-1045G7 @ 2.60GHz", 8, ""),
+                  "11th Gen Intel(R) Core(TM) i1-1145G7 @ 2.60GHz", 8, ""),
             AllowStatus::kHardwareChecksFailed);
 
   // Bad model
@@ -68,18 +68,18 @@ TEST(BorealisTokenHardwareCheckerTest, Draco) {
 }
 
 TEST(BorealisTokenHardwareCheckerTest, Nissa) {
+  auto check_nissa = []() {
+    return check("nissa", "", "Intel(R) Core(TM) i3-X105", 8, "");
+  };
+
   // Nissa without FeatureManagement's flag are disallowed
-  EXPECT_EQ(check("nissa", "",
-                  "42nd Gen Intel(R) Core(TM) i5-42700kf @ 2.60THz", 8, ""),
-            AllowStatus::kUnsupportedModel);
+  EXPECT_EQ(check_nissa(), AllowStatus::kUnsupportedModel);
 
   // With FeatureManagement's flag, they are allowed
   base::test::ScopedFeatureList features;
   features.InitWithFeatureState(ash::features::kFeatureManagementBorealis,
                                 /*enabled=*/true);
-  EXPECT_EQ(check("nissa", "",
-                  "42nd Gen Intel(R) Core(TM) i5-42700kf @ 2.60THz", 8, ""),
-            AllowStatus::kAllowed);
+  EXPECT_EQ(check_nissa(), AllowStatus::kAllowed);
 }
 
 // Procedure for adding and new token:
