@@ -6,6 +6,8 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/dcheck_always_on.gni")
+import("//build/config/features.gni")
+import("//build/config/ios/config.gni")
 
 declare_args() {
   # Specify the current PGO phase.
@@ -24,6 +26,7 @@ declare_args() {
       # obsolete.
       (is_high_end_android || is_win || is_mac || is_fuchsia ||
        (is_linux && !is_castos) ||
+       (is_ios && use_blink && target_environment == "device") ||
        (is_chromeos_lacros && is_chromeos_device))) {
     chrome_pgo_phase = 2
   }

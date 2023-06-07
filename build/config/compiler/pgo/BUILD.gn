@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compiler/pgo/pgo.gni")
+import("//build/config/features.gni")
 import("//build/toolchain/toolchain.gni")
 
 # Configuration that enables PGO instrumentation.
@@ -66,6 +67,12 @@ config("pgo_optimization_flags") {
       # TODO(crbug.com/1308749): fix this.
       _pgo_target = "mac-arm"
     } else if (is_fuchsia) {
+      if (target_cpu == "arm64") {
+        _pgo_target = "mac-arm"
+      } else {
+        _pgo_target = "mac"
+      }
+    } else if (is_ios && use_blink) {
       if (target_cpu == "arm64") {
         _pgo_target = "mac-arm"
       } else {
