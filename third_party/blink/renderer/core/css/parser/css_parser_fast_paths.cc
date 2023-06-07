@@ -108,10 +108,10 @@ static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
   return properties.Has(property_id);
 }
 
-static inline bool ParseSimpleLength(const LChar* characters,
-                                     unsigned length,
-                                     CSSPrimitiveValue::UnitType& unit,
-                                     double& number) {
+ALWAYS_INLINE static bool ParseSimpleLength(const LChar* characters,
+                                            unsigned length,
+                                            CSSPrimitiveValue::UnitType& unit,
+                                            double& number) {
   if (length > 2 && (characters[length - 2] | 0x20) == 'p' &&
       (characters[length - 1] | 0x20) == 'x') {
     length -= 2;
@@ -168,10 +168,10 @@ static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
   return CSSNumericLiteralValue::Create(number, unit);
 }
 
-static inline bool ParseSimpleAngle(const LChar* characters,
-                                    unsigned length,
-                                    CSSPrimitiveValue::UnitType& unit,
-                                    double& number) {
+ALWAYS_INLINE static bool ParseSimpleAngle(const LChar* characters,
+                                           unsigned length,
+                                           CSSPrimitiveValue::UnitType& unit,
+                                           double& number) {
   if (length > 3 && (characters[length - 3] | 0x20) == 'd' &&
       (characters[length - 2] | 0x20) == 'e' &&
       (characters[length - 1] | 0x20) == 'g') {
@@ -376,11 +376,11 @@ static unsigned ParsePositiveDouble(const LChar* string,
 
 // Parse a float and clamp it upwards to max_value. Optimized for having
 // no decimal part.
-static bool ParseFloatWithMaxValue(const LChar*& string,
-                                   const LChar* end,
-                                   int max_value,
-                                   double& value,
-                                   bool& negative) {
+ALWAYS_INLINE static bool ParseFloatWithMaxValue(const LChar*& string,
+                                                 const LChar* end,
+                                                 int max_value,
+                                                 double& value,
+                                                 bool& negative) {
   value = 0.0;
   const LChar* current = string;
   while (current != end && IsHTMLSpace(*current)) {
@@ -534,11 +534,11 @@ static bool ParseColorNumberOrPercentage(const LChar*& string,
 
 // Parses a percentage (including the % sign), clamps it and converts it to
 // 0.0..1.0.
-static bool ParsePercentage(const LChar*& string,
-                            const LChar* end,
-                            const char terminator,
-                            TerminatorStatus& terminator_status,
-                            double& value) {
+ALWAYS_INLINE static bool ParsePercentage(const LChar*& string,
+                                          const LChar* end,
+                                          const char terminator,
+                                          TerminatorStatus& terminator_status,
+                                          double& value) {
   const LChar* current = string;
   bool negative = false;
   if (!ParseFloatWithMaxValue(current, end, 100, value, negative)) {
@@ -579,10 +579,10 @@ static inline bool IsTenthAlpha(const LChar* string, const wtf_size_t length) {
   return false;
 }
 
-static inline bool ParseAlphaValue(const LChar*& string,
-                                   const LChar* end,
-                                   const char terminator,
-                                   int& value) {
+ALWAYS_INLINE static bool ParseAlphaValue(const LChar*& string,
+                                          const LChar* end,
+                                          const char terminator,
+                                          int& value) {
   while (string != end && IsHTMLSpace(*string)) {
     string++;
   }
