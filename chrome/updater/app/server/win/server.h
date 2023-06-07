@@ -106,7 +106,8 @@ class ComServerApp : public AppServer {
   void Start(base::OnceCallback<HRESULT()> register_callback);
 
   // Task runner bound to the main sequence.
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_ =
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   // These services run the in-process code, which is delegating to the
   // |update_client| component.

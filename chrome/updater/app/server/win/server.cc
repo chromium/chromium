@@ -350,7 +350,6 @@ void ComServerApp::ActiveDutyInternal(
 }
 
 void ComServerApp::Start(base::OnceCallback<HRESULT()> register_callback) {
-  main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   CreateWRLModule();
   HRESULT hr = std::move(register_callback).Run();
   if (FAILED(hr)) {
