@@ -32,6 +32,7 @@ source_set("autofill") {
     "//google_apis",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/autofill:autofill_shared",
+    "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/autofill/manual_fill",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/metrics",

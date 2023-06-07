@@ -114,6 +114,22 @@ void AutofillBottomSheetTabHelper::AttachListeners(
   }
 }
 
+bool AutofillBottomSheetTabHelper::IsPaymentsBottomSheetTriggeringField(
+    autofill::ServerFieldType type) const {
+  switch (type) {
+    case autofill::CREDIT_CARD_NAME_FULL:
+    case autofill::CREDIT_CARD_NUMBER:
+    case autofill::CREDIT_CARD_EXP_MONTH:
+    case autofill::CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case autofill::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return true;
+    default:
+      return false;
+  }
+}
+
 void AutofillBottomSheetTabHelper::DetachPasswordListenersAndRefocus(
     web::WebFrame* frame) {
   AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(

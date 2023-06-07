@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 
+#import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -48,6 +49,11 @@ class AutofillBottomSheetTabHelper
   void AttachPaymentsListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       web::WebFrame* frame);
+
+  // Whether the provided field type is one which can trigger the Payments
+  // Bottom Sheet.
+  bool IsPaymentsBottomSheetTriggeringField(
+      autofill::ServerFieldType type) const;
 
   // Detach the password listeners, which will deactivate the bottom sheet.
   void DetachPasswordListenersAndRefocus(web::WebFrame* frame);
