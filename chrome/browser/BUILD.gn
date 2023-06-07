@@ -5820,10 +5820,10 @@ static_library("browser") {
       "//chrome/installer/util:with_no_strings",
       "//chrome/notification_helper:constants",
       "//chrome/services/util_win/public/mojom",
+      "//chrome/updater/app/server/win:updater_legacy_idl_idl",
       "//components/chrome_cleaner/public/constants",
       "//components/crash/core/app",
       "//components/crash/core/app:crash_export_thunk_include",
-      "//google_update",
       "//sandbox/win:sandbox",
       "//services/proxy_resolver_win/public/mojom",
       "//third_party/crashpad/crashpad/client",
@@ -5858,7 +5858,7 @@ static_library("browser") {
         "//chrome/browser/win/conflicts:module_list_proto",
         "//chrome/chrome_elf:sha1",
         "//chrome/chrome_elf:third_party_shared_defines",
-        "//google_update",
+        "//chrome/updater/app/server/win:updater_legacy_idl_idl",
       ]
       libs += [ "msi.lib" ]
       sources += [

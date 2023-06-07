@@ -36,7 +36,7 @@ source_set("commands") {
     deps += [
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",
-      "//google_update",
+      "//chrome/updater/app/server/win:updater_legacy_idl_idl",
     ]
   }
   if (is_linux) {

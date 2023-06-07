@@ -200,6 +200,10 @@ HRESULT CreateGoogleUpdate3WebClass(
   if (FAILED(hresult)) {
     return hresult;
   }
+
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
+  // Without this change, marshaling can load the typelib from the wrong hive
+  // (HKCU instead of HKLM, or vice-versa).
   hresult =
       unknown.CopyTo(system_level_install ? __uuidof(IGoogleUpdate3WebSystem)
                                           : __uuidof(IGoogleUpdate3WebUser),
@@ -578,10 +582,11 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
                         IID_PPV_ARGS_Helper(&app_bundle));
     if (FAILED(hresult)) {
       hresult = dispatch.As(&app_bundle);
+      if (FAILED(hresult)) {
+        return {error_code, hresult};
+      }
     }
 
-    if (FAILED(hresult))
-      return {error_code, hresult};
     dispatch.Reset();
 
     ConfigureProxyBlanket(app_bundle.Get());
@@ -636,10 +641,11 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
         IID_PPV_ARGS_Helper(&app));
     if (FAILED(hresult)) {
       hresult = dispatch.As(&app);
+      if (FAILED(hresult)) {
+        return {error_code, hresult};
+      }
     }
 
-    if (FAILED(hresult))
-      return {error_code, hresult};
     ConfigureProxyBlanket(app.Get());
     hresult = app_bundle->checkForUpdate();
     if (FAILED(hresult))
@@ -669,9 +675,10 @@ bool UpdateCheckDriver::GetCurrentState(
                       IID_PPV_ARGS_Helper(&(*current_state)));
   if (FAILED(*hresult)) {
     *hresult = dispatch.As(&(*current_state));
+    if (FAILED(*hresult)) {
+      return false;
+    }
   }
-  if (FAILED(*hresult))
-    return false;
   ConfigureProxyBlanket(current_state->Get());
   LONG value = 0;
   *hresult = (*current_state)->get_stateValue(&value);

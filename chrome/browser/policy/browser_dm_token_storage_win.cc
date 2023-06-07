@@ -38,7 +38,7 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "google_update/google_update_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace policy {
@@ -61,7 +61,7 @@ void ConfigureProxyBlanket(IUnknown* interface_pointer) {
 Microsoft::WRL::ComPtr<IAppCommandWeb> GetUpdaterAppCommand(
     const std::wstring& command_name) {
   Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
-  HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebServiceClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebSystemClass, nullptr,
                                   CLSCTX_ALL, IID_PPV_ARGS(&google_update));
   if (FAILED(hr))
     return nullptr;
@@ -72,10 +72,18 @@ Microsoft::WRL::ComPtr<IAppCommandWeb> GetUpdaterAppCommand(
   if (FAILED(hr))
     return nullptr;
 
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
+  // Without this change, marshaling can load the typelib from the wrong hive
+  // (HKCU instead of HKLM, or vice-versa).
   Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
-  hr = dispatch.As(&app_bundle);
-  if (FAILED(hr))
-    return nullptr;
+  hr = dispatch.CopyTo(__uuidof(IAppBundleWebSystem),
+                       IID_PPV_ARGS_Helper(&app_bundle));
+  if (FAILED(hr)) {
+    hr = dispatch.As(&app_bundle);
+    if (FAILED(hr)) {
+      return nullptr;
+    }
+  }
 
   dispatch.Reset();
   ConfigureProxyBlanket(app_bundle.Get());
@@ -90,9 +98,13 @@ Microsoft::WRL::ComPtr<IAppCommandWeb> GetUpdaterAppCommand(
     return nullptr;
 
   Microsoft::WRL::ComPtr<IAppWeb> app;
-  hr = dispatch.As(&app);
-  if (FAILED(hr))
-    return nullptr;
+  hr = dispatch.CopyTo(__uuidof(IAppWebSystem), IID_PPV_ARGS_Helper(&app));
+  if (FAILED(hr)) {
+    hr = dispatch.As(&app);
+    if (FAILED(hr)) {
+      return nullptr;
+    }
+  }
 
   dispatch.Reset();
   ConfigureProxyBlanket(app.Get());
@@ -102,9 +114,14 @@ Microsoft::WRL::ComPtr<IAppCommandWeb> GetUpdaterAppCommand(
     return nullptr;
 
   Microsoft::WRL::ComPtr<IAppCommandWeb> app_command;
-  hr = dispatch.As(&app_command);
-  if (FAILED(hr))
-    return nullptr;
+  hr = dispatch.CopyTo(__uuidof(IAppCommandWebSystem),
+                       IID_PPV_ARGS_Helper(&app_command));
+  if (FAILED(hr)) {
+    hr = dispatch.As(&app_command);
+    if (FAILED(hr)) {
+      return nullptr;
+    }
+  }
 
   ConfigureProxyBlanket(app_command.Get());
   return app_command;

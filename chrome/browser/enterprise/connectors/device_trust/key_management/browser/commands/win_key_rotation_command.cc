@@ -27,7 +27,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/metrics_utils.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
-#include "google_update/google_update_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
@@ -61,7 +61,7 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
     return E_INVALIDARG;
 
   Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
-  HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebMachineClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebSystemClass, nullptr,
                                   CLSCTX_ALL, IID_PPV_ARGS(&google_update));
   if (FAILED(hr))
     return hr;
@@ -72,10 +72,18 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
   if (FAILED(hr))
     return hr;
 
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
+  // Without this change, marshaling can load the typelib from the wrong hive
+  // (HKCU instead of HKLM, or vice-versa).
   Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
-  hr = dispatch.As(&app_bundle);
-  if (FAILED(hr))
-    return hr;
+  hr = dispatch.CopyTo(__uuidof(IAppBundleWebSystem),
+                       IID_PPV_ARGS_Helper(&app_bundle));
+  if (FAILED(hr)) {
+    hr = dispatch.As(&app_bundle);
+    if (FAILED(hr)) {
+      return hr;
+    }
+  }
 
   dispatch.Reset();
   ConfigureProxyBlanket(app_bundle.Get());
@@ -90,22 +98,31 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
     return hr;
 
   Microsoft::WRL::ComPtr<IAppWeb> app;
-  hr = dispatch.As(&app);
-  if (FAILED(hr))
-    return hr;
+  hr = dispatch.CopyTo(__uuidof(IAppWebSystem), IID_PPV_ARGS_Helper(&app));
+  if (FAILED(hr)) {
+    hr = dispatch.As(&app);
+    if (FAILED(hr)) {
+      return hr;
+    }
+  }
 
   dispatch.Reset();
   ConfigureProxyBlanket(app.Get());
+
   hr = app->get_command(base::win::ScopedBstr(command).Get(), &dispatch);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
-  if (!dispatch)
-    return E_NOTIMPL;
+  }
 
   Microsoft::WRL::ComPtr<IAppCommandWeb> app_command;
-  hr = dispatch.As(&app_command);
-  if (FAILED(hr))
-    return hr;
+  hr = dispatch.CopyTo(__uuidof(IAppCommandWebSystem),
+                       IID_PPV_ARGS_Helper(&app_command));
+  if (FAILED(hr)) {
+    hr = dispatch.As(&app_command);
+    if (FAILED(hr)) {
+      return hr;
+    }
+  }
 
   ConfigureProxyBlanket(app_command.Get());
 

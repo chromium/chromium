@@ -4264,7 +4264,7 @@ static_library("ui") {
         "webui/settings/incompatible_applications_handler_win.cc",
         "webui/settings/incompatible_applications_handler_win.h",
       ]
-      deps += [ "//google_update" ]
+      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl_idl" ]
     } else {
       sources += [
         "webui/help/version_updater_basic.cc",
