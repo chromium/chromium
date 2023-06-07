@@ -20,6 +20,7 @@ component("browser") {
     "window.mm",
   ]
   defines = [ "REMOTE_COCOA_BROWSER_IMPLEMENTATION" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//components/remote_cocoa/common:mojo",
