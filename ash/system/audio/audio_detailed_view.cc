@@ -234,11 +234,13 @@ void AudioDetailedView::AddAudioSubHeader(views::View* container,
   auto* sub_header_label_ = TrayPopupUtils::CreateDefaultLabel();
   sub_header_label_->SetText(l10n_util::GetStringUTF16(text_id));
   sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-  TrayPopupUtils::SetLabelFontList(sub_header_label_,
-                                   TrayPopupUtils::FontStyle::kSubHeader);
   if (chromeos::features::IsJellyEnabled()) {
+    sub_header_label_->SetAutoColorReadabilityEnabled(false);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                           *sub_header_label_);
+  } else {
+    TrayPopupUtils::SetLabelFontList(sub_header_label_,
+                                     TrayPopupUtils::FontStyle::kSubHeader);
   }
   sub_header_label_->SetBorder(views::CreateEmptyBorder(kTextRowInsets));
   container->AddChildView(sub_header_label_);
@@ -750,8 +752,14 @@ void AudioDetailedView::UpdateScrollableList() {
         label->SetMultiLine(/*multi_line=*/true);
         label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
         label->SetEnabledColorId(kColorAshTextColorWarning);
-        TrayPopupUtils::SetLabelFontList(
-            label.get(), TrayPopupUtils::FontStyle::kDetailedViewLabel);
+        if (chromeos::features::IsJellyEnabled()) {
+          label->SetAutoColorReadabilityEnabled(false);
+          TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                                *label);
+        } else {
+          TrayPopupUtils::SetLabelFontList(
+              label.get(), TrayPopupUtils::FontStyle::kDetailedViewLabel);
+        }
         nbs_warning_view->AddView(TriView::Container::CENTER, std::move(label));
 
         container->AddChildView(std::move(nbs_warning_view));

@@ -25,6 +25,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -40,6 +41,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -180,8 +182,14 @@ class ImeTitleView : public views::BoxLayoutView {
         views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 1, 0)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetEnabledColorId(kColorAshTextColorPrimary);
-    TrayPopupUtils::SetLabelFontList(title_label,
-                                     TrayPopupUtils::FontStyle::kPodMenuHeader);
+    if (chromeos::features::IsJellyEnabled()) {
+      title_label->SetAutoColorReadabilityEnabled(false);
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                            *title_label);
+    } else {
+      TrayPopupUtils::SetLabelFontList(
+          title_label, TrayPopupUtils::FontStyle::kPodMenuHeader);
+    }
     SetFlexForView(title_label, 1);
 
     // Don't create Settings Button if it is Kiosk session.

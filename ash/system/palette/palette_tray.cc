@@ -19,8 +19,10 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
@@ -35,6 +37,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -109,8 +112,14 @@ class BatteryView : public views::View {
     label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
     label_->SetEnabledColor(stylus_battery_delegate_.GetColorForBatteryLevel());
-    TrayPopupUtils::SetLabelFontList(label_,
-                                     TrayPopupUtils::FontStyle::kSmallTitle);
+    if (chromeos::features::IsJellyEnabled()) {
+      label_->SetAutoColorReadabilityEnabled(false);
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                            *label_);
+    } else {
+      TrayPopupUtils::SetLabelFontList(label_,
+                                       TrayPopupUtils::FontStyle::kSmallTitle);
+    }
   }
 
   // views::View:
@@ -162,10 +171,15 @@ class TitleView : public views::View {
     auto* title_label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-    TrayPopupUtils::SetLabelFontList(title_label,
-                                     TrayPopupUtils::FontStyle::kPodMenuHeader);
+    title_label->SetEnabledColorId(kColorAshTextColorPrimary);
+    if (chromeos::features::IsJellyEnabled()) {
+      title_label->SetAutoColorReadabilityEnabled(false);
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                            *title_label);
+    } else {
+      TrayPopupUtils::SetLabelFontList(
+          title_label, TrayPopupUtils::FontStyle::kPodMenuHeader);
+    }
     layout_ptr->SetFlexForView(title_label, 1);
 
     if (ash::features::IsStylusBatteryStatusEnabled()) {

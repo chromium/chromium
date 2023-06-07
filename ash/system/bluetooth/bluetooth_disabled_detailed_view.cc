@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -34,6 +35,7 @@ const int kDesiredLabelBaselineY = 20;
 }  // namespace
 
 BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
+  DCHECK(!features::IsQsRevampEnabled());
   std::unique_ptr<BoxLayout> box_layout =
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical);
   box_layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);

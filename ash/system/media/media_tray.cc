@@ -16,6 +16,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -27,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/media_message_center/notification_theme.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -103,8 +105,13 @@ class GlobalMediaControlsTitleView : public views::View {
     if (base::FeatureList::IsEnabled(
             media::kGlobalMediaControlsCrOSUpdatedUI)) {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-      TrayPopupUtils::SetLabelFontList(title_label_,
-                                       TrayPopupUtils::FontStyle::kTitle);
+      if (chromeos::features::IsJellyEnabled()) {
+        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                              *title_label_);
+      } else {
+        TrayPopupUtils::SetLabelFontList(title_label_,
+                                         TrayPopupUtils::FontStyle::kTitle);
+      }
     } else {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(

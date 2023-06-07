@@ -26,6 +26,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
@@ -950,8 +951,13 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(
-      label.get(), TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  if (chromeos::features::IsJellyEnabled()) {
+    label->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
+  } else {
+    TrayPopupUtils::SetLabelFontList(
+        label.get(), TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  }
   label->SetID(static_cast<int>(
       NetworkListViewControllerViewChildId::kConnectionWarningLabel));
   connection_warning_label_ = label.get();

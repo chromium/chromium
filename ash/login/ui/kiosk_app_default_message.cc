@@ -8,8 +8,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,8 +69,13 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   title_->SetLineHeight(kTitleLineHeight);
   title_->SetMultiLine(true);
   title_->SetEnabledColorId(kColorAshTextColorPrimary);
-  TrayPopupUtils::SetLabelFontList(title_,
-                                   TrayPopupUtils::FontStyle::kSmallTitle);
+  if (chromeos::features::IsJellyEnabled()) {
+    title_->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *title_);
+  } else {
+    TrayPopupUtils::SetLabelFontList(title_,
+                                     TrayPopupUtils::FontStyle::kSmallTitle);
+  }
 }
 
 KioskAppDefaultMessage::~KioskAppDefaultMessage() = default;

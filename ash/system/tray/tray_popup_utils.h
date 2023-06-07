@@ -187,6 +187,9 @@ class ASH_EXPORT TrayPopupUtils {
   static ui::ImageModel CreateCheckMark(ui::ColorId color_id);
 
   // Sets the font list for |label| based on |style|.
+  // DEPRECATED: Use `TypographyProvider` in new code. If you need legacy fonts,
+  // use TypographyToken::kLegacy*. This function DCHECKs if used when QsRevamp
+  // and Jelly are both enabled.
   static void SetLabelFontList(views::Label* label, FontStyle style);
 };
 
