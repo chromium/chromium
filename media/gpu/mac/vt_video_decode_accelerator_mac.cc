@@ -641,12 +641,6 @@ VTVideoDecodeAccelerator::Frame::~Frame() {}
 VTVideoDecodeAccelerator::PictureInfo::PictureInfo()
     : uses_shared_images(true) {}
 
-VTVideoDecodeAccelerator::PictureInfo::PictureInfo(uint32_t client_texture_id,
-                                                   uint32_t service_texture_id)
-    : uses_shared_images(false),
-      client_texture_id(client_texture_id),
-      service_texture_id(service_texture_id) {}
-
 VTVideoDecodeAccelerator::PictureInfo::~PictureInfo() {}
 
 bool VTVideoDecodeAccelerator::FrameOrder::operator()(
@@ -1978,18 +1972,15 @@ void VTVideoDecodeAccelerator::AssignPictureBuffers(
     DCHECK(!picture_info_map_.contains(picture.id()));
     assigned_picture_ids_.insert(picture.id());
     available_picture_ids_.push_back(picture.id());
-    if (picture.client_texture_ids().empty() &&
-        picture.service_texture_ids().empty()) {
-      picture_info_map_.insert(
-          std::make_pair(picture.id(), std::make_unique<PictureInfo>()));
-    } else {
-      DCHECK_LE(1u, picture.client_texture_ids().size());
-      DCHECK_LE(1u, picture.service_texture_ids().size());
-      picture_info_map_.insert(std::make_pair(
-          picture.id(),
-          std::make_unique<PictureInfo>(picture.client_texture_ids()[0],
-                                        picture.service_texture_ids()[0])));
-    }
+
+    // PictureBufferManager::CreatePictureBuffers() never creates
+    // PictureBuffer instances with texture IDs on Apple platforms: it does so
+    // only when requested to allocate GL textures, which is neither supported
+    // nor ever requested on these platforms.
+    CHECK(picture.client_texture_ids().empty() &&
+          picture.service_texture_ids().empty());
+    picture_info_map_.insert(
+        std::make_pair(picture.id(), std::make_unique<PictureInfo>()));
   }
 
   // Pictures are not marked as uncleared until after this method returns, and

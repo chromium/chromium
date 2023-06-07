@@ -203,6 +203,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         picture_buffers_[picture_buffer_id] = picture_data;
       }
 
+      // `picture_data.service_ids()` should be non-empty only when allocating
+      // GL textures.
+      CHECK(picture_data.service_ids.empty() ||
+            mode == VideoDecodeAccelerator::TextureAllocationMode::
+                        kAllocateGLTextures);
+
       // Since our textures have no client IDs, we reuse the service IDs as
       // convenient unique identifiers.
       //

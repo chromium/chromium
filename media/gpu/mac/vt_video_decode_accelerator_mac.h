@@ -163,7 +163,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     // A PictureInfo that specifies no texture IDs will be used for shared
     // images.
     PictureInfo();
-    PictureInfo(uint32_t client_texture_id, uint32_t service_texture_id);
 
     PictureInfo(const PictureInfo&) = delete;
     PictureInfo& operator=(const PictureInfo&) = delete;
