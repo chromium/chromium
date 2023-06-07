@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
@@ -129,7 +130,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
             &trusted_url_loader_factory_),
         base::BindOnce(&AuctionUrlLoaderFactoryProxyTest::PreconnectSocket,
                        base::Unretained(this)),
-        top_frame_origin_, frame_origin_,
+        /*force_reload=*/force_reload_, top_frame_origin_, frame_origin_,
         /*renderer_process_id=*/kRenderProcessId, is_for_seller_,
         client_security_state_.Clone(), GURL(kScriptUrl), wasm_url_,
         trusted_signals_base_url_);
@@ -291,6 +292,10 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
     EXPECT_EQ(network::mojom::RedirectMode::kError,
               observed_request.redirect_mode);
 
+    // Should bypass cache when in force-reload mode.
+    EXPECT_EQ(force_reload_ ? net::LOAD_BYPASS_CACHE : 0,
+              observed_request.load_flags);
+
     // The initiator should be set.
     EXPECT_EQ(frame_origin_, observed_request.request_initiator);
 
@@ -394,6 +399,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   bool is_for_seller_ = false;
+  bool force_reload_ = false;
   const network::mojom::ClientSecurityStatePtr client_security_state_ =
       network::mojom::ClientSecurityState::New();
   absl::optional<GURL> trusted_signals_base_url_ = GURL(kTrustedSignalsBaseUrl);
@@ -451,6 +457,15 @@ TEST_F(AuctionUrlLoaderFactoryProxyTest, Basic) {
     TryMakeRequest("https://host.test/", absl::nullopt,
                    ExpectedResponse::kReject);
   }
+}
+
+TEST_F(AuctionUrlLoaderFactoryProxyTest, ForceReload) {
+  force_reload_ = true;
+  // Force creation of a new proxy, with correct `force_reload` value.
+  remote_url_loader_factory_.reset();
+  CreateUrlLoaderFactoryProxy();
+
+  TryMakeRequest(kScriptUrl, kAcceptJavascript, ExpectedResponse::kAllow);
 }
 
 TEST_F(AuctionUrlLoaderFactoryProxyTest, NoWasmUrl) {

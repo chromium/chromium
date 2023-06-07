@@ -1273,6 +1273,8 @@ TEST_F(NavigationControllerTest, Reload) {
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
+  // So no committed reload in RFH yet.
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 
   navigation->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
@@ -1286,6 +1288,7 @@ TEST_F(NavigationControllerTest, Reload) {
   EXPECT_FALSE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
+  EXPECT_EQ(ReloadType::NORMAL, main_test_rfh()->reload_type());
 
   // The timestamp should have been updated.
   ASSERT_TRUE(controller.GetVisibleEntry());
@@ -1378,6 +1381,7 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   navigation->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 
   // The NavigationEntry should save both the original URL and the final
   // redirected URL.
@@ -1416,6 +1420,7 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   EXPECT_FALSE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
+  EXPECT_EQ(ReloadType::ORIGINAL_REQUEST_URL, main_test_rfh()->reload_type());
 }
 
 // Test that certain non-persisted NavigationEntryImpl values get reset after
@@ -4179,6 +4184,7 @@ TEST_F(NavigationControllerTest, MultipleNavigationsAndReload) {
   EXPECT_EQ(initial_url, controller.GetVisibleEntry()->GetURL());
   navigation1->Commit();
   EXPECT_EQ(ReloadType::NONE, last_reload_type_);
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 
   // Test 2.
   // A navigation to initial_url with the navigation commit delayed should be
@@ -4212,6 +4218,7 @@ TEST_F(NavigationControllerTest, MultipleNavigationsAndReload) {
   EXPECT_EQ(ReloadType::NONE, last_reload_type_);
 
   navigation2->Commit();
+  EXPECT_EQ(ReloadType::NORMAL, main_test_rfh()->reload_type());  // from nav2.
 
   // Test 5
   // A navigation to url_2 followed by a navigation to the previously pending
@@ -4230,6 +4237,7 @@ TEST_F(NavigationControllerTest, MultipleNavigationsAndReload) {
   EXPECT_EQ(url_1, controller.GetVisibleEntry()->GetURL());
   EXPECT_EQ(ReloadType::NONE, last_reload_type_);
   navigation6->Commit();
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 }
 
 // Tests that NavigationUIData has been passed to the NavigationHandle.
@@ -4262,6 +4270,7 @@ TEST_F(NavigationControllerTest, MainFrameNavigationReloadType) {
 
   EXPECT_TRUE(observer.is_main_frame());
   EXPECT_EQ(observer.reload_type(), ReloadType::BYPASSING_CACHE);
+  EXPECT_EQ(ReloadType::BYPASSING_CACHE, main_test_rfh()->reload_type());
 }
 
 // Tests calling LoadURLParams with NavigationUIData and for a sub frame.

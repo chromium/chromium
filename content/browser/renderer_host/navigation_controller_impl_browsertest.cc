@@ -19468,6 +19468,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
             frame_entry_1->referrer().policy);
   int item_sequence_number_1 = frame_entry_1->item_sequence_number();
   int document_sequence_number_1 = frame_entry_1->document_sequence_number();
+  EXPECT_EQ(ReloadType::NONE, main_frame->reload_type());
+  EXPECT_EQ(ReloadType::NONE,
+            main_frame->child_at(0)->current_frame_host()->reload_type());
 
   // 2. Reload the document.
   TestNavigationManager observer_2(shell()->web_contents(), iframe_url);
@@ -19505,6 +19508,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   int document_sequence_number_2 = frame_entry_1->document_sequence_number();
   EXPECT_EQ(item_sequence_number_1, item_sequence_number_2);
   EXPECT_EQ(document_sequence_number_1, document_sequence_number_2);
+  EXPECT_EQ(ReloadType::NONE, main_frame->reload_type());
+  EXPECT_EQ(ReloadType::NORMAL,
+            main_frame->child_at(0)->current_frame_host()->reload_type());
 }
 
 // A history navigation only navigates the iframe that should be changed to

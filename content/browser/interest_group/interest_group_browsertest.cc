@@ -6340,6 +6340,62 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ForceReload) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/bidding_logic.js"))
+              .SetTrustedBiddingSignalsUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds(/*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1]})",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  const std::vector<GURL> kExpectedRequests = {
+      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+      https_server_->GetURL(
+          "a.test",
+          "/interest_group/trusted_bidding_signals.json?"
+          "hostname=a.test&keys=key1&interestGroupNames=cars"),
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+  };
+  EXPECT_TRUE(HasServerSeenUrls(kExpectedRequests));
+
+  // Do a regular reload, and re-run the auction. Things should be cached.
+  ClearReceivedRequests();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  for (const auto& expected_url : kExpectedRequests) {
+    EXPECT_FALSE(HasServerSeenUrl(expected_url));
+  }
+
+  // Now do a bypass-cache reload. Things should get requested again.
+  ClearReceivedRequests();
+  ReloadBypassingCacheBlockUntilNavigationsComplete(shell(), 1);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  EXPECT_TRUE(HasServerSeenUrls(kExpectedRequests));
+}
+
 // Runs an auction just like InterestGroupBrowserTest.RunAdAuctionWithWinner,
 // but where the render size is specified only in the interest group, not the
 // bid. When size is only specified in one place, the ads are considered

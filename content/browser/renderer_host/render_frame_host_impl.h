@@ -1652,6 +1652,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool is_overriding_user_agent() { return is_overriding_user_agent_; }
 
+  ReloadType reload_type() { return reload_type_; }
+
   // Notifies the render frame that |frame_tree_node_| has received user
   // activation. May be invoked multiple times. This is called both for the
   // actual frame that saw user activation and any ancestor frames that might
@@ -4630,6 +4632,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Whether the currently committed document is overriding the user agent or
   // not.
   bool is_overriding_user_agent_ = false;
+
+  // Whether the currently committed document was reloaded in a particular
+  // way.
+  ReloadType reload_type_ = ReloadType::NONE;
 
   // Used to intercept DidCommit* calls in tests.
   raw_ptr<CommitCallbackInterceptor> commit_callback_interceptor_ = nullptr;

@@ -12853,6 +12853,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   is_overriding_user_agent_ =
       navigation_request->is_overriding_user_agent() && is_main_frame();
 
+  reload_type_ = navigation_request->GetReloadType();
+
   // Mark whether then navigation was intended as a loadDataWithBaseURL or not.
   // If |renderer_url_info_.was_loaded_from_load_data_with_base_url| is true, we
   // will bypass checks in VerifyDidCommitParams for same-document navigations
