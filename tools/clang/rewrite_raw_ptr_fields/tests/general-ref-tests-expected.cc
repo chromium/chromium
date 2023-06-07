@@ -213,4 +213,13 @@ struct VectorMemberRef {
 
   const raw_ref<std::vector<T>> v;
 };
-  
+
+struct MyStruct2 {
+  // Expected rewrite: const raw_ref<int> int_ref;
+  const raw_ref<int> int_ref;
+  int i;
+  // Function references are not rewritten.
+  int (&func_ref)();
+  // References to arrays are not rewritten.
+  int (&ref_to_array_of_ints)[123];
+};

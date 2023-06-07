@@ -131,21 +131,24 @@ clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
   }
 }
 
+static const auto unsupported_pointee_types =
+    pointee(hasUnqualifiedDesugaredType(
+        anyOf(functionType(), memberPointerType(), arrayType())));
+
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
     const RawPtrAndRefExclusionsOptions& options) {
   // Supported pointer types =========
   // Given
-  //   struct MyStrict {
+  //   struct MyStruct {
   //     int* int_ptr;
   //     int i;
   //     int (*func_ptr)();
   //     int (MyStruct::* member_func_ptr)(char);
-  //     int (*ptr_to_array_of_ints)[123]
+  //     int (*ptr_to_array_of_ints)[123];
   //   };
   // matches |int*|, but not the other types.
   auto supported_pointer_types_matcher =
-      pointerType(unless(pointee(hasUnqualifiedDesugaredType(
-          anyOf(functionType(), memberPointerType(), arrayType())))));
+      pointerType(unless(unsupported_pointee_types));
 
   // TODO(crbug.com/1381955): Skipping const char pointers as it likely points
   // to string literals where raw_ptr isn't necessary. Remove when we have
@@ -167,6 +170,18 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
 
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
     const RawPtrAndRefExclusionsOptions& options) {
+  // Supported reference types =========
+  // Given
+  //   struct MyStruct {
+  //     int& int_ref;
+  //     int i;
+  //     int (&func_ref)();
+  //     int (&ref_to_array_of_ints)[123];
+  //   };
+  // matches |int&|, but not the other types.
+  auto supported_ref_types_matcher =
+      referenceType(unless(unsupported_pointee_types));
+
   // Field declarations =========
   // Given
   //   struct S {
@@ -177,6 +192,7 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
   // - fields matching criteria elaborated in PtrAndRefExclusions
   auto field_decl_matcher =
       fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
+                      hasType(supported_ref_types_matcher),
                       unless(PtrAndRefExclusions(options))))
           .bind("affectedFieldDecl");
 
