@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/android/features/keyboard_accessory/jni_headers/ManualFillingComponentBridge_jni.h"
@@ -303,8 +302,7 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
   base::android::AppendJavaStringArrayToStringVector(env, j_passwords,
                                                      &passwords);
   std::vector<password_manager::PasswordForm> password_forms(usernames.size());
-  std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>
-      credentials;
+  std::vector<const password_manager::PasswordForm*> credentials;
   for (unsigned int i = 0; i < usernames.size(); ++i) {
     password_forms[i].url = origin.GetURL();
     password_forms[i].username_value = base::ASCIIToUTF16(usernames[i]);

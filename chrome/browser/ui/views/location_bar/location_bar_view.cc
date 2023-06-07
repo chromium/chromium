@@ -1027,9 +1027,8 @@ int LocationBarView::GetMinimumLeadingWidth() const {
 int LocationBarView::GetMinimumTrailingWidth() const {
   int trailing_width = IncrementalMinimumWidth(page_action_icon_container_);
 
-  for (ContentSettingImageView* content_setting_view : content_setting_views_) {
+  for (auto* content_setting_view : content_setting_views_)
     trailing_width += IncrementalMinimumWidth(content_setting_view);
-  }
 
   return trailing_width;
 }
@@ -1088,7 +1087,7 @@ bool LocationBarView::RefreshContentSettingViews() {
   }
 
   bool visibility_changed = false;
-  for (ContentSettingImageView* v : content_setting_views_) {
+  for (auto* v : content_setting_views_) {
     const bool was_visible = v->GetVisible();
     v->Update();
     if (was_visible != v->GetVisible())

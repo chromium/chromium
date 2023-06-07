@@ -22,9 +22,8 @@ BrowserTabStripTracker::BrowserTabStripTracker(
 BrowserTabStripTracker::~BrowserTabStripTracker() {
   // Per ObserverList::RemoveObserver() documentation, this does nothing if the
   // observer is not in the ObserverList (i.e. if |browser| is not tracked).
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance())
     browser->tab_strip_model()->RemoveObserver(tab_strip_model_observer_);
-  }
 
   BrowserList::RemoveObserver(this);
 }
@@ -33,9 +32,8 @@ void BrowserTabStripTracker::Init() {
   BrowserList::AddObserver(this);
 
   base::AutoReset<bool> resetter(&is_processing_initial_browsers_, true);
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance())
     MaybeTrackBrowser(browser);
-  }
 }
 
 bool BrowserTabStripTracker::ShouldTrackBrowser(Browser* browser) {

@@ -786,15 +786,14 @@ void BrowserAccessibilityManagerWin::FireIA2SelectionEvents(
   } else {
     const bool container_is_multiselectable =
         container && container->HasState(ax::mojom::State::kMultiselectable);
-    for (content::BrowserAccessibility* item : changes.added) {
+    for (auto* item : changes.added) {
       if (container_is_multiselectable)
         FireWinAccessibilityEvent(EVENT_OBJECT_SELECTIONADD, item);
       else
         FireWinAccessibilityEvent(EVENT_OBJECT_SELECTION, item);
     }
-    for (content::BrowserAccessibility* item : changes.removed) {
+    for (auto* item : changes.removed)
       FireWinAccessibilityEvent(EVENT_OBJECT_SELECTIONREMOVE, item);
-    }
   }
 }
 
@@ -808,9 +807,8 @@ void BrowserAccessibilityManagerWin::FireUIASelectionEvents(
                               only_selected_child);
     FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId,
                                 only_selected_child);
-    for (content::BrowserAccessibility* item : changes.removed) {
+    for (auto* item : changes.removed)
       FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId, item);
-    }
   } else {
     // Per UIA documentation, beyond the "invalidate limit" we're supposed to
     // fire a 'SelectionInvalidated' event.  The exact value isn't specified,
@@ -822,7 +820,7 @@ void BrowserAccessibilityManagerWin::FireUIASelectionEvents(
     } else {
       const bool container_is_multiselectable =
           container && container->HasState(ax::mojom::State::kMultiselectable);
-      for (content::BrowserAccessibility* item : changes.added) {
+      for (auto* item : changes.added) {
         if (container_is_multiselectable) {
           FireUiaAccessibilityEvent(
               UIA_SelectionItem_ElementAddedToSelectionEventId, item);
@@ -833,7 +831,7 @@ void BrowserAccessibilityManagerWin::FireUIASelectionEvents(
         FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId,
                                     item);
       }
-      for (content::BrowserAccessibility* item : changes.removed) {
+      for (auto* item : changes.removed) {
         FireUiaAccessibilityEvent(
             UIA_SelectionItem_ElementRemovedFromSelectionEventId, item);
         FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId,

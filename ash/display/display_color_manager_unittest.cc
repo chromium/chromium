@@ -173,8 +173,7 @@ TEST_F(DisplayColorManagerTest, VCGTOnly) {
           .SetHasColorCorrectionMatrix(false)
           .SetProductCode(0x06af5c10)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -196,8 +195,7 @@ TEST_F(DisplayColorManagerTest, VCGTOnlyWithPlatformCTM) {
           .SetHasColorCorrectionMatrix(true)
           .SetProductCode(0x06af5c10)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   log_->GetActionsAndClear();
@@ -220,8 +218,7 @@ TEST_F(DisplayColorManagerTest, FullWithPlatformCTM) {
           .SetHasColorCorrectionMatrix(true)
           .SetProductCode(0x4c834a42)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -245,8 +242,7 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixNoCTMSupport) {
           .SetHasColorCorrectionMatrix(false)
           .SetProductCode(0x4c834a42)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -281,8 +277,7 @@ TEST_F(DisplayColorManagerTest,
           .SetHasColorCorrectionMatrix(true)
           .SetProductCode(0x0)  // Non-existent product code.
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -336,7 +331,7 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixWithMixedCTMSupport) {
           .SetProductCode(0x0)  // Non-existent product code.
           .Build();
 
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
+  std::vector<display::DisplaySnapshot*> outputs(
       {snapshot1.get(), snapshot2.get()});
   native_display_delegate_->set_outputs(outputs);
 
@@ -377,8 +372,7 @@ TEST_F(DisplayColorManagerTest,
           .SetHasColorCorrectionMatrix(true)
           .SetProductCode(0x4c834a42)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -421,8 +415,7 @@ TEST_F(DisplayColorManagerTest, FullWithoutPlatformCTM) {
           .SetHasColorCorrectionMatrix(false)
           .SetProductCode(0x4c834a42)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -445,8 +438,7 @@ TEST_F(DisplayColorManagerTest, NoMatchProductID) {
           .SetHasColorCorrectionMatrix(false)
           .SetProductCode(0)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -471,8 +463,7 @@ TEST_F(DisplayColorManagerTest, NoVCGT) {
           .SetHasColorCorrectionMatrix(false)
           .SetProductCode(0x0dae3211)
           .Build();
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -510,8 +501,7 @@ TEST_F(DisplayColorManagerTest, VpdCalibration) {
           .SetProductCode(product_id)
           .Build();
 
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();
@@ -548,8 +538,7 @@ TEST_F(DisplayColorManagerTest, VpdCalibrationWithQuirks) {
           .SetProductCode(product_id)
           .Build();
 
-  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs(
-      {snapshot.get()});
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
   native_display_delegate_->set_outputs(outputs);
 
   configurator_.OnConfigurationChanged();

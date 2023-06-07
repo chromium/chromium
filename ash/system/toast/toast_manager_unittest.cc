@@ -439,7 +439,7 @@ TEST_P(ToastManagerImplTest, ToastsOnMultipleMonitors) {
 
   toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsRunning(toast_id));
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+  for (auto* root_window : Shell::GetAllRootWindows()) {
     ASSERT_TRUE(GetCurrentOverlay(root_window));
   }
 
@@ -1140,9 +1140,8 @@ TEST_P(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
     toast_data.show_on_all_root_windows = true;
     toast_manager->Show(std::move(toast_data));
 
-    for (aura::Window* root_window : root_windows) {
+    for (auto* root_window : root_windows)
       EXPECT_TRUE(GetCurrentOverlay(root_window));
-    }
 
     switch (test_case.source) {
       case CancellationSource::kToastManager: {
@@ -1163,9 +1162,8 @@ TEST_P(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
       }
     }
 
-    for (aura::Window* root_window : root_windows) {
+    for (auto* root_window : root_windows)
       EXPECT_FALSE(GetCurrentOverlay(root_window));
-    }
   }
 }
 
@@ -1188,9 +1186,8 @@ TEST_P(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsRunning(toast_id));
 
-  for (aura::Window* root_window : root_windows) {
+  for (auto* root_window : root_windows)
     ASSERT_TRUE(GetCurrentOverlay(root_window));
-  }
 
   // Wait for half of the toast duration to elapse.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
@@ -1210,9 +1207,8 @@ TEST_P(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   // remain open after this time.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
 
-  for (aura::Window* root_window : root_windows) {
+  for (auto* root_window : root_windows)
     EXPECT_TRUE(GetCurrentOverlay(root_window));
-  }
 
   // Move the mouse away to resume the expiration countdown timer.
   event_generator->MoveMouseTo(gfx::Point(0, 0));
@@ -1223,9 +1219,8 @@ TEST_P(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   // gone.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
 
-  for (aura::Window* root_window : root_windows) {
+  for (auto* root_window : root_windows)
     EXPECT_FALSE(GetCurrentOverlay(root_window));
-  }
 }
 
 // This tests that multi-monitor toast instances do not call the
@@ -1251,9 +1246,8 @@ TEST_P(ToastManagerImplTest, ExpiredCallbackNotCalledOnRootWindowRemoved) {
   toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsRunning(toast_id));
 
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+  for (auto* root_window : Shell::GetAllRootWindows())
     ASSERT_TRUE(GetCurrentOverlay(root_window));
-  }
 
   // Wait for half of the toast duration to elapse.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
@@ -1312,9 +1306,8 @@ TEST_P(ToastManagerImplTest,
   // instance should be destroyed.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
 
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+  for (auto* root_window : Shell::GetAllRootWindows())
     EXPECT_TRUE(GetCurrentOverlay(root_window));
-  }
 
   // Unhover the mouse an add a third root window.
   event_generator->MoveMouseTo(gfx::Point(0, 0));
@@ -1326,9 +1319,8 @@ TEST_P(ToastManagerImplTest,
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
   base::RunLoop().RunUntilIdle();
 
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+  for (auto* root_window : Shell::GetAllRootWindows())
     EXPECT_FALSE(GetCurrentOverlay(root_window));
-  }
 }
 
 // Tests that toasts add a leading icon when one is provided.

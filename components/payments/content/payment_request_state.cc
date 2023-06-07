@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -585,11 +584,10 @@ base::WeakPtr<PaymentRequestState> PaymentRequestState::AsWeakPtr() {
 }
 
 void PaymentRequestState::PopulateProfileCache() {
-  std::vector<dangling_raw_ptr<autofill::AutofillProfile>> profiles =
+  std::vector<autofill::AutofillProfile*> profiles =
       personal_data_manager_->GetProfilesToSuggest();
 
-  std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
-      raw_profiles_for_filtering;
+  std::vector<autofill::AutofillProfile*> raw_profiles_for_filtering;
   raw_profiles_for_filtering.reserve(profiles.size());
 
   // PaymentRequest may outlive the Profiles returned by the Data Manager.

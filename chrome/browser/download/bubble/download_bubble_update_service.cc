@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1081,9 +1080,9 @@ void DownloadBubbleUpdateService::InitializeOfflineItemsCache(
   offline_item_callbacks_.clear();
 }
 
-std::vector<dangling_raw_ptr<download::DownloadItem>>
+std::vector<download::DownloadItem*>
 DownloadBubbleUpdateService::GetAllDownloadItems() {
-  std::vector<dangling_raw_ptr<download::DownloadItem>> all_items;
+  std::vector<download::DownloadItem*> all_items;
   if (download_item_notifier_) {
     download_item_notifier_->GetManager()->GetAllDownloads(&all_items);
   }

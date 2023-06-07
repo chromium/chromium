@@ -171,17 +171,15 @@ class ChromePasswordManagerClient
 #endif
   void UpdateCredentialCache(
       const url::Origin& origin,
-      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>&
-          best_matches,
+      const std::vector<const password_manager::PasswordForm*>& best_matches,
       bool is_blocklisted) override;
   void AutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           saved_form_manager) override;
   void PasswordWasAutofilled(
-      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>&
-          best_matches,
+      const std::vector<const password_manager::PasswordForm*>& best_matches,
       const url::Origin& origin,
-      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>*
+      const std::vector<const password_manager::PasswordForm*>*
           federated_matches,
       bool was_autofilled_on_pageload) override;
   void AutofillHttpAuth(

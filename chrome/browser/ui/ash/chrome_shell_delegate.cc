@@ -17,7 +17,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "cc/input/touch_action.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -403,7 +402,7 @@ version_info::Channel ChromeShellDelegate::GetChannel() {
 }
 
 void ChromeShellDelegate::ForceSkipWarningUserOnClose(
-    const std::vector<dangling_raw_ptr<aura::Window>>& windows) {
+    const std::vector<aura::Window*>& windows) {
   for (aura::Window* window : windows) {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForNativeWindow(window);

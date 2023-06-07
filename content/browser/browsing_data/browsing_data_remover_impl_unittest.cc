@@ -1455,8 +1455,7 @@ class MultipleTasksObserver {
 
   void ClearLastCalledTarget() { last_called_targets_.clear(); }
 
-  const std::vector<dangling_raw_ptr<BrowsingDataRemover::Observer>>
-  GetLastCalledTargets() {
+  const std::vector<BrowsingDataRemover::Observer*> GetLastCalledTargets() {
     return last_called_targets_;
   }
 
@@ -1466,8 +1465,7 @@ class MultipleTasksObserver {
  private:
   Target target_a_;
   Target target_b_;
-  std::vector<dangling_raw_ptr<BrowsingDataRemover::Observer>>
-      last_called_targets_;
+  std::vector<BrowsingDataRemover::Observer*> last_called_targets_;
 };
 
 TEST_F(BrowsingDataRemoverImplTest, MultipleTasks) {

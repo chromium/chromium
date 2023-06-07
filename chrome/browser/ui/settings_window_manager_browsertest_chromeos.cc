@@ -67,7 +67,7 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
   void CloseNonDefaultBrowsers() {
     std::list<Browser*> browsers_to_close;
-    for (Browser* b : *BrowserList::GetInstance()) {
+    for (auto* b : *BrowserList::GetInstance()) {
       if (b != browser())
         browsers_to_close.push_back(b);
     }

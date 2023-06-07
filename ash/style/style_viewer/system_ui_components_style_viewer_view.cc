@@ -218,10 +218,8 @@ void SystemUIComponentsStyleViewerView::ShowComponentInstances(
 
   // Set the button corresponding to the component indicated by the name active.
   // Set other buttons inactive.
-  for (ash::SystemUIComponentsStyleViewerView::ComponentButton* button :
-       buttons_) {
+  for (auto* button : buttons_)
     button->SetActive(button->GetText() == name);
-  }
 
   // Toggle corresponding components grid view.
   components_grid_view_ = component_instances_scroll_view_->SetContents(

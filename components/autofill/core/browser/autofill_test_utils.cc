@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "base/memory/raw_ptr.h"
 
 #include <cstdint>
 #include <iterator>
@@ -1162,7 +1161,7 @@ std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form) {
 }
 
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
+    const std::vector<FormStructure*>& forms) {
   std::vector<FormSignature> all_signatures;
   for (const FormStructure* form : forms)
     all_signatures.push_back(form->form_signature());

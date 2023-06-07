@@ -82,17 +82,15 @@ AshWindowTreeHostUnified::AshWindowTreeHostUnified(
 }
 
 AshWindowTreeHostUnified::~AshWindowTreeHostUnified() {
-  for (ash::AshWindowTreeHost* ash_host : mirroring_hosts_) {
+  for (auto* ash_host : mirroring_hosts_)
     ash_host->AsWindowTreeHost()->window()->RemoveObserver(this);
-  }
 }
 
 void AshWindowTreeHostUnified::PrepareForShutdown() {
   AshWindowTreeHostPlatform::PrepareForShutdown();
 
-  for (ash::AshWindowTreeHost* host : mirroring_hosts_) {
+  for (auto* host : mirroring_hosts_)
     host->PrepareForShutdown();
-  }
 }
 
 void AshWindowTreeHostUnified::RegisterMirroringHost(
@@ -111,21 +109,18 @@ void AshWindowTreeHostUnified::RegisterMirroringHost(
 void AshWindowTreeHostUnified::UpdateCursorConfig() {}
 
 void AshWindowTreeHostUnified::ClearCursorConfig() {
-  for (ash::AshWindowTreeHost* host : mirroring_hosts_) {
+  for (auto* host : mirroring_hosts_)
     host->ClearCursorConfig();
-  }
 }
 
 void AshWindowTreeHostUnified::SetCursorNative(gfx::NativeCursor cursor) {
-  for (ash::AshWindowTreeHost* host : mirroring_hosts_) {
+  for (auto* host : mirroring_hosts_)
     host->AsWindowTreeHost()->SetCursor(cursor);
-  }
 }
 
 void AshWindowTreeHostUnified::OnCursorVisibilityChangedNative(bool show) {
-  for (ash::AshWindowTreeHost* host : mirroring_hosts_) {
+  for (auto* host : mirroring_hosts_)
     host->AsWindowTreeHost()->OnCursorVisibilityChanged(show);
-  }
 }
 
 void AshWindowTreeHostUnified::OnBoundsChanged(const BoundsChange& change) {

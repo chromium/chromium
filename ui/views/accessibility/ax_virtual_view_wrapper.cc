@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -34,7 +33,7 @@ AXAuraObjWrapper* AXVirtualViewWrapper::GetParent() {
 }
 
 void AXVirtualViewWrapper::GetChildren(
-    std::vector<dangling_raw_ptr<AXAuraObjWrapper>>* out_children) {
+    std::vector<AXAuraObjWrapper*>* out_children) {
   for (const auto& child : virtual_view_->children())
     out_children->push_back(child->GetOrCreateWrapper(aura_obj_cache_));
 }

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -153,7 +152,7 @@ class AutofillDriver {
   // method is a no-op if the renderer is not available or the appropriate
   // command-line flag is not set.
   virtual void SendAutofillTypePredictionsToRenderer(
-      const std::vector<dangling_raw_ptr<FormStructure>>& forms) = 0;
+      const std::vector<FormStructure*>& forms) = 0;
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(

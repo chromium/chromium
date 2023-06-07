@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -1131,9 +1130,9 @@ base::Time FFmpegDemuxer::GetTimelineOffset() const {
   return timeline_offset_;
 }
 
-std::vector<dangling_raw_ptr<DemuxerStream>> FFmpegDemuxer::GetAllStreams() {
+std::vector<DemuxerStream*> FFmpegDemuxer::GetAllStreams() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  std::vector<dangling_raw_ptr<DemuxerStream>> result;
+  std::vector<DemuxerStream*> result;
   // Put enabled streams at the beginning of the list so that
   // MediaResource::GetFirstStream returns the enabled stream if there is one.
   // TODO(servolk): Revisit this after media track switching is supported.

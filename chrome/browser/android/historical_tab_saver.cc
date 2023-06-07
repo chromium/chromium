@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/HistoricalTabSaverImpl_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,7 +65,7 @@ void CreateHistoricalTab(
 void CreateHistoricalGroup(
     TabModel* model,
     const std::u16string& group_title,
-    std::vector<dangling_raw_ptr<TabAndroid>> tabs,
+    std::vector<TabAndroid*> tabs,
     std::vector<WebContentsStateByteBuffer> web_contents_state) {
   DCHECK(model);
   sessions::TabRestoreService* service =
@@ -77,7 +76,7 @@ void CreateHistoricalGroup(
 
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
   std::map<int, tab_groups::TabGroupId> tab_id_to_group_id;
-  for (const TabAndroid* tab : tabs) {
+  for (const auto* tab : tabs) {
     DCHECK(tab);
     tab_id_to_group_id.insert(std::make_pair(tab->GetAndroidId(), group_id));
   }
@@ -98,7 +97,7 @@ void CreateHistoricalBulkClosure(
     std::vector<int> android_group_ids,
     std::vector<std::u16string> group_titles,
     std::vector<int> per_tab_android_group_id,
-    std::vector<dangling_raw_ptr<TabAndroid>> tabs,
+    std::vector<TabAndroid*> tabs,
     std::vector<WebContentsStateByteBuffer> web_contents_state) {
   DCHECK(model);
   DCHECK_EQ(android_group_ids.size(), group_titles.size());

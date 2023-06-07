@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "cc/tiles/software_image_decode_cache.h"
 #include "cc/tiles/tile_manager.h"
 
@@ -24,7 +23,7 @@ class FakeTileManager : public TileManager {
   void AssignMemoryToTiles(
       const GlobalStateThatImpactsTilePriority& state);
 
-  std::vector<dangling_raw_ptr<Tile>> tiles_for_raster;
+  std::vector<Tile*> tiles_for_raster;
 
  private:
   SoftwareImageDecodeCache image_decode_cache_;

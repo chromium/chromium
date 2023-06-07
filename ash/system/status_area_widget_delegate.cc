@@ -211,7 +211,7 @@ void StatusAreaWidgetDelegate::CalculateTargetBounds() {
   const View* last_visible_child = it == children().crend() ? nullptr : *it;
 
   // Set the border for each child, with a different border for the edge child.
-  for (views::View* child : children()) {
+  for (auto* child : children()) {
     if (!child->GetVisible())
       continue;
     SetBorderOnChild(child, last_visible_child == child);

@@ -31,7 +31,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
@@ -159,7 +158,7 @@ void MirrorLayerTree(
   parent->Add(mirror);
 
   // Calculate child layers.
-  std::vector<dangling_raw_ptr<ui::Layer>> children;
+  std::vector<ui::Layer*> children;
   if (visible_on_all_desks_windows_to_mirror.empty()) {
     // Without all desk windows, there is no need to reorder layers, just use
     // them as is.
@@ -226,7 +225,7 @@ void MirrorLayerTree(
 
     // Step 2: Populate child layers from `source_layer` with their orders.
     size_t order = 0;
-    for (ui::Layer* it : base::Reversed(source_layer->children())) {
+    for (auto* it : base::Reversed(source_layer->children())) {
       while (primary_key_taken.contains(order)) {
         order++;
       }
@@ -244,11 +243,11 @@ void MirrorLayerTree(
         });
     children.reserve(layer_orders.size());
     for (const auto& lo : layer_orders) {
-      children.emplace_back(lo.layer.get());
+      children.emplace_back(lo.layer);
     }
   }
 
-  for (ui::Layer* child : children) {
+  for (auto* child : children) {
     // Visible on all desks windows only needed to be added to the subtree once
     // so use an empty set for subsequent calls.
     MirrorLayerTree(child, mirror, layers_data, base::flat_set<aura::Window*>(),
@@ -320,9 +319,8 @@ void GetLayersData(aura::Window* window,
     layer_data.should_clear_transform = true;
   }
 
-  for (aura::Window* child : window->children()) {
+  for (auto* child : window->children())
     GetLayersData(child, out_layers_data);
-  }
 }
 
 gfx::RoundedCornersF GetRoundedCorner() {

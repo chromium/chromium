@@ -177,8 +177,7 @@ SkM44 SkMatrix44FromColorMatrixVector(const std::vector<float>& matrix_vector) {
 
 bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
                               int64_t display_id) {
-  for (const display::DisplaySnapshot* display_snapshot :
-       configurator->cached_displays()) {
+  for (const auto* display_snapshot : configurator->cached_displays()) {
     if (display_snapshot->display_id() != display_id)
       continue;
 
@@ -207,8 +206,7 @@ DisplayColorManager::~DisplayColorManager() {
 
 bool DisplayColorManager::SetDisplayColorMatrix(int64_t display_id,
                                                 const SkM44& color_matrix) {
-  for (const display::DisplaySnapshot* display_snapshot :
-       configurator_->cached_displays()) {
+  for (const auto* display_snapshot : configurator_->cached_displays()) {
     if (display_snapshot->display_id() != display_id)
       continue;
 

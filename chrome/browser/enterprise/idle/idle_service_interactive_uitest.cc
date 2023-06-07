@@ -178,7 +178,7 @@ class IdleServiceTest : public InProcessBrowserTest {
 
   int GetBrowserCount(Profile* profile) {
     int count = 0;
-    for (Browser* browser : *BrowserList::GetInstance()) {
+    for (auto* browser : *BrowserList::GetInstance()) {
       if (browser->profile() == profile) {
         count++;
       }

@@ -1594,7 +1594,7 @@ TEST(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
   older.SetMergeModeForTesting(MergeMode::kMergeChildrenAndReformatIfNeeded);
   // Set the merge modes of the children to replace empty values and use
   // supersets.
-  for (autofill::AddressComponent* subcomponent : older.Subcomponents()) {
+  for (auto* subcomponent : older.Subcomponents()) {
     subcomponent->SetMergeModeForTesting(kReplaceEmpty | kReplaceSubset);
   }
 

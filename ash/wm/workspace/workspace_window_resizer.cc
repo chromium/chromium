@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
-#include "base/memory/raw_ptr.h"
 
 #include <cmath>
 #include <utility>
@@ -653,7 +652,7 @@ WorkspaceWindowResizer::~WorkspaceWindowResizer() {
 // static
 std::unique_ptr<WorkspaceWindowResizer> WorkspaceWindowResizer::Create(
     WindowState* window_state,
-    const std::vector<dangling_raw_ptr<aura::Window>>& attached_windows) {
+    const std::vector<aura::Window*>& attached_windows) {
   return base::WrapUnique(
       new WorkspaceWindowResizer(window_state, attached_windows));
 }
@@ -1062,7 +1061,7 @@ void WorkspaceWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
 
 WorkspaceWindowResizer::WorkspaceWindowResizer(
     WindowState* window_state,
-    const std::vector<dangling_raw_ptr<aura::Window>>& attached_windows)
+    const std::vector<aura::Window*>& attached_windows)
     : WindowResizer(window_state),
       attached_windows_(attached_windows),
       initial_bounds_changed_by_user_(window_state_->bounds_changed_by_user()) {
@@ -1354,8 +1353,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
   aura::Window* container =
       desks_util::GetActiveDeskContainerForRoot(root_window);
   DCHECK(container);
-  const std::vector<dangling_raw_ptr<aura::Window>>& children =
-      container->children();
+  const std::vector<aura::Window*>& children = container->children();
   for (auto i = children.rbegin();
        i != children.rend() && !matcher.AreEdgesObscured(); ++i) {
     // Ignore already attached windows.
@@ -1618,10 +1616,9 @@ void WorkspaceWindowResizer::RestackWindows() {
   using IndexToWindowMap = std::map<size_t, aura::Window*>;
   IndexToWindowMap map;
   aura::Window* parent = GetTarget()->parent();
-  const std::vector<dangling_raw_ptr<aura::Window>>& windows(
-      parent->children());
+  const std::vector<aura::Window*>& windows(parent->children());
   map[base::ranges::find(windows, GetTarget()) - windows.begin()] = GetTarget();
-  for (aura::Window* attached_window : attached_windows_) {
+  for (auto* attached_window : attached_windows_) {
     if (attached_window->parent() != parent) {
       return;
     }
@@ -1749,7 +1746,7 @@ void WorkspaceWindowResizer::StartDragForAttachedWindows() {
   }
   DCHECK(window_component == HTLEFT || window_component == HTTOP);
 
-  for (aura::Window* window : attached_windows_) {
+  for (auto* window : attached_windows_) {
     WindowState* window_state = WindowState::Get(window);
     window_state->CreateDragDetails(details().initial_location_in_parent,
                                     window_component,
@@ -1763,7 +1760,7 @@ void WorkspaceWindowResizer::EndDragForAttachedWindows(bool revert_drag) {
     return;
   }
 
-  for (aura::Window* window : attached_windows_) {
+  for (auto* window : attached_windows_) {
     WindowState* window_state = WindowState::Get(window);
     if (revert_drag) {
       window_state->OnRevertDrag(last_location_in_parent_);

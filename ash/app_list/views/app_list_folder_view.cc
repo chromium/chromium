@@ -292,9 +292,8 @@ class TopIconAnimation : public AppListFolderView::Animation,
   TopIconAnimation& operator=(const TopIconAnimation&) = delete;
 
   ~TopIconAnimation() override {
-    for (ash::TopIconAnimationView* view : top_icon_views_) {
+    for (auto* view : top_icon_views_)
       view->RemoveObserver(this);
-    }
     top_icon_views_.clear();
   }
 
@@ -483,7 +482,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
   // not outlive the `folder_item_view_`.
   const raw_ptr<AppListItemView, ExperimentalAsh> folder_item_view_;
 
-  std::vector<dangling_raw_ptr<TopIconAnimationView>> top_icon_views_;
+  std::vector<TopIconAnimationView*> top_icon_views_;
 
   base::OnceClosure completion_callback_;
 };

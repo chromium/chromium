@@ -122,7 +122,7 @@ void FakeDisplayDelegate::RelinquishDisplayControl(
 }
 
 void FakeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
-  std::vector<dangling_raw_ptr<DisplaySnapshot>> displays;
+  std::vector<DisplaySnapshot*> displays;
   for (auto& display : displays_)
     displays.push_back(display.get());
   std::move(callback).Run(displays);

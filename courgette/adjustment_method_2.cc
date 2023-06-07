@@ -204,7 +204,7 @@ class LabelInfo {
   // inside a std::map.
 };
 
-typedef std::vector<dangling_raw_ptr<LabelInfo>> Trace;
+typedef std::vector<LabelInfo*> Trace;
 
 std::string ToString(const LabelInfo* info) {
   std::string s;
@@ -802,8 +802,7 @@ class VariableQueue {
   typedef std::set<ScoreAndLabel, OrderScoreAndLabelByScoreDecreasing> Queue;
 
   Queue queue_;
-  std::vector<dangling_raw_ptr<AssignmentCandidates>>
-      pending_update_candidates_;
+  std::vector<AssignmentCandidates*> pending_update_candidates_;
 };
 
 
@@ -1214,7 +1213,7 @@ class AssignmentProblem {
   Shingle::OwningSet shingle_instances_;
 
   // |instances_| maps from position in |trace_| to Shingle at that position.
-  std::vector<dangling_raw_ptr<Shingle>> instances_;
+  std::vector<Shingle*> instances_;
 
   SingleUsePatternQueue single_use_pattern_queue_;
   ShinglePatternSet active_non_single_use_patterns_;

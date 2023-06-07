@@ -170,7 +170,7 @@ class WebTestControlHost : public WebContentsObserver,
 
     raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host = nullptr;
     GlobalRenderFrameHostId render_frame_host_id;
-    std::vector<dangling_raw_ptr<Node>> children;
+    std::vector<Node*> children;
   };
 
   class WebTestWindowObserver;

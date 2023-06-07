@@ -180,7 +180,7 @@ class PrerenderPageLoadMetricsObserverBrowserTest
 
     for (auto& ukm : ukm_list) {
       int count = 0;
-      for (const ukm::mojom::UkmEntry* entry :
+      for (auto* entry :
            ukm_recorder().GetEntriesByName(PrerenderPageLoad::kEntryName)) {
         auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
         if (!source)

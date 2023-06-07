@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_item_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
@@ -83,8 +82,7 @@ class ProfileListViewController : public PaymentRequestSheetController {
 
   // Returns the profiles cached by |request| which are appropriate for display
   // in this context.
-  virtual std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
-  GetProfiles() = 0;
+  virtual std::vector<autofill::AutofillProfile*> GetProfiles() = 0;
 
   virtual DialogViewID GetDialogViewId() = 0;
 

@@ -868,9 +868,8 @@ void LoginShelfView::UpdateUi() {
       session_state == SessionState::RMA) {
     // The entire view was set invisible. The buttons are also set invisible
     // to avoid affecting calculation of the shelf size.
-    for (views::View* child : children()) {
+    for (auto* child : children())
       child->SetVisible(false);
-    }
 
     return;
   }
@@ -932,7 +931,7 @@ void LoginShelfView::UpdateUi() {
   // LoginShelfView. We update it here, so we don't need to check visibility
   // every time we move focus to system tray.
   bool is_anything_focusable = false;
-  for (ash::LoginShelfButton* child : login_shelf_buttons_) {
+  for (auto* child : login_shelf_buttons_) {
     if (child->IsFocusable()) {
       is_anything_focusable = true;
       break;
@@ -974,7 +973,7 @@ void LoginShelfView::UpdateButtonsColors() {
 void LoginShelfView::UpdateButtonUnionBounds() {
   button_union_bounds_ = gfx::Rect();
   View::Views children = GetChildrenInZOrder();
-  for (views::View* child : children) {
+  for (auto* child : children) {
     if (child->GetVisible())
       button_union_bounds_.Union(child->bounds());
   }

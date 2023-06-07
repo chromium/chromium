@@ -142,7 +142,7 @@ base::Value::Dict CreateFileSystemValue(
 }
 
 Browser* FindBrowser(content::WebContents* web_contents) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(
         web_contents);
     if (tab_index != TabStripModel::kNoTab)

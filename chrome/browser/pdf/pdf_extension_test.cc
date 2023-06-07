@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -612,9 +611,9 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
     download_manager->RemoveObserver(download_awaiter_.get());
 
     // Cancel all downloads to shut down cleanly.
-    std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
+    std::vector<download::DownloadItem*> downloads;
     download_manager->GetAllDownloads(&downloads);
-    for (download::DownloadItem* item : downloads) {
+    for (auto* item : downloads) {
       item->Cancel(false);
     }
 
@@ -646,7 +645,7 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
     content::DownloadManager* download_manager =
         browser_context->GetDownloadManager();
 
-    std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
+    std::vector<download::DownloadItem*> downloads;
     download_manager->GetAllDownloads(&downloads);
     return downloads.size();
   }

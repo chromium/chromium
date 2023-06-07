@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "net/reporting/reporting_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
@@ -377,10 +376,9 @@ ReportingContext* TestReportingService::GetContextForTesting() const {
   return nullptr;
 }
 
-std::vector<dangling_raw_ptr<const ReportingReport>>
-TestReportingService::GetReports() const {
+std::vector<const ReportingReport*> TestReportingService::GetReports() const {
   NOTREACHED();
-  return std::vector<dangling_raw_ptr<const ReportingReport>>();
+  return std::vector<const ReportingReport*>();
 }
 
 base::flat_map<url::Origin, std::vector<ReportingEndpoint>>

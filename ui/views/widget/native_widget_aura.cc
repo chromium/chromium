@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -97,7 +96,7 @@ void SetIcon(aura::Window* window,
     window->SetProperty(key, value);
 }
 
-bool FindLayersInOrder(const std::vector<dangling_raw_ptr<ui::Layer>>& children,
+bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
                        const ui::Layer** first,
                        const ui::Layer** second) {
   for (const ui::Layer* child : children) {
@@ -1333,9 +1332,8 @@ void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
       children->insert(native_widget->GetWidget());
   }
 
-  for (aura::Window* child_window : native_view->children()) {
+  for (auto* child_window : native_view->children())
     GetAllChildWidgets(child_window, children);
-  }
 }
 
 // static

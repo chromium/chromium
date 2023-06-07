@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/invoke.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2225,7 +2224,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
 
   FormStructure form_structure(form);
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   std::vector<FormSignature> expected_signatures;
@@ -2355,7 +2354,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   EXPECT_THAT(encoded_query5, SerializesSameAs(query));
 
   // Check that we fail if there are only bad form(s).
-  std::vector<dangling_raw_ptr<FormStructure>> bad_forms;
+  std::vector<FormStructure*> bad_forms;
   bad_forms.push_back(&malformed_form_structure);
   AutofillPageQueryRequest encoded_query6;
   std::vector<FormSignature> encoded_signatures6;
@@ -4786,7 +4785,7 @@ TEST_F(FormStructureTestImpl, SkipFieldTest) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   std::vector<FormSignature> encoded_signatures;
   AutofillPageQueryRequest encoded_query;
@@ -4834,7 +4833,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLabels) {
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   FormStructure form_structure(form);
   forms.push_back(&form_structure);
   std::vector<FormSignature> encoded_signatures;
@@ -4886,7 +4885,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLongLabels) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   std::vector<FormSignature> encoded_signatures;
   AutofillPageQueryRequest encoded_query;
@@ -4932,7 +4931,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   for (auto& fs_field : form_structure)
     fs_field->host_form_signature = form_structure.form_signature();
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   std::vector<FormSignature> encoded_signatures;
   AutofillPageQueryRequest encoded_query;
@@ -5045,7 +5044,7 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
   // Parse the response and update the field type predictions.
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(nullptr, nullptr);
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
@@ -5119,7 +5118,7 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
@@ -5186,7 +5185,7 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
@@ -5239,7 +5238,7 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
@@ -5265,7 +5264,7 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
 
   // Also check the extreme case of an empty form.
   FormStructure empty_form{FormData()};
-  std::vector<dangling_raw_ptr<FormStructure>> empty_forms{&empty_form};
+  std::vector<FormStructure*> empty_forms{&empty_form};
   FormStructure::ParseApiQueryResponse(response_string, empty_forms,
                                        test::GetEncodedSignatures(empty_forms),
                                        nullptr, nullptr);
@@ -5304,7 +5303,7 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
@@ -5379,7 +5378,7 @@ TEST_F(FormStructureTestImpl,
     form.fields = fields;
     form.url = GURL("http://foo.com");
     FormStructure form_structure(form);
-    std::vector<dangling_raw_ptr<FormStructure>> forms;
+    std::vector<FormStructure*> forms;
     forms.push_back(&form_structure);
 
     // Make serialized API response.
@@ -5473,7 +5472,7 @@ TEST_F(FormStructureTestImpl,
   form.url = GURL("http://foo.com");
 
   FormStructure form_structure(form);
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   ASSERT_GE(fields.size(), 6u);
@@ -5563,7 +5562,7 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   form.fields.push_back(checkable_field);
 
   FormStructure form_structure(form);
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Make form 2 data.
@@ -5646,7 +5645,7 @@ TEST_F(FormStructureTestImpl,
   FormStructure form_structure(form);
   form_structure.field(0)->set_server_predictions(
       {CreateFieldPrediction(NAME_FULL)});
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   std::string response_string = "invalid string that cannot be parsed";
@@ -5677,7 +5676,7 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponseWhenPayloadNotBase64) {
   FormStructure form_structure(form);
   form_structure.field(0)->set_server_predictions(
       {CreateFieldPrediction(NAME_FULL)});
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Make a really simple serialized API response. We don't encode it in base64.
@@ -5718,7 +5717,7 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_AuthorDefinedTypes) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   forms.front()->DetermineHeuristicTypes(nullptr, nullptr);
 
@@ -5793,7 +5792,7 @@ TEST_F(FormStructureTestImpl,
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
@@ -5857,7 +5856,7 @@ TEST_F(FormStructureTestImpl, NoServerDataCCFields_CVC_NoOverwrite) {
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
@@ -5926,7 +5925,7 @@ TEST_F(FormStructureTestImpl, WithServerDataCCFields_CVC_NoOverwrite) {
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
@@ -5982,7 +5981,7 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RankEqualSignatures) {
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
@@ -6026,7 +6025,7 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
@@ -6053,7 +6052,7 @@ TEST_F(FormStructureTestImpl, AllowBigForms) {
 
   FormStructure form_structure(form);
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   std::vector<FormSignature> encoded_signatures;
 
@@ -6593,7 +6592,7 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
       .SetFieldTypes(
           {CREDIT_CARD_NAME_FULL, ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE});
 
-  std::vector<dangling_raw_ptr<FormStructure>> forms;
+  std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
   test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
@@ -6668,7 +6667,7 @@ TEST_F(FormStructureTestImpl, ExperimentalServerPredictionsAreSeparate) {
                             form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<dangling_raw_ptr<FormStructure>> forms{&form};
+  std::vector<FormStructure*> forms{&form};
   FormStructure::ParseApiQueryResponse(SerializeAndEncode(response), forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);

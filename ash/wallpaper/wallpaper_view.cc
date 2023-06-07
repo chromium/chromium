@@ -66,7 +66,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     display::Display display =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window);
 
-    for (views::View* child : children()) {
+    for (auto* child : children()) {
       child->SetBounds(0, 0, display.size().width(), display.size().height());
       gfx::Transform transform;
       // Apply RTL transform explicitly becacuse Views layer code

@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   content::WebContents* new_tab = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
+  for (auto* b : *BrowserList::GetInstance()) {
     if (b != browser())
       new_tab = b->tab_strip_model()->GetActiveWebContents();
   }

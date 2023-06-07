@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/scheduler/internal/collection_store.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,8 +26,7 @@ class IconStore;
 class ScheduledNotificationManager {
  public:
   using Notifications =
-      std::map<SchedulerClientType,
-               std::vector<dangling_raw_ptr<const NotificationEntry>>>;
+      std::map<SchedulerClientType, std::vector<const NotificationEntry*>>;
   using InitCallback = base::OnceCallback<void(bool)>;
   using ScheduleCallback = base::OnceCallback<void(bool)>;
   using DisplayCallback =

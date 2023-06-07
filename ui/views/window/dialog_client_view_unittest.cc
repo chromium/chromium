@@ -140,7 +140,7 @@ class DialogClientViewTest : public test::WidgetTest {
     Button* button = Button::AsButton(root);
     if (button && button->GetAccessibleName() == name)
       return button;
-    for (views::View* child : root->children()) {
+    for (auto* child : root->children()) {
       button = GetButtonByAccessibleName(child, name);
       if (button)
         return button;

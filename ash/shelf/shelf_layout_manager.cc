@@ -1221,7 +1221,7 @@ bool ShelfLayoutManager::HasVisibleWindow() const {
           kActiveDesk);
   // Process the window list and check if there are any visible windows.
   // Ignore app list windows that may be animating to hide after dismissal.
-  for (aura::Window* window : windows) {
+  for (auto* window : windows) {
     if (window->IsVisible() && !IsAppListWindow(window) &&
         root->Contains(window)) {
       return true;
@@ -1924,7 +1924,7 @@ bool ShelfLayoutManager::IsDraggingWindowFromTopOrCaptionArea() const {
   // in overview mode. http://crbug.com/866679
   auto windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (aura::Window* window : windows) {
+  for (auto* window : windows) {
     WindowState* window_state = WindowState::Get(window);
     if (window_state && window_state->is_dragged() &&
         (window_state->IsMaximized() || window_state->IsFullscreen()) &&

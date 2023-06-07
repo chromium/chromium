@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -84,7 +83,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   session_tracker_.GetSession(kSessionTag3)
       ->SetModifiedTime(kTime0 + base::Seconds(2));
 
-  std::vector<dangling_raw_ptr<const SyncedSession>> sessions;
+  std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag1);
   EXPECT_EQ(sessions[1]->GetSessionTag(), kSessionTag3);
@@ -139,7 +138,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonPresentable) {
       ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
                                   CreateNavigationForTest());
 
-  std::vector<dangling_raw_ptr<const SyncedSession>> sessions;
+  std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
 }
@@ -168,7 +167,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
   session_tracker_.GetTab(kSessionTag2, kTabId2)
       ->navigations.push_back(syncable_entry);
 
-  std::vector<dangling_raw_ptr<const SyncedSession>> sessions;
+  std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
 }

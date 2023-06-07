@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -53,8 +52,7 @@ class FakeDisconnectTetheringOperationFactory
   FakeDisconnectTetheringOperationFactory() = default;
   ~FakeDisconnectTetheringOperationFactory() override = default;
 
-  std::vector<dangling_raw_ptr<FakeDisconnectTetheringOperation>>&
-  created_operations() {
+  std::vector<FakeDisconnectTetheringOperation*>& created_operations() {
     return created_operations_;
   }
 
@@ -72,8 +70,7 @@ class FakeDisconnectTetheringOperationFactory
   }
 
  private:
-  std::vector<dangling_raw_ptr<FakeDisconnectTetheringOperation>>
-      created_operations_;
+  std::vector<FakeDisconnectTetheringOperation*> created_operations_;
 };
 
 class FakeDisconnectTetheringRequestSenderObserver

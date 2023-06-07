@@ -280,17 +280,15 @@ class EventTargetingBlocker : aura::WindowObserver {
     window->AddObserver(this);
     event_targeting_blocker_map_[window] =
         std::make_unique<aura::ScopedWindowEventTargetingBlocker>(window);
-    for (aura::Window* child : window->children()) {
+    for (auto* child : window->children())
       Register(child);
-    }
   }
 
   void Unregister(aura::Window* window) {
     window->RemoveObserver(this);
     event_targeting_blocker_map_.erase(window);
-    for (aura::Window* child : window->children()) {
+    for (auto* child : window->children())
       Unregister(child);
-    }
   }
 
   void OnWindowDestroying(aura::Window* window) override {

@@ -8,7 +8,6 @@
 #include <set>
 
 #include "ash/style/style_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
@@ -212,12 +211,11 @@ class ActionLabelMove : public ActionLabel {
 
 }  // namespace
 
-std::vector<dangling_raw_ptr<ActionLabel>> ActionLabel::Show(
-    views::View* parent,
-    ActionType action_type,
-    const InputElement& input_element,
-    TapLabelPosition label_position) {
-  std::vector<dangling_raw_ptr<ActionLabel>> labels;
+std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
+                                            ActionType action_type,
+                                            const InputElement& input_element,
+                                            TapLabelPosition label_position) {
+  std::vector<ActionLabel*> labels;
   gfx::Size touch_point_size;
 
   switch (action_type) {
@@ -263,7 +261,7 @@ std::vector<dangling_raw_ptr<ActionLabel>> ActionLabel::Show(
       break;
   }
 
-  for (arc::input_overlay::ActionLabel* label : labels) {
+  for (auto* label : labels) {
     label->Init();
     label->set_touch_point_size(touch_point_size);
   }

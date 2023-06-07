@@ -10,7 +10,6 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
-#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/titled_url_index.h"
@@ -66,14 +65,14 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
       continue;
     }
 
-    std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodes;
+    std::vector<const bookmarks::BookmarkNode*> nodes;
     local_or_syncable_bookmark_model_->GetNodesByURL(match.destination_url,
                                                      &nodes);
     if (nodes.empty()) {
       return;
     }
 
-    for (const bookmarks::BookmarkNode* node : nodes) {
+    for (const auto* node : nodes) {
       const std::u16string lower_title = base::i18n::ToLower(
           TitledUrlIndex::Normalize(node->GetTitledUrlNodeTitle()));
       query_parser::QueryWordVector title_words;

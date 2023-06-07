@@ -91,9 +91,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
     overview_grid_ = overview_grid;
   }
 
-  const std::vector<dangling_raw_ptr<DeskMiniView>>& mini_views() const {
-    return mini_views_;
-  }
+  const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
 
   const views::View* scroll_view_contents() const {
     return scroll_view_contents_;
@@ -403,7 +401,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_ = nullptr;
 
   // The views representing desks mini_views. They're owned by views hierarchy.
-  std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_;
+  std::vector<DeskMiniView*> mini_views_;
 
   // Puts the contents in a `ScrollView` to support scrollable desks.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -239,8 +238,7 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
   data_dir_ = test_data_dir.AppendASCII("extensions");
 
   policy_service_ = std::make_unique<policy::PolicyServiceImpl>(
-      std::vector<dangling_raw_ptr<policy::ConfigurationPolicyProvider>>{
-          &policy_provider_});
+      std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
 }
 
 ExtensionServiceTestBase::~ExtensionServiceTestBase() {

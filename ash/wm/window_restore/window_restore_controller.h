@@ -10,7 +10,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -66,10 +65,9 @@ class ASH_EXPORT WindowRestoreController
   // should be inserted. The insertion point is determined by iterating from LRU
   // to MRU, returning the an iter to the first window that has no activation
   // index or a lower activation index.
-  static std::vector<dangling_raw_ptr<aura::Window>>::const_iterator
-  GetWindowToInsertBefore(
+  static std::vector<aura::Window*>::const_iterator GetWindowToInsertBefore(
       aura::Window* window,
-      const std::vector<dangling_raw_ptr<aura::Window>>& windows);
+      const std::vector<aura::Window*>& windows);
 
   // Calls SaveWindowImpl for |window_state|. The activation index will be
   // calculated in SaveWindowImpl.

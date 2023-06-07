@@ -168,7 +168,7 @@ void WindowTransformAnimationObserver::OnImplicitAnimationsCompleted() {
     return;
   }
 
-  for (aura::Window* transient_window :
+  for (auto* transient_window :
        ::wm::TransientWindowManager::GetOrCreate(window_)
            ->transient_children()) {
     // For now we only care about bubble dialog type transient children.

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace base {
@@ -30,8 +29,7 @@ struct SchedulerConfig;
 class BackgroundTaskCoordinator {
  public:
   using Notifications =
-      std::map<SchedulerClientType,
-               std::vector<dangling_raw_ptr<const NotificationEntry>>>;
+      std::map<SchedulerClientType, std::vector<const NotificationEntry*>>;
   using ClientStates = std::map<SchedulerClientType, const ClientState*>;
   using TimeRandomizer = base::RepeatingCallback<base::TimeDelta()>;
 

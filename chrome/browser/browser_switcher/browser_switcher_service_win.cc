@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -47,8 +46,8 @@ const int kCurrentFileVersion = 1;
 // policies). This stores the rules as raw-pointers rather than unique-pointers,
 // to avoid copying/moving them from their original source.
 struct MergedRuleSet {
-  std::vector<dangling_raw_ptr<Rule>> sitelist;
-  std::vector<dangling_raw_ptr<Rule>> greylist;
+  std::vector<Rule*> sitelist;
+  std::vector<Rule*> greylist;
 };
 
 // Creates a RuleSet that is the concatenation of all 3 sources.

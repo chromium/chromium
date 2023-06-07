@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/prefs/pref_service.h"
@@ -92,10 +91,9 @@ class PasswordsClientUIDelegate {
   // the manage password icon. |federated_matches| contain the matching stored
   // federated credentials to display in the UI.
   virtual void OnPasswordAutofilled(
-      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>&
-          password_forms,
+      const std::vector<const password_manager::PasswordForm*>& password_forms,
       const url::Origin& origin,
-      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>*
+      const std::vector<const password_manager::PasswordForm*>*
           federated_matches) = 0;
 
   // Called when user credentials were leaked. This triggers the UI to prompt

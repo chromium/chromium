@@ -191,9 +191,8 @@ void RecentAppsView::OnAppListItemWillBeDeleted(AppListItem* item) {
 void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
   app_list_config_ = app_list_config;
 
-  for (ash::AppListItemView* item_view : item_views_) {
+  for (auto* item_view : item_views_)
     item_view->UpdateAppListConfig(app_list_config);
-  }
 }
 
 void RecentAppsView::UpdateResults(

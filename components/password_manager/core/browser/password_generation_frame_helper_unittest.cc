@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -293,7 +292,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     autofill::FormStructure form(account_creation_form);
 
-    std::vector<dangling_raw_ptr<autofill::FormStructure>> forms = {&form};
+    std::vector<autofill::FormStructure*> forms = {&form};
 
     // EMAIL_ADDRESS = 9
     // ACCOUNT_CREATION_PASSWORD = 76

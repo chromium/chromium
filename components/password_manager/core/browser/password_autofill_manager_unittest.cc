@@ -1407,7 +1407,7 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
   const auto& entries = autofill_client.GetTestUkmRecorder()->GetEntriesByName(
       UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
+  for (const auto* entry : entries) {
     EXPECT_EQ(expected_source_id, entry->source_id);
     ukm::TestUkmRecorder::ExpectEntryMetric(
         entry, UkmEntry::kPageLevelUserActionName,

@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -43,7 +42,7 @@ AXAuraObjWrapper* AXViewObjWrapper::GetParent() {
 }
 
 void AXViewObjWrapper::GetChildren(
-    std::vector<dangling_raw_ptr<AXAuraObjWrapper>>* out_children) {
+    std::vector<AXAuraObjWrapper*>* out_children) {
   const ViewAccessibility& view_accessibility = view_->GetViewAccessibility();
 
   // Ignore this view's descendants if it has a child tree.

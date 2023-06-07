@@ -452,9 +452,9 @@ gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
   return gfx::Size();
 }
 
-std::vector<dangling_raw_ptr<views::View>>
-BrowserViewLayout::GetChildViewsInPaintOrder(const views::View* host) const {
-  std::vector<dangling_raw_ptr<views::View>> result =
+std::vector<views::View*> BrowserViewLayout::GetChildViewsInPaintOrder(
+    const views::View* host) const {
+  std::vector<views::View*> result =
       views::LayoutManager::GetChildViewsInPaintOrder(host);
   // Make sure `top_container_` is after `contents_container_` in paint order
   // when this is a window using WindowControlsOverlay, to make sure the window

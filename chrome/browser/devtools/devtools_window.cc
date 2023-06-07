@@ -124,7 +124,7 @@ bool FindInspectedBrowserAndTabIndex(
   if (!inspected_web_contents)
     return false;
 
-  for (Browser* b : *BrowserList::GetInstance()) {
+  for (auto* b : *BrowserList::GetInstance()) {
     int tab_index =
         b->tab_strip_model()->GetIndexOfWebContents(inspected_web_contents);
     if (tab_index != TabStripModel::kNoTab) {

@@ -21,7 +21,6 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "components/app_restore/window_properties.h"
@@ -2673,12 +2672,10 @@ class TestWindowObserver : public WMHelper::ExoWindowObserver {
     windows_.push_back(window);
   }
 
-  const std::vector<dangling_raw_ptr<aura::Window>>& observed_windows() {
-    return windows_;
-  }
+  const std::vector<aura::Window*>& observed_windows() { return windows_; }
 
  private:
-  std::vector<dangling_raw_ptr<aura::Window>> windows_;
+  std::vector<aura::Window*> windows_;
 };
 
 TEST_F(ShellSurfaceTest, NotifyOnWindowCreation) {

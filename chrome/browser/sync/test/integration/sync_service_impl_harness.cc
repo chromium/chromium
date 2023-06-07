@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -373,7 +372,7 @@ bool SyncServiceImplHarness::AwaitQuiescence(
     return true;
   }
 
-  std::vector<dangling_raw_ptr<SyncServiceImpl>> services;
+  std::vector<SyncServiceImpl*> services;
   for (SyncServiceImplHarness* harness : clients) {
     services.push_back(harness->service());
   }

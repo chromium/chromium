@@ -165,8 +165,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   Shelf* shelf() { return shelf_; }
 
-  const std::vector<dangling_raw_ptr<TrayBackgroundView>>& tray_buttons()
-      const {
+  const std::vector<TrayBackgroundView*>& tray_buttons() const {
     return tray_buttons_;
   }
 
@@ -317,7 +316,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   // Vector of the tray buttons above. The ordering is used to determine which
   // tray buttons are hidden when they overflow the available width.
-  std::vector<dangling_raw_ptr<TrayBackgroundView>> tray_buttons_;
+  std::vector<TrayBackgroundView*> tray_buttons_;
 
   LoginStatus login_status_ = LoginStatus::NOT_LOGGED_IN;
 

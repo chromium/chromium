@@ -290,7 +290,7 @@ void StatusAreaWidget::UpdateCollapseState() {
 
 void StatusAreaWidget::LogVisiblePodCountMetric() {
   int visible_pod_count = 0;
-  for (ash::TrayBackgroundView* tray_button : tray_buttons_) {
+  for (auto* tray_button : tray_buttons_) {
     switch (tray_button->catalog_name()) {
       case TrayBackgroundViewCatalogName::kUnifiedSystem:
       case TrayBackgroundViewCatalogName::kStatusAreaOverflowButton:
@@ -420,7 +420,7 @@ void StatusAreaWidget::HandleLocaleChange() {
   // needed).
   status_area_widget_delegate_->RemoveAllChildViewsWithoutDeleting();
 
-  for (ash::TrayBackgroundView* tray_button : tray_buttons_) {
+  for (auto* tray_button : tray_buttons_) {
     tray_button->HandleLocaleChange();
     status_area_widget_delegate_->AddChildView(tray_button);
   }
@@ -430,7 +430,7 @@ void StatusAreaWidget::HandleLocaleChange() {
 void StatusAreaWidget::NotifyAnyBubbleVisibilityChanged(
     views::Widget* bubble_widget,
     bool visible) {
-  for (ash::TrayBackgroundView* tray_button : tray_buttons_) {
+  for (auto* tray_button : tray_buttons_) {
     tray_button->OnAnyBubbleVisibilityChanged(bubble_widget, visible);
   }
 }

@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -94,7 +93,7 @@ void It2MeStandaloneHost::Connect() {
       &handler_, std::unique_ptr<protocol::ConnectionToClient>(&connection_),
       &factory_, options, base::TimeDelta(),
       scoped_refptr<protocol::PairingRegistry>(),
-      std::vector<dangling_raw_ptr<HostExtension>>());
+      std::vector<HostExtension*>());
   session_->OnConnectionAuthenticated();
   session_->OnConnectionChannelsConnected();
   session_->CreateMediaStreams();

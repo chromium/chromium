@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/lacros/sync/crosapi_session_sync_favicon_delegate.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -71,8 +70,7 @@ std::vector<crosapi::mojom::SyncedSessionWindowPtr> ConstructSyncedPhoneWindows(
 // sync_sessions::SyncedSession for sessions with FormFactor kPhone from the
 // latter list.
 std::vector<crosapi::mojom::SyncedSessionPtr> ConstructSyncedPhoneSessions(
-    const std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>&
-        sessions) {
+    const std::vector<const sync_sessions::SyncedSession*>& sessions) {
   std::vector<crosapi::mojom::SyncedSessionPtr> crosapi_synced_phone_sessions;
   for (const sync_sessions::SyncedSession* session : sessions) {
     if (session->GetDeviceFormFactor() !=
@@ -160,8 +158,7 @@ void CrosapiSessionSyncNotifier::OnForeignSyncedSessionsUpdated() {
     return;
   }
 
-  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>
-      synced_sessions;
+  std::vector<const sync_sessions::SyncedSession*> synced_sessions;
   open_tabs->GetAllForeignSessions(&synced_sessions);
   std::vector<crosapi::mojom::SyncedSessionPtr> crosapi_synced_phone_sessions =
       ConstructSyncedPhoneSessions(synced_sessions);

@@ -45,7 +45,7 @@ void ScrollArrowButton::PaintButtonContents(gfx::Canvas* canvas) {
           AshColorProvider::ContentLayerType::kIconColorPrimary));
 
   DCHECK(!bar_view_->mini_views().empty());
-  const auto* mini_view = bar_view_->mini_views()[0].get();
+  const auto* mini_view = bar_view_->mini_views()[0];
   canvas->DrawImageInt(
       img, (width() - img.width()) / 2,
       mini_view->bounds().y() +

@@ -245,7 +245,7 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
   base::flat_set<GURL> result;
   // TODO (crbug/1288416): Enable this for android.
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile) {
       continue;
     }

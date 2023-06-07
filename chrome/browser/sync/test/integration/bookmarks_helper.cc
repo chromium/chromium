@@ -793,11 +793,10 @@ bool ContainsDuplicateBookmarks(int profile) {
     if (node->is_folder()) {
       continue;
     }
-    std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
+    std::vector<const BookmarkNode*> nodes;
     GetBookmarkModel(profile)->GetNodesByURL(node->url(), &nodes);
     EXPECT_GE(nodes.size(), 1U);
-    for (std::vector<dangling_raw_ptr<const BookmarkNode>>::const_iterator it =
-             nodes.begin();
+    for (std::vector<const BookmarkNode*>::const_iterator it = nodes.begin();
          it != nodes.end(); ++it) {
       if (node->id() != (*it)->id() && node->parent() == (*it)->parent() &&
           node->GetTitle() == (*it)->GetTitle()) {
@@ -809,13 +808,13 @@ bool ContainsDuplicateBookmarks(int profile) {
 }
 
 bool HasNodeWithURL(int profile, const GURL& url) {
-  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
+  std::vector<const BookmarkNode*> nodes;
   GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
   return !nodes.empty();
 }
 
 const BookmarkNode* GetUniqueNodeByURL(int profile, const GURL& url) {
-  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
+  std::vector<const BookmarkNode*> nodes;
   GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
   EXPECT_EQ(1U, nodes.size());
   if (nodes.empty()) {
@@ -834,7 +833,7 @@ size_t CountBookmarksWithTitlesMatching(int profile, const std::string& title) {
 }
 
 size_t CountBookmarksWithUrlsMatching(int profile, const GURL& url) {
-  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
+  std::vector<const BookmarkNode*> nodes;
   GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
   return nodes.size();
 }

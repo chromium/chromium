@@ -286,7 +286,7 @@ TEST_F(MediaNotificationViewImplTest, ButtonsSanityCheck) {
   auto buttons = view()->get_buttons_for_testing();
   EXPECT_EQ(6u, buttons.size());
 
-  for (views::View* button : buttons) {
+  for (auto* button : buttons) {
     EXPECT_TRUE(button->GetVisible());
     EXPECT_LT(kMediaButtonIconSize, button->width());
     EXPECT_LT(kMediaButtonIconSize, button->height());

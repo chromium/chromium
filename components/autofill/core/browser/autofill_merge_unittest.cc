@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -91,10 +90,9 @@ const std::vector<base::FilePath> GetTestFiles() {
 }
 
 // Serializes the |profiles| into a string.
-std::string SerializeProfiles(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles) {
+std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
   std::string result;
-  for (autofill::AutofillProfile* profile : profiles) {
+  for (auto* profile : profiles) {
     result += kProfileSeparator;
     result += "\n";
     for (const ServerFieldType& type : kProfileFieldTypes) {
@@ -127,7 +125,7 @@ class PersonalDataManagerMock : public PersonalDataManager {
 
   // PersonalDataManager:
   std::string SaveImportedProfile(const AutofillProfile& profile) override;
-  std::vector<dangling_raw_ptr<AutofillProfile>> GetProfiles(
+  std::vector<AutofillProfile*> GetProfiles(
       PersonalDataManager::ProfileOrder order =
           PersonalDataManager::ProfileOrder::kNone) const override;
 
@@ -157,9 +155,9 @@ std::string PersonalDataManagerMock::SaveImportedProfile(
   return merged_guid;
 }
 
-std::vector<dangling_raw_ptr<AutofillProfile>>
-PersonalDataManagerMock::GetProfiles(PersonalDataManager::ProfileOrder) const {
-  std::vector<dangling_raw_ptr<AutofillProfile>> result;
+std::vector<AutofillProfile*> PersonalDataManagerMock::GetProfiles(
+    PersonalDataManager::ProfileOrder) const {
+  std::vector<AutofillProfile*> result;
   for (const auto& profile : profiles_)
     result.push_back(profile.get());
   return result;

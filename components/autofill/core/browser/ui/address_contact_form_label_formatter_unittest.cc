@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -33,7 +32,7 @@ std::vector<ServerFieldType> GetFieldTypes() {
 }
 
 TEST(AddressContactFormLabelFormatterTest, GetLabelsWithMissingProfiles) {
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{};
+  const std::vector<AutofillProfile*> profiles{};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", NAME_FULL, GetFieldTypes());
   EXPECT_TRUE(formatter->GetLabels().empty());
@@ -68,8 +67,8 @@ TEST(AddressContactFormLabelFormatterTest,
   test::SetProfileInfo(&profile6, "", "", "", "", "", "", "", "", "", "", "US",
                        "");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
-      &profile1, &profile2, &profile3, &profile4, &profile5, &profile6};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
+                                               &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", NAME_FULL, GetFieldTypes());
 
@@ -112,8 +111,8 @@ TEST(AddressContactFormLabelFormatterTest,
   test::SetProfileInfo(&profile6, "", "", "", "", "", "", "", "", "", "", "US",
                        "");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
-      &profile1, &profile2, &profile3, &profile4, &profile5, &profile6};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
+                                               &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_LINE1, GetFieldTypes());
 
@@ -157,8 +156,8 @@ TEST(AddressContactFormLabelFormatterTest,
   test::SetProfileInfo(&profile6, "", "", "", "", "", "", "", "", "", "", "US",
                        "");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
-      &profile1, &profile2, &profile3, &profile4, &profile5, &profile6};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
+                                               &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_CITY, GetFieldTypes());
 
@@ -201,8 +200,8 @@ TEST(AddressContactFormLabelFormatterTest,
   test::SetProfileInfo(&profile6, "", "", "", "", "", "", "", "", "", "", "US",
                        "");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
-      &profile1, &profile2, &profile3, &profile4, &profile5, &profile6};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
+                                               &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", EMAIL_ADDRESS, GetFieldTypes());
 
@@ -246,8 +245,8 @@ TEST(AddressContactFormLabelFormatterTest,
   test::SetProfileInfo(&profile6, "", "", "", "", "", "", "", "", "", "", "US",
                        "");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
-      &profile1, &profile2, &profile3, &profile4, &profile5, &profile6};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
+                                               &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", PHONE_HOME_WHOLE_NUMBER, GetFieldTypes());
 
@@ -276,8 +275,7 @@ TEST(AddressContactFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
-                                                                &profile2};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "pt-BR", NAME_FULL, GetFieldTypes());
 
@@ -304,8 +302,7 @@ TEST(AddressContactFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
-                                                                &profile2};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", ADDRESS_HOME_LINE1, GetFieldTypes());
 
@@ -331,8 +328,7 @@ TEST(AddressContactFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
-                                                                &profile2};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", ADDRESS_HOME_ZIP, GetFieldTypes());
 
@@ -359,8 +355,7 @@ TEST(AddressContactFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
-                                                                &profile2};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "pt-BR", EMAIL_ADDRESS, GetFieldTypes());
 
@@ -387,8 +382,7 @@ TEST(AddressContactFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
-                                                                &profile2};
+  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", PHONE_HOME_WHOLE_NUMBER, GetFieldTypes());
 
@@ -408,7 +402,7 @@ TEST(AddressContactFormLabelFormatterTest,
                        "", "19 North Sq", "", "Boston", "MA", "02113", "US",
                        "16175232338");
 
-  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile};
+  const std::vector<AutofillProfile*> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", EMAIL_ADDRESS,
       {NAME_FULL, EMAIL_ADDRESS, ADDRESS_HOME_ZIP, PHONE_HOME_WHOLE_NUMBER});
@@ -425,7 +419,7 @@ TEST(AddressContactFormLabelFormatterTest,
                        "", "19 North Sq", "", "Boston", "MA", "02113", "US",
                        "16175232338");
 
-  std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1};
+  std::vector<AutofillProfile*> profiles{&profile1};
   std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_LINE1,
       {ADDRESS_HOME_ZIP, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER});

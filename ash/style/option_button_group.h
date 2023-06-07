@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/option_button_base.h"
-#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -51,7 +50,7 @@ class ASH_EXPORT OptionButtonGroup : public views::View {
   // The padding insets of the buttons.
   const gfx::Insets button_padding_;
 
-  std::vector<dangling_raw_ptr<OptionButtonBase>> buttons_;
+  std::vector<OptionButtonBase*> buttons_;
   base::CallbackListSubscription enabled_changed_subscription_;
 };
 

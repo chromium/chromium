@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -227,7 +226,7 @@ class FakeWSCProductList : public IWSCProductList {
   absl::optional<FailureStep> failed_step_;
 
   absl::optional<ULONG> provider_;
-  std::vector<dangling_raw_ptr<IWscProduct>> products_;
+  std::vector<IWscProduct*> products_;
 };
 
 }  // namespace device_signals

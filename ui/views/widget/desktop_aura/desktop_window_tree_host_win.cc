@@ -1254,7 +1254,7 @@ bool DesktopWindowTreeHostWin::IsModalWindowActive() const {
   if (!dispatcher())
     return false;
 
-  const auto is_active = [](const aura::Window* child) {
+  const auto is_active = [](const auto* child) {
     return child->GetProperty(aura::client::kModalKey) != ui::MODAL_TYPE_NONE &&
            child->TargetVisibility();
   };

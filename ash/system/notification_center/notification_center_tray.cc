@@ -48,7 +48,7 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
 }
 
 NotificationCenterTray::~NotificationCenterTray() {
-  for (views::View* tray_item : tray_container()->children()) {
+  for (auto* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->RemoveObserver(this);
   }
 }
@@ -106,7 +106,7 @@ void NotificationCenterTray::Initialize() {
     privacy_indicators_view_ = tray_container()->AddChildView(
         std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
   }
-  for (views::View* tray_item : tray_container()->children()) {
+  for (auto* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->AddObserver(this);
   }
   for (auto& observer : observers_) {
@@ -234,7 +234,7 @@ void NotificationCenterTray::UpdateTrayItemsColor(bool active) {
   if (!chromeos::features::IsJellyEnabled()) {
     return;
   }
-  for (views::View* tray_item : tray_container()->children()) {
+  for (auto* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->UpdateLabelOrImageViewColor(active);
   }
 }

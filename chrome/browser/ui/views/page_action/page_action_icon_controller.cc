@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -352,7 +351,7 @@ void PageActionIconController::OnPageActionIconViewShown(
       page_actions_excluded_from_logging_.end()) {
     page_actions_excluded_from_logging_[url] = {};
   }
-  std::vector<dangling_raw_ptr<PageActionIconView>> excluded_actions_on_page =
+  std::vector<PageActionIconView*> excluded_actions_on_page =
       page_actions_excluded_from_logging_[url];
   if (!view->ephemeral() || std::find(excluded_actions_on_page.begin(),
                                       excluded_actions_on_page.end(),
@@ -423,7 +422,7 @@ void PageActionIconController::RecordMetricsOnURLChange(GURL url) {
       page_actions_excluded_from_logging_.end()) {
     page_actions_excluded_from_logging_[url] = {};
   }
-  std::vector<dangling_raw_ptr<PageActionIconView>> excluded_actions_on_page =
+  std::vector<PageActionIconView*> excluded_actions_on_page =
       page_actions_excluded_from_logging_[url];
   RecordOverallMetrics();
   for (auto icon_item : page_action_icon_views_) {

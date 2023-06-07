@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/display/types/display_snapshot.h"
 
@@ -39,7 +38,7 @@ chromeos::DisplayPowerState TestDisplayLayoutManager::GetPowerState() const {
 }
 
 bool TestDisplayLayoutManager::GetDisplayLayout(
-    const std::vector<dangling_raw_ptr<DisplaySnapshot>>& displays,
+    const std::vector<DisplaySnapshot*>& displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     RefreshRateThrottleState new_throttle_state,
@@ -49,9 +48,9 @@ bool TestDisplayLayoutManager::GetDisplayLayout(
   return false;
 }
 
-std::vector<dangling_raw_ptr<DisplaySnapshot>>
-TestDisplayLayoutManager::GetDisplayStates() const {
-  std::vector<dangling_raw_ptr<DisplaySnapshot>> snapshots(displays_.size());
+std::vector<DisplaySnapshot*> TestDisplayLayoutManager::GetDisplayStates()
+    const {
+  std::vector<DisplaySnapshot*> snapshots(displays_.size());
   base::ranges::transform(displays_, snapshots.begin(),
                           &std::unique_ptr<DisplaySnapshot>::get);
   return snapshots;

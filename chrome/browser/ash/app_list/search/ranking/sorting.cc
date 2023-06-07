@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
 
-#include "base/memory/raw_ptr.h"
-
 namespace app_list {
 
 namespace {
@@ -40,7 +38,7 @@ void SortCategories(CategoriesList& categories) {
             });
 }
 
-void SortResults(std::vector<dangling_raw_ptr<ChromeSearchResult>>& results,
+void SortResults(std::vector<ChromeSearchResult*>& results,
                  const CategoriesList& categories) {
   std::sort(
       results.begin(), results.end(),

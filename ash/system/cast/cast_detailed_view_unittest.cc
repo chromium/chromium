@@ -57,8 +57,7 @@ class CastDetailedViewTest : public AshTestBase {
     return views;
   }
 
-  std::vector<dangling_raw_ptr<views::View>> GetExtraViewsForSink(
-      const std::string& sink_id) {
+  std::vector<views::View*> GetExtraViewsForSink(const std::string& sink_id) {
     return detailed_view_->sink_extra_views_map_[sink_id];
   }
 
@@ -247,10 +246,9 @@ TEST_F(CastDetailedViewTest, FreezeButton) {
   devices.push_back(device);
   OnDevicesUpdated(devices);
 
-  std::vector<dangling_raw_ptr<views::View>> views =
-      GetExtraViewsForSink("fake_sink_id_1");
+  std::vector<views::View*> views = GetExtraViewsForSink("fake_sink_id_1");
   ASSERT_EQ(views.size(), 2u);
-  auto* freeze_button = views[0].get();
+  auto* freeze_button = views[0];
   EXPECT_TRUE(views::IsViewClass<PillButton>(freeze_button));
   EXPECT_EQ(freeze_button->GetTooltipText(gfx::Point()), u"Pause casting");
 

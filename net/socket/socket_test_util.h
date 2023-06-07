@@ -1060,9 +1060,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
 
 class TestSocketRequest : public TestCompletionCallbackBase {
  public:
-  TestSocketRequest(
-      std::vector<dangling_raw_ptr<TestSocketRequest>>* request_order,
-      size_t* completion_count);
+  TestSocketRequest(std::vector<TestSocketRequest*>* request_order,
+                    size_t* completion_count);
 
   TestSocketRequest(const TestSocketRequest&) = delete;
   TestSocketRequest& operator=(const TestSocketRequest&) = delete;
@@ -1080,7 +1079,7 @@ class TestSocketRequest : public TestCompletionCallbackBase {
   void OnComplete(int result);
 
   ClientSocketHandle handle_;
-  raw_ptr<std::vector<dangling_raw_ptr<TestSocketRequest>>> request_order_;
+  raw_ptr<std::vector<TestSocketRequest*>> request_order_;
   raw_ptr<size_t> completion_count_;
 };
 
@@ -1148,7 +1147,7 @@ class ClientSocketPoolTest {
 
  private:
   std::vector<std::unique_ptr<TestSocketRequest>> requests_;
-  std::vector<dangling_raw_ptr<TestSocketRequest>> request_order_;
+  std::vector<TestSocketRequest*> request_order_;
   size_t completion_count_ = 0;
 };
 

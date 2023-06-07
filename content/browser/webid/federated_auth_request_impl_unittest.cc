@@ -1008,7 +1008,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     // There are multiple types of metrics under the same FedCM UKM. We need to
     // make sure that the metric only includes the expected one.
     bool metric_found = false;
-    for (const ukm::mojom::UkmEntry* const entry : entries) {
+    for (const auto* const entry : entries) {
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "Status.RequestIdToken");
       if (!metric) {
@@ -1037,7 +1037,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     ASSERT_FALSE(entries.empty())
         << "No " << entry_name << " entry was recorded";
 
-    for (const ukm::mojom::UkmEntry* const entry : entries) {
+    for (const auto* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
         SUCCEED();
         return;
@@ -1058,7 +1058,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     ASSERT_FALSE(entries.empty())
         << "No " << entry_name << " entry was recorded";
 
-    for (const ukm::mojom::UkmEntry* const entry : entries) {
+    for (const auto* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name))
         FAIL() << "Unexpected UKM was recorded in " << entry_name;
     }
@@ -1073,7 +1073,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     // There are multiple types of metrics under the same FedCM UKM. We need to
     // make sure that the metric only includes the expected one.
     bool metric_found = false;
-    for (const ukm::mojom::UkmEntry* const entry : entries) {
+    for (const auto* const entry : entries) {
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "Status.SignInStateMatch");
       if (!metric) {
@@ -1122,7 +1122,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     ASSERT_FALSE(entries.empty()) << "No FedCM UKM entry was found!";
 
     bool metric_found = false;
-    for (const ukm::mojom::UkmEntry* entry : entries) {
+    for (const auto* entry : entries) {
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "AutoReauthn.Succeeded");
       if (!metric) {
@@ -1181,7 +1181,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     absl::optional<int> session_id;
     auto CheckUKMSessionID = [&](const auto& ukm_entries) {
       ASSERT_FALSE(ukm_entries.empty());
-      for (const ukm::mojom::UkmEntry* const entry : ukm_entries) {
+      for (const auto* const entry : ukm_entries) {
         const auto* const metric =
             ukm_recorder()->GetEntryMetric(entry, "FedCmSessionID");
         ASSERT_TRUE(metric)

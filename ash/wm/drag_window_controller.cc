@@ -240,9 +240,8 @@ void DragWindowController::RequestLayerPaintForTest() {
       layers.pop_back();
       if (layer->delegate())
         layer->delegate()->OnPaintLayer(context);
-      for (ui::Layer* child : layer->children()) {
+      for (auto* child : layer->children())
         layers.push_back(child);
-      }
     }
   }
 }

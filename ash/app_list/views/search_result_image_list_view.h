@@ -43,8 +43,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
       std::vector<SearchResultAimationMetadata>* result_metadata_) override;
 
   // Returns all search result image views children of this view.
-  std::vector<dangling_raw_ptr<SearchResultImageView>>
-  GetSearchResultImageViews();
+  std::vector<SearchResultImageView*> GetSearchResultImageViews();
 
   const views::TableLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
@@ -70,7 +69,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::BoxLayoutView> image_view_container_ = nullptr;
   raw_ptr<views::TableLayoutView> image_info_container_ = nullptr;
-  std::vector<dangling_raw_ptr<SearchResultImageView>> image_views_;
+  std::vector<SearchResultImageView*> image_views_;
 };
 
 }  // namespace ash

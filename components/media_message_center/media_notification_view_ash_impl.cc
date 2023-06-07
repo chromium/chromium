@@ -347,7 +347,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
 
 void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
   bool should_invalidate_layout = false;
-  for (views::Button* button : action_buttons_) {
+  for (auto* button : action_buttons_) {
     bool should_show = base::Contains(
         enabled_actions_, static_cast<MediaSessionAction>(button->GetID()));
     if (should_show != button->GetVisible()) {

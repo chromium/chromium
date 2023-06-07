@@ -53,18 +53,17 @@ void TopShortcutButtonContainer::Layout() {
   const gfx::Rect child_area = GetContentsBounds();
 
   views::View::Views visible_children;
-  base::ranges::copy_if(children(), std::back_inserter(visible_children),
-                        [](const views::View* v) {
-                          return v->GetVisible() &&
-                                 (v->GetPreferredSize().width() > 0);
-                        });
+  base::ranges::copy_if(
+      children(), std::back_inserter(visible_children), [](const auto* v) {
+        return v->GetVisible() && (v->GetPreferredSize().width() > 0);
+      });
   if (visible_children.empty()) {
     return;
   }
 
   const int visible_child_width =
       std::accumulate(visible_children.cbegin(), visible_children.cend(), 0,
-                      [](int width, const views::View* v) {
+                      [](int width, const auto* v) {
                         return width + v->GetPreferredSize().width();
                       });
 
@@ -79,7 +78,7 @@ void TopShortcutButtonContainer::Layout() {
   int x = child_area.x();
   int y = child_area.y() + kUnifiedTopShortcutContainerTopPadding +
           kUnifiedCircularButtonFocusPadding.bottom();
-  for (views::View* child : visible_children) {
+  for (auto* child : visible_children) {
     int child_y = y;
     int width = child->GetPreferredSize().width();
     if (child == user_avatar_button_) {
@@ -106,7 +105,7 @@ void TopShortcutButtonContainer::Layout() {
 gfx::Size TopShortcutButtonContainer::CalculatePreferredSize() const {
   int total_horizontal_size = 0;
   int num_visible = 0;
-  for (const views::View* child : children()) {
+  for (const auto* child : children()) {
     if (!child->GetVisible()) {
       continue;
     }

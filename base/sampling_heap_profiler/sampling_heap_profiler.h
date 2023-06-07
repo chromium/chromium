@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/synchronization/lock.h"
@@ -48,7 +47,7 @@ class BASE_EXPORT SamplingHeapProfiler
     // Name of the thread that made the sampled allocation.
     const char* thread_name = nullptr;
     // Call stack of PC addresses responsible for the allocation.
-    RAW_PTR_EXCLUSION std::vector<void*> stack;
+    std::vector<void*> stack;
 
     // Public for testing.
     Sample(size_t size, size_t total, uint32_t ordinal);

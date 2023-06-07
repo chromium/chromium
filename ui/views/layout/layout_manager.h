@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
@@ -103,8 +102,7 @@ class VIEWS_EXPORT LayoutManager {
   // Gets the child views of the specified view in paint order (reverse
   // Z-order). Defaults to returning host->children(). Called by
   // View::GetChildrenInZOrder().
-  virtual std::vector<dangling_raw_ptr<View>> GetChildViewsInPaintOrder(
-      const View* host) const;
+  virtual std::vector<View*> GetChildViewsInPaintOrder(const View* host) const;
 
  private:
   friend class views::View;

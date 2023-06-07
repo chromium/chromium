@@ -524,7 +524,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
     for (auto& overview_grid : overview_session->grid_list()) {
       if (SavedDeskLibraryView* library_view =
               overview_grid->GetSavedDeskLibraryView()) {
-        for (ash::SavedDeskGridView* grid_view : library_view->grid_views()) {
+        for (auto* grid_view : library_view->grid_views()) {
           grid_view->SortEntries(/*order_first_uuid=*/{});
         }
       }

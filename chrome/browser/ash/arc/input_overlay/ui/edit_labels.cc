@@ -37,7 +37,7 @@ void EditLabels::Init() {
 }
 
 void EditLabels::OnActionUpdated() {
-  for (EditLabel* label : labels_) {
+  for (auto* label : labels_) {
     label->OnActionUpdated();
   }
 }

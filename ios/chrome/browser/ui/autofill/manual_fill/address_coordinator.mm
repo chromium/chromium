@@ -72,7 +72,7 @@
         new autofill::PersonalDataManagerObserverBridge(self));
     _personalDataManager->AddObserver(_personalDataManagerObserver.get());
 
-    std::vector<dangling_raw_ptr<autofill::AutofillProfile>> profiles =
+    std::vector<autofill::AutofillProfile*> profiles =
         _personalDataManager->GetProfilesToSuggest();
 
     _addressMediator =
@@ -108,7 +108,7 @@
 #pragma mark - PersonalDataManagerObserver
 
 - (void)onPersonalDataChanged {
-  std::vector<dangling_raw_ptr<autofill::AutofillProfile>> profiles =
+  std::vector<autofill::AutofillProfile*> profiles =
       _personalDataManager->GetProfilesToSuggest();
 
   [self.addressMediator reloadWithProfiles:profiles];

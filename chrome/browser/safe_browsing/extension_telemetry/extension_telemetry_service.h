@@ -281,7 +281,7 @@ class ExtensionTelemetryService : public KeyedService {
 
   using SignalSubscribers =
       base::flat_map<ExtensionSignalType,
-                     std::vector<dangling_raw_ptr<ExtensionSignalProcessor>>>;
+                     std::vector<ExtensionSignalProcessor*>>;
   SignalSubscribers signal_subscribers_;
 
   friend class ExtensionTelemetryServiceTest;

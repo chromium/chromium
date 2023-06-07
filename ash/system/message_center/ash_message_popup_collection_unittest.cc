@@ -489,8 +489,7 @@ TEST_P(AshMessagePopupCollectionTest, PopupDestroyedDuringClick) {
       message_view
           ->GetViewByID(
               message_center::NotificationViewBase::ViewId::kActionButtonsRow)
-          ->children()[0]
-          .get();
+          ->children()[0];
   EXPECT_EQ(static_cast<views::LabelButton*>(action_button)->GetText(),
             button_text);
 

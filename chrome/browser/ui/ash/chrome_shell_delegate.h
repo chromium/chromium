@@ -10,7 +10,6 @@
 
 #include "ash/shell_delegate.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
 class ChromeShellDelegate : public ash::ShellDelegate {
@@ -77,7 +76,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
   version_info::Channel GetChannel() override;
   void ForceSkipWarningUserOnClose(
-      const std::vector<dangling_raw_ptr<aura::Window>>& windows) override;
+      const std::vector<aura::Window*>& windows) override;
   std::string GetVersionString() override;
   void ShouldExitFullscreenBeforeLock(
       ShouldExitFullscreenCallback callback) override;

@@ -4778,7 +4778,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
     // "Owned" but not with std::unique_ptr, as a DocumentServiceBase is
     // allowed to delete itself directly.
-    std::vector<dangling_raw_ptr<internal::DocumentServiceBase>>& services() {
+    std::vector<internal::DocumentServiceBase*>& services() {
       return services_;
     }
 
@@ -4815,7 +4815,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
     std::unique_ptr<PageImpl> owned_page_;
     bool dom_content_loaded_ = false;
     absl::optional<GURL> pending_did_finish_load_url_for_prerendering_;
-    std::vector<dangling_raw_ptr<internal::DocumentServiceBase>> services_;
+    std::vector<internal::DocumentServiceBase*> services_;
     scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
     base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
     absl::optional<base::UnguessableToken> devtools_navigation_token_ =

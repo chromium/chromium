@@ -137,9 +137,7 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetVisibleCount() { return container()->GetVisibleFeatureTileCount(); }
 
-  std::vector<dangling_raw_ptr<views::View>> pages() {
-    return container()->children();
-  }
+  std::vector<views::View*> pages() { return container()->children(); }
 
   // Fills the container with a number of `pages` given the max amount of
   // displayable primary tiles per page.

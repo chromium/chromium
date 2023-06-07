@@ -1081,10 +1081,9 @@ class MockReportingService : public net::ReportingService {
     return nullptr;
   }
 
-  std::vector<dangling_raw_ptr<const net::ReportingReport>> GetReports()
-      const override {
+  std::vector<const net::ReportingReport*> GetReports() const override {
     NOTREACHED();
-    return std::vector<dangling_raw_ptr<const net::ReportingReport>>();
+    return std::vector<const net::ReportingReport*>();
   }
 
   base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>

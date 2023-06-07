@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -50,8 +49,7 @@ void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
       days);
 }
 
-void LogStoredProfileMetrics(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles) {
+void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles) {
   const base::Time now = AutofillClock::Now();
   // Counts stored profile metrics for all profile of the given `category` and
   // emits UMA metrics for them.
@@ -79,16 +77,13 @@ void LogStoredProfileMetrics(
   }
 }
 
-void LogLocalProfileSupersetMetrics(
-    std::vector<dangling_raw_ptr<AutofillProfile>> profiles,
-    base::StringPiece app_locale) {
+void LogLocalProfileSupersetMetrics(std::vector<AutofillProfile*> profiles,
+                                    base::StringPiece app_locale) {
   // Place all `kLocalOrSyncable` profiles before all `kAccount` profiles.
-  std::vector<dangling_raw_ptr<AutofillProfile>>::iterator
-      begin_account_profiles =
-          base::ranges::partition(profiles, [](AutofillProfile* profile) {
-            return profile->source() ==
-                   AutofillProfile::Source::kLocalOrSyncable;
-          });
+  std::vector<AutofillProfile*>::iterator begin_account_profiles =
+      base::ranges::partition(profiles, [](AutofillProfile* profile) {
+        return profile->source() == AutofillProfile::Source::kLocalOrSyncable;
+      });
   // Determines if a given `profile` is a strict superset of any account
   // profile.
   auto is_account_superset = [&, comparator = AutofillProfileComparator(

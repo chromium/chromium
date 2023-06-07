@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -140,9 +139,8 @@ class FFmpegDemuxerTest : public testing::Test {
   }
 
   DemuxerStream* GetStream(DemuxerStream::Type type) {
-    std::vector<dangling_raw_ptr<DemuxerStream>> streams =
-        demuxer_->GetAllStreams();
-    for (media::DemuxerStream* stream : streams) {
+    std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
+    for (auto* stream : streams) {
       if (stream->type() == type)
         return stream;
     }
@@ -448,8 +446,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   CreateDemuxer("bear-320x240-multitrack.webm");
   InitializeDemuxer();
 
-  std::vector<dangling_raw_ptr<DemuxerStream>> streams =
-      demuxer_->GetAllStreams();
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
   EXPECT_EQ(4u, streams.size());
 
   // Stream #0 should be VP8 video.
@@ -487,8 +484,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack_Disabled) {
   CreateDemuxer("multitrack-disabled.mp4");
   InitializeDemuxer();
 
-  std::vector<dangling_raw_ptr<DemuxerStream>> streams =
-      demuxer_->GetAllStreams();
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
   EXPECT_EQ(1u, streams.size());
 }
 #endif
@@ -511,9 +507,8 @@ TEST_F(FFmpegDemuxerTest, Initialize_NoConfigChangeSupport) {
   CreateDemuxer("bear-vp8-webvtt.webm");
   InitializeDemuxer();
 
-  for (media::DemuxerStream* stream : demuxer_->GetAllStreams()) {
+  for (auto* stream : demuxer_->GetAllStreams())
     EXPECT_FALSE(stream->SupportsConfigChanges());
-  }
 }
 
 TEST_F(FFmpegDemuxerTest, AbortPendingReads) {
@@ -1762,9 +1757,8 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
 
   // Now enable all demuxer streams in the file and perform another read, this
   // will buffer the data for additional streams and memory usage will increase.
-  std::vector<dangling_raw_ptr<DemuxerStream>> streams =
-      demuxer_->GetAllStreams();
-  for (media::DemuxerStream* stream : streams) {
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
+  for (auto* stream : streams) {
     static_cast<FFmpegDemuxerStream*>(stream)->SetEnabled(true,
                                                           base::TimeDelta());
   }

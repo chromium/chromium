@@ -301,7 +301,7 @@ void ConfigureNSAppForKioskMode() {
 // apps).
 std::set<gfx::NativeWindow> GetBrowserNativeWindows() {
   std::set<gfx::NativeWindow> result;
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     if (!browser)
       continue;
     // When focusing Chrome, don't focus any browser windows associated with

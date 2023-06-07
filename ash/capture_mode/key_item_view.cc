@@ -103,7 +103,7 @@ gfx::Size KeyItemView::CalculatePreferredSize() const {
   }
 
   int width = 0;
-  for (const views::View* child : children()) {
+  for (const auto* child : children()) {
     const auto child_size = child->GetPreferredSize();
     width += child_size.width();
   }

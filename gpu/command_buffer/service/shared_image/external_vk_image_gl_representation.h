@@ -54,11 +54,10 @@ class ExternalVkImageGLRepresentationShared {
 
 class ExternalVkImageGLRepresentation : public GLTextureImageRepresentation {
  public:
-  ExternalVkImageGLRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::vector<dangling_raw_ptr<gles2::Texture>> textures);
+  ExternalVkImageGLRepresentation(SharedImageManager* manager,
+                                  SharedImageBacking* backing,
+                                  MemoryTypeTracker* tracker,
+                                  std::vector<gles2::Texture*> textures);
 
   ExternalVkImageGLRepresentation(const ExternalVkImageGLRepresentation&) =
       delete;
@@ -73,7 +72,7 @@ class ExternalVkImageGLRepresentation : public GLTextureImageRepresentation {
   void EndAccess() override;
 
  private:
-  std::vector<dangling_raw_ptr<gles2::Texture>> textures_;
+  std::vector<gles2::Texture*> textures_;
   ExternalVkImageGLRepresentationShared representation_shared_;
 };
 

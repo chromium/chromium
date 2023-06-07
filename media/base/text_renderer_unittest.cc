@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -201,7 +200,7 @@ class TextRendererTest : public testing::Test {
   typedef std::vector<std::unique_ptr<FakeTextTrackStream>> TextTrackStreams;
   TextTrackStreams text_track_streams_;
 
-  typedef std::vector<dangling_raw_ptr<FakeTextTrack>> TextTracks;
+  typedef std::vector<FakeTextTrack*> TextTracks;
   TextTracks text_tracks_;
 
   std::unique_ptr<TextRenderer> text_renderer_;

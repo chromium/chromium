@@ -4,7 +4,6 @@
 
 #include <sstream>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -47,7 +46,7 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
       BrowserContextDependencyManager::GetInstance();
   DependencyGraph& dependency_graph =
       dependency_manager->GetDependencyGraphForTesting();
-  std::vector<dangling_raw_ptr<DependencyNode>> nodes;
+  std::vector<DependencyNode*> nodes;
   bool success = dependency_graph.GetConstructionOrder(&nodes);
   DCHECK(success);
 

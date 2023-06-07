@@ -17,7 +17,6 @@
 #include "base/android/locale_utils.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -331,7 +330,7 @@ bool AwAutofillClient::IsPasswordManagerEnabled() {
 
 void AwAutofillClient::PropagateAutofillPredictions(
     autofill::AutofillDriver* driver,
-    const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms) {}
+    const std::vector<autofill::FormStructure*>& forms) {}
 
 void AwAutofillClient::DidFillOrPreviewForm(
     autofill::mojom::RendererFormDataAction action,

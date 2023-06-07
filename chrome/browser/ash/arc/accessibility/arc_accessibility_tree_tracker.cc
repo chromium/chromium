@@ -908,10 +908,8 @@ void ArcAccessibilityTreeTracker::StartTrackingWindows() {
   DCHECK(aura::Env::HasInstance());
   env_observation_.Observe(aura::Env::GetInstance());
 
-  for (aura::WindowTreeHost* host :
-       aura::Env::GetInstance()->window_tree_hosts()) {
+  for (auto* host : aura::Env::GetInstance()->window_tree_hosts())
     StartTrackingWindows(host->window());
-  }
 }
 
 void ArcAccessibilityTreeTracker::StartTrackingWindows(aura::Window* window) {

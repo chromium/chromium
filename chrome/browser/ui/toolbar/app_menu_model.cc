@@ -1437,7 +1437,7 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
   const GlobalErrorService::GlobalErrorList& errors =
       GlobalErrorServiceFactory::GetForProfile(browser_->profile())->errors();
   bool menu_items_added = false;
-  for (GlobalError* error : errors) {
+  for (auto* error : errors) {
     DCHECK(error);
     if (error->HasMenuItem()) {
       AddItem(error->MenuItemCommandID(), error->MenuItemLabel());

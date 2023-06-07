@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -42,7 +41,7 @@ class DangerousDownloadDialogBridge : public download::DownloadItem::Observer {
  private:
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
-  std::vector<dangling_raw_ptr<download::DownloadItem>> download_items_;
+  std::vector<download::DownloadItem*> download_items_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

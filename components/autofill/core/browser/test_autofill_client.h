@@ -318,7 +318,7 @@ class TestAutofillClientTemplate : public T {
       base::OnceCallback<void(bool accept)> callback) override {}
 
   void OfferVirtualCardOptions(
-      const std::vector<dangling_raw_ptr<CreditCard>>& candidates,
+      const std::vector<CreditCard*>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override {}
 
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -432,7 +432,7 @@ class TestAutofillClientTemplate : public T {
 
   void PropagateAutofillPredictions(
       AutofillDriver* driver,
-      const std::vector<dangling_raw_ptr<FormStructure>>& forms) override {}
+      const std::vector<FormStructure*>& forms) override {}
 
   void DidFillOrPreviewForm(mojom::RendererFormDataAction action,
                             AutofillTriggerSource trigger_source,

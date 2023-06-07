@@ -1725,7 +1725,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   // permissions have been updated.
   // Info bar should only be shown on pages with the same origin and
   // on the same profile
-  for (Browser* it : *BrowserList::GetInstance()) {
+  for (auto* it : *BrowserList::GetInstance()) {
     TabStripModel* tab_strip = it->tab_strip_model();
     for (int i = 0; i < tab_strip->count(); ++i) {
       content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);

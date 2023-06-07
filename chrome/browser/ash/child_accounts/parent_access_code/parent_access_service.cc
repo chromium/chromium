@@ -58,7 +58,7 @@ bool IsParentCodeConfigAvailable() {
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetUsers();
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  for (const user_manager::User* user : users) {
+  for (const auto* user : users) {
     if (known_user.FindPath(user->GetAccountId(),
                             prefs::kKnownUserParentAccessCodeConfig)) {
       return true;

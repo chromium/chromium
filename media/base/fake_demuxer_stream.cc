@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -228,9 +227,8 @@ FakeMediaResource::FakeMediaResource(int num_video_configs,
 
 FakeMediaResource::~FakeMediaResource() = default;
 
-std::vector<dangling_raw_ptr<DemuxerStream>>
-FakeMediaResource::GetAllStreams() {
-  std::vector<dangling_raw_ptr<DemuxerStream>> result;
+std::vector<DemuxerStream*> FakeMediaResource::GetAllStreams() {
+  std::vector<DemuxerStream*> result;
   result.push_back(&fake_video_stream_);
   return result;
 }

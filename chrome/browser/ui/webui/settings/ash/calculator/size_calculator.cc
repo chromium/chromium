@@ -570,7 +570,7 @@ void OtherUsersSizeCalculator::PerformCalculation() {
   user_sizes_.clear();
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetUsers();
-  for (user_manager::User* user : users) {
+  for (auto* user : users) {
     if (user->is_active()) {
       continue;
     }

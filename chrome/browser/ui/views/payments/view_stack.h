@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -85,7 +84,7 @@ class ViewStack : public views::BoundsAnimatorObserver,
 
   // Should be the last member, because views need to be destroyed before other
   // members, and members are destroyed in reverse order of their creation.
-  std::vector<dangling_raw_ptr<views::View>> stack_;
+  std::vector<views::View*> stack_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAYMENTS_VIEW_STACK_H_

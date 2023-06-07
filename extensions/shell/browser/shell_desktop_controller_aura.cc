@@ -121,9 +121,8 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
  private:
   // Sets |cursor| as the active cursor within Aura.
   void SetCursorOnAllRootWindows(gfx::NativeCursor cursor) {
-    for (aura::Window* window : desktop_controller_->GetAllRootWindows()) {
+    for (auto* window : desktop_controller_->GetAllRootWindows())
       window->GetHost()->SetCursor(cursor);
-    }
   }
 
   raw_ptr<ShellDesktopControllerAura> desktop_controller_;  // Not owned.

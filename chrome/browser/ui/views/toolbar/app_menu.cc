@@ -519,7 +519,7 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
     // All buttons are given the same width.
     int width = GetMaxChildViewPreferredWidth();
     int x = 0;
-    for (views::View* child : children()) {
+    for (auto* child : children()) {
       child->SetBounds(x, 0, width, height());
       x += width;
     }
@@ -529,9 +529,8 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
   // Returns the max preferred width of all the children.
   int GetMaxChildViewPreferredWidth() const {
     int width = 0;
-    for (const views::View* child : children()) {
+    for (const auto* child : children())
       width = std::max(width, child->GetPreferredSize().width());
-    }
     return width;
   }
 };

@@ -598,8 +598,7 @@ class CC_EXPORT LayerTreeImpl {
 
   void RegisterPictureLayerImpl(PictureLayerImpl* layer);
   void UnregisterPictureLayerImpl(PictureLayerImpl* layer);
-  const std::vector<dangling_raw_ptr<PictureLayerImpl>>& picture_layers()
-      const {
+  const std::vector<PictureLayerImpl*>& picture_layers() const {
     return picture_layers_;
   }
 
@@ -894,7 +893,7 @@ class CC_EXPORT LayerTreeImpl {
   base::flat_map<ElementId, ScrollbarLayerIds>
       element_id_to_scrollbar_layer_ids_;
 
-  std::vector<dangling_raw_ptr<PictureLayerImpl>> picture_layers_;
+  std::vector<PictureLayerImpl*> picture_layers_;
 
   // After commit (or impl-side invalidation), the LayerTreeHostImpl must walk
   // all PictureLayerImpls that have PaintWorklets to ensure they are painted.

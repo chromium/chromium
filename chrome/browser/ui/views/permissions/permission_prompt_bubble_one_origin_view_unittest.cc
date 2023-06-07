@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
@@ -35,8 +34,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
         &std::unique_ptr<permissions::PermissionRequest>::get);
   }
 
-  const std::vector<dangling_raw_ptr<permissions::PermissionRequest>>&
-  Requests() override {
+  const std::vector<permissions::PermissionRequest*>& Requests() override {
     return raw_requests_;
   }
 
@@ -81,7 +79,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
-  std::vector<dangling_raw_ptr<permissions::PermissionRequest>> raw_requests_;
+  std::vector<permissions::PermissionRequest*> raw_requests_;
   base::WeakPtrFactory<TestDelegate> weak_factory_{this};
 };
 

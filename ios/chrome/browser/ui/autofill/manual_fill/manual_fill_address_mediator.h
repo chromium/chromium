@@ -8,8 +8,6 @@
 #import <UIKit/UIKit.h>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-
 namespace autofill {
 class AutofillProfile;
 }  // namespace autofill
@@ -37,15 +35,13 @@ extern NSString* const ManageAddressAccessibilityIdentifier;
 
 // The designated initializer.
 - (instancetype)initWithProfiles:
-    (std::vector<dangling_raw_ptr<autofill::AutofillProfile>>)profiles
-    NS_DESIGNATED_INITIALIZER;
+    (std::vector<autofill::AutofillProfile*>)profiles NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithProfiles:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 // Updates the `profiles` being presented.
-- (void)reloadWithProfiles:
-    (std::vector<dangling_raw_ptr<autofill::AutofillProfile>>)profiles;
+- (void)reloadWithProfiles:(std::vector<autofill::AutofillProfile*>)profiles;
 
 @end
 

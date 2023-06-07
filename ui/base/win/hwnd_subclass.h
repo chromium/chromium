@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/view_prop.h"
 
 namespace ui {
@@ -75,7 +74,7 @@ class COMPONENT_EXPORT(UI_BASE) HWNDSubclass {
   explicit HWNDSubclass(HWND target);
 
   HWND target_;
-  std::vector<dangling_raw_ptr<HWNDMessageFilter>> filters_;
+  std::vector<HWNDMessageFilter*> filters_;
   WNDPROC original_wnd_proc_;
   ui::ViewProp prop_;
 };

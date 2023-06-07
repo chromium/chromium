@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/property_change_reason.h"
@@ -50,7 +49,7 @@ class WindowsStationarityMonitorAura : public WindowsStationarityMonitor,
  private:
   ~WindowsStationarityMonitorAura() override;
 
-  std::vector<dangling_raw_ptr<aura::Window>> tracked_windows_;
+  std::vector<aura::Window*> tracked_windows_;
 };
 
 }  // namespace views

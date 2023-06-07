@@ -55,10 +55,9 @@ void GlobalErrorService::RemoveUnownedGlobalError(GlobalError* error) {
 
 GlobalError* GlobalErrorService::GetGlobalErrorByMenuItemCommandID(
     int command_id) const {
-  for (GlobalError* error : all_errors_) {
+  for (auto* error : all_errors_)
     if (error->HasMenuItem() && command_id == error->MenuItemCommandID())
       return error;
-  }
 
   return nullptr;
 }
@@ -68,7 +67,7 @@ GlobalErrorService::GetHighestSeverityGlobalErrorWithAppMenuItem() const {
   GlobalError::Severity highest_severity = GlobalError::SEVERITY_LOW;
   GlobalError* highest_severity_error = nullptr;
 
-  for (GlobalError* error : all_errors_) {
+  for (auto* error : all_errors_) {
     if (error->HasMenuItem()) {
       if (!highest_severity_error || error->GetSeverity() > highest_severity) {
         highest_severity = error->GetSeverity();
@@ -81,7 +80,7 @@ GlobalErrorService::GetHighestSeverityGlobalErrorWithAppMenuItem() const {
 }
 
 GlobalError* GlobalErrorService::GetFirstGlobalErrorWithBubbleView() const {
-  for (GlobalError* error : all_errors_) {
+  for (auto* error : all_errors_) {
     if (error->HasBubbleView() && !error->HasShownBubbleView())
       return error;
   }

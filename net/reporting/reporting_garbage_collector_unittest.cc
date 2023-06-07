@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -25,7 +24,7 @@ namespace {
 class ReportingGarbageCollectorTest : public ReportingTestBase {
  protected:
   size_t report_count() {
-    std::vector<dangling_raw_ptr<const ReportingReport>> reports;
+    std::vector<const ReportingReport*> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }
@@ -80,7 +79,7 @@ TEST_F(ReportingGarbageCollectorTest, FailedReport) {
   cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
 
-  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
+  std::vector<const ReportingReport*> reports;
   cache()->GetReports(&reports);
   for (int i = 0; i < policy().max_report_attempts; i++) {
     cache()->IncrementReportsAttempts(reports);
@@ -131,7 +130,7 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredSourceWithPendingReports) {
   EXPECT_TRUE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_));
 
   // Deliver report.
-  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
+  std::vector<const ReportingReport*> reports;
   cache()->GetReports(&reports);
   cache()->RemoveReports(reports);
   EXPECT_EQ(0u, report_count());

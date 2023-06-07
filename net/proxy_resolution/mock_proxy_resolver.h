@@ -66,9 +66,7 @@ class MockAsyncProxyResolver : public ProxyResolver {
                      CompletionOnceCallback callback,
                      std::unique_ptr<Request>* request,
                      const NetLogWithSource& /*net_log*/) override;
-  const std::vector<dangling_raw_ptr<Job>>& pending_jobs() const {
-    return pending_jobs_;
-  }
+  const std::vector<Job*>& pending_jobs() const { return pending_jobs_; }
 
   const std::vector<std::unique_ptr<Job>>& cancelled_jobs() const {
     return cancelled_jobs_;
@@ -78,7 +76,7 @@ class MockAsyncProxyResolver : public ProxyResolver {
   void RemovePendingJob(Job* job);
 
  private:
-  std::vector<dangling_raw_ptr<Job>> pending_jobs_;
+  std::vector<Job*> pending_jobs_;
   std::vector<std::unique_ptr<Job>> cancelled_jobs_;
 };
 

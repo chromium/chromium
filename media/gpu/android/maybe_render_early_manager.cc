@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -61,7 +60,7 @@ class GpuMaybeRenderEarlyImpl {
   }
 
   // Outstanding images that should be considered for early rendering.
-  std::vector<dangling_raw_ptr<CodecImage>> images_;
+  std::vector<CodecImage*> images_;
 
   // Current image group to which new images (frames) will be added.  We'll
   // replace this when SetImageGroup() is called.

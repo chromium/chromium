@@ -86,7 +86,7 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
 #else
   // Check to see if this notification comes from a webpage that is displaying
   // fullscreen content.
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     // Only consider the browsers for the profile that created the notification
     if (browser->profile() != profile)
       continue;

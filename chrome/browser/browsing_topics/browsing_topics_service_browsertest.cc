@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, CalculationResultUkm) {
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::kEntryName);
 
-  for (const ukm::mojom::UkmEntry* entry : entries) {
+  for (auto* entry : entries) {
     ukm_recorder_->ExpectEntryMetric(
         entry,
         ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::

@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -815,7 +814,7 @@ void PersonalDataManagerAndroid::SetSyncServiceForTesting(JNIEnv* env) {
 
 ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileGUIDs(
     JNIEnv* env,
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles) {
+    const std::vector<AutofillProfile*>& profiles) {
   std::vector<std::u16string> guids;
   for (AutofillProfile* profile : profiles)
     guids.push_back(base::UTF8ToUTF16(profile->guid()));
@@ -839,7 +838,7 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
     bool include_name_in_label,
     bool include_organization_in_label,
     bool include_country_in_label,
-    std::vector<dangling_raw_ptr<AutofillProfile>> profiles) {
+    std::vector<AutofillProfile*> profiles) {
   std::unique_ptr<std::vector<ServerFieldType>> suggested_fields;
   size_t minimal_fields_shown = 2;
   if (address_only) {

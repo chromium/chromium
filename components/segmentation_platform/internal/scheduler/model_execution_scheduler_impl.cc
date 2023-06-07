@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -22,7 +21,7 @@
 namespace segmentation_platform {
 
 ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
-    std::vector<dangling_raw_ptr<Observer>>&& observers,
+    std::vector<Observer*>&& observers,
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
     ModelExecutionManager* model_execution_manager,

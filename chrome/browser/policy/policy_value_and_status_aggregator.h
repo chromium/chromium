@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
@@ -109,7 +108,7 @@ class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
   // Contains the pointers to PolicyValueProvider which also implement
   // PolicyStatusProvider. The ownership of the instances will be in
   // `status_providers_`.
-  std::vector<dangling_raw_ptr<PolicyValueProvider>> value_providers_unowned_;
+  std::vector<PolicyValueProvider*> value_providers_unowned_;
   base::ObserverList<Observer> observers_;
   base::ScopedMultiSourceObservation<PolicyValueProvider,
                                      PolicyValueProvider::Observer>

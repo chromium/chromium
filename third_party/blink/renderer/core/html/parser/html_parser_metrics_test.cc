@@ -240,7 +240,7 @@ TEST_F(HTMLMetricsTest, UkmStoresValuesCorrectly) {
   // Check we have a single entry
   entries = recorder.GetEntriesByName("Blink.HTMLParsing");
   EXPECT_EQ(entries.size(), 1u);
-  auto* entry = entries[0].get();
+  auto* entry = entries[0];
 
   // Verify all the values
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entry, "ChunkCount"));

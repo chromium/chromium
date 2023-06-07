@@ -31,7 +31,7 @@ void ArcToastSurfaceManager::RemoveSurface(exo::ToastSurface* surface) {
 }
 
 void ArcToastSurfaceManager::UpdateVisibility() {
-  for (exo::ToastSurface* surface : toast_surfaces_) {
+  for (auto* surface : toast_surfaces_) {
     if (!surface->GetWidget())
       continue;
 

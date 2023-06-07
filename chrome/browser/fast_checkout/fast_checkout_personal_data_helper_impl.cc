@@ -4,7 +4,6 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +24,7 @@ FastCheckoutPersonalDataHelperImpl::GetPersonalDataManager() const {
   return pdm;
 }
 
-std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
+std::vector<autofill::AutofillProfile*>
 FastCheckoutPersonalDataHelperImpl::GetProfilesToSuggest() const {
   return GetPersonalDataManager()->GetProfilesToSuggest();
 }
@@ -68,11 +67,11 @@ FastCheckoutPersonalDataHelperImpl::GetValidCreditCards() const {
   return cards;
 }
 
-std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
+std::vector<autofill::AutofillProfile*>
 FastCheckoutPersonalDataHelperImpl::GetValidAddressProfiles() const {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
   // Trigger only if there is at least 1 complete address profile on file.
-  std::vector<dangling_raw_ptr<autofill::AutofillProfile>> profiles =
+  std::vector<autofill::AutofillProfile*> profiles =
       pdm->GetProfilesToSuggest();
 
   base::EraseIf(profiles,

@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,12 +32,11 @@ FakeDeskSyncBridge::~FakeDeskSyncBridge() = default;
 
 DeskModel::GetAllEntriesResult FakeDeskSyncBridge::GetAllEntries() {
   if (!IsReady()) {
-    return GetAllEntriesResult(
-        GetAllEntriesStatus::kFailure,
-        std::vector<dangling_raw_ptr<const ash::DeskTemplate>>());
+    return GetAllEntriesResult(GetAllEntriesStatus::kFailure,
+                               std::vector<const ash::DeskTemplate*>());
   }
 
-  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> entries;
+  std::vector<const ash::DeskTemplate*> entries;
 
   for (const auto& it : policy_entries_) {
     entries.push_back(it.get());
@@ -102,7 +100,7 @@ void FakeDeskSyncBridge::AddOrUpdateEntry(
                             std::move(new_entry));
     return;
   }
-  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> added_or_updated;
+  std::vector<const ash::DeskTemplate*> added_or_updated;
   // When a user creates a desk template locally, the desk template has `kUser`
   // as its source. Only user desk templates should be saved to Sync.
   DCHECK_EQ(ash::DeskTemplateSource::kUser, new_entry->source());
@@ -221,7 +219,7 @@ const ash::DeskTemplate* FakeDeskSyncBridge::GetUserEntryByUUID(
 }
 
 void FakeDeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
-    const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>& new_entries) {
+    const std::vector<const ash::DeskTemplate*>& new_entries) {
   if (new_entries.empty()) {
     return;
   }

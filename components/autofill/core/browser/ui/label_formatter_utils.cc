@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,7 +34,7 @@ namespace {
 // Returns true if all |profiles| have the same value for the data retrieved by
 // |get_data|.
 bool HaveSameData(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
     base::RepeatingCallback<std::u16string(const AutofillProfile&,
                                            const std::string&)> get_data,
@@ -305,25 +304,22 @@ std::u16string GetLabelPhone(const AutofillProfile& profile,
                    data_util::GetCountryCodeWithFallback(profile, app_locale)));
 }
 
-bool HaveSameEmailAddresses(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
-    const std::string& app_locale) {
+bool HaveSameEmailAddresses(const std::vector<AutofillProfile*>& profiles,
+                            const std::string& app_locale) {
   return HaveSameData(profiles, app_locale, base::BindRepeating(&GetLabelEmail),
                       base::BindRepeating(base::BindRepeating(&Equals)));
 }
 
-bool HaveSameFirstNames(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
-    const std::string& app_locale) {
+bool HaveSameFirstNames(const std::vector<AutofillProfile*>& profiles,
+                        const std::string& app_locale) {
   return HaveSameData(profiles, app_locale,
                       base::BindRepeating(&GetLabelFirstName),
                       base::BindRepeating(base::BindRepeating(&Equals)));
 }
 
-bool HaveSameNonStreetAddresses(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
-    const std::string& app_locale,
-    const std::vector<ServerFieldType>& types) {
+bool HaveSameNonStreetAddresses(const std::vector<AutofillProfile*>& profiles,
+                                const std::string& app_locale,
+                                const std::vector<ServerFieldType>& types) {
   // In general, comparing non street addresses with Equals, which uses ==, is
   // not ideal since Düsseldorf and Dusseldorf will be considered distinct. It's
   // okay to use it here because near-duplicate non street addresses like this
@@ -333,9 +329,8 @@ bool HaveSameNonStreetAddresses(
                       base::BindRepeating(&Equals));
 }
 
-bool HaveSamePhoneNumbers(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
-    const std::string& app_locale) {
+bool HaveSamePhoneNumbers(const std::vector<AutofillProfile*>& profiles,
+                          const std::string& app_locale) {
   // Note that the same country code is used in all comparisons.
   auto equals = [](const std::string& country_code,
                    const std::string& app_locale, const std::u16string& phone1,
@@ -354,10 +349,9 @@ bool HaveSamePhoneNumbers(
                                        app_locale));
 }
 
-bool HaveSameStreetAddresses(
-    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
-    const std::string& app_locale,
-    const std::vector<ServerFieldType>& types) {
+bool HaveSameStreetAddresses(const std::vector<AutofillProfile*>& profiles,
+                             const std::string& app_locale,
+                             const std::vector<ServerFieldType>& types) {
   // In general, comparing street addresses with Equals, which uses ==, is not
   // ideal since 3 Elm St and 3 Elm St. will be considered distinct. It's okay
   // to use it here because near-duplicate addresses like this are filtered

@@ -776,7 +776,7 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
     }
   }
 
-  std::vector<dangling_raw_ptr<gles2::Texture>> textures;
+  std::vector<gles2::Texture*> textures;
   textures.reserve(gl_textures_.size());
   for (auto& gl_texture : gl_textures_) {
     textures.push_back(gl_texture.texture());

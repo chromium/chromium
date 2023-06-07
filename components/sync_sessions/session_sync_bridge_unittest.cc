@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -1104,7 +1103,7 @@ TEST_F(SessionSyncBridgeTest, ShouldMergeForeignSession) {
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
   StartSyncing({foreign_header, foreign_tab});
 
-  std::vector<dangling_raw_ptr<const SyncedSession>> foreign_sessions;
+  std::vector<const SyncedSession*> foreign_sessions;
   EXPECT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions));
   EXPECT_THAT(foreign_sessions,
@@ -1149,7 +1148,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotExposeForeignHeaderWithoutTabs) {
   StartSyncing({foreign_header});
   ASSERT_THAT(GetData(foreign_header_storage_key), NotNull());
 
-  std::vector<dangling_raw_ptr<const SyncedSession>> foreign_sessions;
+  std::vector<const SyncedSession*> foreign_sessions;
   EXPECT_FALSE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions));
 
@@ -1262,7 +1261,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
       kForeignSessionTag, SessionID::FromSerializedValue(kForeignTabId),
       &foreign_session_tab));
   ASSERT_THAT(foreign_session_tab, NotNull());
-  std::vector<dangling_raw_ptr<const SyncedSession>> foreign_sessions;
+  std::vector<const SyncedSession*> foreign_sessions;
   ASSERT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions));
   ASSERT_THAT(foreign_sessions,
@@ -1488,7 +1487,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDeleteForeignSessionFromUI) {
       kForeignSessionTag, SessionID::FromSerializedValue(kForeignTabId),
       &foreign_session_tab));
   ASSERT_THAT(foreign_session_tab, NotNull());
-  std::vector<dangling_raw_ptr<const SyncedSession>> foreign_sessions;
+  std::vector<const SyncedSession*> foreign_sessions;
   ASSERT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions));
   ASSERT_THAT(foreign_sessions,

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,8 +26,7 @@ class FakeTabModel : public TabModel {
  public:
   explicit FakeTabModel(
       Profile* profile,
-      const std::vector<dangling_raw_ptr<content::WebContents>>&
-          web_contents_list)
+      const std::vector<content::WebContents*>& web_contents_list)
       : TabModel(profile, chrome::android::ActivityType::kCustomTab),
         web_contents_list_(web_contents_list) {}
 
@@ -61,7 +59,7 @@ class FakeTabModel : public TabModel {
   void RemoveObserver(TabModelObserver* observer) override {}
 
  private:
-  std::vector<dangling_raw_ptr<content::WebContents>> web_contents_list_;
+  std::vector<content::WebContents*> web_contents_list_;
 };
 
 }  // namespace

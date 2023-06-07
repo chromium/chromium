@@ -30,9 +30,8 @@ DangerousDownloadDialogBridge::DangerousDownloadDialogBridge() {
 }
 
 DangerousDownloadDialogBridge::~DangerousDownloadDialogBridge() {
-  for (download::DownloadItem* download_item : download_items_) {
+  for (auto* download_item : download_items_)
     download_item->RemoveObserver(this);
-  }
   Java_DangerousDownloadDialogBridge_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }

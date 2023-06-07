@@ -221,7 +221,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
   void SendAutofillTypePredictionsToRenderer(
-      const std::vector<dangling_raw_ptr<FormStructure>>& forms) override;
+      const std::vector<FormStructure*>& forms) override;
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) override;

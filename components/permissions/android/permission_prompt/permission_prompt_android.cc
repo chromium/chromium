@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_request.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -69,14 +68,13 @@ size_t PermissionPromptAndroid::PermissionCount() const {
 
 ContentSettingsType PermissionPromptAndroid::GetContentSettingType(
     size_t position) const {
-  const std::vector<dangling_raw_ptr<PermissionRequest>>& requests =
-      delegate_->Requests();
+  const std::vector<PermissionRequest*>& requests = delegate_->Requests();
   CHECK_LT(position, requests.size());
   return requests[position]->GetContentSettingsType();
 }
 
 static bool IsValidMediaRequestGroup(
-    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests) {
+    const std::vector<PermissionRequest*>& requests) {
   if (requests.size() < 2)
     return false;
   return ((requests[0]->request_type() == RequestType::kMicStream &&
@@ -87,14 +85,13 @@ static bool IsValidMediaRequestGroup(
 
 // Grouped permission requests can only be Mic+Camera, Camera+Mic.
 static void CheckValidRequestGroup(
-    const std::vector<dangling_raw_ptr<PermissionRequest>>& requests) {
+    const std::vector<PermissionRequest*>& requests) {
   DCHECK_EQ(static_cast<size_t>(2u), requests.size());
   DCHECK((IsValidMediaRequestGroup(requests)));
 }
 
 int PermissionPromptAndroid::GetIconId() const {
-  const std::vector<dangling_raw_ptr<PermissionRequest>>& requests =
-      delegate_->Requests();
+  const std::vector<PermissionRequest*>& requests = delegate_->Requests();
   if (requests.size() == 1)
     return permissions::GetIconId(requests[0]->request_type());
   CheckValidRequestGroup(requests);
@@ -102,8 +99,7 @@ int PermissionPromptAndroid::GetIconId() const {
 }
 
 std::u16string PermissionPromptAndroid::GetMessageText() const {
-  const std::vector<dangling_raw_ptr<PermissionRequest>>& requests =
-      delegate_->Requests();
+  const std::vector<PermissionRequest*>& requests = delegate_->Requests();
   if (requests.size() == 1) {
     if (requests[0]->request_type() == RequestType::kStorageAccess) {
       return l10n_util::GetStringFUTF16(

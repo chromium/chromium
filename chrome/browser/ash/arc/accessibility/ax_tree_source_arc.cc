@@ -11,7 +11,6 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
@@ -310,7 +309,7 @@ void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
 
   // NOTE: |AXTreeSourceArc::GetChildren| depends on ComputeEnclosingBounds.
   // To get children, directly call wrapper's GetChildren here.
-  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
+  std::vector<AccessibilityInfoDataWrapper*> children;
   info_data->GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children)
     ComputeEnclosingBoundsInternal(child, computed_bounds);
@@ -602,8 +601,8 @@ void AXTreeSourceArc::PerformAction(const ui::AXActionData& data) {
   delegate_->OnAction(data);
 }
 
-std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>&
-AXTreeSourceArc::GetChildren(AccessibilityInfoDataWrapper* info_data) const {
+std::vector<AccessibilityInfoDataWrapper*>& AXTreeSourceArc::GetChildren(
+    AccessibilityInfoDataWrapper* info_data) const {
   DCHECK(info_data);
   ComputeAndCacheChildren(info_data);
   return info_data->cached_children_.value();
@@ -615,7 +614,7 @@ void AXTreeSourceArc::ComputeAndCacheChildren(
     return;
   }
 
-  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>& children =
+  std::vector<AccessibilityInfoDataWrapper*>& children =
       info_data->cached_children_.emplace();
 
   info_data->GetChildren(&children);

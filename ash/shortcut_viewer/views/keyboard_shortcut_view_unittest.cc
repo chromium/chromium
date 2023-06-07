@@ -13,7 +13,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,8 +73,7 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
     return GetView()->GetSearchBoxViewForTesting();
   }
 
-  const std::vector<dangling_raw_ptr<KeyboardShortcutItemView>>&
-  GetFoundShortcutItems() const {
+  const std::vector<KeyboardShortcutItemView*>& GetFoundShortcutItems() const {
     DCHECK(GetView());
     return GetView()->GetFoundShortcutItemsForTesting();
   }
@@ -271,8 +269,7 @@ TEST_F(KeyboardShortcutViewTest, ShouldAlignSubLabelsInSearchResults) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetFoundShortcutItems().empty());
 
-  for (const keyboard_shortcut_viewer::KeyboardShortcutItemView* item_view :
-       GetFoundShortcutItems()) {
+  for (const auto* item_view : GetFoundShortcutItems()) {
     ASSERT_EQ(2u, item_view->children().size());
 
     const views::View* description = item_view->children()[0];
@@ -284,7 +281,7 @@ TEST_F(KeyboardShortcutViewTest, ShouldAlignSubLabelsInSearchResults) {
     // vertically aligned in each line.
     int height = 0;
     int center_y = 0;
-    for (const views::View* child : description->children()) {
+    for (const auto* child : description->children()) {
       // The first view in each line.
       if (child->bounds().x() == 0) {
         height = child->bounds().height();
@@ -340,11 +337,10 @@ TEST_F(KeyboardShortcutViewTest, MAYBE_AccessibilityProperties) {
   task_environment()->FastForwardBy(time_out);
   base::RunLoop().RunUntilIdle();
 
-  const std::vector<dangling_raw_ptr<KeyboardShortcutItemView>>& items =
-      GetFoundShortcutItems();
+  const std::vector<KeyboardShortcutItemView*>& items = GetFoundShortcutItems();
   EXPECT_FALSE(items.empty());
 
-  auto* first_item = items.front().get();
+  auto* first_item = items.front();
   ui::AXNodeData first_item_data;
   first_item->GetViewAccessibility().GetAccessibleNodeData(&first_item_data);
   EXPECT_EQ(first_item_data.role, ax::mojom::Role::kListItem);
@@ -358,7 +354,7 @@ TEST_F(KeyboardShortcutViewTest, MAYBE_AccessibilityProperties) {
   EXPECT_EQ(first_item_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
             static_cast<int>(items.size()));
 
-  auto* last_item = items.back().get();
+  auto* last_item = items.back();
   ui::AXNodeData last_item_data;
   last_item->GetViewAccessibility().GetAccessibleNodeData(&last_item_data);
   EXPECT_EQ(last_item_data.role, ax::mojom::Role::kListItem);

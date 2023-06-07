@@ -96,7 +96,7 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
     // iterate through bubble getting size plus button padding
     // calculated button_sizes + extra_padding
     int size = 0;
-    for (const views::View* const button : saved_tab_group_bar_->children()) {
+    for (const auto* const button : saved_tab_group_bar_->children()) {
       size += button->GetVisible()
                   ? button->GetPreferredSize().width() + button_padding_
                   : 0;

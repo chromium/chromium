@@ -97,7 +97,7 @@ int UIElement::FindUIElementIdForBackendElement<views::Widget>(
           element) {
     return node_id_;
   }
-  for (ui_devtools::UIElement* child : children_) {
+  for (auto* child : children_) {
     int ui_element_id = child->FindUIElementIdForBackendElement(element);
     if (ui_element_id)
       return ui_element_id;

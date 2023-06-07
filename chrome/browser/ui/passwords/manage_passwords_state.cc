@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -22,7 +21,7 @@ using password_manager_util::GetMatchType;
 namespace {
 
 std::vector<std::unique_ptr<PasswordForm>> DeepCopyNonPSLVector(
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& password_forms) {
+    const std::vector<const PasswordForm*>& password_forms) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   result.reserve(password_forms.size());
   for (const PasswordForm* form : password_forms) {
@@ -32,13 +31,11 @@ std::vector<std::unique_ptr<PasswordForm>> DeepCopyNonPSLVector(
   return result;
 }
 
-void AppendDeepCopyVector(
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& forms,
-    std::vector<std::unique_ptr<PasswordForm>>* result) {
+void AppendDeepCopyVector(const std::vector<const PasswordForm*>& forms,
+                          std::vector<std::unique_ptr<PasswordForm>>* result) {
   result->reserve(result->size() + forms.size());
-  for (const password_manager::PasswordForm* form : forms) {
+  for (auto* form : forms)
     result->push_back(std::make_unique<PasswordForm>(*form));
-  }
 }
 
 // Updates one form in |forms| that has the same unique key as |updated_form|.
@@ -125,8 +122,7 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
   ClearData();
   form_manager_ = std::move(form_manager);
-  for (const password_manager::PasswordForm* form :
-       form_manager_->GetBestMatches()) {
+  for (const auto* form : form_manager_->GetBestMatches()) {
     if (GetMatchType(*form) == password_manager_util::GetLoginMatchType::kPSL)
       continue;
     local_credentials_forms_.push_back(std::make_unique<PasswordForm>(*form));
@@ -138,10 +134,9 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
 }
 
 void ManagePasswordsState::OnPasswordAutofilled(
-    const std::vector<dangling_raw_ptr<const PasswordForm>>& password_forms,
+    const std::vector<const PasswordForm*>& password_forms,
     url::Origin origin,
-    const std::vector<dangling_raw_ptr<const PasswordForm>>*
-        federated_matches) {
+    const std::vector<const PasswordForm*>* federated_matches) {
   DCHECK(!password_forms.empty() ||
          (federated_matches && !federated_matches->empty()));
   auto local_credentials_forms = DeepCopyNonPSLVector(password_forms);

@@ -440,7 +440,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
 
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
+  for (const auto* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     EXPECT_FALSE(metric);
@@ -481,7 +481,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const ukm::mojom::UkmEntry* entry : entries) {
+  for (const auto* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
@@ -527,7 +527,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const ukm::mojom::UkmEntry* entry : entries) {
+  for (const auto* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
@@ -572,7 +572,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const ukm::mojom::UkmEntry* entry : entries) {
+  for (const auto* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {

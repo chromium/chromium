@@ -4,7 +4,6 @@
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -120,10 +119,10 @@ void TabSessionSource::AddTabRanks(const std::string& session_tag,
       }
     }
   }
-  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
+  std::vector<const sync_sessions::SyncedSession*> sessions;
   int session_rank_overall = 0;
   if (open_tab_delegate->GetAllForeignSessions(&sessions)) {
-    for (const sync_sessions::SyncedSession* session : sessions) {
+    for (const auto* session : sessions) {
       if (session->GetModifiedTime() > session_tab->timestamp) {
         session_rank_overall++;
       }

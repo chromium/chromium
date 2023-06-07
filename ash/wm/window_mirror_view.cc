@@ -22,9 +22,8 @@ namespace ash {
 namespace {
 
 void EnsureAllChildrenAreVisible(ui::Layer* layer) {
-  for (ui::Layer* child : layer->children()) {
+  for (auto* child : layer->children())
     EnsureAllChildrenAreVisible(child);
-  }
 
   layer->SetVisible(true);
   layer->SetOpacity(1);

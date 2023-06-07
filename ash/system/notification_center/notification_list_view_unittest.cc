@@ -11,7 +11,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -109,8 +108,8 @@ class TestNotificationListView : public NotificationListView {
     return message_view;
   }
 
-  std::vector<dangling_raw_ptr<message_center::Notification>>
-  GetStackedNotifications() const override {
+  std::vector<message_center::Notification*> GetStackedNotifications()
+      const override {
     return stacked_notifications_;
   }
 
@@ -120,8 +119,7 @@ class TestNotificationListView : public NotificationListView {
   }
 
  private:
-  std::vector<dangling_raw_ptr<message_center::Notification>>
-      stacked_notifications_;
+  std::vector<message_center::Notification*> stacked_notifications_;
   std::vector<std::string> notification_id_list_;
 };
 
@@ -807,7 +805,7 @@ TEST_F(NotificationListViewTest, TwoExpandsInARow) {
   CreateMessageListView();
 
   // First expand the notification in `first_notification_container`.
-  auto* first_notification_container = message_list_view()->children()[1].get();
+  auto* first_notification_container = message_list_view()->children()[1];
   auto* message_view = GetMessageViewAt(1);
   ASSERT_FALSE(message_view->IsExpanded());
   message_view->SetExpanded(/*expanded=*/true);
@@ -816,8 +814,7 @@ TEST_F(NotificationListViewTest, TwoExpandsInARow) {
       first_notification_container->GetPreferredSize();
 
   // Collapse the second notification as `message_view` is still animating.
-  auto* second_notification_container =
-      message_list_view()->children()[0].get();
+  auto* second_notification_container = message_list_view()->children()[0];
   const gfx::Size second_notification_initial_size =
       second_notification_container->GetPreferredSize();
   message_view = GetMessageViewAt(0);
@@ -848,8 +845,7 @@ TEST_F(NotificationListViewTest, ReverseExpand) {
   CreateMessageListView();
   auto* message_view = GetMessageViewAt(0);
 
-  auto* second_notification_container =
-      message_list_view()->children()[0].get();
+  auto* second_notification_container = message_list_view()->children()[0];
   message_view->SetExpanded(/*expanded=*/false);
   AnimateToMiddle();
   const gfx::Size middle_of_collapsed_size =
@@ -889,7 +885,7 @@ TEST_F(NotificationListViewTest, RemoveNotificationDuringCollapse) {
   auto* message_view = GetMessageViewAt(0);
   message_view->SetExpanded(/*expanded=*/false);
   AnimateToMiddle();
-  auto* notification_container = message_list_view()->children()[0].get();
+  auto* notification_container = message_list_view()->children()[0];
   const gfx::Size middle_of_collapsed_size =
       notification_container->GetPreferredSize();
 
@@ -915,7 +911,7 @@ TEST_F(NotificationListViewTest,
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
 
-  auto* notification_container = message_list_view()->children()[0].get();
+  auto* notification_container = message_list_view()->children()[0];
   const gfx::Size pre_remove_size = notification_container->GetPreferredSize();
   // Remove the notification, this should activate the "slide out" animation.
   MessageCenter::Get()->RemoveNotification(id1, /*by_user=*/true);
@@ -954,7 +950,7 @@ TEST_F(NotificationListViewTest, DISABLED_CollapseDuringMoveNoAnimation) {
       AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
   auto* to_be_collapsed_message_view_container =
-      message_list_view()->children()[1].get();
+      message_list_view()->children()[1];
   auto* to_be_collapsed_message_view = GetMessageViewAt(1);
   const gfx::Size pre_collapse_size =
       to_be_collapsed_message_view_container->GetPreferredSize();
@@ -990,7 +986,7 @@ TEST_F(NotificationListViewTest, MoveDuringCollapseNoAnimation) {
       AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
   auto* to_be_collapsed_message_view_container =
-      message_list_view()->children()[0].get();
+      message_list_view()->children()[0];
   auto* to_be_collapsed_message_view = GetMessageViewAt(0);
   const gfx::Size pre_collapse_size =
       to_be_collapsed_message_view_container->GetPreferredSize();

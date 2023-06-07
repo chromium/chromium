@@ -456,8 +456,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_settingsAreDismissed)
     return;
 
-  std::vector<dangling_raw_ptr<TemplateURL>> urls =
-      _templateURLService->GetTemplateURLs();
+  std::vector<TemplateURL*> urls = _templateURLService->GetTemplateURLs();
   _firstList.clear();
   _firstList.reserve(urls.size());
   _secondList.clear();

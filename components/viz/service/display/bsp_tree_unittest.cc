@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/draw_polygon.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +39,7 @@ class BspTreeTest {
       const std::vector<int>& compare_list) {
     BspTree bsp_tree(test_polygons);
 
-    std::vector<dangling_raw_ptr<DrawPolygon>> sorted_list;
+    std::vector<DrawPolygon*> sorted_list;
     BspWalkActionToVector action_handler(&sorted_list);
     bsp_tree.TraverseWithActionHandler(&action_handler);
 

@@ -9,7 +9,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -48,7 +47,7 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
 
   MOCK_METHOD(bool,
               StartQueryRequest,
-              (const std::vector<dangling_raw_ptr<FormStructure>>&,
+              (const std::vector<FormStructure*>&,
                net::IsolationInfo,
                base::WeakPtr<Observer>),
               (override));
@@ -129,7 +128,7 @@ class MockAutofillManager : public AutofillManager {
               (override));
   MOCK_METHOD(void,
               PropagateAutofillPredictions,
-              (const std::vector<dangling_raw_ptr<FormStructure>>& forms),
+              (const std::vector<FormStructure*>& forms),
               (override));
   MOCK_METHOD(void,
               OnFormSubmittedImpl,

@@ -34,7 +34,7 @@ class CompanionMetricsLoggerTest : public testing::Test {
     // There should be only one UKM entry of Companion_PageView type.
     const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
     EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
-    auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0].get();
+    auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
 
     // Verify the metric.
     ukm_recorder()->EntryHasMetric(entry, metric_name);
@@ -56,7 +56,7 @@ class CompanionMetricsLoggerTest : public testing::Test {
     logger_.reset();
     const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
-    auto* entry = entries[entries.size() - 1].get();
+    auto* entry = entries[entries.size() - 1];
 
     ukm_recorder()->EntryHasMetric(
         entry, ukm::builders::Companion_PageView::kPromoEventName);

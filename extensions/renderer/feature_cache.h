@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
@@ -57,7 +56,7 @@ class FeatureCache {
   void InvalidateExtension(const ExtensionId& extension_id);
 
  private:
-  using FeatureVector = std::vector<dangling_raw_ptr<const Feature>>;
+  using FeatureVector = std::vector<const Feature*>;
   struct ExtensionFeatureData {
    public:
     ExtensionFeatureData();

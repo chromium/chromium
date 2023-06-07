@@ -52,7 +52,7 @@ void StatusAreaAnimationController::OnAllTrayItemsAdded() {
 
 void StatusAreaAnimationController::
     DisableNotificationCenterTrayItemAnimations() {
-  for (views::View* tray_item :
+  for (auto* tray_item :
        notification_center_tray_->tray_container()->children()) {
     notification_center_tray_item_animation_enablers_.push_back(
         static_cast<TrayItemView*>(tray_item)->DisableAnimation());
@@ -137,7 +137,7 @@ void StatusAreaAnimationController::PerformAnimation(bool visible) {
 }
 
 void StatusAreaAnimationController::ImmediatelyUpdateTrayItemVisibilities() {
-  for (views::View* tray_item :
+  for (auto* tray_item :
        notification_center_tray_->tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->ImmediatelyUpdateVisibility();
   }

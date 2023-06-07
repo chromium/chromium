@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -58,7 +57,7 @@ class WebFrame;
 
 // Bridge for AutofillClient's method |PropagateAutofillPredictions|.
 - (void)propagateAutofillPredictionsForForms:
-            (const std::vector<dangling_raw_ptr<autofill::FormStructure>>&)forms
+            (const std::vector<autofill::FormStructure*>&)forms
                                      inFrame:(web::WebFrame*)frame;
 
 // Bridge for AutofillClient's method |ConfirmSaveAddressProfile|.

@@ -87,7 +87,7 @@ void FocusCycler::RotateFocus(Direction direction) {
           Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
       if (mru_windows.empty())
         break;
-      auto* window = mru_windows.front().get();
+      auto* window = mru_windows.front();
       WindowState::Get(window)->Activate();
       views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
       if (!widget)
@@ -121,7 +121,7 @@ bool FocusCycler::FocusWidget(views::Widget* widget) {
 
 views::Widget* FocusCycler::FindWidget(
     base::RepeatingCallback<bool(views::Widget*)> callback) {
-  for (views::Widget* widget : widgets_) {
+  for (auto* widget : widgets_) {
     if (callback.Run(widget))
       return widget;
   }

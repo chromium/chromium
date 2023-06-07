@@ -444,9 +444,8 @@ gfx::Insets InputMenuView::CalculateInsets(views::View* view,
                                            int other_spacing,
                                            int menu_width) const {
   int total_width = 0;
-  for (views::View* child : view->children()) {
+  for (auto* child : view->children())
     total_width += child->GetPreferredSize().width();
-  }
 
   int right_inset =
       std::max(0, menu_width - (total_width + left + right + other_spacing));

@@ -416,7 +416,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #endif
   // This value is not surrounded by build flags as it is meant to be updated
   // manually in binary experiment patches.
-  trials.emplace("VectorRawPtrExperiment", "Enabled");
+  trials.emplace("VectorRawPtrExperiment", "Disabled");
 
 #if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
   trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Enabled");

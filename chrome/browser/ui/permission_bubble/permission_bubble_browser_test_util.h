@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "components/permissions/permission_prompt.h"
@@ -39,8 +38,7 @@ class TestPermissionBubbleViewDelegate
 
   ~TestPermissionBubbleViewDelegate() override;
 
-  const std::vector<dangling_raw_ptr<permissions::PermissionRequest>>&
-  Requests() override;
+  const std::vector<permissions::PermissionRequest*>& Requests() override;
 
   GURL GetRequestingOrigin() const override;
 
@@ -70,13 +68,12 @@ class TestPermissionBubbleViewDelegate
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override;
 
-  void set_requests(
-      std::vector<dangling_raw_ptr<permissions::PermissionRequest>> requests) {
+  void set_requests(std::vector<permissions::PermissionRequest*> requests) {
     requests_ = requests;
   }
 
  private:
-  std::vector<dangling_raw_ptr<permissions::PermissionRequest>> requests_;
+  std::vector<permissions::PermissionRequest*> requests_;
   base::WeakPtrFactory<TestPermissionBubbleViewDelegate> weak_factory_{this};
 };
 

@@ -28,7 +28,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -124,7 +123,7 @@ void FixWindowStackingAccordingToGlobalMru(aura::Window* window_to_fix) {
   // Find the closest sibling that is not a transient descendant, which
   // |window_to_fix| should be stacked below.
   aura::Window* closest_sibling_above_window = nullptr;
-  for (aura::Window* window : mru_windows) {
+  for (auto* window : mru_windows) {
     if (window == window_to_fix) {
       if (closest_sibling_above_window)
         container->StackChildBelow(window_to_fix, closest_sibling_above_window);
@@ -272,7 +271,7 @@ Desk::ScopedContentUpdateNotificationDisabler::
 
 Desk::ScopedContentUpdateNotificationDisabler::
     ~ScopedContentUpdateNotificationDisabler() {
-  for (ash::Desk* desk : desks_) {
+  for (auto* desk : desks_) {
     desk->ResumeContentUpdateNotification(notify_when_destroyed_);
   }
 }
@@ -296,7 +295,7 @@ Desk::Desk(int associated_container_id, bool desk_being_restored)
 
 Desk::~Desk() {
 #if DCHECK_IS_ON()
-  for (aura::Window* window : windows_) {
+  for (auto* window : windows_) {
     DCHECK(!CanMoveWindowOutOfDeskContainer(window))
         << "DesksController should remove this desk's application windows "
            "first.";
@@ -352,7 +351,7 @@ void Desk::OnRootWindowClosing(aura::Window* root) {
   // WindowTreeHostManager will move those windows to another host/root, and
   // they will be added again to the desk container on the new root.
   const auto windows = windows_;
-  for (aura::Window* window : windows) {
+  for (auto* window : windows) {
     if (window->GetRootWindow() == root)
       base::Erase(windows_, window);
   }
@@ -556,7 +555,7 @@ void Desk::Activate(bool update_window_activation) {
   // the MRU list here so that in the case that there are multiple roots that
   // each have a topmost adw window, we'll activate the one most recently used.
   if (features::IsPerDeskZOrderEnabled()) {
-    for (aura::Window* window : mru_window_list) {
+    for (auto* window : mru_window_list) {
       aura::Window* root = window->GetRootWindow();
 
       if (last_active_root_ != nullptr && last_active_root_ != root) {
@@ -576,7 +575,7 @@ void Desk::Activate(bool update_window_activation) {
 
   // Activate the window on this desk that was most recently used right before
   // the user switched to another desk, so as not to break the user's workflow.
-  for (aura::Window* window : mru_window_list) {
+  for (auto* window : mru_window_list) {
     const auto* window_state = WindowState::Get(window);
     // Floated window should be activated with the desk window, but it doesn't
     // belong to `windows_`.
@@ -685,7 +684,7 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
   aura::WindowTracker windows_to_move;
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     const aura::Window* container = GetDeskContainerForRoot(root);
-    for (aura::Window* window : base::Reversed(container->children())) {
+    for (auto* window : base::Reversed(container->children())) {
       windows_to_move.Add(window);
     }
   }
@@ -778,9 +777,8 @@ void Desk::NotifyContentChanged() {
 }
 
 void Desk::UpdateDeskBackdrops() {
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
+  for (auto* root : Shell::GetAllRootWindows())
     UpdateBackdropController(GetDeskContainerForRoot(root));
-  }
 }
 
 void Desk::RecordLifetimeHistogram(int index) {
@@ -817,11 +815,11 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
   first_day_visited_ = -1;
 }
 
-std::vector<dangling_raw_ptr<aura::Window>> Desk::GetAllAppWindows() const {
+std::vector<aura::Window*> Desk::GetAllAppWindows() const {
   // We need to copy the app windows from `windows_` into `app_windows` so
   // that we do not modify `windows_` in place. This also gives us a filtered
   // list with all of the app windows that we need to remove.
-  std::vector<dangling_raw_ptr<aura::Window>> app_windows;
+  std::vector<aura::Window*> app_windows;
   base::ranges::copy_if(windows_, std::back_inserter(app_windows),
                         [](aura::Window* window) {
                           return window->GetProperty(aura::client::kAppType) !=
@@ -839,8 +837,7 @@ std::vector<dangling_raw_ptr<aura::Window>> Desk::GetAllAppWindows() const {
   return app_windows;
 }
 
-std::vector<dangling_raw_ptr<aura::Window>> Desk::GetAllAssociatedWindows()
-    const {
+std::vector<aura::Window*> Desk::GetAllAssociatedWindows() const {
   // Note that floated window needs to be handled separately since it doesn't
   // store in desk container.
   if (auto* floated_window =
@@ -848,7 +845,7 @@ std::vector<dangling_raw_ptr<aura::Window>> Desk::GetAllAssociatedWindows()
               ? nullptr
               : Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
                     this)) {
-    std::vector<dangling_raw_ptr<aura::Window>> all_windows;
+    std::vector<aura::Window*> all_windows;
     base::ranges::copy(windows_, std::back_inserter(all_windows));
     all_windows.push_back(floated_window);
     return all_windows;

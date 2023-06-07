@@ -13,7 +13,6 @@
 #include "base/containers/cxx20_erase_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -87,7 +86,7 @@ ClientSession::ClientSession(
     const DesktopEnvironmentOptions& desktop_environment_options,
     const base::TimeDelta& max_duration,
     scoped_refptr<protocol::PairingRegistry> pairing_registry,
-    const std::vector<dangling_raw_ptr<HostExtension>>& extensions)
+    const std::vector<HostExtension*>& extensions)
     : event_handler_(event_handler),
       desktop_environment_factory_(desktop_environment_factory),
       desktop_environment_options_(desktop_environment_options),

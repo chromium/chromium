@@ -56,7 +56,7 @@ void AddDesksBarTraversableViews(
     if (is_zero_state) {
       out_traversable_views.push_back(bar_view->default_desk_button());
     } else {
-      for (ash::DeskMiniView* mini_view : bar_view->mini_views()) {
+      for (auto* mini_view : bar_view->mini_views()) {
         out_traversable_views.push_back(mini_view->desk_preview());
         out_traversable_views.push_back(mini_view->desk_name_view());
       }
@@ -87,7 +87,7 @@ void AddDesksBarTraversableViews(
     return;
   }
 
-  for (ash::DeskMiniView* mini_view : bar_view->mini_views()) {
+  for (auto* mini_view : bar_view->mini_views()) {
     out_traversable_views.push_back(mini_view->desk_preview());
     out_traversable_views.push_back(mini_view->desk_name_view());
   }

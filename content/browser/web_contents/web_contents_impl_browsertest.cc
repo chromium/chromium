@@ -5927,9 +5927,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
 
   const auto& entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
+  for (const auto* entry : entries)
     test_recorder_.ExpectEntryMetric(entry, UkmEntry::kIsTopFrameName, false);
-  }
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)

@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -297,12 +296,10 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       })");
 }
 
-size_t CountActiveFieldsInForms(
-    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
+size_t CountActiveFieldsInForms(const std::vector<FormStructure*>& forms) {
   size_t active_field_count = 0;
-  for (const autofill::FormStructure* form : forms) {
+  for (const auto* form : forms)
     active_field_count += form->active_field_count();
-  }
   return active_field_count;
 }
 
@@ -609,7 +606,7 @@ bool AutofillDownloadManager::IsEnabled() const {
 }
 
 bool AutofillDownloadManager::StartQueryRequest(
-    const std::vector<dangling_raw_ptr<FormStructure>>& forms,
+    const std::vector<FormStructure*>& forms,
     net::IsolationInfo isolation_info,
     base::WeakPtr<Observer> observer) {
   if (!IsEnabled())

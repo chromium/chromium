@@ -165,7 +165,7 @@ ash::ShelfAction SelectItem(
 
 // Find the browser that associated with |app_name|.
 Browser* FindBrowserForApp(const std::string& app_name) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     std::string browser_app_name =
         web_app::GetAppIdFromApplicationName(browser->app_name());
     if (browser_app_name == app_name)

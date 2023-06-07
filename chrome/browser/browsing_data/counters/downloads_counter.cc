@@ -4,7 +4,6 @@
 
 #include "chrome/browser/browsing_data/counters/downloads_counter.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,7 +22,7 @@ const char* DownloadsCounter::GetPrefName() const {
 
 void DownloadsCounter::Count() {
   content::DownloadManager* download_manager = profile_->GetDownloadManager();
-  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
+  std::vector<download::DownloadItem*> downloads;
   download_manager->GetAllDownloads(&downloads);
   base::Time begin_time = GetPeriodStart();
 

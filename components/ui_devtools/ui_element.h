@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/devtools_export.h"
 #include "components/ui_devtools/dom.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -49,7 +48,7 @@ class UI_DEVTOOLS_EXPORT UIElement {
     int line_;
   };
 
-  using UIElements = std::vector<dangling_raw_ptr<UIElement>>;
+  using UIElements = std::vector<UIElement*>;
 
   UIElement(const UIElement&) = delete;
   UIElement& operator=(const UIElement&) = delete;

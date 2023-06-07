@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -78,7 +77,7 @@ ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
 ExtensionMenuItemView* GetMenuItem(
     views::View* parent_view,
     const ToolbarActionsModel::ActionId& action_id) {
-  for (views::View* view : parent_view->children()) {
+  for (auto* view : parent_view->children()) {
     auto* item_view = GetAsMenuItem(view);
     if (item_view->view_controller()->GetId() == action_id) {
       return item_view;
@@ -348,8 +347,7 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
     requests_access_container_->SetVisible(!extension_entries_.empty());
   } else {
     // Update extension entry.
-    std::vector<dangling_raw_ptr<View>> extension_items =
-        extension_iter->second->children();
+    std::vector<View*> extension_items = extension_iter->second->children();
     views::AsViewClass<views::ImageView>(
         extension_items[kExtensionItemIconIndex])
         ->SetImage(icon);

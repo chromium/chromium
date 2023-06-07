@@ -149,7 +149,7 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
   // |login_state| being NEW or EXISTING, prepares |form_manager_| in a state in
   // which |pending_| looks like a new or existing credential, respectively.
   void SavePending(LoginState login_state) {
-    std::vector<dangling_raw_ptr<const PasswordForm>> matches;
+    std::vector<const PasswordForm*> matches;
     if (login_state == LoginState::EXISTING) {
       matches.push_back(&pending_);
     }

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "build/buildflag.h"
@@ -205,7 +204,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
     int argc = 0;
 
     // Contains C-strings that point into `args`.  `argv.size()` >= `argc`.
-    RAW_PTR_EXCLUSION std::vector<char*> argv;
+    std::vector<char*> argv;
 
     // `argv` concatenated with NUL characters.
     std::vector<char> args;

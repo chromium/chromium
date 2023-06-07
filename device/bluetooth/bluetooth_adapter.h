@@ -17,7 +17,6 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -372,7 +371,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   using DiscoverySessionCallback =
       base::OnceCallback<void(std::unique_ptr<BluetoothDiscoverySession>)>;
   using DeviceList = std::vector<BluetoothDevice*>;
-  using ConstDeviceList = std::vector<dangling_raw_ptr<const BluetoothDevice>>;
+  using ConstDeviceList = std::vector<const BluetoothDevice*>;
   using UUIDList = std::vector<BluetoothUUID>;
   using CreateServiceCallback =
       base::OnceCallback<void(scoped_refptr<BluetoothSocket>)>;

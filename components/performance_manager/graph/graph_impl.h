@@ -222,17 +222,17 @@ class GraphImpl : public Graph {
   // Typed observers.
   // TODO(chrisha): We should wrap these containers in something that catches
   // invalid reentrant usage in DCHECK builds.
-  RAW_PTR_EXCLUSION std::vector<GraphObserver*> graph_observers_
+  std::vector<GraphObserver*> graph_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  RAW_PTR_EXCLUSION std::vector<FrameNodeObserver*> frame_node_observers_
+  std::vector<FrameNodeObserver*> frame_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  RAW_PTR_EXCLUSION std::vector<PageNodeObserver*> page_node_observers_
+  std::vector<PageNodeObserver*> page_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  RAW_PTR_EXCLUSION std::vector<ProcessNodeObserver*> process_node_observers_
+  std::vector<ProcessNodeObserver*> process_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  RAW_PTR_EXCLUSION std::vector<SystemNodeObserver*> system_node_observers_
+  std::vector<SystemNodeObserver*> system_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  RAW_PTR_EXCLUSION std::vector<WorkerNodeObserver*> worker_node_observers_
+  std::vector<WorkerNodeObserver*> worker_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Graph-owned objects. For now we only expect O(10) clients, hence the

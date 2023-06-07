@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_manager.h"
@@ -60,7 +59,7 @@ class ScreenStateEnabledProviderTest : public AshTestBase {
   }
 
   void UpdateDisplays(bool external_on, bool internal_on) {
-    std::vector<dangling_raw_ptr<display::DisplaySnapshot>> outputs;
+    std::vector<display::DisplaySnapshot*> outputs;
 
     if (internal_on) {
       outputs.push_back(internal_on_snapshot_.get());

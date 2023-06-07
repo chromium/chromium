@@ -288,7 +288,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                           public ui::PropertyHandler,
                           public ui::metadata::MetaDataProvider {
  public:
-  using Views = std::vector<dangling_raw_ptr<View>>;
+  using Views = std::vector<View*>;
 
   // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not add
   // new callers.
@@ -2078,9 +2078,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Implementation for adding a layer above or beneath the view layer. Called
   // from |AddLayerToRegion()|.
-  void AddLayerToRegionImpl(
-      ui::Layer* new_layer,
-      std::vector<dangling_raw_ptr<ui::Layer>>& layer_vector);
+  void AddLayerToRegionImpl(ui::Layer* new_layer,
+                            std::vector<ui::Layer*>& layer_vector);
 
   // Sets this view's layer and the layers above and below's parent to the given
   // parent_layer. This will also ensure the layers are added to the given
@@ -2309,8 +2308,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Set of layers that should be painted above and beneath this View's layer.
   // These layers are maintained as siblings of this View's layer and are
   // stacked above and beneath, respectively.
-  std::vector<dangling_raw_ptr<ui::Layer>> layers_above_;
-  std::vector<dangling_raw_ptr<ui::Layer>> layers_below_;
+  std::vector<ui::Layer*> layers_above_;
+  std::vector<ui::Layer*> layers_below_;
 
   // If painting to a layer |mask_layer_| will mask the current layer and all
   // child layers to within the |clip_path_|.

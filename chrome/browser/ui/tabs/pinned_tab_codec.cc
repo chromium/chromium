@@ -70,7 +70,7 @@ void PinnedTabCodec::WritePinnedTabs(Profile* profile) {
     return;
 
   base::Value::List values;
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->is_type_normal() && browser->profile() == profile) {
       EncodePinnedTabs(browser, values);
     }

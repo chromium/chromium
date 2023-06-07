@@ -180,7 +180,7 @@ void Legend::Layout() {
 
   gfx::Size max_size;
   bool updated = false;
-  for (views::View* view : children()) {
+  for (auto* view : children()) {
     if (view->GetClassName() != LegendEntry::kViewClassName)
       continue;
 
@@ -189,7 +189,7 @@ void Legend::Layout() {
     updated |= max_size != value->GetPreferredSize();
   }
   if (updated) {
-    for (views::View* view : children()) {
+    for (auto* view : children()) {
       if (view->GetClassName() != LegendEntry::kViewClassName)
         continue;
 
@@ -200,7 +200,7 @@ void Legend::Layout() {
 }
 
 void Legend::SetValuesIndex(size_t index) {
-  for (views::View* view : children()) {
+  for (auto* view : children()) {
     if (view->GetClassName() != LegendEntry::kViewClassName)
       continue;
 
@@ -209,7 +209,7 @@ void Legend::SetValuesIndex(size_t index) {
 }
 
 void Legend::RefreshValues() {
-  for (views::View* view : children()) {
+  for (auto* view : children()) {
     if (view->GetClassName() != LegendEntry::kViewClassName)
       continue;
 

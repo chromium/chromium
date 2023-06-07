@@ -54,7 +54,7 @@ namespace {
 // Find a browser other than |browser|.
 Browser* FindOtherBrowser(Browser* browser) {
   Browser* found = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
+  for (auto* b : *BrowserList::GetInstance()) {
     if (b == browser)
       continue;
     found = b;

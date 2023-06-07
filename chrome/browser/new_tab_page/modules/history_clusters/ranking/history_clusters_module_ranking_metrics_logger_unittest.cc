@@ -61,7 +61,7 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::NewTabPage_HistoryClusters::kEntryName);
   ASSERT_EQ(entries.size(), 2u);
-  auto* entry = entries[0].get();
+  auto* entry = entries[0];
   test_ukm_recorder.EntryHasMetric(entry,
                                    ukm::builders::NewTabPage_HistoryClusters::
                                        kMinutesSinceMostRecentVisitName);
@@ -86,7 +86,7 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
       entry, ukm::builders::NewTabPage_HistoryClusters::kLayoutTypeShownName,
       1);
 
-  auto* entry2 = entries[1].get();
+  auto* entry2 = entries[1];
   test_ukm_recorder.EntryHasMetric(entry2,
                                    ukm::builders::NewTabPage_HistoryClusters::
                                        kMinutesSinceMostRecentVisitName);

@@ -95,15 +95,13 @@ void DeskAnimationBase::OnStartingDeskScreenshotTaken(int ending_desk_index) {
   // Extend the compositors' timeouts in order to prevents any repaints until
   // the desks are switched and overview mode exits.
   const auto roots = Shell::GetAllRootWindows();
-  for (aura::Window* root : roots) {
+  for (auto* root : roots)
     root->GetHost()->compositor()->SetAllowLocksToExtendTimeout(true);
-  }
 
   OnStartingDeskScreenshotTakenInternal(ending_desk_index);
 
-  for (aura::Window* root : roots) {
+  for (auto* root : roots)
     root->GetHost()->compositor()->SetAllowLocksToExtendTimeout(false);
-  }
 
   // Continue the second phase of the animation by taking the ending desk
   // screenshot and actually animating the layers.

@@ -441,7 +441,7 @@ class SingleBookmarksModelMatcherChecker
   bool IsExitConditionSatisfied(std::ostream* os) final;
 
  private:
-  RAW_PTR_EXCLUSION const Matcher matcher_;
+  const Matcher matcher_;
 };
 
 // Checker used to block until the actual number of bookmarks with the given

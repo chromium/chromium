@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
@@ -19,12 +18,11 @@ namespace autofill {
 // with name and address fields and without email or phone fields.
 class AddressFormLabelFormatter : public LabelFormatter {
  public:
-  AddressFormLabelFormatter(
-      const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
-      const std::string& app_locale,
-      ServerFieldType focused_field_type,
-      uint32_t groups,
-      const std::vector<ServerFieldType>& field_types);
+  AddressFormLabelFormatter(const std::vector<AutofillProfile*>& profiles,
+                            const std::string& app_locale,
+                            ServerFieldType focused_field_type,
+                            uint32_t groups,
+                            const std::vector<ServerFieldType>& field_types);
 
   ~AddressFormLabelFormatter() override;
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -112,12 +111,11 @@ class MockFastCheckoutController : public FastCheckoutController {
   MockFastCheckoutController() : FastCheckoutController() {}
   ~MockFastCheckoutController() override = default;
 
-  MOCK_METHOD(
-      void,
-      Show,
-      (const std::vector<dangling_raw_ptr<AutofillProfile>>& autofill_profiles,
-       const std::vector<CreditCard*>& credit_cards),
-      (override));
+  MOCK_METHOD(void,
+              Show,
+              (const std::vector<AutofillProfile*>& autofill_profiles,
+               const std::vector<CreditCard*>& credit_cards),
+              (override));
   MOCK_METHOD(void,
               OnOptionsSelected,
               (std::unique_ptr<AutofillProfile> profile,

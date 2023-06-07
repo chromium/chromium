@@ -29,7 +29,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -153,8 +152,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       return;
     }
 
-    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
-        bar_view_->mini_views();
+    std::vector<DeskMiniView*> mini_views = bar_view_->mini_views();
     if (mini_views.empty()) {
       return;
     }
@@ -199,7 +197,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
             kDeskBarDeskPreviewViewFocusRingThicknessAndPadding;
     const int y =
         kDeskBarMiniViewsY - mini_views[0]->GetPreviewBorderInsets().top();
-    for (ash::DeskMiniView* mini_view : mini_views) {
+    for (auto* mini_view : mini_views) {
       mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
       x += (mini_view_size.width() + kDeskBarMiniViewsSpacing);
     }
@@ -297,8 +295,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       return;
     }
 
-    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
-        bar_view_->mini_views();
+    std::vector<DeskMiniView*> mini_views = bar_view_->mini_views();
     if (mini_views.empty()) {
       return;
     }
@@ -344,7 +341,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
             kDeskBarDeskPreviewViewFocusRingThicknessAndPadding;
     const int y =
         kDeskBarMiniViewsY - mini_views[0]->GetPreviewBorderInsets().top();
-    for (ash::DeskMiniView* mini_view : mini_views) {
+    for (auto* mini_view : mini_views) {
       mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
       x += (mini_view_size.width() + kDeskBarMiniViewsSpacing);
     }
@@ -788,7 +785,7 @@ bool DeskBarViewBase::IsDeskNameBeingModified() const {
     return false;
   }
 
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     if (mini_view->IsDeskNameBeingModified()) {
       return true;
     }
@@ -812,7 +809,7 @@ void DeskBarViewBase::ScrollToShowViewIfNecessary(const views::View* view) {
 }
 
 DeskMiniView* DeskBarViewBase::FindMiniViewForDesk(const Desk* desk) const {
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     if (mini_view->desk() == desk) {
       return mini_view;
     }
@@ -1036,14 +1033,14 @@ void DeskBarViewBase::UpdateDeskIconButtonState(
 }
 
 void DeskBarViewBase::OnHoverStateMayHaveChanged() {
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     mini_view->UpdateDeskButtonVisibility();
   }
 }
 
 void DeskBarViewBase::OnGestureTap(const gfx::Rect& screen_rect,
                                    bool is_long_gesture) {
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     mini_view->OnWidgetGestureTap(screen_rect, is_long_gesture);
   }
 }
@@ -1077,7 +1074,7 @@ void DeskBarViewBase::SetDragDetails(const gfx::Point& screen_location,
     return;
   }
 
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     mini_view->UpdateFocusColor();
   }
 
@@ -1340,7 +1337,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
   }
 
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     mini_view->UpdateDeskButtonVisibility();
   }
 
@@ -1367,10 +1364,8 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   Layout();
   PerformRemoveDeskMiniViewAnimation(
       this, removed_mini_view,
-      std::vector<dangling_raw_ptr<DeskMiniView>>(mini_views_.begin(),
-                                                  partition_iter),
-      std::vector<dangling_raw_ptr<DeskMiniView>>(partition_iter,
-                                                  mini_views_.end()),
+      std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
+      std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
       begin_x - GetFirstMiniViewXOffset());
 
   MaybeUpdateCombineDesksTooltips();
@@ -1380,7 +1375,7 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
   desks_util::ReorderItem(mini_views_, old_index, new_index);
 
   // Update the order of child views.
-  auto* reordered_view = mini_views_[new_index].get();
+  auto* reordered_view = mini_views_[new_index];
   reordered_view->parent()->ReorderChildView(reordered_view, new_index);
   reordered_view->parent()->NotifyAccessibilityEvent(
       ax::mojom::Event::kTreeChanged, true);
@@ -1394,7 +1389,7 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
 
 void DeskBarViewBase::OnDeskActivationChanged(const Desk* activated,
                                               const Desk* deactivated) {
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     const Desk* desk = mini_view->desk();
     if (desk == activated || desk == deactivated) {
       mini_view->UpdateFocusColor();
@@ -1473,12 +1468,11 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   DCHECK(std::vector<DeskMiniView*>(left_partition_iter,
                                     right_partition_iter) == new_mini_views);
 
-  PerformNewDeskMiniViewAnimation(this, new_mini_views,
-                                  std::vector<dangling_raw_ptr<DeskMiniView>>(
-                                      mini_views_.begin(), left_partition_iter),
-                                  std::vector<dangling_raw_ptr<DeskMiniView>>(
-                                      right_partition_iter, mini_views_.end()),
-                                  begin_x - GetFirstMiniViewXOffset());
+  PerformNewDeskMiniViewAnimation(
+      this, new_mini_views,
+      std::vector<DeskMiniView*>(mini_views_.begin(), left_partition_iter),
+      std::vector<DeskMiniView*>(right_partition_iter, mini_views_.end()),
+      begin_x - GetFirstMiniViewXOffset());
 }
 
 void DeskBarViewBase::SwitchToZeroState() {
@@ -1495,7 +1489,7 @@ void DeskBarViewBase::SwitchToZeroState() {
     EndDragDesk(drag_view_, /*end_by_user=*/false);
   }
 
-  std::vector<dangling_raw_ptr<DeskMiniView>> removed_mini_views = mini_views_;
+  std::vector<DeskMiniView*> removed_mini_views = mini_views_;
   mini_views_.clear();
 
   auto* highlight_controller = GetHighlightController();
@@ -1535,7 +1529,7 @@ int DeskBarViewBase::DetermineMoveIndex(int location_screen_x) const {
   // We find the target position according to the x-axis coordinate of the
   // desks' center positions in screen in ascending order.
   for (int new_index = 0; new_index != views_size - 1; ++new_index) {
-    auto* mini_view = mini_views_[new_index].get();
+    auto* mini_view = mini_views_[new_index];
 
     // Note that we cannot directly use `GetBoundsInScreen`. Because we may
     // perform animation (transform) on mini views. The bounds gotten from
@@ -1699,7 +1693,7 @@ void DeskBarViewBase::OnLibraryButtonPressed() {
 }
 
 void DeskBarViewBase::MaybeUpdateCombineDesksTooltips() {
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (auto* mini_view : mini_views_) {
     // If desk is being removed, do not update the tooltip.
     if (mini_view->desk()->is_desk_being_removed()) {
       continue;
