@@ -46,11 +46,13 @@ ci.builder(
         ),
     ),
     builderless = 1,
+    cores = 16,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "experimental|linux",
         short_name = "asan lsan",
     ),
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -77,11 +79,12 @@ ci.builder(
     # At this time, MSan is only compatibly with Focal. See
     # //docs/linux/instrumented_libraries.md.
     os = os.LINUX_FOCAL,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "experimental|linux",
         short_name = "msan",
     ),
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
