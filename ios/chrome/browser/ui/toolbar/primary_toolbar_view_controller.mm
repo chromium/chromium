@@ -172,15 +172,6 @@
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 }
 
-- (void)didMoveToParentViewController:(UIViewController*)parent {
-  [super didMoveToParentViewController:parent];
-  // TODO(crbug.com/1450530): Remove once all usage of kOmniboxGuide has moved
-  // to LayoutGuideCenter.
-  UIView* omniboxView = self.view.locationBarContainer;
-  [NamedGuide guideWithName:kOmniboxGuide view:omniboxView].constrainedView =
-      omniboxView;
-}
-
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   self.view.locationBarBottomConstraint.constant =

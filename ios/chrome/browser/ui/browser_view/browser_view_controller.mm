@@ -1630,8 +1630,8 @@ enum HeaderBehaviour {
 
     // Create the NamedGuides and add them to the browser view.
     NSArray<GuideName*>* guideNames = @[
+      // TODO(crbug.com/1450600): Migrate kContentAreaGuide to LayoutGuideCenter
       kContentAreaGuide,
-      kOmniboxGuide,
     ];
     AddNamedGuidesToView(guideNames, self.view);
 
