@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL pointer updates (adding text nodes) assert_equals: error events on b expected 1 but got 0
+FAIL pointer updates (adding text nodes) assert_equals: error events on c expected 1 but got 0
 Harness: the test ran to completion.
 

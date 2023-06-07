@@ -1980,7 +1980,6 @@ void HTMLMediaElement::SetNetworkState(WebMediaPlayer::NetworkState state) {
   if (state == WebMediaPlayer::kNetworkStateIdle) {
     if (network_state_ > kNetworkIdle) {
       ChangeNetworkStateFromLoadingToIdle();
-      SetShouldDelayLoadEvent(false);
     } else {
       SetNetworkState(kNetworkIdle);
     }

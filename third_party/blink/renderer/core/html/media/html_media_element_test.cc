@@ -976,7 +976,7 @@ TEST_P(HTMLMediaElementTest, EmptyRedirectedSrcUsesOriginal) {
   EXPECT_EQ(Media()->downloadURL(), Media()->currentSrc());
 }
 
-TEST_P(HTMLMediaElementTest, NoPendingActivityEvenIfBeforeMetadata) {
+TEST_P(HTMLMediaElementTest, NoPendingActivityAfterCurrentData) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
 
@@ -987,9 +987,12 @@ TEST_P(HTMLMediaElementTest, NoPendingActivityEvenIfBeforeMetadata) {
 
   EXPECT_TRUE(MediaShouldBeOpaque());
   EXPECT_TRUE(Media()->HasPendingActivity());
-  SetNetworkState(WebMediaPlayer::kNetworkStateIdle);
+  EXPECT_CALL(*MockMediaPlayer(), GetSrcAfterRedirects)
+      .WillRepeatedly(Return(GURL()));
+  EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
+  SetReadyState(HTMLMediaElement::kHaveCurrentData);
+  test::RunPendingTasks();
   EXPECT_FALSE(Media()->HasPendingActivity());
-  EXPECT_TRUE(MediaShouldBeOpaque());
 }
 
 TEST_P(HTMLMediaElementTest, OnTimeUpdate_DurationChange) {

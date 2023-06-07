@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+ <head>
+  <title>{audio,video} events - readyState property during window.onload</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/media.js"></script>
+ </head>
+ <body>
+  <p>
+    <!--
+      Once the readyState attribute reaches HAVE_CURRENT_DATA, after the
+      loadeddata event has been fired, set the element's
+      delaying-the-load-event flag to false. This stops delaying the load
+      event.
+    -->
+    <a href="https://html.spec.whatwg.org/multipage/media.html#the-video-element">spec reference</a>
+  </p>
+  <audio id="a" autoplay controls>
+  </audio>
+  <video id="v" autoplay controls>
+  </video>
+  <div id="log"></div>
+  <script>
+test(function() {
+  var t = async_test("audio.readyState should be >= HAVE_CURRENT_DATA during window.onload");
+  var a = document.getElementById("a");
+  a.addEventListener("error", t.unreached_func());
+  window.addEventListener("load", t.step_func(function() {
+    assert_greater_than_equal(a.readyState, a.HAVE_CURRENT_DATA);
+    t.done();
+    a.pause();
+  }), false);
+  a.src = getAudioURI("/media/sound_5") + "?" + new Date() + Math.random();
+}, "audio events - readyState property window.onload");
+
+test(function() {
+  var t = async_test("video.readyState should be >= HAVE_CURRENT_DATA during window.onload");
+  var v = document.getElementById("v");
+  v.addEventListener("error", t.unreached_func());
+  window.addEventListener("load", t.step_func(function() {
+    assert_greater_than_equal(v.readyState, v.HAVE_CURRENT_DATA);
+    t.done();
+    v.pause();
+  }), false);
+  v.src = getVideoURI("/media/movie_5") + "?" + new Date() + Math.random();
+}, "video events - readyState property window.onload");
+  </script>
+ </body>
+</html>
