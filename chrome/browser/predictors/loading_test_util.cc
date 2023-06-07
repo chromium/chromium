@@ -85,9 +85,9 @@ PageRequestSummary CreatePageRequestSummary(
     const std::string& initial_url,
     const std::vector<blink::mojom::ResourceLoadInfoPtr>& resource_load_infos,
     base::TimeTicks navigation_started) {
-  PageRequestSummary summary(ukm::SourceId(), GURL(main_frame_url),
+  PageRequestSummary summary(ukm::SourceId(), GURL(initial_url),
                              navigation_started);
-  summary.initial_url = GURL(initial_url);
+  summary.main_frame_url = GURL(main_frame_url);
   for (const auto& resource_load_info : resource_load_infos)
     summary.UpdateOrAddResource(*resource_load_info);
   return summary;
