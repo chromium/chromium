@@ -2805,7 +2805,7 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     absl::optional<std::u16string> select_content;
     // TODO(crbug.com/1395740) Remove the flag check once the feature has
     // settled.
-    if (field->form_control_type == "select-one" &&
+    if (field->IsSelectOrSelectMenuElement() &&
         base::FeatureList::IsEnabled(
             features::kAutofillVoteForSelectOptionValues)) {
       auto it = base::ranges::find(field->options, field->value,

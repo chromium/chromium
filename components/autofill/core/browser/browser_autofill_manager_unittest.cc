@@ -7292,17 +7292,12 @@ class DeterminePossibleFieldTypesForUploadOfSelectTest
   void SetUp() override { BrowserAutofillManagerTest::SetUp(); }
 };
 
-// Tests that DeterminePossibleFieldTypesForUpload considers both the value
-// and the human readable part of an <option> element in a <select> element:
-// <option value="this is the value">this is the human readable part</option>
-//
-// In particular <option value="US">USA (+1)</option> is probably part of a
-// phone number country code.
-TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
-       DeterminePossibleFieldTypesForUploadOfSelect) {
+void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
+    bool enable_autofill_vote_for_select_option_values,
+    const char* field_type) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatureState(features::kAutofillVoteForSelectOptionValues,
-                                GetParam());
+                                enable_autofill_vote_for_select_option_values);
 
   // Set up a profile and no credit cards.
   std::vector<AutofillProfile> profiles(1);
@@ -7321,18 +7316,21 @@ TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
   // We want the "Memphis" in <option value="2">Memphis</option> to be
   // recognized.
   FormFieldData city_field;
-  test::CreateTestSelectField(
-      "label", "name", /*value=*/"2",
+  test::CreateTestSelectOrSelectMenuField(
+      "label", "name", /*value=*/"2", /*autocomplete=*/"",
       /*values=*/{"1", "2", "3"},
-      /*contents=*/{"New York", "Memphis", "Gotham City"}, &city_field);
+      /*contents=*/{"New York", "Memphis", "Gotham City"}, field_type,
+      &city_field);
 
   // We want the +1 in <option value="US">USA (+1)</option> to be recognized
   // as a phone country code. Despite the value "US", we don't want this to be
   // recognized as a country field.
   FormFieldData phone_country_code_field;
-  test::CreateTestSelectField(
-      "label", "name", /*value=*/"US", /*values=*/{"US", "DE"},
-      /*contents=*/{"USA (+1)", "Germany (+49)"}, &phone_country_code_field);
+  test::CreateTestSelectOrSelectMenuField(
+      "label", "name", /*value=*/"US", /*autocomplete=*/"",
+      /*values=*/{"US", "DE"},
+      /*contents=*/{"USA (+1)", "Germany (+49)"}, field_type,
+      &phone_country_code_field);
 
   form.fields = {city_field, phone_country_code_field};
 
@@ -7355,6 +7353,32 @@ TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
     EXPECT_EQ(form_structure.field(1)->possible_types(),
               ServerFieldTypeSet({ADDRESS_HOME_COUNTRY}));
   }
+}
+
+// Tests that DeterminePossibleFieldTypesForUpload considers both the value
+// and the human readable part of an <option> element in a <select> element:
+// <option value="this is the value">this is the human readable part</option>
+//
+// In particular <option value="US">USA (+1)</option> is probably part of a
+// phone number country code.
+TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
+       DeterminePossibleFieldTypesForUploadOfSelect) {
+  DoTestDeterminePossibleFieldTypesForUploadOfSelect(
+      /*enable_autofill_vote_for_select_option_values=*/GetParam(),
+      "select-one");
+}
+
+// Tests that DeterminePossibleFieldTypesForUpload considers both the value
+// and the human readable part of an <option> element in a <selectmenu> element:
+// <option value="this is the value">this is the human readable part</option>
+//
+// In particular <option value="US">USA (+1)</option> is probably part of a
+// phone number country code.
+TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
+       DeterminePossibleFieldTypesForUploadOfSelectMenu) {
+  DoTestDeterminePossibleFieldTypesForUploadOfSelect(
+      /*enable_autofill_vote_for_select_option_values=*/GetParam(),
+      "selectmenu");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

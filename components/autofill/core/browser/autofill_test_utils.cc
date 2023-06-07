@@ -243,17 +243,8 @@ void CreateTestSelectField(const char* label,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
                            FormFieldData* field) {
-  // Fill the base attributes.
-  CreateTestFormField(label, name, value, "select-one", field);
-
-  field->options.clear();
-  CHECK_EQ(values.size(), contents.size());
-  for (size_t i = 0; i < std::min(values.size(), contents.size()); ++i) {
-    field->options.push_back({
-        .value = base::UTF8ToUTF16(values[i]),
-        .content = base::UTF8ToUTF16(contents[i]),
-    });
-  }
+  CreateTestSelectField(label, name, value, /*autocomplete=*/"", values,
+                        contents, field);
 }
 
 void CreateTestSelectField(const char* label,
@@ -263,9 +254,32 @@ void CreateTestSelectField(const char* label,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
                            FormFieldData* field) {
-  CreateTestSelectField(label, name, value, values, contents, field);
+  CreateTestSelectOrSelectMenuField(label, name, value, autocomplete, values,
+                                    contents, "select-one", field);
+}
+
+void CreateTestSelectOrSelectMenuField(const char* label,
+                                       const char* name,
+                                       const char* value,
+                                       const char* autocomplete,
+                                       const std::vector<const char*>& values,
+                                       const std::vector<const char*>& contents,
+                                       const char* field_type,
+                                       FormFieldData* field) {
+  CHECK(strcmp(field_type, "select-one") == 0 ||
+        strcmp(field_type, "selectmenu") == 0);
+  CreateTestFormField(label, name, value, field_type, field);
   field->autocomplete_attribute = autocomplete;
   field->parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
+
+  field->options.clear();
+  CHECK_EQ(values.size(), contents.size());
+  for (size_t i = 0; i < std::min(values.size(), contents.size()); ++i) {
+    field->options.push_back({
+        .value = base::UTF8ToUTF16(values[i]),
+        .content = base::UTF8ToUTF16(contents[i]),
+    });
+  }
 }
 
 void CreateTestSelectField(const std::vector<const char*>& values,

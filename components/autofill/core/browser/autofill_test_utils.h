@@ -225,6 +225,15 @@ void CreateTestSelectField(const char* label,
                            const std::vector<const char*>& contents,
                            FormFieldData* field);
 
+void CreateTestSelectOrSelectMenuField(const char* label,
+                                       const char* name,
+                                       const char* value,
+                                       const char* autocomplete,
+                                       const std::vector<const char*>& values,
+                                       const std::vector<const char*>& contents,
+                                       const char* field_type,
+                                       FormFieldData* field);
+
 void CreateTestSelectField(const std::vector<const char*>& values,
                            FormFieldData* field);
 
