@@ -156,6 +156,12 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
   [[noreturn]] NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedNoreturnError();
 };
 
+// A helper macro for checks that log to streams that makes it easier for the
+// compiler to identify and warn about dead code, e.g.:
+//
+//   return 2;
+//   NOTREACHED();
+//
 // The 'switch' is used to prevent the 'else' from being ambiguous when the
 // macro is used in an 'if' clause such as:
 // if (a == 1)
@@ -163,15 +169,18 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 //
 // TODO(crbug.com/1380930): Remove the const bool when the blink-gc plugin has
 // been updated to accept `if (LIKELY(!field_))` as well as `if (!field_)`.
-#define CHECK_FUNCTION_IMPL(check_failure_invocation, condition)   \
-  switch (0)                                                       \
-  case 0:                                                          \
-  default:                                                         \
-    if (const bool checky_bool_lol = static_cast<bool>(condition); \
-        LIKELY(ANALYZER_ASSUME_TRUE(checky_bool_lol)))             \
-      ;                                                            \
-    else                                                           \
-      check_failure_invocation
+#define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition)              \
+  switch (0)                                                              \
+  case 0:                                                                 \
+  default:                                                                \
+    /* Hint to the optimizer that `condition` is unlikely to be false. */ \
+    /* The optimizer can use this as a hint to place the failure path */  \
+    /* out-of-line, e.g. at the tail of the function. */                  \
+    if (const bool probably_true = static_cast<bool>(condition);          \
+        LIKELY(ANALYZER_ASSUME_TRUE(probably_true)))                      \
+      ;                                                                   \
+    else                                                                  \
+      (check_stream)
 
 #if defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 #error "Debug builds are not expected to be optimized as official builds."
@@ -188,7 +197,9 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 //
 // This is not calling BreakDebugger since this is called frequently, and
 // calling an out-of-line function instead of a noreturn inline macro prevents
-// compiler optimizations.
+// compiler optimizations. Unlike the other check macros, this one does not use
+// LOGGING_CHECK_FUNCTION_IMPL(), since it is incompatible with
+// EAT_CHECK_STREAM_PARAMETERS().
 #define CHECK(condition) \
   UNLIKELY(!(condition)) ? logging::CheckFailure() : EAT_CHECK_STREAM_PARAMS()
 
@@ -196,26 +207,30 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 
 // Strip the conditional string from official builds.
 #define PCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(), condition)
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(), condition)
 
 #else
 
 #define CHECK_WILL_STREAM() true
 
-#define CHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::Check(#condition), condition)
+#define CHECK(condition)                                                \
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::Check(#condition), \
+                              condition)
 
-#define PCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(#condition), condition)
+#define PCHECK(condition)                                                \
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(#condition), \
+                              condition)
 
 #endif
 
 #if DCHECK_IS_ON()
 
-#define DCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::DCheck(#condition), condition)
-#define DPCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::DPCheck(#condition), condition)
+#define DCHECK(condition)                                                \
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::DCheck(#condition), \
+                              condition)
+#define DPCHECK(condition)                                                \
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::DPCheck(#condition), \
+                              condition)
 
 #else
 
@@ -246,9 +261,9 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // invocations as it communicates intent to eventually end up as a CHECK. It
 // also preserves the log message so setting crash keys to get additional debug
 // info isn't required as often.
-#define DUMP_WILL_BE_CHECK(condition)                                     \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::DumpWillBeCheck(#condition), \
-                      condition)
+#define DUMP_WILL_BE_CHECK(condition) \
+  LOGGING_CHECK_FUNCTION_IMPL(        \
+      ::logging::CheckError::DumpWillBeCheck(#condition), condition)
 
 // Async signal safe checking mechanism.
 [[noreturn]] BASE_EXPORT void RawCheckFailure(const char* message);

@@ -25,7 +25,7 @@ namespace logging {
 // NOTREACHED_NORETURN() back to NOTREACHED() and remove the non-FATAL version.
 #if CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 #define NOTREACHED() \
-  CHECK_FUNCTION_IMPL(::logging::NotReachedError::NotReached(), false)
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::NotReachedError::NotReached(), false)
 #else
 #define NOTREACHED()                                       \
   (true) ? ::logging::NotReachedError::TriggerNotReached() \
