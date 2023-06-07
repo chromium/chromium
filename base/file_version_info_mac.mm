@@ -6,17 +6,20 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 
-FileVersionInfoMac::FileVersionInfoMac(NSBundle *bundle)
-    : bundle_([bundle retain]) {
-}
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
-FileVersionInfoMac::~FileVersionInfoMac() {}
+FileVersionInfoMac::FileVersionInfoMac(NSBundle* bundle) : bundle_(bundle) {}
+
+FileVersionInfoMac::~FileVersionInfoMac() = default;
 
 // static
 std::unique_ptr<FileVersionInfo>
@@ -53,9 +56,9 @@ std::u16string FileVersionInfoMac::product_short_name() {
 }
 
 std::u16string FileVersionInfoMac::product_version() {
-  // On OS X, CFBundleVersion is used by LaunchServices, and must follow
+  // On macOS, CFBundleVersion is used by LaunchServices, and must follow
   // specific formatting rules, so the four-part Chrome version is in
-  // CFBundleShortVersionString. On iOS, both have a policy-enfoced limit
+  // CFBundleShortVersionString. On iOS, both have a policy-enforced limit
   // of three version components, so the full version is stored in a custom
   // key (CrBundleVersion) falling back to CFBundleVersion if not present.
 #if BUILDFLAG(IS_IOS)
@@ -86,7 +89,7 @@ std::u16string FileVersionInfoMac::special_build() {
 
 std::u16string FileVersionInfoMac::GetString16Value(CFStringRef name) {
   if (bundle_) {
-    NSString *ns_name = base::mac::CFToNSCast(name);
+    NSString* ns_name = base::apple::CFToNSPtrCast(name);
     NSString* value = [bundle_ objectForInfoDictionaryKey:ns_name];
     if (value) {
       return base::SysNSStringToUTF16(value);

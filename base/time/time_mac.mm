@@ -28,6 +28,10 @@
 #include "base/ios/ios_util.h"
 #endif  // !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 #if BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
@@ -140,7 +144,7 @@ int64_t ComputeThreadTicks() {
 namespace base {
 
 // The Time routines in this file use Mach and CoreFoundation APIs, since the
-// POSIX definition of time_t in Mac OS X wraps around after 2038--and
+// POSIX definition of time_t in macOS wraps around after 2038--and
 // there are already cookie expiration dates, etc., past that time out in
 // the field.  Using CFDate prevents that problem, and using mach_absolute_time
 // for TimeTicks gives us nice high-resolution interval timing.

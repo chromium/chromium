@@ -8,12 +8,18 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base::apple {
 
-// NSBundle isn't threadsafe, all functions in this file must be called on the
-// main thread.
-static NSBundle* g_override_framework_bundle = nil;
-static NSBundle* g_override_outer_bundle = nil;
+namespace {
+
+NSBundle* g_override_framework_bundle = nil;
+NSBundle* g_override_outer_bundle = nil;
+
+}  // namespace
 
 NSBundle* MainBundle() {
   return NSBundle.mainBundle;
@@ -53,38 +59,37 @@ FilePath FrameworkBundlePath() {
   return mac::NSStringToFilePath(FrameworkBundle().bundlePath);
 }
 
-static void AssignOverrideBundle(NSBundle* new_bundle,
-                                 NSBundle** override_bundle) {
-  if (new_bundle != *override_bundle) {
-    [*override_bundle release];
-    *override_bundle = [new_bundle retain];
+namespace {
+
+NSBundle* BundleFromPath(const FilePath& file_path) {
+  if (file_path.empty()) {
+    return nil;
   }
+
+  NSBundle* bundle = [NSBundle bundleWithURL:mac::FilePathToNSURL(file_path)];
+  CHECK(bundle) << "Failed to load the bundle at " << file_path.value();
+
+  return bundle;
 }
 
-static void AssignOverridePath(const FilePath& file_path,
-                               NSBundle** override_bundle) {
-  NSBundle* new_bundle = nil;
-  if (!file_path.empty()) {
-    new_bundle = [NSBundle bundleWithURL:mac::FilePathToNSURL(file_path)];
-    CHECK(new_bundle) << "Failed to load the bundle at " << file_path.value();
-  }
-  AssignOverrideBundle(new_bundle, override_bundle);
-}
+}  // namespace
 
 void SetOverrideOuterBundle(NSBundle* bundle) {
-  AssignOverrideBundle(bundle, &g_override_outer_bundle);
+  g_override_outer_bundle = bundle;
 }
 
 void SetOverrideFrameworkBundle(NSBundle* bundle) {
-  AssignOverrideBundle(bundle, &g_override_framework_bundle);
+  g_override_framework_bundle = bundle;
 }
 
 void SetOverrideOuterBundlePath(const FilePath& file_path) {
-  AssignOverridePath(file_path, &g_override_outer_bundle);
+  NSBundle* bundle = BundleFromPath(file_path);
+  g_override_outer_bundle = bundle;
 }
 
 void SetOverrideFrameworkBundlePath(const FilePath& file_path) {
-  AssignOverridePath(file_path, &g_override_framework_bundle);
+  NSBundle* bundle = BundleFromPath(file_path);
+  g_override_framework_bundle = bundle;
 }
 
 }  // namespace base::apple

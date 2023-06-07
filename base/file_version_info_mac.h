@@ -6,10 +6,14 @@
 #define BASE_FILE_VERSION_INFO_MAC_H_
 
 #include <CoreFoundation/CoreFoundation.h>
+
 #include <string>
 
 #include "base/file_version_info.h"
-#include "base/mac/scoped_nsobject.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class NSBundle;
 
@@ -38,7 +42,7 @@ class FileVersionInfoMac : public FileVersionInfo {
   // Returns the empty string if the property does not exist.
   std::u16string GetString16Value(CFStringRef name);
 
-  base::scoped_nsobject<NSBundle> bundle_;
+  NSBundle* __strong bundle_;
 };
 
 #endif  // BASE_FILE_VERSION_INFO_MAC_H_

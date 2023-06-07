@@ -16,6 +16,9 @@ namespace base {
 class FilePath;
 }
 
+// NSBundle isn't thread-safe; all functions in this file must be called on the
+// main thread.
+
 namespace base::apple {
 
 // This file provides several functions to explicitly request the various

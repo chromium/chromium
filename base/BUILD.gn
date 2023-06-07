@@ -210,27 +210,49 @@ if (is_apple) {
   # .mm files are ARCed.
   source_set("base_arc") {
     sources = [
+      "apple/backup_util.h",
+      "apple/backup_util.mm",
+      "apple/bundle_locations.h",
+      "apple/bundle_locations.mm",
       "apple/owned_objc.h",
       "apple/owned_objc.mm",
+      "file_version_info_mac.h",
+      "file_version_info_mac.mm",
+      "files/file_util_mac.mm",
       "message_loop/message_pump_mac.h",
       "message_loop/message_pump_mac.mm",
+      "strings/sys_string_conversions_mac.mm",
+      "system/sys_info_apple.mm",
+      "threading/platform_thread_mac.mm",
+      "time/time_mac.mm",
     ]
-    if (is_mac) {
-      sources += [
-        "mac/launch_application.h",
-        "mac/launch_application.mm",
-      ]
-      frameworks = [
-        "AppKit.framework",
-        "Foundation.framework",
-      ]
-    }
     defines = [ "BASE_IMPLEMENTATION" ]
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
       "//base:base_static",
+      "//base/numerics:base_numerics",
+      "//build:blink_buildflags",
       "//third_party/abseil-cpp:absl",
     ]
+    if (is_mac) {
+      sources += [
+        "enterprise_util_mac.mm",
+        "mac/authorization_util.h",
+        "mac/authorization_util.mm",
+        "mac/launch_application.h",
+        "mac/launch_application.mm",
+        "system/sys_info_mac.mm",
+      ]
+      frameworks = [
+        "AppKit.framework",
+        "Foundation.framework",
+        "OpenDirectory.framework",
+        "Security.framework",
+      ]
+    }
+    if (is_ios) {
+      deps += [ "//base/ios" ]
+    }
   }
 }
 
@@ -2003,14 +2025,11 @@ component("base") {
       "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
       "enterprise_util.cc",
       "enterprise_util.h",
-      "enterprise_util_mac.mm",
       "files/file_path_watcher_fsevents.cc",
       "files/file_path_watcher_fsevents.h",
       "files/file_path_watcher_kqueue.cc",
       "files/file_path_watcher_kqueue.h",
       "files/file_path_watcher_mac.cc",
-      "mac/authorization_util.h",
-      "mac/authorization_util.mm",
       "mac/close_nocancel.cc",
       "mac/launchd.cc",
       "mac/launchd.h",
@@ -2060,7 +2079,6 @@ component("base") {
       "profiler/suspendable_thread_delegate_mac.cc",
       "profiler/suspendable_thread_delegate_mac.h",
       "synchronization/waitable_event_watcher_mac.cc",
-      "system/sys_info_mac.mm",
       "time/time_exploded_posix.cc",
     ]
 
@@ -2081,14 +2099,7 @@ component("base") {
   # Mac or iOS.
   if (is_apple) {
     sources += [
-      "apple/backup_util.h",
-      "apple/backup_util.mm",
       "apple/bridging.h",
-      "apple/bundle_locations.h",
-      "apple/bundle_locations.mm",
-      "file_version_info_mac.h",
-      "file_version_info_mac.mm",
-      "files/file_util_mac.mm",
       "mac/call_with_eh_frame.cc",
       "mac/call_with_eh_frame.h",
       "mac/call_with_eh_frame_asm.S",
@@ -2116,11 +2127,7 @@ component("base") {
       "process/process_metrics_apple_internal.cc",
       "process/process_metrics_apple_internal.h",
       "profiler/module_cache_mac.cc",
-      "strings/sys_string_conversions_mac.mm",
       "synchronization/waitable_event_mac.cc",
-      "system/sys_info_apple.mm",
-      "threading/platform_thread_mac.mm",
-      "time/time_mac.mm",
     ]
     frameworks += [ "Security.framework" ]
     public_deps += [ ":base_arc" ]
@@ -2739,6 +2746,7 @@ component("i18n") {
 
   if (is_ios) {
     deps += [ "//base/ios" ]
+    allow_circular_includes_from = [ "//base/ios" ]
   }
 }
 

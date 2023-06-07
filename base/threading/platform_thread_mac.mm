@@ -27,6 +27,10 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base {
 
 namespace {
@@ -74,8 +78,7 @@ void PlatformThread::YieldCurrentThread() {
 void PlatformThread::SetName(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 
-  // Mac OS X does not expose the length limit of the name, so
-  // hardcode it.
+  // macOS does not expose the length limit of the name, so hardcode it.
   const int kMaxNameLength = 63;
   std::string shortened_name = name.substr(0, kMaxNameLength);
   // pthread_setname() fails (harmlessly) in the sandbox, ignore when it does.
@@ -110,8 +113,8 @@ bool IsOptimizedRealtimeThreadingMacEnabled() {
 
 }  // namespace
 
-// Fine-tuning optimized realt-time thread config:
-// Whether or not the thread should be preeptible.
+// Fine-tuning optimized real-time thread config:
+// Whether or not the thread should be preemptible.
 const FeatureParam<bool> kOptimizedRealtimeThreadingMacPreemptible{
     &kOptimizedRealtimeThreadingMac, "preemptible", true};
 // Portion of the time quantum the thread is expected to be busy, (0, 1].
@@ -168,7 +171,7 @@ void PlatformThread::InitFeaturesPostFieldTrial() {
 void PlatformThread::SetCurrentThreadRealtimePeriodValue(
     TimeDelta realtime_period) {
   if (g_use_optimized_realtime_threading.load()) {
-    [[NSThread currentThread] threadDictionary][kRealtimePeriodNsKey] =
+    NSThread.currentThread.threadDictionary[kRealtimePeriodNsKey] =
         @(realtime_period.InNanoseconds());
   }
 }
@@ -177,12 +180,12 @@ namespace {
 
 TimeDelta GetCurrentThreadRealtimePeriod() {
   NSNumber* period = mac::ObjCCast<NSNumber>(
-      [[NSThread currentThread] threadDictionary][kRealtimePeriodNsKey]);
+      NSThread.currentThread.threadDictionary[kRealtimePeriodNsKey]);
 
   return period ? Nanoseconds(period.longLongValue) : TimeDelta();
 }
 
-// Calculates time constrints for THREAD_TIME_CONSTRAINT_POLICY.
+// Calculates time constraints for THREAD_TIME_CONSTRAINT_POLICY.
 // |realtime_period| is used as a base if it's non-zero.
 // Otherwise we fall back to empirical values.
 thread_time_constraint_policy_data_t GetTimeConstraints(
@@ -242,7 +245,7 @@ thread_time_constraint_policy_data_t GetTimeConstraints(
   return time_constraints;
 }
 
-// Enables time-contraint policy and priority suitable for low-latency,
+// Enables time-constraint policy and priority suitable for low-latency,
 // glitch-resistant audio.
 void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
   // Increase thread priority to real-time.
@@ -347,11 +350,11 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     case ThreadType::kRealtimeAudio:
       priority = ThreadPriorityForTest::kRealtimeAudio;
       SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
-      DCHECK_EQ([[NSThread currentThread] threadPriority], 1.0);
+      DCHECK_EQ([NSThread.currentThread threadPriority], 1.0);
       break;
   }
 
-  [[NSThread currentThread] threadDictionary][kThreadPriorityForTestKey] =
+  NSThread.currentThread.threadDictionary[kThreadPriorityForTestKey] =
       @(static_cast<int>(priority));
 }
 
@@ -360,7 +363,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 // static
 ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   NSNumber* priority = base::mac::ObjCCast<NSNumber>(
-      [[NSThread currentThread] threadDictionary][kThreadPriorityForTestKey]);
+      NSThread.currentThread.threadDictionary[kThreadPriorityForTestKey]);
 
   if (!priority)
     return ThreadPriorityForTest::kNormal;
@@ -376,14 +379,14 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
 #if BUILDFLAG(IS_IOS)
 #if BUILDFLAG(USE_BLINK)
   // For iOS 512kB (the default) isn't sufficient, but using the code
-  // for Mac OS X below will return 8MB. So just be a little more conservative
+  // for macOS below will return 8MB. So just be a little more conservative
   // and return 1MB for now.
   return 1024 * 1024;
 #else
   return 0;
 #endif
 #else
-  // The Mac OS X default for a pthread stack size is 512kB.
+  // The macOS default for a pthread stack size is 512kB.
   // Libc-594.1.4/pthreads/pthread.c's pthread_attr_init uses
   // DEFAULT_STACK_SIZE for this purpose.
   //
@@ -392,13 +395,13 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
   // glibc's behavior as on Linux, which is to use the current stack size
   // limit (ulimit -s) as the default stack size. See
   // glibc-2.11.1/nptl/nptl-init.c's __pthread_initialize_minimal_internal. To
-  // avoid setting the limit below the Mac OS X default or the minimum usable
+  // avoid setting the limit below the macOS default or the minimum usable
   // stack size, these values are also considered. If any of these values
   // can't be determined, or if stack size is unlimited (ulimit -s unlimited),
   // stack_size is left at 0 to get the system default.
   //
-  // Mac OS X normally only applies ulimit -s to the main thread stack. On
-  // contemporary OS X and Linux systems alike, this value is generally 8MB
+  // macOS normally only applies ulimit -s to the main thread stack. On
+  // contemporary macOS and Linux systems alike, this value is generally 8MB
   // or in that neighborhood.
   size_t default_stack_size = 0;
   struct rlimit stack_rlimit;
