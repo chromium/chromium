@@ -838,10 +838,7 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     // use NG's size via BoxLayoutExtraInput's override fields.
     BoxLayoutExtraInput input(*box_);
     SetupBoxLayoutExtraInput(constraint_space, *box_, &input);
-    NGBoxFragment fragment(constraint_space.GetWritingDirection(),
-                           physical_fragment);
-    input.override_inline_size = fragment.InlineSize();
-    input.override_block_size = fragment.BlockSize();
+    input.size = physical_fragment.Size();
     input.border_padding_for_replaced =
         physical_fragment.Borders() + physical_fragment.Padding();
     box_->ComputeAndSetBlockDirectionMargins(box_->ContainingBlock());

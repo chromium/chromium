@@ -2017,46 +2017,6 @@ void LayoutBox::UpdateCachedIntrinsicLogicalWidthsIfNeeded() {
   ClearIntrinsicLogicalWidthsDirty();
 }
 
-LayoutUnit LayoutBox::OverrideLogicalWidth() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideLogicalWidth());
-  if (extra_input_ && extra_input_->override_inline_size)
-    return *extra_input_->override_inline_size;
-  return kIndefiniteSize;
-}
-
-LayoutUnit LayoutBox::OverrideLogicalHeight() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideLogicalHeight());
-  if (extra_input_ && extra_input_->override_block_size)
-    return *extra_input_->override_block_size;
-  return kIndefiniteSize;
-}
-
-bool LayoutBox::HasOverrideLogicalHeight() const {
-  NOT_DESTROYED();
-  return extra_input_ && extra_input_->override_block_size;
-}
-
-bool LayoutBox::HasOverrideLogicalWidth() const {
-  NOT_DESTROYED();
-  return extra_input_ && extra_input_->override_inline_size;
-}
-
-LayoutUnit LayoutBox::OverrideContentLogicalWidth() const {
-  NOT_DESTROYED();
-  return (OverrideLogicalWidth() - BorderAndPaddingLogicalWidth() -
-          ComputeLogicalScrollbars().InlineSum())
-      .ClampNegativeToZero();
-}
-
-LayoutUnit LayoutBox::OverrideContentLogicalHeight() const {
-  NOT_DESTROYED();
-  return (OverrideLogicalHeight() - BorderAndPaddingLogicalHeight() -
-          ComputeLogicalScrollbars().BlockSum())
-      .ClampNegativeToZero();
-}
-
 // TODO (lajava) Shouldn't we implement these functions based on physical
 // direction ?.
 LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalWidth() const {
@@ -3387,12 +3347,8 @@ void LayoutBox::ComputeLogicalHeight(
     return;
 
   Length h;
-  if (HasOverrideLogicalHeight()) {
-    computed_values.extent_ = OverrideLogicalHeight();
-  } else if (IsOutOfFlowPositioned()) {
+  if (IsOutOfFlowPositioned()) {
     ComputePositionedLogicalHeight(computed_values);
-    if (HasOverrideLogicalHeight())
-      computed_values.extent_ = OverrideLogicalHeight();
   } else {
     LayoutBlock* cb = ContainingBlock();
 
@@ -3422,11 +3378,7 @@ void LayoutBox::ComputeLogicalHeight(
 
     bool check_min_max_height = false;
 
-    // The parent box is flexing us, so it has increased or decreased our
-    // height. We have to grab our cached flexible height.
-    if (HasOverrideLogicalHeight()) {
-      h = Length::Fixed(OverrideLogicalHeight());
-    } else if (ShouldComputeSizeAsReplaced()) {
+    if (ShouldComputeSizeAsReplaced()) {
       h = Length::Fixed(ComputeReplacedLogicalHeight() +
                         BorderAndPaddingLogicalHeight());
     } else {
@@ -3682,25 +3634,21 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPercentageResolution(
       // Basically we don't care if the cell specified a height or not. We just
       // always make ourselves be a percentage of the cell's current content
       // height.
-      if (!cell->HasOverrideLogicalHeight()) {
-        // https://drafts.csswg.org/css-tables-3/#row-layout:
-        // For the purpose of calculating [the minimum height of a row],
-        // descendants of table cells whose height depends on percentages
-        // of their parent cell's height are considered to have an auto
-        // height if they have overflow set to visible or hidden or if
-        // they are replaced elements, and a 0px height if they have not.
-        if (StyleRef().OverflowY() != EOverflow::kVisible &&
-            StyleRef().OverflowY() != EOverflow::kHidden &&
-            !ShouldBeConsideredAsReplaced() &&
-            (!cell->StyleRef().LogicalHeight().IsAuto() ||
-             !cell->Table()->StyleRef().LogicalHeight().IsAuto())) {
-          return LayoutUnit();
-        }
-        return LayoutUnit(-1);
+
+      // https://drafts.csswg.org/css-tables-3/#row-layout:
+      // For the purpose of calculating [the minimum height of a row],
+      // descendants of table cells whose height depends on percentages
+      // of their parent cell's height are considered to have an auto
+      // height if they have overflow set to visible or hidden or if
+      // they are replaced elements, and a 0px height if they have not.
+      if (StyleRef().OverflowY() != EOverflow::kVisible &&
+          StyleRef().OverflowY() != EOverflow::kHidden &&
+          !ShouldBeConsideredAsReplaced() &&
+          (!cell->StyleRef().LogicalHeight().IsAuto() ||
+           !cell->Table()->StyleRef().LogicalHeight().IsAuto())) {
+        return LayoutUnit();
       }
-      available_height = cb->OverrideLogicalHeight() -
-                         cb->CollapsedBorderAndCSSPaddingLogicalHeight() -
-                         cb->ComputeLogicalScrollbars().BlockSum();
+      return LayoutUnit(-1);
     }
   } else {
     available_height = cb->AvailableLogicalHeightForPercentageComputation();
@@ -3897,11 +3845,6 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
   // some new height, and then when we lay out again we'll use the calculation
   // below.
   if (IsTableCell() && (h.IsAuto() || h.IsPercentOrCalc())) {
-    if (HasOverrideLogicalHeight()) {
-      return OverrideLogicalHeight() -
-             CollapsedBorderAndCSSPaddingLogicalHeight() -
-             ComputeLogicalScrollbars().BlockSum();
-    }
     return LogicalHeight() - BorderAndPaddingLogicalHeight();
   }
 

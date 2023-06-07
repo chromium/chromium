@@ -383,10 +383,7 @@ LayoutSize LayoutReplaced::SizeFromNG() const {
   if (!GetBoxLayoutExtraInput()) {
     return Size();
   }
-  LayoutSize new_size(OverrideLogicalWidth(), OverrideLogicalHeight());
-  if (!StyleRef().IsHorizontalWritingMode())
-    new_size = new_size.TransposedSize();
-  return new_size;
+  return GetBoxLayoutExtraInput()->size.ToLayoutSize();
 }
 
 NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {

@@ -842,14 +842,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // details about those widths.
   MinMaxSizes PreferredLogicalWidths() const override;
 
-  LayoutUnit OverrideLogicalHeight() const;
-  LayoutUnit OverrideLogicalWidth() const;
-  bool HasOverrideLogicalHeight() const;
-  bool HasOverrideLogicalWidth() const;
-
-  LayoutUnit OverrideContentLogicalWidth() const;
-  LayoutUnit OverrideContentLogicalHeight() const;
-
   LayoutUnit OverrideContainingBlockContentLogicalWidth() const;
   bool HasOverrideContainingBlockContentLogicalWidth() const;
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);

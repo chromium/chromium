@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_LAYOUT_EXTRA_INPUT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_LAYOUT_EXTRA_INPUT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -31,13 +30,8 @@ struct BoxLayoutExtraInput {
 
   Member<LayoutBox> box;
 
-  // When set, no attempt should be be made to resolve the inline size. Use this
-  // one instead.
-  absl::optional<LayoutUnit> override_inline_size;
-
-  // When set, no attempt should be be made to resolve the block size. Use this
-  // one instead.
-  absl::optional<LayoutUnit> override_block_size;
+  // The border-box size computed by NGReplacedLayoutAlgorithm.
+  PhysicalSize size;
 
   // The content size of the containing block. These are somewhat vague legacy
   // layout values, that typically either mean available size or percentage
