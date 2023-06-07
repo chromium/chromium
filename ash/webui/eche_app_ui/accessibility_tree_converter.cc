@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "ash/webui/eche_app_ui/proto/accessibility_mojom.pb.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -18,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 
 namespace ash::eche_app {
@@ -367,8 +367,8 @@ mojo::StructPtr<AXNodeData> AccessibilityTreeConverter::ToMojomNodeData(
       mojom_out->spannable_string_properties,
       base::BindRepeating(
           [](AccessibilityTreeConverter* converter, proto::SpanEntry entry,
-             arc::mojom::SpanEntryPtr* out_entry_ptr) {
-            auto result_ptr = arc::mojom::SpanEntry::New();
+             ax::android::mojom::SpanEntryPtr* out_entry_ptr) {
+            auto result_ptr = ax::android::mojom::SpanEntry::New();
             if (entry.start() >= entry.end()) {
               return false;
             }
@@ -407,7 +407,7 @@ mojo::StructPtr<AXNodeData> AccessibilityTreeConverter::ToMojomNodeData(
   if (proto_in.has_collection_item_info()) {
     const auto& proto_collection_item_info = proto_in.collection_item_info();
     mojom_out->collection_item_info =
-        arc::mojom::AccessibilityCollectionItemInfoData::New();
+        ax::android::mojom::AccessibilityCollectionItemInfoData::New();
     mojom_out->collection_item_info->row_index =
         proto_collection_item_info.row_index();
     mojom_out->collection_item_info->column_index =
@@ -445,7 +445,8 @@ mojo::StructPtr<AXNodeData> AccessibilityTreeConverter::ToMojomNodeData(
   CopyRepeatedPtrFieldToOptionalVector(
       proto_in.standard_actions(), mojom_out->standard_actions,
       base::BindRepeating([](proto::AccessibilityActionInHost proto_action) {
-        auto result_ptr = arc::mojom::AccessibilityActionInAndroid::New();
+        auto result_ptr =
+            ax::android::mojom::AccessibilityActionInAndroid::New();
         result_ptr->id = proto_action.id();
         result_ptr->label = proto_action.label();
         return result_ptr;
@@ -454,7 +455,8 @@ mojo::StructPtr<AXNodeData> AccessibilityTreeConverter::ToMojomNodeData(
   CopyRepeatedPtrFieldToOptionalVector(
       proto_in.custom_actions(), mojom_out->custom_actions,
       base::BindRepeating([](proto::AccessibilityActionInHost proto_action) {
-        auto result_ptr = arc::mojom::AccessibilityActionInAndroid::New();
+        auto result_ptr =
+            ax::android::mojom::AccessibilityActionInAndroid::New();
         result_ptr->id = proto_action.id();
         result_ptr->label = proto_action.label();
         return result_ptr;

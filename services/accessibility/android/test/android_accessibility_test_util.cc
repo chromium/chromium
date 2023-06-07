@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
+#include "services/accessibility/android/test/android_accessibility_test_util.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace {
 void AddAction(
-    std::vector<arc::mojom::AccessibilityActionInAndroidPtr>* actions,
+    std::vector<ax::android::mojom::AccessibilityActionInAndroidPtr>* actions,
     int id,
     absl::optional<std::string> label) {
-  actions->push_back(arc::mojom::AccessibilityActionInAndroid::New());
-  arc::mojom::AccessibilityActionInAndroid* action = actions->back().get();
+  actions->push_back(ax::android::mojom::AccessibilityActionInAndroid::New());
+  ax::android::mojom::AccessibilityActionInAndroid* action =
+      actions->back().get();
   action->id = id;
   if (label) {
     action->label = label;
@@ -21,7 +22,7 @@ void AddAction(
 }
 }  // namespace
 
-namespace arc {
+namespace ax::android {
 
 void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
                        mojom::AccessibilityActionType action_type,
@@ -44,4 +45,4 @@ void AddCustomAction(mojom::AccessibilityNodeInfoData* node,
   AddAction(&node->custom_actions.value(), id, label);
 }
 
-}  // namespace arc
+}  // namespace ax::android

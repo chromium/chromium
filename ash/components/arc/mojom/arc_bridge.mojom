@@ -4,7 +4,7 @@
 
 module arc.mojom;
 
-import "ash/components/arc/mojom/accessibility_helper.mojom";
+import "services/accessibility/android/public/mojom/accessibility_helper.mojom";
 import "ash/components/arc/mojom/adbd.mojom";
 import "ash/components/arc/mojom/appfuse.mojom";
 import "ash/components/arc/mojom/app.mojom";
@@ -75,7 +75,8 @@ interface ArcBridgeHost {
 
   // Notifies Chrome that the AccessibilityHelperInstance interface is ready.
   [MinVersion=21] OnAccessibilityHelperInstanceReady@127(
-      pending_remote<AccessibilityHelperInstance> instance_remote);
+      pending_remote<ax.android.mojom.AccessibilityHelperInstance>
+      instance_remote);
 
   // Notifies Chrome that the AdbdMonitorInstance interface is ready.
   [MinVersion=53] OnAdbdMonitorInstanceReady@158(

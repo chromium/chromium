@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_WINDOW_INFO_DATA_WRAPPER_H_
-#define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_WINDOW_INFO_DATA_WRAPPER_H_
+#ifndef SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_WINDOW_INFO_DATA_WRAPPER_H_
+#define SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_WINDOW_INFO_DATA_WRAPPER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "ui/accessibility/ax_node_data.h"
 
-namespace arc {
+namespace ax::android {
 
-class AXTreeSourceArc;
+class AXTreeSourceAndroid;
 
 // Wrapper class for an AccessibilityWindowInfoData.
 class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
  public:
   AccessibilityWindowInfoDataWrapper(
-      AXTreeSourceArc* tree_source,
+      AXTreeSourceAndroid* tree_source,
       mojom::AccessibilityWindowInfoData* window);
 
   AccessibilityWindowInfoDataWrapper(
@@ -62,6 +62,6 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
       nullptr;
 };
 
-}  // namespace arc
+}  // namespace ax::android
 
-#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_WINDOW_INFO_DATA_WRAPPER_H_
+#endif

@@ -122,7 +122,21 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     EXPECT_EQ(count_before + 1, count_after);                                \
   }
 
-    MAKE_INSTANCE_READY(AccessibilityHelper);
+#define MAKE_INSTANCE_READY_PREFIX_NAMESPACE(name_space, name)        \
+  ScopedPendingReceiver<name_space::mojom::name##Instance>            \
+      pending_receiver_##name(impl);                                  \
+  {                                                                   \
+    SCOPED_TRACE("mojom::" #name "Instance");                         \
+    mojo::PendingRemote<name_space::mojom::name##Instance> remote =   \
+        pending_receiver_##name.get().InitWithNewPipeAndPassRemote(); \
+    const size_t count_before = impl->GetNumMojoChannelsForTesting(); \
+    proxy->On##name##InstanceReady(std::move(remote));                \
+    base::RunLoop().RunUntilIdle();                                   \
+    const size_t count_after = impl->GetNumMojoChannelsForTesting();  \
+    EXPECT_EQ(count_before + 1, count_after);                         \
+  }
+
+    MAKE_INSTANCE_READY_PREFIX_NAMESPACE(ax::android, AccessibilityHelper);
     MAKE_INSTANCE_READY(AdbdMonitor);
     MAKE_INSTANCE_READY(App);
     MAKE_INSTANCE_READY(AppPermissions);
@@ -179,6 +193,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Wallpaper);
 
 #undef MAKE_INSTANCE_READY
+#undef MAKE_INSTANCE_READY_PREFIX_NAMESPACE
     EXPECT_LT(0u, impl->GetNumMojoChannelsForTesting());
   }
   // After all ScopedPendingReceiver<T> objects are destructed, the number of

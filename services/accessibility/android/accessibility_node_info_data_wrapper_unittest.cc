@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 
 #include <map>
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/grit/generated_resources.h"
+#include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -22,7 +22,7 @@
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace arc {
+namespace ax::android {
 
 using AXActionType = mojom::AccessibilityActionType;
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
@@ -34,31 +34,34 @@ using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 
-class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
-                                             public AXTreeSourceArc::Delegate {
+class AccessibilityNodeInfoDataWrapperTest
+    : public testing::Test,
+      public AXTreeSourceAndroid::Delegate {
  public:
-  class TestAXTreeSourceArc : public AXTreeSourceArc {
+  class TestAXTreeSourceAndroid : public AXTreeSourceAndroid {
    public:
-    explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate, /*window=*/nullptr) {}
+    explicit TestAXTreeSourceAndroid(AXTreeSourceAndroid::Delegate* delegate)
+        : AXTreeSourceAndroid(delegate, /*window=*/nullptr) {}
 
-    // AXTreeSourceArc overrides.
+    // AXTreeSourceAndroid overrides.
     bool IsRootOfNodeTree(int32_t id) const override {
       return id == node_root_id_;
     }
 
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {
       auto itr = wrapper_map_.find(id);
-      if (itr == wrapper_map_.end())
+      if (itr == wrapper_map_.end()) {
         return nullptr;
+      }
       return itr->second;
     }
 
     AccessibilityInfoDataWrapper* GetParent(
         AccessibilityInfoDataWrapper* info_data) const override {
       auto itr = parent_map_.find(info_data->GetId());
-      if (itr == parent_map_.end())
+      if (itr == parent_map_.end()) {
         return nullptr;
+      }
       return GetFromId(itr->second);
     }
 
@@ -78,7 +81,7 @@ class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
   };
 
   AccessibilityNodeInfoDataWrapperTest()
-      : tree_source_(new TestAXTreeSourceArc(this)) {}
+      : tree_source_(new TestAXTreeSourceAndroid(this)) {}
 
   ui::AXNodeData CallSerialize(
       const AccessibilityInfoDataWrapper& wrapper) const {
@@ -95,16 +98,16 @@ class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
     tree_source_->SetParentId(child_id, parent_id);
   }
 
-  // AXTreeSourceArc::Delegate overrides.
+  // AXTreeSourceAndroid::Delegate overrides.
   bool UseFullFocusMode() const override { return full_focus_mode_; }
   void OnAction(const ui::AXActionData& data) const override {}
 
   void set_full_focus_mode(bool enabled) { full_focus_mode_ = enabled; }
 
-  AXTreeSourceArc* tree_source() { return tree_source_.get(); }
+  AXTreeSourceAndroid* tree_source() { return tree_source_.get(); }
 
  private:
-  const std::unique_ptr<TestAXTreeSourceArc> tree_source_;
+  const std::unique_ptr<TestAXTreeSourceAndroid> tree_source_;
   bool full_focus_mode_ = true;
 };
 
@@ -420,14 +423,16 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, TextFieldNameAndValue) {
     ASSERT_EQ(
         !test_case.second.name.empty(),
         data.GetStringAttribute(ax::mojom::StringAttribute::kName, &prop));
-    if (!test_case.second.name.empty())
+    if (!test_case.second.name.empty()) {
       EXPECT_EQ(test_case.second.name, prop);
+    }
 
     ASSERT_EQ(
         !test_case.second.value.empty(),
         data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &prop));
-    if (!test_case.second.value.empty())
+    if (!test_case.second.value.empty()) {
       EXPECT_EQ(test_case.second.value, prop);
+    }
   }
 }
 
@@ -892,4 +897,4 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ActionLabel) {
       ax::mojom::StringAttribute::kLongClickLabel, &val));
   EXPECT_EQ("long click label", val);
 }
-}  // namespace arc
+}  // namespace ax::android

@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 
 #include <algorithm>
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/grit/generated_resources.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -19,7 +18,7 @@
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace arc {
+namespace ax::android {
 
 using AXActionType = mojom::AccessibilityActionType;
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
@@ -38,7 +37,7 @@ constexpr mojom::AccessibilityStringProperty
     AccessibilityNodeInfoDataWrapper::text_properties_[];
 
 AccessibilityNodeInfoDataWrapper::AccessibilityNodeInfoDataWrapper(
-    AXTreeSourceArc* tree_source,
+    AXTreeSourceAndroid* tree_source,
     AXNodeInfoData* node)
     : AccessibilityInfoDataWrapper(tree_source), node_ptr_(node) {}
 
@@ -655,35 +654,38 @@ int32_t AccessibilityNodeInfoDataWrapper::GetWindowId() const {
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(
     AXBooleanProperty prop) const {
-  return arc::GetBooleanProperty(node_ptr_.get(), prop);
+  return ax::android::GetBooleanProperty(node_ptr_.get(), prop);
 }
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(AXIntProperty prop,
                                                    int32_t* out_value) const {
-  return arc::GetProperty(node_ptr_->int_properties, prop, out_value);
+  return ax::android::GetProperty(node_ptr_->int_properties, prop, out_value);
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasProperty(
     AXStringProperty prop) const {
-  return arc::HasProperty(node_ptr_->string_properties, prop);
+  return ax::android::HasProperty(node_ptr_->string_properties, prop);
 }
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(
     AXStringProperty prop,
     std::string* out_value) const {
-  return arc::GetProperty(node_ptr_->string_properties, prop, out_value);
+  return ax::android::GetProperty(node_ptr_->string_properties, prop,
+                                  out_value);
 }
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(
     AXIntListProperty prop,
     std::vector<int32_t>* out_value) const {
-  return arc::GetProperty(node_ptr_->int_list_properties, prop, out_value);
+  return ax::android::GetProperty(node_ptr_->int_list_properties, prop,
+                                  out_value);
 }
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(
     AXStringListProperty prop,
     std::vector<std::string>* out_value) const {
-  return arc::GetProperty(node_ptr_->string_list_properties, prop, out_value);
+  return ax::android::GetProperty(node_ptr_->string_list_properties, prop,
+                                  out_value);
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasStandardAction(
@@ -909,4 +911,4 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
   return false;
 }
 
-}  // namespace arc
+}  // namespace ax::android

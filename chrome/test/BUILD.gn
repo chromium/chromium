@@ -4647,6 +4647,8 @@ if (!is_android) {
         "//extensions/browser:test_support",
         "//extensions/components/native_app_window",
         "//mojo/core/embedder",
+        "//services/accessibility/android:android_lib",
+        "//services/accessibility/android:test_support",
         "//services/audio/public/cpp",
         "//services/audio/public/cpp:test_support",
         "//services/media_session/public/mojom",

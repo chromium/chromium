@@ -1,0 +1,67 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("android_lib") {
+  public_deps = [
+    "//ash/public/cpp:cpp",
+    "//chrome/app:generated_resources_grit",
+    "//components/exo",
+    "//extensions/browser/api/automation_internal:automation_internal",
+    "//services/accessibility/android/public/mojom",
+  ]
+
+  sources = [
+    "accessibility_info_data_wrapper.cc",
+    "accessibility_info_data_wrapper.h",
+    "accessibility_node_info_data_wrapper.cc",
+    "accessibility_node_info_data_wrapper.h",
+    "accessibility_window_info_data_wrapper.cc",
+    "accessibility_window_info_data_wrapper.h",
+    "android_accessibility_util.cc",
+    "android_accessibility_util.h",
+    "auto_complete_handler.cc",
+    "auto_complete_handler.h",
+    "ax_tree_source_android.cc",
+    "ax_tree_source_android.h",
+    "drawer_layout_handler.cc",
+    "drawer_layout_handler.h",
+    "geometry_util.cc",
+    "geometry_util.h",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test/android_accessibility_test_util.cc",
+    "test/android_accessibility_test_util.h",
+    "test/fake_accessibility_helper_instance.cc",
+    "test/fake_accessibility_helper_instance.h",
+  ]
+  deps = [
+    ":android_lib",
+    "//base/test:test_support",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  deps = [
+    ":android_lib",
+    ":test_support",
+    "//ash:test_support",
+    "//base/test:test_support",
+    "//components/exo:test_support",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "accessibility_info_data_wrapper_unittest.cc",
+    "accessibility_node_info_data_wrapper_unittest.cc",
+    "auto_complete_handler_unittest.cc",
+    "ax_tree_source_arc_unittest.cc",
+    "drawer_layout_handler_unittest.cc",
+  ]
+}

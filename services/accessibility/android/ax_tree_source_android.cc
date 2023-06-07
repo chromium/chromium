@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
 
 #include <memory>
 #include <stack>
@@ -11,18 +11,16 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/auto_complete_handler.h"
-#include "chrome/browser/ash/arc/accessibility/drawer_layout_handler.h"
-#include "extensions/browser/api/automation_internal/automation_event_router.h"
-#include "extensions/common/extension_messages.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/auto_complete_handler.h"
+#include "services/accessibility/android/drawer_layout_handler.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace arc {
+namespace ax::android {
 
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXEventData = mojom::AccessibilityEventData;
@@ -36,18 +34,19 @@ using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 
 // TODO(hirokisato): Enable AXTreeArcSerializer's |crash_on_error| once
 // Android becomes able to send reliable trees.
-AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate, aura::Window* window)
+AXTreeSourceAndroid::AXTreeSourceAndroid(Delegate* delegate,
+                                         aura::Window* window)
     : current_tree_serializer_(new AXTreeArcSerializer(this, DCHECK_IS_ON())),
       is_notification_(false),
       is_input_method_window_(false),
       window_(window),
       delegate_(delegate) {}
 
-AXTreeSourceArc::~AXTreeSourceArc() {
+AXTreeSourceAndroid::~AXTreeSourceAndroid() {
   Reset();
 }
 
-void AXTreeSourceArc::NotifyAccessibilityEvent(AXEventData* event_data) {
+void AXTreeSourceAndroid::NotifyAccessibilityEvent(AXEventData* event_data) {
   root_id_.reset();
   DCHECK(event_data);
 
@@ -59,43 +58,46 @@ void AXTreeSourceArc::NotifyAccessibilityEvent(AXEventData* event_data) {
   computed_bounds_.clear();
 }
 
-void AXTreeSourceArc::NotifyActionResult(const ui::AXActionData& data,
-                                         bool result) {
+void AXTreeSourceAndroid::NotifyActionResult(const ui::AXActionData& data,
+                                             bool result) {
   GetAutomationEventRouter()->DispatchActionResult(data, result);
 }
 
-void AXTreeSourceArc::NotifyGetTextLocationDataResult(
+void AXTreeSourceAndroid::NotifyGetTextLocationDataResult(
     const ui::AXActionData& data,
     const absl::optional<gfx::Rect>& rect) {
   GetAutomationEventRouter()->DispatchGetTextLocationDataResult(data, rect);
 }
 
-bool AXTreeSourceArc::UseFullFocusMode() const {
+bool AXTreeSourceAndroid::UseFullFocusMode() const {
   return delegate_->UseFullFocusMode();
 }
 
-void AXTreeSourceArc::InvalidateTree() {
+void AXTreeSourceAndroid::InvalidateTree() {
   current_tree_serializer_->Reset();
 }
 
-bool AXTreeSourceArc::IsRootOfNodeTree(int32_t id) const {
+bool AXTreeSourceAndroid::IsRootOfNodeTree(int32_t id) const {
   const auto& node_it = tree_map_.find(id);
-  if (node_it == tree_map_.end())
+  if (node_it == tree_map_.end()) {
     return false;
+  }
 
-  if (!node_it->second->IsNode())
+  if (!node_it->second->IsNode()) {
     return false;
+  }
 
   const auto& parent_it = parent_map_.find(id);
-  if (parent_it == parent_map_.end())
+  if (parent_it == parent_map_.end()) {
     return true;
+  }
 
   const auto& parent_tree_it = tree_map_.find(parent_it->second);
   CHECK(parent_tree_it != tree_map_.end());
   return !parent_tree_it->second->IsNode();
 }
 
-AccessibilityInfoDataWrapper* AXTreeSourceArc::GetFirstImportantAncestor(
+AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetFirstImportantAncestor(
     AccessibilityInfoDataWrapper* info_data) const {
   AccessibilityInfoDataWrapper* parent = GetParent(info_data);
   while (parent && parent->IsNode() && !parent->IsImportantInAndroid()) {
@@ -104,55 +106,62 @@ AccessibilityInfoDataWrapper* AXTreeSourceArc::GetFirstImportantAncestor(
   return parent;
 }
 
-bool AXTreeSourceArc::GetTreeData(ui::AXTreeData* data) const {
+bool AXTreeSourceAndroid::GetTreeData(ui::AXTreeData* data) const {
   data->tree_id = ax_tree_id();
-  if (android_focused_id_.has_value())
+  if (android_focused_id_.has_value()) {
     data->focus_id = *android_focused_id_;
+  }
   return true;
 }
 
-AccessibilityInfoDataWrapper* AXTreeSourceArc::GetRoot() const {
+AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetRoot() const {
   return root_id_.has_value() ? GetFromId(*root_id_) : nullptr;
 }
 
-AccessibilityInfoDataWrapper* AXTreeSourceArc::GetFromId(int32_t id) const {
+AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetFromId(int32_t id) const {
   auto it = tree_map_.find(id);
-  if (it == tree_map_.end())
+  if (it == tree_map_.end()) {
     return nullptr;
+  }
   return it->second.get();
 }
 
-AccessibilityInfoDataWrapper* AXTreeSourceArc::GetParent(
+AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetParent(
     AccessibilityInfoDataWrapper* info_data) const {
-  if (!info_data)
+  if (!info_data) {
     return nullptr;
+  }
   auto it = parent_map_.find(info_data->GetId());
-  if (it != parent_map_.end())
+  if (it != parent_map_.end()) {
     return GetFromId(it->second);
+  }
   return nullptr;
 }
 
-void AXTreeSourceArc::SerializeNode(AccessibilityInfoDataWrapper* info_data,
-                                    ui::AXNodeData* out_data) const {
-  if (!info_data)
+void AXTreeSourceAndroid::SerializeNode(AccessibilityInfoDataWrapper* info_data,
+                                        ui::AXNodeData* out_data) const {
+  if (!info_data) {
     return;
+  }
 
   info_data->Serialize(out_data);
 
   const auto& itr = hooks_.find(info_data->GetId());
-  if (itr != hooks_.end())
+  if (itr != hooks_.end()) {
     itr->second->PostSerializeNode(out_data);
+  }
 }
 
-void AXTreeSourceArc::NotifyAccessibilityEventInternal(
+void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     const AXEventData& event_data) {
   if (window_id_ != event_data.window_id) {
     android_focused_id_.reset();
     window_id_ = event_data.window_id;
   }
   is_notification_ = event_data.notification_key.has_value();
-  if (is_notification_)
+  if (is_notification_) {
     notification_key_ = event_data.notification_key;
+  }
   is_input_method_window_ = event_data.is_input_method_window;
 
   // Prepare the wrapper objects of mojom data from Android.
@@ -162,8 +171,9 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     int32_t window_id = event_data.window_data->at(i)->window_id;
     int32_t root_node_id = event_data.window_data->at(i)->root_node_id;
     AXWindowInfoData* window = event_data.window_data->at(i).get();
-    if (root_node_id)
+    if (root_node_id) {
       parent_map_[root_node_id] = window_id;
+    }
 
     tree_map_[window_id] =
         std::make_unique<AccessibilityWindowInfoDataWrapper>(this, window);
@@ -187,8 +197,9 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     std::vector<int32_t> children;
     if (GetProperty(event_data.node_data[i].get()->int_list_properties,
                     AXIntListProperty::CHILD_NODE_IDS, &children)) {
-      for (const int32_t child : children)
+      for (const int32_t child : children) {
         parent_map_[child] = node_id;
+      }
     }
   }
 
@@ -220,15 +231,15 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
   ui::AXEvent event;
   event.event_type = ToAXEvent(
       event_data.event_type,
-      GetPropertyOrNull(
-          event_data.int_list_properties,
-          arc::mojom::AccessibilityEventIntListProperty::CONTENT_CHANGE_TYPES),
+      GetPropertyOrNull(event_data.int_list_properties,
+                        ax::android::mojom::AccessibilityEventIntListProperty::
+                            CONTENT_CHANGE_TYPES),
       GetFromId(event_data.source_id), focused_node);
   event.id = event_data.source_id;
 
   int event_from_action;
   if (GetProperty(event_data.int_properties,
-                  arc::mojom::AccessibilityEventIntProperty::ACTION,
+                  ax::android::mojom::AccessibilityEventIntProperty::ACTION,
                   &event_from_action)) {
     event.event_from = ax::mojom::EventFrom::kAction;
 
@@ -247,8 +258,9 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   update_ids.push_back(node_id_to_clear);
 
-  for (const int32_t update_id : update_ids)
+  for (const int32_t update_id : update_ids) {
     current_tree_serializer_->MarkSubtreeDirty(GetFromId(update_id));
+  }
 
   std::vector<ui::AXTreeUpdate> updates;
   for (const int32_t update_id : update_ids) {
@@ -272,26 +284,28 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 }
 
 extensions::AutomationEventRouterInterface*
-AXTreeSourceArc::GetAutomationEventRouter() const {
-  if (automation_event_router_for_test_)
+AXTreeSourceAndroid::GetAutomationEventRouter() const {
+  if (automation_event_router_for_test_) {
     return automation_event_router_for_test_;
+  }
 
   return extensions::AutomationEventRouter::GetInstance();
 }
 
-gfx::Rect AXTreeSourceArc::ComputeEnclosingBounds(
+gfx::Rect AXTreeSourceAndroid::ComputeEnclosingBounds(
     AccessibilityInfoDataWrapper* info_data) const {
   DCHECK(info_data);
   gfx::Rect computed_bounds;
   // Exit early if the node or window is invisible.
-  if (!info_data->IsVisibleToUser())
+  if (!info_data->IsVisibleToUser()) {
     return computed_bounds;
+  }
 
   ComputeEnclosingBoundsInternal(info_data, &computed_bounds);
   return computed_bounds;
 }
 
-void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
+void AXTreeSourceAndroid::ComputeEnclosingBoundsInternal(
     AccessibilityInfoDataWrapper* info_data,
     gfx::Rect* computed_bounds) const {
   DCHECK(computed_bounds);
@@ -301,42 +315,48 @@ void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
     return;
   }
 
-  if (!info_data->IsVisibleToUser())
+  if (!info_data->IsVisibleToUser()) {
     return;
+  }
   // Only consider nodes that can possibly be accessibility focused.
-  if (info_data->IsFocusableInFullFocusMode())
+  if (info_data->IsFocusableInFullFocusMode()) {
     computed_bounds->Union(info_data->GetBounds());
+  }
 
-  // NOTE: |AXTreeSourceArc::GetChildren| depends on ComputeEnclosingBounds.
+  // NOTE: |AXTreeSourceAndroid::GetChildren| depends on ComputeEnclosingBounds.
   // To get children, directly call wrapper's GetChildren here.
   std::vector<AccessibilityInfoDataWrapper*> children;
   info_data->GetChildren(&children);
-  for (AccessibilityInfoDataWrapper* child : children)
+  for (AccessibilityInfoDataWrapper* child : children) {
     ComputeEnclosingBoundsInternal(child, computed_bounds);
+  }
   return;
 }
 
 AccessibilityInfoDataWrapper*
-AXTreeSourceArc::FindFirstFocusableNodeInFullFocusMode(
+AXTreeSourceAndroid::FindFirstFocusableNodeInFullFocusMode(
     AccessibilityInfoDataWrapper* info_data) const {
   if (!info_data) {
     return nullptr;
   }
 
-  if (info_data->IsVisibleToUser() && info_data->IsFocusableInFullFocusMode())
+  if (info_data->IsVisibleToUser() && info_data->IsFocusableInFullFocusMode()) {
     return info_data;
+  }
 
   for (AccessibilityInfoDataWrapper* child : GetChildren(info_data)) {
     AccessibilityInfoDataWrapper* candidate =
         FindFirstFocusableNodeInFullFocusMode(child);
-    if (candidate)
+    if (candidate) {
       return candidate;
+    }
   }
 
   return nullptr;
 }
 
-bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
+bool AXTreeSourceAndroid::UpdateAndroidFocusedId(
+    const AXEventData& event_data) {
   AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
   if (source_node) {
     AccessibilityInfoDataWrapper* source_window =
@@ -364,8 +384,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     }
   } else if (event_data.event_type == AXEventType::VIEW_ACCESSIBILITY_FOCUSED &&
              UseFullFocusMode()) {
-    if (source_node && source_node->IsVisibleToUser())
+    if (source_node && source_node->IsVisibleToUser()) {
       android_focused_id_ = source_node->GetId();
+    }
   } else if (event_data.event_type ==
                  AXEventType::VIEW_ACCESSIBILITY_FOCUS_CLEARED &&
              UseFullFocusMode()) {
@@ -383,8 +404,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     // In Android, VIEW_SELECTED event is dispatched in the two cases below:
     // 1. Changing a value in ProgressBar or TimePicker in ARC P.
     // 2. Selecting an item in the context of an AdapterView.
-    if (!source_node || !source_node->IsNode())
+    if (!source_node || !source_node->IsNode()) {
       return false;
+    }
 
     AXNodeInfoData* node_info = source_node->GetNode();
     DCHECK(node_info);
@@ -393,8 +415,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     if (!is_range_change) {
       AccessibilityInfoDataWrapper* selected_node =
           GetSelectedNodeInfoFromAdapterViewEvent(event_data, source_node);
-      if (!selected_node || !selected_node->IsVisibleToUser())
+      if (!selected_node || !selected_node->IsVisibleToUser()) {
         return false;
+      }
 
       android_focused_id_ = selected_node->GetId();
     }
@@ -412,8 +435,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
                                IsRootOfNodeTree(event_data.source_id);
     if (from_root_or_window) {
       auto itr = window_id_to_last_focus_node_id_.find(event_data.window_id);
-      if (itr != window_id_to_last_focus_node_id_.end())
+      if (itr != window_id_to_last_focus_node_id_.end()) {
         new_focus = GetFromId(itr->second);
+      }
     } else if (UseFullFocusMode()) {
       // Otherwise, try focus on the first focusable node.
       new_focus = FindFirstFocusableNodeInFullFocusMode(
@@ -458,7 +482,7 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
   return true;
 }
 
-std::vector<int32_t> AXTreeSourceArc::ProcessHooksOnEvent(
+std::vector<int32_t> AXTreeSourceAndroid::ProcessHooksOnEvent(
     const AXEventData& event_data) {
   base::EraseIf(hooks_, [this](const auto& it) {
     return this->GetFromId(it.first) == nullptr;
@@ -466,27 +490,30 @@ std::vector<int32_t> AXTreeSourceArc::ProcessHooksOnEvent(
 
   std::vector<int32_t> serialization_needed_ids;
   for (const auto& modifier : hooks_) {
-    if (modifier.second->PreDispatchEvent(this, event_data))
+    if (modifier.second->PreDispatchEvent(this, event_data)) {
       serialization_needed_ids.push_back(modifier.first);
+    }
   }
 
   // Add new hook implementations if necessary.
   auto drawer_layout_hook =
       DrawerLayoutHandler::CreateIfNecessary(this, event_data);
-  if (drawer_layout_hook.has_value())
+  if (drawer_layout_hook.has_value()) {
     hooks_.insert(std::move(*drawer_layout_hook));
+  }
 
   auto auto_complete_hooks =
       AutoCompleteHandler::CreateIfNecessary(this, event_data);
   for (auto& modifier : auto_complete_hooks) {
-    if (hooks_.count(modifier.first) == 0)
+    if (hooks_.count(modifier.first) == 0) {
       hooks_.insert(std::move(modifier));
+    }
   }
 
   return serialization_needed_ids;
 }
 
-void AXTreeSourceArc::Reset() {
+void AXTreeSourceAndroid::Reset() {
   tree_map_.clear();
   parent_map_.clear();
   computed_bounds_.clear();
@@ -496,68 +523,79 @@ void AXTreeSourceArc::Reset() {
   android_focused_id_.reset();
   extensions::AutomationEventRouterInterface* router =
       GetAutomationEventRouter();
-  if (!router)
+  if (!router) {
     return;
+  }
 
   router->DispatchTreeDestroyedEvent(ax_tree_id());
 }
 
-bool AXTreeSourceArc::NeedReorder(AccessibilityInfoDataWrapper* left,
-                                  AccessibilityInfoDataWrapper* right) const {
+bool AXTreeSourceAndroid::NeedReorder(
+    AccessibilityInfoDataWrapper* left,
+    AccessibilityInfoDataWrapper* right) const {
   auto left_bounds = ComputeEnclosingBounds(left);
   auto right_bounds = ComputeEnclosingBounds(right);
   return !CompareBounds(left_bounds, right_bounds) &&
          CompareBounds(left->GetBounds(), right->GetBounds());
 }
 
-bool AXTreeSourceArc::CompareBounds(const gfx::Rect& left,
-                                    const gfx::Rect& right) const {
-  if (left.IsEmpty() || right.IsEmpty())
+bool AXTreeSourceAndroid::CompareBounds(const gfx::Rect& left,
+                                        const gfx::Rect& right) const {
+  if (left.IsEmpty() || right.IsEmpty()) {
     return true;
+  }
 
   // Non-intersecting vertical check.
-  if (left.bottom() <= right.y())
+  if (left.bottom() <= right.y()) {
     return true;
+  }
 
-  if (left.y() >= right.bottom())
+  if (left.y() >= right.bottom()) {
     return false;
+  }
 
   // Vertically overlapping. Left one comes first.
   // TODO consider right-to-left
   int left_difference = left.x() - right.x();
-  if (left_difference != 0)
+  if (left_difference != 0) {
     return left_difference < 0;
+  }
 
   // Top to bottom.
   int top_difference = left.y() - right.y();
-  if (top_difference != 0)
+  if (top_difference != 0) {
     return top_difference < 0;
+  }
 
   // Larger to smaller.
   int height_difference = left.height() - right.height();
-  if (height_difference != 0)
+  if (height_difference != 0) {
     return height_difference > 0;
+  }
 
   int width_difference = left.width() - right.width();
-  if (width_difference != 0)
+  if (width_difference != 0) {
     return width_difference > 0;
+  }
 
   // The rects are equal. Respect the original order.
   return true;
 }
 
-int32_t AXTreeSourceArc::GetId(AccessibilityInfoDataWrapper* info_data) const {
-  if (!info_data)
+int32_t AXTreeSourceAndroid::GetId(
+    AccessibilityInfoDataWrapper* info_data) const {
+  if (!info_data) {
     return ui::kInvalidAXNodeID;
+  }
   return info_data->GetId();
 }
 
-void AXTreeSourceArc::CacheChildrenIfNeeded(
+void AXTreeSourceAndroid::CacheChildrenIfNeeded(
     AccessibilityInfoDataWrapper* info_data) {
   ComputeAndCacheChildren(info_data);
 }
 
-size_t AXTreeSourceArc::GetChildCount(
+size_t AXTreeSourceAndroid::GetChildCount(
     AccessibilityInfoDataWrapper* info_data) const {
   if (!info_data) {
     return 0;
@@ -566,7 +604,7 @@ size_t AXTreeSourceArc::GetChildCount(
   return info_data->cached_children_->size();
 }
 
-AccessibilityInfoDataWrapper* AXTreeSourceArc::ChildAt(
+AccessibilityInfoDataWrapper* AXTreeSourceAndroid::ChildAt(
     AccessibilityInfoDataWrapper* info_data,
     size_t i) const {
   DCHECK(info_data->cached_children_);
@@ -576,39 +614,41 @@ AccessibilityInfoDataWrapper* AXTreeSourceArc::ChildAt(
 
 // We don't need to handle cache clearing here, because each
 // AccessibilityInfoDataWrapper is created during
-// AXTreeSourceArc::NotifyAccessibilityEvent(), and destructed at the end of it
-// that method.
-void AXTreeSourceArc::ClearChildCache(AccessibilityInfoDataWrapper* info_data) {
-}
+// AXTreeSourceAndroid::NotifyAccessibilityEvent(), and destructed at the end of
+// it that method.
+void AXTreeSourceAndroid::ClearChildCache(
+    AccessibilityInfoDataWrapper* info_data) {}
 
-bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {
+bool AXTreeSourceAndroid::IsIgnored(
+    AccessibilityInfoDataWrapper* info_data) const {
   return false;
 }
 
-bool AXTreeSourceArc::IsEqual(AccessibilityInfoDataWrapper* info_data1,
-                              AccessibilityInfoDataWrapper* info_data2) const {
+bool AXTreeSourceAndroid::IsEqual(
+    AccessibilityInfoDataWrapper* info_data1,
+    AccessibilityInfoDataWrapper* info_data2) const {
   if (!info_data1 || !info_data2) {
     return false;
   }
   return info_data1->GetId() == info_data2->GetId();
 }
 
-AccessibilityInfoDataWrapper* AXTreeSourceArc::GetNull() const {
+AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetNull() const {
   return nullptr;
 }
 
-void AXTreeSourceArc::PerformAction(const ui::AXActionData& data) {
+void AXTreeSourceAndroid::PerformAction(const ui::AXActionData& data) {
   delegate_->OnAction(data);
 }
 
-std::vector<AccessibilityInfoDataWrapper*>& AXTreeSourceArc::GetChildren(
+std::vector<AccessibilityInfoDataWrapper*>& AXTreeSourceAndroid::GetChildren(
     AccessibilityInfoDataWrapper* info_data) const {
   DCHECK(info_data);
   ComputeAndCacheChildren(info_data);
   return info_data->cached_children_.value();
 }
 
-void AXTreeSourceArc::ComputeAndCacheChildren(
+void AXTreeSourceAndroid::ComputeAndCacheChildren(
     AccessibilityInfoDataWrapper* info_data) const {
   if (info_data->cached_children_) {
     return;
@@ -655,8 +695,9 @@ void AXTreeSourceArc::ComputeAndCacheChildren(
   for (int i = children.size() - 2; i >= 0; i--) {
     auto original_bounds = children.at(i)->GetBounds();
     auto enclosing_bounds = ComputeEnclosingBounds(children.at(i));
-    if (original_bounds == enclosing_bounds)
+    if (original_bounds == enclosing_bounds) {
       continue;
+    }
 
     // move the current node to be visited later if necessary.
     for (size_t j = i; j + 1 < children.size() &&
@@ -667,4 +708,4 @@ void AXTreeSourceArc::ComputeAndCacheChildren(
   }
 }
 
-}  // namespace arc
+}  // namespace ax::android

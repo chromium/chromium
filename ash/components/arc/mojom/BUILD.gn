@@ -9,7 +9,6 @@ assert(is_chromeos_ash)
 
 mojom("mojom") {
   sources = [
-    "accessibility_helper.mojom",
     "adbd.mojom",
     "anr.mojom",
     "app.mojom",
@@ -85,6 +84,7 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//printing/mojom",
     "//sandbox/policy/mojom",
+    "//services/accessibility/android/public/mojom",
     "//services/device/public/mojom:usb",
     "//services/media_session/public/mojom",
     "//services/resource_coordinator/public/mojom",

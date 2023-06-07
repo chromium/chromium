@@ -2,38 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_DRAWER_LAYOUT_HANDLER_H_
-#define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_DRAWER_LAYOUT_HANDLER_H_
+#ifndef SERVICES_ACCESSIBILITY_ANDROID_DRAWER_LAYOUT_HANDLER_H_
+#define SERVICES_ACCESSIBILITY_ANDROID_DRAWER_LAYOUT_HANDLER_H_
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 struct AXNodeData;
 }
 
-namespace arc {
+namespace ax::android {
 
 namespace mojom {
 class AccessibilityEventData;
 }
 
-class DrawerLayoutHandler : public AXTreeSourceArc::Hook {
+class DrawerLayoutHandler : public AXTreeSourceAndroid::Hook {
  public:
   static absl::optional<
       std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
-  CreateIfNecessary(AXTreeSourceArc* tree_source,
+  CreateIfNecessary(AXTreeSourceAndroid* tree_source,
                     const mojom::AccessibilityEventData& event_data);
 
   explicit DrawerLayoutHandler(const std::string& name) : name_(name) {}
 
-  // AXTreeSourceArc::Hook overrides:
+  // AXTreeSourceAndroid::Hook overrides:
   bool PreDispatchEvent(
-      AXTreeSourceArc* tree_source,
+      AXTreeSourceAndroid* tree_source,
       const mojom::AccessibilityEventData& event_data) override;
   void PostSerializeNode(ui::AXNodeData* out_data) const override;
 
@@ -41,6 +41,6 @@ class DrawerLayoutHandler : public AXTreeSourceArc::Hook {
   const std::string name_;
 };
 
-}  // namespace arc
+}  // namespace ax::android
 
-#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_DRAWER_LAYOUT_HANDLER_H_
+#endif

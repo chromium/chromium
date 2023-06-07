@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
-#define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
+#ifndef SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
+#define SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 #include <string>
 #include <vector>
@@ -16,15 +18,15 @@ namespace ui {
 struct AXNodeData;
 }  // namespace ui
 
-namespace arc {
-class AXTreeSourceArc;
+namespace ax::android {
+class AXTreeSourceAndroid;
 
-// AccessibilityInfoDataWrapper represents a single ARC++ node or window. This
-// class can be used by AXTreeSourceArc to encapsulate ARC-side information
-// which maps to a single AXNodeData.
+// AccessibilityInfoDataWrapper represents a single Android node or window. This
+// class can be used by AXTreeSourceAndroid to encapsulate Android-side
+// information which maps to a single AXNodeData.
 class AccessibilityInfoDataWrapper {
  public:
-  explicit AccessibilityInfoDataWrapper(AXTreeSourceArc* tree_source);
+  explicit AccessibilityInfoDataWrapper(AXTreeSourceAndroid* tree_source);
   virtual ~AccessibilityInfoDataWrapper();
 
   // True if this AccessibilityInfoDataWrapper represents an Android node, false
@@ -53,11 +55,11 @@ class AccessibilityInfoDataWrapper {
   virtual int32_t GetWindowId() const = 0;
 
  protected:
-  raw_ptr<AXTreeSourceArc, ExperimentalAsh> tree_source_;
+  raw_ptr<AXTreeSourceAndroid, ExperimentalAsh> tree_source_;
   absl::optional<std::vector<AccessibilityInfoDataWrapper*>> cached_children_;
 
  private:
-  friend class AXTreeSourceArc;
+  friend class AXTreeSourceAndroid;
 
   // Populate bounds of a node which can be passed to AXNodeData.location.
   // Bounds are returned in the following coordinates depending on whether it's
@@ -67,6 +69,6 @@ class AccessibilityInfoDataWrapper {
   void PopulateBounds(ui::AXNodeData* out_data) const;
 };
 
-}  // namespace arc
+}  // namespace ax::android
 
-#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
+#endif

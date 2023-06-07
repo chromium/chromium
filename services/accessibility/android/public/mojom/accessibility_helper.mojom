@@ -4,9 +4,17 @@
 
 // Next MinVersion: 26
 
-module arc.mojom;
+module ax.android.mojom;
 
-import "ash/components/arc/mojom/gfx.mojom";
+// Represents a rectangle. Note that the wire format is different from
+// the one defined in geometry.mojom in ui/gfx for backward compatibility.
+struct Rect {
+  int32 left;
+  int32 top;
+  int32 right;
+  int32 bottom;
+};
+
 
 // For future maintainers, each of the below enums were hand picked
 // from their equivalents in the Android source. Keep them in the
@@ -45,6 +53,7 @@ enum AccessibilityEventType {
   WINDOWS_CHANGED,
   VIEW_CONTEXT_CLICKED,
   ASSIST_READING_CONTEXT,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // ContentChangeType lists the possible sub types of WINDOW_STATE_CHANGED and
@@ -61,6 +70,7 @@ enum ContentChangeType {
   UNDEFINED,
   PANE_APPEARED,
   PANE_DISAPPEARED,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // Possible actions that can be performed on an AccessibilityNodeInfo.
@@ -100,6 +110,7 @@ enum AccessibilityActionType {
   GET_TEXT_LOCATION,  // Not a standard action.
   SHOW_TOOLTIP,
   HIDE_TOOLTIP,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // Possible boolean properties set on an AccessibilityNodeInfo.
@@ -130,6 +141,7 @@ enum AccessibilityBooleanProperty {
   SHOWING_HINT_TEXT,
   HEADING,
   SUPPORTS_TEXT_LOCATION,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from string instance members of
@@ -146,7 +158,8 @@ enum AccessibilityStringProperty {
   TOOLTIP,
   PANE_TITLE,
   HINT_TEXT,
-  STATE_DESCRIPTION
+  STATE_DESCRIPTION,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from int instance members of
@@ -161,7 +174,8 @@ enum AccessibilityIntProperty {
   TEXT_SELECTION_START,
   TEXT_SELECTION_END,
   INPUT_TYPE,
-  LIVE_REGION
+  LIVE_REGION,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from List<int> instance members of
@@ -170,7 +184,8 @@ enum AccessibilityIntProperty {
 enum AccessibilityIntListProperty {
   CHILD_NODE_IDS,
   CUSTOM_ACTION_IDS_DEPRECATED,
-  STANDARD_ACTION_IDS_DEPRECATED
+  STANDARD_ACTION_IDS_DEPRECATED,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // Deprecated
@@ -178,7 +193,8 @@ enum AccessibilityIntListProperty {
 // AccessibilityNodeInfo.
 [Extensible]
 enum AccessibilityStringListProperty {
-  CUSTOM_ACTION_DESCRIPTIONS
+  CUSTOM_ACTION_DESCRIPTIONS,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from boolean properties of
@@ -189,6 +205,7 @@ enum AccessibilityWindowBooleanProperty {
   FOCUSED,
   IN_PICTURE_IN_PICTURE_MODE,
   WINDOW_ACTIVE,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from int attributes of
@@ -198,6 +215,7 @@ enum AccessibilityWindowIntProperty {
   ANCHOR_NODE_ID,
   LAYER_ORDER,
   PARENT_WINDOW_ID,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from String attributes of
@@ -205,6 +223,7 @@ enum AccessibilityWindowIntProperty {
 [Extensible]
 enum AccessibilityWindowStringProperty {
   TITLE,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from List<Integer> instance members of
@@ -212,13 +231,15 @@ enum AccessibilityWindowStringProperty {
 [Extensible]
 enum AccessibilityWindowIntListProperty {
   CHILD_WINDOW_IDS,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // This type is a subset of spans available under android.text.style.
 [Extensible]
 enum SpanType {
   URL,
-  CLICKABLE
+  CLICKABLE,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // Groups data about a Spannable.
@@ -233,7 +254,8 @@ struct SpanEntry {
 enum AccessibilitySelectionMode {
   NONE,
   SINGLE,
-  MULTIPLE
+  MULTIPLE,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from AccessibilityNodeInfo.CollectionInfo.
@@ -259,7 +281,8 @@ struct AccessibilityCollectionItemInfoData {
 enum AccessibilityRangeType {
   INT,
   FLOAT,
-  PERCENT
+  PERCENT,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from AccessibilityNodeInfo.RangeInfo.
@@ -276,6 +299,7 @@ enum AccessibilityLiveRegionType {
   NONE,
   POLITE,
   ASSERTIVE,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from AccessibilityWindowInfo's window types.
@@ -286,6 +310,7 @@ enum AccessibilityWindowType {
   TYPE_INPUT_METHOD,
   TYPE_SPLIT_SCREEN_DIVIDER,
   TYPE_SYSTEM,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // AccessibilityActionInAndroid is a struct to send information of
@@ -343,7 +368,8 @@ enum AccessibilityFilterType {
   FOCUS,
 
   // Send a complete tree from the event source's root for every event.
-  ALL
+  ALL,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 [Extensible]
@@ -355,6 +381,7 @@ enum AccessibilityNotificationStateType {
 
   // Surface for a notification is removed.
   SURFACE_REMOVED,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from int attributes of
@@ -372,6 +399,7 @@ enum AccessibilityEventIntProperty {
   MAX_SCROLL_Y,
   SCROLL_DELTA_X,
   SCROLL_DELTA_Y,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from string attributes of
@@ -381,6 +409,7 @@ enum AccessibilityEventStringProperty {
   CLASS_NAME,
   PACKAGE_NAME,
   CONTENT_DESCRIPTION,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // These fields are taken from List<Integer> like instance members of
@@ -388,6 +417,7 @@ enum AccessibilityEventStringProperty {
 [Extensible]
 enum AccessibilityEventIntListProperty{
   CONTENT_CHANGE_TYPES,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // AccessibilityEventData is a struct to contain info of
@@ -508,6 +538,8 @@ enum CaptionTextShadowType {
 
   // Edge type value specifying depressed bevel character edges.
   DEPRESSED = 4,
+
+  [Default] INVALID_ENUM_VALUE = -1,
 };
 
 // Encapsulates settings to stylize captions.
@@ -556,6 +588,7 @@ enum SetNativeChromeVoxResponse {
   // Need to notify users that TalkBack is installed but
   // it no longer support ARC++ customization.
   NEED_DEPRECATION_CONFIRMATION,
+  [Default] INVALID_ENUM_VALUE,
 };
 
 // Interface for communicating to Android.

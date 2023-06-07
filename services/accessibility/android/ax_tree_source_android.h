@@ -1,9 +1,8 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_AX_TREE_SOURCE_ARC_H_
-#define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_AX_TREE_SOURCE_ARC_H_
+#ifndef SERVICES_ACCESSIBILITY_ANDROID_AX_TREE_SOURCE_ANDROID_H_
+#define SERVICES_ACCESSIBILITY_ANDROID_AX_TREE_SOURCE_ANDROID_H_
 
 #include <map>
 #include <memory>
@@ -11,11 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom-forward.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -28,14 +27,15 @@ namespace aura {
 class Window;
 }
 
-namespace arc {
-class AXTreeSourceArcTest;
+namespace ax::android {
+class AXTreeSourceAndroidTest;
 
 using AXTreeArcSerializer = ui::AXTreeSerializer<AccessibilityInfoDataWrapper*>;
 
 // This class represents the accessibility tree from the focused ARC window.
-class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
-                        public ui::AXActionHandler {
+class AXTreeSourceAndroid
+    : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
+      public ui::AXActionHandler {
  public:
   class Delegate {
    public:
@@ -54,7 +54,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
     // hooks can update the serialization state in PostSerializeNode().
     // Return true if re-serialization of attaching node is needed.
     virtual bool PreDispatchEvent(
-        AXTreeSourceArc* tree_source,
+        AXTreeSourceAndroid* tree_source,
         const mojom::AccessibilityEventData& event_data) = 0;
 
     // Called after the default serialization of the attaching node.
@@ -66,12 +66,12 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
     virtual void PostSerializeNode(ui::AXNodeData* out_data) const = 0;
   };
 
-  AXTreeSourceArc(Delegate* delegate, aura::Window* window);
+  AXTreeSourceAndroid(Delegate* delegate, aura::Window* window);
 
-  AXTreeSourceArc(const AXTreeSourceArc&) = delete;
-  AXTreeSourceArc& operator=(const AXTreeSourceArc&) = delete;
+  AXTreeSourceAndroid(const AXTreeSourceAndroid&) = delete;
+  AXTreeSourceAndroid& operator=(const AXTreeSourceAndroid&) = delete;
 
-  ~AXTreeSourceArc() override;
+  ~AXTreeSourceAndroid() override;
 
   // Notify automation of an accessibility event.
   void NotifyAccessibilityEvent(mojom::AccessibilityEventData* event_data);
@@ -127,7 +127,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   void set_window_id_for_test(int32_t window_id) { window_id_ = window_id; }
 
  private:
-  friend class arc::AXTreeSourceArcTest;
+  friend class AXTreeSourceAndroidTest;
 
   // Actual implementation of NotifyAccessibilityEvent.
   void NotifyAccessibilityEventInternal(
@@ -235,6 +235,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
       automation_event_router_for_test_ = nullptr;
 };
 
-}  // namespace arc
+}  // namespace ax::android
 
-#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_AX_TREE_SOURCE_ARC_H_
+#endif

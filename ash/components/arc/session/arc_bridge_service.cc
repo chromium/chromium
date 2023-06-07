@@ -5,7 +5,6 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 
 // These header is necessary for instantiation of ConnectionHolder.
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "ash/components/arc/mojom/adbd.mojom.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
@@ -60,6 +59,7 @@
 #include "ash/components/arc/mojom/wake_lock.mojom.h"
 #include "ash/components/arc/mojom/wallpaper.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 
 namespace arc {
 

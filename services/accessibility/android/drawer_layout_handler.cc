@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/drawer_layout_handler.h"
+#include "services/accessibility/android/drawer_layout_handler.h"
 
 #include <vector>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom-forward.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -21,14 +21,16 @@ constexpr char kDrawerLayoutClassNameAndroidX[] =
 constexpr char kDrawerLayoutClassNameLegacy[] =
     "android.support.v4.widget.DrawerLayout";
 
-bool IsDrawerLayout(arc::mojom::AccessibilityNodeInfoData* node) {
-  if (!node || !node->string_properties)
+bool IsDrawerLayout(ax::android::mojom::AccessibilityNodeInfoData* node) {
+  if (!node || !node->string_properties) {
     return false;
+  }
 
   auto it = node->string_properties->find(
-      arc::mojom::AccessibilityStringProperty::CLASS_NAME);
-  if (it == node->string_properties->end())
+      ax::android::mojom::AccessibilityStringProperty::CLASS_NAME);
+  if (it == node->string_properties->end()) {
     return false;
+  }
 
   return it->second == kDrawerLayoutClassNameAndroidX ||
          it->second == kDrawerLayoutClassNameLegacy;
@@ -36,12 +38,12 @@ bool IsDrawerLayout(arc::mojom::AccessibilityNodeInfoData* node) {
 
 }  // namespace
 
-namespace arc {
+namespace ax::android {
 
 // static
 absl::optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
 DrawerLayoutHandler::CreateIfNecessary(
-    AXTreeSourceArc* tree_source,
+    AXTreeSourceAndroid* tree_source,
     const mojom::AccessibilityEventData& event_data) {
   if (event_data.event_type !=
       mojom::AccessibilityEventType::WINDOW_STATE_CHANGED) {
@@ -50,8 +52,9 @@ DrawerLayoutHandler::CreateIfNecessary(
 
   AccessibilityInfoDataWrapper* source_node =
       tree_source->GetFromId(event_data.source_id);
-  if (!source_node || !IsDrawerLayout(source_node->GetNode()))
+  if (!source_node || !IsDrawerLayout(source_node->GetNode())) {
     return absl::nullopt;
+  }
 
   // Find a node with accessibility importance. That is a menu node opened now.
   // Extract the accessibility name of the drawer menu from the event text.
@@ -73,15 +76,16 @@ DrawerLayoutHandler::CreateIfNecessary(
 }
 
 bool DrawerLayoutHandler::PreDispatchEvent(
-    AXTreeSourceArc* tree_source,
+    AXTreeSourceAndroid* tree_source,
     const mojom::AccessibilityEventData& event_data) {
   return false;
 }
 
 void DrawerLayoutHandler::PostSerializeNode(ui::AXNodeData* out_data) const {
   out_data->role = ax::mojom::Role::kMenu;
-  if (!name_.empty())
+  if (!name_.empty()) {
     out_data->SetName(name_);
+  }
 }
 
-}  // namespace arc
+}  // namespace ax::android

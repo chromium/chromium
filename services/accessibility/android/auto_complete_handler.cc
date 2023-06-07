@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/auto_complete_handler.h"
+#include "services/accessibility/android/auto_complete_handler.h"
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom-forward.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -18,27 +18,31 @@ namespace {
 // The list value aria-autocomplete property.
 constexpr char kAutoCompleteListAttribute[] = "list";
 
-bool IsAutoComplete(arc::mojom::AccessibilityNodeInfoData* node) {
-  if (!node || !node->string_properties)
+bool IsAutoComplete(ax::android::mojom::AccessibilityNodeInfoData* node) {
+  if (!node || !node->string_properties) {
     return false;
+  }
 
   auto it = node->string_properties->find(
-      arc::mojom::AccessibilityStringProperty::CLASS_NAME);
-  if (it == node->string_properties->end())
+      ax::android::mojom::AccessibilityStringProperty::CLASS_NAME);
+  if (it == node->string_properties->end()) {
     return false;
+  }
 
   return it->second == ui::kAXAutoCompleteTextViewClassname ||
          it->second == ui::kAXMultiAutoCompleteTextViewClassname;
 }
 
-int32_t GetAnchorId(arc::mojom::AccessibilityWindowInfoData* window) {
-  if (!window)
+int32_t GetAnchorId(ax::android::mojom::AccessibilityWindowInfoData* window) {
+  if (!window) {
     return ui::kInvalidAXNodeID;
+  }
 
   int32_t id;
-  if (arc::GetProperty(
+  if (ax::android::GetProperty(
           window->int_properties,
-          arc::mojom::AccessibilityWindowIntProperty::ANCHOR_NODE_ID, &id)) {
+          ax::android::mojom::AccessibilityWindowIntProperty::ANCHOR_NODE_ID,
+          &id)) {
     return id;
   }
   return ui::kInvalidAXNodeID;
@@ -46,7 +50,7 @@ int32_t GetAnchorId(arc::mojom::AccessibilityWindowInfoData* window) {
 
 }  // namespace
 
-namespace arc {
+namespace ax::android {
 
 AutoCompleteHandler::AutoCompleteHandler(const int32_t editable_node_id)
     : anchored_node_id_(editable_node_id) {}
@@ -56,7 +60,7 @@ AutoCompleteHandler::~AutoCompleteHandler() = default;
 // static
 std::vector<AutoCompleteHandler::IdAndHandler>
 AutoCompleteHandler::CreateIfNecessary(
-    AXTreeSourceArc* tree_source,
+    AXTreeSourceAndroid* tree_source,
     const mojom::AccessibilityEventData& event_data) {
   if (event_data.event_type !=
       mojom::AccessibilityEventType::WINDOW_CONTENT_CHANGED) {
@@ -71,8 +75,9 @@ AutoCompleteHandler::CreateIfNecessary(
   while (!to_visit.empty()) {
     AccessibilityInfoDataWrapper* node_ptr = to_visit.back();
     to_visit.pop_back();
-    if (!node_ptr)
+    if (!node_ptr) {
       continue;
+    }
 
     const int32_t node_id = node_ptr->GetId();
     if (IsAutoComplete(node_ptr->GetNode())) {
@@ -87,7 +92,7 @@ AutoCompleteHandler::CreateIfNecessary(
 }
 
 bool AutoCompleteHandler::PreDispatchEvent(
-    AXTreeSourceArc* tree_source,
+    AXTreeSourceAndroid* tree_source,
     const mojom::AccessibilityEventData& event_data) {
   if (event_data.event_type == mojom::AccessibilityEventType::WINDOWS_CHANGED) {
     // Check if a popup window anchoring the node exists.
@@ -120,18 +125,21 @@ bool AutoCompleteHandler::PreDispatchEvent(
              mojom::AccessibilityEventType::VIEW_SELECTED) {
     // VIEW_SELECTED event from the suggestion list is a user's selecting action
     // in a candidate.
-    if (!suggestion_window_id_.has_value())
+    if (!suggestion_window_id_.has_value()) {
       return false;
+    }
 
     AccessibilityInfoDataWrapper* source_node =
         tree_source->GetFromId(event_data.source_id);
-    if (!source_node || source_node->GetWindowId() != suggestion_window_id_)
+    if (!source_node || source_node->GetWindowId() != suggestion_window_id_) {
       return false;
+    }
 
     AccessibilityInfoDataWrapper* selected_node =
         GetSelectedNodeInfoFromAdapterViewEvent(event_data, source_node);
-    if (!selected_node || selected_node->GetId() == selected_node_id_)
+    if (!selected_node || selected_node->GetId() == selected_node_id_) {
       return false;
+    }
 
     selected_node_id_ = selected_node->GetId();
     return true;
@@ -158,4 +166,4 @@ void AutoCompleteHandler::PostSerializeNode(ui::AXNodeData* out_data) const {
   }
 }
 
-}  // namespace arc
+}  // namespace ax::android

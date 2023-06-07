@@ -11,6 +11,10 @@
 namespace chromeos::payments::mojom {
 class PaymentAppInstance;
 }  // namespace chromeos::payments::mojom
+namespace ax::android::mojom {
+class AccessibilityHelperInstance;
+class AccessibilityHelperHost;
+}  // namespace ax::android::mojom
 
 namespace arc {
 
@@ -18,8 +22,6 @@ namespace mojom {
 
 // Instead of including ash/components/arc/mojom/arc_bridge.mojom.h, list all
 // the instance classes here for faster build.
-class AccessibilityHelperHost;
-class AccessibilityHelperInstance;
 class AdbdMonitorHost;
 class AdbdMonitorInstance;
 class AppHost;
@@ -158,8 +160,8 @@ class ArcBridgeService {
   void ObserveBeforeArcBridgeClosed();
   void ObserveAfterArcBridgeClosed();
 
-  ConnectionHolder<mojom::AccessibilityHelperInstance,
-                   mojom::AccessibilityHelperHost>*
+  ConnectionHolder<ax::android::mojom::AccessibilityHelperInstance,
+                   ax::android::mojom::AccessibilityHelperHost>*
   accessibility_helper() {
     return &accessibility_helper_;
   }
@@ -353,8 +355,8 @@ class ArcBridgeService {
  private:
   base::ObserverList<Observer> observer_list_;
 
-  ConnectionHolder<mojom::AccessibilityHelperInstance,
-                   mojom::AccessibilityHelperHost>
+  ConnectionHolder<ax::android::mojom::AccessibilityHelperInstance,
+                   ax::android::mojom::AccessibilityHelperHost>
       accessibility_helper_;
   ConnectionHolder<mojom::AdbdMonitorInstance, mojom::AdbdMonitorHost>
       adbd_monitor_;

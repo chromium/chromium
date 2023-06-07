@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
 
 #include <utility>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,7 +21,7 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 
-namespace arc {
+namespace ax::android {
 
 using AXActionType = mojom::AccessibilityActionType;
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
@@ -62,8 +62,9 @@ class MockAutomationEventRouter
     }
     last_dispatched_events_ = std::move(events);
 
-    for (const auto& update : updates)
+    for (const auto& update : updates) {
       tree_.Unserialize(update);
+    }
   }
 
   void DispatchAccessibilityLocationChange(
@@ -93,20 +94,20 @@ class MockAutomationEventRouter
 
 }  // namespace
 
-class AXTreeSourceArcTest : public testing::Test,
-                            public AXTreeSourceArc::Delegate {
+class AXTreeSourceAndroidTest : public testing::Test,
+                                public AXTreeSourceAndroid::Delegate {
  public:
-  AXTreeSourceArcTest()
+  AXTreeSourceAndroidTest()
       : router_(std::make_unique<MockAutomationEventRouter>()),
         tree_source_(
-            std::make_unique<AXTreeSourceArc>(this, /*window=*/nullptr)) {
+            std::make_unique<AXTreeSourceAndroid>(this, /*window=*/nullptr)) {
     tree_source_->set_automation_event_router_for_test(router_.get());
   }
 
-  AXTreeSourceArcTest(const AXTreeSourceArcTest&) = delete;
-  AXTreeSourceArcTest& operator=(const AXTreeSourceArcTest&) = delete;
+  AXTreeSourceAndroidTest(const AXTreeSourceAndroidTest&) = delete;
+  AXTreeSourceAndroidTest& operator=(const AXTreeSourceAndroidTest&) = delete;
 
-  // AXTreeSourceArc::Delegate overrides.
+  // AXTreeSourceAndroid::Delegate overrides.
   void OnAction(const ui::AXActionData& data) const override {}
   bool UseFullFocusMode() const override { return full_focus_mode_; }
 
@@ -160,12 +161,12 @@ class AXTreeSourceArcTest : public testing::Test,
 
  private:
   const std::unique_ptr<MockAutomationEventRouter> router_;
-  const std::unique_ptr<AXTreeSourceArc> tree_source_;
+  const std::unique_ptr<AXTreeSourceAndroid> tree_source_;
 
   bool full_focus_mode_ = false;
 };
 
-TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
+TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
   set_full_focus_mode(true);
 
   auto event = AXEventData::New();
@@ -352,7 +353,7 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
       " restriction=disabled\n");
 }
 
-TEST_F(AXTreeSourceArcTest, AccessibleNameComputationWindow) {
+TEST_F(AXTreeSourceAndroidTest, AccessibleNameComputationWindow) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -390,7 +391,7 @@ TEST_F(AXTreeSourceArcTest, AccessibleNameComputationWindow) {
   EXPECT_EQ(2, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
-TEST_F(AXTreeSourceArcTest, NotificationWindow) {
+TEST_F(AXTreeSourceAndroidTest, NotificationWindow) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -424,7 +425,7 @@ TEST_F(AXTreeSourceArcTest, NotificationWindow) {
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, data.role);
 }
 
-TEST_F(AXTreeSourceArcTest, AccessibleNameComputationWindowWithChildren) {
+TEST_F(AXTreeSourceAndroidTest, AccessibleNameComputationWindowWithChildren) {
   auto event = AXEventData::New();
   event->source_id = 3;
   event->task_id = 1;
@@ -506,7 +507,7 @@ TEST_F(AXTreeSourceArcTest, AccessibleNameComputationWindowWithChildren) {
   EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
-TEST_F(AXTreeSourceArcTest, ComplexTreeStructure) {
+TEST_F(AXTreeSourceAndroidTest, ComplexTreeStructure) {
   int tree_size = 4;
   int num_trees = 3;
 
@@ -571,7 +572,7 @@ TEST_F(AXTreeSourceArcTest, ComplexTreeStructure) {
   EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
-TEST_F(AXTreeSourceArcTest, GetTreeDataAppliesFocus) {
+TEST_F(AXTreeSourceAndroidTest, GetTreeDataAppliesFocus) {
   auto event = AXEventData::New();
   event->source_id = 2;
   event->task_id = 1;
@@ -608,7 +609,7 @@ TEST_F(AXTreeSourceArcTest, GetTreeDataAppliesFocus) {
   EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
-TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
+TEST_F(AXTreeSourceAndroidTest, OnViewSelectedEvent) {
   auto event = AXEventData::New();
   event->task_id = 1;
   event->event_type = AXEventType::VIEW_SELECTED;
@@ -719,7 +720,7 @@ TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
             GetDispatchedEventCount(ax::mojom::Event::kFocus));  // not changed
 }
 
-TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
+TEST_F(AXTreeSourceAndroidTest, OnWindowStateChangedEvent) {
   set_full_focus_mode(true);
 
   auto event = AXEventData::New();
@@ -820,7 +821,7 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
   EXPECT_EQ(5, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
-TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
+TEST_F(AXTreeSourceAndroidTest, OnFocusEvent) {
   set_full_focus_mode(true);
 
   auto event = AXEventData::New();
@@ -896,7 +897,7 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   EXPECT_EQ(3, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
-TEST_F(AXTreeSourceArcTest, OnClearA11yFocusEvent) {
+TEST_F(AXTreeSourceAndroidTest, OnClearA11yFocusEvent) {
   set_full_focus_mode(true);
 
   auto event = AXEventData::New();
@@ -961,7 +962,7 @@ TEST_F(AXTreeSourceArcTest, OnClearA11yFocusEvent) {
   EXPECT_EQ(root_window->window_id, data.focus_id);
 }
 
-TEST_F(AXTreeSourceArcTest, OnDrawerOpened) {
+TEST_F(AXTreeSourceAndroidTest, OnDrawerOpened) {
   auto event = AXEventData::New();
   event->source_id = 10;  // root
   event->task_id = 1;
@@ -1031,7 +1032,7 @@ TEST_F(AXTreeSourceArcTest, OnDrawerOpened) {
   EXPECT_EQ("Navigation", name);
 }
 
-TEST_F(AXTreeSourceArcTest, SerializeAndUnserialize) {
+TEST_F(AXTreeSourceAndroidTest, SerializeAndUnserialize) {
   auto event = AXEventData::New();
   event->source_id = 10;
   event->task_id = 1;
@@ -1107,7 +1108,7 @@ TEST_F(AXTreeSourceArcTest, SerializeAndUnserialize) {
   EXPECT_EQ(1U, tree()->GetFromId(10)->GetUnignoredChildCount());
 }
 
-TEST_F(AXTreeSourceArcTest, SerializeVirtualNode) {
+TEST_F(AXTreeSourceAndroidTest, SerializeVirtualNode) {
   auto event = AXEventData::New();
   event->source_id = 10;
   event->task_id = 1;
@@ -1177,7 +1178,7 @@ TEST_F(AXTreeSourceArcTest, SerializeVirtualNode) {
   EXPECT_EQ(button2->id, children[1]->id());
 }
 
-TEST_F(AXTreeSourceArcTest, SyncFocus) {
+TEST_F(AXTreeSourceAndroidTest, SyncFocus) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -1263,7 +1264,7 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   EXPECT_EQ(root_window->window_id, data.focus_id);
 }
 
-TEST_F(AXTreeSourceArcTest, StateDescriptionChangedEvent) {
+TEST_F(AXTreeSourceAndroidTest, StateDescriptionChangedEvent) {
   auto event = AXEventData::New();
   event->source_id = 10;
   event->task_id = 1;
@@ -1312,7 +1313,7 @@ TEST_F(AXTreeSourceArcTest, StateDescriptionChangedEvent) {
             last_dispatched_events()[0].event_type);
 }
 
-TEST_F(AXTreeSourceArcTest, EventWithWrongSourceId) {
+TEST_F(AXTreeSourceAndroidTest, EventWithWrongSourceId) {
   auto event = AXEventData::New();
   event->source_id = 99999;  // This doesn't exist in serialized nodes.
   event->task_id = 1;
@@ -1345,7 +1346,7 @@ TEST_F(AXTreeSourceArcTest, EventWithWrongSourceId) {
   CallNotifyAccessibilityEvent(event.get());
 }
 
-TEST_F(AXTreeSourceArcTest, EnsureNodeIdMapCleared) {
+TEST_F(AXTreeSourceAndroidTest, EnsureNodeIdMapCleared) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -1381,7 +1382,7 @@ TEST_F(AXTreeSourceArcTest, EnsureNodeIdMapCleared) {
   CallNotifyAccessibilityEvent(event.get());
 }
 
-TEST_F(AXTreeSourceArcTest, ControlWithoutNameReceivesFocus) {
+TEST_F(AXTreeSourceAndroidTest, ControlWithoutNameReceivesFocus) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -1426,7 +1427,7 @@ TEST_F(AXTreeSourceArcTest, ControlWithoutNameReceivesFocus) {
   EXPECT_EQ(node->id, tree_data.focus_id);
 }
 
-TEST_F(AXTreeSourceArcTest, AutoComplete) {
+TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
   auto event = AXEventData::New();
   event->task_id = 1;
 
@@ -1541,7 +1542,7 @@ TEST_F(AXTreeSourceArcTest, AutoComplete) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
 }
 
-TEST_F(AXTreeSourceArcTest, EventFrom) {
+TEST_F(AXTreeSourceAndroidTest, EventFrom) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -1565,12 +1566,13 @@ TEST_F(AXTreeSourceArcTest, EventFrom) {
   EXPECT_EQ(ax::mojom::Action::kNone, actual.event_from_action);
 
   // With |Action| field, event_from and event_from_action are populated.
-  SetProperty(event.get(), AXEventIntProperty::ACTION,
-              static_cast<int32_t>(arc::mojom::AccessibilityActionType::CLICK));
+  SetProperty(
+      event.get(), AXEventIntProperty::ACTION,
+      static_cast<int32_t>(ax::android::mojom::AccessibilityActionType::CLICK));
   CallNotifyAccessibilityEvent(event.get());
 
   actual = last_dispatched_events()[0];
   EXPECT_EQ(ax::mojom::EventFrom::kAction, actual.event_from);
   EXPECT_EQ(ax::mojom::Action::kDoDefault, actual.event_from_action);
 }
-}  // namespace arc
+}  // namespace ax::android

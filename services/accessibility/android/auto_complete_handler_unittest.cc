@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/auto_complete_handler.h"
+#include "services/accessibility/android/auto_complete_handler.h"
 
 #include <map>
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 
-namespace arc {
+namespace ax::android {
 
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXCollectionItemInfoData = mojom::AccessibilityCollectionItemInfoData;
@@ -36,18 +36,19 @@ using AXWindowIntProperty = mojom::AccessibilityWindowIntProperty;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 
 class AutoCompleteHandlerTest : public testing::Test,
-                                public AXTreeSourceArc::Delegate {
+                                public AXTreeSourceAndroid::Delegate {
  public:
-  class TestAXTreeSourceArc : public AXTreeSourceArc {
+  class TestAXTreeSourceAndroid : public AXTreeSourceAndroid {
    public:
-    explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate, /*window=*/nullptr) {}
+    explicit TestAXTreeSourceAndroid(AXTreeSourceAndroid::Delegate* delegate)
+        : AXTreeSourceAndroid(delegate, /*window=*/nullptr) {}
 
-    // AXTreeSourceArc overrides.
+    // AXTreeSourceAndroid overrides.
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {
       auto itr = wrapper_map_.find(id);
-      if (itr == wrapper_map_.end())
+      if (itr == wrapper_map_.end()) {
         return nullptr;
+      }
       return itr->second.get();
     }
 
@@ -60,7 +61,7 @@ class AutoCompleteHandlerTest : public testing::Test,
         wrapper_map_;
   };
 
-  AutoCompleteHandlerTest() : tree_source_(new TestAXTreeSourceArc(this)) {}
+  AutoCompleteHandlerTest() : tree_source_(new TestAXTreeSourceAndroid(this)) {}
 
   void SetNodeIdToTree(mojom::AccessibilityNodeInfoData* wrapper) {
     tree_source_->SetId(std::make_unique<AccessibilityNodeInfoDataWrapper>(
@@ -72,11 +73,11 @@ class AutoCompleteHandlerTest : public testing::Test,
         tree_source(), wrapper));
   }
 
-  // AXTreeSourceArc::Delegate overrides.
+  // AXTreeSourceAndroid::Delegate overrides.
   bool UseFullFocusMode() const override { return true; }
   void OnAction(const ui::AXActionData& data) const override {}
 
-  AXTreeSourceArc* tree_source() { return tree_source_.get(); }
+  AXTreeSourceAndroid* tree_source() { return tree_source_.get(); }
 
   mojom::AccessibilityEventDataPtr CreateEventWithEditables() {
     auto event = AXEventData::New();
@@ -157,7 +158,7 @@ class AutoCompleteHandlerTest : public testing::Test,
   }
 
  private:
-  const std::unique_ptr<TestAXTreeSourceArc> tree_source_;
+  const std::unique_ptr<TestAXTreeSourceAndroid> tree_source_;
 };
 
 TEST_F(AutoCompleteHandlerTest, Create) {
@@ -193,8 +194,8 @@ TEST_F(AutoCompleteHandlerTest, Create) {
 }
 
 TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {
-  // Similar to AXTreeSourceArcTest.AutoComplete, but handle multiple editable
-  // and more patterns.
+  // Similar to AXTreeSourceAndroidTest.AutoComplete, but handle multiple
+  // editable and more patterns.
   auto event_data = CreateEventWithEditables();
   event_data->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
   event_data->source_id = 10;  // root
@@ -302,4 +303,4 @@ TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {
       data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
 }
 
-}  // namespace arc
+}  // namespace ax::android

@@ -67,6 +67,7 @@ static_library("session") {
     "//components/prefs:prefs",
     "//components/user_manager",
     "//components/version_info",
+    "//services/accessibility/android/public/mojom",
     "//ui/display/manager",
   ]
 }
@@ -144,8 +145,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/system",
     "//components/account_id",
     "//components/prefs:test_support",
-    "//components/user_manager:test_support",
     "//components/user_manager",
+    "//components/user_manager:test_support",
     "//components/version_info",
     "//content/test:test_support",
     "//ui/views:views",

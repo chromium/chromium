@@ -1,0 +1,35 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+assert(is_chromeos_ash)
+mojom("mojom") {
+  generate_java = true
+  sources = [ "accessibility_helper.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/mojom",
+  ]
+
+  common_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ax.android.mojom.Rect"
+          cpp = "::gfx::Rect"
+        },
+      ]
+      traits_headers = [ "accessibility_helper_mojom_traits.h" ]
+      traits_sources = [ "accessibility_helper_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//ui/gfx",
+        "//ui/gfx/mojom",
+      ]
+    },
+  ]
+
+  cpp_typemaps = common_typemaps
+  blink_cpp_typemaps = common_typemaps
+}

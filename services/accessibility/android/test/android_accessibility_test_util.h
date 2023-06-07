@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_TEST_UTIL_H_
-#define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_TEST_UTIL_H_
+#ifndef SERVICES_ACCESSIBILITY_ANDROID_TEST_ANDROID_ACCESSIBILITY_TEST_UTIL_H_
+#define SERVICES_ACCESSIBILITY_ANDROID_TEST_ANDROID_ACCESSIBILITY_TEST_UTIL_H_
 
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "base/containers/flat_map.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace arc {
+namespace ax::android {
 
 template <class PropType, class ValueType>
 void SetProperty(
     absl::optional<base::flat_map<PropType, ValueType>>& properties,
     PropType prop,
     const ValueType& value) {
-  if (!properties.has_value())
+  if (!properties.has_value()) {
     properties = base::flat_map<PropType, ValueType>();
+  }
 
   properties->insert_or_assign(prop, value);
 }
@@ -88,6 +89,6 @@ DEF_SET_PROP(mojom::AccessibilityWindowInfoData,
 
 #undef DEF_SET_PROP
 
-}  // namespace arc
+}  // namespace ax::android
 
-#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_TEST_UTIL_H_
+#endif

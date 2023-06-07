@@ -4,11 +4,11 @@
 
 #include <memory>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"

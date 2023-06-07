@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
 
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "base/notreached.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/exo/wm_helper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace arc {
+namespace ax::android {
 
 AccessibilityWindowInfoDataWrapper::AccessibilityWindowInfoDataWrapper(
-    AXTreeSourceArc* tree_source,
+    AXTreeSourceAndroid* tree_source,
     mojom::AccessibilityWindowInfoData* window)
     : AccessibilityInfoDataWrapper(tree_source), window_ptr_(window) {}
 
@@ -102,6 +102,9 @@ void AccessibilityWindowInfoDataWrapper::PopulateAXRole(
     case mojom::AccessibilityWindowType::TYPE_SYSTEM:
       out_data->role = ax::mojom::Role::kWindow;
       return;
+    case mojom::AccessibilityWindowType::INVALID_ENUM_VALUE:
+      NOTREACHED();
+      return;
   }
 }
 
@@ -114,8 +117,9 @@ void AccessibilityWindowInfoDataWrapper::PopulateAXState(
 void AccessibilityWindowInfoDataWrapper::Serialize(
     ui::AXNodeData* out_data) const {
   AccessibilityInfoDataWrapper* root = tree_source_->GetRoot();
-  if (!root)
+  if (!root) {
     return;
+  }
 
   AccessibilityInfoDataWrapper::Serialize(out_data);
 
@@ -135,8 +139,9 @@ void AccessibilityWindowInfoDataWrapper::Serialize(
 
   if (root->GetId() == GetId()) {
     // Make the root window of each ARC task modal unless it's notification.
-    if (!tree_source_->is_notification())
+    if (!tree_source_->is_notification()) {
       out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
+    }
 
     // Focusable in Android simply means a node within the window is focusable.
     // The window itself is not focusable in Android, but ChromeVox sets the
@@ -190,30 +195,32 @@ int32_t AccessibilityWindowInfoDataWrapper::GetWindowId() const {
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(
     mojom::AccessibilityWindowBooleanProperty prop) const {
-  return arc::GetBooleanProperty(window_ptr_.get(), prop);
+  return GetBooleanProperty(window_ptr_.get(), prop);
 }
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(
     mojom::AccessibilityWindowIntProperty prop,
     int32_t* out_value) const {
-  return arc::GetProperty(window_ptr_->int_properties, prop, out_value);
+  return ax::android::GetProperty(window_ptr_->int_properties, prop, out_value);
 }
 
 bool AccessibilityWindowInfoDataWrapper::HasProperty(
     mojom::AccessibilityWindowStringProperty prop) const {
-  return arc::HasProperty(window_ptr_->string_properties, prop);
+  return ax::android::HasProperty(window_ptr_->string_properties, prop);
 }
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(
     mojom::AccessibilityWindowStringProperty prop,
     std::string* out_value) const {
-  return arc::GetProperty(window_ptr_->string_properties, prop, out_value);
+  return ax::android::GetProperty(window_ptr_->string_properties, prop,
+                                  out_value);
 }
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(
     mojom::AccessibilityWindowIntListProperty prop,
     std::vector<int32_t>* out_value) const {
-  return arc::GetProperty(window_ptr_->int_list_properties, prop, out_value);
+  return ax::android::GetProperty(window_ptr_->int_list_properties, prop,
+                                  out_value);
 }
 
-}  // namespace arc
+}  // namespace ax::android

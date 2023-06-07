@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
+#include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace arc {
+namespace ax::android {
 
 namespace {
 class TestAccessibilityInfoDataWrapper : public AccessibilityInfoDataWrapper {
  public:
-  explicit TestAccessibilityInfoDataWrapper(AXTreeSourceArc* tree_source_)
+  explicit TestAccessibilityInfoDataWrapper(AXTreeSourceAndroid* tree_source_)
       : AccessibilityInfoDataWrapper(tree_source_) {}
 
   // AccessibilityInfoDataWrapper overrides:
@@ -51,10 +51,10 @@ class TestAccessibilityInfoDataWrapper : public AccessibilityInfoDataWrapper {
   gfx::Rect bounds_;
 };
 
-class TestTreeSource : public AXTreeSourceArc {
+class TestTreeSource : public AXTreeSourceAndroid {
  public:
   explicit TestTreeSource(aura::Window* window)
-      : AXTreeSourceArc(nullptr, window) {}
+      : AXTreeSourceAndroid(nullptr, window) {}
   AccessibilityInfoDataWrapper* GetRoot() const override { return root_; }
   raw_ptr<AccessibilityInfoDataWrapper, ExperimentalAsh> root_;
 };
@@ -90,7 +90,6 @@ TEST_F(AccessibilityInfoDataWrapperTest, NonRootNodeBounds) {
 
 TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBounds) {
   UpdateDisplay("400x300");
-
   auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
                            .SetGeometry(gfx::Rect(10, 10, 200, 200))
                            .BuildClientControlledShellSurface();
@@ -165,4 +164,4 @@ TEST_F(AccessibilityInfoDataWrapperTest, BoundsScalingFromRvcArcAndLater) {
   EXPECT_EQ(gfx::RectF(0, 0, 200, 200), out_data.relative_bounds.bounds);
 }
 
-}  // namespace arc
+}  // namespace ax::android

@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/drawer_layout_handler.h"
+#include "services/accessibility/android/drawer_layout_handler.h"
 
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
+#include "services/accessibility/android/android_accessibility_util.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
 
-namespace arc {
+namespace ax::android {
 
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXEventData = mojom::AccessibilityEventData;
@@ -31,18 +31,19 @@ using AXStringProperty = mojom::AccessibilityStringProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 
 class DrawerLayoutHandlerTest : public testing::Test,
-                                public AXTreeSourceArc::Delegate {
+                                public AXTreeSourceAndroid::Delegate {
  public:
-  class TestAXTreeSourceArc : public AXTreeSourceArc {
+  class TestAXTreeSourceAndroid : public AXTreeSourceAndroid {
    public:
-    explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate, /*window=*/nullptr) {}
+    explicit TestAXTreeSourceAndroid(AXTreeSourceAndroid::Delegate* delegate)
+        : AXTreeSourceAndroid(delegate, /*window=*/nullptr) {}
 
-    // AXTreeSourceArc overrides.
+    // AXTreeSourceAndroid overrides.
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {
       auto itr = wrapper_map_.find(id);
-      if (itr == wrapper_map_.end())
+      if (itr == wrapper_map_.end()) {
         return nullptr;
+      }
       return itr->second.get();
     }
 
@@ -55,7 +56,7 @@ class DrawerLayoutHandlerTest : public testing::Test,
         wrapper_map_;
   };
 
-  DrawerLayoutHandlerTest() : tree_source_(new TestAXTreeSourceArc(this)) {}
+  DrawerLayoutHandlerTest() : tree_source_(new TestAXTreeSourceAndroid(this)) {}
 
   void SetNodeIdToTree(mojom::AccessibilityNodeInfoData* wrapper) {
     tree_source_->SetId(std::make_unique<AccessibilityNodeInfoDataWrapper>(
@@ -67,11 +68,11 @@ class DrawerLayoutHandlerTest : public testing::Test,
         tree_source(), wrapper));
   }
 
-  // AXTreeSourceArc::Delegate overrides.
+  // AXTreeSourceAndroid::Delegate overrides.
   bool UseFullFocusMode() const override { return true; }
   void OnAction(const ui::AXActionData& data) const override {}
 
-  AXTreeSourceArc* tree_source() { return tree_source_.get(); }
+  AXTreeSourceAndroid* tree_source() { return tree_source_.get(); }
 
   mojom::AccessibilityEventDataPtr CreateEventWithDrawer() {
     auto event = AXEventData::New();
@@ -123,7 +124,7 @@ class DrawerLayoutHandlerTest : public testing::Test,
   }
 
  private:
-  const std::unique_ptr<TestAXTreeSourceArc> tree_source_;
+  const std::unique_ptr<TestAXTreeSourceAndroid> tree_source_;
 };
 
 TEST_F(DrawerLayoutHandlerTest, CreateAndSerialize) {
@@ -175,4 +176,4 @@ TEST_F(DrawerLayoutHandlerTest, NoCreation) {
   ASSERT_FALSE(create_result.has_value());
 }
 
-}  // namespace arc
+}  // namespace ax::android

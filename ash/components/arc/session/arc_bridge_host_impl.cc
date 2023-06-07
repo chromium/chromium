@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "ash/components/arc/mojom/adbd.mojom.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
@@ -74,6 +73,7 @@
 #include "base/ranges/algorithm.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 
 namespace arc {
 
@@ -92,7 +92,7 @@ ArcBridgeHostImpl::~ArcBridgeHostImpl() {
 }
 
 void ArcBridgeHostImpl::OnAccessibilityHelperInstanceReady(
-    mojo::PendingRemote<mojom::AccessibilityHelperInstance>
+    mojo::PendingRemote<ax::android::mojom::AccessibilityHelperInstance>
         accessibility_helper_remote) {
   OnInstanceReady(arc_bridge_service_->accessibility_helper(),
                   std::move(accessibility_helper_remote));

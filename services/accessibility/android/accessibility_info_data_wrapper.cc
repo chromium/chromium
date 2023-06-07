@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
 
-#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "chrome/browser/ash/arc/accessibility/geometry_util.h"
 #include "components/exo/wm_helper.h"
+#include "services/accessibility/android/ax_tree_source_android.h"
+#include "services/accessibility/android/geometry_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -14,10 +14,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-namespace arc {
+namespace ax::android {
 
 AccessibilityInfoDataWrapper::AccessibilityInfoDataWrapper(
-    AXTreeSourceArc* tree_source)
+    AXTreeSourceAndroid* tree_source)
     : tree_source_(tree_source) {}
 
 AccessibilityInfoDataWrapper::~AccessibilityInfoDataWrapper() = default;
@@ -81,4 +81,4 @@ void AccessibilityInfoDataWrapper::PopulateBounds(
   }
 }
 
-}  // namespace arc
+}  // namespace ax::android
