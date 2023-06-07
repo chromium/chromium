@@ -1,0 +1,17 @@
+diff --git a/third_party/abseil-cpp/absl/base/internal/sysinfo.cc b/third_party/abseil-cpp/absl/base/internal/sysinfo.cc
+index 7de8ead2139a9..75759733eafa7 100644
+--- a/third_party/abseil-cpp/absl/base/internal/sysinfo.cc
++++ b/third_party/abseil-cpp/absl/base/internal/sysinfo.cc
+@@ -426,6 +426,12 @@ pid_t GetTID() {
+   return static_cast<pid_t>(tid);
+ }
+ 
++#elif defined(__native_client__)
++
++pid_t GetTID() {
++  return reinterpret_cast<intptr_t>(pthread_self());
++}
++
+ #else
+ 
+ // Fallback implementation of `GetTID` using `pthread_self`.

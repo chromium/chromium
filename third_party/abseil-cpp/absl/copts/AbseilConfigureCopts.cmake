@@ -83,6 +83,16 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")  # MATCHES so we get both Clang an
     set(ABSL_DEFAULT_COPTS "${ABSL_LLVM_FLAGS}")
     set(ABSL_TEST_COPTS "${ABSL_LLVM_TEST_FLAGS}")
   endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+  # IntelLLVM is similar to Clang, with some additional flags.
+  if(MSVC)
+    # clang-cl is half MSVC, half LLVM
+    set(ABSL_DEFAULT_COPTS "${ABSL_CLANG_CL_FLAGS}")
+    set(ABSL_TEST_COPTS "${ABSL_CLANG_CL_TEST_FLAGS}")
+  else()
+    set(ABSL_DEFAULT_COPTS "${ABSL_LLVM_FLAGS}")
+    set(ABSL_TEST_COPTS "${ABSL_LLVM_TEST_FLAGS}")
+  endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(ABSL_DEFAULT_COPTS "${ABSL_MSVC_FLAGS}")
   set(ABSL_TEST_COPTS "${ABSL_MSVC_TEST_FLAGS}")

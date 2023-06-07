@@ -107,21 +107,22 @@ FindInfo find_first_non_full_outofline(const CommonFields& common,
   return find_first_non_full(common, hash);
 }
 
-// Return address of the ith slot in slots where each slot occupies slot_size.
+// Returns the address of the ith slot in slots where each slot occupies
+// slot_size.
 static inline void* SlotAddress(void* slot_array, size_t slot,
                                 size_t slot_size) {
   return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot_array) +
                                  (slot * slot_size));
 }
 
-// Return the address of the slot just after slot assuming each slot
-// has the specified size.
+// Returns the address of the slot just after slot assuming each slot has the
+// specified size.
 static inline void* NextSlot(void* slot, size_t slot_size) {
   return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot) + slot_size);
 }
 
-// Return the address of the slot just before slot assuming each slot
-// has the specified size.
+// Returns the address of the slot just before slot assuming each slot has the
+// specified size.
 static inline void* PrevSlot(void* slot, size_t slot_size) {
   return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot) - slot_size);
 }

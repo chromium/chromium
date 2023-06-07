@@ -64,6 +64,7 @@ absl_cc_test(
     hash_test
   SRCS
     "hash_test.cc"
+    "internal/hash_test.h"
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
@@ -80,6 +81,26 @@ absl_cc_test(
     absl::meta
     absl::int128
     GTest::gmock_main
+)
+
+absl_cc_test(
+  NAME
+    hash_instantiated_test
+  SRCS
+    "hash_test.cc"
+    "internal/hash_test.h"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::hash
+    absl::hash_testing
+    absl::config
+    absl::btree
+    absl::flat_hash_map
+    absl::flat_hash_set
+    absl::node_hash_map
+    absl::node_hash_set
+    GTest::gtest_main
 )
 
 # Internal-only target, do not depend on directly.

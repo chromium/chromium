@@ -84,6 +84,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    Threads::Threads
     $<$<PLATFORM_ID:Darwin>:${CoreFoundation}>
 )
 

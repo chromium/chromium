@@ -42,11 +42,15 @@ absl_source_set("hash_testing") {
 }
 
 absl_test("hash_test") {
-  sources = [ "hash_test.cc" ]
+  sources = [
+    "hash_test.cc",
+    "internal/hash_test.h",
+  ]
   deps = [
     ":hash",
     ":hash_testing",
     ":spy_hash_state",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/container:btree",
     "//third_party/abseil-cpp/absl/container:flat_hash_map",
@@ -56,6 +60,23 @@ absl_test("hash_test") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/strings:cord_test_helpers",
+  ]
+}
+
+absl_test("hash_instantiated_test") {
+  sources = [
+    "hash_instantiated_test.cc",
+    "internal/hash_test.h",
+  ]
+  deps = [
+    ":hash",
+    ":hash_testing",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/container:btree",
+    "//third_party/abseil-cpp/absl/container:flat_hash_map",
+    "//third_party/abseil-cpp/absl/container:flat_hash_set",
+    "//third_party/abseil-cpp/absl/container:node_hash_map",
+    "//third_party/abseil-cpp/absl/container:node_hash_set",
   ]
 }
 

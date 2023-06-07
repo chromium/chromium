@@ -1566,7 +1566,6 @@ EXPORTS
     ??0Time@absl@@QAE@XZ
     ??0TimeConversion@absl@@QAE@XZ
     ??0TimeInfo@TimeZone@absl@@QAE@XZ
-    ??0TimeSample@absl@@QAE@XZ
     ??0TimeZone@absl@@QAE@Vtime_zone@cctz@time_internal@1@@Z
     ??0TimeZoneIf@cctz@time_internal@absl@@IAE@XZ
     ??0TimeZoneInfo@cctz@time_internal@absl@@QAE@XZ
@@ -2890,7 +2889,6 @@ EXPORTS
     ?Notify@Notification@absl@@QAEXXZ
     ?Now@CycleClock@base_internal@absl@@SA_JXZ
     ?Now@UnscaledCycleClock@base_internal@absl@@CA_JXZ
-    ?Now@UnscaledCycleClockWrapperForGetCurrentTime@time_internal@absl@@SA_JXZ
     ?Now@absl@@YA?AVTime@1@XZ
     ?NullSafeStringView@absl@@YA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PBD@Z
     ?NumCPUs@base_internal@absl@@YAHXZ

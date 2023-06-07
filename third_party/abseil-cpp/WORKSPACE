@@ -28,13 +28,11 @@ http_archive(
 )
 
 # RE2 (the regular expression library used by GoogleTest)
-# Note this must use a commit from the `abseil` branch of the RE2 project.
-# https://github.com/google/re2/tree/abseil
 http_archive(
     name = "com_googlesource_code_re2",
-    sha256 = "0a890c2aa0bb05b2ce906a15efb520d0f5ad4c7d37b8db959c43772802991887",
-    strip_prefix = "re2-a427f10b9fb4622dd6d8643032600aa1b50fbd12",
-    urls = ["https://github.com/google/re2/archive/a427f10b9fb4622dd6d8643032600aa1b50fbd12.zip"],  # 2022-06-09
+    sha256 = "1726508efc93a50854c92e3f7ac66eb28f0e57652e413f11d7c1e28f97d997ba",
+    strip_prefix = "re2-03da4fc0857c285e3a26782f6bc8931c4c950df4",
+    urls = ["https://github.com/google/re2/archive/03da4fc0857c285e3a26782f6bc8931c4c950df4.zip"],  # 2023-06-01
 )
 
 # Google benchmark.

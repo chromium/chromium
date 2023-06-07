@@ -68,13 +68,17 @@ cc_library(
 
 cc_test(
     name = "hash_test",
-    srcs = ["hash_test.cc"],
+    srcs = [
+        "hash_test.cc",
+        "internal/hash_test.h",
+    ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":hash",
         ":hash_testing",
         ":spy_hash_state",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/container:btree",
         "//absl/container:flat_hash_map",
@@ -84,6 +88,27 @@ cc_test(
         "//absl/meta:type_traits",
         "//absl/numeric:int128",
         "//absl/strings:cord_test_helpers",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "hash_instantiated_test",
+    srcs = [
+        "hash_instantiated_test.cc",
+        "internal/hash_test.h",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":hash",
+        ":hash_testing",
+        "//absl/base:config",
+        "//absl/container:btree",
+        "//absl/container:flat_hash_map",
+        "//absl/container:flat_hash_set",
+        "//absl/container:node_hash_map",
+        "//absl/container:node_hash_set",
         "@com_google_googletest//:gtest_main",
     ],
 )

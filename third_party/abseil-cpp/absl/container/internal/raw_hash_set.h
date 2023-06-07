@@ -376,12 +376,12 @@ class NonIterableBitMask {
     return static_cast<uint32_t>((bit_width(mask_) - 1) >> Shift);
   }
 
-  // Return the number of trailing zero *abstract* bits.
+  // Returns the number of trailing zero *abstract* bits.
   uint32_t TrailingZeros() const {
     return container_internal::TrailingZeros(mask_) >> Shift;
   }
 
-  // Return the number of leading zero *abstract* bits.
+  // Returns the number of leading zero *abstract* bits.
   uint32_t LeadingZeros() const {
     constexpr int total_significant_bits = SignificantBits << Shift;
     constexpr int extra_bits = sizeof(T) * 8 - total_significant_bits;
@@ -961,7 +961,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
       compressed_tuple_{0u, HashtablezInfoHandle{}};
 };
 
-// Returns he number of "cloned control bytes".
+// Returns the number of "cloned control bytes".
 //
 // This is the number of control bytes that are present both at the beginning
 // of the control byte array and at the end, such that we can create a
@@ -1361,7 +1361,7 @@ ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c, Alloc alloc) {
 struct PolicyFunctions {
   size_t slot_size;
 
-  // Return the hash of the pointed-to slot.
+  // Returns the hash of the pointed-to slot.
   size_t (*hash_slot)(void* set, void* slot);
 
   // Transfer the contents of src_slot to dst_slot.
@@ -1644,9 +1644,9 @@ class raw_hash_set {
   // Note: can't use `= default` due to non-default noexcept (causes
   // problems for some compilers). NOLINTNEXTLINE
   raw_hash_set() noexcept(
-      std::is_nothrow_default_constructible<hasher>::value&&
-          std::is_nothrow_default_constructible<key_equal>::value&&
-              std::is_nothrow_default_constructible<allocator_type>::value) {}
+      std::is_nothrow_default_constructible<hasher>::value &&
+      std::is_nothrow_default_constructible<key_equal>::value &&
+      std::is_nothrow_default_constructible<allocator_type>::value) {}
 
   ABSL_ATTRIBUTE_NOINLINE explicit raw_hash_set(
       size_t bucket_count, const hasher& hash = hasher(),
@@ -1772,9 +1772,9 @@ class raw_hash_set {
   }
 
   ABSL_ATTRIBUTE_NOINLINE raw_hash_set(raw_hash_set&& that) noexcept(
-      std::is_nothrow_copy_constructible<hasher>::value&&
-          std::is_nothrow_copy_constructible<key_equal>::value&&
-              std::is_nothrow_copy_constructible<allocator_type>::value)
+      std::is_nothrow_copy_constructible<hasher>::value &&
+      std::is_nothrow_copy_constructible<key_equal>::value &&
+      std::is_nothrow_copy_constructible<allocator_type>::value)
       :  // Hash, equality and allocator are copied instead of moved because
          // `that` must be left valid. If Hash is std::function<Key>, moving it
          // would create a nullptr functor that cannot be called.
@@ -1803,9 +1803,9 @@ class raw_hash_set {
   }
 
   raw_hash_set& operator=(raw_hash_set&& that) noexcept(
-      absl::allocator_traits<allocator_type>::is_always_equal::value&&
-          std::is_nothrow_move_assignable<hasher>::value&&
-              std::is_nothrow_move_assignable<key_equal>::value) {
+      absl::allocator_traits<allocator_type>::is_always_equal::value &&
+      std::is_nothrow_move_assignable<hasher>::value &&
+      std::is_nothrow_move_assignable<key_equal>::value) {
     // TODO(sbenza): We should only use the operations from the noexcept clause
     // to make sure we actually adhere to that contract.
     // NOLINTNEXTLINE: not returning *this for performance.

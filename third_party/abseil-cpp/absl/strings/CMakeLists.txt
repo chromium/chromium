@@ -548,6 +548,20 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+absl_cc_test(
+  NAME
+    char_formatting_test
+  SRCS
+    "char_formatting_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::base
+    absl::str_format
+    absl::strings
+    GTest::gmock_main
+)
+
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME

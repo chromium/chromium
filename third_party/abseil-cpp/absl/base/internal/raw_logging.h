@@ -129,7 +129,7 @@ void RawLog(absl::LogSeverity severity, const char* file, int line,
             const char* format, ...) ABSL_PRINTF_ATTRIBUTE(4, 5);
 
 // Writes the provided buffer directly to stderr, in a signal-safe, low-level
-// manner.
+// manner.  Preserves errno.
 void AsyncSignalSafeWriteToStderr(const char* s, size_t len);
 
 // compile-time function to get the "base" filename, that is, the part of

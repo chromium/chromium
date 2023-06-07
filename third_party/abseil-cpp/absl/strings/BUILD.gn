@@ -568,3 +568,11 @@ absl_test("cord_rep_btree_navigator_test") {
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
   ]
 }
+
+absl_test("char_formatting_test") {
+  sources = [ "char_formatting_test.cc" ]
+  deps = [
+    ":str_format",
+    ":strings",
+  ]
+}

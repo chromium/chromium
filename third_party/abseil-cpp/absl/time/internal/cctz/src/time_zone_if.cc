@@ -26,6 +26,8 @@ namespace cctz {
 std::unique_ptr<TimeZoneIf> TimeZoneIf::Load(const std::string& name) {
   // Support "libc:localtime" and "libc:*" to access the legacy
   // localtime and UTC support respectively from the C library.
+  // NOTE: The "libc:*" zones are internal, test-only interfaces, and
+  // are subject to change/removal without notice. Do not use them.
   if (name.compare(0, 5, "libc:") == 0) {
     return std::unique_ptr<TimeZoneIf>(new TimeZoneLibC(name.substr(5)));
   }

@@ -26,6 +26,7 @@
 #include "absl/base/config.h"
 #include "absl/base/log_severity.h"
 #include "absl/base/macros.h"
+#include "absl/numeric/int128.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/numbers.h"
@@ -123,6 +124,32 @@ bool AbslParseFlag(absl::string_view text, long long* dst, std::string*) {
 bool AbslParseFlag(absl::string_view text, unsigned long long* dst,
                    std::string*) {
   return ParseFlagImpl(text, *dst);
+}
+
+bool AbslParseFlag(absl::string_view text, absl::int128* dst, std::string*) {
+  text = absl::StripAsciiWhitespace(text);
+
+  // check hex
+  int base = NumericBase(text);
+  if (!absl::numbers_internal::safe_strto128_base(text, dst, base)) {
+    return false;
+  }
+
+  return base == 16 ? absl::SimpleHexAtoi(text, dst)
+                    : absl::SimpleAtoi(text, dst);
+}
+
+bool AbslParseFlag(absl::string_view text, absl::uint128* dst, std::string*) {
+  text = absl::StripAsciiWhitespace(text);
+
+  // check hex
+  int base = NumericBase(text);
+  if (!absl::numbers_internal::safe_strtou128_base(text, dst, base)) {
+    return false;
+  }
+
+  return base == 16 ? absl::SimpleHexAtoi(text, dst)
+                    : absl::SimpleAtoi(text, dst);
 }
 
 // --------------------------------------------------------------------

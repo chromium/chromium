@@ -1319,3 +1319,15 @@ cc_binary(
         "//absl/types:optional",
     ],
 )
+
+cc_test(
+    name = "char_formatting_test",
+    srcs = [
+        "char_formatting_test.cc",
+    ],
+    deps = [
+        ":str_format",
+        ":strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

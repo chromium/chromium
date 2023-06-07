@@ -236,10 +236,6 @@ static void InstallOneFailureHandler(FailureSignalData* data,
 
 #endif
 
-static void WriteToStderr(const char* data) {
-  absl::raw_log_internal::AsyncSignalSafeWriteToStderr(data, strlen(data));
-}
-
 static void WriteSignalMessage(int signo, int cpu,
                                void (*writerfn)(const char*)) {
   char buf[96];
@@ -380,7 +376,11 @@ static void AbslFailureSignalHandler(int signo, siginfo_t*, void* ucontext) {
 #endif
 
   // First write to stderr.
-  WriteFailureInfo(signo, ucontext, my_cpu, WriteToStderr);
+  WriteFailureInfo(
+      signo, ucontext, my_cpu, +[](const char* data) {
+        absl::raw_log_internal::AsyncSignalSafeWriteToStderr(data,
+                                                             strlen(data));
+      });
 
   // Riskier code (because it is less likely to be async-signal-safe)
   // goes after this point.

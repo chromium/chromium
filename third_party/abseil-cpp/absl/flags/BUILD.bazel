@@ -99,6 +99,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:log_severity",
+        "//absl/numeric:int128",
         "//absl/strings",
         "//absl/strings:str_format",
         "//absl/types:optional",
