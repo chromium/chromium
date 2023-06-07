@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -349,7 +350,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<MockCastMediaSinkServiceImpl>
       mock_cast_media_sink_service_impl_;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
-  std::vector<MediaSinksObserver*> media_sinks_observers_;
+  std::vector<dangling_raw_ptr<MediaSinksObserver>> media_sinks_observers_;
   mojom::RouteRequestResultCode result_code_ =
       mojom::RouteRequestResultCode::OK;
   MediaSinkInternal cast_sink_1_;

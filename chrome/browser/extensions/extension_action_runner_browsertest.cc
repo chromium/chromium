@@ -119,7 +119,7 @@ class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
 
  private:
   std::vector<TestExtensionDir> test_extension_dirs_;
-  std::vector<const Extension*> extensions_;
+  std::vector<dangling_raw_ptr<const Extension>> extensions_;
 };
 
 void ExtensionActionRunnerBrowserTest::TearDownOnMainThread() {

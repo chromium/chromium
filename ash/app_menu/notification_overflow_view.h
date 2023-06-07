@@ -56,7 +56,7 @@ class APP_MENU_EXPORT NotificationOverflowView : public views::View {
   raw_ptr<views::MenuSeparator, ExperimentalAsh> separator_;
 
   // The list of overflow icons. Listed in right to left ordering.
-  std::vector<NotificationOverflowImageView*> image_views_;
+  std::vector<dangling_raw_ptr<NotificationOverflowImageView>> image_views_;
 
   // The overflow icon shown when there are more than |kMaxOverflowIcons|
   // notifications.

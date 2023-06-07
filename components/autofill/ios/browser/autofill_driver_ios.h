@@ -61,7 +61,7 @@ class AutofillDriverIOS : public AutofillDriver,
       override;
   void HandleParsedForms(const std::vector<FormData>& forms) override;
   void SendAutofillTypePredictionsToRenderer(
-      const std::vector<FormStructure*>& forms) override;
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms) override;
   void RendererShouldClearFilledSection() override;
   void RendererShouldClearPreviewedForm() override;
   void RendererShouldAcceptDataListSuggestion(

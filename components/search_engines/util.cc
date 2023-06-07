@@ -400,7 +400,7 @@ void ApplyActionsFromCurrentData(
   DCHECK(template_urls);
 
   // Remove items.
-  for (const auto* removed_engine : actions.removed_engines) {
+  for (const TemplateURL* removed_engine : actions.removed_engines) {
     auto j = FindTemplateURL(template_urls, removed_engine);
     DCHECK(j != template_urls->end());
     DCHECK(!default_search_provider ||

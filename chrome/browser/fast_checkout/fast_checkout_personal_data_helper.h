@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_PERSONAL_DATA_HELPER_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_PERSONAL_DATA_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -21,8 +22,8 @@ class FastCheckoutPersonalDataHelper {
       const FastCheckoutPersonalDataHelper&) = delete;
 
   // Returns profiles to suggest.
-  virtual std::vector<autofill::AutofillProfile*> GetProfilesToSuggest()
-      const = 0;
+  virtual std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
+  GetProfilesToSuggest() const = 0;
 
   // Returns credit cards to suggest that have a number.
   virtual std::vector<autofill::CreditCard*> GetCreditCardsToSuggest()
@@ -32,8 +33,8 @@ class FastCheckoutPersonalDataHelper {
   virtual std::vector<autofill::CreditCard*> GetValidCreditCards() const = 0;
 
   // Returns profiles with name, address, country, email and phone number.
-  virtual std::vector<autofill::AutofillProfile*> GetValidAddressProfiles()
-      const = 0;
+  virtual std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
+  GetValidAddressProfiles() const = 0;
 
   // Returns the current profile's `PersonalDataManager` instance.
   virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;

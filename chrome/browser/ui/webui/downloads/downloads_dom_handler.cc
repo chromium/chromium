@@ -361,7 +361,7 @@ void DownloadsDOMHandler::ClearAll() {
 void DownloadsDOMHandler::RemoveDownloads(const DownloadVector& to_remove) {
   IdSet ids;
 
-  for (auto* download : to_remove) {
+  for (download::DownloadItem* download : to_remove) {
     if (download->IsDangerous() || download->IsInsecure()) {
       // Don't allow users to revive dangerous downloads; just nuke 'em.
       download->Remove();

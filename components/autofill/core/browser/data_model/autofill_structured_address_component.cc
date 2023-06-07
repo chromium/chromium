@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -224,7 +225,7 @@ void AddressComponent::GetSupportedTypes(
       << storage_type_;
   supported_types->insert(storage_type_);
   supported_types->insert_all(GetAdditionalSupportedFieldTypes());
-  for (auto* subcomponent : subcomponents_) {
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     subcomponent->GetSupportedTypes(supported_types);
   }
 }
@@ -253,7 +254,7 @@ std::u16string AddressComponent::GetBestFormatString() const {
   // Otherwise, the canonical format string is the concatenation of all
   // subcomponents by their natural order.
   std::vector<std::string> format_pieces;
-  for (const auto* subcomponent : subcomponents_) {
+  for (const autofill::AddressComponent* subcomponent : subcomponents_) {
     std::string format_piece = GetPlaceholderToken(
         AutofillType(subcomponent->GetStorageType()).ToString());
     format_pieces.emplace_back(std::move(format_piece));
@@ -264,7 +265,7 @@ std::u16string AddressComponent::GetBestFormatString() const {
 std::vector<ServerFieldType> AddressComponent::GetSubcomponentTypes() const {
   std::vector<ServerFieldType> subcomponent_types;
   subcomponent_types.reserve(subcomponents_.size());
-  for (const auto* subcomponent : subcomponents_) {
+  for (const autofill::AddressComponent* subcomponent : subcomponents_) {
     subcomponent_types.emplace_back(subcomponent->GetStorageType());
   }
   return subcomponent_types;
@@ -307,8 +308,9 @@ void AddressComponent::UnsetAddressComponentAndItsSubcomponents() {
 }
 
 void AddressComponent::UnsetSubcomponents() {
-  for (auto* component : subcomponents_)
+  for (autofill::AddressComponent* component : subcomponents_) {
     component->UnsetAddressComponentAndItsSubcomponents();
+  }
 }
 
 void AddressComponent::FillTreeGaps() {
@@ -317,7 +319,9 @@ void AddressComponent::FillTreeGaps() {
   }
 
   bool has_empty_child = base::ranges::any_of(
-      Subcomponents(), [](const auto* c) { return c->GetValue().empty(); });
+      Subcomponents(), [](const autofill::AddressComponent* c) {
+        return c->GetValue().empty();
+      });
 
   // If the current node is not empty and at least one child is empty, we can
   // try filling the empty children by parsing the value on the current node.
@@ -325,7 +329,7 @@ void AddressComponent::FillTreeGaps() {
     TryParseValueAndAssignSubcomponentsRespectingSetValues();
   }
 
-  for (auto* component : subcomponents_) {
+  for (autofill::AddressComponent* component : subcomponents_) {
     component->FillTreeGaps();
   }
 
@@ -346,7 +350,7 @@ const AddressComponent* AddressComponent::GetNodeForType(
     return this;
   }
   // Check if any of the descendants of the node support `field_type`
-  for (const auto* subcomponent : subcomponents_) {
+  for (const autofill::AddressComponent* subcomponent : subcomponents_) {
     if (const AddressComponent* matched_subcomponent =
             subcomponent->GetNodeForType(field_type);
         matched_subcomponent) {
@@ -415,8 +419,9 @@ AddressComponent::GetParseRegularExpressionsByRelevance() const {
 void AddressComponent::ParseValueAndAssignSubcomponents() {
   // Set the values of all subcomponents to the empty string and set the
   // verification status to kParsed.
-  for (auto* subcomponent : subcomponents_)
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     subcomponent->SetValue(std::u16string(), VerificationStatus::kParsed);
+  }
 
   // First attempt, try to parse by method.
   if (ParseValueAndAssignSubcomponentsByMethod())
@@ -465,7 +470,7 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsRespectingSetValues(
   }
 
   // Make sure that parsing matches non-empty values.
-  for (auto* subcomponent : subcomponents_) {
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     if (!subcomponent->GetValue().empty()) {
       auto it = result_map->find(subcomponent->GetStorageTypeName());
       if (it == result_map->end() ||
@@ -478,7 +483,7 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsRespectingSetValues(
   // Parsing was successful and results from the result map can be written
   // to the structure.
 
-  for (auto* subcomponent : subcomponents_) {
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     auto it = result_map->find(subcomponent->GetStorageTypeName());
     if (subcomponent->GetValue().empty() && it != result_map->end()) {
       const std::u16string parsed_value = base::UTF8ToUTF16(it->second);
@@ -498,9 +503,10 @@ bool AddressComponent::IsValueCompatibleWithDescendants(
     return AreStringTokenCompatible(GetValue(), value);
   }
 
-  return base::ranges::all_of(Subcomponents(), [value](const auto* c) {
-    return c->IsValueCompatibleWithDescendants(value);
-  });
+  return base::ranges::all_of(
+      Subcomponents(), [value](const autofill::AddressComponent* c) {
+        return c->IsValueCompatibleWithDescendants(value);
+      });
 }
 
 bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
@@ -566,9 +572,10 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
 }
 
 bool AddressComponent::AllDescendantsAreEmpty() const {
-  return base::ranges::all_of(Subcomponents(), [](const auto* c) {
-    return c->GetValue().empty() && c->AllDescendantsAreEmpty();
-  });
+  return base::ranges::all_of(
+      Subcomponents(), [](const autofill::AddressComponent* c) {
+        return c->GetValue().empty() && c->AllDescendantsAreEmpty();
+      });
 }
 
 bool AddressComponent::IsValueCompatibleWithAncestors(
@@ -588,9 +595,10 @@ bool AddressComponent::IsStructureValid() const {
   // overlapping portion of the unstructured string, but it guarantees that all
   // information in the components is contained in the unstructured
   // representation.
-  return base::ranges::all_of(Subcomponents(), [this](const auto* c) {
-    return AreStringTokenCompatible(c->GetValue(), GetValue());
-  });
+  return base::ranges::all_of(
+      Subcomponents(), [this](const autofill::AddressComponent* c) {
+        return AreStringTokenCompatible(c->GetValue(), GetValue());
+      });
 }
 
 bool AddressComponent::WipeInvalidStructure() {
@@ -752,8 +760,9 @@ void AddressComponent::RecursivelyCompleteTree() {
     ParseValueAndAssignSubcomponents();
 
   // First call completion on all subcomponents.
-  for (auto* subcomponent : subcomponents_)
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     subcomponent->RecursivelyCompleteTree();
+  }
 
   // Finally format the value from the subcomponents if it is not already
   // assigned.
@@ -765,7 +774,7 @@ int AddressComponent::
     MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() const {
   int result = 0;
 
-  for (auto* subcomponent : subcomponents_) {
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     result = std::max(
         result,
         subcomponent
@@ -801,12 +810,13 @@ void AddressComponent::RecursivelyUnsetParsedAndFormattedValues() {
        GetVerificationStatus() == VerificationStatus::kParsed))
     UnsetValue();
 
-  for (auto* component : subcomponents_)
+  for (autofill::AddressComponent* component : subcomponents_) {
     component->RecursivelyUnsetParsedAndFormattedValues();
+  }
 }
 
 void AddressComponent::RecursivelyUnsetSubcomponents() {
-  for (auto* subcomponent : subcomponents_) {
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     subcomponent->UnsetValue();
     subcomponent->RecursivelyUnsetSubcomponents();
   }
@@ -1208,7 +1218,7 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // this component or the other depending on which substructure is better in
   // terms of the number of validated tokens.
 
-  const std::vector<AddressComponent*> other_subcomponents =
+  const std::vector<dangling_raw_ptr<AddressComponent>> other_subcomponents =
       newer_component.Subcomponents();
   CHECK(subcomponents_.size() == other_subcomponents.size());
   if (HasNewerValuePrecedenceInMerging(newer_component)) {
@@ -1300,7 +1310,7 @@ void AddressComponent::ConsumeAdditionalToken(
   }
 
   // Try the first free subcomponent.
-  for (auto* subcomponent : subcomponents_) {
+  for (autofill::AddressComponent* subcomponent : subcomponents_) {
     if (subcomponent->GetValue().empty()) {
       subcomponent->SetValue(token_value, VerificationStatus::kParsed);
       return;
@@ -1327,7 +1337,7 @@ bool AddressComponent::MergeSubsetComponent(
   std::vector<int> unmerged_indices;
   unmerged_indices.reserve(subcomponents_.size());
 
-  const std::vector<AddressComponent*>& subset_subcomponents =
+  const std::vector<dangling_raw_ptr<AddressComponent>>& subset_subcomponents =
       subset_component.Subcomponents();
 
   unmerged_indices.reserve(subcomponents_.size());

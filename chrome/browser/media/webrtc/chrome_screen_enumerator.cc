@@ -28,8 +28,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
-base::LazyInstance<std::vector<aura::Window*>>::DestructorAtExit
-    root_windows_for_testing_ = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<std::vector<dangling_raw_ptr<aura::Window>>>::
+    DestructorAtExit root_windows_for_testing_ = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
@@ -125,7 +125,7 @@ ChromeScreenEnumerator::~ChromeScreenEnumerator() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeScreenEnumerator::SetRootWindowsForTesting(
-    std::vector<aura::Window*> root_windows) {
+    std::vector<dangling_raw_ptr<aura::Window>> root_windows) {
   root_windows_for_testing_.Get() = std::move(root_windows);
 }
 

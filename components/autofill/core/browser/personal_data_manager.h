@@ -334,9 +334,9 @@ class PersonalDataManager : public KeyedService,
   // using `GetProfilesFromSource()`, profiles from a single source are be
   // retrieved.
   // The profiles are returned in the specified `order`.
-  virtual std::vector<AutofillProfile*> GetProfiles(
+  virtual std::vector<dangling_raw_ptr<AutofillProfile>> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
-  virtual std::vector<AutofillProfile*> GetProfilesFromSource(
+  virtual std::vector<dangling_raw_ptr<AutofillProfile>> GetProfilesFromSource(
       AutofillProfile::Source profile_source,
       ProfileOrder order = ProfileOrder::kNone) const;
   // Returns just SERVER_PROFILES.
@@ -346,7 +346,8 @@ class PersonalDataManager : public KeyedService,
   // Returns just LOCAL_CARD cards.
   virtual std::vector<CreditCard*> GetLocalCreditCards() const;
   // Returns just server cards.
-  virtual std::vector<CreditCard*> GetServerCreditCards() const;
+  virtual std::vector<dangling_raw_ptr<CreditCard>> GetServerCreditCards()
+      const;
   // Returns all credit cards, server and local.
   virtual std::vector<CreditCard*> GetCreditCards() const;
 
@@ -384,11 +385,11 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the profiles to suggest to the user for filling, ordered by
   // frecency.
-  std::vector<AutofillProfile*> GetProfilesToSuggest() const;
+  std::vector<dangling_raw_ptr<AutofillProfile>> GetProfilesToSuggest() const;
 
   // Returns all `GetProfiles()` in the order that the should be shown in the
   // settings.
-  std::vector<AutofillProfile*> GetProfilesForSettings() const;
+  std::vector<dangling_raw_ptr<AutofillProfile>> GetProfilesForSettings() const;
 
   // Returns Suggestions corresponding to the focused field's |type| and
   // |field_contents|, i.e. what the user has typed. |field_is_autofilled| is

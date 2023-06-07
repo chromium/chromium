@@ -135,7 +135,7 @@ class ASH_EXPORT NotificationIconsController
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  std::vector<NotificationIconTrayItemView*> tray_items() {
+  std::vector<dangling_raw_ptr<NotificationIconTrayItemView>> tray_items() {
     return tray_items_;
   }
 
@@ -161,7 +161,7 @@ class ASH_EXPORT NotificationIconsController
 
   // Contains notification icon tray items that are added to tray container. All
   // items are owned by views hierarchy.
-  std::vector<NotificationIconTrayItemView*> tray_items_;
+  std::vector<dangling_raw_ptr<NotificationIconTrayItemView>> tray_items_;
 
   // Points to the first item that is available to use among the notification
   // icons tray item. All the items in previous index are used and visible.

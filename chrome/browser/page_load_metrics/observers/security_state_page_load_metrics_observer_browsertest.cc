@@ -133,7 +133,7 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
                           int64_t expected_value) {
     // Find last entry matching |url|.
     const ukm::mojom::UkmEntry* last = nullptr;
-    for (auto* entry :
+    for (const ukm::mojom::UkmEntry* entry :
          test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)) {
       auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (source && source->url() == url)

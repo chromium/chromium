@@ -583,7 +583,7 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
     DCHECK_GE(children().size(), edit_model_->result().size());
     popup_height = std::accumulate(
         children().cbegin(), children().cbegin() + edit_model_->result().size(),
-        0, [](int height, const auto* v) {
+        0, [](int height, const views::View* v) {
           return height + v->GetPreferredSize().height();
         });
   }

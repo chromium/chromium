@@ -18,8 +18,9 @@ OcclusionTrackerPauser::~OcclusionTrackerPauser() {
 }
 
 void OcclusionTrackerPauser::PauseUntilAnimationsEnd(base::TimeDelta timeout) {
-  for (auto* root : Shell::GetAllRootWindows())
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     Pause(root->GetHost()->compositor());
+  }
 
   if (!scoped_pause_) {
     scoped_pause_ =

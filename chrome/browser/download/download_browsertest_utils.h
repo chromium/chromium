@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -191,8 +192,9 @@ class DownloadTestBase : public InProcessBrowserTest {
                    const std::string& partial_indication,
                    const std::string& total_indication);
 
-  void GetDownloads(Browser* browser,
-                    std::vector<download::DownloadItem*>* downloads) const;
+  void GetDownloads(
+      Browser* browser,
+      std::vector<dangling_raw_ptr<download::DownloadItem>>* downloads) const;
 
   static void ExpectWindowCountAfterDownload(size_t expected);
 

@@ -68,7 +68,7 @@ jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
         data_url->prepopulate_id == TemplateURLPrepopulateData::google.id) {
       auto existing_urls = template_url_service_->GetTemplateURLs();
 
-      for (auto* existing_url : existing_urls) {
+      for (TemplateURL* existing_url : existing_urls) {
         if (existing_url->prepopulate_id() ==
             TemplateURLPrepopulateData::google.id) {
           matching_url = existing_url;

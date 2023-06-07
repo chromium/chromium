@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -119,7 +120,7 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
   std::unique_ptr<Browser> browser_;
 
   // The original web contentses in order.
-  std::vector<content::WebContents*> web_contentses_;
+  std::vector<dangling_raw_ptr<content::WebContents>> web_contentses_;
 };
 
 void TabGroupsApiUnitTest::SetUp() {

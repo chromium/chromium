@@ -371,7 +371,7 @@ void DisplayChangeObserver::UpdateInternalDisplay(
     const DisplayConfigurator::DisplayStateList& display_states) {
   bool force_first_display_internal = ForceFirstDisplayInternal();
 
-  for (auto* state : display_states) {
+  for (display::DisplaySnapshot* state : display_states) {
     if (state->type() == DISPLAY_CONNECTION_TYPE_INTERNAL ||
         (force_first_display_internal &&
          (!HasInternalDisplay() || IsInternalDisplayId(state->display_id())))) {

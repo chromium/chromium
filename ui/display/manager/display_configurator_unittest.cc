@@ -303,7 +303,7 @@ class DisplayConfiguratorTest : public testing::Test {
   // timeout if one was scheduled.
   void UpdateOutputs(size_t num_outputs, bool send_events) {
     ASSERT_LE(num_outputs, std::size(outputs_));
-    std::vector<DisplaySnapshot*> outputs;
+    std::vector<dangling_raw_ptr<DisplaySnapshot>> outputs;
     for (size_t i = 0; i < num_outputs; ++i)
       outputs.push_back(outputs_[i].get());
     native_display_delegate_->set_outputs(outputs);

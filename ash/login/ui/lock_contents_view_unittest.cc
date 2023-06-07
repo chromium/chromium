@@ -2821,7 +2821,7 @@ TEST_F(LockContentsViewUnitTest, LoginNotReactingOnEventsWithOobeDialogShown) {
 
   LockContentsViewTestApi lock_contents(contents);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
-  const auto* const list_user_view = users_list.user_views()[0];
+  const auto* const list_user_view = users_list.user_views()[0].get();
   LoginBigUserView* auth_view = lock_contents.primary_big_view();
 
   AccountId auth_view_user =
@@ -3233,7 +3233,7 @@ TEST_F(LockContentsViewUnitTest,
 
   LockContentsViewTestApi lock_contents(contents);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
-  const auto* const list_user_view = users_list.user_views()[0];
+  const auto* const list_user_view = users_list.user_views()[0].get();
   LoginBigUserView* auth_view = lock_contents.primary_big_view();
 
   AccountId auth_view_user =

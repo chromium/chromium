@@ -96,7 +96,7 @@ class ASH_EXPORT TabSlider : public views::View {
 
   // Owned by view hierarchy.
   raw_ptr<SelectorView, ExperimentalAsh> selector_view_;
-  std::vector<TabSliderButton*> buttons_;
+  std::vector<dangling_raw_ptr<TabSliderButton>> buttons_;
 
   // Parameters for a custom layout. Set by either individual buttons, or
   // through `SetCustomLayout()`.

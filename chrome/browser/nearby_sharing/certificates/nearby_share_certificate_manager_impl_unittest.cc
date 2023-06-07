@@ -92,7 +92,7 @@ class NearbyShareCertificateManagerImplTest
         task_environment_.GetMockClock());
     cert_manager_->AddObserver(this);
 
-    cert_store_ = cert_store_factory_.instances().back();
+    cert_store_ = cert_store_factory_.instances().back().get();
 
     private_cert_exp_scheduler_ =
         scheduler_factory_.pref_name_to_expiration_instance()

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
@@ -119,7 +120,8 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   }
 
   bool GetAllForeignSessions(
-      std::vector<const sync_sessions::SyncedSession*>* sessions) {
+      std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>*
+          sessions) {
     foreign_sessions_ = synced_session_tracker_.LookupAllForeignSessions(
         sync_sessions::SyncedSessionTracker::SessionLookup::PRESENTABLE);
     *sessions = foreign_sessions_;
@@ -164,8 +166,8 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   // `CrosapiSessionSyncNotifier` to the `FakeSyncedSessionClient` was received
   // exactly as sent, even if the sent message was empty.
   void ValidateSentSessions() {
-    const std::vector<const sync_sessions::SyncedSession*>& sent_sessions =
-        synced_session_tracker_.LookupAllForeignSessions(
+    const std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>&
+        sent_sessions = synced_session_tracker_.LookupAllForeignSessions(
             sync_sessions::SyncedSessionTracker::SessionLookup::PRESENTABLE);
     const std::vector<crosapi::mojom::SyncedSessionPtr>& received_sessions =
         fake_synced_session_client_ash_.LookupForeignSyncedPhoneSessions();
@@ -313,7 +315,8 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   base::RepeatingClosure delete_foreign_session_callback_;
   sync_sessions::OpenTabsUIDelegateImpl open_tabs_ui_delegate_;
   testing::NiceMock<MockSessionSyncService> mock_session_sync_service_;
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>
+      foreign_sessions_;
   base::RepeatingClosure foreign_sessions_changed_callback_;
 };
 

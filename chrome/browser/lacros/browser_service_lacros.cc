@@ -151,7 +151,7 @@ Browser* FindBrowserWithTabId(const std::string& tab_id_str) {
   if (tab_id == extensions::api::tabs::TAB_ID_NONE)
     return nullptr;
 
-  for (auto* target_browser : *BrowserList::GetInstance()) {
+  for (Browser* target_browser : *BrowserList::GetInstance()) {
     TabStripModel* target_tab_strip = target_browser->tab_strip_model();
     for (int i = 0; i < target_tab_strip->count(); ++i) {
       content::WebContents* target_contents =

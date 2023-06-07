@@ -31,7 +31,8 @@ class FakeNearbyShareContactDownloader : public NearbyShareContactDownloader {
 
     // Returns all FakeNearbyShareContactDownloader instances created by
     // CreateInstance().
-    std::vector<FakeNearbyShareContactDownloader*>& instances() {
+    std::vector<dangling_raw_ptr<FakeNearbyShareContactDownloader>>&
+    instances() {
       return instances_;
     }
 
@@ -50,7 +51,7 @@ class FakeNearbyShareContactDownloader : public NearbyShareContactDownloader {
         SuccessCallback success_callback,
         FailureCallback failure_callback) override;
 
-    std::vector<FakeNearbyShareContactDownloader*> instances_;
+    std::vector<dangling_raw_ptr<FakeNearbyShareContactDownloader>> instances_;
     base::TimeDelta latest_timeout_;
     raw_ptr<NearbyShareClientFactory, ExperimentalAsh> latest_client_factory_;
   };

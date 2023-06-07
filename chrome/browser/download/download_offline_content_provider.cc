@@ -409,10 +409,10 @@ void DownloadOfflineContentProvider::OnRenameDownloadCallbackDone(
 
 void DownloadOfflineContentProvider::OnManagerGoingDown(
     SimpleDownloadManagerCoordinator* manager) {
-  std::vector<DownloadItem*> all_items;
+  std::vector<dangling_raw_ptr<DownloadItem>> all_items;
   GetAllDownloads(&all_items);
 
-  for (auto* item : all_items) {
+  for (download::DownloadItem* item : all_items) {
     if (!ShouldShowDownloadItem(item))
       continue;
     NotifyItemRemoved(ContentId(name_space_, item->GetGuid()));
@@ -514,7 +514,7 @@ DownloadItem* DownloadOfflineContentProvider::GetDownload(
 }
 
 void DownloadOfflineContentProvider::GetAllDownloads(
-    std::vector<DownloadItem*>* all_items) {
+    std::vector<dangling_raw_ptr<DownloadItem>>* all_items) {
   if (manager_)
     manager_->GetAllDownloads(all_items);
 }
@@ -543,11 +543,11 @@ void DownloadOfflineContentProvider::EnsureDownloadCoreServiceStarted() {
 
 void DownloadOfflineContentProvider::RunGetAllItemsCallback(
     OfflineContentProvider::MultipleItemCallback callback) {
-  std::vector<DownloadItem*> all_items;
+  std::vector<dangling_raw_ptr<DownloadItem>> all_items;
   GetAllDownloads(&all_items);
 
   std::vector<OfflineItem> items;
-  for (auto* item : all_items) {
+  for (download::DownloadItem* item : all_items) {
     if (!ShouldShowDownloadItem(item))
       continue;
     items.push_back(OfflineItemUtils::CreateOfflineItem(name_space_, item));

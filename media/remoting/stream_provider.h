@@ -48,7 +48,7 @@ class StreamProvider final : public Demuxer {
       const scoped_refptr<base::SequencedTaskRunner>& media_task_runner);
 
   // Demuxer implementation.
-  std::vector<DemuxerStream*> GetAllStreams() override;
+  std::vector<dangling_raw_ptr<DemuxerStream>> GetAllStreams() override;
   std::string GetDisplayName() const override;
   DemuxerType GetDemuxerType() const override;
   void Initialize(DemuxerHost* host, PipelineStatusCallback status_cb) override;

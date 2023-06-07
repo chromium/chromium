@@ -236,7 +236,7 @@
   sync_sessions::OpenTabsUIDelegate* openTabs =
       self.sessionSyncService->GetOpenTabsUIDelegate();
   DCHECK(openTabs);
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
   return openTabs->GetAllForeignSessions(&sessions);
 }
 

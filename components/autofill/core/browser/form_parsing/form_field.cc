@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -78,7 +79,8 @@ void FormField::ParseFormFields(
     PatternSource pattern_source,
     FieldCandidatesMap& field_candidates,
     LogManager* log_manager) {
-  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  std::vector<dangling_raw_ptr<AutofillField>> processed_fields =
+      RemoveCheckableFields(fields);
 
   // Email pass.
   ParseFormFieldsPass(EmailField::Parse, processed_fields, field_candidates,
@@ -201,7 +203,8 @@ void FormField::ParseSingleFieldForms(
     PatternSource pattern_source,
     FieldCandidatesMap& field_candidates,
     LogManager* log_manager) {
-  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  std::vector<dangling_raw_ptr<AutofillField>> processed_fields =
+      RemoveCheckableFields(fields);
 
   // Merchant promo code pass.
   ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
@@ -370,10 +373,10 @@ void FormField::AddClassification(const AutofillField* field,
 }
 
 // static
-std::vector<AutofillField*> FormField::RemoveCheckableFields(
+std::vector<dangling_raw_ptr<AutofillField>> FormField::RemoveCheckableFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
   // Set up a working copy of the fields to be processed.
-  std::vector<AutofillField*> processed_fields;
+  std::vector<dangling_raw_ptr<AutofillField>> processed_fields;
   for (const auto& field : fields) {
     // Ignore checkable fields as they interfere with parsers assuming context.
     // Eg., while parsing address, "Is PO box" checkbox after ADDRESS_LINE1
@@ -474,12 +477,13 @@ bool FormField::Match(const AutofillField* field,
 }
 
 // static
-void FormField::ParseFormFieldsPass(ParseFunction parse,
-                                    const std::vector<AutofillField*>& fields,
-                                    FieldCandidatesMap& field_candidates,
-                                    const LanguageCode& page_language,
-                                    PatternSource pattern_source,
-                                    LogManager* log_manager) {
+void FormField::ParseFormFieldsPass(
+    ParseFunction parse,
+    const std::vector<dangling_raw_ptr<AutofillField>>& fields,
+    FieldCandidatesMap& field_candidates,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    LogManager* log_manager) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {
     std::unique_ptr<FormField> form_field =
@@ -534,7 +538,7 @@ bool FormField::IsSingleFieldParseableType(ServerFieldType field_type) {
 
 // static
 void FormField::ParseUsingAutocompleteAttributes(
-    const std::vector<AutofillField*>& fields,
+    const std::vector<dangling_raw_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
   for (const AutofillField* field : fields) {
     HtmlFieldType html_type = FieldTypeFromAutocompleteAttributeValue(

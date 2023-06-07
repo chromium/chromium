@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
@@ -32,7 +33,8 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
 
     // Returns all FakeNearbyShareCertificateManager instances created by
     // CreateInstance().
-    std::vector<FakeNearbyShareCertificateManager*>& instances() {
+    std::vector<dangling_raw_ptr<FakeNearbyShareCertificateManager>>&
+    instances() {
       return instances_;
     }
 
@@ -48,7 +50,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
         NearbyShareClientFactory* client_factory,
         const base::Clock* clock) override;
 
-    std::vector<FakeNearbyShareCertificateManager*> instances_;
+    std::vector<dangling_raw_ptr<FakeNearbyShareCertificateManager>> instances_;
   };
 
   class GetDecryptedPublicCertificateCall {

@@ -38,7 +38,7 @@ namespace net {
 
 namespace {
 
-using ReportList = std::vector<const ReportingReport*>;
+using ReportList = std::vector<dangling_raw_ptr<const ReportingReport>>;
 using ReportingUploadHeaderType =
     ReportingDeliveryAgent::ReportingUploadHeaderType;
 

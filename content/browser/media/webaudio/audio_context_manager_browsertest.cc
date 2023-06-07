@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
     auto ukm_entries = test_ukm_recorder.GetEntriesByName(Entry::kEntryName);
 
     ASSERT_EQ(1u, ukm_entries.size());
-    auto* entry = ukm_entries[0];
+    auto* entry = ukm_entries[0].get();
 
     // The test doesn't check the URL because not the full Ukm stack is
     // running in //content.

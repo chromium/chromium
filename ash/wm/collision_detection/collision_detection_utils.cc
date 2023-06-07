@@ -72,7 +72,7 @@ std::vector<gfx::Rect> CollectCollisionRects(
     // Check SettingsBubbleContainer windows.
     auto* settings_bubble_container =
         root_window->GetChildById(kShellWindowId_SettingBubbleContainer);
-    for (auto* window : settings_bubble_container->children()) {
+    for (aura::Window* window : settings_bubble_container->children()) {
       if (!window->IsVisible() && !window->GetTargetBounds().IsEmpty())
         continue;
       if (ShouldIgnoreWindowForCollision(window, priority))
@@ -95,7 +95,7 @@ std::vector<gfx::Rect> CollectCollisionRects(
     // tray.
     auto* shelf_container =
         root_window->GetChildById(kShellWindowId_ShelfContainer);
-    for (auto* window : shelf_container->children()) {
+    for (aura::Window* window : shelf_container->children()) {
       if (window->IsVisible() && !window->GetTargetBounds().IsEmpty() &&
           window->GetName() ==
               AshMessagePopupCollection::kMessagePopupWidgetName &&
@@ -136,7 +136,7 @@ std::vector<gfx::Rect> CollectCollisionRects(
     // position triggers the PIP to re-check its bounds. crbug.com/954546.
     auto* accessibility_bubble_container =
         root_window->GetChildById(kShellWindowId_AccessibilityBubbleContainer);
-    for (auto* window : accessibility_bubble_container->children()) {
+    for (aura::Window* window : accessibility_bubble_container->children()) {
       if (!window->IsVisible() && !window->GetTargetBounds().IsEmpty())
         continue;
       if (ShouldIgnoreWindowForCollision(window, priority))

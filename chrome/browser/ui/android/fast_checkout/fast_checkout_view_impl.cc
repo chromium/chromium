@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/locale_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/android/fast_checkout/jni_headers/FastCheckoutBridge_jni.h"
 #include "chrome/browser/ui/android/fast_checkout/ui_view_android_utils.h"
@@ -53,7 +54,8 @@ void FastCheckoutViewImpl::OnDismiss(JNIEnv* env) {
 }
 
 void FastCheckoutViewImpl::Show(
-    const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+    const std::vector<dangling_raw_ptr<autofill::AutofillProfile>>&
+        autofill_profiles,
     const std::vector<autofill::CreditCard*>& credit_cards) {
   if (!RecreateJavaObjectIfNecessary()) {
     // It's possible that the constructor cannot access the bottom sheet clank

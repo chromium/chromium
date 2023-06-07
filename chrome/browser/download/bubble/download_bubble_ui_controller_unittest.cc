@@ -278,7 +278,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     EXPECT_CALL(item(index), GetDangerType())
         .WillRepeatedly(
             Return(DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
-    std::vector<download::DownloadItem*> items;
+    std::vector<dangling_raw_ptr<download::DownloadItem>> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }

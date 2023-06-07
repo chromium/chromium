@@ -126,7 +126,7 @@ void UiTest::VerifyOnlyElementsVisible(
     const std::set<UiElementName>& names) const {
   OnBeginFrame();
   SCOPED_TRACE(trace_context);
-  for (auto* element : scene_->GetAllElements()) {
+  for (vr::UiElement* element : scene_->GetAllElements()) {
     SCOPED_TRACE(element->DebugName());
     UiElementName name = element->name();
     UiElementName owner_name = element->owner_name_for_test();

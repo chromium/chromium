@@ -83,7 +83,8 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
       const int expected_value,
       base::StringPiece entry_name =
           ukm::builders::JavascriptFrameworkPageLoad::kEntryName) {
-    for (auto* entry : test_ukm_recorder_->GetEntriesByName(entry_name)) {
+    for (const ukm::mojom::UkmEntry* entry :
+         test_ukm_recorder_->GetEntriesByName(entry_name)) {
       auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (source && source->url() == url) {
         test_ukm_recorder_->EntryHasMetric(entry, metric_name);
@@ -99,7 +100,8 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
       base::StringPiece entry_name =
           ukm::builders::JavascriptFrameworkPageLoad::kEntryName) {
     int count = 0;
-    for (auto* entry : test_ukm_recorder_->GetEntriesByName(entry_name)) {
+    for (const ukm::mojom::UkmEntry* entry :
+         test_ukm_recorder_->GetEntriesByName(entry_name)) {
       auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (source && source->url() == url &&
           test_ukm_recorder_->EntryHasMetric(entry, metric_name)) {

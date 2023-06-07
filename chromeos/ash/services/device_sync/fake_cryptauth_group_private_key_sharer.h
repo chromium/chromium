@@ -79,7 +79,8 @@ class FakeCryptAuthGroupPrivateKeySharerFactory
 
   // Returns a vector of all FakeCryptAuthGroupPrivateKeySharer instances
   // created by CreateInstance().
-  const std::vector<FakeCryptAuthGroupPrivateKeySharer*>& instances() const {
+  const std::vector<dangling_raw_ptr<FakeCryptAuthGroupPrivateKeySharer>>&
+  instances() const {
     return instances_;
   }
 
@@ -94,7 +95,7 @@ class FakeCryptAuthGroupPrivateKeySharerFactory
       CryptAuthClientFactory* client_factory,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<FakeCryptAuthGroupPrivateKeySharer*> instances_;
+  std::vector<dangling_raw_ptr<FakeCryptAuthGroupPrivateKeySharer>> instances_;
   raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
       nullptr;
 };

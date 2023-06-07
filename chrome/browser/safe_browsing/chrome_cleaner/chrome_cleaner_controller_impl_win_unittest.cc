@@ -443,8 +443,8 @@ class ChromeCleanerControllerTest
   raw_ptr<ChromeCleanerControllerImpl> controller_;
   ChromeCleanerRunner::ProcessStatus cleaner_process_status_;
 
-  std::vector<Profile*> profiles_tagged_;
-  std::vector<Profile*> profiles_to_reset_if_tagged_;
+  std::vector<dangling_raw_ptr<Profile>> profiles_tagged_;
+  std::vector<dangling_raw_ptr<Profile>> profiles_to_reset_if_tagged_;
 
   bool reboot_flow_started_ = false;
 };

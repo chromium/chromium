@@ -969,7 +969,7 @@ TEST(JourneyLoggerTest,
   // Make sure the UKM was logged correctly.
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
     EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(
@@ -1020,7 +1020,7 @@ TEST(JourneyLoggerTest,
   // Make sure the UKM was logged correctly.
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
     EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
@@ -1061,7 +1061,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
   // Make sure the UKM was logged correctly.
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
     EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
@@ -1115,7 +1115,7 @@ TEST(JourneyLoggerTest,
   // Make sure the UKM was logged correctly.
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
     EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,

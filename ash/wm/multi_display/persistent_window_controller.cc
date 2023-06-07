@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/multi_display/persistent_window_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -67,7 +68,7 @@ void PersistentWindowController::OnWillProcessDisplayChanges() {
     return;
   }
 
-  for (auto* window : GetWindowList()) {
+  for (aura::Window* window : GetWindowList()) {
     WindowState* window_state = WindowState::Get(window);
     // This implies that we keep the first persistent info until they're valid
     // to restore, or until they're cleared by user-invoked bounds change.
@@ -112,7 +113,7 @@ void PersistentWindowController::OnDisplayMetricsChanged(
               is_landscape_orientation_map_.end()
           ? is_landscape_orientation_map_[display.id()]
           : false;
-  for (auto* window : GetWindowList()) {
+  for (aura::Window* window : GetWindowList()) {
     if (window->GetRootWindow() !=
         Shell::GetRootWindowForDisplayId(display.id())) {
       continue;
@@ -181,8 +182,8 @@ void PersistentWindowController::
   // their persistent window info. Go backwards so that if they do get added to
   // another root window's container, the stacking order will match the MRU
   // order (windows added first are stacked at the bottom).
-  std::vector<aura::Window*> mru_window_list = GetWindowList();
-  for (auto* window : base::Reversed(mru_window_list)) {
+  std::vector<dangling_raw_ptr<aura::Window>> mru_window_list = GetWindowList();
+  for (aura::Window* window : base::Reversed(mru_window_list)) {
     WindowState* window_state = WindowState::Get(window);
     if (!window_state->persistent_window_info_of_display_removal()) {
       continue;
@@ -237,7 +238,7 @@ void PersistentWindowController::
   }
 
   int window_restored_count = 0;
-  for (auto* window : GetWindowList()) {
+  for (aura::Window* window : GetWindowList()) {
     WindowState* window_state = WindowState::Get(window);
     if (!window_state->persistent_window_info_of_screen_rotation()) {
       continue;

@@ -385,7 +385,7 @@ class CONTENT_EXPORT SavePackage
   // Note that |frame_tree_node_id_to_contained_save_items_| does NOT own
   // SaveItems - they remain owned by waiting_item_queue_, in_progress_items_,
   // etc.
-  std::unordered_map<int, std::vector<SaveItem*>>
+  std::unordered_map<int, std::vector<dangling_raw_ptr<SaveItem>>>
       frame_tree_node_id_to_contained_save_items_;
 
   // Number of frames that we still need to get a response from.

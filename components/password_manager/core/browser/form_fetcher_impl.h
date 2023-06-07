@@ -47,16 +47,20 @@ class FormFetcherImpl : public FormFetcher,
   void Fetch() override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
-  std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
-  std::vector<const PasswordForm*> GetFederatedMatches() const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetInsecureCredentials()
+      const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetNonFederatedMatches()
+      const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetFederatedMatches()
+      const override;
   bool IsBlocklisted() const override;
   bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
                        const std::u16string& username) const override;
 
-  const std::vector<const PasswordForm*>& GetAllRelevantMatches()
+  const std::vector<dangling_raw_ptr<const PasswordForm>>&
+  GetAllRelevantMatches() const override;
+  const std::vector<dangling_raw_ptr<const PasswordForm>>& GetBestMatches()
       const override;
-  const std::vector<const PasswordForm*>& GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   std::unique_ptr<FormFetcher> Clone() override;
   absl::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
@@ -124,11 +128,11 @@ class FormFetcherImpl : public FormFetcher,
       http_migrators_;
 
   // Non-federated credentials of the same scheme as the observed form.
-  std::vector<const PasswordForm*> non_federated_same_scheme_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> non_federated_same_scheme_;
 
   // Set of nonblocklisted PasswordForms from the password store that best match
   // the form being managed by |this|.
-  std::vector<const PasswordForm*> best_matches_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches_;
 
   // Whether there were any blocklisted credentials obtained from the profile
   // and account password stores respectively.

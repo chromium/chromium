@@ -119,7 +119,7 @@ class ASH_EXPORT SystemModalContainerLayoutManager
   std::unique_ptr<WindowDimmer> window_dimmer_;
 
   // A stack of modal windows. Only the topmost can receive events.
-  std::vector<aura::Window*> modal_windows_;
+  std::vector<dangling_raw_ptr<aura::Window>> modal_windows_;
 
   // Windows contained in this set are centered. Windows are automatically
   // added to this based on IsBoundsCentered().

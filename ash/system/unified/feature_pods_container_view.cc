@@ -35,7 +35,7 @@ void FeaturePodsContainerView::SetExpandedAmount(double expanded_amount) {
   expanded_amount_ = expanded_amount;
 
   int visible_index = 0;
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     FeaturePodButton* button = static_cast<FeaturePodButton*>(view);
     // When collapsing from page 1, buttons below the second row fade out
     // while the rest move up into a single row for the collapsed state.
@@ -132,7 +132,7 @@ void FeaturePodsContainerView::UpdateChildVisibility() {
   changing_visibility_ = true;
 
   int visible_count = 0;
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     auto* child = static_cast<FeaturePodButton*>(view);
     bool visible = IsButtonVisible(child, visible_count);
     child->SetVisibleByContainer(visible);
@@ -159,7 +159,7 @@ bool FeaturePodsContainerView::IsButtonVisible(FeaturePodButton* button,
 }
 
 int FeaturePodsContainerView::GetVisibleCount() const {
-  return base::ranges::count_if(children(), [](const auto* v) {
+  return base::ranges::count_if(children(), [](const views::View* v) {
     return static_cast<const FeaturePodButton*>(v)->visible_preferred();
   });
 }

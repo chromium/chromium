@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "courgette/courgette.h"
 #include "courgette/image_utils.h"
 #include "courgette/instruction_utils.h"
@@ -90,8 +91,8 @@ class AssemblyProgram {
 
   // Label pointers for each abs32 and rel32 location, sorted by file offset.
   // These are used by Label adjustment during patch generation.
-  std::vector<Label*> abs32_label_annotations_;
-  std::vector<Label*> rel32_label_annotations_;
+  RAW_PTR_EXCLUSION std::vector<Label*> abs32_label_annotations_;
+  RAW_PTR_EXCLUSION std::vector<Label*> rel32_label_annotations_;
 };
 
 }  // namespace courgette

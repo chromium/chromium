@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 //
@@ -121,7 +122,7 @@ class InProcessBrowserTestMixinHost final {
   // simpler.
   friend class InProcessBrowserTestMixin;
 
-  std::vector<InProcessBrowserTestMixin*> mixins_;
+  std::vector<dangling_raw_ptr<InProcessBrowserTestMixin>> mixins_;
 };
 
 // An InProcessBrowserTest which supports mixins.

@@ -60,7 +60,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   };
 
   OverviewGrid(aura::Window* root_window,
-               const std::vector<aura::Window*>& window_list,
+               const std::vector<dangling_raw_ptr<aura::Window>>& window_list,
                OverviewSession* overview_session);
 
   OverviewGrid(const OverviewGrid&) = delete;

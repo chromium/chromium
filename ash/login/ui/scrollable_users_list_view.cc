@@ -18,6 +18,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -161,7 +162,7 @@ ScrollableUsersListView::TestApi::TestApi(ScrollableUsersListView* view)
 
 ScrollableUsersListView::TestApi::~TestApi() = default;
 
-const std::vector<LoginUserView*>&
+const std::vector<dangling_raw_ptr<LoginUserView>>&
 ScrollableUsersListView::TestApi::user_views() const {
   return view_->user_views_;
 }
@@ -227,7 +228,7 @@ ScrollableUsersListView::~ScrollableUsersListView() = default;
 
 LoginUserView* ScrollableUsersListView::GetUserView(
     const AccountId& account_id) {
-  for (auto* view : user_views_) {
+  for (ash::LoginUserView* view : user_views_) {
     if (view->current_user().basic_user_info.account_id == account_id) {
       return view;
     }

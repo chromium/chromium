@@ -905,7 +905,7 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
 TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   gfx::Size layer_bounds(1300, 1900);
 
-  std::vector<PictureLayerTiling*> used_tilings;
+  std::vector<dangling_raw_ptr<PictureLayerTiling>> used_tilings;
 
   float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
   EXPECT_LT(low_res_factor, 1.f);
@@ -4038,7 +4038,7 @@ TEST_F(NoLowResPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
 
 TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
   gfx::Size layer_bounds(1300, 1900);
-  std::vector<PictureLayerTiling*> used_tilings;
+  std::vector<dangling_raw_ptr<PictureLayerTiling>> used_tilings;
   SetupDefaultTrees(layer_bounds);
 
   float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;

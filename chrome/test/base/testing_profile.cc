@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -754,7 +755,8 @@ void TestingProfile::CreateProfilePolicyConnector() {
       BuildSchemaRegistryServiceForProfile(this, policy::Schema(), nullptr);
 
   if (!policy_service_) {
-    std::vector<policy::ConfigurationPolicyProvider*> providers;
+    std::vector<dangling_raw_ptr<policy::ConfigurationPolicyProvider>>
+        providers;
     std::unique_ptr<policy::PolicyServiceImpl> policy_service =
         std::make_unique<policy::PolicyServiceImpl>(std::move(providers));
     policy_service_ = std::move(policy_service);

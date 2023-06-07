@@ -168,7 +168,7 @@ class PasswordManager : public PasswordManagerInterface {
 
   void ProcessAutofillPredictions(
       PasswordManagerDriver* driver,
-      const std::vector<autofill::FormStructure*>& forms);
+      const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms);
 
   // Causes all |pending_login_managers_| to query the password store again.
   // Results in updating the fill information on the page.

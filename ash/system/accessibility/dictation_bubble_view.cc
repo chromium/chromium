@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -202,7 +203,9 @@ class ASH_EXPORT HintView : public views::View {
       // should use the primary text color.
       ui::ColorId color_id =
           i == 0 ? kColorAshTextColorSecondary : kColorAshTextColorPrimary;
-      AddChildView(CreateLabelView(&labels_[i], std::u16string(), color_id));
+      auto* label = labels_[i].get();
+      AddChildView(CreateLabelView(&label, std::u16string(), color_id));
+      labels_[i] = label;
     }
   }
 
@@ -253,7 +256,7 @@ class ASH_EXPORT HintView : public views::View {
 
   // Labels containing hints for users of Dictation. A max of five hints can be
   // shown at any given time.
-  std::vector<views::Label*> labels_{5, nullptr};
+  std::vector<dangling_raw_ptr<views::Label>> labels_{5, nullptr};
 };
 
 BEGIN_METADATA(TopRowView, views::View)

@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -96,7 +97,7 @@ net::DohProviderEntry::List ProvidersForCountry(
     int country_id) {
   net::DohProviderEntry::List local_providers;
   base::ranges::copy_if(providers, std::back_inserter(local_providers),
-                        [country_id](const auto* entry) {
+                        [country_id](const net::DohProviderEntry* entry) {
                           return EntryIsForCountry(entry, country_id);
                         });
   return local_providers;
@@ -106,21 +107,21 @@ net::DohProviderEntry::List SelectEnabledProviders(
     const net::DohProviderEntry::List& providers) {
   net::DohProviderEntry::List enabled_providers;
   base::ranges::copy_if(providers, std::back_inserter(enabled_providers),
-                        [](const auto* entry) {
+                        [](const net::DohProviderEntry* entry) {
                           return base::FeatureList::IsEnabled(entry->feature);
                         });
   return enabled_providers;
 }
 
 void UpdateDropdownHistograms(
-    const std::vector<const net::DohProviderEntry*>& providers,
+    const std::vector<dangling_raw_ptr<const net::DohProviderEntry>>& providers,
     base::StringPiece old_config,
     base::StringPiece new_config) {
   auto old_parsed = net::DnsOverHttpsConfig::FromString(old_config);
   auto new_parsed = net::DnsOverHttpsConfig::FromString(new_config);
   DCHECK(old_parsed.has_value() || old_config.empty());
   DCHECK(new_parsed.has_value() || new_config.empty());
-  for (const auto* entry : providers) {
+  for (const net::DohProviderEntry* entry : providers) {
     net::DnsOverHttpsConfig doh_config({entry->doh_server_config});
     IncrementDropdownHistogram(entry->provider_id_for_histogram.value(),
                                doh_config, old_parsed, new_parsed);

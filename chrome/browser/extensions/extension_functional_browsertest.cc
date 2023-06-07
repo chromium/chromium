@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -153,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, DownloadExtensionResource) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("download")));
   download_observer.WaitForFinished();
 
-  std::vector<download::DownloadItem*> download_items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> download_items;
   download_manager->GetAllDownloads(&download_items);
 
   base::ScopedAllowBlockingForTesting allow_blocking;

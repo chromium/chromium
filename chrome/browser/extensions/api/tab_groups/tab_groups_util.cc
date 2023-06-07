@@ -82,7 +82,7 @@ bool GetGroupById(int group_id,
       include_incognito && profile->HasPrimaryOTRProfile()
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : nullptr;
-  for (auto* target_browser : *BrowserList::GetInstance()) {
+  for (Browser* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() == profile ||
         target_browser->profile() == incognito_profile) {
       TabStripModel* target_tab_strip = target_browser->tab_strip_model();

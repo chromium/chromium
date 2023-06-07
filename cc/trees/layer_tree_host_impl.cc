@@ -27,6 +27,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
@@ -1868,7 +1869,7 @@ std::unique_ptr<RasterTilePriorityQueue> LayerTreeHostImpl::BuildRasterQueue(
       active_tree_->picture_layers(),
       pending_tree_ && pending_tree_fully_painted_
           ? pending_tree_->picture_layers()
-          : std::vector<PictureLayerImpl*>(),
+          : std::vector<dangling_raw_ptr<PictureLayerImpl>>(),
       tree_priority, type);
 }
 
@@ -1880,8 +1881,9 @@ LayerTreeHostImpl::BuildEvictionQueue(TreePriority tree_priority) {
   std::unique_ptr<EvictionTilePriorityQueue> queue(
       new EvictionTilePriorityQueue);
   queue->Build(active_tree_->picture_layers(),
-               pending_tree_ ? pending_tree_->picture_layers()
-                             : std::vector<PictureLayerImpl*>(),
+               pending_tree_
+                   ? pending_tree_->picture_layers()
+                   : std::vector<dangling_raw_ptr<PictureLayerImpl>>(),
                tree_priority);
   return queue;
 }
@@ -2614,7 +2616,7 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
   // TODO(boliu): If we did a temporary software renderer frame, propogate the
   // damage forward to the next frame.
   for (size_t i = 0; i < frame->render_surface_list->size(); i++) {
-    auto* surface = (*frame->render_surface_list)[i];
+    auto* surface = (*frame->render_surface_list)[i].get();
     surface->damage_tracker()->DidDrawDamagedArea();
   }
   active_tree_->ResetAllChangeTracking();

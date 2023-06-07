@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
@@ -55,9 +56,9 @@ DrawerLayoutHandler::CreateIfNecessary(
 
   // Find a node with accessibility importance. That is a menu node opened now.
   // Extract the accessibility name of the drawer menu from the event text.
-  std::vector<AccessibilityInfoDataWrapper*> children;
+  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> children;
   source_node->GetChildren(&children);
-  for (auto* child : children) {
+  for (arc::AccessibilityInfoDataWrapper* child : children) {
     if (!child->IsNode() || !child->IsVisibleToUser() ||
         !GetBooleanProperty(child->GetNode(),
                             mojom::AccessibilityBooleanProperty::IMPORTANCE)) {

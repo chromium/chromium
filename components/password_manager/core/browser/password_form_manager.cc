@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -253,13 +254,13 @@ const GURL& PasswordFormManager::GetURL() const {
   return observed_form() ? observed_form()->url : observed_digest()->url;
 }
 
-const std::vector<const PasswordForm*>& PasswordFormManager::GetBestMatches()
-    const {
+const std::vector<dangling_raw_ptr<const PasswordForm>>&
+PasswordFormManager::GetBestMatches() const {
   return form_fetcher_->GetBestMatches();
 }
 
-std::vector<const PasswordForm*> PasswordFormManager::GetFederatedMatches()
-    const {
+std::vector<dangling_raw_ptr<const PasswordForm>>
+PasswordFormManager::GetFederatedMatches() const {
   return form_fetcher_->GetFederatedMatches();
 }
 
@@ -281,8 +282,8 @@ base::span<const InteractionsStats> PasswordFormManager::GetInteractionsStats()
   return base::make_span(form_fetcher_->GetInteractionsStats());
 }
 
-std::vector<const PasswordForm*> PasswordFormManager::GetInsecureCredentials()
-    const {
+std::vector<dangling_raw_ptr<const PasswordForm>>
+PasswordFormManager::GetInsecureCredentials() const {
   return form_fetcher_->GetInsecureCredentials();
 }
 
@@ -1117,7 +1118,8 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames;
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords;
 
-  for (auto* saved_form : form_fetcher_->GetNonFederatedMatches()) {
+  for (const password_manager::PasswordForm* saved_form :
+       form_fetcher_->GetNonFederatedMatches()) {
     // Saved credentials might have empty usernames which are not interesting
     // for filling assistance metric.
     if (!saved_form->username_value.empty())

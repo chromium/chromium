@@ -146,7 +146,7 @@ void NameFull::MigrateLegacyStructure() {
     SetValue(GetValue(), VerificationStatus::kObserved);
 
     // Set the verification status of all subcomponents to |kParsed|.
-    for (auto* subcomponent : Subcomponents()) {
+    for (autofill::AddressComponent* subcomponent : Subcomponents()) {
       subcomponent->SetValue(subcomponent->GetValue(),
                              subcomponent->GetValue().empty()
                                  ? VerificationStatus::kNoStatus
@@ -165,7 +165,7 @@ void NameFull::MigrateLegacyStructure() {
 
   // Otherwise, at least one of the subcomponents should be set.
   // Set its verification status to observed.
-  for (auto* subcomponent : Subcomponents()) {
+  for (autofill::AddressComponent* subcomponent : Subcomponents()) {
     if (!subcomponent->GetValue().empty())
       subcomponent->SetValue(subcomponent->GetValue(),
                              VerificationStatus::kObserved);

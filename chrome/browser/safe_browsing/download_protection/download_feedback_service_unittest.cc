@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -104,7 +105,7 @@ class FakeDownloadFeedbackFactory : public DownloadFeedbackFactory {
   size_t num_feedbacks() const { return feedbacks_.size(); }
 
  private:
-  std::vector<FakeDownloadFeedback*> feedbacks_;
+  std::vector<dangling_raw_ptr<FakeDownloadFeedback>> feedbacks_;
 };
 
 class FakeDownloadProtectionService : public DownloadProtectionService {

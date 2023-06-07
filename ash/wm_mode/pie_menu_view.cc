@@ -349,7 +349,7 @@ void PieMenuView::Layout() {
   // `PieSubMenuContainerView`s) should fill the entire bounds of this view. The
   // back button however should be centered.
   auto local_bounds = GetLocalBounds();
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     if (child != back_button_)
       child->SetBoundsRect(local_bounds);
   }

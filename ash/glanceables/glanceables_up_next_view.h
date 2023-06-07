@@ -55,7 +55,8 @@ class ASH_EXPORT GlanceablesUpNextView : public views::View,
   void AddNoEventsLabel();
 
   raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_ = nullptr;
-  std::vector<GlanceablesUpNextEventItemView*> event_item_views_;
+  std::vector<dangling_raw_ptr<GlanceablesUpNextEventItemView>>
+      event_item_views_;
   raw_ptr<views::Label, ExperimentalAsh> no_events_label_ = nullptr;
 };
 

@@ -257,7 +257,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return header_row()->close_button_for_testing();
   }
 
-  std::vector<views::Button*>& media_action_buttons() const {
+  std::vector<dangling_raw_ptr<views::Button>>& media_action_buttons() const {
     return media_controls_view_->media_action_buttons_;
   }
 
@@ -380,7 +380,7 @@ TEST_F(LockScreenMediaControlsViewTest, ButtonsSanityCheck) {
   EXPECT_EQ(5u, media_action_buttons().size());
 
   for (int i = 0; i < 5; /* size of |button_row| */ i++) {
-    auto* child = media_action_buttons()[i];
+    auto* child = media_action_buttons()[i].get();
 
     ASSERT_TRUE(IsMediaButtonType(child->GetClassName()));
 

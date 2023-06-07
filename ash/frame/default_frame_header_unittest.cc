@@ -196,14 +196,14 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
   wm::ActivateWindow(win0.get());
 
   auto* frame_view = NonClientFrameViewAsh::Get(win0.get());
-  auto* animating_layer_holding_view = frame_view->children()[0];
+  auto* animating_layer_holding_view = frame_view->children()[0].get();
   EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
       animating_layer_holding_view));
   ASSERT_TRUE(animating_layer_holding_view->layer());
   ASSERT_GT(animating_layer_holding_view->layer()->parent()->children().size(),
             2u);
   auto* animating_layer =
-      animating_layer_holding_view->layer()->parent()->children()[0];
+      animating_layer_holding_view->layer()->parent()->children()[0].get();
   EXPECT_EQ(ui::LAYER_TEXTURED, animating_layer->type());
   EXPECT_NE(std::string::npos, animating_layer->name().find(":Old", 0));
   EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
@@ -231,7 +231,7 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* frame_view_0 = NonClientFrameViewAsh::Get(win_0.get());
-  auto* animating_layer_holding_view_0 = frame_view_0->children()[0];
+  auto* animating_layer_holding_view_0 = frame_view_0->children()[0].get();
   EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
       animating_layer_holding_view_0));
   size_t original_layers_count_0 =
@@ -241,7 +241,7 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
   auto* extra_view_1 =
       frame_view_1->AddChildView(std::make_unique<views::View>());
 
-  auto* animating_layer_holding_view_1 = frame_view_1->children()[0];
+  auto* animating_layer_holding_view_1 = frame_view_1->children()[0].get();
   EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
       animating_layer_holding_view_1));
   size_t original_layers_count_1 =
@@ -255,7 +255,7 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
         animating_layer_holding_view_0->layer()->parent()->children().size(),
         original_layers_count_0 + 1);
     auto* animating_layer =
-        animating_layer_holding_view_0->layer()->parent()->children()[0];
+        animating_layer_holding_view_0->layer()->parent()->children()[0].get();
     EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
 
     LayerDestroyedChecker checker(animating_layer);
@@ -275,7 +275,7 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
         animating_layer_holding_view_1->layer()->parent()->children().size(),
         original_layers_count_1 + 1);
     auto* animating_layer =
-        animating_layer_holding_view_1->layer()->parent()->children()[0];
+        animating_layer_holding_view_1->layer()->parent()->children()[0].get();
     EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
     LayerDestroyedChecker checker(animating_layer);
 

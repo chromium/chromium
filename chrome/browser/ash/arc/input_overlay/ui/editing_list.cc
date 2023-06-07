@@ -202,7 +202,7 @@ void EditingList::OnActionTypeChanged(const Action& action,
 
 void EditingList::OnActionUpdated(const Action& action) {
   DCHECK(scroll_content_);
-  for (auto* child : scroll_content_->children()) {
+  for (views::View* child : scroll_content_->children()) {
     auto* list_item = static_cast<ActionViewListItem*>(child);
     DCHECK(list_item);
     if (list_item->action() == &action) {

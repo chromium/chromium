@@ -436,7 +436,8 @@ class MenuEventMonitor {
     if (IsInButton(screen_coords, help_bubble_->default_button_)) {
       return help_bubble_->default_button_;
     }
-    for (auto* const button : help_bubble_->non_default_buttons_) {
+    for (views::MdTextButton* const button :
+         help_bubble_->non_default_buttons_) {
       if (IsInButton(screen_coords, button)) {
         return button;
       }
@@ -875,7 +876,7 @@ void HelpBubbleView::OnThemeChanged() {
         foreground_color, icon_view_->GetPreferredSize().height() / 2));
   }
 
-  for (auto* label : labels_) {
+  for (views::Label* label : labels_) {
     label->SetBackgroundColor(background_color);
     label->SetEnabledColor(foreground_color);
   }
@@ -956,7 +957,7 @@ bool HelpBubbleView::IsFocusInHelpBubble() const {
     return true;
   if (default_button_ && default_button_->HasFocus())
     return true;
-  for (auto* button : non_default_buttons_) {
+  for (views::MdTextButton* button : non_default_buttons_) {
     if (button->HasFocus())
       return true;
   }

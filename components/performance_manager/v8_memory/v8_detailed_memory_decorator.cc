@@ -71,10 +71,10 @@ class V8DetailedMemoryRequestQueue {
       base::FunctionRef<void(V8DetailedMemoryRequest*)> func) const;
 
   // Lists of requests sorted by min_time_between_requests (lowest first).
-  std::vector<V8DetailedMemoryRequest*> bounded_measurement_requests_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<V8DetailedMemoryRequest*> lazy_measurement_requests_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<dangling_raw_ptr<V8DetailedMemoryRequest>>
+      bounded_measurement_requests_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<dangling_raw_ptr<V8DetailedMemoryRequest>>
+      lazy_measurement_requests_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -932,7 +932,7 @@ void V8DetailedMemoryRequestQueue::AddMeasurementRequest(
     V8DetailedMemoryRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
-  std::vector<V8DetailedMemoryRequest*>& measurement_requests =
+  std::vector<dangling_raw_ptr<V8DetailedMemoryRequest>>& measurement_requests =
       IsMeasurementBounded(request->mode()) ? bounded_measurement_requests_
                                             : lazy_measurement_requests_;
   DCHECK(!base::Contains(measurement_requests, request))
@@ -940,8 +940,8 @@ void V8DetailedMemoryRequestQueue::AddMeasurementRequest(
   // Each user of the decorator is expected to issue a single
   // V8DetailedMemoryRequest, so the size of measurement_requests is too low
   // to make the complexity of real priority queue worthwhile.
-  for (std::vector<V8DetailedMemoryRequest*>::const_iterator it =
-           measurement_requests.begin();
+  for (std::vector<dangling_raw_ptr<V8DetailedMemoryRequest>>::const_iterator
+           it = measurement_requests.begin();
        it != measurement_requests.end(); ++it) {
     if (request->min_time_between_requests() <
         (*it)->min_time_between_requests()) {
@@ -986,7 +986,8 @@ void V8DetailedMemoryRequestQueue::Validate() {
 #if DCHECK_IS_ON()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto check_invariants =
-      [](const std::vector<V8DetailedMemoryRequest*>& measurement_requests,
+      [](const std::vector<dangling_raw_ptr<V8DetailedMemoryRequest>>&
+             measurement_requests,
          bool is_bounded) {
         for (size_t i = 1; i < measurement_requests.size(); ++i) {
           DCHECK(measurement_requests[i - 1]);

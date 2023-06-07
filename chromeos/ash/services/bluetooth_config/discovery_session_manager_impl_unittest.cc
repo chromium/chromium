@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -177,7 +178,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     return observer;
   }
 
-  std::vector<FakeDevicePairingHandler*>& GetDevicePairingHandlers() {
+  std::vector<dangling_raw_ptr<FakeDevicePairingHandler>>&
+  GetDevicePairingHandlers() {
     return fake_device_pairing_handler_factory_.device_pairing_handlers();
   }
 
@@ -188,7 +190,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     FakeDevicePairingHandlerFactory() = default;
     ~FakeDevicePairingHandlerFactory() override = default;
 
-    std::vector<FakeDevicePairingHandler*>& device_pairing_handlers() {
+    std::vector<dangling_raw_ptr<FakeDevicePairingHandler>>&
+    device_pairing_handlers() {
       return device_pairing_handlers_;
     }
 
@@ -209,7 +212,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
       return fake_device_pairing_handler;
     }
 
-    std::vector<FakeDevicePairingHandler*> device_pairing_handlers_;
+    std::vector<dangling_raw_ptr<FakeDevicePairingHandler>>
+        device_pairing_handlers_;
   };
 
   base::test::TaskEnvironment task_environment_;

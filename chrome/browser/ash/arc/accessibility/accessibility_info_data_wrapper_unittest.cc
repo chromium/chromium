@@ -43,8 +43,8 @@ class TestAccessibilityInfoDataWrapper : public AccessibilityInfoDataWrapper {
   void PopulateAXRole(ui::AXNodeData* out_data) const override {}
   void PopulateAXState(ui::AXNodeData* out_data) const override {}
   std::string ComputeAXName(bool do_recursive) const override { return ""; }
-  void GetChildren(
-      std::vector<AccessibilityInfoDataWrapper*>* children) const override {}
+  void GetChildren(std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>*
+                       children) const override {}
   int32_t GetWindowId() const override { return 1; }
 
   int32_t id_ = 1;

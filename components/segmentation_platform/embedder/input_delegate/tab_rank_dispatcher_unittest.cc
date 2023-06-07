@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
@@ -97,7 +98,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   }
 
   bool GetAllForeignSessions(
-      std::vector<const sync_sessions::SyncedSession*>* sessions) override {
+      std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>*
+          sessions) override {
     *sessions = foreign_sessions_;
     base::ranges::sort(*sessions, std::greater(),
                        [](const sync_sessions::SyncedSession* session) {
@@ -135,7 +137,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  private:
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>>
       foreign_sessions_owned_;
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>
+      foreign_sessions_;
   std::unique_ptr<sync_sessions::SyncedSession> local_session_;
   std::map<std::string, const sessions::SessionTab*> session_to_tab_;
 };

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -36,12 +37,13 @@ AutofillProfileImportId GetImportId() {
 // Comparisons are done using `comparator`.
 bool ShouldCountryApproximationBeRemoved(
     const AutofillProfile& profile,
-    const std::vector<AutofillProfile*>& existing_profiles,
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& existing_profiles,
     const AutofillProfileComparator& comparator) {
   auto IsMergeableWithExistingProfiles = [&](const AutofillProfile& profile) {
-    return base::ranges::any_of(existing_profiles, [&](auto* existing_profile) {
-      return comparator.AreMergeable(profile, *existing_profile);
-    });
+    return base::ranges::any_of(
+        existing_profiles, [&](autofill::AutofillProfile* existing_profile) {
+          return comparator.AreMergeable(profile, *existing_profile);
+        });
   };
   if (IsMergeableWithExistingProfiles(profile))
     return false;
@@ -111,7 +113,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // - Settings-visible updates are only possible when
   //   `kAutofillAccountProfileStorage` is enabled.
   // - Silent updates are allowed in any case.
-  const std::vector<AutofillProfile*> existing_profiles =
+  const std::vector<dangling_raw_ptr<AutofillProfile>> existing_profiles =
       personal_data_manager_->GetProfiles(
           PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
 
@@ -124,7 +126,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     import_metadata_.did_complement_country = false;
   }
 
-  for (const auto* existing_profile : existing_profiles) {
+  for (const autofill::AutofillProfile* existing_profile : existing_profiles) {
     // If the existing profile is not mergeable with the observed profile, the
     // existing profile is not altered by this import.
     if (!comparator.AreMergeable(*existing_profile, observed_profile_)) {
@@ -346,7 +348,8 @@ std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
 
   // Add all other profiles that are currently available in the personal data
   // manager.
-  for (const auto* unchanged_profile : personal_data_manager_->GetProfiles()) {
+  for (const autofill::AutofillProfile* unchanged_profile :
+       personal_data_manager_->GetProfiles()) {
     if (!guids_of_changed_profiles.contains(unchanged_profile->guid())) {
       resulting_profiles.push_back(*unchanged_profile);
     }

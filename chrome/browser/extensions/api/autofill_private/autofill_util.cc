@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -280,7 +281,7 @@ namespace extensions::autofill_util {
 
 AddressEntryList GenerateAddressList(
     const autofill::PersonalDataManager& personal_data) {
-  const std::vector<autofill::AutofillProfile*>& profiles =
+  const std::vector<dangling_raw_ptr<autofill::AutofillProfile>>& profiles =
       personal_data.GetProfilesForSettings();
   std::vector<std::u16string> labels;
   autofill::AutofillProfile::CreateDifferentiatingLabels(

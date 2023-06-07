@@ -98,7 +98,8 @@ IN_PROC_BROWSER_TEST_F(DownloadControllerClientLacrosBrowserTest,
   // Mock `download_manager()` response for `GetAllDownloads()`.
   EXPECT_CALL(*download_manager(), GetAllDownloads)
       .WillRepeatedly(testing::Invoke(
-          [&](std::vector<download::DownloadItem*>* download_ptrs) {
+          [&](std::vector<dangling_raw_ptr<download::DownloadItem>>*
+                  download_ptrs) {
             for (auto& download : downloads)
               download_ptrs->push_back(download.get());
           }));

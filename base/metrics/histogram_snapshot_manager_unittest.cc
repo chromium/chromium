@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_delta_serialization.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sample_vector.h"
@@ -55,7 +56,8 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
     recorded_delta_histogram_sum_.clear();
   }
 
-  std::vector<const HistogramBase*>& GetRecordedDeltaHistograms() {
+  std::vector<dangling_raw_ptr<const HistogramBase>>&
+  GetRecordedDeltaHistograms() {
     return recorded_delta_histograms_;
   }
 
@@ -65,7 +67,7 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
   }
 
  private:
-  std::vector<const HistogramBase*> recorded_delta_histograms_;
+  std::vector<dangling_raw_ptr<const HistogramBase>> recorded_delta_histograms_;
   std::map<std::string, int64_t> recorded_delta_histogram_sum_;
 };
 
@@ -97,7 +99,7 @@ TEST_F(HistogramSnapshotManagerTest, PrepareDeltasNoFlagsFilter) {
       /*required_flags=*/HistogramBase::kNoFlags, &histogram_snapshot_manager_);
 
   // Verify that the snapshots were recorded.
-  const std::vector<const HistogramBase*>& histograms =
+  const std::vector<dangling_raw_ptr<const HistogramBase>>& histograms =
       histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
@@ -121,7 +123,7 @@ TEST_F(HistogramSnapshotManagerTest, PrepareDeltasUmaHistogramFlagFilter) {
       &histogram_snapshot_manager_);
 
   // Verify that the snapshots were recorded.
-  const std::vector<const HistogramBase*>& histograms =
+  const std::vector<dangling_raw_ptr<const HistogramBase>>& histograms =
       histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
@@ -145,7 +147,7 @@ TEST_F(HistogramSnapshotManagerTest,
       &histogram_snapshot_manager_);
 
   // Verify that only the stability histogram was snapshotted and recorded.
-  const std::vector<const HistogramBase*>& histograms =
+  const std::vector<dangling_raw_ptr<const HistogramBase>>& histograms =
       histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
   ASSERT_EQ(1U, histograms.size());
   ASSERT_EQ(kStabilityHistogramName, histograms[0]->histogram_name());
@@ -164,7 +166,7 @@ TEST_F(HistogramSnapshotManagerTest, SnapshotUnloggedSamplesNoFlagsFilter) {
       /*required_flags=*/HistogramBase::kNoFlags, &histogram_snapshot_manager_);
 
   // Verify that the snapshots were recorded.
-  const std::vector<const HistogramBase*>& histograms =
+  const std::vector<dangling_raw_ptr<const HistogramBase>>& histograms =
       histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
@@ -198,7 +200,7 @@ TEST_F(HistogramSnapshotManagerTest,
       &histogram_snapshot_manager_);
 
   // Verify that the snapshots were recorded.
-  const std::vector<const HistogramBase*>& histograms =
+  const std::vector<dangling_raw_ptr<const HistogramBase>>& histograms =
       histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
@@ -231,7 +233,7 @@ TEST_F(HistogramSnapshotManagerTest,
       &histogram_snapshot_manager_);
 
   // Verify that only the stability histogram was snapshotted and recorded.
-  const std::vector<const HistogramBase*>& histograms =
+  const std::vector<dangling_raw_ptr<const HistogramBase>>& histograms =
       histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
   ASSERT_EQ(1U, histograms.size());
   ASSERT_EQ(kStabilityHistogramName, histograms[0]->histogram_name());

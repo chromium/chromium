@@ -193,7 +193,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
 
-  std::vector<AccessibilityInfoDataWrapper*>& GetChildren(
+  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>& GetChildren(
       AccessibilityInfoDataWrapper* info_data) const;
 
   void ComputeAndCacheChildren(AccessibilityInfoDataWrapper* info_data) const;

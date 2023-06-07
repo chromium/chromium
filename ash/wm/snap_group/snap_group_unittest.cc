@@ -328,7 +328,8 @@ TEST_F(SnapGroupTest, WindowActivationTest) {
 
   MruWindowTracker::WindowList window_list =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  EXPECT_EQ(std::vector<aura::Window*>({w1.get(), w3.get(), w2.get()}),
+  EXPECT_EQ(std::vector<dangling_raw_ptr<aura::Window>>(
+                {w1.get(), w3.get(), w2.get()}),
             window_list);
 
   // `w3` is stacked below `w2` even though the activation order of `w3` is

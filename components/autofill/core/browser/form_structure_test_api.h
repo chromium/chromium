@@ -21,7 +21,7 @@ class FormStructureTestApi {
 
   static void ParseApiQueryResponse(
       base::StringPiece payload,
-      const std::vector<FormStructure*>& forms,
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger* ukm_logger,
       LogManager* log_manager = nullptr) {
@@ -31,7 +31,7 @@ class FormStructureTestApi {
 
   static void ProcessQueryResponse(
       const AutofillQueryResponse& response,
-      const std::vector<FormStructure*>& forms,
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager = nullptr) {

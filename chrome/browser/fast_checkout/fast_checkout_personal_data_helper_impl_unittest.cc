@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -138,7 +139,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
   personal_data_helper()->GetPersonalDataManager()->AddProfile(
       kIncompleteProfile);
 
-  std::vector<autofill::AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<autofill::AutofillProfile>> profiles =
       personal_data_helper()->GetProfilesToSuggest();
 
   EXPECT_EQ(profiles.size(), 2UL);

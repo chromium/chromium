@@ -82,7 +82,8 @@ void AutofillOptimizationGuide::OnDidParseForm(
     if (has_credit_card_field) {
       // For each server card, check whether we need to register an optimization
       // type, and if so then add it to `optimization_types`.
-      for (const auto* card : personal_data_manager->GetServerCreditCards()) {
+      for (const autofill::CreditCard* card :
+           personal_data_manager->GetServerCreditCards()) {
         if (auto optimization_type =
                 GetVcnMerchantOptOutOptimizationTypeForCard(card);
             optimization_type != optimization_guide::proto::TYPE_UNSPECIFIED) {

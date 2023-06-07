@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_resource.h"
 #include "media/mojo/services/mojo_demuxer_stream_adapter.h"
@@ -31,7 +32,7 @@ class MediaResourceShim : public MediaResource {
   ~MediaResourceShim() override;
 
   // MediaResource interface.
-  std::vector<DemuxerStream*> GetAllStreams() override;
+  std::vector<dangling_raw_ptr<DemuxerStream>> GetAllStreams() override;
 
  private:
   // Called as each mojom::DemuxerStream becomes ready.  Once all streams

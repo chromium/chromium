@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
@@ -191,7 +192,7 @@ class PinDialogManager final {
   SecurityTokenPinDialogHostPopupImpl default_dialog_host_;
   // The list of dynamically added dialog hosts, in the same order as they were
   // added.
-  std::vector<SecurityTokenPinDialogHost*> added_dialog_hosts_;
+  std::vector<dangling_raw_ptr<SecurityTokenPinDialogHost>> added_dialog_hosts_;
 
   // There can be only one active dialog to request the PIN at any point of
   // time.

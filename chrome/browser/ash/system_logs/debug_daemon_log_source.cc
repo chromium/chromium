@@ -265,7 +265,7 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
   std::vector<base::FilePath> profile_dirs;
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetLoggedInUsers();
-  for (const auto* user : users) {
+  for (const user_manager::User* user : users) {
     if (user->username_hash().empty()) {
       continue;
     }

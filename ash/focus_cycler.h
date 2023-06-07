@@ -53,7 +53,7 @@ class ASH_EXPORT FocusCycler {
       base::RepeatingCallback<bool(views::Widget*)> callback);
 
  private:
-  std::vector<views::Widget*> widgets_;
+  std::vector<dangling_raw_ptr<views::Widget>> widgets_;
 
   // See description above getter.
   raw_ptr<views::Widget, ExperimentalAsh> widget_activating_;

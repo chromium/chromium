@@ -97,7 +97,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   Browser* current_browser =
       ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!profile->IsSameOrParent(browser->profile()))
       continue;
 

@@ -11,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 
@@ -64,7 +65,7 @@ void DependencyGraph::AddEdge(DependencyNode* depended,
 }
 
 bool DependencyGraph::GetConstructionOrder(
-    std::vector<DependencyNode*>* order) {
+    std::vector<dangling_raw_ptr<DependencyNode>>* order) {
   if (construction_order_.empty() && !BuildConstructionOrder())
     return false;
 
@@ -72,7 +73,8 @@ bool DependencyGraph::GetConstructionOrder(
   return true;
 }
 
-bool DependencyGraph::GetDestructionOrder(std::vector<DependencyNode*>* order) {
+bool DependencyGraph::GetDestructionOrder(
+    std::vector<dangling_raw_ptr<DependencyNode>>* order) {
   if (construction_order_.empty() && !BuildConstructionOrder())
     return false;
 
@@ -92,7 +94,7 @@ bool DependencyGraph::BuildConstructionOrder() {
     base::Erase(queue, pair.second);
 
   // Step 2: Do the Kahn topological sort.
-  std::vector<DependencyNode*> output;
+  std::vector<dangling_raw_ptr<DependencyNode>> output;
   EdgeMap edges(edges_);
   while (!queue.empty()) {
     DependencyNode* node = queue.front();

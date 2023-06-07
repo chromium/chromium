@@ -143,7 +143,8 @@ class GlanceablesTest : public AshTestBase {
     return controller_->view_->up_next_view_;
   }
 
-  std::vector<GlanceablesUpNextEventItemView*> GetEventItemViews() {
+  std::vector<dangling_raw_ptr<GlanceablesUpNextEventItemView>>
+  GetEventItemViews() {
     return GetUpNextView()->event_item_views_;
   }
 

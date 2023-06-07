@@ -677,7 +677,7 @@ void DrmDisplayHostManager::GpuShouldDisplayEventTriggerConfiguration(
 
 void DrmDisplayHostManager::RunUpdateDisplaysCallback(
     display::GetDisplaysCallback callback) const {
-  std::vector<display::DisplaySnapshot*> snapshots;
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> snapshots;
   for (const auto& display : displays_)
     snapshots.push_back(display->snapshot());
 

@@ -172,7 +172,7 @@ class IntentPickerAppGridButton : public views::Button {
       return nullptr;
 
     Views siblings = parent()->children();
-    auto it = base::ranges::find_if(siblings, [](auto* v) {
+    auto it = base::ranges::find_if(siblings, [](views::View* v) {
       return static_cast<IntentPickerAppGridButton*>(v)->selected_;
     });
 

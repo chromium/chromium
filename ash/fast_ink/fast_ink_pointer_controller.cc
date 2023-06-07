@@ -102,7 +102,7 @@ bool FastInkPointerController::IsPointerInExcludedWindows(
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
   wm::ConvertPointToScreen(event_target, &screen_location);
 
-  for (const auto* excluded_window : excluded_windows_.windows()) {
+  for (const aura::Window* excluded_window : excluded_windows_.windows()) {
     if (excluded_window->GetBoundsInScreen().Contains(screen_location)) {
       return true;
     }

@@ -325,7 +325,7 @@ void ChromeShelfController::Init() {
 
   // Tag all open browser windows with the appropriate shelf id property. This
   // associates each window with the shelf item for the active web contents.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (IsBrowserRepresentedInBrowserList(browser, model_) &&
         browser->tab_strip_model()->GetActiveWebContents()) {
       SetShelfIDForBrowserWindowContents(
@@ -697,7 +697,7 @@ ChromeShelfController::GetBrowserShortcutShelfItemControllerForTesting() {
 
 void ChromeShelfController::UpdateBrowserItemState() {
   ash::ShelfItemStatus browser_status = ash::STATUS_CLOSED;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (IsBrowserRepresentedInBrowserList(browser, model_)) {
       browser_status = ash::STATUS_RUNNING;
       break;

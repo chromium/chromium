@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/sync/synced_session_client_ash.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -115,7 +116,7 @@ void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
     return;
   }
 
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
   bool was_fetch_successful = open_tabs->GetAllForeignSessions(&sessions);
   // No tabs were found, clear all tab metadata.
   if (!was_fetch_successful) {
@@ -129,7 +130,7 @@ void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
   // multiple phones of the same type, |phone_session| will have the latest
   // |modified_time|.
   const sync_sessions::SyncedSession* phone_session = nullptr;
-  for (const auto* session : sessions) {
+  for (const sync_sessions::SyncedSession* session : sessions) {
     if (session->GetSessionName() != *host_device_name) {
       continue;
     }

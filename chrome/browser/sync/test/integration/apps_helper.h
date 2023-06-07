@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/extensions/install_observer.h"
@@ -109,7 +110,7 @@ void FixNTPOrdinalCollisions(Profile* profile);
 
 // Flushes pending changes and verifies that the profiles have no pending
 // installs or uninstalls afterwards.
-bool AwaitWebAppQuiescence(std::vector<Profile*> profiles);
+bool AwaitWebAppQuiescence(std::vector<dangling_raw_ptr<Profile>> profiles);
 }  // namespace apps_helper
 
 // An app specific version of StatusChangeChecker which checks the exit
@@ -158,7 +159,7 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
       const absl::optional<std::string>& extension_id) override;
 
  protected:
-  std::vector<Profile*> profiles_;
+  std::vector<dangling_raw_ptr<Profile>> profiles_;
 
  private:
   void InstallSyncedApps(Profile* profile);

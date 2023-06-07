@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 
 #include "build/build_config.h"
@@ -64,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check UKM.
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
       ukm_recorder().GetEntriesByName(PageLoad::kEntryName);
   auto name_filter = [](const ukm::mojom::UkmEntry* entry) {
     return !ukm::TestUkmRecorder::EntryHasMetric(

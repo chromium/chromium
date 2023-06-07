@@ -72,7 +72,7 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       break;
   }
 
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     auto* action_view = static_cast<ActionView*>(view);
     action_view->SetDisplayMode(mode);
   }
@@ -88,7 +88,7 @@ void InputMappingView::OnActionAdded(Action* action) {
 }
 
 void InputMappingView::OnActionRemoved(Action* action) {
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     auto* action_view = static_cast<ActionView*>(view);
     if (action != action_view->action()) {
       continue;
@@ -102,9 +102,10 @@ void InputMappingView::OnActionRemoved(Action* action) {
 
 void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
   auto event_location = event.root_location();
-  for (auto* const child : children()) {
+  for (views::View* const child : children()) {
     auto* action_view = static_cast<ActionView*>(child);
-    for (auto* action_label : action_view->labels()) {
+    for (arc::input_overlay::ActionLabel* action_label :
+         action_view->labels()) {
       if (!action_label->HasFocus()) {
         continue;
       }
@@ -123,7 +124,7 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
 void InputMappingView::SortChildren() {
   std::vector<ActionView*> left, right;
   float aspect_ratio = (float)width() / height();
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* action_view = static_cast<ActionView*>(child);
     if (aspect_ratio > 1 &&
         action_view->GetTouchCenterInWindow().x() < width() / 2) {

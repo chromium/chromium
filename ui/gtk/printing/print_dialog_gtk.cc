@@ -171,7 +171,7 @@ class GtkPrinterList {
     return FALSE;
   }
 
-  std::vector<GtkPrinter*> printers_;
+  std::vector<dangling_raw_ptr<GtkPrinter>> printers_;
   raw_ptr<GtkPrinter> default_printer_ = nullptr;
 };
 

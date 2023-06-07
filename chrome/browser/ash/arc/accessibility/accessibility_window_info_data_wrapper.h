@@ -44,8 +44,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
   void PopulateAXState(ui::AXNodeData* out_data) const override;
   void Serialize(ui::AXNodeData* out_data) const override;
   std::string ComputeAXName(bool do_recursive) const override;
-  void GetChildren(
-      std::vector<AccessibilityInfoDataWrapper*>* children) const override;
+  void GetChildren(std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>*
+                       children) const override;
   int32_t GetWindowId() const override;
 
  private:

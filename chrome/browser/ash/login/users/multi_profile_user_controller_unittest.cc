@@ -212,7 +212,7 @@ class MultiProfileUserControllerTest
 
   std::unique_ptr<MultiProfileUserController> controller_;
 
-  std::vector<TestingProfile*> user_profiles_;
+  std::vector<dangling_raw_ptr<TestingProfile>> user_profiles_;
 
   int user_not_allowed_count_;
 

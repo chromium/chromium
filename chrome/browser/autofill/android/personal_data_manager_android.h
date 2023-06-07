@@ -371,7 +371,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Returns the GUIDs of the |profiles| passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDs(
       JNIEnv* env,
-      const std::vector<AutofillProfile*>& profiles);
+      const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles);
 
   // Returns the GUIDs of the |credit_cards| passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDs(
@@ -391,7 +391,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       bool include_name_in_label,
       bool include_organization_in_label,
       bool include_country_in_label,
-      std::vector<AutofillProfile*> profiles);
+      std::vector<dangling_raw_ptr<AutofillProfile>> profiles);
 
   // Returns the shipping label of the given profile for PaymentRequest. This
   // label does not contain the full name or the email address but will include

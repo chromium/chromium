@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
@@ -115,7 +116,8 @@ class AXTreeSourceArcTest : public testing::Test,
     tree_source_->NotifyAccessibilityEvent(event_data);
   }
 
-  const std::vector<ui::AXNode*>& GetChildren(int32_t node_id) {
+  const std::vector<dangling_raw_ptr<ui::AXNode>>& GetChildren(
+      int32_t node_id) {
     ui::AXNode* ax_node = tree()->GetFromId(node_id);
     return ax_node->children();
   }
@@ -226,7 +228,7 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
 
   // Trigger an update which refreshes the computed bounds used for reordering.
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> top_to_bottom;
+  std::vector<dangling_raw_ptr<ui::AXNode>> top_to_bottom;
   top_to_bottom = GetChildren(root->id);
   ASSERT_EQ(2U, top_to_bottom.size());
   EXPECT_EQ(12, top_to_bottom[0]->id());
@@ -245,7 +247,7 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   button1->bounds_in_screen = gfx::Rect(101, 100, 99, 100);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> left_to_right;
+  std::vector<dangling_raw_ptr<ui::AXNode>> left_to_right;
   left_to_right = GetChildren(root->id);
   ASSERT_EQ(2U, left_to_right.size());
   EXPECT_EQ(12, left_to_right[0]->id());
@@ -282,7 +284,7 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 10);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> dimension;
+  std::vector<dangling_raw_ptr<ui::AXNode>> dimension;
   dimension = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, dimension.size());
   EXPECT_EQ(12, dimension[0]->id());
@@ -556,7 +558,7 @@ TEST_F(AXTreeSourceArcTest, ComplexTreeStructure) {
   CallNotifyAccessibilityEvent(event.get());
 
   // Check that each node subtree tree was added, and that it is correct.
-  std::vector<ui::AXNode*> children;
+  std::vector<dangling_raw_ptr<ui::AXNode>> children;
   for (int i = 0; i < num_trees; i++) {
     children = GetChildren(event->node_data.at(i * tree_size).get()->id);
     ASSERT_EQ(1U, children.size());
@@ -1170,7 +1172,7 @@ TEST_F(AXTreeSourceArcTest, SerializeVirtualNode) {
   ASSERT_FALSE(data.IsIgnored());
 
   // Children are not reordered under WebView.
-  std::vector<ui::AXNode*> children;
+  std::vector<dangling_raw_ptr<ui::AXNode>> children;
   children = GetChildren(webview->id);
   ASSERT_EQ(2U, children.size());
   EXPECT_EQ(button1->id, children[0]->id());

@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
   auto entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::PaymentRequest_CheckoutEvents::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, main_frame_url);
     EXPECT_EQ(3U, entry->metrics.size());
     test_ukm_recorder_->ExpectEntryMetric(

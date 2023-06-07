@@ -13,6 +13,7 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
@@ -143,7 +144,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // Channel requests that we are waiting to send to the plugin process once
   // the channel is opened.
-  std::vector<Client*> pending_requests_;
+  std::vector<dangling_raw_ptr<Client>> pending_requests_;
 
   // Channel requests that we have already sent to the plugin process, but
   // haven't heard back about yet.

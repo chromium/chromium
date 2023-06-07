@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
@@ -20,7 +21,7 @@ namespace arc::input_overlay {
 class ActionLabel : public views::LabelButton {
  public:
   METADATA_HEADER(ActionLabel);
-  static std::vector<ActionLabel*> Show(
+  static std::vector<dangling_raw_ptr<ActionLabel>> Show(
       views::View* parent,
       ActionType action_type,
       const InputElement& input_element,

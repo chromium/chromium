@@ -71,7 +71,7 @@ void PopulateAdminTemplateMetadata(
     return;
   }
 
-  for (auto* entry : entries_lookup_result.entries) {
+  for (const ash::DeskTemplate* entry : entries_lookup_result.entries) {
     out_metadata->push_back(AdminTemplateMetadata{
         .uuid = entry->uuid(), .name = entry->template_name()});
   }

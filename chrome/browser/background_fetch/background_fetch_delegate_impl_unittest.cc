@@ -63,7 +63,7 @@ TEST_F(BackgroundFetchDelegateImplTest, RecordUkmEvent) {
   url::Origin origin = url::Origin::Create(kOriginUrl);
 
   {
-    std::vector<const ukm::mojom::UkmEntry*> entries =
+    std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
         recorder_->GetEntriesByName(
             ukm::builders::BackgroundFetchDeletingRegistration::kEntryName);
     EXPECT_EQ(entries.size(), 0u);
@@ -78,12 +78,15 @@ TEST_F(BackgroundFetchDelegateImplTest, RecordUkmEvent) {
   run_loop.Run();
 
   {
-    std::vector<const ukm::mojom::UkmEntry*> entries =
+    std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
         recorder_->GetEntriesByName(
             ukm::builders::BackgroundFetchDeletingRegistration::kEntryName);
     ASSERT_EQ(entries.size(), 1u);
-    auto* entry = recorder_->GetEntriesByName(
-        ukm::builders::BackgroundFetchDeletingRegistration::kEntryName)[0];
+    auto* entry = recorder_
+                      ->GetEntriesByName(
+                          ukm::builders::BackgroundFetchDeletingRegistration::
+                              kEntryName)[0]
+                      .get();
     recorder_->ExpectEntryMetric(entry, kUserInitiatedAbort, 1);
   }
 }

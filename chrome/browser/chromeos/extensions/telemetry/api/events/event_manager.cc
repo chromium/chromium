@@ -44,7 +44,7 @@ bool IsPwaOpenForExtensionId(extensions::ExtensionId extension_id,
   auto related_pwa = GetChromeOSExtensionInfoForId(extension_id).pwa_origin;
 
   Profile* profile = Profile::FromBrowserContext(context);
-  for (auto* target_browser : *BrowserList::GetInstance()) {
+  for (Browser* target_browser : *BrowserList::GetInstance()) {
     // Ignore incognito.
     if (target_browser->profile() != profile) {
       continue;
@@ -89,7 +89,7 @@ EventManager::EventManager(content::BrowserContext* context)
   auto* browser_list = BrowserList::GetInstance();
   browser_list->AddObserver(this);
 
-  for (auto* target_browser : *browser_list) {
+  for (Browser* target_browser : *browser_list) {
     if (target_browser->profile() != profile) {
       continue;
     }
@@ -101,7 +101,7 @@ EventManager::EventManager(content::BrowserContext* context)
 
 EventManager::~EventManager() {
   BrowserList::RemoveObserver(this);
-  for (auto* target_browser : *BrowserList::GetInstance()) {
+  for (Browser* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() != target_browser->profile()) {
       continue;
     }

@@ -15,6 +15,7 @@
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -329,12 +330,12 @@ IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestForWorkersClientAdded,
   // Test succeeds if there is no timeout.
   // Both surfaces should come from the same source but have different client
   // ids.
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
       recorder().GetEntriesByName(ukm::builders::Identifiability::kEntryName);
 
   base::flat_set<uint64_t> source_ids;
   base::flat_set<uint64_t> client_source_ids;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     for (const auto& metric : entry->metrics) {
       if (metric.first == expected_key) {
         source_ids.insert(entry->source_id);

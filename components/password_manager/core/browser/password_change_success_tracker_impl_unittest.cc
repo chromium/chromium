@@ -242,7 +242,7 @@ TEST_F(PasswordChangeMetricsRecorderUkmTest, RecordSingleMetricsEvent) {
   // Check that UKM logging is correct.
   const auto& entries = ukm_tester().GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(entry->source_id, ukm::NoURLSourceId());
     ukm_tester().ExpectEntryMetric(entry, UkmEntry::kStartEventName,
                                    static_cast<int64_t>(start_event));
@@ -270,7 +270,7 @@ TEST_F(PasswordChangeMetricsRecorderUkmTest,
   // Check that UKM logging is correct.
   const auto& entries = ukm_tester().GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(entry->source_id, ukm::NoURLSourceId());
     ukm_tester().ExpectEntryMetric(entry, UkmEntry::kStartEventName,
                                    static_cast<int64_t>(start_event));
@@ -517,7 +517,7 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
   // Check that UKM logging is correct.
   const auto& entries = ukm_tester.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(entry->source_id, ukm::NoURLSourceId());
     ukm_tester.ExpectEntryMetric(
         entry, UkmEntry::kStartEventName,

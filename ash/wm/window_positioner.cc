@@ -86,7 +86,7 @@ void SetBoundsAndOffsetTransientChildren(aura::Window* window,
                                          const gfx::Rect& work_area,
                                          const gfx::Vector2d& offset) {
   aura::Window::Windows transient_children = ::wm::GetTransientChildren(window);
-  for (auto* transient_child : transient_children) {
+  for (aura::Window* transient_child : transient_children) {
     gfx::Rect child_bounds = transient_child->bounds();
     gfx::Rect new_child_bounds = child_bounds + offset;
     if ((child_bounds.x() <= work_area.x() &&

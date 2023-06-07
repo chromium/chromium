@@ -170,7 +170,7 @@ void DownloadBubbleUIControllerDelegate::OnButtonClicked() {
   if (!browser_list)
     return;
 
-  for (auto* browser : *browser_list) {
+  for (Browser* browser : *browser_list) {
     if (browser && browser->window() &&
         browser->window()->GetDownloadBubbleUIController()) {
       browser->window()->GetDownloadBubbleUIController()->HandleButtonPressed();

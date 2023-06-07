@@ -1181,7 +1181,7 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
                  : kGroupedNotificationsCollapsedSpacing);
 
     int notification_count = 0;
-    for (auto* child : grouped_notifications_container_->children()) {
+    for (views::View* child : grouped_notifications_container_->children()) {
       auto* notification_view = static_cast<AshNotificationView*>(child);
       notification_view->AnimateGroupedChildExpandedCollapse(expanded);
       notification_view->SetGroupedChildExpanded(expanded);
@@ -1595,7 +1595,7 @@ void AshNotificationView::OnWidgetDestroying(views::Widget* widget) {
 void AshNotificationView::AbortAllAnimations() {
   std::vector<scoped_refptr<ui::LayerAnimator>> animators;
   animators.push_back(layer()->GetAnimator());
-  for (auto* child_notification :
+  for (views::View* child_notification :
        grouped_notifications_container_->children()) {
     animators.push_back(child_notification->layer()->GetAnimator());
   }
@@ -1649,7 +1649,7 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
 void AshNotificationView::UpdateGroupedNotificationsVisibility() {
   for (size_t i = 0; i < grouped_notifications_container_->children().size();
        i++) {
-    auto* view = grouped_notifications_container_->children()[i];
+    auto* view = grouped_notifications_container_->children()[i].get();
     bool show_notification_view =
         IsExpanded() ||
         i < message_center_style::kMaxGroupedNotificationsInCollapsedState;
@@ -1805,7 +1805,7 @@ void AshNotificationView::UpdateIconAndButtonsColor(
         AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
   }
 
-  for (auto* action_button : action_buttons()) {
+  for (views::LabelButton* action_button : action_buttons()) {
     static_cast<PillButton*>(action_button)->SetButtonTextColor(button_color);
   }
 

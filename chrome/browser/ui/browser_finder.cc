@@ -228,7 +228,7 @@ Browser* FindBrowserWithProfile(Profile* profile) {
 
 std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
   std::vector<Browser*> browsers;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, kMatchNormal,
                        display::kInvalidDisplayId))
       browsers.emplace_back(browser);
@@ -238,7 +238,7 @@ std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
 
 std::vector<Browser*> FindAllBrowsersWithProfile(Profile* profile) {
   std::vector<Browser*> browsers;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, kMatchAny,
                        display::kInvalidDisplayId)) {
       browsers.emplace_back(browser);
@@ -248,7 +248,7 @@ std::vector<Browser*> FindAllBrowsersWithProfile(Profile* profile) {
 }
 
 Browser* FindBrowserWithID(SessionID desired_id) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->session_id() == desired_id)
       return browser;
   }
@@ -258,7 +258,7 @@ Browser* FindBrowserWithID(SessionID desired_id) {
 Browser* FindBrowserWithWindow(gfx::NativeWindow window) {
   if (!window)
     return nullptr;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->window() && browser->window()->GetNativeWindow() == window)
       return browser;
   }
@@ -279,7 +279,7 @@ Browser* FindBrowserWithWebContents(const WebContents* web_contents) {
 }
 
 Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if ((!profile || browser->profile() == profile) &&
         browser->tab_strip_model() &&
         browser->tab_strip_model()->group_model() &&
@@ -291,7 +291,7 @@ Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile) {
 }
 
 Browser* FindBrowserWithUiElementContext(ui::ElementContext context) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->window()->GetElementContext() == context) {
       return browser;
     }

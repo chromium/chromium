@@ -89,7 +89,7 @@ LoginUserInfo CreatePublicAccountUser(const std::string& email) {
 
 bool HasFocusInAnyChildView(const views::View* view) {
   return view->HasFocus() ||
-         base::ranges::any_of(view->children(), [](const auto* v) {
+         base::ranges::any_of(view->children(), [](const views::View* v) {
            return HasFocusInAnyChildView(v);
          });
 }
@@ -116,7 +116,7 @@ bool TabThroughView(ui::test::EventGenerator* event_generator,
 // Performs a DFS for the first button in the views hierarchy
 // The last child is on the top of the z layer stack
 views::View* FindTopButton(views::View* current_view) {
-  for (auto* child : base::Reversed(current_view->children())) {
+  for (views::View* child : base::Reversed(current_view->children())) {
     if (views::Button::AsButton(child)) {
       return child;
     }

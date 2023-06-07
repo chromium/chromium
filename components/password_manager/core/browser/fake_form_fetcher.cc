@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/statistics_table.h"
@@ -38,17 +39,18 @@ const std::vector<InteractionsStats>& FakeFormFetcher::GetInteractionsStats()
   return stats_;
 }
 
-std::vector<const PasswordForm*> FakeFormFetcher::GetInsecureCredentials()
-    const {
+std::vector<dangling_raw_ptr<const PasswordForm>>
+FakeFormFetcher::GetInsecureCredentials() const {
   return insecure_credentials_;
 }
 
-std::vector<const PasswordForm*> FakeFormFetcher::GetNonFederatedMatches()
-    const {
+std::vector<dangling_raw_ptr<const PasswordForm>>
+FakeFormFetcher::GetNonFederatedMatches() const {
   return non_federated_;
 }
 
-std::vector<const PasswordForm*> FakeFormFetcher::GetFederatedMatches() const {
+std::vector<dangling_raw_ptr<const PasswordForm>>
+FakeFormFetcher::GetFederatedMatches() const {
   return federated_;
 }
 
@@ -60,7 +62,7 @@ bool FakeFormFetcher::IsMovingBlocked(const autofill::GaiaIdHash& destination,
                                       const std::u16string& username) const {
   // This is analogous to the implementation in
   // MultiStoreFormFetcher::IsMovingBlocked().
-  for (const std::vector<const PasswordForm*>& matches_vector :
+  for (const std::vector<dangling_raw_ptr<const PasswordForm>>& matches_vector :
        {federated_, non_federated_}) {
     for (const PasswordForm* form : matches_vector) {
       // Only local entries can be moved to the account store (though
@@ -82,13 +84,13 @@ bool FakeFormFetcher::IsMovingBlocked(const autofill::GaiaIdHash& destination,
   return false;
 }
 
-const std::vector<const PasswordForm*>& FakeFormFetcher::GetAllRelevantMatches()
-    const {
+const std::vector<dangling_raw_ptr<const PasswordForm>>&
+FakeFormFetcher::GetAllRelevantMatches() const {
   return non_federated_same_scheme_;
 }
 
-const std::vector<const PasswordForm*>& FakeFormFetcher::GetBestMatches()
-    const {
+const std::vector<dangling_raw_ptr<const PasswordForm>>&
+FakeFormFetcher::GetBestMatches() const {
   return best_matches_;
 }
 
@@ -104,7 +106,7 @@ std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
 }
 
 void FakeFormFetcher::SetNonFederated(
-    const std::vector<const PasswordForm*>& non_federated) {
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& non_federated) {
   non_federated_ = non_federated;
   password_manager_util::FindBestMatches(
       non_federated_, scheme_, &non_federated_same_scheme_, &best_matches_);

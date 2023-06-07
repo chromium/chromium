@@ -385,7 +385,7 @@ class SplitViewController::AutoSnapController
       : split_view_controller_(split_view_controller) {
     Shell::Get()->activation_client()->AddObserver(this);
     AddWindow(split_view_controller->root_window());
-    for (auto* window :
+    for (aura::Window* window :
          Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
       AddWindow(window);
     }

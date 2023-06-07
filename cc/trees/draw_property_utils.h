@@ -6,6 +6,7 @@
 #define CC_TREES_DRAW_PROPERTY_UTILS_H_
 
 #include <vector>
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
 
@@ -49,9 +50,9 @@ UpdatePropertyTreesAndRenderSurfaces(LayerTreeImpl* layer_tree_impl,
 void CC_EXPORT FindLayersThatNeedUpdates(LayerTreeHost* layer_tree_host,
                                          LayerList* update_layer_list);
 
-void CC_EXPORT
-FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
-                          std::vector<LayerImpl*>* visible_layer_list);
+void CC_EXPORT FindLayersThatNeedUpdates(
+    LayerTreeImpl* layer_tree_impl,
+    std::vector<dangling_raw_ptr<LayerImpl>>* visible_layer_list);
 
 gfx::Transform CC_EXPORT DrawTransform(const LayerImpl* layer,
                                        const TransformTree& transform_tree,

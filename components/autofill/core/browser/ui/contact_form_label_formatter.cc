@@ -4,13 +4,14 @@
 
 #include "components/autofill/core/browser/ui/contact_form_label_formatter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 
 namespace autofill {
 
 ContactFormLabelFormatter::ContactFormLabelFormatter(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
     uint32_t groups,

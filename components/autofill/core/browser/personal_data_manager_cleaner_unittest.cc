@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/personal_data_manager_cleaner.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -380,7 +381,7 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Get the profiles and cards sorted by their ranking score to have a
   // deterministic order.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_->GetProfilesToSuggest();
   std::vector<CreditCard*> credit_cards =
       personal_data_->GetCreditCardsToSuggest();
@@ -447,7 +448,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   EXPECT_TRUE(personal_data_manager_cleaner_->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
-  std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
+      personal_data_->GetProfiles();
 
   // |profile1| should have been merged into |profile2| which should then have
   // been merged into |profile3|. Therefore there should only be 1 saved
@@ -554,7 +556,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
   WaitForOnPersonalDataChanged();
 
   // Get the profiles, sorted by ranking score to have a deterministic order.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_->GetProfilesToSuggest();
 
   // The 2 duplicates Homer home profiles with the higher ranking score  should
@@ -643,7 +645,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_TRUE(personal_data_manager_cleaner_->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
-  std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
+      personal_data_->GetProfiles();
 
   // The profiles should have been deduped
   EXPECT_EQ(1U, profiles.size());

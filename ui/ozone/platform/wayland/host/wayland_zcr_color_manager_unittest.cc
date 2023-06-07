@@ -78,7 +78,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementOutput) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_outputs();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementOutputV1* mock_params : params_vector) {
       mock_params->SetGfxColorSpace(gfx::ColorSpace::CreateHDR10());
       zcr_color_management_output_v1_send_color_space_changed(
           mock_params->resource());
@@ -88,7 +88,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementOutput) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_outputs();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementOutputV1* mock_params : params_vector) {
       auto* zcr_color_space = mock_params->GetZcrColorSpace();
       // assert that the color space is the same as the one in output.
       EXPECT_EQ(zcr_color_space->GetGfxColorSpace(),
@@ -110,7 +110,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementSurface) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_surfaces();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementSurfaceV1* mock_params : params_vector) {
       EXPECT_EQ(gfx::ColorSpace::CreateSRGB(), mock_params->GetGfxColorSpace());
     }
   });
@@ -152,7 +152,7 @@ TEST_P(WaylandZcrColorManagerTest, DoNotSetInvaliColorSpace) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_surfaces();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementSurfaceV1* mock_params : params_vector) {
       EXPECT_EQ(gfx::ColorSpace::CreateSRGB(), mock_params->GetGfxColorSpace());
     }
   });

@@ -260,7 +260,7 @@ TEST_F(MediaEngagementSessionTest, TotalPlayers) {
     auto ukm_entries = test_ukm_recorder().GetEntriesByName(Entry::kEntryName);
     EXPECT_EQ(1u, ukm_entries.size());
 
-    auto* ukm_entry = ukm_entries[0];
+    auto* ukm_entry = ukm_entries[0].get();
     test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry, origin().GetURL());
     EXPECT_EQ(2, *test_ukm_recorder().GetEntryMetric(
                      ukm_entry, Entry::kPlayer_Audible_DeltaName));
@@ -637,7 +637,7 @@ TEST_F(MediaEngagementSessionTest, RecordUkmMetrics) {
     auto ukm_entries = test_ukm_recorder().GetEntriesByName(Entry::kEntryName);
     EXPECT_EQ(1u, ukm_entries.size());
 
-    auto* ukm_entry = ukm_entries[0];
+    auto* ukm_entry = ukm_entries[0].get();
     test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry, origin().GetURL());
     EXPECT_EQ(1, *test_ukm_recorder().GetEntryMetric(
                      ukm_entry, Entry::kPlaybacks_TotalName));
@@ -662,7 +662,7 @@ TEST_F(MediaEngagementSessionTest, RecordUkmMetrics) {
     auto ukm_entries = test_ukm_recorder().GetEntriesByName(Entry::kEntryName);
     EXPECT_EQ(2u, ukm_entries.size());
 
-    auto* ukm_entry = ukm_entries[1];
+    auto* ukm_entry = ukm_entries[1].get();
     test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry, origin().GetURL());
 
     EXPECT_EQ(2, *test_ukm_recorder().GetEntryMetric(

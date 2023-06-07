@@ -87,7 +87,7 @@ class AX_EXPORT AXTableInfo {
   // Extra computed nodes for the accessibility tree for macOS:
   // one column node for each table column, followed by one
   // table header container node.
-  std::vector<AXNode*> extra_mac_nodes;
+  std::vector<dangling_raw_ptr<AXNode>> extra_mac_nodes;
 
   // Map from each cell's node ID to its index in unique_cell_ids.
   std::map<AXNodeID, size_t> cell_id_to_index;
@@ -96,7 +96,7 @@ class AX_EXPORT AXTableInfo {
   std::map<AXNodeID, size_t> row_id_to_index;
 
   // List of ax nodes that represent the rows of the table.
-  std::vector<AXNode*> row_nodes;
+  std::vector<dangling_raw_ptr<AXNode>> row_nodes;
 
   // The ARIA row count and column count, if any ARIA table or grid
   // attributes are used in the table at all.
@@ -121,7 +121,7 @@ class AX_EXPORT AXTableInfo {
 
   void ClearVectors();
   void BuildCellDataVectorFromRowAndCellNodes(
-      const std::vector<AXNode*>& row_node_list,
+      const std::vector<dangling_raw_ptr<AXNode>>& row_node_list,
       const std::vector<std::vector<AXNode*>>& cell_nodes_per_row);
   void BuildCellDataVectorFromCellNodes(
       const std::vector<std::vector<AXNode*>>& cell_nodes_per_row);

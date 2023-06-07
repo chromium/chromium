@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
@@ -58,7 +59,7 @@ class SafeAcquisitionTracker {
   }
 
  private:
-  using LockVector = std::vector<const CheckedLockImpl*>;
+  using LockVector = std::vector<dangling_raw_ptr<const CheckedLockImpl>>;
   using PredecessorMap =
       std::unordered_map<const CheckedLockImpl*, const CheckedLockImpl*>;
 

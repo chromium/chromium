@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
@@ -44,7 +45,8 @@ void ExecutionService::Initialize(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::flat_set<SegmentId>& all_segment_ids,
     ModelProviderFactory* model_provider_factory,
-    std::vector<ModelExecutionScheduler::Observer*>&& observers,
+    std::vector<dangling_raw_ptr<ModelExecutionScheduler::Observer>>&&
+        observers,
     const PlatformOptions& platform_options,
     std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
     const std::vector<std::unique_ptr<Config>>* configs,

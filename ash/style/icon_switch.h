@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -55,7 +56,7 @@ class ASH_EXPORT IconSwitch : public views::View, public IconButton::Delegate {
   // If set to true, the icon switch will have a rounded rect background
   // wrapping all the toggle buttons. Otherwise, there is no background.
   bool has_background_;
-  std::vector<IconButton*> buttons_;
+  std::vector<dangling_raw_ptr<IconButton>> buttons_;
   base::CallbackListSubscription enabled_changed_subscription_;
 };
 

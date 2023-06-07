@@ -37,7 +37,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
  public:
   METADATA_HEADER(WindowCycleView);
 
-  using WindowList = std::vector<aura::Window*>;
+  using WindowList = std::vector<dangling_raw_ptr<aura::Window>>;
 
   // Horizontal padding between the alt-tab bandshield and the window
   // previews.

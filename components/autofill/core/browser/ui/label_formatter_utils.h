@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -143,18 +144,23 @@ std::u16string GetLabelPhone(const AutofillProfile& profile,
 //
 // Near-duplicate data, such as Düsseldorf and Dusseldorf or 3 Elm St and 3 Elm
 // St., should be filtered out before calling this function.
-bool HaveSameEmailAddresses(const std::vector<AutofillProfile*>& profiles,
-                            const std::string& app_locale);
-bool HaveSameFirstNames(const std::vector<AutofillProfile*>& profiles,
-                        const std::string& app_locale);
-bool HaveSameNonStreetAddresses(const std::vector<AutofillProfile*>& profiles,
-                                const std::string& app_locale,
-                                const std::vector<ServerFieldType>& types);
-bool HaveSamePhoneNumbers(const std::vector<AutofillProfile*>& profiles,
-                          const std::string& app_locale);
-bool HaveSameStreetAddresses(const std::vector<AutofillProfile*>& profiles,
-                             const std::string& app_locale,
-                             const std::vector<ServerFieldType>& types);
+bool HaveSameEmailAddresses(
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::string& app_locale);
+bool HaveSameFirstNames(
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::string& app_locale);
+bool HaveSameNonStreetAddresses(
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::string& app_locale,
+    const std::vector<ServerFieldType>& types);
+bool HaveSamePhoneNumbers(
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::string& app_locale);
+bool HaveSameStreetAddresses(
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+    const std::string& app_locale,
+    const std::vector<ServerFieldType>& types);
 
 // Each HasUnfocused* function below returns true if the form described by
 // |form_groups| includes a field corresponding to the specified data and if

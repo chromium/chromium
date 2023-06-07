@@ -118,7 +118,7 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
     bool IsGrabHandle(View* view);
 
    private:
-    std::vector<GrabHandle*> grab_handles_;
+    std::vector<dangling_raw_ptr<GrabHandle>> grab_handles_;
   };
 
   DesignerExample();
@@ -171,7 +171,8 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   raw_ptr<View> selected_ = nullptr;
   raw_ptr<View> dragging_ = nullptr;
   gfx::Point last_mouse_pos_;
-  std::vector<ui::metadata::MemberMetaDataBase*> selected_members_;
+  std::vector<dangling_raw_ptr<ui::metadata::MemberMetaDataBase>>
+      selected_members_;
 
   GrabHandles grab_handles_;
 

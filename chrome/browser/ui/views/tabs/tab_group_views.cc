@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -154,8 +155,9 @@ bool TabGroupViews::InTearDown() const {
 
 std::tuple<const views::View*, const views::View*>
 TabGroupViews::GetLeadingTrailingGroupViews() const {
-  std::vector<views::View*> children = underline_->parent()->children();
-  std::vector<views::View*> dragged_children =
+  std::vector<dangling_raw_ptr<views::View>> children =
+      underline_->parent()->children();
+  std::vector<dangling_raw_ptr<views::View>> dragged_children =
       drag_underline_->parent()->children();
   children.insert(children.end(), dragged_children.begin(),
                   dragged_children.end());
@@ -169,7 +171,7 @@ TabGroupViews::GetLeadingTrailingDraggedGroupViews() const {
 
 std::tuple<views::View*, views::View*>
 TabGroupViews::GetLeadingTrailingGroupViews(
-    std::vector<views::View*> children) const {
+    std::vector<dangling_raw_ptr<views::View>> children) const {
   // Elements of |children| may be in different coordinate spaces. Canonicalize
   // to widget space for comparison, since they will be in the same widget.
   views::View* leading_child = nullptr;

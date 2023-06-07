@@ -674,8 +674,9 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized(
   DCHECK(!is_restoring_persistence());
   download::SimpleDownloadManager::DownloadVector downloads;
   manager->GetAllDownloads(&downloads);
-  for (auto* download : downloads)
+  for (download::DownloadItem* download : downloads) {
     OnDownloadCreated(manager, download);
+  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnManagerGoingDown(

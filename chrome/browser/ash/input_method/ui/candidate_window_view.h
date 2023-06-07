@@ -106,7 +106,7 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   raw_ptr<views::View, ExperimentalAsh> candidate_area_;
 
   // The candidate views are used for rendering candidates.
-  std::vector<CandidateView*> candidate_views_;
+  std::vector<dangling_raw_ptr<CandidateView>> candidate_views_;
 
   // Current columns size in |candidate_area_|.
   gfx::Size previous_shortcut_column_size_;

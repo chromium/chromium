@@ -398,7 +398,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // The video capture clients hooking into this instance to observe frame
   // begins and damage, and then make CopyOutputRequests on the appropriate
   // frames.
-  std::vector<CapturableFrameSink::Client*> capture_clients_;
+  std::vector<dangling_raw_ptr<CapturableFrameSink::Client>> capture_clients_;
 
   // The set of SharedBitmapIds that have been reported as allocated to this
   // interface. On closing this interface, the display compositor should drop

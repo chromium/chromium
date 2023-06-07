@@ -374,7 +374,8 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // A vector of SharedImageRepresentations which hold references to this
   // backing. The first reference is considered the owner, and the vector is
   // ordered by the order in which references were taken.
-  std::vector<SharedImageRepresentation*> refs_ GUARDED_BY(lock_);
+  std::vector<dangling_raw_ptr<SharedImageRepresentation>> refs_
+      GUARDED_BY(lock_);
 };
 
 // Helper implementation of SharedImageBacking which tracks a simple

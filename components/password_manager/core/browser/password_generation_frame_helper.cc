@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -56,7 +57,7 @@ void PasswordGenerationFrameHelper::PrefetchSpec(const GURL& origin) {
 }
 
 void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
-    const std::vector<autofill::FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms) {
   // IsGenerationEnabled is called multiple times and it is sufficient to
   // log debug data once.
   if (!IsGenerationEnabled(/*log_debug_data=*/false))

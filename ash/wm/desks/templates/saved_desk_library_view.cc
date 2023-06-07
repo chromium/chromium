@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -86,15 +87,16 @@ constexpr base::TimeDelta kSaveAndRecallLaunchFadeDuration =
 
 struct SavedDesks {
   // Saved desks created as templates.
-  std::vector<const DeskTemplate*> desk_templates;
+  std::vector<dangling_raw_ptr<const DeskTemplate>> desk_templates;
   // Saved desks created for save & recall.
-  std::vector<const DeskTemplate*> save_and_recall;
+  std::vector<dangling_raw_ptr<const DeskTemplate>> save_and_recall;
 };
 
-SavedDesks Group(const std::vector<const DeskTemplate*>& saved_desks) {
+SavedDesks Group(
+    const std::vector<dangling_raw_ptr<const DeskTemplate>>& saved_desks) {
   SavedDesks grouped;
 
-  for (auto* saved_desk : saved_desks) {
+  for (const ash::DeskTemplate* saved_desk : saved_desks) {
     switch (saved_desk->type()) {
       case DeskTemplateType::kTemplate:
         grouped.desk_templates.push_back(saved_desk);
@@ -303,7 +305,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
         MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL)));
     desk_template_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
-    grid_views_.push_back(desk_template_grid_view_);
+    grid_views_.push_back(desk_template_grid_view_.get());
 
     scroll_contents->AddChildView(std::move(group_contents));
   }
@@ -313,7 +315,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
         IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL)));
     save_and_recall_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
-    grid_views_.push_back(save_and_recall_grid_view_);
+    grid_views_.push_back(save_and_recall_grid_view_.get());
 
     scroll_contents->AddChildView(std::move(group_contents));
   }
@@ -340,7 +342,7 @@ SavedDeskLibraryView::~SavedDeskLibraryView() {
 
 SavedDeskItemView* SavedDeskLibraryView::GetItemForUUID(
     const base::Uuid& uuid) {
-  for (auto* grid_view : grid_views()) {
+  for (ash::SavedDeskGridView* grid_view : grid_views()) {
     if (auto* item = grid_view->GetItemForUUID(uuid))
       return item;
   }
@@ -348,7 +350,7 @@ SavedDeskItemView* SavedDeskLibraryView::GetItemForUUID(
 }
 
 void SavedDeskLibraryView::AddOrUpdateEntries(
-    const std::vector<const DeskTemplate*>& entries,
+    const std::vector<dangling_raw_ptr<const DeskTemplate>>& entries,
     const base::Uuid& order_first_uuid,
     bool animate) {
   SavedDesks grouped = Group(entries);
@@ -428,7 +430,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::Uuid& uuid,
 }
 
 bool SavedDeskLibraryView::IsAnimating() {
-  for (auto* grid_view : grid_views()) {
+  for (ash::SavedDeskGridView* grid_view : grid_views()) {
     if (grid_view->IsAnimating())
       return true;
   }
@@ -438,8 +440,8 @@ bool SavedDeskLibraryView::IsAnimating() {
 
 bool SavedDeskLibraryView::IntersectsWithUi(const gfx::Point& screen_location) {
   // Check saved desk items.
-  for (auto* grid : grid_views()) {
-    for (auto* item : grid->grid_items()) {
+  for (ash::SavedDeskGridView* grid : grid_views()) {
+    for (ash::SavedDeskItemView* item : grid->grid_items()) {
       if (item->GetBoundsInScreen().Contains(screen_location))
         return true;
     }
@@ -489,7 +491,7 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
       if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
         break;
 
-      for (auto* grid_view : grid_views()) {
+      for (ash::SavedDeskGridView* grid_view : grid_views()) {
         for (SavedDeskItemView* grid_item : grid_view->grid_items())
           grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
       }
@@ -549,7 +551,7 @@ void SavedDeskLibraryView::Layout() {
     return;
 
   const bool landscape = width() >= kLandscapeMinWidth;
-  for (auto* grid_view : grid_views()) {
+  for (ash::SavedDeskGridView* grid_view : grid_views()) {
     grid_view->set_layout_mode(landscape
                                    ? SavedDeskGridView::LayoutMode::LANDSCAPE
                                    : SavedDeskGridView::LayoutMode::PORTRAIT);

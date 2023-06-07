@@ -54,7 +54,7 @@ class EditLabels : public views::View {
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action> action_ = nullptr;
 
-  std::vector<EditLabel*> labels_;
+  std::vector<dangling_raw_ptr<EditLabel>> labels_;
 };
 }  // namespace arc::input_overlay
 

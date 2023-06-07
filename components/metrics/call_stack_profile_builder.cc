@@ -252,7 +252,7 @@ void CallStackProfileBuilder::OnProfileCompleted(
   call_stack_profile->set_sampling_period_ms(sampling_period.InMilliseconds());
 
   // Write CallStackProfile::ModuleIdentifier protobuf message.
-  for (const auto* module : modules_) {
+  for (const base::ModuleCache::Module* module : modules_) {
     CallStackProfile::ModuleIdentifier* module_id =
         call_stack_profile->add_module_id();
     module_id->set_build_id(module->GetId());

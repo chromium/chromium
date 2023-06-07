@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -133,7 +134,7 @@ class MessageCenterImpl : public MessageCenter,
   base::ObserverList<MessageCenterObserver> observer_list_;
   std::unique_ptr<PopupTimersController> popup_timers_controller_;
   base::OneShotTimer quiet_mode_timer_;
-  std::vector<NotificationBlocker*> blockers_;
+  std::vector<dangling_raw_ptr<NotificationBlocker>> blockers_;
 
   bool visible_ = false;
   bool has_message_center_view_ = true;

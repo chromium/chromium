@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -21,7 +22,7 @@ CredentialCache::CredentialCache() = default;
 CredentialCache::~CredentialCache() = default;
 
 void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
-    const std::vector<const PasswordForm*>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
     IsOriginBlocklisted is_blocklisted,
     const url::Origin& origin) {
   std::vector<UiCredential> credentials;

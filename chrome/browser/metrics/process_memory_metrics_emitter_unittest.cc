@@ -633,7 +633,7 @@ class ProcessMemoryMetricsEmitterTest
         test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
     size_t i = 0;
     size_t total_memory_entries = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       if (test_ukm_recorder_.EntryHasMetric(
               entry, UkmEntry::kTotal2_PrivateMemoryFootprintName)) {
         total_memory_entries++;
@@ -788,7 +788,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, ReceiveProcessInfoFirst) {
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 2u);
   int total_memory_entries = 0;
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     if (test_ukm_recorder_.EntryHasMetric(
             entry, UkmEntry::kTotal2_PrivateMemoryFootprintName)) {
       total_memory_entries++;
@@ -820,7 +820,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, ReceiveProcessInfoSecond) {
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 2u);
   int total_memory_entries = 0;
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     if (test_ukm_recorder_.EntryHasMetric(
             entry, UkmEntry::kTotal2_PrivateMemoryFootprintName)) {
       total_memory_entries++;
@@ -873,7 +873,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, ProcessInfoHasTwoURLs) {
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
   int total_memory_entries = 0;
   int entries_with_urls = 0;
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     if (test_ukm_recorder_.EntryHasMetric(
             entry, UkmEntry::kTotal2_PrivateMemoryFootprintName)) {
       total_memory_entries++;
@@ -1056,7 +1056,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {
   entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::Memory_TabFootprint::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
-  const auto* entry = entries.front();
+  const auto* entry = entries.front().get();
   ASSERT_TRUE(test_ukm_recorder_.EntryHasMetric(
       entry, ukm::builders::Memory_TabFootprint::kMainFrameProcessPMFName));
 }

@@ -554,7 +554,7 @@ class HoldingSpaceUiDragAndDropBrowserTest
     // Cache a reference to preview layers.
     const ui::Layer* previews_container_layer =
         test_api().GetPreviewsTrayIcon()->layer()->children()[0];
-    const std::vector<ui::Layer*>& preview_layers =
+    const std::vector<dangling_raw_ptr<ui::Layer>>& preview_layers =
         previews_container_layer->children();
 
     // Iterate over the layers for each preview.
@@ -1298,7 +1298,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, TogglePreviews) {
   ASSERT_TRUE(previews_tray_icon);
   ASSERT_TRUE(previews_tray_icon->layer());
   ASSERT_EQ(1u, previews_tray_icon->layer()->children().size());
-  auto* previews_container_layer = previews_tray_icon->layer()->children()[0];
+  auto* previews_container_layer =
+      previews_tray_icon->layer()->children()[0].get();
   EXPECT_FALSE(previews_tray_icon->GetVisible());
 
   // After pinning a file, we should have a single preview in the tray icon.

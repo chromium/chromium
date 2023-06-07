@@ -146,7 +146,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     bool final_status_entry_found = false;
     const auto entries = ukm_recorder_.GetEntriesByName(
         ukm::builders::PrerenderPageLoad::kEntryName);
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       if (ukm_recorder_.EntryHasMetric(
               entry, ukm::builders::PrerenderPageLoad::kFinalStatusName)) {
         final_status_entry_found = true;

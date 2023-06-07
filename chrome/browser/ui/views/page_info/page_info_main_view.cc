@@ -302,10 +302,10 @@ void PageInfoMainView::SetPermissionInfo(
   reset_button_ = content_view->AddChildView(
       std::make_unique<views::MdTextButton>(base::BindRepeating(
           [=](PageInfoMainView* view) {
-            for (auto* toggle_row : view->toggle_rows_) {
+            for (PermissionToggleRowView* toggle_row : view->toggle_rows_) {
               toggle_row->ResetPermission();
             }
-            for (auto* object_row : view->chosen_object_rows_) {
+            for (ChosenObjectView* object_row : view->chosen_object_rows_) {
               object_row->ResetPermission();
             }
             view->chosen_object_rows_.clear();
@@ -358,7 +358,7 @@ void PageInfoMainView::UpdateResetButton(
     }
     num_permissions++;
   }
-  for (auto* object_view : chosen_object_rows_) {
+  for (ChosenObjectView* object_view : chosen_object_rows_) {
     if (object_view->GetVisible()) {
       reset_button_->SetEnabled(true);
       reset_button_->SetVisible(true);

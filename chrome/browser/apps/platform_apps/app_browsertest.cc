@@ -143,7 +143,7 @@ class TabsAddedNotificationObserver : public TabStripModelObserver {
       return;
 
     for (auto& tab : change.GetInsert()->contents)
-      observed_tabs_.push_back(tab.contents);
+      observed_tabs_.push_back(tab.contents.get());
 
     if (observed_tabs_.size() >= observations_)
       run_loop_.Quit();
@@ -151,12 +151,14 @@ class TabsAddedNotificationObserver : public TabStripModelObserver {
 
   void Wait() { run_loop_.Run(); }
 
-  const std::vector<content::WebContents*>& tabs() { return observed_tabs_; }
+  const std::vector<dangling_raw_ptr<content::WebContents>>& tabs() {
+    return observed_tabs_;
+  }
 
  private:
   base::RunLoop run_loop_;
   size_t observations_;
-  std::vector<content::WebContents*> observed_tabs_;
+  std::vector<dangling_raw_ptr<content::WebContents>> observed_tabs_;
 };
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

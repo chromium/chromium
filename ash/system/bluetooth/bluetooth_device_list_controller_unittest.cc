@@ -69,7 +69,7 @@ class BluetoothDeviceListControllerTest
   }
 
   const views::Separator* FindSeparator() {
-    for (const auto* view : device_list()->children()) {
+    for (const views::View* view : device_list()->children()) {
       if (!std::strcmp("Separator", view->GetClassName()))
         return static_cast<const views::Separator*>(view);
     }
@@ -184,7 +184,7 @@ class BluetoothDeviceListControllerTest
 
  private:
   const TriView* FindSubHeaderWithText(const std::u16string text) {
-    for (const auto* view : device_list()->children()) {
+    for (const views::View* view : device_list()->children()) {
       if (std::strcmp("TriView", view->GetClassName()))
         continue;
       const TriView* sub_header = static_cast<const TriView*>(view);

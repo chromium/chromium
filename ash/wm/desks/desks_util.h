@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/compositor.h"
 
 namespace aura {
@@ -88,7 +89,7 @@ ASH_EXPORT bool IsZOrderTracked(aura::Window* window);
 // in reverse order. If `window` is not in the list (or isn't z-order tracked),
 // then nullopt is returned.
 ASH_EXPORT absl::optional<size_t> GetWindowZOrder(
-    const std::vector<aura::Window*>& windows,
+    const std::vector<dangling_raw_ptr<aura::Window>>& windows,
     aura::Window* window);
 
 // Move an item at |old_index| to |new_index|.

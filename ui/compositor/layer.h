@@ -160,7 +160,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void StackBelow(Layer* child, Layer* other);
 
   // Returns the child Layers.
-  const std::vector<Layer*>& children() const { return children_; }
+  const std::vector<dangling_raw_ptr<Layer>>& children() const {
+    return children_;
+  }
 
   // The parent.
   const Layer* parent() const { return parent_; }
@@ -698,7 +700,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   raw_ptr<Layer> parent_;
 
   // This layer's children, in bottom-to-top stacking order.
-  std::vector<Layer*> children_;
+  std::vector<dangling_raw_ptr<Layer>> children_;
 
   std::vector<std::unique_ptr<LayerMirror>> mirrors_;
 

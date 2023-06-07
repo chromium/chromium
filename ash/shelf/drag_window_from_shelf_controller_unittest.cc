@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/drag_window_from_shelf_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <tuple>
 
@@ -1157,7 +1158,7 @@ TEST_F(DragWindowFromShelfControllerTest, DropsIntoOverviewAtCorrectPosition) {
   // Verify the grid arrangement.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  const std::vector<aura::Window*> expected_mru_list = {
+  const std::vector<dangling_raw_ptr<aura::Window>> expected_mru_list = {
       window2.get(), window1.get(), window3.get()};
   const std::vector<aura::Window*> expected_overview_list = {
       window2.get(), window1.get(), window3.get()};

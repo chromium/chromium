@@ -39,6 +39,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -147,7 +148,7 @@ constexpr char kTestTabGroupNameFormat[] = "test_tab_group_%u";
 constexpr char kTestAppName[] = "test_app_name";
 
 Browser* FindBrowser(int32_t window_id) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     if (window->GetProperty(app_restore::kRestoreWindowIdKey) == window_id) {
       return browser;
@@ -174,7 +175,7 @@ std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
 std::vector<Browser*> FindLaunchedBrowsersByURLs(
     const std::vector<GURL>& urls) {
   std::vector<Browser*> browsers;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     if (window->GetProperty(app_restore::kRestoreWindowIdKey) <
             kLaunchedWindowIdBase &&
@@ -210,13 +211,14 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate(
   return desk_template;
 }
 
-std::vector<const ash::DeskTemplate*> GetDeskTemplates() {
+std::vector<dangling_raw_ptr<const ash::DeskTemplate>> GetDeskTemplates() {
   base::RunLoop run_loop;
-  std::vector<const ash::DeskTemplate*> templates;
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates;
 
   DesksClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
       [&](absl::optional<DesksClient::DeskActionError> error,
-          const std::vector<const ash::DeskTemplate*>& desk_templates) {
+          const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>&
+              desk_templates) {
         templates = desk_templates;
         run_loop.Quit();
       }));
@@ -229,7 +231,8 @@ std::vector<const ash::DeskTemplate*> GetDeskTemplates() {
 // false if not.
 bool ContainUuidInTemplates(
     const base::Uuid& uuid,
-    const std::vector<const ash::DeskTemplate*>& desk_templates) {
+    const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>&
+        desk_templates) {
   DCHECK(uuid.is_valid());
   return base::Contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
 }
@@ -343,7 +346,7 @@ void ClickFirstTemplateItem() {
   ClickButton(template_item);
 }
 
-const std::vector<const ash::DeskTemplate*> GetAllEntries() {
+const std::vector<dangling_raw_ptr<const ash::DeskTemplate>> GetAllEntries() {
   std::vector<const ash::DeskTemplate*> templates;
   auto error = DesksClient::Get()->GetDeskModel()->GetAllEntries();
   DCHECK_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk, error.status);
@@ -656,7 +659,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
 
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   const app_restore::AppRestoreData* data = ash::QueryRestoreData(
@@ -691,7 +695,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
 
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   const app_restore::AppRestoreData* data = ash::QueryRestoreData(
@@ -895,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   // matches. We should verify the restore id and use
   // `FindBrowserWindow(kSettingsWindowId)` once things are wired up properly.
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     if (window->GetTitle() == settings_title) {
       settings_window = window;
@@ -1538,7 +1543,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
 
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   const app_restore::AppRestoreData* data = ash::QueryRestoreData(
@@ -1686,7 +1692,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
   ui::test::EventGenerator event_generator(root_window);
   event_generator.PressAndReleaseKey(ui::VKEY_RETURN);
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   const ash::DeskTemplate* desk_template = templates.front();
@@ -1748,7 +1755,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   settings_window = nullptr;
   help_window = nullptr;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     const std::u16string title = window->GetTitle();
     if (title == settings_title) {
@@ -1952,7 +1959,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   // Find `pwa_browser` window's app restore data.
@@ -1997,7 +2005,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   // Test that `pwa_browser` restore data can be found.
@@ -2045,7 +2054,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   const ash::DeskTemplate* desk_template = templates.front();
@@ -2901,7 +2911,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
   ClickFirstTemplateItem();
   aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/2u);
   ASSERT_EQ(2u, launched_windows.size());
-  for (auto* window : launched_windows) {
+  for (aura::Window* window : launched_windows) {
     EXPECT_TRUE(window->GetProperty(app_restore::kWindowInfoKey));
   }
 
@@ -2941,7 +2951,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
   ClickSaveDeskAsTemplateButton();
 
   // Grab all entries to assert.
-  const std::vector<const ash::DeskTemplate*> all_entries = GetAllEntries();
+  const std::vector<dangling_raw_ptr<const ash::DeskTemplate>> all_entries =
+      GetAllEntries();
   ASSERT_EQ(all_entries.size(), 1u);
 
   // Since we only have one template grab the first one.
@@ -3009,7 +3020,8 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ASSERT_TRUE(overview_grid);
   EXPECT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
 
-  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<dangling_raw_ptr<const ash::DeskTemplate>> templates =
+      GetAllEntries();
   EXPECT_EQ(1u, templates.size());
 }
 

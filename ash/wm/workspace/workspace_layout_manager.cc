@@ -28,6 +28,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/backdrop_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/layer.h"
@@ -550,7 +551,8 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
   // appropriate windows will be included in the iteration.
   // Use an `aura::WindowTracker` since `OnWillRemoveWindowFromLayout()` may
   // remove windows from `windows_`.
-  std::vector<aura::Window*> windows(windows_.begin(), windows_.end());
+  std::vector<dangling_raw_ptr<aura::Window>> windows(windows_.begin(),
+                                                      windows_.end());
   aura::WindowTracker tracker(windows);
   while (!tracker.windows().empty()) {
     aura::Window* window = tracker.Pop();

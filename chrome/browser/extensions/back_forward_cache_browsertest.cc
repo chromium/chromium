@@ -1303,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(2u, entries.size());
 
   std::vector<const GURL> entry_urls;
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
     EXPECT_TRUE(src)
         << "The recorded UKM source id should have a source URL registered.";
@@ -1350,7 +1350,7 @@ IN_PROC_BROWSER_TEST_F(
          "from the second navigation";
 
   entry_urls.clear();
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
     ASSERT_TRUE(src)
         << "The recorded UKM source id should have a source URL registered.";

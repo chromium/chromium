@@ -4,6 +4,7 @@
 
 #include "components/media_message_center/media_notification_view_ash_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -121,7 +122,7 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
 
   test::MockMediaNotificationItem& item() { return *item_; }
 
-  std::vector<views::Button*> media_control_buttons() const {
+  std::vector<dangling_raw_ptr<views::Button>> media_control_buttons() const {
     return view()->action_buttons_;
   }
 
@@ -246,7 +247,7 @@ TEST_F(MediaNotificationViewAshImplTest, ButtonVisibilityCheck) {
   view()->UpdateWithMediaSessionInfo(session_info.Clone());
 
   DisableAllActions();
-  for (auto* button : media_control_buttons()) {
+  for (views::Button* button : media_control_buttons()) {
     EXPECT_FALSE(button->GetVisible());
   }
 

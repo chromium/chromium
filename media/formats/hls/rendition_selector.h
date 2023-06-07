@@ -115,10 +115,10 @@ class MEDIA_EXPORT RenditionSelector {
   scoped_refptr<MultivariantPlaylist> playlist_;
 
   // All variants which we suspect have an audio component.
-  std::vector<const VariantStream*> audio_variants_;
+  std::vector<dangling_raw_ptr<const VariantStream>> audio_variants_;
 
   // All variants which we suspect have a video component.
-  std::vector<const VariantStream*> video_variants_;
+  std::vector<dangling_raw_ptr<const VariantStream>> video_variants_;
 
   // The default audio language that was present in the manifest.
   // This is a singular value, relying on the fact the spec says that all groups

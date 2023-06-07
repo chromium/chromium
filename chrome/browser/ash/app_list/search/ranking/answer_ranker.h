@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_ANSWER_RANKER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_ANSWER_RANKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ash/app_list/search/types.h"
@@ -38,7 +39,7 @@ class AnswerRanker : public Ranker {
   base::WeakPtr<ChromeSearchResult> chosen_answer_;
 
   // All current Omnibox answer candidates.
-  std::vector<ChromeSearchResult*> omnibox_candidates_;
+  std::vector<dangling_raw_ptr<ChromeSearchResult>> omnibox_candidates_;
 
   bool burn_in_elapsed_ = false;
 };
