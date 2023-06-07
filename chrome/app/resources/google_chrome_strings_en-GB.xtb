@@ -49,7 +49,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1698376642261615901">Google Chrome is a web browser that runs web pages and applications with lightning speed. It's fast, stable and easy to use. Browse the web more safely with malware and phishing protection built into Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome will relaunch in an hour}other{Chrome will relaunch in # hours}}</translation>
 <translation id="1734234790201236882">Chrome will save this password in your Google Account. You won’t have to remember it.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Make sure that you are signed in to Chrome on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
@@ -85,7 +84,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2399868464369312507">Google Chrome is trying to edit payment methods.</translation>
 <translation id="2401189691232800402">Chrome OS system</translation>
+<translation id="2424440923901031101">This extension violates the Chrome Web Store policy and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
+<translation id="2472092250898121027">This extension contains malware and is unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2534507159460261402">Google Pay (copied to Chrome)</translation>
 <translation id="2556847002339236023">Your organisation closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION" />. Browsing data was deleted. This could include history, autofill and downloads.</translation>
@@ -289,6 +290,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6327105987658262776">No update is available.</translation>
+<translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Your administrator automatically deletes browsing data when it isn't used for one minute. This could include history, auto-fill and downloads. Your existing tabs will remain open.}other{Your administrator automatically deletes browsing data when it isn't used for # minutes. This could include history, auto-fill and downloads. Your existing tabs will remain open.}}</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
@@ -372,9 +374,9 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
 <translation id="8008534537613507642">Reinstall Chrome</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
+<translation id="8019103195866286235">This extension was unpublished by its developer and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="80471789339884597">Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
@@ -398,7 +400,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8504220326736535258">Chrome blocked this file because it has malware</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome is trying to modify settings for filling payment methods.</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8556340503434111824">There's a new version of Google Chrome available and it's faster than ever.</translation>

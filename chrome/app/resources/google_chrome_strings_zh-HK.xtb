@@ -49,7 +49,6 @@
 <translation id="1698376642261615901">Google Chrome 瀏覽器開啟網頁和執行應用程式的速度奇快無比！除了執行速度迅速、穩定且容易使用之外，內置防護機制還可讓您安心瀏覽網頁，無需擔心受到網絡釣魚與惡意軟件的威脅。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 將於 1 小時後重新啟動}other{Chrome 將於 # 小時後重新啟動}}</translation>
 <translation id="1734234790201236882">Chrome 會將此密碼儲存在您的 Google 帳戶內，您無需記住。</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">請確保您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chrome，然後再傳送一次。</translation>
 <translation id="1812689907177901597">關閉此功能後，您無需登入 Chrome，即可登入 Gmail 等 Google 網站</translation>
 <translation id="1860536484129686729">Chrome 需要取得權限，才能讓這個網站存取您的相機</translation>
@@ -374,7 +373,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="80471789339884597">多謝安裝。您必須先重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的相機和麥克風。</translation>
@@ -398,7 +396,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8504220326736535258">由於此檔案含有惡意軟件，因此已被 Chrome 封鎖</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome 正嘗試修改填入付款方法的設定。</translation>
 <translation id="8550334526674375523">此工作設定檔與個人設定檔是完全分開。</translation>
 <translation id="8556340503434111824">Google Chrome 推出全新版本，速度更勝從前。</translation>

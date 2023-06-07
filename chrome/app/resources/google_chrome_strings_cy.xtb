@@ -50,7 +50,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="1698376642261615901">Porwr gwe yw Google Chrome sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we'n fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Bydd Chrome yn ail-lansio mewn awr}zero{Bydd Chrome yn ail-lansio mewn # awr}two{Bydd Chrome yn ail-lansio mewn # awr}few{Bydd Chrome yn ail-lansio mewn # awr}many{Bydd Chrome yn ail-lansio mewn # awr}other{Bydd Chrome yn ail-lansio mewn # awr}}</translation>
 <translation id="1734234790201236882">Bydd Chrome yn cadw'r cyfrinair hwn yn eich Cyfrif Google. Ni fydd yn rhaid i chi ei gofio.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chrome ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
 <translation id="1812689907177901597">Drwy ddiffodd hyn, gallwch fewngofnodi i wefannau Google megis Gmail heb fewngofnodi i Chrome</translation>
 <translation id="1860536484129686729">Mae angen caniatâd ar Chrome i gael mynediad at eich camera ar gyfer y wefan hon</translation>
@@ -375,7 +374,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8013993649590906847">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chrome yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
 <translation id="80471789339884597">Diolch am osod. Rhaid i chi ailgychwyn eich holl borwyr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Ynghylch &amp;Google Chrome</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="8255190535488645436">Mae Google Chrome yn defnyddio'ch camera a'ch meicroffon.</translation>
@@ -399,7 +397,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8504220326736535258">Gwnaeth Chrome rwystro'r ffeil hon oherwydd bod maleiswedd ynddi</translation>
 <translation id="8516431725144212809">Eich diddordebau fel yr amcangyfrifir gan Chrome</translation>
 <translation id="8521348052903287641">Rheol dod i mewn ar gyfer Google Chrome Dev i ganiatáu traffig mDNS.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Mae Google Chrome yn ceisio addasu gosodiadau ar gyfer llenwi dulliau talu.</translation>
 <translation id="8550334526674375523">Mae'r proffil gwaith hwn yn hollol ar wahân i'ch proffil personol.</translation>
 <translation id="8556340503434111824">Mae fersiwn newydd o Google Chrome ar gael, ac mae'n gyflymach nag erioed.</translation>

@@ -48,7 +48,6 @@
 <translation id="1698376642261615901">Google Chrome হল একটি ওয়েব ব্রাউজার যা ওয়েব পৃষ্ঠাগুলি এবং অ্যাপগুলিকে বিদ্যুৎ গতিতে চালনা করে৷ এটি দ্রুত, সুস্থির এবং সহজেই ব্যবহারযোগ্য৷ Google Chrome-এ অন্তর্গঠিত ম্যালওয়ার এবং ফিশিং সুরক্ষার সাথে আরও নিরাপদে ওয়েব ব্রাউজ করুন৷</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ১ ঘণ্টার মধ্যে আবার লঞ্চ হবে}one{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}other{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="1734234790201236882">Google অ্যাকাউন্টে এই পাসওয়ার্ডটি Chrome সেভ করবে। আপনার এটি মনে রাখার দরকার নেই।</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1812689907177901597">এটি বন্ধ করার মানে হল, আপনি Chrome-এ সাইন-ইন না করে Gmail এর মতো Google সাইটগুলিতে সাইন-ইন করতে পারেন</translation>
 <translation id="1860536484129686729">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরায় অ্যাক্সেস দিতে হবে</translation>
@@ -371,7 +370,6 @@
 <translation id="8013993649590906847">যদি ছবিতে প্রয়োজনীয় বিবরণ দেওয়া না থাকে, তাহলে Chrome আপনাকে একটি বিবরণ দেওয়ার চেষ্টা করবে। বিবরণ তৈরির জন্য, Google-এ ছবি পাঠানো হয়।</translation>
 <translation id="80471789339884597">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই সমস্ত ব্রাউজার রিস্টার্ট করতে হবে।</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">&amp;Google Chrome সম্বন্ধে</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8255190535488645436">Google Chrome আপনার ক্যামেরা এবং মাইক্রোফোন ব্যবহার করছে৷</translation>
@@ -395,7 +393,6 @@
 <translation id="8504220326736535258">Chrome এই ফাইলটিকে ব্লক করেছে কারণ এতে ম্যালওয়্যার আছে</translation>
 <translation id="8516431725144212809">আপনার আগ্রহ Chrome দ্বারা অনুমান করা হয়েছে</translation>
 <translation id="8521348052903287641">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome ডেভেলপারের জন্য ইনবাউন্ড নিয়ম।</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">পেমেন্ট পদ্ধতি পূরণের জন্য Google Chrome, সেটিংস পরিবর্তন করার চেষ্টা করছে।</translation>
 <translation id="8550334526674375523">এই অফিস প্রোফাইল আপনার ব্যক্তিগত প্রোফাইল থেকে সম্পূর্ণ আলাদা।</translation>
 <translation id="8556340503434111824">Google Chrome-এর একটি নতুন ভার্সন উপলভ্য এবং এটি আগের তুলনায় দ্রুততর৷</translation>

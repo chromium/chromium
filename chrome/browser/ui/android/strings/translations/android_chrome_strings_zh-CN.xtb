@@ -59,6 +59,7 @@
 <translation id="1269129608791067105">您的历史记录会显示在此处</translation>
 <translation id="1273937721055267968">屏蔽 <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">点按即可展开</translation>
+<translation id="1289059016768036948">系统会要求您登录自己的 Google 帐号</translation>
 <translation id="1291207594882862231">清除历史记录、Cookie、网站数据、缓存内容…</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1298077576058087471">节省高达 60% 的数据流量，阅读今日新闻</translation>
@@ -126,6 +127,7 @@
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="1657932388559784161">显示网页数据洞见的底部工作表已关闭</translation>
 <translation id="1668122540633280551">选择如何在 Chrome 主页中自动播放视频预览。</translation>
 <translation id="1670399744444387456">基本</translation>
 <translation id="1671236975893690980">正在等待下载…</translation>
@@ -140,7 +142,6 @@
 <translation id="1749561566933687563">同步您的书签</translation>
 <translation id="1750259112639922169">标签页分组 - <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
-<translation id="1754404134430936718">文字已复制</translation>
 <translation id="1757620656501361327">Google 密码管理工具更新</translation>
 <translation id="1778457539567749232">标记为未读</translation>
 <translation id="1779766957982586368">关闭窗口</translation>
@@ -296,6 +297,7 @@
 <translation id="2647434099613338025">添加语言</translation>
 <translation id="2649068648233607930">您的浏览器由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="2650348088770008516">隐私保护指南说明已关闭</translation>
+<translation id="2650408372219180431">导出并删除此设备中保存的密码</translation>
 <translation id="2650751991977523696">是否重新下载文件？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 个音频文件}other{# 个音频文件}}</translation>
 <translation id="265156376773362237">标准预加载</translation>
@@ -506,6 +508,7 @@
 <translation id="3773856050682458546">基本数据加上您所访问网站、所用应用的有关信息</translation>
 <translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
+<translation id="3795154175078851242">复制图片且含链接</translation>
 <translation id="3803784507854318295">管理自动播放</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -808,6 +811,7 @@
 <translation id="5401851137404501592">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。</translation>
 <translation id="5409881200985013443">将“<ph name="ONE_TIME_CODE" />”提交至“<ph name="CLIENT_NAME" />”？</translation>
 <translation id="5414836363063783498">正在验证…</translation>
+<translation id="542190472198460451">所有密码都将下载到您的设备上，并且会从 Chrome <ph name="CHROME_CHANNEL" />中移除</translation>
 <translation id="5423934151118863508">您最常访问的网页将列在此处</translation>
 <translation id="5424588387303617268">可用存储空间：<ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">修改密码</translation>
@@ -961,6 +965,7 @@
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
 
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
+<translation id="6233974827872475843">开启同步功能，将此设备上的密码保存到您的 Google 帐号中</translation>
 <translation id="6255794742848779505">我们即将更改此设备上的密码保存方式</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
@@ -1369,6 +1374,7 @@
 <translation id="8221401890884589479">您可根据自己的需要屏蔽一些网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">动态卡片上的菜单</translation>
 <translation id="8236097722223016103">添加到书签</translation>
+<translation id="8237871086242677046">显示网页数据洞见的底部工作表</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8255617931166444521">网站只能使用 Cookie 查看您在此网站上的浏览活动</translation>
 <translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 帐号中的其他信息。</translation>
@@ -1438,7 +1444,6 @@
 <translation id="856481929701340285">请求切换到桌面版网站</translation>
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
-<translation id="8572344201470131220">图片已复制</translation>
 <translation id="8580884231102452214">复制 GIF</translation>
 <translation id="8583805026567836021">清除帐号数据</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>
@@ -1468,6 +1473,7 @@
 <translation id="8746155870861185046">分享突出显示的内容</translation>
 <translation id="874726034427945498">为了在地址栏中获得更好的建议，请同步您的标签页和历史记录</translation>
 <translation id="8748850008226585750">内容已隐藏</translation>
+<translation id="8754448020583829686">复制但不含链接</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8766529642647037772">创建一个像这样指向突出显示的文本的链接？</translation>
@@ -1479,6 +1485,7 @@
 <translation id="8803526663383843427">处于开启状态时</translation>
 <translation id="8805097383171548551">如需扫描二维码，请使用一部带有摄像头的设备。</translation>
 <translation id="8812260976093120287">在某些网站上，您可以使用自己的设备通过上述支持的付款应用付款。</translation>
+<translation id="8816556050903368450">包含链接：<ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="8835786707922974220">确保您可以随时访问自己的已保存密码</translation>
@@ -1566,6 +1573,7 @@
 <translation id="938850635132480979">错误：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">请输入密码</translation>
 <translation id="950679278154734362">若要在车载系统中同步信息并确保数据安全，您必须设置个人资料锁定功能。之后，每当您上车时，系统都会要求您输入验证码或密码。</translation>
+<translation id="952301137339791907">显示网页数据洞见的底部工作表已打开</translation>
 <translation id="95817756606698420">在中国，Chrome 可以使用<ph name="BEGIN_BOLD" />搜狗<ph name="END_BOLD" />作为搜索引擎。如果需要，您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行更改。</translation>
 <translation id="962979164594783469">安装此应用</translation>
 <translation id="96681097142096641">查看简化版网页？</translation>

@@ -46,7 +46,6 @@
 <translation id="1698376642261615901">Google Chrome అనేది మెరుపు వేగంతో వెబ్‌పేజీలను మరియు యాప్‌ల‌ను అమలు చేసే వెబ్ బ్రౌజర్. ఇది వేగమైనది, సామర్థ్యం కలది మరియు ఉపయోగించడానికి సులభమైంది. Google Chromeలో నిర్మితమైన మాల్‌వేర్‌ మరియు ఫిషింగ్ భద్రతతో మరింత సురక్షితంగా వెబ్‌ను బ్రౌజ్ చేయండి.</translation>
 <translation id="1713301662689114961">{0,plural, =1{ఒక గంటలో Chrome తిరిగి ప్రారంభించబడుతుంది}other{# గంటల్లో Chrome తిరిగి ప్రారంభించబడుతుంది}}</translation>
 <translation id="1734234790201236882">Chrome ఈ పాస్‌వర్డ్‌ను మీ Google ఖాతాలో సేవ్ చేస్తుంది. మీరు దీనిని గుర్తుంచుకోవాల్సిన అవసరం లేదు.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">మీ <ph name="TARGET_DEVICE_NAME" />లో మీరు Chromeకు సైన్ ఇన్ చేశారని నిర్ధారించుకుని, ఆపై మళ్లీ పంపడానికి ట్రై చేయండి.</translation>
 <translation id="1812689907177901597">దీనిని ఆఫ్ చేయడం ద్వారా, మీరు Chromeకి సైన్ ఇన్ చేయకుండానే Gmail లాంటి Google సైట్‌లలో సైన్ ఇన్ చేయగలరు</translation>
 <translation id="1860536484129686729">ఈ సైట్ కోసం మీ కెమెరాను ఉపయోగించడానికి Chromeకు అనుమతి అవసరం</translation>
@@ -367,7 +366,6 @@
 <translation id="8013993649590906847">చిత్రంలో ఉపయోగకరమైన వివరణ లేకుంటే, మీ కోసం ఒక వివరణను అందించడానికి Chrome ప్రయత్నిస్తుంది. వివరణలను క్రియేట్ చేయడానికి, చిత్రాలు Googleకు పంపబడతాయి.</translation>
 <translation id="80471789339884597">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించే ముందు మీరు తప్పకుండా మీ అన్ని బ్రౌజర్‌లను రీస్టార్ట్ చేయాలి.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">&amp;Google Chrome గురించి</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>
 <translation id="8255190535488645436">Google Chrome మీ కెమెరా మరియు మైక్రోఫోన్‌ని ఉపయోగిస్తోంది.</translation>
@@ -391,7 +389,6 @@
 <translation id="8504220326736535258">ఈ ఫైల్ మాల్‌వేర్‌ను కలిగి ఉన్నందున Chrome దీనిని బ్లాక్ చేసింది</translation>
 <translation id="8516431725144212809">Chrome అంచనా ఆధారంగా మీ ఆసక్తులు</translation>
 <translation id="8521348052903287641">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome డెవలపర్ కోసం ఇన్‌బౌండ్ నియమం.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయడానికి Google Chrome ట్రై చేస్తోంది.</translation>
 <translation id="8550334526674375523">ఈ వర్క్ ప్రొఫైల్, మీ వ్యక్తిగత ప్రొఫైల్ నుండి పూర్తిగా భిన్నంగా ఉంది.</translation>
 <translation id="8556340503434111824">Google Chrome యొక్క కొత్త వెర్షన్ అందుబాటులో ఉంది, ఇది మునుపటి కంటే వేగవంతంగా ఉంటుంది.</translation>

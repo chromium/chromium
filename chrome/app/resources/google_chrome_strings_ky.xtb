@@ -50,7 +50,6 @@
 <translation id="1698376642261615901">Google Chrome – веб-баракчалар жана колдонмолорду чагылгандай тездик менен иштеткен желе серепчиси. Ал оңой, тез жана туруктуу иштеген курал. Google Chrome кесепеттүү программалар менен фишингден коргоп тургандыктан, желени эч нерседен коркпостон серептей берсеңиз болот.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 1 сааттан кийин кайра иштетилет}other{Chrome # сааттан кийин кайра иштетилет}}</translation>
 <translation id="1734234790201236882">Chrome бул сырсөздү Google аккаунтуңузга сактап коёт. Аны эстеп калуунун кажети жок.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Chrome'го <ph name="TARGET_DEVICE_NAME" /> түзмөгүңүздөн кирип турганыңызды текшерип, кайра жөнөтүп көрүңүз.</translation>
 <translation id="1812689907177901597">Ушуну өчүрүү менен Gmail сыяктуу Google сайттарына Chrome'суз кире аласыз</translation>
 <translation id="1860536484129686729">Бул сайтта иштөө үчүн Chrome камераңызды колдонушу керек</translation>
@@ -375,7 +374,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8013993649590906847">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chrome аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт.</translation>
 <translation id="80471789339884597">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда бардык серепчилерди өчүрүп күйгүзүңүз.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">&amp;Google Chrome жөнүндө</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
 <translation id="8255190535488645436">Google Chrome камераңыз менен микрофонуңузду колдонуп жатат.</translation>
@@ -399,7 +397,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8504220326736535258">Бул файлда кесепеттүү программа болгондуктан, Chrome аны бөгөттөп койду</translation>
 <translation id="8516431725144212809">Chrome'дун божомолу боюнча төмөнкү нерселерге кызыгасыз</translation>
 <translation id="8521348052903287641">mDNS трафигине уруксат берүү үчүн Google Chrome Dev'дин кирүүчү туташуу эрежеси.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome төлөм ыкмаларын толтуруу параметрлерин өзгөртүүгө аракет кылууда.</translation>
 <translation id="8550334526674375523">Бул жумуш профили жеке профилиңизден толугу менен ажыратылган.</translation>
 <translation id="8556340503434111824">Google Chrome'дун чагылгандай тездик менен иштеген жаңы версиясы бар.</translation>

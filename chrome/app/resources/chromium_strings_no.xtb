@@ -301,7 +301,6 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="7318036098707714271">Innstillingerfilen din er ødelagt eller ugyldig.
 
 Chromium kan ikke gjenopprette innstillingen dine.</translation>
-<translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="734373864078049451">Her finner du nettinnholdet, bokmerkene og de andre Chromium-tingene dine.</translation>
 <translation id="7349591376906416160">Systemadministratoren din har konfigurert Chromium til å åpne <ph name="ALTERNATIVE_BROWSER_NAME" /> for å få tilgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>

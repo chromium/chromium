@@ -50,7 +50,6 @@
 <translation id="1698376642261615901">Google Chrome ଏକ ୱେବ୍ ବ୍ରାଉଜର୍ ଯାହା ଦ୍ରୁତ ବେଗରେ ୱେବ୍‌ପୃଷ୍ଠା ଏବଂ ଆପ୍ଲିକେସନ୍‌ ଚଲାଏ। ଏହା ଦ୍ରୁତ, ସ୍ଥିର ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ ସହଜ ଅଟେ। Google Chromeରେ ଅର୍ନ୍ତନିହିତ ମାଲ୍‌ୱେର୍‌ ଏବଂ ଫିସିଙ୍ଗ ସୁରକ୍ଷା ସହିତ ସୁରକ୍ଷିତ ଭାବେ ବ୍ରାଉଜ୍‌ କରନ୍ତୁ।</translation>
 <translation id="1713301662689114961">{0,plural, =1{ଗୋଟିଏ ଘଣ୍ଟା ମଧ୍ୟରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}other{# ଘଣ୍ଟାରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
 <translation id="1734234790201236882">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ Chrome ଏହି ପାସ୍‌ୱର୍ଡ ସେଭ୍ କରିବ। ଆପଣଙ୍କୁ ଏହା ମନେରଖିବାକୁ ପଡ଼ିବ ନାହିଁ।</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ଆପଣ ଆପଣଙ୍କ <ph name="TARGET_DEVICE_NAME" />ରେ Chromeରେ ସାଇନ୍ ଇନ୍ କରିଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ ଏବଂ ତା'ପରେ ପୁଣି ପଠାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1812689907177901597">ଏହାକୁ ବନ୍ଦ କରିବା ଦ୍ଵାରା, ଆପଣ Chromeରେ ସାଇନ୍-ଇନ୍ ନକରି Gmail ଭଳି Google ସାଇଟ୍‍ଗୁଡ଼ିକରେ ସାଇନ୍-ଇନ୍ କରିପାରିବେ</translation>
 <translation id="1860536484129686729">ଏହି ସାଇଟ୍ ପାଇଁ Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
@@ -375,7 +374,6 @@
 <translation id="8013993649590906847">ଯଦି ଗୋଟିଏ ଛବିରେ ଏକ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chrome ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି।</translation>
 <translation id="80471789339884597">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ । ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ସମସ୍ତ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">&amp;Google Chrome ବିଷୟରେ</translation>
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>
 <translation id="8255190535488645436">Google Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍‌କୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -399,7 +397,6 @@
 <translation id="8504220326736535258">ଏହି ଫାଇଲରେ ମାଲୱେର ଥିବା ଯୋଗୁଁ Chrome ଏହାକୁ ବ୍ଲକ କରିଦେଇଛି</translation>
 <translation id="8516431725144212809">Chrome ଦ୍ୱାରା ଆକଳନ କରାଯାଇଥିବା ଅନୁସାରେ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକ</translation>
 <translation id="8521348052903287641">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବାକୁ Google Chrome Dev ପାଇଁ ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">ପେମେଣ୍ଟ ପଦ୍ଧତି ପୂରଣ କରିବା ପାଇଁ Google Chrome ସେଟିଂସ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="8550334526674375523">ଏହି ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ପ୍ରୋଫାଇଲରୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଅଲଗା ଅଟେ।</translation>
 <translation id="8556340503434111824">Google Chromeର ଏକ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି ଏବଂ ଏହା ସବୁଠାରୁ ଦ୍ରୁତ ଅଟେ।</translation>

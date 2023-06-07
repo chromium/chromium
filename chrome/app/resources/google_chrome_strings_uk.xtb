@@ -46,7 +46,6 @@
 <translation id="1698376642261615901">Google Chrome – це веб-переглядач, який запускає веб-сторінки та програми з блискавичною швидкістю. Він швидкий, надійний і зручний у користуванні. Вбудований у Google Chrome захист від шкідливих програм і фішингу гарантує ще більшу безпеку під час перегляду веб-сторінок.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome перезапуститься через годину}one{Chrome перезапуститься через # годину}few{Chrome перезапуститься через # години}many{Chrome перезапуститься через # годин}other{Chrome перезапуститься через # години}}</translation>
 <translation id="1734234790201236882">Chrome збереже цей пароль в обліковому записі Google. Не потрібно його запам’ятовувати.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Переконайтеся, що ви ввійшли в Chrome на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
 <translation id="1812689907177901597">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chrome</translation>
 <translation id="1860536484129686729">Chrome потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>
@@ -367,7 +366,6 @@
 <translation id="8013993649590906847">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google.</translation>
 <translation id="80471789339884597">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити всі веб-переглядачі.</translation>
 <translation id="8064015586118426197">ОС Chrome Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Про &amp;Google Chrome</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
@@ -391,7 +389,6 @@
 <translation id="8504220326736535258">Веб-переглядач Chrome заблокував цей файл, оскільки він містить зловмисне програмне забезпечення</translation>
 <translation id="8516431725144212809">Ваші інтереси (за оцінкою Chrome)</translation>
 <translation id="8521348052903287641">Вхідне правило для Google Chrome для розробників дозволяє трафік mDNS.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome намагається змінити параметри заповнення способів оплати.</translation>
 <translation id="8550334526674375523">Цей робочий профіль ніяк не пов'язаний із вашим особистим профілем.</translation>
 <translation id="8556340503434111824">Доступна нова версія Google Chrome – швидша, ніж будь-коли.</translation>

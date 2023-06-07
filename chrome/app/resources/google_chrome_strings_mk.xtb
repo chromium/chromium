@@ -50,7 +50,6 @@
 <translation id="1698376642261615901">Google Chrome е веб-прелистувач кој отвора веб-локации и апликации со светлосна брзина. Тој е брз, стабилен и лесен за користење. Побезбедно прелистувајте на интернет со заштита од злонамерен софтвер и кражба на идентитетот која е вградена во Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ќе се рестартира по еден час}one{Chrome ќе се рестартира по # час}other{Chrome ќе се рестартира по # часа}}</translation>
 <translation id="1734234790201236882">Chrome ќе ја зачува лозинкава во вашата сметка на Google. Не мора да ја запомните.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Проверете дали сте најавени на Chrome на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
 <translation id="1812689907177901597">Ако го исклучите ова, може да се најавувате на сајтови на Google, како што е Gmail, без да се најавите на Chrome</translation>
 <translation id="1860536484129686729">На Chrome му треба дозвола за да пристапи до камерата за сајтов</translation>
@@ -375,7 +374,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8013993649590906847">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">За &amp;Google Chrome</translation>
 <translation id="813913629614996137">Се иницијализира…</translation>
 <translation id="8255190535488645436">Google Chrome ги користи камерата и микрофонот.</translation>
@@ -399,7 +397,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8504220326736535258">Chrome ја блокираше датотекава бидејќи има злонамерен софтвер</translation>
 <translation id="8516431725144212809">Вашите интереси како што се проценети од Chrome</translation>
 <translation id="8521348052903287641">Дојдовно правило за Google Chrome Dev за овозможување mDNS-сообраќај.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome се обидува да ги измени поставките за пополнување на начините на плаќање.</translation>
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8556340503434111824">Достапна е нова верзија на Google Chrome и побрза е од кога било.</translation>

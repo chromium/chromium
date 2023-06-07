@@ -50,7 +50,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="1698376642261615901">Google Chrome je web preglednik koji pokreće web stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za upotrebu. Pregledajte web u sigurnijem okruženju, zaštićeni od zlonamjernih softvera i krađe identiteta zahvaljujući elementima ugrađenim u Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome će se ponovo pokrenuti za sat vremena}one{Chrome će se ponovo pokrenuti za # sat}few{Chrome će se ponovo pokrenuti za # sata}other{Chrome će se ponovo pokrenuti za # sati}}</translation>
 <translation id="1734234790201236882">Chrome će sačuvati ovu lozinku u vašem Google računu. Nećete morati da je pamtite.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Provjerite jeste li prijavljeni u Chrome na svom uređaju <ph name="TARGET_DEVICE_NAME" /> i pokušajte poslati ponovo.</translation>
 <translation id="1812689907177901597">Isključivanjem ove opcije, možete se prijaviti na Googleove web lokacije poput Gmaila bez prijave u Chrome</translation>
 <translation id="1860536484129686729">Chrome treba odobrenja za pristup vašoj kameri na ovoj web lokaciji</translation>
@@ -375,7 +374,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8013993649590906847">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa.</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
 <translation id="813913629614996137">Pokretanje…</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
@@ -399,7 +397,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8504220326736535258">Chrome je blokirao ovaj fajl jer sadržava zlonamjerni softver</translation>
 <translation id="8516431725144212809">Vaša interesovanja prema Chromeovoj procjeni</translation>
 <translation id="8521348052903287641">Ulazno pravilo da Google Chrome Dev dozvoli mDNS saobraćaj.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>
 <translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>
 <translation id="8556340503434111824">Dostupna je nova verzija Google Chromea koji je brži nego ikad.</translation>

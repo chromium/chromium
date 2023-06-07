@@ -48,7 +48,6 @@
 <translation id="1698376642261615901">Google Chrome е уеб браузър, който зарежда уеб страници и изпълнява приложения със светкавична скорост. Той е бърз, стабилен и лесен за употреба. Сърфирайте в мрежата по-безопасно с вградената защита на Google Chrome срещу злонамерен софтуер и фишинг.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ще се стартира отново след 1 час}other{Chrome ще се стартира отново след # часа}}</translation>
 <translation id="1734234790201236882">Chrome ще запази тази парола в профила ви в Google. Няма да се налага да я помните.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Проверете дали сте влезли в Chrome на устройството си <ph name="TARGET_DEVICE_NAME" /> и опитайте да изпратите отново.</translation>
 <translation id="1812689907177901597">С изключването на тази функция можете да влизате в сайтовете на Google, като например Gmail, без да влизате в Chrome</translation>
 <translation id="1860536484129686729">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт</translation>
@@ -369,7 +368,6 @@
 <translation id="8013993649590906847">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google.</translation>
 <translation id="80471789339884597">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате всичките си браузъри, преди да използвате това приложение.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Всичко за &amp;Google Chrome</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8255190535488645436">Google Chrome използва камерата и микрофона ви.</translation>
@@ -393,7 +391,6 @@
 <translation id="8504220326736535258">Chrome блокира този файл, защото съдържа злонамерен софтуер</translation>
 <translation id="8516431725144212809">Вашите интереси според прогнозата на Chrome</translation>
 <translation id="8521348052903287641">Правило за Google Chrome Dev за допускане на входящия трафик за mDNS.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome се опитва да промени настройките за попълване на начините на плащане.</translation>
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8556340503434111824">Налице е нова версия на Google Chrome, която е по-бърза от всякога.</translation>

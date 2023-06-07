@@ -126,7 +126,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 
       Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>
 <translation id="1123650965531933634">Nega l'autorizzazione per il posizionamento delle finestre su tutti i siti per impostazione predefinita</translation>
-<translation id="112496019059412872">Consente di stabilire se attivare o meno la funzionalità "Ricorda password" nella finestra di dialogo dell'autenticazione Kerberos. Le password vengono memorizzate criptate su disco e sono accessibili soltanto al daemon del sistema Kerberos durante una sessione utente.
+<translation id="112496019059412872">Consente di stabilire se attivare o meno la funzionalità "Memorizza la password" nella finestra di dialogo dell'autenticazione Kerberos. Le password vengono memorizzate criptate su disco e sono accessibili soltanto al daemon del sistema Kerberos durante una sessione utente.
 
           Se questo criterio viene attivato o se non viene configurato, gli utenti possono decidere se memorizzare o meno le password Kerberos in modo da non doverle inserire nuovamente. I ticket Kerberos vengono recuperati automaticamente, a meno che non sia necessaria un'ulteriore autenticazione (autenticazione a due fattori).
 
@@ -304,13 +304,6 @@ I pattern corrispondenti alle origini di questo criterio non possono però conte
 <translation id="1272798957154751008">Attiva la migrazione dei dispositivi Chromad nella gestione del cloud</translation>
 <translation id="1274997165432133392">Cookie e altri dati dei siti</translation>
 <translation id="1277411517984768103">Consenti l'esecuzione di <ph name="BOREALIS_NAME" /> per un utente</translation>
-<translation id="128059397544257017">Quando il criterio viene impostato su Attivato, se <ph name="CHROME_CLEANUP_NAME" /> rileva un software indesiderato, potrebbe segnalare la scansione a Google, in linea con il criterio impostato da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati vengono inviati a Google.
-
-      Quando il criterio viene impostato su Disattivato, se <ph name="CHROME_CLEANUP_NAME" /> rileva un software indesiderato, la scansione non viene segnalata a Google, a prescindere dal valore di <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati non vengono inviati a Google.
-
-      Se il criterio non viene configurato, <ph name="CHROME_CLEANUP_NAME" /> potrebbe segnalare a Google le scansioni in cui è stato rilevato un software indesiderato, in linea con il profilo impostato da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato e di condividere i risultati con Google per semplificarne l'identificazione in futuro. Questi risultati includono metadati di file, estensioni installate automaticamente e chiavi del Registro di sistema, come spiegato nel white paper sulla privacy di Chrome.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto per le istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">L'API Event.path non sarà disponibile.</translation>
 <translation id="1290722184971934486">Se il criterio viene impostato su <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valore 2), per impostazione predefinita viene automaticamente negata ai siti l'autorizzazione per la gestione delle finestre. Ciò limiterà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
@@ -346,13 +339,6 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
 <translation id="1317658068839330898">Non consentire l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
 <translation id="1327466551276625742">Attivazione richiesta di configurazione della rete offline</translation>
 <translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
-<translation id="1330957570904024655">Se il criterio viene impostato su Enabled o se non viene configurato, i file scaricati vengono inviati per essere analizzati da Navigazione sicura, anche se provengono da una fonte attendibile.
-
-Se il criterio viene impostato su Disabled, i file scaricati non vengono inviati per essere analizzati da Navigazione sicura se provengono da una fonte attendibile.
-
-Queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu Link di download. Non vengono applicate al salvataggio o al download della pagina attualmente visualizzata né alle opzioni di stampa relative al salvataggio come file PDF.
-
-Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="13356285923490863">Nome criterio</translation>
 <translation id="1338603603553894503">Consente di specificare se il selettore profilo è attivato, disattivato o forzato all'avvio del browser.
 
@@ -586,11 +572,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Se il criterio non viene configurato o se viene impostato su Disattivato, non è possibile unire i criteri relativi al cloud a livello di utente ai criteri di altre fonti.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
-<translation id="152740744678799092">Se il criterio viene impostato su Enabled, viene eseguita una ricerca predefinita quando un utente inserisce nella barra degli indirizzi un testo che non è un URL. Per specificare il provider di ricerca predefinito, imposta gli altri criteri relativi alla ricerca predefinita. Se non configuri questi criteri, l'utente può scegliere il provider predefinito. Se il criterio viene impostato su Disabled, non viene eseguita alcuna ricerca quando l'utente inserisce nella barra degli indirizzi un testo che non è un URL. Il valore Disabled non è supportato da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, il provider di ricerca predefinito è attivo e gli utenti possono impostare l'elenco dei provider di ricerca.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1550295162561011575">L'impostazione di questo criterio consente agli amministratori di configurare l'automazione per il lancio di app sui dispositivi <ph name="PRODUCT_NAME" />. Queste app possono essere lanciate al momento dell'accesso dell'utente oppure insieme da Avvio app.</translation>
@@ -687,11 +668,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1625700732886306811">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi su tutti gli indirizzi IP</translation>
 <translation id="1626379196197114720">Consenti uso della cache back-forward</translation>
 <translation id="1628974048137236820">La pagina Nuova scheda non mostra schede</translation>
-<translation id="1630263002012156148">Se il criterio viene impostato su Attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se viene impostato su Disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che chrome://newtab venga impostato come URL della pagina iniziale dell'utente.
-
-      Se il criterio viene impostato, gli utenti non possono cambiare il tipo di pagina iniziale in <ph name="PRODUCT_NAME" />. Se non viene impostato, l'utente può decidere se impostare o meno la pagina Nuova scheda come pagina iniziale.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="163200210584085447">I pattern di questo elenco verranno confrontati con l'origine di sicurezza dell'URL richiedente. Se viene trovata una corrispondenza, l'accesso ai dispositivi di acquisizione video verrà concesso sulle pagine di accesso SAML. In caso contrario, l'accesso verrà automaticamente negato. Non sono consentite sequenze con caratteri jolly.</translation>
 <translation id="1634770710106162474">Se il criterio viene impostato su Attivato, viene eliminato l'avviso visualizzato quando <ph name="PRODUCT_NAME" /> è in esecuzione su un computer o un sistema operativo non supportato.
 
@@ -1335,13 +1311,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se viene impostato <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valore 1), è possibile applicare a <ph name="PRODUCT_OS_NAME" /> soltanto le varianti considerate correzioni fondamentali per la sicurezza o la stabilità.
 
       Se viene impostato <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2), non è possibile applicare al browser tutte le varianti nella schermata di accesso. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_OS_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
-<translation id="2217931577484185673">Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password non esegue alcun controllo per il riutilizzo delle password.
-
-      Se il criterio non viene configurato, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
-
-      Il criterio deve essere impostato come un elenco di nomi di dominio completi. Non supporta espressioni regolari e non inserirà nella lista consentita i sottodomini di domini elencati nel criterio.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o che fanno parte di un dominio tramite MCX.</translation>
 <translation id="2221779615493499989">Consente agli utenti di segnalare lo stato di rete su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -1766,11 +1735,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2608887839902987727">Impedisci all'autenticazione captive portal di ignorare le impostazioni del proxy</translation>
 <translation id="2608985885792348429">Impostazione relativa agli appunti predefinita</translation>
 <translation id="2615240493030733717">Segnala informazioni sul fuso orario</translation>
-<translation id="2619966380594000538">Se il criterio viene impostato su Attivato o se non viene configurato, vengono mostrati avvisi di sicurezza quando flag della riga di comando potenzialmente pericolosi vengono utilizzati per avviare Chrome.
-
-      Se il criterio viene impostato su Disattivato, viene impedita la visualizzazione degli avvisi di sicurezza quando Chrome viene avviato con flag della riga di comando potenzialmente pericolosi.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="2621290137818374425">La configurazione del criterio consente di disattivare i requisiti relativi alle informative di Certificate Transparency per i nomi host negli URL specificati. Anche se rilevare certificati emessi in modo scorretto diventa più difficile, gli host possono continuare a utilizzare certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato.
 
       Se il criterio non viene configurato e se i certificati che richiedono informative tramite Certificate Transparency non vengono comunicati, <ph name="PRODUCT_NAME" /> non ritiene attendibili questi certificati.
@@ -2507,11 +2471,6 @@ Se un'estensione specificata in questo criterio non viene installata, la navigaz
 <translation id="3256920103934729145">Impedisci il clickthrough degli utenti su pagine di avviso SSL</translation>
 <translation id="3257786863492892609">Controlla i criteri relativi alla funzionalità Registra schermo.</translation>
 <translation id="3258380413685430793">Esegui tutti i contenuti di <ph name="FLASH_PLUGIN_NAME" /></translation>
-<translation id="325883417142483505">La configurazione del criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
-
-      Se l'impostazione viene disattivata o se non viene configurata, il servizio di protezione tramite password acquisisce solo gli hash con salt della password all'indirizzo https://accounts.google.com.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3261592499545947104">Il numero di secondi prima della scadenza di un certificato in cui attivare il rinnovo.</translation>
 <translation id="3262080895269946462">Consenti la disattivazione per impostazione predefinita di WebSQL nei contesti di terze parti.</translation>
 <translation id="3263892501786842604">Consenti la visualizzazione del pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda, se supportato.</translation>
@@ -2853,13 +2812,6 @@ Le connessioni che non superano il controllo non andranno a buon fine con l'erro
 <translation id="3554498762428140109">Attiva Copertura finestra nativa</translation>
 <translation id="3554984410014457319">Consente all'Assistente Google di ascoltare la frase di attivazione vocale</translation>
 <translation id="3557586898458302131">Includi porta non standard nel Kerberos SPN generato</translation>
-<translation id="3562741878192828370">Elenco dei tipi di file che dovrebbero essere aperti automaticamente al termine del download. Il separatore iniziale non deve essere incluso nell'elenco dei tipi di file, quindi usa "txt" anziché ".txt".
-
-      I tipi di file che dovrebbero essere aperti automaticamente saranno comunque soggetti ai controlli attivi di Navigazione sicura e non verranno aperti se non superano tali controlli.
-
-      Se questo criterio non viene impostato, al termine del download verranno aperti automaticamente soltanto i tipi di file per cui l'utente ha già specificato tale tipo di apertura.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="35668690622495904">
           Le chiamate non sono rifiutate se provengono da contesti non aggiunti alla lista consentita. (Le chiamate potrebbero comunque essere rifiutate per altri motivi.)</translation>
 <translation id="3568762199045490351">La funzione JavaScript setTimeout() con timeout di 0 ms verrà impostata su 1 ms.</translation>
@@ -3444,11 +3396,6 @@ Con questo criterio, gli amministratori possono specificare le origini da cui è
 Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * non è un valore accettato per questo criterio.
 
 Se questo criterio non viene configurato, tutte le origini richiederanno un gesto dell'utente precedente per chiamare questa API.</translation>
-<translation id="4114059938441379876">La configurazione del criterio consente di impostare l'URL per gli utenti per la modifica delle proprie password dopo aver visualizzato un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTPS) indicato tramite questo criterio. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
-
-      Se il criterio viene disattivato o se non viene configurato, il servizio reindirizza gli utenti al sito https://myaccount.google.com per la modifica della propria password.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="4115501011761259824">Attiva First-Party Sets per tutti gli utenti interessati</translation>
 <translation id="4121350739760194865">Impedisci la visualizzazione delle promozioni di applicazioni nella pagina Nuova scheda</translation>
 <translation id="4122473079291425973">La pagina Nuova scheda mostra le schede se sono disponibili contenuti, ma consente all'utente di modificare l'impostazione</translation>
@@ -3475,17 +3422,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4157594634940419685">Consenti l'accesso a stampanti CUPS native</translation>
 <translation id="4158531549614162499">Attiva la sincronizzazione Google Drive tramite reti cellulari</translation>
 <translation id="4160962198980004898">Origine dell'indirizzo MAC del dispositivo quando inserito nel dock</translation>
-<translation id="4161589119744364846">Questo criterio consente di configurare l'URL predefinito della pagina Nuova scheda e impedisce agli utenti di modificarlo.
-
-      La pagina Nuova scheda si apre con nuove schede e finestre.
-
-      Questo criterio non consente di stabilire quali pagine aprire all'avvio. Tali pagine dipendono dai criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Questo criterio influisce tuttavia sulla home page e sulla pagina iniziale, se sono impostate per l'apertura della pagina Nuova scheda.
-
-      Una best practice consiste nello specificare l'URL canonicalizzato completo; in caso contrario, <ph name="PRODUCT_NAME" /> utilizzerà https:// per impostazione predefinita.
-
-      Se il criterio non viene impostato o viene lasciato vuoto, viene usata la pagina Nuova scheda predefinita.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="4164511138197196839">Se questo criterio viene attivato, le estensioni non pubblicate sul Chrome Web
 Store verranno disattivate su <ph name="PRODUCT_NAME" />.
 Questo criterio viene applicato solo alle estensioni installate e aggiornate dal
@@ -4603,11 +4539,6 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Se il criterio viene impostato su Enabled, lo stato dell'attività del dispositivo verrà segnalato al server, che potrà rilevare se il dispositivo è offline, purché l'utente sia affiliato.</translation>
 <translation id="5238275681097851753">Consenti il blocco di determinati contenuti in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forza l'attivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
-<translation id="5239333626804545932">Se il criterio viene impostato su Attivato o se non viene configurato, Chrome Software Cleaner analizza periodicamente il sistema per individuare eventuale software indesiderato e, qualora fosse presente, chiede all'utente se vuole rimuoverlo. L'attivazione manuale di Chrome Software Cleaner da chrome://settings è consentita.
-
-      Se il criterio viene impostato su Disattivato, Chrome Software Cleaner non esegue alcuna scansione periodica e l'attivazione manuale è disattivata.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management.</translation>
 <translation id="5245647012663146075">Non consentire l'attivazione di Phone Hub</translation>
 <translation id="5245671702326993331">Consente le notifiche native</translation>
 <translation id="524637053580639111">Questo criterio è stato rimosso nella versione M82. Usa il criterio DeviceMinimumVersion.
@@ -4635,15 +4566,6 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="5257395339965216304">Dati app ospitate</translation>
 <translation id="5258445772095084618">Consenti agli utenti non affiliati di usare le macchine virtuali necessarie per supportare le app Linux</translation>
 <translation id="5262320080678421295">Disattiva attendibilità nei certificati emessi dall'Infrastruttura a chiave pubblica precedente di Symantec Corporation</translation>
-<translation id="5266591246506903971">Se questo criterio viene attivato, viene abilitata per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di Chrome. Gli utenti possono comunque modificare questa impostazione dalle impostazioni di Chrome.
-
-      Se questo criterio viene disattivato, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non possono modificare questa impostazione.
-
-      Se questo criterio non viene configurato, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e possono cambiare l'impostazione in un secondo momento dalle impostazioni di Chrome.
-
-      Questo criterio è disponibile esclusivamente per le istanze di Windows aggiunte a un dominio <ph name="MS_AD_NAME" />, per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi e per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.
-
-      (Per <ph name="PRODUCT_OS_NAME" />, vedi DeviceMetricsReportingEnabled.)</translation>
 <translation id="5273744932022326215">Consente di attivare la funzione di accessibilità di evidenziazione del cursore nella schermata di accesso.
 
           Se questo criterio è impostato su true, l'evidenziazione del cursore sarà sempre attivata sulla schermata di accesso.
@@ -4784,15 +4706,6 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 <translation id="5422643441807528365">Codice licenza <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nome della limitazione di Android WebView:</translation>
 <translation id="5424147596523390018">Consenti tutte le modalità a colori</translation>
-<translation id="5426530943254798290">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione del criterio per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
-
-      Questo criterio consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
-
-      Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="5427879482805712214">Questo criterio consente di configurare l'immagine avatar che rappresenta l'utente sulla schermata di accesso. Il criterio viene impostato specificando l'URL da cui <ph name="PRODUCT_OS_NAME" /> può scaricare l'immagine e un hash crittografico utilizzato per verificare l'integrità del download. L'immagine deve essere in formato JPEG e avere dimensioni non superiori a 512 kB. L'URL deve essere accessibile senza nessuna autenticazione.
 
       L'immagine avatar viene scaricata e memorizzata nella cache. Verrà scaricata nuovamente ogni volta che l'URL o l'hash vengono modificati.
@@ -5063,38 +4976,6 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
       Se il criterio viene impostato su False o non viene impostato, gli avvisi relativi al ritiro verranno mostrati.</translation>
 <translation id="5660228672907979869">Blocca l'attivazione del partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="5666457529647159548">Consenti agli utenti di gestire i certificati client installati.</translation>
-<translation id="5670286392821164294">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
-
-      Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
-      Un insieme proprietario deve contenere un sito principale e uno o più siti membri.
-      Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
-      Consulta la pagina https: //github.com/WICG/first-party-sets per maggiori informazioni sugli insiemi proprietari che vengono utilizzati da <ph name="PRODUCT_NAME" />.
-
-      Tutti i siti di un insieme proprietario devono avere un dominio registrabile pubblicato su HTTPS. Ciascun sito di un insieme proprietario deve anche essere univoco,
-      ovvero non può essere elencato più di una volta in un insieme proprietario.
-
-      Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
-
-      Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche
-      in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
-      Dopodiché, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-      Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche
-      in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il
-      nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
-      l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-      L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno
-      sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" />
-      e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi
-      <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
-
-      I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme proprietario in questi elenchi.
-
-      Tutti gli insiemi forniti da questo criterio devono essere insiemi proprietario validi. Qualora non lo fossero, verrà segnalato
-      un errore adeguato.
-
-      Questo criterio è disponibile esclusivamente per le istanze di Windows aggiunte a un dominio <ph name="MS_AD_NAME" />, per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi e per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="567377007899266033">Se il criterio viene impostato su True, Google riceverà rapporti sui principali eventi di installazione delle estensioni attivati dal criterio. Se il criterio viene impostato su False, non viene acquisito alcun evento. Se il criterio non viene impostato, il valore predefinito è True.</translation>
 <translation id="5676740747107495269">Mostra le opzioni di accessibilità nel menu della barra delle applicazioni nella schermata di accesso</translation>
 <translation id="567832102568869993">Consente di attivare un'azione quando il computer è inattivo.
@@ -6765,17 +6646,6 @@ Se il criterio viene impostato, l'elenco dei valori predefiniti viene esteso con
 
           Se questo criterio non viene impostato, inizialmente il pulsante principale sarà il pulsante sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
 <translation id="7136237405361383549">Utilizza il renderer predefinito in base alla configurazione della prova sul campo.</translation>
-<translation id="7137460825181247519">Questo criterio è deprecato in <ph name="PRODUCT_NAME" /> 83. Usa il criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
-
-      Se il criterio viene impostato su Attivato, la funzionalità Navigazione sicura di Chrome rimane attiva. Se il criterio viene impostato su Disattivato, Navigazione sicura rimane disattivata.
-
-      Se il criterio viene configurato, gli utenti non possono modificare questa impostazione o sovrascrivere l'impostazione "Attiva protezione contro phishing e malware" in Chrome. Se non viene configurato, l'impostazione "Attiva protezione contro phishing e malware" viene impostata su True, ma l'utente può modificarla.
-
-      Ulteriori informazioni su Navigazione sicura (https://developers.google.com/safe-browsing).
-
-      Se il criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> viene configurato, il valore del criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> viene ignorato.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7138762292550697459">Controlla il timeout minimo della funzione JavaScript setTimeout().</translation>
 <translation id="714219487865269980">Attiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="7144022711746703451">
@@ -6891,15 +6761,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se imposti questa norma su true disattivi le stampanti che usano protocolli diversi da IPPS, USB o IPP-over-USB poiché il nome utente e il nome file non devono essere inviati nella rete in modo esplicito.</translation>
 <translation id="7253446510183499868">Non consentire il riavvio automatico dopo gli aggiornamenti</translation>
-<translation id="7257092058788772055">Questo criterio consente di impostare l'URL predefinito della pagina iniziale in <ph name="PRODUCT_NAME" />. È possibile aprire la pagina iniziale usando il pulsante omonimo. Sui computer desktop, i criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> consentono di stabilire le pagine da aprire all'avvio.
-
-      Se come pagina iniziale viene impostata la pagina Nuova scheda, dall'utente o in base al criterio <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, questo criterio non ha effetto.
-
-       L'URL deve avere uno schema standard, ad esempio http://example.com o https://example.com. Se questo criterio viene impostato, gli utenti non possono modificare l'URL della loro pagina iniziale in <ph name="PRODUCT_NAME" />.
-
-      Se entrambi i criteri <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> non vengono impostati, gli utenti possono scegliere la pagina iniziale che preferiscono.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7258250780552783197">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene trasferito all'interno di <ph name="PRODUCT_OS_NAME" />.
 
       I campi <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene trasferito tra un'origine e una destinazione e quali tag includere nella richiesta di analisi di quel file. Un tag che corrisponde a una regola "enable" verrà incluso nella richiesta di analisi se l'origine e la destinazione corrispondono alla regola associata a questo tag, purché nessuna regola "disable" con lo stesso tag corrisponda al trasferimento. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta. Una regola <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> è definita da un elenco di coppie, dove ogni coppia contiene un elenco di origini e un elenco di destinazioni. Il campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> definisce il file system a cui deve essere applicata una regola.
@@ -7230,11 +7091,6 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
 
       Se il criterio è attivato o non impostato, la funzionalità di conversione delle unità di Risposte rapide sarà attiva.
       Se il criterio è disattivato, la funzionalità di conversione delle unità di Risposte rapide sarà disattivata.</translation>
-<translation id="7582095958259051083">Se il criterio viene impostato su Attivato, la raccolta di dati anonimizzati con chiave URL, che invia gli URL delle pagine visitate dagli utenti a Google per migliorare le esperienze di ricerca e navigazione, è sempre attiva.
-
-      Se viene impostato su Disattivato, non viene attivata alcuna raccolta di dati anonimizzati con chiave URL.
-
-      Se questo criterio non viene configurato, l'utente potrà modificare manualmente questa impostazione.</translation>
 <translation id="7585312329612243723">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL su browser gestiti</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
@@ -7570,15 +7426,6 @@ I valori validi sono compresi tra 1 secondo e 9999 secondi. Se il criterio non v
 Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> viene impostato su false.</translation>
 <translation id="7912255076272890813">Configura tipi di app/estensioni consentiti</translation>
 <translation id="791267408364877739">Mostra avvisi di sicurezza quando vengono usati flag della riga di comando potenzialmente pericolosi</translation>
-<translation id="79156801312131034">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non impostarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
-
-      Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono modificarlo.
-
-      Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> o <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o dei cookie della sessione.
-
-      Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, il browser ripristinerà la sessione precedente e aprirà una finestra separata per mostrare gli URL impostati nel criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Tieni presente che gli utenti possono decidere di tenere aperti questi URL, che verranno ripristinati nella sessione futura.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7919665519909231619">Consenti l'attivazione della funzionalità della lista della spesa</translation>
 <translation id="7922358664346625612">Mantieni l'ultima scheda aperta in Chrome.</translation>
 <translation id="7923734850959347297">Impostazioni del salvaschermo</translation>
@@ -8138,11 +7985,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se questo criterio non viene impostato, viene usato il valore predefinito 3.
 
       Se questo criterio viene impostato, le istantanee meno recenti vengono eliminate in base a quanto necessario per rispettare il limite. Se il criterio viene impostato su 0, non vengono acquisite istantanee.</translation>
-<translation id="8447347049334673364">La configurazione del criterio permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da criteri relativi alle estensioni esistenti. Il criterio prevale su tutti i criteri precedenti che potrebbero essere stati impostati.
-
-      Questo criterio consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questo criterio. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Se il flag "override_update_url" viene impostato su vero, l'estensione viene installata e aggiornata usando l'URL di aggiornamento ("update") specificato nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questo criterio. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
-
-      Nota: per le istanze di <ph name="MS_WIN_NAME" /> che non fanno parte di un dominio <ph name="MS_AD_NAME" /> e le istanze <ph name="MAC_OS_NAME" /> non gestite tramite MDM o che non fanno parte di un dominio tramite MCX, l'installazione forzata è limitata alle app e alle estensioni elencate nel Chrome Web Store.</translation>
 <translation id="8451988835943702790">Usa la pagina Nuova scheda come Pagina iniziale</translation>
 <translation id="8453218444172088993">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci per i tuoi utenti.</translation>
 <translation id="8455529558077979314">Impostazioni Schermata sulla privacy</translation>
@@ -8380,11 +8222,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
       Per informazioni dettagliate sui tipi di multimediali JavaScript/ECMAScript, consulta la pagina https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
-<translation id="8669313549017524373">Se il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> viene impostato su RestoreOnStartupIsURLs e per il criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> viene impostato un elenco di URL, è possibile specificare quali URL aprire.
-
-      Se non viene impostato, all'avvio viene aperta la pagina Nuova scheda.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="8671119576957984818">Attiva hub di condivisione desktop</translation>
 <translation id="8671193325113134911">Attiva il controllo rigoroso del tipo MIME per gli script worker</translation>
 <translation id="8671303329680827168">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".</translation>

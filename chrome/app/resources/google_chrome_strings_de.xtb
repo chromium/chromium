@@ -46,7 +46,6 @@
 <translation id="1698376642261615901">Google Chrome ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes kannst du bedenkenlos im Internet surfen.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome wird in einer Stunde neu gestartet}other{Chrome wird in # Stunden neu gestartet}}</translation>
 <translation id="1734234790201236882">Chrome speichert dieses Passwort in deinem Google-Konto. Du musst es dir also nicht merken.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Du musst auf deinem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chrome angemeldet sein. Versuche es dann noch einmal.</translation>
 <translation id="1812689907177901597">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne auch in Chrome angemeldet zu werden</translation>
 <translation id="1860536484129686729">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera zuzugreifen</translation>
@@ -367,7 +366,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="80471789339884597">Vielen Dank für die Installation. Du musst alle Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8255190535488645436">Google Chrome verwendet deine Kamera und dein Mikrofon.</translation>
@@ -391,7 +389,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8504220326736535258">Chrome hat diese Datei blockiert, weil sie Malware enthält</translation>
 <translation id="8516431725144212809">Deine von Chrome geschätzten Interessen</translation>
 <translation id="8521348052903287641">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Dev.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome versucht, die Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="8550334526674375523">Dieses Arbeitsprofil wird getrennt von deinem persönlichen Profil verwaltet.</translation>
 <translation id="8556340503434111824">Es gibt eine neue Version von Google Chrome, die schneller ist, als anderen zuvor.</translation>

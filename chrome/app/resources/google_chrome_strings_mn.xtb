@@ -50,7 +50,6 @@
 <translation id="1698376642261615901">Google Chrome нь веб хуудсууд болон аппликейшнуудыг цахилгаан мэт хурдан ажиллуулдаг веб хөтөч юм. Энэ нь хурдан, найдвартай мөн хэрэглэхэд хялбар. Google Chrome-д бий болгосон хорт вирус болон хууль бус үйлдлээс хамгаалах хамгаалалтаар дамжуулан веб сайтуудад илүү аюулгүй хайлт хийгээрэй.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome-г 1 цагийн дотор дахин ажиллуулна}other{Chrome-г # цагийн дотор дахин ажиллуулна}}</translation>
 <translation id="1734234790201236882">Chrome энэ нууц үгийг таны Google Бүртгэлд хадгалах тул та үүнийг санах шаардлагагүй.</translation>
-<translation id="1759842336958782510">Хромэ</translation>
 <translation id="1786003790898721085">Та Chrome-д өөрийн <ph name="TARGET_DEVICE_NAME" />-с нэвтэрсэн эсэхээ шалгаад, дахин илгээхээр оролдоно уу.</translation>
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
@@ -375,7 +374,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8013993649590906847">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chrome танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ.</translation>
 <translation id="80471789339884597">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө бүх хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Google Chrome-ийн тухай</translation>
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
 <translation id="8255190535488645436">Google Chrome нь таны камер болон микрофоныг ашиглаж байна.</translation>
@@ -399,7 +397,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8504220326736535258">Энэ файл хортой программтай тул Chrome үүнийг блоклосон</translation>
 <translation id="8516431725144212809">Chrome-с тооцоолсон таны сонирхол</translation>
 <translation id="8521348052903287641">mDNS урсгалыг зөвшөөрөх Google Chrome-н дотоод дүрэм.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome төлбөрийн хэрэгсэл бөглөх тохиргоог өөрчлөхөөр оролдож байна.</translation>
 <translation id="8550334526674375523">Энэ ажлын профайл нь таны хувийн профайлаас бүрэн тусдаа байна.</translation>
 <translation id="8556340503434111824">Google Chrome-ийн шинэ хувилбар боломжтой байгаа бөгөөд энэ нь урьд урьдныхаас ч илүү хурдан.</translation>

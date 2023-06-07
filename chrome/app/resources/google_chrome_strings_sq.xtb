@@ -49,7 +49,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1698376642261615901">Google Chrome është një shfletues uebi që ekzekuton faqe uebi dhe aplikacione me një shpejtësi jashtëzakonisht të lartë. Është i shpejtë, i qëndrueshëm dhe i lehtë në përdorim. Shfleto në ueb në mënyrë më të sigurt, me mbrojtje të integruar në Google Chrome kundër mashtrimeve dhe softuerëve keqdashës.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome do të hapet përsëri për një orë}other{Chrome do të hapet përsëri për # orë}}</translation>
 <translation id="1734234790201236882">Chrome do ta ruajë këtë fjalëkalim në llogarinë tënde të Google. Nuk është nevoja që ta mbash mend.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Sigurohu që të jesh identifikuar në Chrome në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
 <translation id="1812689907177901597">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chrome</translation>
 <translation id="1860536484129686729">Chrome ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
@@ -374,7 +373,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="80471789339884597">Faleminderit që e instalove. Duhet të rinisësh të gjithë shfletuesit e tu përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Informacion rreth &amp;Google Chrome</translation>
 <translation id="813913629614996137">Po fillon...</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
@@ -398,7 +396,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8504220326736535258">Chrome e bllokoi këtë skedar sepse ai ka softuer keqdashës</translation>
 <translation id="8516431725144212809">Interesat e tua sipas përllogaritjes nga Chrome</translation>
 <translation id="8521348052903287641">Rregulli hyrës për Google Chrome Dev për të lejuar trafikun mDNS.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome po përpiqet të modifikojë cilësimet për plotësimin e mënyrave të pagesës.</translation>
 <translation id="8550334526674375523">Ky profil pune është plotësisht i veçuar nga profili yt personal.</translation>
 <translation id="8556340503434111824">Ofrohet një version i ri i Google Chrome dhe është më i shpejtë se kurrë.</translation>

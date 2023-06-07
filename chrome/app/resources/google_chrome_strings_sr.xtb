@@ -50,7 +50,6 @@
 <translation id="1698376642261615901">Google Chrome је веб прегледач који веб-странице и апликације покреће брзином светлости. Он је брз, стабилан и лак за коришћење. Још безбедније прегледајте Веб уз помоћ заштите од малвера и „пецања“ која је уграђена у Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Поново ћемо покренути Chrome за један сат}one{Поново ћемо покренути Chrome за # сат}few{Поново ћемо покренути Chrome за # сата}other{Поново ћемо покренути Chrome за # сати}}</translation>
 <translation id="1734234790201236882">Chrome ће сачувати ову лозинку на Google налогу. Нећете морати да је памтите.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Уверите се да сте пријављени у Chrome на уређају <ph name="TARGET_DEVICE_NAME" /> и пробајте да пошаљете поново.</translation>
 <translation id="1812689907177901597">Када то укључите, можете да се пријављујете на Google сајтове, као што је Gmail, али се не пријављујете у Chrome</translation>
 <translation id="1860536484129686729">Chrome тражи дозволу да приступи камери за овај сајт</translation>
@@ -375,7 +374,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8013993649590906847">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
 <translation id="80471789339884597">Хвала вам на инсталацији. Морате да рестартујете све прегледаче пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">О &amp;Google Chrome-у</translation>
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8255190535488645436">Google Chrome користи камеру и микрофон.</translation>
@@ -399,7 +397,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8504220326736535258">Chrome је блокирао овај фајл јер садржи малвер</translation>
 <translation id="8516431725144212809">Ваша интересовања према процени Chrome-а</translation>
 <translation id="8521348052903287641">Правило за долазни саобраћај за програмерску верзију Google Chrome-а да бисте омогућили mDNS саобраћај.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome покушава да измени подешавања за попуњавање начина плаћања.</translation>
 <translation id="8550334526674375523">Овај пословни профил је потпуно одвојен од личног профила.</translation>
 <translation id="8556340503434111824">Доступна је нова верзија Google Chrome прегледача, бржа него икад пре.</translation>

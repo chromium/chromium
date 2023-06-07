@@ -48,7 +48,6 @@
 <translation id="1698376642261615901">‏إن Google Chrome هو متصفح ويب يشغّل صفحات الويب والتطبيقات بسرعة خاطفة. فهذا المتصفح سريع ويتميز بالثبات وسهولة الاستخدام، ويمكنك من خلاله تصفح الويب بقدر أكبر من الأمان من خلال وجود حماية مضمنة داخله ضد البرامج الضارة والتصيّد.</translation>
 <translation id="1713301662689114961">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون ساعة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # ساعة}two{‏ستتم إعادة تشغيل Chrome في غضون ساعتين}few{‏ستتم إعادة تشغيل Chrome في غضون # ساعات}many{‏ستتم إعادة تشغيل Chrome في غضون # ساعةً}other{‏ستتم إعادة تشغيل Chrome في غضون # ساعة}}</translation>
 <translation id="1734234790201236882">‏سيحفظ Chrome كلمة المرور هذه في حسابك على Google ولن تحتاج إلى تذكُّرها.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chrome على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
@@ -369,7 +368,6 @@
 <translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">‏&amp;حول Google Chrome</translation>
 <translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8255190535488645436">‏يستخدم Google Chrome الكاميرا والميكروفون.</translation>
@@ -393,7 +391,6 @@
 <translation id="8504220326736535258">‏حَظَر Chrome هذا الملف لأنّه يحتوي على برامج ضارة.</translation>
 <translation id="8516431725144212809">‏اهتماماتك حسب تقدير Chrome</translation>
 <translation id="8521348052903287641">‏قاعدة الوارد إلى إصدار مطوري البرامج من Google Chrome للسماح بحركة مرور mDNS.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">‏يحاول Google Chrome تعديل إعدادات ميزة "الملء التلقائي" لبيانات طُرق الدفع.</translation>
 <translation id="8550334526674375523">هذا الملف الشخصي للعمل منفصِل تمامًا عن ملفك الشخصي.</translation>
 <translation id="8556340503434111824">‏يتوفر إصدار جديد من Google Chrome، وهو أسرع بكثير من ذي قبل.</translation>

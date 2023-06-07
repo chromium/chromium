@@ -496,6 +496,7 @@
 <translation id="213826338245044447">移动设备书签</translation>
 <translation id="214556005048008348">取消付款</translation>
 <translation id="2148613324460538318">添加支付卡</translation>
+<translation id="2148716181193084225">今天</translation>
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2153609454945889823">安装“面向 AR 的 Google Play 服务”？</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
@@ -2263,6 +2264,7 @@
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 英寸</translation>
+<translation id="6560786330438719938">已安装或卸载的应用及其使用频率</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6569366777234823130">剧情片</translation>
 <translation id="6573200754375280815">双孔（右侧）</translation>
@@ -2788,6 +2790,7 @@
 <translation id="7764225426217299476">添加地址</translation>
 <translation id="7766518757692125295">裙式</translation>
 <translation id="7773005668374414287">顺序不变，正面朝上</translation>
+<translation id="7781829728241885113">昨天</translation>
 <translation id="7785790577395078482">这台平板电脑</translation>
 <translation id="7786368602962652765">有一个必填字段是空的。请先填写该字段，然后再保存。</translation>
 <translation id="7790488044432570133">您访问的网站可请求 Chrome 提供相关信息，以便衡量各自的广告效果。Chrome 允许网站收集有限类型的数据，例如一天中向您展示广告的时段。</translation>
@@ -3220,6 +3223,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="890493561996401738">“移除建议”按钮，按 Enter 键即可移除“<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />”</translation>
 <translation id="8910898109640902752">8 x 10 英寸</translation>
+<translation id="8919895429178014996">隐藏所有项</translation>
 <translation id="8922013791253848639">在此网站上始终允许显示广告</translation>
 <translation id="892588693504540538">打孔（右上角）</translation>
 <translation id="8930330541574156305">房地产</translation>

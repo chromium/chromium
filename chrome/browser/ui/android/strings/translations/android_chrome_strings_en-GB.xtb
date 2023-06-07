@@ -142,7 +142,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="1750259112639922169">Tab group – <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="17513872634828108">Open tabs</translation>
-<translation id="1754404134430936718">Text copied</translation>
 <translation id="1757620656501361327">Google Password Manager update</translation>
 <translation id="1778457539567749232">Mark as unread</translation>
 <translation id="1779766957982586368">Close window</translation>
@@ -277,6 +276,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2567545343356994513">Faster, proactive protection against dangerous websites, downloads and extensions</translation>
 <translation id="2569733278091928697">You’ll be able to easily manage media controls, Incognito sessions, downloads and more</translation>
 <translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
+<translation id="2571834852878229351">Create my own</translation>
 <translation id="2573452357057307036">Learn how to set Chrome as your default</translation>
 <translation id="257470231920177468">When on, a list of sites that you visit that guess your interests appears here.</translation>
 <translation id="2580436639406015883">Spam and fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
@@ -568,6 +568,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4108314971463891922">Follow</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="4116038641877404294">Download pages to use them offline</translation>
+<translation id="4121654769234887259">You won’t need to remember this password. It will be saved to Google Password Manager for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Notification permission flow opened at full height</translation>
 <translation id="4135200667068010335">List of devices with which to share a tab is closed.</translation>
 <translation id="4137746084635924146">Current device language</translation>
@@ -780,6 +781,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5171045022955879922">Search or type URL</translation>
 <translation id="5174700554036517242">Tab is back to initial height</translation>
 <translation id="5184329579814168207">Open in Chrome</translation>
+<translation id="5186634140793586141">Manage the topics and searches that you're interested in</translation>
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
 <translation id="5193988420012215838">Copied to your clipboard</translation>
 <translation id="5204967432542742771">Enter password</translation>
@@ -1363,6 +1365,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>
+<translation id="8137562778192957619">You won’t need to remember this password. It will be saved to Google Password Manager.</translation>
 <translation id="8156139159503939589">What languages do you read?</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -1445,7 +1448,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="856481929701340285">Request desktop site</translation>
 <translation id="8570677896027847510">File can’t be downloaded securely</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
-<translation id="8572344201470131220">Image copied</translation>
 <translation id="8580884231102452214">Copy GIF</translation>
 <translation id="8583805026567836021">Clearing account data</translation>
 <translation id="859046281437143747">Track price from the 'More options' button</translation>

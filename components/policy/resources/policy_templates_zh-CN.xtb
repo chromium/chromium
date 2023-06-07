@@ -302,13 +302,6 @@
 <translation id="1272798957154751008">允许将 Chromad 设备迁移到云管理服务</translation>
 <translation id="1274997165432133392">Cookie 及其他网站数据</translation>
 <translation id="1277411517984768103">允许为用户运行 <ph name="BOREALIS_NAME" /></translation>
-<translation id="128059397544257017">如果此政策已启用，当 <ph name="CHROME_CLEANUP_NAME" />检测到垃圾软件时，它可以按照 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 设置的政策向 Google 报告与此项扫描相关的数据。<ph name="CHROME_CLEANUP_NAME" />会询问用户是否需要清理，并会将扫描结果发送给 Google。
-
-      如果此政策已停用，当 <ph name="CHROME_CLEANUP_NAME" />检测到垃圾软件时，无论 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 的值是什么，它都不会向 Google 报告与此项扫描相关的数据。<ph name="CHROME_CLEANUP_NAME" />会询问用户是否需要清理，但不会向 Google 报告扫描结果。
-
-      如果您未设置此政策，<ph name="CHROME_CLEANUP_NAME" />可以按照 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 设置的政策向 Google 报告与用于检测垃圾软件的扫描相关的数据。<ph name="CHROME_CLEANUP_NAME" />会询问用户是否需要清理，并与 Google 分享扫描结果，以协助 Google 日后更好地检测垃圾软件。这些结果包含文件元数据、自动安装的扩展程序以及注册表项（如《Chrome 隐私权白皮书》中所述）。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
 <translation id="1285819498003746288">Event.path API 将不可用。</translation>
 <translation id="1290722184971934486">如果此政策设为 <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" />（值 2），默认情况下，系统会自动拒绝向网站授予窗口管理权限。此设置会限制网站的以下功能：查看设备屏幕的相关信息，以及使用该信息在特定屏幕上打开并放置窗口或者请求进入全屏模式。
 
@@ -344,13 +337,6 @@
 <translation id="1317658068839330898">不允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
 <translation id="1327466551276625742">离线时，弹出网络配置提示</translation>
 <translation id="1330145147221172764">启用屏幕键盘</translation>
-<translation id="1330957570904024655">如果此政策已启用或未设置，系统将会发送下载的文件以供“安全浏览”功能进行分析，即使来源可信也是如此。
-
-如果此政策已停用，当来源可信时，系统不会发送下载的文件以供“安全浏览”功能进行分析。
-
-这些限制适用于从网页内容以及“下载链接”菜单选项触发的下载，但不适用于保存或下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。
-
-在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
 <translation id="13356285923490863">政策名称</translation>
 <translation id="1338603603553894503">此政策用于指定在浏览器启动时是启用、停用还是强制显示个人资料选择器。
 
@@ -583,11 +569,6 @@
 
       如果此政策未设置或已停用，系统会禁止用户级云政策与任何其他来源的政策合并。</translation>
 <translation id="152657506688053119">默认搜索服务提供商的备选网址列表</translation>
-<translation id="152740744678799092">如果此政策已启用，当用户在地址栏中输入非网址的文字时，系统将会执行默认搜索。若要指定默认搜索引擎，请设置其余的默认搜索政策。如果您将这些政策留空，用户可自行选择默认搜索引擎。如果此政策已停用，当用户在地址栏中输入非网址的文字时，系统将不会执行任何搜索。<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />不支持“已停用”值。
-
-      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您不设置此政策，系统将启用默认搜索引擎，而且用户可以设置搜索引擎列表。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="1530812829012954197">总是通过托管浏览器呈现以下网址格式</translation>
 <translation id="1542491165152947087">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 广告主题设置。</translation>
 <translation id="1550295162561011575">设置此政策后，管理员就可以配置在 <ph name="PRODUCT_NAME" /> 设备上启动应用的自动化设置。这些应用可在用户登录时启动，也可由用户从启动器中一并启动。</translation>
@@ -684,11 +665,6 @@
 <translation id="1625700732886306811">允许 <ph name="PRODUCT_NAME" /> 连接到位于任何 IP 地址的设备</translation>
 <translation id="1626379196197114720">允许使用往返缓存</translation>
 <translation id="1628974048137236820">“新标签页”页面不会显示卡片</translation>
-<translation id="1630263002012156148">如果此政策已启用，系统会使用“新标签页”页面作为用户的主页，并忽略所有主页网址位置。如果此政策已停用，系统绝不会使用“新标签页”页面作为用户的主页，除非用户将主页网址设为 chrome://newtab。
-
-      如果您设置了此政策，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页类型。如果您未设置此政策，用户便可自行决定是否使用“新标签页”页面作为主页。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="163200210584085447">系统会将此列表中的网址格式与请求网址的安全来源进行比对。如果找到了匹配项，系统将允许相应网址通过 SAML 登录页面访问视频捕获设备。如果未找到匹配项，系统将自动拒绝授予访问权限。不允许使用通配符模式。</translation>
 <translation id="1634770710106162474">如果此政策已启用，当 <ph name="PRODUCT_NAME" /> 在不受支持的计算机或操作系统中运行时，系统将不会显示警告。
 
@@ -1330,13 +1306,6 @@
       如果将此政策设置为 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />（值为 1），则只有被视为重要安全性或稳定性修复程序的变体可应用于 <ph name="PRODUCT_OS_NAME" />。
 
       如果将此政策设置为 <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（值为 2），则任何变体都不会在登录屏幕应用于浏览器。请注意，我们不建议您使用此模式，因为它可能会妨碍 <ph name="PRODUCT_OS_NAME" />开发者及时提供重要的安全性修复程序。</translation>
-<translation id="2217931577484185673">如果此政策已启用，“安全浏览”功能将会信任您指定的网域。此功能将不会检查这类网域是否含有危险资源（例如钓鱼式攻击、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务将不会检查托管在这类网域上的下载内容。此功能的密码保护服务将不会检查密码重用情况。
-
-      如果此政策未经设置，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
-
-      此政策必须设为一个由完全限定域名组成的列表。它不支持正则表达式，也不会将政策中所列域名的子域名添加到许可名单中。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="2221779615493499989">报告已注册的设备上的用户网络状态。
 
       如果此政策设为 false，系统将不会报告这些信息。
@@ -1761,11 +1730,6 @@
 <translation id="2608887839902987727">禁止强制门户身份验证忽略代理设置</translation>
 <translation id="2608985885792348429">默认剪贴板设置</translation>
 <translation id="2615240493030733717">报告时区信息</translation>
-<translation id="2619966380594000538">如果此政策已启用或未设置，当您使用可能不安全的命令行标记启动 Chrome 时，系统会显示安全警告。
-
-      如果此政策已停用，当您使用可能不安全的命令行标记启动 Chrome 时，系统会禁止显示安全警告。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="2621290137818374425">设置此政策可关闭对指定网址中所含主机名的证书透明度披露要求。虽然这会导致更难以检测到误颁的证书，但相应主机可以继续使用因没有恰当公开披露相关信息而不受信任的证书。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会将那些应按照证书透明度要求进行披露但却未予披露的证书视为不可信证书。
@@ -2498,11 +2462,6 @@
 <translation id="3256920103934729145">禁止用户点击 SSL 警告页面</translation>
 <translation id="3257786863492892609">控制与“屏幕录制”功能相关的政策。</translation>
 <translation id="3258380413685430793">运行所有 <ph name="FLASH_PLUGIN_NAME" /> 内容</translation>
-<translation id="325883417142483505">通过设置此政策，您可以配置企业登录网址（仅限 HTTP 和 HTTPS 协议）列表。密码保护服务会在这些网址上捕获密码的加盐哈希值，以用于检测密码重用情况。为了使 <ph name="PRODUCT_NAME" /> 能够正确捕获密码的加盐哈希值，请务必确保您的登录页面遵循了这些准则 ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms )。
-
-      如果您停用了或未配置此设置，密码保护服务将仅在 https://accounts.google.com 上捕获密码的加盐哈希值。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="3261592499545947104">应在证书还差多少秒到期时触发续订操作</translation>
 <translation id="3262080895269946462">允许第三方情境下的 WebSQL 默认处于停用状态。</translation>
 <translation id="3263892501786842604">允许在“新标签页”页面上的搜索框中显示 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮（如果支持的话）。</translation>
@@ -2827,13 +2786,6 @@
 <translation id="3554498762428140109">启用原生窗口遮挡</translation>
 <translation id="3554984410014457319">允许 Google 助理听取语音启动词组</translation>
 <translation id="3557586898458302131">在生成的 Kerberos SPN 中加入非标准端口</translation>
-<translation id="3562741878192828370">此政策用于指定一系列应在下载完毕后自动打开的文件类型。罗列文件类型时不应添加前导分隔符，因此请罗列“txt”而非“.txt”。
-
-      应自动打开的文件类型所对应的文件仍须接受安全浏览检查（若已启用）；如果未通过检查，便不会打开。
-
-      如果您不设置此政策，只有那些已被用户指定为自动打开的文件类型才会在下载完毕后自动打开。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="35668690622495904">
           对 getDisplayMedia 的调用不会因源自未被列入许可名单的上下文而遭到拒绝。（但是，这类调用仍可能会由于别的原因被拒。）</translation>
 <translation id="3568762199045490351">超时设置为 0 毫秒的 JavaScript setTimeout() 将会延迟到 1 毫秒。</translation>
@@ -3225,6 +3177,7 @@
 <translation id="3918339829588313389">允许用户设置安全系数不高的 PIN 码</translation>
 <translation id="3924506460382372403">停用设备显卡状态报告功能</translation>
 <translation id="3925377537407648234">设置显示屏分辨率和缩放比例</translation>
+<translation id="3926681471685211524">检查由本地信任锚颁发的服务器证书的 RSA 密钥用法</translation>
 <translation id="3927137827189017535">在登录屏幕上启用“粘滞键”无障碍功能。
 
           如果此政策设为 true，“粘滞键”在登录屏幕上将始终处于启用状态。
@@ -3417,11 +3370,6 @@
 如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。* 不是此政策可接受的值。
 
 如果不设置此政策，所有源都将需要之前的用户手势才能调用此 API。</translation>
-<translation id="4114059938441379876">通过设置此政策，您可以配置当浏览器显示警告后，供用户更改密码的网址。密码保护服务会将用户转到您通过此政策指定的网址（仅限 HTTP 和 HTTPS 协议）。为了使 <ph name="PRODUCT_NAME" /> 能够在这个密码更改页面上正确捕获新密码的加盐哈希值，请务必确保该页面遵循了这些准则 ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms )。
-
-      如果您停用了或未设置此政策，该服务会将用户转到 https://myaccount.google.com，以便其更改密码。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="4115501011761259824">对所有受影响客户启用 First-Party Sets 功能</translation>
 <translation id="4121350739760194865">阻止在新标签页上显示应用宣传信息</translation>
 <translation id="4122473079291425973">“新标签页”页面会显示卡片（若有可用内容），但用户可以更改此设置</translation>
@@ -3448,17 +3396,6 @@
 <translation id="4157594634940419685">允许访问本机 CUPS 打印机</translation>
 <translation id="4158531549614162499">允许在连接移动网络的情况下进行 Google 云端硬盘同步</translation>
 <translation id="4160962198980004898">插入基座后的设备 MAC 地址来源</translation>
-<translation id="4161589119744364846">通过设置此政策，您可以配置默认的“新标签页”页面网址，并禁止用户更改此设置。
-
-      在打开新的标签页和窗口时，系统会显示“新标签页”页面。
-
-      此政策不影响哪些页面会在 Chrome 启动时打开。启动时打开的页面由 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策控制。如果主页被设为“打开新标签页”，此政策确实会影响主页；如果启动页被设为“打开新标签页”，此政策也会影响启动页。
-
-      最佳做法是提供完全规范化的网址；如果您提供的网址并未完全规范化，<ph name="PRODUCT_NAME" /> 会默认采用 https://。
-
-      如果您未设置此政策或将其留空，系统会使用默认的“新标签页”页面。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="4164511138197196839">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 中停用 Chrome 应用商店中处于未发布状态的扩展程序。
 此政策仅适用于那些通过 Chrome 应用商店安装和更新的扩展程序。
 
@@ -4558,11 +4495,6 @@
       如果此政策已启用，只要用户已被关联，系统就会向服务器报告设备活动状态，以便服务器检测设备是否处于离线状态。</translation>
 <translation id="5238275681097851753">允许屏蔽特定的 <ph name="FLASH_PLUGIN_NAME" /> 内容</translation>
 <translation id="5238976843489093540">强制启用快速配对（快速蓝牙配对）。</translation>
-<translation id="5239333626804545932">如果此政策已启用或未设置，Chrome 清理功能将会定期扫描系统以检测是否存在垃圾软件，并会在发现任何垃圾软件时询问用户是否要将其移除。此外，系统还会允许通过 chrome://settings 手动触发 Chrome 清理功能。
-
-      如果此政策已停用，Chrome 清理功能将不会定期进行扫描，并且手动触发会被停用。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。</translation>
 <translation id="5245647012663146075">不允许启用 Phone Hub</translation>
 <translation id="5245671702326993331">允许使用原生通知</translation>
 <translation id="524637053580639111">在 M82 中，我们移除了此政策，请改用 DeviceMinimumVersion。
@@ -4590,15 +4522,6 @@
 <translation id="5257395339965216304">托管的应用数据</translation>
 <translation id="5258445772095084618">允许独立用户使用所需的虚拟机来支持 Linux 应用</translation>
 <translation id="5262320080678421295">不信任 Symantec Corporation 旧版 PKI 颁发的证书</translation>
-<translation id="5266591246506903971">如果启用此政策，则默认情况下，系统将可以使用匿名报告功能，因此会向 Google 报告与 Chrome 的使用情况和崩溃情况相关的数据。用户将仍能在 Chrome 设置中更改该设置。
-
-      如果停用此政策，系统将无法使用匿名报告功能，因此不会向 Google 发送任何使用情况或崩溃数据。用户将无法更改该设置。
-
-      如果未设置此政策，用户可在安装或首次运行时选择匿名报告行为，日后亦可在 Chrome 设置中更改该设置。
-
-      此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。
-
-      （对于 <ph name="PRODUCT_OS_NAME" />，请参阅 DeviceMetricsReportingEnabled。）</translation>
 <translation id="5273744932022326215">在登录屏幕上启用“光标突出显示”无障碍功能。
 
           如果此政策设为 true，“光标突出显示”在登录屏幕上将始终处于启用状态。
@@ -4739,15 +4662,6 @@
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" /> 许可密钥</translation>
 <translation id="5423197884968724595">Android WebView 限制名称：</translation>
 <translation id="5424147596523390018">允许所有颜色模式</translation>
-<translation id="5426530943254798290">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设成 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。系统会屏蔽还是允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1,000 个条目。
-
-      通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
-
-      如果您未设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
-
-      从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="5427879482805712214">通过此政策，您可以配置用于在登录屏幕上代表用户的头像图片。要设置此政策，请指定可供 <ph name="PRODUCT_OS_NAME" />下载相应头像图片的网址，并指定用于验证下载内容是否完整的加密哈希值。图片必须是 JPEG 格式，且大小不得超过 512KB。网址必须可直接访问，而无需进行任何身份验证。
 
       系统会下载并缓存相应的头像图片。只要网址或哈希值有任何变化，系统都会重新下载相应的头像图片。
@@ -5016,29 +4930,6 @@
       如果此政策设为 False 或未设置，系统会显示弃用警告。</translation>
 <translation id="5660228672907979869">禁止启用第三方存储分区。</translation>
 <translation id="5666457529647159548">允许用户管理已安装的客户端证书。</translation>
-<translation id="5670286392821164294">此政策提供了一种方式，以覆盖浏览器用来实现 First-Party Set 功能的集合列表。
-
-      浏览器的 First-Party Set 列表中的每个集合都必须符合 First-Party Set 要求。
-      每个 First-Party Set 都必须包含一个主要网站以及一个或多个成员网站。
-      每个集合还可包含其拥有的一系列服务网站，以及从某个网站到其所有 ccTLD 变体的映射关系。
-      如需详细了解 <ph name="PRODUCT_NAME" /> 使用的 First-Party Set，请参阅 https://github.com/WICG/first-party-sets。
-
-      每个 First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网域。此外，First-Party Set 中的每个网站都必须互不相同，也就是说：同一个网站不能在 First-Party Set 中列出多次。
-
-      如果此政策设为一个空字典，浏览器会使用 First-Party Set 的公开列表。
-
-      对于来自 <ph name="REPLACEMENTS" /> 列表的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，则该网站会被从浏览器的 First-Party Set 中移除。
-      之后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
-
-      对于来自 <ph name="ADDITIONS" /> 列表的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，则浏览器的 First-Party Set 会被更新，以将新的 First-Party Set 添加到浏览器的列表中。待浏览器的列表更新完毕后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
-
-      浏览器的 First-Party Set 列表要求其中的所有网站都不得出现在多个集合中。<ph name="REPLACEMENTS" /> 列表和 <ph name="ADDITIONS" /> 列表也都有这样的要求。同理，同一个网站不能既出现在 <ph name="REPLACEMENTS" /> 列表中又出现在 <ph name="ADDITIONS" /> 列表中。
-
-      通配符 (*) 无法用作政策值，也无法用于这些列表所含的任何 First-Party Set 中。
-
-      此政策提供的所有集合都必须是有效的 First-Party Set；如果无效，则会触发相应的错误。
-
-      此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。</translation>
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
 <translation id="5676740747107495269">在登录屏幕的系统任务栏菜单中显示无障碍选项</translation>
 <translation id="567832102568869993">在计算机处于闲置状态时触发操作。
@@ -6326,6 +6217,14 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6819838337315703072">如果 <ph name="LINUX_OS_NAME" /> 应用支持已开启，当此政策已启用时，系统会将有关 <ph name="LINUX_OS_NAME" /> 应用使用情况的信息发送回服务器。
 
       如果此政策已停用或未设置，系统便不会报告使用情况信息。</translation>
+<translation id="6821870597514407499">Chrome 应用 <ph name="WEBVIEW_TAG_NAME" /> 允许正被从 <ph name="PRODUCT_NAME" /> 中移除的行为。
+
+之前的行为允许 <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> 事件 (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) 将新窗口附加到位于源 <ph name="WEBVIEW_TAG_NAME" /> 所含单独应用窗口中的 <ph name="WEBVIEW_TAG_NAME" /> 元素。新行为依然允许这种附加操作，但对源 <ph name="WEBVIEW_TAG_NAME" /> 中 <ph name="WINDOW_OPEN_NAME" /> 的调用所返回的窗口引用已失效。
+
+如果此政策已启用，系统会遵循之前的行为。
+如果此政策已停用或未设置，这项行为变更将在通过 <ph name="PRODUCT_NAME" /> 发布流程发布时生效。
+
+此政策是一种临时的变通方案，可在企业因这项变更而发生网站崩溃时使用。在版本 122 中，此政策将被移除。</translation>
 <translation id="6823711520976094072">如果此政策设为小于 1 MB 或未设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小 (256 MiB) 缓存应用和扩展程序，以供同一部设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
 <translation id="6828729771894228555">让您能够设置一个网址格式列表，以指定要禁止哪些顶级（标签页地址栏中的网址）源使用第三方存储分区（跨源 iframe 存储分区）。
           如果此政策未设置或顶级源不匹配，系统将会使用 <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> 的值。
@@ -6695,17 +6594,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
           如果您未设置此政策，最初鼠标左键会是主键，但用户随时可将主键切换成右键。</translation>
 <translation id="7136237405361383549">使用现场试验配置中的默认渲染程序。</translation>
-<translation id="7137460825181247519">此政策已在 <ph name="PRODUCT_NAME" /> 83 中弃用，请改用 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />。
-
-      如果此政策已启用，Chrome 的“安全浏览”功能会保持开启状态。如果此政策已停用，Chrome 的“安全浏览”功能会保持关闭状态。
-
-      如果您设置了此政策，用户便无法更改它或覆盖 Chrome 中的“启用针对网上诱骗和恶意软件的防护功能”设置。如果您不设置此政策，“启用针对网上诱骗和恶意软件的防护功能”会设为 True，但用户可以更改它。
-
-      详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。
-
-      如果 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 政策已设置，系统会忽略 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策的值。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7138762292550697459">控制 JavaScript setTimeout() 函数的最短超时时间。</translation>
 <translation id="714219487865269980">允许使用键盘焦点突出显示</translation>
 <translation id="7144022711746703451">
@@ -6820,15 +6708,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       将此政策设为 true 也会停用那些使用 IPPS、USB 和 USB 型 IPP 以外协议的打印机，因为用户名和文件名不应通过网络公开发送。</translation>
 <translation id="7253446510183499868">禁止在更新后自动重新启动</translation>
-<translation id="7257092058788772055">通过设置此政策，您可以配置 <ph name="PRODUCT_NAME" /> 中的默认主页网址。您可以使用“主页”按钮打开主页。在桌面设备上，<ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策控制着哪些页面会在 Chrome 启动时打开。
-
-      如果用户或 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 将主页设为“新标签页”页面，此政策不会产生任何影响。
-
-       此网址必须是采用标准架构的网址，例如 http://example.com 或 https://example.com。如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改主页网址。
-
-      如果 <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> 和 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 均未设置，用户便可自行选择主页。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7258250780552783197">让您能够指定一系列要应用于 <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在有人在 <ph name="PRODUCT_OS_NAME" /> 中传输文件时调用。
 
       <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户在源位置和目标位置之间传输某个文件时，该接口是否应将此文件发送给系统进行分析，以及要将哪些标记添加到此文件的分析请求中。如果相应的源位置和目标位置与某个标记关联的“enable”规则相匹配，那么只要此标记关联的“disable”规则不与此传输匹配，该接口便会将这个标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会分析此文件。<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> 规则由对列表定义，其中每个对都包含源位置列表和目标位置列表。<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> 用于定义规则应该应用到哪个文件系统。
@@ -7159,11 +7038,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策已启用或未设置，系统将启用快速解答单位换算功能。
       如果此政策已停用，系统将停用快速解答单位换算功能。</translation>
-<translation id="7582095958259051083">如果此政策已启用，系统会始终启用以网址为键的匿名化数据收集功能，从而将用户访问的网页网址发送给 Google，以用于改善搜索和浏览体验。
-
-      如果此政策已停用，系统将不会启用以网址为键的匿名化数据收集功能。
-
-      如果此政策未设置，用户将能手动更改此设置。</translation>
 <translation id="7585312329612243723">以列表形式为一系列网址启用受管理浏览器的 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 认证流程</translation>
 <translation id="7587345076013230465">当登录屏幕上有多份客户端证书与自动选择政策匹配时，提示用户做出选择</translation>
 <translation id="7587921466180902617">为 Family Link 用户启用“屏幕录制”功能 dogfood</translation>
@@ -7499,15 +7373,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果 <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。</translation>
 <translation id="7912255076272890813">配置允许的应用/扩展程序类型</translation>
 <translation id="791267408364877739">使用可能不安全的命令行标记时显示安全警告</translation>
-<translation id="79156801312131034">通过设置此政策，您可以指定 Chrome 启动时的系统行为。关闭此设置相当于未对其进行配置，因为 <ph name="PRODUCT_NAME" /> 必须具有指定的启动行为。
-
-      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行更改它。
-
-      如果此政策设为 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> 或 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，某些依赖于会话的设置或用于指定退出时应执行什么操作的设置（例如：退出时清除浏览数据，或仅在会话期间有效的 Cookie）就会被关闭。
-
-      如果此政策设为 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，浏览器将会恢复上一个会话并打开一个单独的窗口，以显示通过 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设置的网址。请注意，用户可以选择让这些网址保持打开状态，它们也会在未来的会话中恢复。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
 <translation id="7919665519909231619">允许启用购物清单功能</translation>
 <translation id="7922358664346625612">使 Chrome 中仅剩的那个标签页保持打开状态。</translation>
 <translation id="7923734850959347297">屏保设置</translation>
@@ -8063,11 +7928,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策未设置，系统将会使用默认值（即 3）
 
       如果设置了此政策，系统便会酌情删除旧快照以遵守此限制。如果此政策设为 0，系统将不会创建任何快照</translation>
-<translation id="8447347049334673364">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，其中包括由现有的扩展程序相关政策控制的设置。此政策会取代任何可能已设置的旧版政策。
-
-      此政策仅会将某个扩展程序 ID 或某个更新网址映射至其特定的设置。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。对于更新网址，相应配置会应用于具有在扩展程序清单 ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ) 中注明的确切更新网址的扩展程序。如果“override_update_url”标记设为 true，系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址来安装并更新扩展程序。如果“update_url”是 Chrome 应用商店网址，“override_update_url”标记会被忽略。
-
-      注意：对于未加入 <ph name="MS_AD_NAME" /> 网域的 <ph name="MS_WIN_NAME" /> 实例，以及未通过 MDM 进行管理或未通过 MCX 加入网域的 <ph name="MAC_OS_NAME" /> 实例，强制安装仅限于 Chrome 应用商店中列出的应用和扩展程序。</translation>
 <translation id="8451988835943702790">使用“新标签页”作为主页</translation>
 <translation id="8453218444172088993">为您的用户停用 <ph name="PRIVACY_SANDBOX_NAME" /> 广告主题设置。</translation>
 <translation id="8455529558077979314">隐私保护屏设置</translation>
@@ -8305,11 +8165,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如需详细了解 JavaScript/ECMAScript 媒体类型，请参阅 https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage。
       </translation>
-<translation id="8669313549017524373">如果 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 设为 RestoreOnStartupIsURLs，那么将 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设为一系列网址即可指定哪些网址会在 Chrome 启动时打开。
-
-      如果您未设置此政策，“新标签页”页面会在 Chrome 启动时打开。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="8671119576957984818">启用桌面分享中心</translation>
 <translation id="8671193325113134911">为工作器脚本启用严格的 MIME 类型检查</translation>
 <translation id="8671303329680827168">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。</translation>

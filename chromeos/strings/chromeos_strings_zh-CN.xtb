@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">未按下<ph name="KEY_NAME" />键</translation>
 <translation id="1435763214710588005">在每月的指定日期自动重置流量使用情况</translation>
 <translation id="1442433966118452622">图片来源</translation>
+<translation id="1449035143498573192">在 Google 搜索中打开</translation>
 <translation id="1451536289672181509">设备类型是键盘。</translation>
 <translation id="1459693405370120464">天气</translation>
 <translation id="1468664791493211953">优惠</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">输入法</translation>
 <translation id="7955587717700691983">蓝牙键盘</translation>
 <translation id="7960831585769876809">温度</translation>
+<translation id="7971535376154084247">常规控件</translation>
 <translation id="7977800524392185497">若要加入“<ph name="NETWORK_NAME" />”网络，请转到“设置”</translation>
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">家用移动网络提供商名称</translation>
 <translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
 <translation id="8476242415522716722">让键盘变暗</translation>
+<translation id="8476942730579767658">窗口和桌面</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
 <translation id="8483248364096924578">IP 地址</translation>
 <translation id="8491311378305535241">无法通过防火墙从 Android 应用连接到 HTTP 网站</translation>

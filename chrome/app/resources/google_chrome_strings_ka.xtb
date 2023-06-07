@@ -49,7 +49,6 @@
 <translation id="1698376642261615901">Google Chrome არის ვებ-ბრაუზერი, რომელიც ძალიან სწრაფად ხსნის ვებ-გვერდებს და პროგრამებს. იგი სწრაფი, სტაბილური და ადვილად გამოსაყენებელია. უფრო უსაფრთხოდ დაათვალიერეთ ინტერნეტ-გვერდები, Google Chrome-ში ჩაშენებული საზიანო პროგრამების და თაღლითობის საწინააღმდეგო დაცვის დახმარებით.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ხელახლა გაეშვება 1 საათში}other{Chrome ხელახლა გაეშვება # საათში}}</translation>
 <translation id="1734234790201236882">Chrome შეინახავს ამ პაროლს თქვენს Google ანგარიშში. მისი დამახსოვრება აუცილებელი არ არის.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">დარწმუნდით, რომ თქვენს <ph name="TARGET_DEVICE_NAME" />-ზე შესული ხართ Chrome-ში, შემდეგ კი ხელახლა ცადეთ გაგზავნა.</translation>
 <translation id="1812689907177901597">ამ პარამეტრის გამორთვის შემთხვევაში, Google-ის საიტებში (მაგალითად, Gmail-ში) შესვლას შეძლებთ Chrome-ში შესვლის გარეშე</translation>
 <translation id="1860536484129686729">Chrome საჭიროებს თქვენს კამერაზე წვდომის ნებართვას ამ საიტისთვის</translation>
@@ -374,7 +373,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8013993649590906847">თუ სურათს არ ექნება სასარგებლო აღწერილობა, Chrome შეეცდება მის უზრუნველყოფას. აღწერილობების შესაქმნელად სურათები იგზავნება Google-ში.</translation>
 <translation id="80471789339884597">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ყველა ბრაუზერი უნდა გადატვირთოთ.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">&amp;Google Chrome-ის შესახებ</translation>
 <translation id="813913629614996137">მიმდინარეობს ინიცირება…</translation>
 <translation id="8255190535488645436">Google Chrome იყენებს თქვენს კამერასა და მიკროფონს.</translation>
@@ -398,7 +396,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8504220326736535258">Chrome-მა დაბლოკა ეს ფაილი, რადგან ის შეიცავს მავნე პროგრამას</translation>
 <translation id="8516431725144212809">Chrome-ის მიერ პროგნოზირებული თქვენი ინტერესები</translation>
 <translation id="8521348052903287641">შემომავალი წესი Google Chrome Dev-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome ცდილობს გადახდის მეთოდების შევსების პარამეტრების შეცვლას.</translation>
 <translation id="8550334526674375523">სამსახურის ეს პროფილი თქვენი პირადი პროფილისგან სრულიად დამოუკიდებლად ფუნქციონირებს.</translation>
 <translation id="8556340503434111824">ხელმისაწვდომია Google Chrome-ის უფრო ახალი ვერსია, რომელიც უფრო სწრაფია.</translation>

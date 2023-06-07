@@ -302,7 +302,6 @@
 <translation id="7318036098707714271">El fitxer de preferències està malmès o no és vàlid.
 
 Chromium no pot recuperar la configuració.</translation>
-<translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="734373864078049451">El vostre web, les adreces d'interès i altres coses de Chromium resideixen aquí.</translation>
 <translation id="7349591376906416160">L'administrador del sistema ha configurat Chromium perquè obri <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>

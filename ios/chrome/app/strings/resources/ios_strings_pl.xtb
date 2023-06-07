@@ -193,6 +193,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="225943865679747347">Kod błędu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj konto</translation>
 <translation id="2268044343513325586">Zawęź</translation>
+<translation id="2269277877025820298">Zobacz więcej</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
 <translation id="2286505070150039482">Zaznaczony tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
@@ -1084,7 +1085,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 
 Witryny mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="7971521879845308059">Blokuj wyskakujące okienka</translation>
-<translation id="797413074872316787">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="7978018860671536736">3. Kliknij Automatyczne wypełnianie haseł.</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7987685713885608670">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo.</translation>

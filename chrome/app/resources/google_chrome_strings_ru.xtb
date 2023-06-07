@@ -45,7 +45,6 @@
 <translation id="1698376642261615901">Google Chrome – это быстрый и удобный браузер для работы с веб-страницами и приложениями. Он надежен и прост в использовании. Вы можете просматривать страницы в Интернете, положившись на систему защиту от вредоносного ПО и фишинга, которая уже встроена в Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome перезапустится через 1 час}one{Chrome перезапустится через # час}few{Chrome перезапустится через # часа}many{Chrome перезапустится через # часов}other{Chrome перезапустится через # часа}}</translation>
 <translation id="1734234790201236882">Этот пароль будет сохранен в аккаунте Google. Вам не нужно его запоминать.</translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Убедитесь, что вы вошли в Chrome на устройстве <ph name="TARGET_DEVICE_NAME" />, и попробуйте повторить отправку.</translation>
 <translation id="1812689907177901597">Отключив эту функцию, вы сможете входить в систему на сайтах Google (например, Gmail) без необходимости выполнять вход в Chrome.</translation>
 <translation id="1860536484129686729">Для этого сайта Chrome запрашивает доступ к камере.</translation>
@@ -366,7 +365,6 @@
 <translation id="8013993649590906847">Если у изображения нет понятного описания, Chrome попытается его найти. Для создания описаний изображения отправляются в Google.</translation>
 <translation id="80471789339884597">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите все открытые браузеры.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">О браузере &amp;Google Chrome</translation>
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8255190535488645436">Google Chrome использует камеру и микрофон.</translation>
@@ -390,7 +388,6 @@
 <translation id="8504220326736535258">Браузер Chrome заблокировал файл, так как он содержит вредоносное ПО.</translation>
 <translation id="8516431725144212809">Ваши интересы по данным Chrome</translation>
 <translation id="8521348052903287641">Разрешить в Google Chrome для разработчиков передачу входящего трафика по протоколу mDNS</translation>
-<translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544217240017914508">Google Chrome пытается изменить настройки заполнения способов оплаты.</translation>
 <translation id="8550334526674375523">Этот рабочий профиль никак не связан с вашим личным профилем.</translation>
 <translation id="8556340503434111824">Доступна новая версия Google Chrome, которая стала еще быстрее.</translation>

@@ -304,7 +304,6 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido.
 
 Chromium no puede recuperar tu configuración.</translation>
-<translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="734373864078049451">Aquí puedes encontrar tus páginas web, marcadores y otros contenidos de Chromium.</translation>
 <translation id="7349591376906416160">El administrador del sistema ha configurado Chromium para que abra <ph name="ALTERNATIVE_BROWSER_NAME" /> al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
