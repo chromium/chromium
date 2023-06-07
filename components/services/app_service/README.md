@@ -31,7 +31,7 @@ for these aspects:
   - App Installer: install, uninstall and update apps.
   - App Coordinator: keep system-wide settings, e.g. default handlers.
 
-Some things are still the responsbility of individual Consumers or Publishers.
+Some things are still the responsibility of individual Consumers or Publishers.
 For example, the order in which the apps' icons are presented in the launcher
 is a launcher-specific detail, not a system-wide detail, and is managed by the
 launcher, not the App Service. Similarly, Android-specific VM (Virtual Machine)
@@ -322,8 +322,8 @@ There are two boolean fields that facilitate this: `allow_placeholder_icon` is
 sent from a `Subscriber` to a `Publisher` and `is_placeholder_icon` is sent in
 the response.
 
-`LoadIcon`'s `allow_placeholder_icon` states whether the the caller will accept
-a placeholder if the real icon can not be provided quickly. Native user
+`LoadIcon`'s `allow_placeholder_icon` states whether the caller will accept a
+placeholder if the real icon can not be provided quickly. Native user
 interfaces like the app launcher will probably set this to true. On the other
 hand, serving Web-UI URLs such as `chrome://app-icon/app_id/icon_size` will set
 this to false, as that URL should identify a particular icon, not one that
