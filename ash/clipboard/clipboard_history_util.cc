@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -16,11 +17,13 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -37,7 +40,6 @@ constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 constexpr int kPlaceholderImageWidth = 234;
 constexpr int kPlaceholderImageHeight = 74;
 constexpr int kPlaceholderImageOutlineCornerRadius = 8;
-constexpr int kPlaceholderImageSVGSize = 32;
 
 // The array of formats in order of decreasing priority.
 constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
@@ -70,7 +72,6 @@ class UnrenderedHtmlPlaceholderImage : public gfx::CanvasImageSource {
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    // TODO(b/269680517): Update to use a semantic color token.
     flags.setColor(gfx::kGoogleGrey100);
     canvas->DrawRoundRect(
         /*rect=*/{kPlaceholderImageWidth, kPlaceholderImageHeight},
@@ -79,10 +80,10 @@ class UnrenderedHtmlPlaceholderImage : public gfx::CanvasImageSource {
     flags = cc::PaintFlags();
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    // TODO(b/269680517): Update to use a semantic color token.
-    const gfx::ImageSkia center_image =
-        gfx::CreateVectorIcon(kUnrenderedHtmlPlaceholderIcon,
-                              kPlaceholderImageSVGSize, gfx::kGoogleGrey600);
+    const gfx::ImageSkia center_image = gfx::CreateVectorIcon(
+        kUnrenderedHtmlPlaceholderIcon,
+        ClipboardHistoryViews::kBitmapItemPlaceholderIconSize,
+        gfx::kGoogleGrey600);
     canvas->DrawImageInt(
         center_image, (size().width() - center_image.size().width()) / 2,
         (size().height() - center_image.size().height()) / 2, flags);
@@ -236,8 +237,13 @@ ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {
 }
 
 ui::ImageModel GetHtmlPreviewPlaceholder() {
-  static base::NoDestructor<ui::ImageModel> model(ui::ImageModel::FromImageSkia(
-      gfx::CanvasImageSource::MakeImageSkia<UnrenderedHtmlPlaceholderImage>()));
+  static base::NoDestructor<ui::ImageModel> model(
+      chromeos::features::IsClipboardHistoryRefreshEnabled()
+          ? ui::ImageModel::FromVectorIcon(
+                kUnrenderedHtmlPlaceholderIcon, cros_tokens::kCrosSysOutline,
+                ClipboardHistoryViews::kBitmapItemPlaceholderIconSize)
+          : ui::ImageModel::FromImageSkia(gfx::CanvasImageSource::MakeImageSkia<
+                                          UnrenderedHtmlPlaceholderImage>()));
   return *model;
 }
 

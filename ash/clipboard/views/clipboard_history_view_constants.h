@@ -7,8 +7,7 @@
 
 #include "ui/gfx/geometry/insets.h"
 
-namespace ash {
-namespace ClipboardHistoryViews {
+namespace ash::ClipboardHistoryViews {
 
 // The insets within the contents view.
 constexpr int kContentsVerticalInset = 8;
@@ -25,6 +24,9 @@ constexpr auto kDefaultItemDeleteButtonMargins = gfx::Insets::TLBR(0, 8, 0, 4);
 // `ClipboardHistoryBitmapItemView`.
 constexpr auto kBitmapItemDeleteButtonMargins = gfx::Insets::TLBR(4, 0, 0, 4);
 
+// The width and height of the placeholder icon for an unrendered HTML preview.
+constexpr int kBitmapItemPlaceholderIconSize = 32;
+
 // The preferred height of `ClipboardHistoryLabel`.
 constexpr int kLabelPreferredHeight = 20;
 
@@ -32,13 +34,15 @@ constexpr int kLabelPreferredHeight = 20;
 // `ClipboardHistoryBitmapItemView`.
 constexpr int kImageViewPreferredHeight = 72;
 
-// The radius of the image's rounded corners.
-constexpr int kImageRoundedCornerRadius = 4;
+// The radius of the image view's rounded corners when offset by a background.
+constexpr int kImageBackgroundCornerRadius = 12;
+
+// The radius of the image view's rounded corners when surrounded by a border.
+constexpr int kImageBorderCornerRadius = 4;
 
 // The thickness of the image border.
 constexpr int kImageBorderThickness = 1;
 
-}  // namespace ClipboardHistoryViews
-}  // namespace ash
+}  // namespace ash::ClipboardHistoryViews
 
 #endif  // ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_VIEW_CONSTANTS_H_
