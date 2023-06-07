@@ -9,7 +9,11 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,6 +28,51 @@ public class PartnerCustomizationsUma {
      */
     private static @CustomizationProviderDelegateType int sWhichDelegate =
             CustomizationProviderDelegateType.NONE_VALID;
+
+    /**
+     * Determines whether UMA logging of Partner Customization - the functionality of this class -
+     * is enabled or not.
+     */
+    @VisibleForTesting
+    static boolean isEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA);
+    }
+
+    /**
+     * @return whether the system was ready to execute or skip the given {@link Runnable}. Returns
+     *         {@code false} when Features are not yet initialized or this UMA Feature is disabled.
+     */
+    private static boolean didExecute(Runnable closure) {
+        if (!FeatureList.isInitialized()) return false;
+
+        if (isEnabled()) {
+            closure.run();
+        }
+        return true;
+    }
+
+    /**
+     * Delays the execution of the given {@link Runnable} until enabled or native is initialized.
+     * Care should be taken when crafting the chore to be executed such that any timely information
+     * is captured outside of the chore in a final local member, and implicitly passed into the
+     * method for subsequent processing. An example is grabbing an end time for some process from
+     * the clock (see usages in this file).
+     * If this Feature is not enabled then calling this is a noop, and the chore will not be
+     * executed.
+     */
+    public void onFinishNativeInitializationOrEnabled(
+            ActivityLifecycleDispatcher activityLifecycleDispatcher, Runnable choreWhenEnabled) {
+        if (!didExecute(choreWhenEnabled)) {
+            NativeInitObserver nativeInitObserver = new NativeInitObserver() {
+                @Override
+                public void onFinishNativeInitialization() {
+                    activityLifecycleDispatcher.unregister(this);
+                    didExecute(choreWhenEnabled);
+                }
+            };
+            activityLifecycleDispatcher.register(nativeInitObserver);
+        }
+    }
 
     /**
      * Constants used to identify the delegate being used.
