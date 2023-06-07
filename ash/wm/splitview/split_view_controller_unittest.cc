@@ -3477,25 +3477,20 @@ TEST_F(SplitViewControllerTest, SnapWindowWithMinSizeOpensOverview) {
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
 
-  // Snap `window1` to 2/3. Since `window2` can't fit in 1/3, test that we open
-  // Overview instead.
+  // Try to snap `window1` to 2/3. Since `window2` can't fit in 1/3, test that
+  // the divider and both windows bounce back to 1/2.
   WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
                                            chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
-  EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kPrimarySnapped);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-
-  // Activate `window2`, i.e. from Overview. Test that `window2` gets pushed to
-  // 1/2 and `window1` also gets updated to 1/2.
-  wm::ActivateWindow(window2.get());
-  EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kBothSnapped);
-  const int divider_delta = kSplitviewDividerShortSideLength / 2;
-  EXPECT_EQ(work_area_bounds.width() * 0.5f,
-            window1->bounds().width() + divider_delta);
-  EXPECT_EQ(work_area_bounds.width() * 0.5f,
-            window2->bounds().width() + divider_delta);
+  SkipDividerSnapAnimation();
+  gfx::Rect divider_bounds =
+      split_view_divider()->GetDividerBoundsInScreen(/*is_dragging=*/false);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, divider_bounds.x(),
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window2->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
 }
 
 // Tests that auto-snap for partial windows works correctly.

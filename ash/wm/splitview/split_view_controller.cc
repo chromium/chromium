@@ -51,6 +51,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/desk_template_read_handler.h"
@@ -289,17 +290,19 @@ class SplitViewController::DividerSnapAnimation
     : public gfx::SlideAnimation,
       public gfx::AnimationDelegate {
  public:
+  // Before you change the value of `duration`, read the comment on
+  // kIsWindowMovedTimeoutMs in tablet_mode_window_drag_delegate.cc.
   DividerSnapAnimation(SplitViewController* split_view_controller,
                        int starting_position,
-                       int ending_position)
+                       int ending_position,
+                       base::TimeDelta duration,
+                       gfx::Tween::Type tween_type)
       : gfx::SlideAnimation(this),
         split_view_controller_(split_view_controller),
         starting_position_(starting_position),
         ending_position_(ending_position) {
-    // Before you change this value, read the comment on kIsWindowMovedTimeoutMs
-    // in tablet_mode_window_drag_delegate.cc.
-    SetSlideDuration(base::Milliseconds(300));
-    SetTweenType(gfx::Tween::EASE_IN);
+    SetSlideDuration(duration);
+    SetTweenType(tween_type);
 
     aura::Window* window = split_view_controller->primary_window()
                                ? split_view_controller->primary_window()
@@ -973,6 +976,7 @@ void SplitViewController::OnWMEvent(aura::Window* window,
   // to-be-snapped window. b/267380892
   absl::optional<float> new_snap_ratio = WindowState::Get(window)->snap_ratio();
   if (new_snap_ratio) {
+    const float old_divider_position = divider_position_;
     divider_position_ = GetDividerPosition(to_snap_position, *new_snap_ratio);
     if (split_view_divider_) {
       split_view_divider_->UpdateDividerBounds();
@@ -996,11 +1000,16 @@ void SplitViewController::OnWMEvent(aura::Window* window,
       if (window_length + other_window_length +
               kSplitviewDividerShortSideLength >
           work_area_size) {
-        // If `other_window` can't fit in the opposite position, open Overview.
-        // TODO(b/265204266): Do bounce animation instead of open Overview.
-        Shell::Get()->overview_controller()->StartOverview(
-            OverviewStartAction::kSplitView,
-            OverviewEnterExitType::kImmediateEnter);
+        // If `other_window` can't fit in the opposite position, set
+        // `divider_snap_animation_` to Hide then Show, to give off the
+        // impression of bouncing the divider back to `old_divider_position`.
+        // Note the duration is 2 * 250ms to bounce out then in.
+        tablet_resize_mode_ = TabletResizeMode::kFast;
+        divider_snap_animation_ = std::make_unique<DividerSnapAnimation>(
+            this, divider_position_, old_divider_position,
+            base::Milliseconds(500), gfx::Tween::FAST_OUT_SLOW_IN_3);
+        divider_snap_animation_->Hide();
+        divider_snap_animation_->Show();
       } else {
         // If both windows are already snapped and one window snap ratio
         // changes, the other window should also get updated.
@@ -1510,7 +1519,8 @@ void SplitViewController::EndResizeWithDivider(
     EndSplitViewAfterResizingAtEdgeIfAppropriate();
   } else {
     divider_snap_animation_ = std::make_unique<DividerSnapAnimation>(
-        this, divider_position_, target_divider_position);
+        this, divider_position_, target_divider_position,
+        base::Milliseconds(300), gfx::Tween::EASE_IN);
     divider_snap_animation_->Show();
   }
 }
@@ -3051,9 +3061,11 @@ void SplitViewController::InsertWindowToOverview(aura::Window* window,
 void SplitViewController::FinishWindowResizing(aura::Window* window) {
   if (window != nullptr) {
     WindowState* window_state = WindowState::Get(window);
-    window_state->OnCompleteDrag(gfx::PointF(
-        GetEndDragLocationInScreen(window, previous_event_location_)));
-    window_state->DeleteDragDetails();
+    if (window_state->is_dragged()) {
+      window_state->OnCompleteDrag(gfx::PointF(
+          GetEndDragLocationInScreen(window, previous_event_location_)));
+      window_state->DeleteDragDetails();
+    }
   }
 }
 
