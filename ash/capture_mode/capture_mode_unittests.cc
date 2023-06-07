@@ -4265,6 +4265,27 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
                                      CaptureQuickAction::kBacklight, 1);
 }
 
+TEST_F(CaptureModeTest, NotificationButtonOfVideoRecording) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  CaptureModeTestApi test_api;
+  test_api.FlushRecordingServiceForTesting();
+  test_api.StopVideoRecording();
+  CaptureNotificationWaiter().Wait();
+  EXPECT_TRUE(GetPreviewNotification());
+
+  // Verify clicking delete on video recording notification.
+  base::RunLoop loop;
+  SetUpFileDeletionVerifier(&loop);
+  const int delete_button = 0;
+  ClickOnNotification(delete_button);
+  loop.Run();
+  EXPECT_FALSE(GetPreviewNotification());
+}
+
 TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
 

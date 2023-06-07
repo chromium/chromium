@@ -130,9 +130,12 @@ enum ScreenshotNotificationButtonIndex {
 };
 
 // The video notification button index.
-enum VideoNotificationButtonIndex {
+enum GameDashboardVideoNotificationButtonIndex {
   BUTTON_SHARE_TO_YOUTUBE = 0,
-  BUTTON_DELETE_VIDEO,
+  BUTTON_DELETE_GAME_VIDEO,
+};
+enum VideoNotificationButtonIndex {
+  BUTTON_DELETE_VIDEO = 0,
 };
 
 // Returns the file extension for the given `recording_type` and the current
@@ -1493,7 +1496,8 @@ void CaptureModeController::ShowPreviewNotification(
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&CaptureModeController::HandleNotificationClicked,
                               weak_ptr_factory_.GetWeakPtr(),
-                              screen_capture_path, type)),
+                              screen_capture_path, type,
+                              behavior->behavior_type())),
       message_center::SystemNotificationWarningLevel::NORMAL, kCaptureModeIcon,
       for_video);
 }
@@ -1501,6 +1505,7 @@ void CaptureModeController::ShowPreviewNotification(
 void CaptureModeController::HandleNotificationClicked(
     const base::FilePath& screen_capture_path,
     const CaptureModeType type,
+    const BehaviorType behavior_type,
     absl::optional<int> button_index) {
   if (!button_index.has_value()) {
     // Show the item in the folder.
@@ -1509,17 +1514,26 @@ void CaptureModeController::HandleNotificationClicked(
   } else {
     const int button_index_value = button_index.value();
     if (type == CaptureModeType::kVideo) {
-      switch (button_index_value) {
-        case VideoNotificationButtonIndex::BUTTON_SHARE_TO_YOUTUBE:
-          OnShareToYouTubeButtonPressed();
-          break;
-        case VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO:
-          DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                          std::move(on_file_deleted_callback_for_test_));
-          break;
-        default:
-          NOTREACHED();
-          break;
+      if (behavior_type == BehaviorType::kGameDashboard) {
+        switch (button_index_value) {
+          case GameDashboardVideoNotificationButtonIndex::
+              BUTTON_SHARE_TO_YOUTUBE:
+            OnShareToYouTubeButtonPressed();
+            break;
+          case GameDashboardVideoNotificationButtonIndex::
+              BUTTON_DELETE_GAME_VIDEO:
+            DeleteFileAsync(blocking_task_runner_, screen_capture_path,
+                            std::move(on_file_deleted_callback_for_test_));
+            break;
+          default:
+            NOTREACHED();
+            break;
+        }
+      } else {
+        CHECK_EQ(VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO,
+                 button_index_value);
+        DeleteFileAsync(blocking_task_runner_, screen_capture_path,
+                        std::move(on_file_deleted_callback_for_test_));
       }
     } else {
       CHECK_EQ(type, CaptureModeType::kImage);

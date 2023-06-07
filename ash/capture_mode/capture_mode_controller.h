@@ -443,6 +443,7 @@ class ASH_EXPORT CaptureModeController
                                const CaptureModeBehavior* behavior);
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  const CaptureModeType type,
+                                 const BehaviorType behavior_type,
                                  absl::optional<int> button_index);
 
   // Builds a path for a file of an image screenshot, or a video screen
