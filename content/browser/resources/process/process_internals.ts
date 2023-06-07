@@ -148,6 +148,7 @@ function frameToTreeItem(frame: FrameInfo, parentProcessId: number = -1):
   }
 
   itemLabel += ` SI:${frame.siteInstance.id}`;
+  itemLabel += `, SIG:${frame.siteInstance.siteInstanceGroupId}`;
   if (frame.siteInstance.locked) {
     itemLabel += ', locked';
   } else {

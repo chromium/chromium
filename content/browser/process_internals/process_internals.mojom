@@ -24,6 +24,9 @@ struct ProcessCountInfo {
 struct SiteInstanceInfo {
   int32 id;
 
+  // ID of the SiteInstanceGroup this SiteInstance belongs to.
+  int32 site_instance_group_id;
+
   // Boolean indicating whether the SiteInstance's process is locked to a
   // specific URL.
   bool locked;
