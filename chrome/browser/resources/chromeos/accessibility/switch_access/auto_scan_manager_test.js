@@ -54,7 +54,8 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
   }
 };
 
-TEST_F('SwitchAccessAutoScanManagerTest', 'SetEnabled', function() {
+// https://crbug.com/1452024: Flaky on linux-chromeos-rel/linux-chromeos-dbg
+TEST_F('SwitchAccessAutoScanManagerTest', 'DISABLED_SetEnabled', function() {
   this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
