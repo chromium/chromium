@@ -75,7 +75,6 @@ enum class InstallerResult {
   // The installer returned a specific error using the Installer API mechanism.
   kCustomError = 1,
 
-  // TODO(crbug.com/1139013): support MSI payloads.
   // The MSI installer failed, with a system error.
   kMsiError = 2,
 
