@@ -9,6 +9,11 @@
     :host {
       --edit-footer-background: var(--google-grey-900-white-4-percent);
     }
+
+    :host-context(html:not([chrome-refresh-2023])):host {
+      --cr-toolbar-search-field-background:
+          var(--google-grey-900-white-4-percent);
+    }
   }
 
   cr-icon-button {
