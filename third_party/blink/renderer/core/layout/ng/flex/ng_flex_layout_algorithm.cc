@@ -2509,11 +2509,20 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
     container_sizes += gap_inline_size;
   }
 
-  // Due to negative margins, it is possible that we calculated a negative
-  // intrinsic width. Make sure that we never return a negative width.
+  // Handle potential weirdness caused by items' negative margins.
+#if DCHECK_IS_ON()
+  if (container_sizes.max_size < container_sizes.min_size) {
+    DCHECK(algorithm_.IsMultiline())
+        << container_sizes
+        << " multiline row containers might have max < min due to negative "
+           "margins, but singleline containers cannot.";
+  }
+#endif
+  container_sizes.max_size =
+      std::max(container_sizes.max_size, container_sizes.min_size);
   container_sizes.Encompass(LayoutUnit());
+
   container_sizes += BorderScrollbarPadding().InlineSum();
-  DCHECK_GE(container_sizes.max_size, container_sizes.min_size);
   return MinMaxSizesResult(container_sizes, depends_on_block_constraints);
 }
 
