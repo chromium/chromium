@@ -144,7 +144,7 @@ bool SavedPasswordsPresenter::IsWaitingForPasswordStore() const {
 
 bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
-  if (credential.is_passkey) {
+  if (!credential.passkey_credential_id.empty()) {
     CHECK(passkey_store_);
     std::string credential_id(credential.passkey_credential_id.begin(),
                               credential.passkey_credential_id.end());
@@ -441,8 +441,8 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedPasswords()
     const {
   auto credentials = GetSavedCredentials();
   base::EraseIf(credentials, [](const auto& credential) {
-    return credential.is_passkey || credential.blocked_by_user ||
-           !credential.federation_origin.opaque();
+    return !credential.passkey_credential_id.empty() ||
+           credential.blocked_by_user || !credential.federation_origin.opaque();
   });
   return credentials;
 }

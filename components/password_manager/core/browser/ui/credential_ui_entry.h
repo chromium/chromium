@@ -94,9 +94,6 @@ struct CredentialUIEntry {
   CredentialUIEntry& operator=(const CredentialUIEntry& other);
   CredentialUIEntry& operator=(CredentialUIEntry&& other);
 
-  // True if this credential is a passkey, false otherwise.
-  bool is_passkey = false;
-
   // If this is a passkey, a non empty credential id as a byte string. Empty
   // otherwise.
   // https://w3c.github.io/webauthn/#credential-id
@@ -109,7 +106,7 @@ struct CredentialUIEntry {
   // The current username.
   std::u16string username;
 
-  // The user's display name, if this is a passkey. Empty otherwise.
+  // The user's display name, if this is a passkey. Always empty otherwise.
   std::u16string user_display_name;
 
   // The current password.

@@ -27,7 +27,6 @@ constexpr char kSortKeyPartsSeparator = ' ';
 constexpr char kSortKeyNoFederationSymbol = '-';
 
 // Symbols to differentiate between passwords and passkeys.
-constexpr char kSortKeyPasskeySymbol = 'k';
 constexpr char kSortKeyPasswordSymbol = 'w';
 
 }  // namespace
@@ -92,11 +91,11 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
 
   // Separate passwords from passkeys.
   key += kSortKeyPartsSeparator;
-  key += credential.is_passkey ? kSortKeyPasskeySymbol : kSortKeyPasswordSymbol;
-
-  key += kSortKeyPartsSeparator +
-         base::HexEncode(credential.passkey_credential_id);
-
+  if (credential.passkey_credential_id.empty()) {
+    key += kSortKeyPasswordSymbol;
+  } else {
+    key += base::HexEncode(credential.passkey_credential_id);
+  }
   return key;
 }
 

@@ -470,7 +470,7 @@ void PasswordsPrivateDelegateImpl::RemoveEntryInternal(
   if (entry->blocked_by_user) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemovePasswordException"));
-  } else if (entry->is_passkey) {
+  } else if (!entry->passkey_credential_id.empty()) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemovePasskey"));
   } else {
@@ -1065,10 +1065,10 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
           return domainInfo;
         });
   }
-  entry.is_passkey = credential.is_passkey;
+  entry.is_passkey = !credential.passkey_credential_id.empty();
   entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
   entry.username = base::UTF16ToUTF8(credential.username);
-  if (credential.is_passkey) {
+  if (entry.is_passkey) {
     entry.display_name = base::UTF16ToUTF8(credential.user_display_name);
   }
   entry.stored_in = extensions::StoreSetFromCredential(credential);

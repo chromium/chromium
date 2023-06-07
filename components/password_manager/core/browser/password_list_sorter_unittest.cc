@@ -247,7 +247,8 @@ TEST(PasswordListSorterTest, PasskeyVsPasswordSortKey) {
 
   PasskeyCredential passkey_credential(
       PasskeyCredential::Source::kAndroidPhone,
-      PasskeyCredential::RpId("test.com"), PasskeyCredential::CredentialId(),
+      PasskeyCredential::RpId("test.com"),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
       PasskeyCredential::UserId(), PasskeyCredential::Username("lora"));
   CredentialUIEntry passkey(std::move(passkey_credential));
 

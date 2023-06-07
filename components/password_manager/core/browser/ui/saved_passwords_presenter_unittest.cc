@@ -951,7 +951,7 @@ TEST_P(SavedPasswordsPresenterTest, DeletePasskey) {
 
   std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
   ASSERT_EQ(passkeys.size(), 1u);
-  ASSERT_TRUE(passkeys.at(0).is_passkey);
+  ASSERT_FALSE(passkeys.at(0).passkey_credential_id.empty());
 
   MockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
