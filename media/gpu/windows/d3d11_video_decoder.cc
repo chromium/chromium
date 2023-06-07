@@ -690,6 +690,14 @@ void D3D11VideoDecoder::DoDecode() {
       DCHECK(set_accelerator_decoder_cb_);
       set_accelerator_decoder_cb_.Run(video_decoder);
       picture_buffers_.clear();
+    } else if (result == media::AcceleratedVideoDecoder::kColorSpaceChange) {
+      MEDIA_LOG(INFO, media_log_)
+          << "D3D11VideoDecoder color space change: color_space: "
+          << accelerated_video_decoder_->GetVideoColorSpace().ToString();
+
+      // Clear the picture buffers and recreate the pictures leading to new
+      // shared images with new color space.
+      picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";
       NotifyError(D3D11Status::Codes::kTryAgainNotSupported);
@@ -764,6 +772,11 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
   DCHECK(decoder_configurator_);
   DCHECK(texture_selector_);
   gfx::Size size = accelerated_video_decoder_->GetPicSize();
+  gfx::ColorSpace color_space =
+      accelerated_video_decoder_->GetVideoColorSpace().ToGfxColorSpace();
+  if (!color_space.IsValid()) {
+    color_space = config_.color_space_info().ToGfxColorSpace();
+  }
 
   // Some streams may have varying metadata, so bitstream metadata should be
   // preferred over metadata provide by the configuration.
@@ -819,7 +832,8 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
     DCHECK(!!in_texture);
 
-    auto tex_wrapper = texture_selector_->CreateTextureWrapper(device_, size);
+    auto tex_wrapper =
+        texture_selector_->CreateTextureWrapper(device_, color_space, size);
     if (!tex_wrapper) {
       return NotifyError(
           D3D11Status::Codes::kAllocateTextureForCopyingWrapperFailed);
