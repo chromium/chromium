@@ -190,6 +190,10 @@ const base::FeatureParam<MemoryTaggingEnabledProcesses>
         MemoryTaggingEnabledProcesses::kBrowserOnly,
         &kMemoryTaggingEnabledProcessesOptions};
 
+BASE_FEATURE(kKillPartitionAllocMemoryTagging,
+             "KillPartitionAllocMemoryTagging",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableDereferenceCheckParam{
     &kPartitionAllocBackupRefPtr, "asan-enable-dereference-check", true};
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableExtractionCheckParam{
