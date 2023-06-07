@@ -541,7 +541,7 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
     case SystemSettingsPane::kPrivacySecurity_Extensions_Sharing:
       if (IsAtLeastOS13()) {
         // See ShareKit, -[SHKSharingServicePicker openAppExtensionsPrefpane].
-        url = @"x-apple.systempreferences:com.apple.ExtensionPreferences?"
+        url = @"x-apple.systempreferences:com.apple.ExtensionsPreferences?"
               @"Sharing";
       } else {
         // This is equivalent to the implementation of AppKit's
