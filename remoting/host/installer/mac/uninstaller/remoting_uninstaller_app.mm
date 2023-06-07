@@ -6,30 +6,33 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/installer/mac/uninstaller/remoting_uninstaller.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
-base::scoped_nsobject<NSMenu> BuildMainMenu() {
-  base::scoped_nsobject<NSMenu> main_menu([[NSMenu alloc] initWithTitle:@""]);
+NSMenu* BuildMainMenu() {
+  NSMenu* main_menu = [[NSMenu alloc] initWithTitle:@""];
 
-  NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
-                                                 action:NULL
-                                          keyEquivalent:@""] autorelease];
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
+                                                action:nil
+                                         keyEquivalent:@""];
 
   // The title is not used, as the title will always be the name of the App.
-  item.submenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
-  [item.submenu addItem:[[[NSMenuItem alloc] initWithTitle:@"Close"
-                                                    action:@selector(terminate:)
-                                             keyEquivalent:@"w"] autorelease]];
+  item.submenu = [[NSMenu alloc] initWithTitle:@""];
+  [item.submenu addItem:[[NSMenuItem alloc] initWithTitle:@"Close"
+                                                   action:@selector(terminate:)
+                                            keyEquivalent:@"w"]];
   [item.submenu
-      addItem:[[[NSMenuItem alloc]
+      addItem:[[NSMenuItem alloc]
                   initWithTitle:@"Quit Chrome Remote Desktop Uninstaller"
                          action:@selector(terminate:)
-                  keyEquivalent:@"q"] autorelease]];
+                  keyEquivalent:@"q"]];
   [main_menu addItem:item];
 
   return main_menu;
@@ -38,30 +41,26 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 }  // namespace
 
 @interface RemotingUninstallerAppDelegate () <NSApplicationDelegate>
-@property(nonatomic, retain) NSWindow* window;
+@property(nonatomic, strong) NSWindow* window;
 @end
 
 @implementation RemotingUninstallerAppDelegate
 @synthesize window = _window;
 
-- (void)dealloc {
-  [_window release];
-  [super dealloc];
-}
-
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
-  base::scoped_nsobject<NSMenu> main_menu = BuildMainMenu();
-  [[NSApplication sharedApplication] setMainMenu:main_menu];
+  NSMenu* main_menu = BuildMainMenu();
+  NSApplication.sharedApplication.mainMenu = main_menu;
 
   NSRect frame = NSMakeRect(0, 0, 499, 112);
-  self.window = [[[NSWindow alloc] initWithContentRect:frame
-                                             styleMask:NSWindowStyleMaskTitled
-                                               backing:NSBackingStoreBuffered
-                                                 defer:NO] autorelease];
+  self.window = [[NSWindow alloc] initWithContentRect:frame
+                                            styleMask:NSWindowStyleMaskTitled
+                                              backing:NSBackingStoreBuffered
+                                                defer:NO];
+  self.window.releasedWhenClosed = NO;
   self.window.title = @"Chrome Remote Desktop Uninstaller";
 
-  NSTextField* title = [[[NSTextField alloc]
-      initWithFrame:NSMakeRect(103, 75, 379, 17)] autorelease];
+  NSTextField* title =
+      [[NSTextField alloc] initWithFrame:NSMakeRect(103, 75, 379, 17)];
   title.stringValue =
       @"This will completely remove Chrome Remote Desktop Host.";
   title.drawsBackground = NO;
@@ -70,13 +69,13 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
   title.font = [NSFont systemFontOfSize:13];
   [self.window.contentView addSubview:title];
 
-  NSImageView* icon = [[[NSImageView alloc]
-      initWithFrame:NSMakeRect(8, 24, 76, 68)] autorelease];
-  icon.image = [[NSApplication sharedApplication] applicationIconImage];
+  NSImageView* icon =
+      [[NSImageView alloc] initWithFrame:NSMakeRect(8, 24, 76, 68)];
+  icon.image = NSApplication.sharedApplication.applicationIconImage;
   [self.window.contentView addSubview:icon];
 
-  NSButton* cancelButton = [[[NSButton alloc]
-      initWithFrame:NSMakeRect(308, 13, 82, 32)] autorelease];
+  NSButton* cancelButton =
+      [[NSButton alloc] initWithFrame:NSMakeRect(308, 13, 82, 32)];
   cancelButton.buttonType = NSButtonTypeMomentaryPushIn;
   cancelButton.bezelStyle = NSBezelStyleRounded;
   cancelButton.title = @"Cancel";
@@ -84,8 +83,8 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
   cancelButton.target = self;
   [self.window.contentView addSubview:cancelButton];
 
-  NSButton* uninstallButton = [[[NSButton alloc]
-      initWithFrame:NSMakeRect(390, 13, 95, 32)] autorelease];
+  NSButton* uninstallButton =
+      [[NSButton alloc] initWithFrame:NSMakeRect(390, 13, 95, 32)];
   uninstallButton.buttonType = NSButtonTypeMomentaryPushIn;
   uninstallButton.bezelStyle = NSBezelStyleRounded;
   uninstallButton.title = @"Uninstall";
@@ -99,11 +98,10 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 
 - (void)showSuccess:(bool)success withMessage:(NSString*)message {
   NSString* summary = success ? @"Uninstall succeeded" : @"Uninstall failed";
-  base::scoped_nsobject<NSAlert> alert([[NSAlert alloc] init]);
-  [alert setMessageText:summary];
-  [alert setInformativeText:message];
-  [alert setAlertStyle:(success ? NSAlertStyleInformational
-                                : NSAlertStyleCritical)];
+  NSAlert* alert = [[NSAlert alloc] init];
+  alert.messageText = summary;
+  alert.informativeText = message;
+  alert.alertStyle = success ? NSAlertStyleInformational : NSAlertStyleCritical;
   // This line crashes the app because ui::ResourceBundle::GetSharedInstance()
   // cannot find a shared instance. https://crbug.com/968257.
   [alert addButtonWithTitle:l10n_util::GetNSString(IDS_OK)];
@@ -114,8 +112,7 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
   @try {
     NSLog(@"Chrome Remote Desktop uninstall starting.");
 
-    RemotingUninstaller* uninstaller =
-        [[[RemotingUninstaller alloc] init] autorelease];
+    RemotingUninstaller* uninstaller = [[RemotingUninstaller alloc] init];
     OSStatus status = [uninstaller remotingUninstall];
 
     NSLog(@"Chrome Remote Desktop Host uninstall complete.");
@@ -139,7 +136,7 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
       [self showSuccess:success withMessage:message];
     }
   } @catch (NSException* exception) {
-    NSLog(@"Exception %@ %@", [exception name], [exception reason]);
+    NSLog(@"Exception %@ %@", exception.name, exception.reason);
     NSString* message =
         @"Error! Unable to uninstall Chrome Remote Desktop Host.";
     [self showSuccess:false withMessage:message];
@@ -167,8 +164,7 @@ int main(int argc, char* argv[]) {
       NSLog(@"Chrome Remote Desktop uninstall starting.");
       NSLog(@"--no-ui : Suppressing UI");
 
-      RemotingUninstaller* uninstaller =
-          [[[RemotingUninstaller alloc] init] autorelease];
+      RemotingUninstaller* uninstaller = [[RemotingUninstaller alloc] init];
       OSStatus status = [uninstaller remotingUninstall];
 
       NSLog(@"Chrome Remote Desktop Host uninstall complete.");
@@ -176,10 +172,10 @@ int main(int argc, char* argv[]) {
       return status != errAuthorizationSuccess;
     } else {
       RemotingUninstallerAppDelegate* delegate =
-          [[[RemotingUninstallerAppDelegate alloc] init] autorelease];
+          [[RemotingUninstallerAppDelegate alloc] init];
 
       [NSApplication sharedApplication];
-      [NSApp setDelegate:delegate];
+      NSApp.delegate = delegate;
       [NSApp activateIgnoringOtherApps:YES];
       [NSApp run];
 

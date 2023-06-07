@@ -131,6 +131,10 @@ mac_app_bundle("remoting_host_uninstaller") {
     "Security.framework",
   ]
 
+  # mac_app_bundle does not use set_defaults, so set extra_configs instead.
+  # https://crbug.com/1451603
+  extra_configs = [ "//build/config/compiler:enable_arc" ]
+
   deps = [
     ":remoting_host_uninstaller_resources",
     "//base",
