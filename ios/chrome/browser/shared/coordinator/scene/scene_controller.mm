@@ -2947,6 +2947,10 @@ void InjectNTP(Browser* browser) {
 // Close Settings, or Signin or the 3rd-party intents Incognito interstitial.
 - (void)closePresentedViews:(BOOL)animated
                  completion:(ProceduralBlock)completion {
+  // If the Incognito interstitial is active, stop it.
+  [self.incognitoInterstitialCoordinator stop];
+  self.incognitoInterstitialCoordinator = nil;
+
   __weak __typeof(self) weakSelf = self;
   BOOL resetSigninState = self.signinCoordinator != nil;
   completion = ^{
@@ -2999,10 +3003,6 @@ void InjectNTP(Browser* browser) {
     // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.
     [self interruptSigninCoordinatorAnimated:animated completion:completion];
-  } else if (self.incognitoInterstitialCoordinator) {
-    [self.incognitoInterstitialCoordinator stop];
-    self.incognitoInterstitialCoordinator = nil;
-    completion();
   } else {
     completion();
   }
