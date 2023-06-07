@@ -7,8 +7,8 @@
 #include <atomic>
 #include <type_traits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/check.h"
 
 namespace allocator_shim {
 
@@ -25,8 +25,8 @@ void StoreZoneFunctions(const ChromeMallocZone* zone,
   functions->free = zone->free;
   functions->realloc = zone->realloc;
   functions->size = zone->size;
-  CHECK(functions->malloc && functions->calloc && functions->valloc &&
-        functions->free && functions->realloc && functions->size);
+  PA_BASE_CHECK(functions->malloc && functions->calloc && functions->valloc &&
+                functions->free && functions->realloc && functions->size);
 
   // These functions might be nullptr.
   functions->batch_malloc = zone->batch_malloc;
