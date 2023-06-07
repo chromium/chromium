@@ -143,6 +143,7 @@
     "linux-headless-shell-rel": "Ubuntu-22.04",
     "linux-lacros-builder-fyi-rel": "Ubuntu-22.04",
     "linux-lacros-builder-rel (reclient)": "Ubuntu-22.04",
+    "linux-lacros-dbg": "Ubuntu-22.04",
     "linux-lacros-dbg-fyi": "Ubuntu-22.04",
     "linux-lacros-dbg-tests-fyi": "Ubuntu-22.04",
     "linux-lacros-tester-fyi-rel": "Ubuntu-22.04",
