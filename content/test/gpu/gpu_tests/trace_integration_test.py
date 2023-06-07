@@ -285,6 +285,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       serial_tests |= {
           # Flaky when run in parallel on Mac.
           'WebGPUTraceTest_WebGPUCanvasOneCopyCapture',
+          'WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated',
       }
     return serial_tests
 
