@@ -235,15 +235,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the address icon is hidden when no addresses are available.
-// TODO(crbug.com/1116043): Flaky on ios simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
-  DISABLED_testAddressIconIsNotVisibleWhenAddressStoreEmpty
-#else
-#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
-  testAddressIconIsNotVisibleWhenAddressStoreEmpty
-#endif
-- (void)MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty {
+- (void)testAddressIconIsNotVisibleWhenAddressStoreEmpty {
   // Delete the profile that is added on `-setUp`.
   [AutofillAppInterface clearProfilesStore];
 
