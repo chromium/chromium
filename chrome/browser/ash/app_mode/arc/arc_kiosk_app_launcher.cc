@@ -12,10 +12,8 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/window_pin_util.h"
 #include "components/exo/shell_surface_util.h"
-#include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/env.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 
 namespace ash {
@@ -42,13 +40,15 @@ void ArcKioskAppLauncher::OnTaskCreated(int32_t task_id,
                                         const std::string& intent,
                                         int32_t session_id) {
   std::unique_ptr<ArcAppListPrefs::AppInfo> app = prefs_->GetApp(app_id_);
-  if (!app || app->package_name != package_name || app->activity != activity)
+  if (!app || app->package_name != package_name || app->activity != activity) {
     return;
+  }
   task_id_ = task_id;
   // The app window may have been created already.
   for (aura::Window* window : windows_) {
-    if (CheckAndPinWindow(window))
+    if (CheckAndPinWindow(window)) {
       break;
+    }
   }
 }
 
@@ -58,8 +58,9 @@ void ArcKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
 
   // The |window|’s task ID might not be set yet. Record the window and
   // OnTaskCreated will check if it's the window we're looking for.
-  if (task_id_ == -1)
+  if (task_id_ == -1) {
     return;
+  }
 
   CheckAndPinWindow(window);
 }
@@ -71,20 +72,28 @@ void ArcKioskAppLauncher::OnWindowDestroying(aura::Window* window) {
 
 bool ArcKioskAppLauncher::CheckAndPinWindow(aura::Window* const window) {
   DCHECK_GE(task_id_, 0);
-  if (arc::GetWindowTaskId(window) != task_id_)
+  if (arc::GetWindowTaskId(window) != task_id_) {
     return false;
+  }
   // Stop observing as target window is already found.
   StopObserving();
   PinWindow(window, /*trusted=*/true);
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnAppWindowLaunched();
+  }
   return true;
 }
 
 void ArcKioskAppLauncher::StopObserving() {
-  exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
-  for (auto* window : windows_)
+  if (exo::WMHelper::HasInstance()) {
+    // The `HasInstance` check is here, because of a crash where the `WMHelper`
+    // was already destroyed. We do not know how we would get into this
+    // position. See b/281992317 for reference.
+    exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
+  }
+  for (auto* window : windows_) {
     window->RemoveObserver(this);
+  }
   windows_.clear();
   prefs_->RemoveObserver(this);
 }
