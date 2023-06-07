@@ -6,6 +6,7 @@
 
 import argparse
 import contextlib
+import datetime
 import functools
 import glob
 import json
@@ -47,6 +48,21 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         #   StructuredLogger.send_message('show_logs', 'on')
         # appears buggy. This default exists as a workaround.
         self.show_logs = True
+        self._start = datetime.datetime.now()
+
+    def log(self, data):
+        offset = datetime.datetime.now() - self._start
+        minutes, seconds = divmod(max(0, offset.total_seconds()), 60)
+        hours, minutes = divmod(minutes, 60)
+        # A relative timestamp is more useful for comparing event timings than
+        # an absolute one.
+        timestamp = f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}'
+        # Place mandatory fields first so that logs are vertically aligned as
+        # much as possible.
+        message = f'{timestamp} {data["level"]}: {data["message"]}'
+        if 'stack' in data:
+            message = f'{message}\n{data["stack"]}'
+        return self.generate_output(text=message + '\n')
 
     def suite_start(self, data) -> str:
         self.completed_tests = 0
