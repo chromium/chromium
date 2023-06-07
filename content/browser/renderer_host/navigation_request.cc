@@ -3992,11 +3992,6 @@ void NavigationRequest::OnResponseStarted(
   // The navigation may have encountered a header that requests isolation for
   // the url's origin. Before we pick the renderer, make sure we update the
   // origin-isolation opt-ins appropriately.
-  //
-  // TODO(https://crbug.com/1220337): With navigation queueing, the RFH may be
-  // asynchronously chosen later. Does the global OAC walk make any assumptions
-  // about nothing creating other BrowsingInstances and/or committing this
-  // origin elsewhere in between this point and picking the final RFH?
   CheckForIsolationOptIn(GetURL());
 
   // Check if the response should be sent to a renderer.
