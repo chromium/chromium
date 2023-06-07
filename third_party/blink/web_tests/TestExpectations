@@ -6696,3 +6696,4 @@ crbug.com/1339291 [ Mac ] external/wpt/webaudio/the-audio-api/the-convolvernode-
 
 # Sheriff 2023-06-07
 crbug.com/1452003 [ Mac12 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Pass Failure ]
+crbug.com/1451210 [ Mac ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
