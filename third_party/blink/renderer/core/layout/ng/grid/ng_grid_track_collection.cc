@@ -701,21 +701,17 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     subgrid_sets_geometry.emplace_back(
         /* offset */ subgrid_border_scrollbar_padding_start);
 
-    // Opposite direction subgrids need to adjust extra margin from the opposite
-    // side.
-    const LayoutUnit start_extra_margin =
-        is_opposite_direction_in_root_grid ? EndExtraMargin(end_set_index)
-                                           : StartExtraMargin(begin_set_index);
-    const LayoutUnit end_extra_margin = is_opposite_direction_in_root_grid
-                                            ? StartExtraMargin(begin_set_index)
-                                            : EndExtraMargin(end_set_index);
-
+    // Opposite direction subgrids adjust extra margin from the opposite side.
     subgrid_track_collection.accumulated_start_extra_margin_ =
         subgrid_margin_start + subgrid_border_scrollbar_padding_start +
-        start_extra_margin;
+        (is_opposite_direction_in_root_grid
+             ? EndExtraMargin(end_set_index)
+             : StartExtraMargin(begin_set_index));
 
     subgrid_track_collection.accumulated_end_extra_margin_ =
-        subgrid_margin_border_scrollbar_padding_end + end_extra_margin;
+        subgrid_margin_border_scrollbar_padding_end +
+        (is_opposite_direction_in_root_grid ? StartExtraMargin(begin_set_index)
+                                            : EndExtraMargin(end_set_index));
 
     // Opposite direction subgrids iterate backwards.
     const wtf_size_t first_set_index =
@@ -771,8 +767,6 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
 
   // Copy the last indefinite indices in the subgrid's span.
   if (!last_indefinite_index_.empty()) {
-    DCHECK_LT(end_set_index, last_indefinite_index_.size());
-
     auto& subgrid_last_indefinite_index =
         subgrid_track_collection.last_indefinite_index_;
 
@@ -780,27 +774,21 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     subgrid_last_indefinite_index.push_back(kNotFound);
 
     wtf_size_t last_indefinite_index = kNotFound;
-    for (wtf_size_t i = 1; i <= set_span_size; ++i) {
+    for (wtf_size_t i = 0; i < set_span_size; ++i) {
       // Opposite direction subgrids need to iterate backwards.
       const wtf_size_t current_index = is_opposite_direction_in_root_grid
-                                           ? end_set_index - i
+                                           ? end_set_index - i - 1
                                            : begin_set_index + i;
-      const wtf_size_t next_index = is_opposite_direction_in_root_grid
-                                        ? current_index - 1
-                                        : current_index + 1;
 
-      if (last_indefinite_index_[current_index] == kNotFound ||
-          next_index == last_indefinite_index_.size()) {
-        subgrid_last_indefinite_index.push_back(kNotFound);
-      } else {
-        // Map the last indefinite index from the parent track collection by
-        // looking for a change in subsequent entries.
-        if (last_indefinite_index_[current_index] !=
-            last_indefinite_index_[next_index]) {
-          last_indefinite_index = i;
-        }
-        subgrid_last_indefinite_index.push_back(last_indefinite_index);
+      DCHECK_LT(current_index + 1, last_indefinite_index_.size());
+
+      // Map the last indefinite index from the parent track collection by
+      // looking for a change in subsequent entries.
+      if (last_indefinite_index_[current_index + 1] !=
+          last_indefinite_index_[current_index]) {
+        last_indefinite_index = i;
       }
+      subgrid_last_indefinite_index.push_back(last_indefinite_index);
     }
   }
 
