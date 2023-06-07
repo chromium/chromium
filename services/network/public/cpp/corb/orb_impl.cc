@@ -372,6 +372,19 @@ Decision OpaqueResponseBlockingAnalyzer::Sniff(base::StringPiece data) {
   CHECK(!IsAudioOrVideoMimeType(mime_type_));       // Ditto.
   CHECK(!IsNonSniffableImageMimeType(mime_type_));  // Ditto.
 
+  // 12. If mimeType is failure, then return true.
+  //
+  // The spec proposal handles this step before checking for JS and JSON. To
+  // be compatible, we handle this before our 'sniffing' steps that handle
+  // those formats.
+  //
+  // TODO(lukasza): This is not fully accurate - it doesn't capture all the
+  // possible failure modes of
+  // https://fetch.spec.whatwg.org/#concept-header-extract-mime-type
+  if (mime_type_.empty()) {
+    return Decision::kAllow;
+  }
+
   // Check if the response is HTML, XML, or JSON, in which case it is surely not
   // JavaScript.  (The sniffers account for HTML/JS polyglot cases - see
   // https://crbug.com/839945 and https://crbug.com/839425.  OTOH, the sniffers
@@ -423,14 +436,6 @@ Decision OpaqueResponseBlockingAnalyzer::HandleEndOfSniffableResponseBody() {
   // 11. If response's status is not an ok status, then return false.
   // (Skipping these steps minimizes the risk of shipping the initial ORB
   // implementation.)
-
-  // 12. If mimeType is failure, then return true.
-  //
-  // TODO(lukasza): This is not fully accurate - it doesn't capture all the
-  // possible failure modes of
-  // https://fetch.spec.whatwg.org/#concept-header-extract-mime-type
-  if (mime_type_.empty())
-    return Decision::kAllow;
 
   // TODO(lukasza): Departure from the spec discussed in
   // https://github.com/annevk/orb/issues/3.
