@@ -117,7 +117,31 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-fyi-astro",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-fyi-nelson",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-fyi-sherlock",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-internal-images-roller",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-smoke-astro",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-smoke-nelson",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-smoke-sherlock",
 )
 
 chrome_internal_verifier(
