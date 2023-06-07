@@ -12,19 +12,45 @@
 #include "media/base/video_bitrate_allocation.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
-#include "media/gpu/video_rate_control.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
 
 namespace libvpx {
-struct VP9FrameParamsQpRTC;
 class VP9RateControlRTC;
+struct VP9FrameParamsQpRTC;
 struct VP9RateControlRtcConfig;
 }  // namespace libvpx
 
 namespace media {
 class VaapiWrapper;
 class VP9SVCLayers;
+
+// Wrapper for the libVPX VP9 rate controller that allows us to override methods
+// for unit testing.
+class VP9RateControlWrapper {
+ public:
+  static std::unique_ptr<VP9RateControlWrapper> Create(
+      const libvpx::VP9RateControlRtcConfig& config);
+
+  VP9RateControlWrapper();
+  explicit VP9RateControlWrapper(
+      std::unique_ptr<libvpx::VP9RateControlRTC> impl);
+  virtual ~VP9RateControlWrapper();
+
+  virtual void UpdateRateControl(
+      const libvpx::VP9RateControlRtcConfig& rate_control_config);
+  // libvpx::VP9FrameParamsQpRTC take 0-63 quantization parameter.
+  // ComputeQP() returns vp9 ac/dc table index. The range is 0-255.
+  virtual int ComputeQP(const libvpx::VP9FrameParamsQpRTC& frame_params);
+  // GetLoopfilterLevel() needs to be called after ComputeQP().
+  virtual int GetLoopfilterLevel() const;
+  virtual void PostEncodeUpdate(
+      uint64_t encoded_frame_size,
+      const libvpx::VP9FrameParamsQpRTC& frame_params);
+
+ private:
+  const std::unique_ptr<libvpx::VP9RateControlRTC> impl_;
+};
 
 class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  public:
@@ -70,11 +96,8 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   friend class VP9VaapiVideoEncoderDelegateTest;
   friend class VaapiVideoEncodeAcceleratorTest;
 
-  using VP9RateControl = VideoRateControl<libvpx::VP9RateControlRtcConfig,
-                                          libvpx::VP9RateControlRTC,
-                                          libvpx::VP9FrameParamsQpRTC,
-                                          int>;
-  void set_rate_ctrl_for_testing(std::unique_ptr<VP9RateControl> rate_ctrl);
+  void set_rate_ctrl_for_testing(
+      std::unique_ptr<VP9RateControlWrapper> rate_ctrl);
 
   bool ApplyPendingUpdateRates();
 
@@ -111,7 +134,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   absl::optional<std::pair<VideoBitrateAllocation, uint32_t>>
       pending_update_rates_;
 
-  std::unique_ptr<VP9RateControl> rate_ctrl_;
+  std::unique_ptr<VP9RateControlWrapper> rate_ctrl_;
 };
 }  // namespace media
 

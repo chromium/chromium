@@ -9,15 +9,12 @@
 
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
-#include "media/gpu/video_rate_control.h"
 #include "media/gpu/vp8_picture.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/parsers/vp8_parser.h"
 
 namespace libvpx {
-struct VP8FrameParamsQpRTC;
 class VP8RateControlRTC;
-struct VP8RateControlRtcConfig;
 }  // namespace libvpx
 
 namespace media {
@@ -97,11 +94,7 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   Vp8ReferenceFrameVector reference_frames_;
 
-  using VP8RateControl = VideoRateControl<libvpx::VP8RateControlRtcConfig,
-                                          libvpx::VP8RateControlRTC,
-                                          libvpx::VP8FrameParamsQpRTC,
-                                          int>;
-  std::unique_ptr<VP8RateControl> rate_ctrl_;
+  std::unique_ptr<libvpx::VP8RateControlRTC> rate_ctrl_;
 };
 
 }  // namespace media

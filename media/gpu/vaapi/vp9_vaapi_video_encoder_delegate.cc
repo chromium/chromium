@@ -18,8 +18,10 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/video_rate_control.h"
 #include "media/gpu/vp9_svc_layers.h"
+
+// TODO(b/286163500): Some macro in the libvpx headers conflicts with a macro in
+// Chrome headers, so we always need to include this file last.
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {
@@ -139,6 +141,44 @@ scoped_refptr<VP9Picture> GetVP9Picture(
 }
 }  // namespace
 
+std::unique_ptr<VP9RateControlWrapper> VP9RateControlWrapper::Create(
+    const libvpx::VP9RateControlRtcConfig& config) {
+  auto impl = libvpx::VP9RateControlRTC::Create(config);
+  if (!impl) {
+    DLOG(ERROR) << "Failed creating video RateControlRTC";
+    return nullptr;
+  }
+  return std::make_unique<VP9RateControlWrapper>(std::move(impl));
+}
+
+VP9RateControlWrapper::VP9RateControlWrapper() = default;
+VP9RateControlWrapper::VP9RateControlWrapper(
+    std::unique_ptr<libvpx::VP9RateControlRTC> impl)
+    : impl_(std::move(impl)) {}
+
+void VP9RateControlWrapper::UpdateRateControl(
+    const libvpx::VP9RateControlRtcConfig& rate_control_config) {
+  impl_->UpdateRateControl(rate_control_config);
+}
+
+VP9RateControlWrapper::~VP9RateControlWrapper() = default;
+
+int VP9RateControlWrapper::ComputeQP(
+    const libvpx::VP9FrameParamsQpRTC& frame_params) {
+  impl_->ComputeQP(frame_params);
+  return impl_->GetQP();
+}
+
+void VP9RateControlWrapper::PostEncodeUpdate(
+    uint64_t encoded_frame_size,
+    const libvpx::VP9FrameParamsQpRTC& frame_params) {
+  impl_->PostEncodeUpdate(encoded_frame_size, frame_params);
+}
+
+int VP9RateControlWrapper::GetLoopfilterLevel() const {
+  return impl_->GetLoopfilterLevel();
+}
+
 VP9VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : kf_period_frames(kKFPeriod),
       framerate(0),
@@ -146,7 +186,7 @@ VP9VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
       max_qp(kMaxQP) {}
 
 void VP9VaapiVideoEncoderDelegate::set_rate_ctrl_for_testing(
-    std::unique_ptr<VP9RateControl> rate_ctrl) {
+    std::unique_ptr<VP9RateControlWrapper> rate_ctrl) {
   rate_ctrl_ = std::move(rate_ctrl);
 }
 
@@ -242,7 +282,7 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
 
   // |rate_ctrl_| might be injected for tests.
   if (!rate_ctrl_) {
-    rate_ctrl_ = VP9RateControl::Create(CreateRateControlConfig(
+    rate_ctrl_ = VP9RateControlWrapper::Create(CreateRateControlConfig(
         current_params_, initial_bitrate_allocation, num_temporal_layers,
         spatial_layer_resolutions));
   }

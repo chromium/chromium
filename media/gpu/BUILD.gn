@@ -372,8 +372,6 @@ source_set("common") {
 
   if (is_win || use_vaapi) {
     sources += [
-      "video_rate_control.cc",
-      "video_rate_control.h",
       "vp9_svc_layers.cc",
       "vp9_svc_layers.h",
     ]

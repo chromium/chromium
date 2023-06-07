@@ -329,7 +329,7 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
 
   // |rate_ctrl_| might be injected for tests.
   if (!rate_ctrl_) {
-    rate_ctrl_ = VP8RateControl::Create(CreateRateControlConfig(
+    rate_ctrl_ = libvpx::VP8RateControlRTC::Create(CreateRateControlConfig(
         visible_size_, current_params_, initial_bitrate_allocation,
         num_temporal_layers_));
     if (!rate_ctrl_)
@@ -420,16 +420,7 @@ void VP8VaapiVideoEncoderDelegate::BitrateControlUpdate(
             << (metadata.vp8 ? metadata.vp8->temporal_idx : 0)
             << ", encoded chunk size=" << metadata.payload_size_bytes;
 
-  libvpx::VP8FrameParamsQpRTC frame_params{};
-  frame_params.frame_type = metadata.key_frame
-                                ? libvpx::RcFrameType::kKeyFrame
-                                : libvpx::RcFrameType::kInterFrame;
-  if (metadata.vp8) {
-    frame_params.temporal_layer_id =
-        base::saturated_cast<int>(metadata.vp8->temporal_idx);
-  }
-
-  rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
+  rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes);
 }
 
 bool VP8VaapiVideoEncoderDelegate::UpdateRates(
@@ -521,8 +512,8 @@ void VP8VaapiVideoEncoderDelegate::SetFrameHeader(
           ? picture.metadata_for_encoding->temporal_idx
           : 0;
 
-  picture.frame_hdr->quantization_hdr.y_ac_qi =
-      rate_ctrl_->ComputeQP(frame_params);
+  rate_ctrl_->ComputeQP(frame_params);
+  picture.frame_hdr->quantization_hdr.y_ac_qi = rate_ctrl_->GetQP();
   picture.frame_hdr->loopfilter_hdr.level =
       base::checked_cast<uint8_t>(rate_ctrl_->GetLoopfilterLevel());
   DVLOGF(4) << "qp="
