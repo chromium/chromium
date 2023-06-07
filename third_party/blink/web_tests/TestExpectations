@@ -6395,6 +6395,8 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cr
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure Pass ]
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure Pass ]
 
+# These will fail until blink supports scroll-start.
+crbug.com/1439807 external/wpt/css/css-scroll-snap-2/scroll-start* [ Failure ]
 
 # Sheriff 2022-11-15
 crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
