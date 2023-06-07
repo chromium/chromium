@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_image_container_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
@@ -91,6 +92,11 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   self.tableView.accessibilityIdentifier =
       kPriceNotificationsTableViewIdentifier;
   self.tableView.estimatedRowHeight = 100;
+  NSUInteger imageWidthWithPadding =
+      PriceNotificationsImageView::kPriceNotificationsImageLength +
+      kTableViewHorizontalSpacing * 2;
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0, imageWidthWithPadding, 0, 0);
 
   self.title =
       l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE);
