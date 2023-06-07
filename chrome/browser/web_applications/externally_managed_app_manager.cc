@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
@@ -521,19 +522,10 @@ base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     desired_installs->Append(option.install_url.spec());
   }
   std::vector<GURL> installed_urls;
-  for (const auto& apps_it :
+  for (const auto& [app_id, install_urls] :
        lock.registrar().GetExternallyInstalledApps(install_source)) {
-    // TODO(crbug.com/1339965): Remove this check once we cleanup
-    // ExternallyInstalledWebAppPrefs on external app uninstall.
-    bool has_same_external_source =
-        lock.registrar()
-            .GetAppById(apps_it.first)
-            ->GetSources()
-            .test(ConvertExternalInstallSourceToSource(install_source));
-    if (has_same_external_source) {
-      for (const GURL& url : apps_it.second) {
-        installed_urls.push_back(url);
-      }
+    for (const GURL& url : install_urls) {
+      installed_urls.push_back(url);
     }
   }
 

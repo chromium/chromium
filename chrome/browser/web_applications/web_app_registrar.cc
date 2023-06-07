@@ -23,7 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -90,12 +89,6 @@ blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
 bool WebAppRegistrar::IsPlaceholderApp(
     const AppId& app_id,
     const WebAppManagement::Type source_type) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kUseWebAppDBInsteadOfExternalPrefs)) {
-    return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
-        .IsPlaceholderApp(app_id);
-  }
-
   CHECK(source_type == WebAppManagement::kPolicy ||
         source_type == WebAppManagement::kKiosk);
   const WebApp* web_app = GetAppById(app_id);
@@ -118,12 +111,6 @@ bool WebAppRegistrar::IsPlaceholderApp(
 absl::optional<AppId> WebAppRegistrar::LookupPlaceholderAppId(
     const GURL& install_url,
     const WebAppManagement::Type source_type) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kUseWebAppDBInsteadOfExternalPrefs)) {
-    return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
-        .LookupPlaceholderAppId(install_url);
-  }
-
   CHECK(source_type == WebAppManagement::kPolicy ||
         source_type == WebAppManagement::kKiosk);
   for (const WebApp& web_app : GetApps()) {
@@ -239,18 +226,6 @@ base::flat_map<AppId, base::flat_set<GURL>>
 WebAppRegistrar::GetExternallyInstalledApps(
     ExternalInstallSource install_source) const {
   base::flat_map<AppId, base::flat_set<GURL>> installed_apps;
-  if (!base::FeatureList::IsEnabled(
-          features::kUseWebAppDBInsteadOfExternalPrefs)) {
-    installed_apps = ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
-        profile()->GetPrefs(), install_source);
-    base::EraseIf(installed_apps,
-                  [this](const std::pair<AppId, base::flat_set<GURL>>& app) {
-                    return !IsInstalled(app.first);
-                  });
-
-    return installed_apps;
-  }
-
   WebAppManagement::Type management_source =
       ConvertExternalInstallSourceToSource(install_source);
   for (const WebApp& web_app : GetApps()) {
@@ -265,12 +240,6 @@ WebAppRegistrar::GetExternallyInstalledApps(
 
 absl::optional<AppId> WebAppRegistrar::LookupExternalAppId(
     const GURL& install_url) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kUseWebAppDBInsteadOfExternalPrefs)) {
-    return ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-        .LookupAppId(install_url);
-  }
-
   absl::optional<AppId> app_id = LookUpAppIdByInstallUrl(install_url);
   if (app_id.has_value())
     return app_id;
@@ -279,11 +248,6 @@ absl::optional<AppId> WebAppRegistrar::LookupExternalAppId(
 }
 
 bool WebAppRegistrar::HasExternalApp(const AppId& app_id) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kUseWebAppDBInsteadOfExternalPrefs)) {
-    return ExternallyInstalledWebAppPrefs::HasAppId(profile()->GetPrefs(),
-                                                    app_id);
-  }
   if (!IsInstalled(app_id))
     return false;
 
@@ -296,12 +260,6 @@ bool WebAppRegistrar::HasExternalApp(const AppId& app_id) const {
 bool WebAppRegistrar::HasExternalAppWithInstallSource(
     const AppId& app_id,
     ExternalInstallSource install_source) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kUseWebAppDBInsteadOfExternalPrefs)) {
-    return ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
-        profile()->GetPrefs(), app_id, install_source);
-  }
-
   if (!IsInstalled(app_id))
     return false;
 

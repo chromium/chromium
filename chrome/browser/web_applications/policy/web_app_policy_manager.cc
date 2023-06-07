@@ -111,8 +111,8 @@ const char WebAppPolicyManager::kInstallResultHistogramName[];
 WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
     : profile_(profile),
       pref_service_(profile_->GetPrefs()),
-      default_settings_(std::make_unique<WebAppPolicyManager::WebAppSetting>()),
-      externally_installed_app_prefs_(profile_->GetPrefs()) {}
+      default_settings_(
+          std::make_unique<WebAppPolicyManager::WebAppSetting>()) {}
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 

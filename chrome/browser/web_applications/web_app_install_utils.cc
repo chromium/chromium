@@ -997,8 +997,6 @@ webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
       return webapps::WebappInstallSource::EXTERNAL_POLICY;
     case ExternalInstallSource::kSystemInstalled:
       return webapps::WebappInstallSource::SYSTEM_DEFAULT;
-    case ExternalInstallSource::kArc:
-      return webapps::WebappInstallSource::ARC;
     case ExternalInstallSource::kKiosk:
       return webapps::WebappInstallSource::KIOSK;
     case ExternalInstallSource::kExternalLockScreen:
@@ -1019,15 +1017,13 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
       return webapps::WebappUninstallSource::kExternalPolicy;
     case ExternalInstallSource::kSystemInstalled:
       return webapps::WebappUninstallSource::kSystemPreinstalled;
-    case ExternalInstallSource::kArc:
-      return webapps::WebappUninstallSource::kArc;
     case ExternalInstallSource::kKiosk:
       NOTREACHED() << "Kiosk apps should not be uninstalled";
       return webapps::WebappUninstallSource::kUnknown;
     case ExternalInstallSource::kExternalLockScreen:
       return webapps::WebappUninstallSource::kExternalLockScreen;
     case ExternalInstallSource::kInternalMicrosoft365Setup:
-      NOTREACHED() << "Microsoft 365 apps should not be unistalled externally";
+      NOTREACHED() << "Microsoft 365 apps should not be uninstalled externally";
       return webapps::WebappUninstallSource::kUnknown;
   }
 }

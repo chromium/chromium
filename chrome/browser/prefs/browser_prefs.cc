@@ -874,6 +874,9 @@ constexpr char kSupervisedUserIncompleteKey[] =
     "SupervisedUserHasIncompleteKey";
 #endif
 
+// Deprecated 06/2023.
+const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1237,6 +1240,9 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kEventRemappedToRightClick, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 06/2023.
+  registry->RegisterDictionaryPref(kWebAppsExtensionIDs);
 }
 
 }  // namespace
@@ -2334,6 +2340,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kSamlPasswordSyncToken);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 06/2023.
+  profile_prefs->ClearPref(kWebAppsExtensionIDs);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

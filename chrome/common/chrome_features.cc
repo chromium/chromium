@@ -846,10 +846,6 @@ BASE_FEATURE(kMetricsSettingsAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kMigrateExternalPrefsToWebAppDB,
-             "MigrateExternalPrefsToWebAppDB",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMoveWebApp,
              "MoveWebApp",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
@@ -1555,10 +1551,6 @@ BASE_FEATURE(kSupportsRtcWakeOver24Hours,
              "SupportsRtcWakeOver24Hours",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-BASE_FEATURE(kUseWebAppDBInsteadOfExternalPrefs,
-             "UseWebAppDBInsteadOfExternalPrefs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebAuthFlowInBrowserTab,
              "WebAuthFlowInBrowserTab",

@@ -56,7 +56,6 @@ ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
       ui_manager_(ui_manager),
       install_finalizer_(install_finalizer),
       command_scheduler_(command_scheduler),
-      externally_installed_app_prefs_(profile_->GetPrefs()),
       data_retriever_factory_(std::move(data_retriever_factory)),
       install_options_(std::move(install_options)) {}
 
@@ -289,11 +288,6 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced(
         .Run(ExternallyManagedAppManager::InstallResult(code));
     return;
   }
-
-  externally_installed_app_prefs_.Insert(install_options_.install_url, app_id,
-                                         install_options_.install_source);
-  externally_installed_app_prefs_.SetIsPlaceholder(install_options_.install_url,
-                                                   is_placeholder);
 
   if (offline_install) {
     code = install_options().only_use_app_info_factory

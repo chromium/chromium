@@ -120,7 +120,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -1231,15 +1230,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     web_app_info->install_url = GURL(install_url ? *install_url : start_url);
     const web_app::AppId expected_web_app_id = web_app::GenerateAppId(
         /*manifest_id=*/absl::nullopt, web_app_info->start_url);
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    web_app::ExternallyInstalledWebAppPrefs web_app_prefs(prefs);
-    web_app_prefs.Insert(GURL(web_app_info->install_url), expected_web_app_id,
-                         web_app::ExternalInstallSource::kExternalPolicy);
-    // Ensure prefs are written before the web app install process reads
-    // them.
-    base::RunLoop run_loop;
-    prefs->CommitPendingWrite(run_loop.QuitClosure());
-    run_loop.Run();
     web_app::AppId web_app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
         /*overwrite_existing_manifest_fields =*/false,

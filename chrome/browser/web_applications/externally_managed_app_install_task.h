@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -125,8 +124,6 @@ class ExternallyManagedAppInstallTask {
   const raw_ptr<WebAppUiManager> ui_manager_;
   const raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   const raw_ptr<WebAppCommandScheduler> command_scheduler_;
-
-  ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
   DataRetrieverFactory data_retriever_factory_;
   const ExternalInstallOptions install_options_;

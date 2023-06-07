@@ -492,9 +492,6 @@ BASE_DECLARE_FEATURE(kShowHiddenNetworkToggle);
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kMetricsSettingsAndroid);
 #endif
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kMigrateExternalPrefsToWebAppDB);
-
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kMoveWebApp);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix;
@@ -925,13 +922,6 @@ bool IsParentAccessCodeForOnlineLoginEnabled();
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSupportsRtcWakeOver24Hours);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// This flag is used to toggle the reading of data from the web_app DB instead
-// of the ExternallyInstalledWebAppPrefs. Data will be written to both storages,
-// and this will be removed in the future once we move to using the web_app DB
-// completely.
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kUseWebAppDBInsteadOfExternalPrefs);
 
 // When enabled, use authentication through a browser tab, instead of
 // an app window.

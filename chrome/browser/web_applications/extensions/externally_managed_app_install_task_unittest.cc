@@ -262,37 +262,9 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
 }  // namespace
 
 class ExternallyManagedAppInstallTaskTest
-    : public ChromeRenderViewHostTestHarness,
-      public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
+    : public ChromeRenderViewHostTestHarness {
  public:
-  ExternallyManagedAppInstallTaskTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    switch (GetParam()) {
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  ExternallyManagedAppInstallTaskTest() = default;
 
   ExternallyManagedAppInstallTaskTest(
       const ExternallyManagedAppInstallTaskTest&) = delete;
@@ -387,10 +359,9 @@ class ExternallyManagedAppInstallTaskTest
   raw_ptr<TestExternallyManagedAppInstallFinalizer, DanglingUntriaged>
       install_finalizer_ = nullptr;
   raw_ptr<FakeWebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
   const GURL kWebAppUrl("https://foo.example");
   auto task = GetInstallationTaskWithTestMocks(
       {kWebAppUrl, absl::nullopt, ExternalInstallSource::kInternalDefault});
@@ -430,7 +401,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallFails) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
   const GURL kWebAppUrl("https://foo.example");
   auto task = GetInstallationTaskWithTestMocks(
       {kWebAppUrl, mojom::UserDisplayMode::kStandalone,
@@ -462,7 +433,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallFails) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
   const GURL kWebAppUrl("https://foo.example");
   auto install_options =
       ExternalInstallOptions(kWebAppUrl, mojom::UserDisplayMode::kStandalone,
@@ -488,7 +459,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
   const GURL kWebAppUrl("https://foo.example");
   auto install_options =
       ExternalInstallOptions(kWebAppUrl, mojom::UserDisplayMode::kBrowser,
@@ -514,7 +485,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
   const GURL kWebAppUrl("https://foo.example");
   auto install_options = ExternalInstallOptions(
       kWebAppUrl, absl::nullopt, ExternalInstallSource::kInternalDefault);
@@ -540,7 +511,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
   const GURL kWebAppUrl("https://foo.example");
   auto install_options = ExternalInstallOptions(
       kWebAppUrl, absl::nullopt, ExternalInstallSource::kExternalPolicy);
@@ -566,7 +537,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options(kWebAppUrl,
                                  mojom::UserDisplayMode::kStandalone,
@@ -606,7 +577,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options(kWebAppUrl,
                                  mojom::UserDisplayMode::kStandalone,
@@ -659,7 +630,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
+TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options(kWebAppUrl,
                                  mojom::UserDisplayMode::kStandalone,
@@ -719,7 +690,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
+TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options(kWebAppUrl,
                                  mojom::UserDisplayMode::kStandalone,
@@ -785,7 +756,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
 }
 
 #if defined(CHROMEOS)
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
   const GURL kWebAppUrl("https://foo.example");
   const std::string kCustomName("Custom äpp näme");
   ExternalInstallOptions options(kWebAppUrl,
@@ -818,7 +789,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
 }
 #endif  // defined(CHROMEOS)
 
-TEST_P(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
+TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options = {kWebAppUrl, absl::nullopt,
                                     ExternalInstallSource::kInternalDefault};
@@ -876,7 +847,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
   }
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
   struct ResultPair {
     WebAppUrlLoader::Result loader_result;
     webapps::InstallResultCode install_result;
@@ -912,7 +883,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
   }
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
   ExternalInstallOptions install_options(
       GURL(), mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -931,7 +902,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options(kWebAppUrl,
                                  mojom::UserDisplayMode::kStandalone,
@@ -979,7 +950,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
   run_loop.Run();
 }
 
-TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options(kWebAppUrl,
                                  mojom::UserDisplayMode::kStandalone,
@@ -1019,15 +990,5 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
 
   run_loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExternallyManagedAppInstallTaskTest,
-    ::testing::Values(
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
-    test::GetExternalPrefMigrationTestName);
 
 }  // namespace web_app

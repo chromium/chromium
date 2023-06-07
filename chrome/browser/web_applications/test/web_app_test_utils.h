@@ -43,16 +43,6 @@ enum class OsIntegrationSubManagersState {
 
 namespace test {
 
-enum class ExternalPrefMigrationTestCases {
-  kDisableMigrationReadPref,
-  kDisableMigrationReadDB,
-  kEnableMigrationReadPref,
-  kEnableMigrationReadDB,
-};
-
-std::string GetExternalPrefMigrationTestName(
-    const ::testing::TestParamInfo<ExternalPrefMigrationTestCases>& info);
-
 std::string GetOsIntegrationSubManagersTestName(
     const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info);
 

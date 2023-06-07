@@ -137,11 +137,13 @@ enum class ExternalInstallSource {
   // in ash::SystemWebAppManager::RefreshPolicyInstalledApps.
   kSystemInstalled = 3,
 
-  // Installed from ARC.
-  // There is no call to SynchronizeInstalledApps for this type, as these apps
-  // are not installed via ExternallyManagedAppManager. This is used in
-  // ExternallyInstalledWebAppPrefs to track navigation url to app_id entries.
-  kArc = 4,
+  // DEPRECATED: This was used by ApkWebAppInstaller to inject an entry into
+  // the now removed ExternallyInstalledWebAppPrefs to track installation of
+  // APK installed web apps however over time this enum value came to have no
+  // effect. Instead the APK installation is tracked via
+  // webapps::WebappUninstallSource::kArc and
+  // web_app::WebAppManagement::kWebAppStore.
+  // kArc = 4,
 
   // Installed by Kiosk. There is no call to SynchronizeInstalledApps for this
   // type because Kiosk apps are bound to their profiles. They will never be

@@ -366,10 +366,6 @@ void WebAppProvider::StartSyncBridge() {
 void WebAppProvider::OnSyncBridgeReady() {
   DCHECK(!on_registry_ready_.is_signaled());
 
-  if (base::FeatureList::IsEnabled(features::kMigrateExternalPrefsToWebAppDB)) {
-    ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-        profile_->GetPrefs(), sync_bridge_.get());
-  }
   DoMigrateProfilePrefs(profile_);
 
   // Note: This does not wait for the call from the ChromeOS

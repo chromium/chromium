@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -87,50 +86,15 @@ base::Value::Dict GetCustomAppIconAndNameItem() {
 
 }  // namespace
 
-class WebAppPolicyManagerBrowserTest
-    : public WebAppControllerBrowserTest,
-      public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
+class WebAppPolicyManagerBrowserTest : public WebAppControllerBrowserTest {
  public:
-  WebAppPolicyManagerBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    switch (GetParam()) {
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  WebAppPolicyManagerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
-    externally_installed_app_prefs_ =
-        std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
   }
 
-  void TearDown() override {
-    externally_installed_app_prefs_.reset();
-
-    WebAppControllerBrowserTest::TearDown();
-  }
+  void TearDown() override { WebAppControllerBrowserTest::TearDown(); }
 
   Profile* profile() { return browser()->profile(); }
 
@@ -142,10 +106,6 @@ class WebAppPolicyManagerBrowserTest
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
-    return *externally_installed_app_prefs_;
-  }
-
   void SetPolicyPrefs(base::StringPiece json,
                       std::vector<std::string> replacements = {}) {
     profile()->GetPrefs()->Set(
@@ -154,15 +114,9 @@ class WebAppPolicyManagerBrowserTest
             base::ReplaceStringPlaceholders(json, replacements, nullptr))
             .value());
   }
-
- private:
-  std::unique_ptr<ExternallyInstalledWebAppPrefs>
-      externally_installed_app_prefs_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
                        OverrideManifestWithCustomName) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
@@ -180,7 +134,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
             manifest->name.value_or(std::u16string()));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
                        OverrideManifestWithCustomIcon) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
@@ -198,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
   EXPECT_EQ(GURL(kDefaultCustomIconUrl), manifest->icons[0].src);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
 
@@ -228,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
 #else
 #define MAYBE_MismatchedInstallAndStartUrl MismatchedInstallAndStartUrl
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
                        MAYBE_MismatchedInstallAndStartUrl) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
@@ -253,8 +207,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
   icon.src = GURL(kDefaultAppIconUrl2);
   manifest->icons.emplace_back(icon);
 
-  // Install the web app, and add it in the externally_installed_app_prefs:
-  auto install_source = ExternalInstallSource::kExternalPolicy;
+  // Install the web app:
   std::unique_ptr<WebAppInstallInfo> install_info =
       std::make_unique<WebAppInstallInfo>();
   install_info->install_url = GURL(kInstallUrl);
@@ -266,10 +219,6 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
       std::move(install_info),
       /*overwrite_existing_manifest_fields=*/true,
       webapps::WebappInstallSource::EXTERNAL_POLICY, base::DoNothing());
-
-  externally_installed_app_prefs().Insert(
-      GURL(kInstallUrl), GenerateAppId(absl::nullopt, GURL(kStartUrl)),
-      install_source);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kStartUrl)));
 
@@ -287,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
 // to be uninstalled after the policy app is installed.
 // This test does not yet work in Lacros because
 // AppServiceProxyLacros::UninstallSilently() has not yet been implemented.
-IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
   // Install old app to replace.
   auto install_info = std::make_unique<WebAppInstallInfo>();
   install_info->start_url = GURL("https://some.app.com");
@@ -309,16 +258,6 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppPolicyManagerBrowserTest,
-    ::testing::Values(
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
-    test::GetExternalPrefMigrationTestName);
 
 class WebAppPolicyManagerGuestModeTest : public InProcessBrowserTest {
  public:

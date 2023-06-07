@@ -20,7 +20,6 @@
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -51,47 +50,15 @@
 
 namespace web_app {
 
-class ExternallyManagedAppManagerTest
-    : public WebAppTest,
-      public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
+class ExternallyManagedAppManagerTest : public WebAppTest {
  public:
-  ExternallyManagedAppManagerTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    switch (GetParam()) {
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  ExternallyManagedAppManagerTest() = default;
 
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
     provider_ = web_app::FakeWebAppProvider::Get(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-
-    externally_installed_app_prefs_ =
-        std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
 
     externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
@@ -108,11 +75,6 @@ class ExternallyManagedAppManagerTest
                   ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
                   update->CreateApp(std::move(web_app));
                 }
-
-                externally_installed_app_prefs().Insert(
-                    install_url,
-                    GenerateAppId(/*manifest_id=*/absl::nullopt, install_url),
-                    install_options.install_source);
                 ++deduped_install_count_;
               }
               return ExternallyManagedAppManager::InstallResult(
@@ -185,10 +147,6 @@ class ExternallyManagedAppManagerTest
 
   WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
 
-  ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
-    return *externally_installed_app_prefs_;
-  }
-
   FakeExternallyManagedAppManager& externally_managed_app_manager() {
     return static_cast<FakeExternallyManagedAppManager&>(
         provider().externally_managed_app_manager());
@@ -199,16 +157,12 @@ class ExternallyManagedAppManagerTest
   int deduped_uninstall_count_ = 0;
 
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
-
-  std::unique_ptr<ExternallyInstalledWebAppPrefs>
-      externally_installed_app_prefs_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that destroying ExternallyManagedAppManager during a synchronize call
 // that installs an app doesn't crash. Regression test for
 // https://crbug.com/962808
-TEST_P(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
+TEST_F(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
   std::vector<ExternalInstallOptions> install_options_list;
   install_options_list.emplace_back(GURL("https://foo.example"),
                                     mojom::UserDisplayMode::kStandalone,
@@ -229,7 +183,7 @@ TEST_P(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
 // Test that destroying ExternallyManagedAppManager during a synchronize call
 // that uninstalls an app doesn't crash. Regression test for
 // https://crbug.com/962808
-TEST_P(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
+TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
   // Install an app that will be uninstalled next.
   {
     std::vector<ExternalInstallOptions> install_options_list;
@@ -257,7 +211,7 @@ TEST_P(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ExternallyManagedAppManagerTest, SynchronizeInstalledApps) {
+TEST_F(ExternallyManagedAppManagerTest, SynchronizeInstalledApps) {
   GURL a("https://a.example.com/");
   GURL b("https://b.example.com/");
   GURL c("https://c.example.com/");
@@ -308,7 +262,7 @@ using ExternallyManagedAppManagerTestAndroidSMS =
     ExternallyManagedAppManagerTest;
 // This test verifies that AndroidSMS is not uninstalled during the Syncing
 // process.
-TEST_P(ExternallyManagedAppManagerTestAndroidSMS,
+TEST_F(ExternallyManagedAppManagerTestAndroidSMS,
        SynchronizeAppsAndroidSMSTest) {
   GURL android_sms_url1(
       "https://messages-web.sandbox.google.com/web/authentication");
@@ -345,27 +299,7 @@ TEST_P(ExternallyManagedAppManagerTestAndroidSMS,
          std::vector<GURL>{android_sms_url1, android_sms_url2});
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExternallyManagedAppManagerTestAndroidSMS,
-    ::testing::Values(
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
-    test::GetExternalPrefMigrationTestName);
-
 #endif
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExternallyManagedAppManagerTest,
-    ::testing::Values(
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
-    test::GetExternalPrefMigrationTestName);
 
 namespace {
 
@@ -386,11 +320,7 @@ class ExternallyAppManagerTest : public WebAppTest {
       base::test::TestFuture<const GURL&,
                              ExternallyManagedAppManager::InstallResult>;
 
-  ExternallyAppManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kUseWebAppDBInsteadOfExternalPrefs},
-        {features::kMigrateExternalPrefsToWebAppDB});
-  }
+  ExternallyAppManagerTest() = default;
 
   void SetUp() override {
     WebAppTest::SetUp();
@@ -462,9 +392,6 @@ class ExternallyAppManagerTest : public WebAppTest {
 
     return GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ExternallyAppManagerTest, NoNetworkNoPlaceholder) {

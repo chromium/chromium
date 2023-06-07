@@ -163,13 +163,6 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
   return root;
 }
 
-base::Value::Dict BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
-  base::Value::Dict root;
-  root.Set(kExternallyManagedWebAppPrefs,
-           profile->GetPrefs()->GetDict(prefs::kWebAppsExtensionIDs).Clone());
-  return root;
-}
-
 base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
     Profile* profile) {
   base::Value::Dict root;
@@ -323,7 +316,6 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildInstalledWebAppsJson(*provider));
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile));
-  root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
   root.Append(BuildLockManagerJson(*provider));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));
