@@ -120,11 +120,11 @@ const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes{
     "high_efficiency_chart_pmf_75_percentile_bytes", 197 * 1024 * 1024};
 
 const base::FeatureParam<double> kDiscardedTabTreatmentOpacity{
-    &kDiscardedTabTreatment, "discard_tab_treatment_opacity", 0.3};
+    &kDiscardedTabTreatment, "discard_tab_treatment_opacity", 0.5};
 
 const base::FeatureParam<int> kDiscardedTabTreatmentOption{
     &kDiscardedTabTreatment, "discard_tab_treatment_option",
-    static_cast<int>(DiscardTabTreatmentOptions::kFadeFullsizedFavicon)};
+    static_cast<int>(DiscardTabTreatmentOptions::kFadeSmallFaviconWithRing)};
 
 const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
     &kMemoryUsageInHovercards,
