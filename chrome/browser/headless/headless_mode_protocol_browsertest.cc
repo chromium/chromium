@@ -216,4 +216,7 @@ HEADLESS_MODE_PROTOCOL_TEST(DISABLED_ScreencastBasics,
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
+                            "sanity/print-to-pdf-tiny-page.js")
+
 }  // namespace headless
