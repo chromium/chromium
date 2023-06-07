@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -33,10 +34,12 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
+#include "url/url_constants.h"
 
 class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
  public:
@@ -105,6 +108,32 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
                  FlushEvents(), HoverTabGroupHeader(group_id), ClickMouse());
   }
 
+  StepBuilder CheckIfSavedGroupIsOpen(const base::Uuid* const saved_guid) {
+    return Do([=]() {
+      const SavedTabGroupKeyedService* const service =
+          SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+      const SavedTabGroup* const group = service->model()->Get(*saved_guid);
+      ASSERT_NE(nullptr, group);
+      EXPECT_TRUE(group->local_group_id().has_value());
+      EXPECT_TRUE(browser()->tab_strip_model()->group_model()->ContainsTabGroup(
+          group->local_group_id().value()));
+    });
+  }
+
+  StepBuilder CheckIfSavedGroupIsClosed(const base::Uuid* const saved_guid) {
+    return Do([=]() {
+      const SavedTabGroupKeyedService* const service =
+          SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+      EXPECT_EQ(1, service->model()->Count());
+
+      const SavedTabGroup* const group = service->model()->Get(*saved_guid);
+      ASSERT_NE(nullptr, group);
+      EXPECT_FALSE(group->local_group_id().has_value());
+    });
+  }
+
   std::unique_ptr<content::WebContents> CreateWebContents() {
     return content::WebContents::Create(
         content::WebContents::CreateParams(browser()->profile()));
@@ -153,6 +182,53 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       // Click the first tab to close the context menu. Mac builders fail if the
       // context menu stays open.
       HoverTabAt(0), ClickMouse(ui_controls::LEFT));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+                       FirstTabIsFocusedInReopenedSavedGroup) {
+  // Add 3 tabs to the browser.
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Add 2 tabs to the group.
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  const SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+  base::Uuid saved_guid;
+
+  RunTestSequence(
+      ShowBookmarksBar(),
+      // Ensure no saved group buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      // Save the group and ensure it is linked in the model.
+      SaveGroupLeaveEditorBubbleOpen(local_group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // The group we just saved should be the only group in the model.
+      CheckResult([&]() { return service->model()->Count(); }, 1),
+      // Find the saved guid that is linked to the group we just saved.
+      Do([&]() {
+        const SavedTabGroup& saved_group =
+            service->model()->saved_tab_groups()[0];
+        ASSERT_TRUE(saved_group.local_group_id().has_value());
+        saved_guid = saved_group.saved_guid();
+      }),
+      // Make sure the editor bubble is still open and flush events before we
+      // close it.
+      EnsurePresent(kTabGroupEditorBubbleId), FlushEvents(),
+      // Close the tab group and expect the saved group is no longer linked.
+      PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
+      FinishTabstripAnimations(), CheckIfSavedGroupIsClosed(&saved_guid),
+      // Reopen the tab group and expect the saved group is linked again.
+      PressButton(kSavedTabGroupButtonElementId), FinishTabstripAnimations(),
+      CheckIfSavedGroupIsOpen(&saved_guid),
+      // Verify the first tab in the group is the active tab.
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->active_index(); }, 1));
 }
 
 // TODO(crbug.com/1432770): Re-enable this test once it doesn't get stuck in

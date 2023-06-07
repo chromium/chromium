@@ -533,7 +533,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         saved_tab_group_service->model()->Contains(group_));
   }
 
-  auto* const new_tab_menu_item = AddChildView(CreateMenuItem(
+  views::LabelButton* const new_tab_menu_item = AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
@@ -547,11 +547,13 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                           base::Unretained(this), header_view),
       ui::ImageModel::FromVectorIcon(kUngroupIcon)));
 
-  AddChildView(CreateMenuItem(
+  views::LabelButton* const close_group_menu_item = AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(kCloseGroupIcon)));
+  close_group_menu_item->SetProperty(views::kElementIdentifierKey,
+                                     kTabGroupEditorBubbleCloseGroupButtonId);
 
   move_menu_item_ = AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
