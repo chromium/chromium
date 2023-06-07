@@ -59,6 +59,18 @@ polymorphic.launcher(
 )
 
 polymorphic.launcher(
+    name = "android-coverage-launcher",
+    # To avoid peak hours, we run it at 10AM UTC.
+    schedule = "0 10 * * *",
+    pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/android-code-coverage-native",
+    ],
+)
+
+polymorphic.launcher(
     name = "android-device-launcher",
     # To avoid peak hours, we run it at 5 AM, 8 AM, 11AM UTC.
     schedule = "0 5,8,11 * * *",
