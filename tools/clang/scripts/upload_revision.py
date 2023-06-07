@@ -10,11 +10,9 @@ a CL, triggers Clang Upload try bots, and tells what to do next"""
 from __future__ import print_function
 
 import argparse
-import fnmatch
 import itertools
 import os
 import re
-import shutil
 import subprocess
 import sys
 import urllib.request
@@ -28,7 +26,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
                  'rust'))
 
-from build_rust import RUST_GIT_URL, RUST_SRC_DIR
+from build_rust import (RUST_GIT_URL, RUST_SRC_DIR)
 
 # Path constants.
 THIS_DIR = os.path.dirname(__file__)
@@ -37,6 +35,10 @@ CLANG_UPDATE_PY_PATH = os.path.join(THIS_DIR, 'update.py')
 RUST_UPDATE_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust',
                                    'update_rust.py')
 BUILD_RUST_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust', 'build_rust.py')
+GNRT_STDLIB_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust',
+                                   'gnrt_stdlib.py')
+RUST_STDLIB_RULES_GN_PATH = os.path.join(CHROMIUM_DIR, 'build', 'rust', 'std',
+                                         'rules', 'BUILD.gn')
 
 # Constants for finding HEAD.
 CLANG_URL = 'https://api.github.com/repos/llvm/llvm-project/git/refs/heads/main'
@@ -297,7 +299,9 @@ def main():
     print('Cannot set both --skip-clang and --skip-rust.')
     sys.exit(1)
 
-  if not args.skip_clang:
+  if args.skip_clang:
+    clang_version = '-skipped-'
+  else:
     if args.clang_git_hash:
       clang_git_hash = args.clang_git_hash
     else:
@@ -309,10 +313,10 @@ def main():
     clang_version = ClangVersion(GetCommitDescription(clang_git_hash),
                                  args.clang_sub_revision)
     os.chdir(CHROMIUM_DIR)
-  else:
-    clang_version = '-skipped-'
 
-  if not args.skip_rust:
+  if args.skip_rust:
+    rust_version = '-skipped-'
+  else:
     if args.rust_git_hash:
       rust_git_hash = args.rust_git_hash
     else:
@@ -320,8 +324,9 @@ def main():
     CheckoutGitRepo("Rust", RUST_GIT_URL, rust_git_hash, RUST_SRC_DIR)
     rust_version = RustVersion(rust_git_hash, args.rust_sub_revision)
     os.chdir(CHROMIUM_DIR)
-  else:
-    rust_version = '-skipped-'
+
+    # Build and run gnrt to update the stdlib GN rules.
+    RunCommand([GNRT_STDLIB_PY_PATH, '--rust-src-dir', RUST_SRC_DIR])
 
   print(f'Making a patch for Clang {clang_version} and Rust {rust_version}')
 
@@ -378,6 +383,7 @@ def main():
   Git('add',
       CLANG_UPDATE_PY_PATH,
       RUST_UPDATE_PY_PATH,
+      RUST_STDLIB_RULES_GN_PATH,
       no_run=args.no_git)
   Git('commit', '-m', commit_message, no_run=args.no_git)
   Git('cl', 'upload', '-f', '--bypass-hooks', no_run=args.no_git)

@@ -37,8 +37,13 @@ impl ChromiumPaths {
         Ok(ChromiumPaths {
             root: cur_dir.clone(),
             third_party: check_path(&cur_dir, RUST_THIRD_PARTY_DIR)?,
+            // We tolerate the Rust sources being missing, as they are only used to generate
+            // rules for the stdlib during Clang/Rust rolls, and they are not checked out for
+            // most machines.
             rust_src_vendor_subdir: Path::new(RUST_SRC_VENDOR_SUBDIR),
-            rust_src_installed: check_path(&cur_dir, RUST_SRC_INSTALLED_DIR)?,
+            // We tolerate the toolchain package dir being missing, as it's not checked out
+            // on the bots that generate Clang/Rust rolls.
+            rust_src_installed: Path::new(RUST_SRC_INSTALLED_DIR),
             std_config_file: check_path(&cur_dir, STD_CONFIG_FILE)?,
             std_build: check_path(&cur_dir, STD_BUILD_DIR)?,
             std_fake_root: check_path(&cur_dir, STD_FAKE_ROOT)?,
