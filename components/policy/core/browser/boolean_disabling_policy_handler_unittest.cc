@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/boolean_disabling_policy_handler.h"
+#include "components/policy/core/browser/boolean_disabling_policy_handler.h"
 
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
 #include "components/policy/core/browser/policy_error_map.h"

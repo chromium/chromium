@@ -1162,8 +1162,6 @@ static_library("browser") {
     "platform_util_internal.h",
     "plugins/pdf_iframe_navigation_throttle.cc",
     "plugins/pdf_iframe_navigation_throttle.h",
-    "policy/boolean_disabling_policy_handler.cc",
-    "policy/boolean_disabling_policy_handler.h",
     "policy/chrome_browser_policy_connector.cc",
     "policy/chrome_browser_policy_connector.h",
     "policy/chrome_policy_conversions_client.cc",

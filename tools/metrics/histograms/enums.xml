@@ -33027,6 +33027,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1110" label="RSAKeyUsageForLocalAnchorsEnabled"/>
   <int value="1111" label="BeforeunloadEventCancelByPreventDefaultEnabled"/>
   <int value="1112" label="PolicyTestPageEnabled"/>
+  <int value="1113" label="UrlKeyedMetricsAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

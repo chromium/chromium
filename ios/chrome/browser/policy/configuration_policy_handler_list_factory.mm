@@ -19,6 +19,7 @@
 #import "components/history/core/common/pref_names.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/policy/core/browser/boolean_disabling_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler_list.h"
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
@@ -119,9 +120,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kURLAllowlist,
     policy::policy_prefs::kUrlAllowlist,
     base::Value::Type::LIST},
-  { policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
-    unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-    base::Value::Type::BOOLEAN },
   { policy::key::kShoppingListEnabled,
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
@@ -179,5 +177,13 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
       policy::key::kURLBlocklist));
 
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<policy::SimplePolicyHandler>(
+          policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<policy::BooleanDisablingPolicyHandler>(
+          policy::key::kUrlKeyedMetricsAllowed,
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
   return handlers;
 }

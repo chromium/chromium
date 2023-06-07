@@ -729,8 +729,8 @@ class PolicyTemplateChecker(object):
       # try and ensure the items are still described in the descriptions.
       value_to_names = {
           None: {'none', 'unset', 'not set', 'not configured'},
-          True: {'true', 'enable'},
-          False: {'false', 'disable'},
+          True: {'true', 'enable', 'allowed'},
+          False: {'false', 'disable', 'not allowed', 'disallowed'},
       }
       if policy['name'] not in LEGACY_NO_ENABLE_DISABLE_DESC:
         for value in required_values:

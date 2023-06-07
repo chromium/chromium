@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/boolean_disabling_policy_handler.h"
+#include "components/policy/core/browser/boolean_disabling_policy_handler.h"
 
 #include "components/policy/core/common/policy_map.h"
 #include "components/prefs/pref_value_map.h"
@@ -20,8 +20,9 @@ BooleanDisablingPolicyHandler::~BooleanDisablingPolicyHandler() {}
 void BooleanDisablingPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  if (!pref_path_)
+  if (!pref_path_) {
     return;
+  }
 
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);

@@ -16,6 +16,8 @@ group("browser") {
 source_set("internal") {
   visibility = [ "//components/policy/*" ]
   sources = [
+    "boolean_disabling_policy_handler.cc",
+    "boolean_disabling_policy_handler.h",
     "browser_policy_connector.cc",
     "browser_policy_connector.h",
     "browser_policy_connector_base.cc",
@@ -143,6 +145,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "boolean_disabling_policy_handler_unittest.cc",
     "configuration_policy_handler_list_unittest.cc",
     "configuration_policy_handler_unittest.cc",
     "configuration_policy_pref_store_unittest.cc",

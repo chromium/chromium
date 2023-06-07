@@ -27,7 +27,6 @@
 #include "chrome/browser/net/explicitly_allowed_network_ports_policy_handler.h"
 #include "chrome/browser/net/secure_dns_policy_handler.h"
 #include "chrome/browser/performance_manager/public/user_tuning/high_efficiency_policy_handler.h"
-#include "chrome/browser/policy/boolean_disabling_policy_handler.h"
 #include "chrome/browser/policy/browsing_history_policy_handler.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/file_selection_dialogs_policy_handler.h"
@@ -84,6 +83,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/policy/core/browser/boolean_disabling_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
@@ -285,9 +285,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy_prefs::kUrlAllowlist,
     base::Value::Type::LIST
   },
-  { key::kUrlKeyedAnonymizedDataCollectionEnabled,
-    unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kHistoryClustersVisible,
     history_clusters::prefs::kVisible,
     base::Value::Type::BOOLEAN },
@@ -1978,6 +1975,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
+
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kUrlKeyedAnonymizedDataCollectionEnabled,
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<BooleanDisablingPolicyHandler>(
+          policy::key::kUrlKeyedMetricsAllowed,
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
   // Policies for all platforms - End
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
