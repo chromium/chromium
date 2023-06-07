@@ -71,6 +71,7 @@ void SigninDelegateImpl::EnableMsbb(bool enable_msbb) {
 }
 
 void SigninDelegateImpl::LoadUrlInNewTab(const GURL& url) {
+  CHECK(url.is_valid());
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
