@@ -59,19 +59,19 @@ public class AwContentsGarbageCollectionTest {
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
         @Override
         public TestDependencyFactory createTestDependencyFactory() {
-            if (mOverridenFactory == null) {
+            if (mOverriddenFactory == null) {
                 return new TestDependencyFactory();
             } else {
-                return mOverridenFactory;
+                return mOverriddenFactory;
             }
         }
     };
 
-    private TestDependencyFactory mOverridenFactory;
+    private TestDependencyFactory mOverriddenFactory;
 
     @After
     public void tearDown() {
-        mOverridenFactory = null;
+        mOverriddenFactory = null;
     }
 
     private static class StrongRefTestContext extends ContextWrapper {
@@ -201,11 +201,11 @@ public class AwContentsGarbageCollectionTest {
             TestAwContentsClient client = new TestAwContentsClient();
             StrongRefTestContext context =
                     new StrongRefTestContext(mActivityTestRule.getActivity());
-            mOverridenFactory = new GcTestDependencyFactory(context);
+            mOverriddenFactory = new GcTestDependencyFactory(context);
             AwTestContainerView containerView =
                     mActivityTestRule.createAwTestContainerViewOnMainSync(client);
             context.setAwContentsStrongRef(containerView.getAwContents());
-            mOverridenFactory = null;
+            mOverriddenFactory = null;
             mActivityTestRule.loadUrlAsync(
                     containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
@@ -228,10 +228,10 @@ public class AwContentsGarbageCollectionTest {
                     StrongRefTestAwContentsClient client = new StrongRefTestAwContentsClient();
                     StrongRefTestContext context =
                             new StrongRefTestContext(mActivityTestRule.getActivity());
-                    mOverridenFactory = new GcTestDependencyFactory(context);
+                    mOverriddenFactory = new GcTestDependencyFactory(context);
                     AwTestContainerView view =
                             mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-                    mOverridenFactory = null;
+                    mOverriddenFactory = null;
                     // Embedding app can hold onto a strong ref to the WebView from either
                     // WebViewClient or WebChromeClient. That should not prevent WebView from
                     // gc-ed. We simulate that behavior by making the equivalent change here,
