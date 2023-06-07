@@ -100,6 +100,8 @@ void AddPrintManagementStrings(content::WebUIDataSource* html_source) {
        IDS_PRINT_MANAGEMENT_TRAY_MISSING_STOPPED_ERROR_STATUS},
       {"outputFullStopped",
        IDS_PRINT_MANAGEMENT_OUTPUT_FULL_STOPPED_ERROR_STATUS},
+      {"printerUnreachableStopped",
+       IDS_PRINT_MANAGEMENT_PRINTER_UNREACHABLE_STOPPED_ERROR_STATUS},
       {"stoppedGeneric", IDS_PRINT_MANAGEMENT_GENERIC_STOPPED_ERROR_STATUS},
       {"unknownPrinterErrorStopped",
        IDS_PRINT_MANAGEMENT_UNKNOWN_STOPPED_ERROR_STATUS},

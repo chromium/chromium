@@ -681,6 +681,9 @@
         <message name="IDS_PRINT_MANAGEMENT_OUTPUT_FULL_STOPPED_ERROR_STATUS" desc="The error status displayed next to a print job to indicate to users that their print job stopped because their printer's output is full .">
           Stopped - Output full
         </message>
+        <message name="IDS_PRINT_MANAGEMENT_PRINTER_UNREACHABLE_STOPPED_ERROR_STATUS" desc="The error status displayed next to a print job to indicate to users that their print job stopped because their printer is unreachable.">
+          Stopped - Printer unreachable
+        </message>
         <message name="IDS_PRINT_MANAGEMENT_GENERIC_STOPPED_ERROR_STATUS" desc="The error status displayed next to a print job to indicate to users that their print job stopped.">
           Stopped
         </message>
