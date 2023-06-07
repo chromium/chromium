@@ -11059,7 +11059,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_V2",
+                    "name": "Enabled",
                     "enable_features": [
                         "PurgeOldCacheEntriesOnTimer"
                     ]
