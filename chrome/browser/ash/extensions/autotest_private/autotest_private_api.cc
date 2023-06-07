@@ -1976,6 +1976,12 @@ AutotestPrivateSetPlayStoreEnabledFunction::Run() {
     // currently.
     profile->GetPrefs()->SetBoolean(arc::prefs::kArcLocationServiceEnabled,
                                     true);
+    // Since we are settings location to enabled, we don't have to sync this
+    // settings from android.
+    if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+      profile->GetPrefs()->SetBoolean(
+          arc::prefs::kArcInitialLocationSettingSyncRequired, false);
+    }
     return RespondNow(NoArguments());
   } else {
     return RespondNow(Error("ARC is not available for the current user"));

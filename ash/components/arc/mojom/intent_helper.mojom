@@ -278,7 +278,9 @@ enum SupportedLinkChangeSource {
 [Extensible]
 enum AndroidSetting {
   [Default] kUnknown = 0,
-  kGeoLocation,
+  kGeoLocation,           // Deprecated, replaced with specific scenarios.
+  kGeoLocationAtBoot,
+  kGeoLocationUserTriggered,
 };
 
 // Interface to interact with a custom tab.

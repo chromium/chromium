@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/intent_helper/chrome_arc_settings_app_delegate.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +23,26 @@ void ChromeArcSettingsAppDelegate::HandleUpdateAndroidSettings(
     mojom::AndroidSetting setting,
     bool is_enabled) {
   switch (setting) {
+    // We need kGeoLocationAtBoot and kGeoLocationUserTriggered to avoid race
+    // condition when we are trying to sync location setting from ChromeOS to
+    // android as well as user trigger comes due to change in
+    // kArcLocationServiceEnabled.
+    // This is potentially seen in CTS/GTS test and hence splitting the two
+    // update.
+    case mojom::AndroidSetting::kGeoLocationAtBoot:
+      if (IsInitialLocationSettingsSyncRequired()) {
+        // This is to handle scenario when we migrate from existing settings.
+        // Currently, android has location settings whereas ChromeOS doesn't.
+        // We want to migrate the android setting one time from android to
+        // ChromeOS.
+        VLOG(1) << "Syncing initial location settings from Android.";
+        UpdateLocationSettings(is_enabled);
+        profile_->GetPrefs()->SetBoolean(
+            prefs::kArcInitialLocationSettingSyncRequired, false);
+      }
+      return;
     case mojom::AndroidSetting::kGeoLocation:
+    case mojom::AndroidSetting::kGeoLocationUserTriggered:
       UpdateLocationSettings(is_enabled);
       return;
     case mojom::AndroidSetting::kUnknown:
@@ -38,4 +58,9 @@ void ChromeArcSettingsAppDelegate::UpdateLocationSettings(bool is_enabled) {
                                    is_enabled);
 }
 
+bool ChromeArcSettingsAppDelegate::IsInitialLocationSettingsSyncRequired() {
+  DCHECK(profile_);
+  return profile_->GetPrefs()->GetBoolean(
+      prefs::kArcInitialLocationSettingSyncRequired);
+}
 }  // namespace arc
