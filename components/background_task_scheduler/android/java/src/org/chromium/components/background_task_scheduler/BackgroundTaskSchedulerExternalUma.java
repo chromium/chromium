@@ -51,26 +51,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
      * @param minimalBrowserMode Whether the task will start native in Minimal Browser Mode
      *                              (Reduced Mode) instead of Full Browser Mode.
      */
-    public abstract void reportTaskStartedNative(int taskId, boolean minimalBrowserMode);
-
-    /**
-     * Report metrics for starting a NativeBackgroundTask. This does not consider tasks that are
-     * short-circuited before any work is done.
-     * @param taskId An id from {@link TaskIds}.
-     * @param minimalBrowserMode Whether the task will run in Minimal Browser Mode (Reduced
-     *                               Mode) instead of Full Browser Mode.
-     */
-    public abstract void reportNativeTaskStarted(int taskId, boolean minimalBrowserMode);
-
-    /**
-     * Reports metrics that a NativeBackgroundTask has been finished cleanly (i.e., no unexpected
-     * exits because of chrome crash or OOM). This includes tasks that have been stopped due to
-     * timeout.
-     * @param taskId An id from {@link TaskIds}.
-     * @param minimalBrowserMode Whether the task will run in Minimal Browser Mode (Reduced
-     *                               Mode) instead of Full Browser Mode.
-     */
-    public abstract void reportNativeTaskFinished(int taskId, boolean minimalBrowserMode);
+    public abstract void reportTaskStartedNative(int taskId);
 
     /**
      * Reports metrics of how Chrome is launched, either in minimal browser mode or as full

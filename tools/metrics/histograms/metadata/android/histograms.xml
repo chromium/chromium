@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.ExactTaskCreated"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
@@ -438,14 +438,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCanceled"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>Records that a specific background task has been canceled.</summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCreated.WithExpiration"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCreated.WithoutExpiration"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskExpired"
-    enum="BackgroundTaskId" expires_after="2023-08-08">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskFinished.{TaskType}"
-    units="ms" expires_after="2023-06-04">
+    units="ms" expires_after="2024-06-05">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -489,38 +489,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a task extending a NativeBackgroundTask started loading the
-    native portion of Chrome (either in Reduced Mode or Full Browser Mode).
-  </summary>
-</histogram>
-
-<histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <summary>
-    Records that a specific background task has loaded native in Full Browser
-    Mode.
-  </summary>
-</histogram>
-
-<histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <summary>
-    Records that a specific background task has loaded native in Reduced Mode.
+    native portion of Chrome.
   </summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskScheduled.Failure"
-    enum="BackgroundTaskId" expires_after="2023-11-12">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -529,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskScheduled.Success"
-    enum="BackgroundTaskId" expires_after="2023-10-15">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -538,14 +517,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStarted"
-    enum="BackgroundTaskId" expires_after="2023-10-08">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>Records that a specific background task has been started.</summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStopped"
-    enum="BackgroundTaskId" expires_after="2023-06-04">
+    enum="BackgroundTaskId" expires_after="2024-06-05">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -2108,79 +2087,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Total time spent in Android N+ multi-window (aka split-screen) mode.
     Recorded when multi-window mode is exited.
-  </summary>
-</histogram>
-
-<histogram name="Android.NativeBackgroundTask.TaskFinished"
-    enum="BackgroundTaskId" expires_after="2023-06-15">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records that a specific background task has finished cleanly (i.e. no
-    unexpected exits because of chrome crash or OOM). This includes tasks that
-    have been stopped due to timeout.
-  </summary>
-</histogram>
-
-<histogram name="Android.NativeBackgroundTask.TaskFinished.FullBrowser"
-    enum="BackgroundTaskId" expires_after="2023-06-15">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <summary>
-    Records that a specific native background task started in Full Browser Mode
-    has finished cleanly. See Android.NativeBackgroundTask.TaskFinished for more
-    details.
-  </summary>
-</histogram>
-
-<histogram name="Android.NativeBackgroundTask.TaskFinished.ReducedMode"
-    enum="BackgroundTaskId" expires_after="2023-06-15">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <summary>
-    Records that a specific native background task started in Reduced Mode has
-    finished cleanly. It is possible that Full Browser has launched while the
-    task was running. See Android.NativeBackgroundTask.TaskFinished for more
-    details.
-  </summary>
-</histogram>
-
-<histogram name="Android.NativeBackgroundTask.TaskStarted"
-    enum="BackgroundTaskId" expires_after="2023-06-15">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records that a specific native background task has been started. This does
-    not consider tasks that are marked as DONE or RESCHEDULED before a call to
-    start native is made (regardless of whether native is already loaded).
-  </summary>
-</histogram>
-
-<histogram name="Android.NativeBackgroundTask.TaskStarted.FullBrowser"
-    enum="BackgroundTaskId" expires_after="2023-08-20">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <summary>
-    Records that a specific native background task has been started in Full
-    Browser Mode. See Android.NativeBackgroundTask.TaskStarted for more details.
-  </summary>
-</histogram>
-
-<histogram name="Android.NativeBackgroundTask.TaskStarted.ReducedMode"
-    enum="BackgroundTaskId" expires_after="2023-08-20">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <summary>
-    Records that a specific native background task has been started in Reduced
-    Mode. See Android.NativeBackgroundTask.TaskStarted for more details.
   </summary>
 </histogram>
 

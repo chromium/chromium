@@ -169,40 +169,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     }
 
     @Override
-    public void reportTaskStartedNative(int taskId, boolean minimalBrowserMode) {
+    public void reportTaskStartedNative(int taskId) {
         int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
         cacheEvent("Android.BackgroundTaskScheduler.TaskLoadedNative", umaEnumValue);
-        if (minimalBrowserMode) {
-            cacheEvent(
-                    "Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode", umaEnumValue);
-        } else {
-            cacheEvent(
-                    "Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser", umaEnumValue);
-        }
     }
-
-    @Override
-    public void reportNativeTaskStarted(int taskId, boolean minimalBrowserMode) {
-        int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
-        cacheEvent("Android.NativeBackgroundTask.TaskStarted", umaEnumValue);
-        if (minimalBrowserMode) {
-            cacheEvent("Android.NativeBackgroundTask.TaskStarted.ReducedMode", umaEnumValue);
-        } else {
-            cacheEvent("Android.NativeBackgroundTask.TaskStarted.FullBrowser", umaEnumValue);
-        }
-    }
-
-    @Override
-    public void reportNativeTaskFinished(int taskId, boolean minimalBrowserMode) {
-        int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
-        cacheEvent("Android.NativeBackgroundTask.TaskFinished", umaEnumValue);
-        if (minimalBrowserMode) {
-            cacheEvent("Android.NativeBackgroundTask.TaskFinished.ReducedMode", umaEnumValue);
-        } else {
-            cacheEvent("Android.NativeBackgroundTask.TaskFinished.FullBrowser", umaEnumValue);
-        }
-    }
-
     @Override
     public void reportStartupMode(int startupMode) {
         // We don't record full browser's warm startup since most of the full browser warm startup
