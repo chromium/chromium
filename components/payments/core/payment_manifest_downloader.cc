@@ -37,7 +37,7 @@
 namespace payments {
 namespace {
 
-static constexpr size_t kMaxManifestSize = 1024 * 1024;
+static constexpr size_t kMaxManifestSize = 5 * 1024 * 1024;
 static_assert(kMaxManifestSize <=
                   network::SimpleURLLoader::kMaxBoundedStringDownloadSize,
               "Max manifest size bigger than largest allowed download size");
