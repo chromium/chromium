@@ -16,6 +16,7 @@
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -39,6 +40,10 @@ class Label;
 
 namespace ui {
 struct AXNodeData;
+}
+
+namespace {
+class CaptionBubbleEventObserver;
 }
 
 namespace captions {
@@ -68,7 +73,8 @@ using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 //  captions bubble's widget is a top-level window that has top z order and is
 //  visible on all workspaces. It is draggable in and out of the tab.
 //
-class CaptionBubble : public views::BubbleDialogDelegateView {
+class CaptionBubble : public views::BubbleDialogDelegateView,
+                      public gfx::AnimationDelegate {
  public:
   METADATA_HEADER(CaptionBubble);
   CaptionBubble(PrefService* profile_prefs,
@@ -77,6 +83,9 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
   ~CaptionBubble() override;
+
+  // gfx::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
 
   // Sets the caption bubble model currently being used for this caption bubble.
   // There exists one CaptionBubble per profile, but one CaptionBubbleModel per
@@ -111,6 +120,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 #if BUILDFLAG(IS_WIN)
   void OnContentSettingsLinkClicked();
 #endif
+
+  void UpdateControlsVisibility(bool show_controls);
 
  protected:
   // views::BubbleDialogDelegateView:
@@ -220,6 +231,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 
   void LogSessionEvent(SessionEvent event);
 
+  std::vector<views::View*> GetButtons();
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Unowned. Owned by views hierarchy.
@@ -289,6 +302,11 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // specified interval.
   std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
   raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_;
+
+  gfx::SlideAnimation controls_animation_;
+
+  bool render_active_ = false;
+  std::unique_ptr<CaptionBubbleEventObserver> caption_bubble_event_observer_;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
 };

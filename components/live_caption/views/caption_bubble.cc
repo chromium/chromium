@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/live_caption/caption_bubble_context.h"
@@ -34,7 +35,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -51,6 +54,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -98,6 +102,8 @@ static constexpr double kDefaultRatioInParentY = 1;
 static constexpr int kErrorImageSizeDip = 20;
 static constexpr int kErrorMessageBetweenChildSpacingDip = 16;
 static constexpr int kNoActivityIntervalSeconds = 5;
+
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
 
 std::unique_ptr<views::ImageButton> BuildImageButton(
     views::Button::PressedCallback callback,
@@ -162,6 +168,52 @@ bool ParseNonTransparentRGBACSSColorString(
   *sk_color = SkColorSetARGB(a_int, r, g, b);
   return match;
 }
+
+// Helper class for observing mouse and key events from native window.
+class CaptionBubbleEventObserver : public ui::EventObserver {
+ public:
+  explicit CaptionBubbleEventObserver(captions::CaptionBubble* caption_bubble,
+                                      views::Widget* widget)
+      : caption_bubble_(caption_bubble) {
+    CHECK(widget);
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        this, widget->GetNativeWindow(),
+        {ui::ET_MOUSE_MOVED, ui::ET_MOUSE_EXITED, ui::ET_KEY_PRESSED,
+         ui::ET_KEY_RELEASED});
+  }
+
+  CaptionBubbleEventObserver(const CaptionBubbleEventObserver&) = delete;
+  CaptionBubbleEventObserver& operator=(const CaptionBubbleEventObserver&) =
+      delete;
+  ~CaptionBubbleEventObserver() override = default;
+
+  void OnEvent(const ui::Event& event) override {
+    if (event.IsKeyEvent()) {
+      caption_bubble_->UpdateControlsVisibility(true);
+      return;
+    }
+
+    // We check if the mouse is in bounds rather than strictly
+    // checking mouse enter/exit events because of two reasons: 1. We get
+    // mouse exit/enter events when the mouse moves between client and
+    // non-client areas on Linux and Windows; 2. We get a mouse exit event when
+    // a context menu is brought up, which might cause the caption bubble to be
+    // stuck in the "in" state when some other window is on top of the caption
+    // bubble.
+    caption_bubble_->UpdateControlsVisibility(IsMouseInBounds());
+  }
+
+ private:
+  bool IsMouseInBounds() {
+    gfx::Point point = event_monitor_->GetLastMouseLocation();
+    views::View::ConvertPointFromScreen(caption_bubble_, &point);
+
+    return caption_bubble_->GetLocalBounds().Contains(point);
+  }
+
+  raw_ptr<captions::CaptionBubble> caption_bubble_;
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+};
 
 }  // namespace
 
@@ -418,7 +470,8 @@ CaptionBubble::CaptionBubble(PrefService* profile_prefs,
       is_expanded_(
           profile_prefs_->GetBoolean(prefs::kLiveCaptionBubbleExpanded)),
       is_pinned_(profile_prefs_->GetBoolean(prefs::kLiveCaptionBubblePinned)),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      controls_animation_(this) {
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
@@ -428,6 +481,9 @@ CaptionBubble::CaptionBubble(PrefService* profile_prefs,
   SetShowTitle(false);
   SetTitle(IDS_LIVE_CAPTION_BUBBLE_TITLE);
   set_has_parent(false);
+
+  controls_animation_.SetSlideDuration(kAnimationDuration);
+  controls_animation_.SetTweenType(gfx::Tween::LINEAR);
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_prefs_);
@@ -697,6 +753,19 @@ void CaptionBubble::Init() {
   header_container_ = AddChildView(std::move(header_container));
   AddChildView(std::move(content_container));
 
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    std::vector<views::View*> buttons = GetButtons();
+    for (auto* button : buttons) {
+      button->SetPaintToLayer();
+      button->layer()->SetFillsBoundsOpaquely(false);
+      button->layer()->SetOpacity(0);
+    }
+
+    language_label_->SetPaintToLayer();
+    language_label_->layer()->SetFillsBoundsOpaquely(false);
+    language_label_->layer()->SetOpacity(0);
+  }
+
   UpdateContentSize();
 }
 
@@ -716,11 +785,11 @@ bool CaptionBubble::ShouldShowCloseButton() const {
 
 std::unique_ptr<views::NonClientFrameView>
 CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
-  std::vector<views::View*> buttons = {back_to_tab_button_, close_button_,
-                                       expand_button_,      collapse_button_,
-                                       pin_button_,         unpin_button_};
+  std::vector<views::View*> buttons = GetButtons();
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
     buttons.push_back(caption_settings_button_);
+    caption_bubble_event_observer_ =
+        std::make_unique<CaptionBubbleEventObserver>(this, widget);
   }
 
   auto frame = std::make_unique<CaptionBubbleFrameView>(
@@ -743,6 +812,10 @@ void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
 void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
                                               bool active) {
   DCHECK_EQ(widget, GetWidget());
+
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    UpdateControlsVisibility(active);
+  }
 
   ResetInactivityTimer();
 }
@@ -858,6 +931,19 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
   }
 }
 
+void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
+  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    return;
+  }
+
+  std::vector<views::View*> buttons = GetButtons();
+  for (auto* button : buttons) {
+    button->layer()->SetOpacity(animation->GetCurrentValue());
+  }
+
+  language_label_->layer()->SetOpacity(animation->GetCurrentValue());
+}
+
 void CaptionBubble::OnTextChanged() {
   DCHECK(model_);
   std::string text = model_->GetFullText();
@@ -956,6 +1042,14 @@ void CaptionBubble::OnContentSettingsLinkClicked() {
   }
 }
 #endif
+
+void CaptionBubble::UpdateControlsVisibility(bool show_controls) {
+  if (show_controls) {
+    controls_animation_.Show();
+  } else {
+    controls_animation_.Hide();
+  }
+}
 
 void CaptionBubble::UpdateBubbleAndTitleVisibility() {
   // Show the title if there is room for it and no error.
@@ -1362,6 +1456,18 @@ void CaptionBubble::LogSessionEvent(SessionEvent event) {
   if (model_ && !model_->HasError()) {
     base::UmaHistogramEnumeration("Accessibility.LiveCaption.Session2", event);
   }
+}
+
+std::vector<views::View*> CaptionBubble::GetButtons() {
+  std::vector<views::View*> buttons = {back_to_tab_button_, close_button_,
+                                       expand_button_,      collapse_button_,
+                                       pin_button_,         unpin_button_};
+
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    buttons.push_back(caption_settings_button_);
+  }
+
+  return buttons;
 }
 
 bool CaptionBubble::HasActivity() {
