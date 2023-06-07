@@ -78,10 +78,8 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
-#import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -1152,9 +1150,9 @@ enum HeaderBehaviour {
   }
 
   // Update the toolbar visibility.
-  // TODO(crbug.com/1329087): Move this update to the toolbar view
-  // controller(s)?
-  [self.toolbarCoordinator.primaryToolbarCoordinator updateToolbar];
+  // TODO(crbug.com/1329087): Remove this and let `PrimaryToolbarViewController`
+  // or `ToolbarCoordinator` call the update ?
+  [self.toolbarCoordinator updateToolbar];
 
   // Update the tab strip visibility.
   if (self.tabStripView) {
@@ -1751,9 +1749,9 @@ enum HeaderBehaviour {
       self.fullscreenController->ResizeHorizontalViewport();
     }
   }
-  // TODO(crbug.com/1329087): Move this update to the toolbar coordinator,
-  // somehow.
-  [self.toolbarCoordinator.primaryToolbarCoordinator updateToolbar];
+  // TODO(crbug.com/1329087): Remove this and let `ToolbarCoordinator` call the
+  // update, somehow.
+  [self.toolbarCoordinator updateToolbar];
 
   [self updateWebStateVisibility:YES];
 }
@@ -2501,8 +2499,7 @@ enum HeaderBehaviour {
 
   // Prerender tab does not have a toolbar, return `headerHeight` as promised by
   // API documentation.
-  if ([self.toolbarCoordinator
-              .primaryToolbarCoordinator isLoadingPrerenderer]) {
+  if ([self.toolbarCoordinator isLoadingPrerenderer]) {
     return self.headerHeight;
   }
 
@@ -2910,7 +2907,7 @@ enum HeaderBehaviour {
   // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform this
   // update. Longer-term, make SideSwipeMediatorDelegate observable instead of
   // delegating.
-  [self.toolbarCoordinator.primaryToolbarCoordinator updateToolbar];
+  [self.toolbarCoordinator updateToolbar];
 
   // Reset horizontal stack view.
   [sideSwipeView removeFromSuperview];
@@ -2949,7 +2946,7 @@ enum HeaderBehaviour {
     // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform
     // this update. Longer-term, make SideSwipeMediatorDelegate observable
     // instead of delegating.
-    [self.toolbarCoordinator.primaryToolbarCoordinator updateToolbar];
+    [self.toolbarCoordinator updateToolbar];
   } else {
     // Hide UI accessories such as find bar and first visit overlays
     // for welcome page.

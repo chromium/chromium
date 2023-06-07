@@ -38,9 +38,6 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-/// Returns `primaryToolbarCoordinator`.
-- (PrimaryToolbarCoordinator*)primaryToolbarCoordinator;
-
 /// Returns `primaryToolbarViewController`.
 - (UIViewController*)primaryToolbarViewController;
 /// Returns `secondaryToolbarViewController`.
@@ -48,6 +45,14 @@
 
 /// Returns the sharing positioner for the current toolbar configuration.
 - (id<SharingPositioner>)sharingPositioner;
+
+/// Updates the toolbar's appearance.
+/// TODO(crbug.com/1329087): Remove this once toolbar coordinator owns focus
+/// orchestrator.
+- (void)updateToolbar;
+
+/// YES when a prerendered webstate is being inserted into a webStateList.
+- (BOOL)isLoadingPrerenderer;
 
 #pragma mark ViewRevealing
 

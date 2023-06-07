@@ -105,6 +105,14 @@
   return self.primaryToolbarCoordinator.SharingPositioner;
 }
 
+- (void)updateToolbar {
+  [self.primaryToolbarCoordinator updateToolbar];
+}
+
+- (BOOL)isLoadingPrerenderer {
+  return self.primaryToolbarCoordinator.isLoadingPrerenderer;
+}
+
 #pragma mark ViewRevealing
 
 - (id<ViewRevealingAnimatee>)viewRevealingAnimatee {
