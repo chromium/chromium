@@ -12,14 +12,17 @@ load("./nacl_linux.star", "nacl")
 load("./nasm_linux.star", "nasm")
 load("./remote_exec_wrapper.star", "remote_exec_wrapper")
 load("./rewrapper_to_reproxy.star", "rewrapper_to_reproxy")
+load("./android.star", "android")
 
 __filegroups = {}
+__filegroups.update(android.filegroups)
 __filegroups.update(clang.filegroups)
 __filegroups.update(mojo.filegroups)
 __filegroups.update(nacl.filegroups)
 __filegroups.update(nasm.filegroups)
 
 __handlers = {}
+__handlers.update(android.handlers)
 __handlers.update(clang.handlers)
 __handlers.update(mojo.handlers)
 __handlers.update(nacl.handlers)
@@ -42,10 +45,13 @@ def __step_config(ctx, step_config):
     elif remote_exec_wrapper.enabled(ctx):
         step_config = remote_exec_wrapper.step_config(ctx, step_config)
     else:
+        if android.enabled(ctx):
+            step_config = android.step_config(ctx, step_config)
         step_config = clang.step_config(ctx, step_config)
         step_config = mojo.step_config(ctx, step_config)
         step_config = nacl.step_config(ctx, step_config)
         step_config = nasm.step_config(ctx, step_config)
+
     return step_config
 
 chromium = module(

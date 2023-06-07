@@ -19,6 +19,7 @@ def __rewrite_rewrapper(ctx, cmd):
     for i, arg in enumerate(cmd.args):
         if i == 0:
             continue
+
         # NOTE: Only handle -cfg= as that's how we call rewrapper in our .gn files.
         if arg.startswith("-cfg="):
             cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
@@ -73,7 +74,7 @@ def __rewrite_rewrapper(ctx, cmd):
 
     ctx.actions.fix(
         args = cmd.args[non_flag_start:],
-        reproxy_config = json.encode(reproxy_config)
+        reproxy_config = json.encode(reproxy_config),
     )
 
 __handlers = {
