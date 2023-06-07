@@ -397,7 +397,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
         scaling_list.scaling_list_dc_coef_32x32[0];
     v4l2_scaling_matrix.scaling_list_dc_coef_32x32[1] =
-        scaling_list.scaling_list_dc_coef_32x32[1];
+        scaling_list.scaling_list_dc_coef_32x32[3];
   }
 
   memset(&ctrl, 0, sizeof(ctrl));
