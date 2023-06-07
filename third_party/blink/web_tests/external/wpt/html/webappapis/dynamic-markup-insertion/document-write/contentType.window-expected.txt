@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL document.write(): video document assert_equals: expected "application/ogg" but got "video/ogg"
+FAIL document.write(): video document Cannot read properties of null (reading 'firstChild')
 FAIL document.write(): image document Cannot read properties of null (reading 'firstChild')
 PASS document.write(): text document
 PASS document.write(): HTML document
