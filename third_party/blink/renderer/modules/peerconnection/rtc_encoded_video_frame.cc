@@ -226,7 +226,7 @@ RTCEncodedVideoFrame::RTCEncodedVideoFrame(
 
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     scoped_refptr<RTCEncodedVideoFrameDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : RTCEncodedVideoFrame(delegate->CloneWebRtcFrame()) {}
 
 String RTCEncodedVideoFrame::type() const {
   return delegate_->Type();
