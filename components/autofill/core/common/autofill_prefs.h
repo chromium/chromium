@@ -53,7 +53,7 @@ extern const char kAutofillPaymentMethodsMandatoryReauthPromoShownCounter[];
 // The maximum value for the
 // `kAutofillPaymentMethodsMandatoryReauthPromoShownCounter` pref. If this
 // value is reached, we should not show a mandatory re-auth promo.
-const int kMaxValueForMandatoryReauthPromoShownCounter = 3;
+const int kMaxValueForMandatoryReauthPromoShownCounter = 2;
 
 namespace sync_transport_opt_in {
 enum Flags {
