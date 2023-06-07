@@ -4,14 +4,17 @@
 
 #include "ash/webui/file_manager/file_manager_ui.h"
 
+#include "ash/shell.h"
 #include "ash/webui/file_manager/file_manager_page_handler.h"
 #include "ash/webui/file_manager/resource_loader.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -25,6 +28,44 @@
 
 namespace ash {
 namespace file_manager {
+
+namespace {
+
+bool IsKioskSession() {
+  auto* session_controller = Shell::Get()->session_controller();
+  auto account_id = session_controller->GetActiveAccountId();
+  const auto user_type =
+      session_controller->GetUserSessionByAccountId(account_id)->user_info.type;
+
+  switch (user_type) {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+      return false;
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      return true;
+    case user_manager::NUM_USER_TYPES:
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
+
+FileManagerUIConfig::FileManagerUIConfig(
+    SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+    : SystemWebAppUIConfig(ash::file_manager::kChromeUIFileManagerHost,
+                           SystemWebAppType::FILE_MANAGER,
+                           create_controller_func) {}
+
+bool FileManagerUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) ||
+         IsKioskSession();
+}
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
