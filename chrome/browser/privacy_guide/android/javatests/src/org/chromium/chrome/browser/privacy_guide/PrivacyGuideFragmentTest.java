@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
@@ -248,7 +249,7 @@ public class PrivacyGuideFragmentTest {
     private void clickOnArrowNextToRadioButtonWithText(int textId) {
         onView(allOf(withId(R.id.expand_arrow),
                        withParent(hasSibling(withChild(withText(textId))))))
-                .perform(click());
+                .perform(scrollTo(), click());
     }
 
     @Test
@@ -409,7 +410,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCompletionCard();
 
-        onViewWaiting(withId(R.id.ps_button)).perform(click());
+        onViewWaiting(withId(R.id.ps_button)).perform(scrollTo(), click());
         onViewWaiting(withText(R.string.privacy_sandbox_trials_title))
                 .check(matches(isDisplayed()));
     }
@@ -423,7 +424,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCompletionCard();
 
-        onViewWaiting(withId(R.id.ps_button)).perform(click());
+        onViewWaiting(withId(R.id.ps_button)).perform(scrollTo(), click());
         onViewWaiting(withText(R.string.ad_privacy_page_title)).check(matches(isDisplayed()));
     }
 
@@ -434,7 +435,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCompletionCard();
 
-        onViewWaiting(withId(R.id.ps_button)).perform(click());
+        onViewWaiting(withId(R.id.ps_button)).perform(scrollTo(), click());
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.CompletionPSClick"));
     }
 
@@ -448,7 +449,7 @@ public class PrivacyGuideFragmentTest {
         var histogram = HistogramWatcher.newSingleRecordWatcher(
                 ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK);
 
-        onViewWaiting(withId(R.id.ps_button)).perform(click());
+        onViewWaiting(withId(R.id.ps_button)).perform(scrollTo(), click());
 
         histogram.assertExpected();
     }
@@ -461,7 +462,7 @@ public class PrivacyGuideFragmentTest {
         goToCompletionCard();
 
         executeWhileCapturingIntents(() -> {
-            onViewWaiting(withId(R.id.waa_button)).perform(click());
+            onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click());
             intended(IntentMatchers.hasData(
                     UrlConstants.GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_FROM_PG_URL));
         });
@@ -474,7 +475,8 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCompletionCard();
 
-        executeWhileCapturingIntents(() -> onViewWaiting(withId(R.id.waa_button)).perform(click()));
+        executeWhileCapturingIntents(
+                () -> onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click()));
 
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.CompletionSWAAClick"));
@@ -490,7 +492,8 @@ public class PrivacyGuideFragmentTest {
         var histogram = HistogramWatcher.newSingleRecordWatcher(
                 ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SWAA_COMPLETION_LINK);
 
-        executeWhileCapturingIntents(() -> onViewWaiting(withId(R.id.waa_button)).perform(click()));
+        executeWhileCapturingIntents(
+                () -> onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click()));
 
         histogram.assertExpected();
     }
@@ -865,7 +868,7 @@ public class PrivacyGuideFragmentTest {
         var histogram = HistogramWatcher.newSingleRecordWatcher(SETTINGS_STATES_HISTOGRAM,
                 PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD);
 
-        onView(withId(R.id.standard_option)).perform(click());
+        onView(withId(R.id.standard_option)).perform(scrollTo(), click());
         navigateFromSBToCookiesCard();
 
         histogram.assertExpected();
@@ -973,7 +976,7 @@ public class PrivacyGuideFragmentTest {
         var histogram = HistogramWatcher.newSingleRecordWatcher(
                 SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P);
 
-        onView(withId(R.id.block_third_party)).perform(click());
+        onView(withId(R.id.block_third_party)).perform(scrollTo(), click());
         navigateFromCookiesToCompletionCard();
 
         histogram.assertExpected();
@@ -1023,7 +1026,7 @@ public class PrivacyGuideFragmentTest {
         var histogram = HistogramWatcher.newSingleRecordWatcher(
                 SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P);
 
-        onView(withId(R.id.block_third_party)).perform(click());
+        onView(withId(R.id.block_third_party)).perform(scrollTo(), click());
         mSettingsActivityTestRule.recreateActivity();
         navigateFromCookiesToCompletionCard();
 
