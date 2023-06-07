@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -165,6 +166,7 @@ public class StaticLayoutUnitTest {
                         mTabModelSelector, mTabContentManager, mBrowserControlsStateProvider,
                         () -> mTopUiThemeColorProvider, mStaticTabSceneLayer);
         mModel = mStaticLayout.getModelForTesting();
+        doReturn(true).when(mUpdateHost).isActiveLayout(mStaticLayout);
 
         doReturn(BACKGROUND_COLOR).when(mTopUiThemeColorProvider).getBackgroundColor(any());
         doReturn(TOOLBAR_BACKGROUND_COLOR)
@@ -251,6 +253,22 @@ public class StaticLayoutUnitTest {
         assertEquals(1.0f, mModel.get(LayoutTab.SATURATION), 0);
         assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
         verify(mTabContentManager).updateVisibleIds(eq(Collections.emptyList()), eq(TAB2_ID));
+    }
+
+    @Test
+    public void testTabSelectionInactive() {
+        doReturn(false).when(mUpdateHost).isActiveLayout(mStaticLayout);
+        assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
+
+        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
+                mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        assertEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
+        assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
+        assertEquals(0.0f, mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND), 0);
+        assertEquals(1.0f, mModel.get(LayoutTab.SATURATION), 0);
+        assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager, never()).updateVisibleIds(any(), anyInt());
     }
 
     @Test

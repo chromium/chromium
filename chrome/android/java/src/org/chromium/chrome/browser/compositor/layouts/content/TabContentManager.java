@@ -634,7 +634,8 @@ public class TabContentManager {
     }
 
     /**
-     * Update the priority-ordered list of visible tabs.
+     * Update the priority-ordered list of visible tabs. This should only be called directly via
+     * the active {@link Layout} to avoid invalidating visible tab IDs that are in use.
      * @param priority The list of tab ids to load cached thumbnails for. Only the first
      *                 {@link mFullResThumbnailsMaxSize} thumbnails will be loaded.
      * @param primaryTabId The id of the current tab this is not loaded under the assumption it will

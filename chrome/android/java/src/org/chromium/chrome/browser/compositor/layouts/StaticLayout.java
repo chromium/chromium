@@ -40,7 +40,6 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.List;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
 /**
@@ -90,14 +89,11 @@ public class StaticLayout extends Layout {
     private final Handler mHandler;
     private boolean mUnstalling;
 
-    private TabModelSelector mTabModelSelector;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
     private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
-
-    private TabContentManager mTabContentManager;
 
     private final CompositorAnimationHandler mAnimationHandler;
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
@@ -145,11 +141,8 @@ public class StaticLayout extends Layout {
         mHandlesTabLifecycles = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
-        assert tabContentManager != null;
-        mTabContentManager = tabContentManager;
 
-        assert tabModelSelector != null;
-        setTabModelSelector(tabModelSelector);
+        setTabModelSelector(tabModelSelector, tabContentManager);
 
         mModel = new PropertyModel.Builder(LayoutTab.ALL_KEYS)
                          .with(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID)
@@ -190,17 +183,20 @@ public class StaticLayout extends Layout {
         } else {
             mSceneLayer = new StaticTabSceneLayer();
         }
-        mSceneLayer.setTabContentManager(mTabContentManager);
+        mSceneLayer.setTabContentManager(tabContentManager);
 
         mMcp = CompositorModelChangeProcessor.create(
                 mModel, mSceneLayer, StaticTabSceneLayer::bind, mRequestSupplier);
     }
 
-    private void setTabModelSelector(TabModelSelector tabModelSelector) {
+    @Override
+    public void setTabModelSelector(
+            TabModelSelector tabModelSelector, TabContentManager tabContentManager) {
         assert tabModelSelector != null;
+        assert tabContentManager != null;
         assert mTabModelSelector == null : "The TabModelSelector should set at most once";
+        super.setTabModelSelector(tabModelSelector, tabContentManager);
 
-        mTabModelSelector = tabModelSelector;
         // TODO(crbug.com/1070281): Investigating to use ActivityTabProvider instead.
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
             @Override
@@ -289,11 +285,6 @@ public class StaticLayout extends Layout {
         // Intentional no-op.
     }
 
-    @Override
-    public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
-        // Intentional no-op.
-    }
-
     private void setPreHideState() {
         mHandler.removeCallbacks(mUnstallRunnable);
         mModel.set(LayoutTab.STATIC_TO_VIEW_BLEND, 1.0f);
@@ -314,23 +305,23 @@ public class StaticLayout extends Layout {
     }
 
     private void updateVisibleIdsLiveLayerOnly() {
+        // May be called when inactive. Prevent this from updating until the layout is shown.
+        if (!isActive()) return;
+
         // Check if we can use the live texture as frozen or native pages don't support live layer.
         if (mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE)) {
-            updateVisibleIds(Collections.emptyList(), mModel.get(LayoutTab.TAB_ID));
+            updateCacheVisibleIdsAndPrimary(Collections.emptyList(), mModel.get(LayoutTab.TAB_ID));
         } else {
             updateVisibleIds();
         }
     }
 
     private void updateVisibleIds() {
-        final int tabId = mModel.get(LayoutTab.TAB_ID);
-        updateVisibleIds(Collections.singletonList(tabId), tabId);
-    }
+        // May be called when inactive. Prevent this from updating until the layout is shown.
+        if (!isActive()) return;
 
-    private void updateVisibleIds(List<Integer> tabIds, int primaryTabId) {
-        if (mTabContentManager != null) {
-            mTabContentManager.updateVisibleIds(tabIds, primaryTabId);
-        }
+        final int tabId = mModel.get(LayoutTab.TAB_ID);
+        updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
     }
 
     private void setStaticTab(Tab tab) {
