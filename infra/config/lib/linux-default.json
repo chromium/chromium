@@ -97,6 +97,7 @@
     "Win10 x64 Release (NVIDIA)": "Ubuntu-22.04",
     "android-angle-chromium-arm64-nexus5x": "Ubuntu-22.04",
     "android-build-perf-developer": "Ubuntu-22.04",
+    "android-official": "Ubuntu-22.04",
     "android-perfetto-rel": "Ubuntu-22.04",
     "build-perf-android": "Ubuntu-22.04",
     "build-perf-android-siso": "Ubuntu-22.04",
