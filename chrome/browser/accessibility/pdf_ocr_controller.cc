@@ -121,10 +121,9 @@ void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
     return;
   }
 
-  if (MaybeAddObserverOrTriggerDownload(web_contents)) {
-    // If we added an observer for `ScreenAIInstallState` or triggered
-    // downloading the Screen AI library, return here; the request will be
-    // handled when the library is ready or discarded if it fails to load it.
+  if (MaybeScheduleRequest(web_contents)) {
+    // The request will be handled when the library is ready or discarded if it
+    // fails to load.
     return;
   }
 
@@ -148,11 +147,9 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
   VLOG(2) << "PDF OCR Always Active changed: " << is_always_active;
 
   if (is_always_active) {
-    if (MaybeAddObserverOrTriggerDownload(
-            /*web_contents_for_only_once_request=*/nullptr)) {
-      // If we added an observer for `ScreenAIInstallState` or triggered
-      // downloading the Screen AI library, return here; the request will be
-      // handled when the library is ready or discarded if it fails to load it.
+    if (MaybeScheduleRequest(/*web_contents_for_only_once_request=*/nullptr)) {
+      // The request will be handled when the library is ready or discarded if
+      // it fails to load.
       return;
     }
   } else {
@@ -179,52 +176,40 @@ void PdfOcrController::SendPdfOcrAlwaysActiveToAll(bool is_always_active) {
   }
 }
 
-bool PdfOcrController::MaybeAddObserverOrTriggerDownload(
+bool PdfOcrController::MaybeScheduleRequest(
     content::WebContents* web_contents_for_only_once_request) {
   ScreenAIInstallState::State current_install_state =
       ScreenAIInstallState::GetInstance()->get_state();
 
+  // No need for scheduling if service is ready already.
   if (current_install_state == ScreenAIInstallState::State::kReady) {
     return false;
   }
 
+  // Keep the request until the library is ready.
+  if (web_contents_for_only_once_request) {
+    // PDF OCR once request. Keep its weak pointer of the web contents
+    // requested for this. We only keep this request for one PDF (the last one).
+    last_webcontents_requested_for_run_once_ =
+        web_contents_for_only_once_request->GetWeakPtr();
+  } else {
+    // PDF OCR always request.
+    send_always_active_state_when_service_is_ready_ = true;
+  }
+
+  // TODO(crbug.com/127829): Make sure requesting to repeat a failed download
+  // will trigger a new one.
+  if (current_install_state == ScreenAIInstallState::State::kFailed) {
+    ScreenAIInstallState::GetInstance()->DownloadComponent();
+  }
+
   if (!component_ready_observer_.IsObserving()) {
     // Start observing ScreenAIInstallState when the user activates PDF OCR. It
-    // triggers downloading the Screen AI library if it's not downloaded. Keep
-    // the request until the library is ready.
-    if (web_contents_for_only_once_request) {
-      // PDF OCR once request. Keep its weak pointer of the web contents
-      // requested for this.
-      last_webcontents_requested_for_run_once_ =
-          web_contents_for_only_once_request->GetWeakPtr();
-    } else {
-      // PDF OCR always request.
-      send_always_active_state_when_service_is_ready_ = true;
-    }
+    // triggers downloading the Screen AI library if it's not downloaded.
     component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
-    return true;
   }
 
-  if (current_install_state == ScreenAIInstallState::State::kFailed) {
-    // Try downloading the Screen AI library again if it failed before. Keep the
-    // request until the library is ready; this request will be discarded
-    // if it fails to download it again.
-    // TODO(crbug.com/127829): Make sure requesting a failed download will
-    // trigger a new one.
-    if (web_contents_for_only_once_request) {
-      // PDF OCR once request. Keep its weak pointer of the web contents
-      // requested for this.
-      last_webcontents_requested_for_run_once_ =
-          web_contents_for_only_once_request->GetWeakPtr();
-    } else {
-      // PDF OCR always request.
-      send_always_active_state_when_service_is_ready_ = true;
-    }
-    ScreenAIInstallState::GetInstance()->DownloadComponent();
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
