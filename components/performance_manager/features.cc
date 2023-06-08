@@ -83,6 +83,9 @@ BASE_FEATURE(kForceHeuristicMemorySaver,
 BASE_FEATURE(kHighEfficiencyMultistateMode,
              "HighEfficiencyMultistateMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kHighEfficiencyDefaultHeuristicMode{
+    &kHighEfficiencyMultistateMode, "default_heuristic_mode", false};
+
 BASE_FEATURE(kDiscardedTabTreatment,
              "DiscardedTabTreatment",
              base::FEATURE_DISABLED_BY_DEFAULT);

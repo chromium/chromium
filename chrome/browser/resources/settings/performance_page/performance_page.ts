@@ -64,6 +64,14 @@ export class SettingsPerformancePageElement extends
         },
       },
 
+      showHighEfficiencyHeuristicModeRecommendedBadge_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('highEfficiencyDefaultHeuristicMode');
+        },
+      },
+
       highEfficiencyModeStateEnum_: {
         readOnly: true,
         type: Object,
@@ -77,6 +85,7 @@ export class SettingsPerformancePageElement extends
 
   private discardTimerOptions_: DropdownMenuOptionList;
   private isHighEfficiencyMultistateModeEnabled_: boolean;
+  private showHighEfficiencyHeuristicModeRecommendedBadge_: boolean;
 
   private onChange_() {
     this.metricsProxy_.recordHighEfficiencyModeChanged(
