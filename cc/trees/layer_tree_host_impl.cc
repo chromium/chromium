@@ -2875,33 +2875,6 @@ int LayerTreeHostImpl::RequestedMSAASampleCount() const {
   return settings_.gpu_rasterization_msaa_sample_count;
 }
 
-void LayerTreeHostImpl::GetGpuRasterizationCapabilities(
-    RasterCapabilities& gpu_raster_caps) {
-  if (settings_.gpu_rasterization_disabled)
-    return;
-
-  if (!(layer_tree_frame_sink_ && layer_tree_frame_sink_->context_provider() &&
-        layer_tree_frame_sink_->worker_context_provider())) {
-    return;
-  }
-
-  viz::RasterContextProvider* context_provider =
-      layer_tree_frame_sink_->worker_context_provider();
-  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-      context_provider);
-
-  const auto& caps = context_provider->ContextCapabilities();
-  gpu_raster_caps.use_gpu_rasterization = caps.gpu_rasterization;
-  if (!gpu_raster_caps.use_gpu_rasterization) {
-    return;
-  }
-
-  DCHECK(caps.supports_oop_raster);
-  gpu_raster_caps.can_use_msaa =
-      !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-  gpu_raster_caps.supports_disable_msaa = caps.multisample_compatibility;
-}
-
 bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
   if (!raster_caps().need_update_gpu_rasterization_status) {
     return false;
@@ -2915,15 +2888,37 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
   if (!layer_tree_frame_sink_)
     return false;
 
-  RasterCapabilities gpu_raster_caps;
-  GetGpuRasterizationCapabilities(gpu_raster_caps);
+  RasterCapabilities new_raster_caps;
+  [this](RasterCapabilities& gpu_caps) {
+    if (settings_.gpu_rasterization_disabled) {
+      return;
+    }
 
-  bool use_gpu = false;
+    if (!(layer_tree_frame_sink_ &&
+          layer_tree_frame_sink_->context_provider() &&
+          layer_tree_frame_sink_->worker_context_provider())) {
+      return;
+    }
 
-  if (!gpu_raster_caps.use_gpu_rasterization) {
+    viz::RasterContextProvider* context_provider =
+        layer_tree_frame_sink_->worker_context_provider();
+    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+        context_provider);
+
+    const auto& caps = context_provider->ContextCapabilities();
+    gpu_caps.use_gpu_rasterization = caps.gpu_rasterization;
+    if (!gpu_caps.use_gpu_rasterization) {
+      return;
+    }
+
+    DCHECK(caps.supports_oop_raster);
+    gpu_caps.can_use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+    gpu_caps.supports_disable_msaa = caps.multisample_compatibility;
+  }(new_raster_caps);
+
+  if (!new_raster_caps.use_gpu_rasterization) {
     raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::OFF_DEVICE;
   } else {
-    use_gpu = true;
     raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::ON;
   }
 
@@ -2931,16 +2926,17 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
   // settings to take effect. But we don't need to trigger any raster
   // invalidation in this case since these settings change only if the context
   // changed. In this case we already re-allocate and re-raster all resources.
-  if (use_gpu == raster_caps().use_gpu_rasterization &&
-      gpu_raster_caps.can_use_msaa == raster_caps().can_use_msaa &&
-      gpu_raster_caps.supports_disable_msaa ==
+  if (new_raster_caps.use_gpu_rasterization ==
+          raster_caps().use_gpu_rasterization &&
+      new_raster_caps.can_use_msaa == raster_caps().can_use_msaa &&
+      new_raster_caps.supports_disable_msaa ==
           raster_caps().supports_disable_msaa) {
     return false;
   }
 
-  raster_caps_.use_gpu_rasterization = use_gpu;
-  raster_caps_.can_use_msaa = gpu_raster_caps.can_use_msaa;
-  raster_caps_.supports_disable_msaa = gpu_raster_caps.supports_disable_msaa;
+  raster_caps_.use_gpu_rasterization = new_raster_caps.use_gpu_rasterization;
+  raster_caps_.can_use_msaa = new_raster_caps.can_use_msaa;
+  raster_caps_.supports_disable_msaa = new_raster_caps.supports_disable_msaa;
   return true;
 }
 

@@ -867,12 +867,8 @@ SkRect HeadsUpDisplayLayerImpl::DrawGpuRasterizationStatus(PaintCanvas* canvas,
       status = "on";
       color = SK_ColorGREEN;
       break;
-    case GpuRasterizationStatus::OFF_FORCED:
-      status = "off (forced)";
-      color = SK_ColorRED;
-      break;
     case GpuRasterizationStatus::OFF_DEVICE:
-      status = "off (device)";
+      status = "off";
       color = SK_ColorRED;
       break;
   }

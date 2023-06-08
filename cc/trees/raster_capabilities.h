@@ -11,13 +11,12 @@ namespace cc {
 
 enum class GpuRasterizationStatus {
   ON,
-  OFF_FORCED,
   OFF_DEVICE,
 };
 
 struct CC_EXPORT RasterCapabilities {
   RasterCapabilities() = default;
-  RasterCapabilities(const RasterCapabilities& other) = default;
+  RasterCapabilities(const RasterCapabilities& other) = delete;
   RasterCapabilities& operator=(const RasterCapabilities& other) = delete;
   ~RasterCapabilities() = default;
 
