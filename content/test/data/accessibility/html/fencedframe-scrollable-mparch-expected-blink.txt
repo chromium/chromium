@@ -1,4 +1,4 @@
-rootWebArea scrollable=true
+rootWebArea name='done' scrollable=true
 ++genericContainer ignored
 ++++genericContainer
 ++++++iframe name='Scrollable iframe'
