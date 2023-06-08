@@ -12987,40 +12987,40 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
       <!--Tab alert tooltip strings-->
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING" desc="Extra tool tip text, when the tab is recording media.">
-        This tab is using your camera or microphone.
+        This tab is using your camera or microphone
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING" desc="Extra tool tip text, when the tab content is being captured.">
-        This tab's content is being shared.
+        This tab's content is being shared
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING" desc="Extra tool tip text, when the tab is playing audio.">
-        This tab is playing audio.
+        This tab is playing audio
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_MUTING" desc="Extra tool tip text, when all tab audio output is muted.">
-        This tab's audio is being muted.
+        This tab's audio is being muted
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_CONNECTED" desc="Extra tool tip text, when tab is connected to a Bluetooth device.">
-        This tab is connected to a Bluetooth Device.
+        This tab is connected to a Bluetooth device
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_SCAN_ACTIVE" desc="Extra tool tip text, when tab is actively scanning for Bluetooth devices.">
-        This tab is actively scanning for Bluetooth devices.
+        This tab is actively scanning for Bluetooth devices
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_USB_CONNECTED" desc="Extra tool tip text, when tab is connected to a USB device.">
-        This tab is connected to a USB device.
+        This tab is connected to a USB device
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_HID_CONNECTED" desc="Extra tool tip text, when tab is connected to a HID device.">
-        This tab is connected to a HID device.
+        This tab is connected to a HID device
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_SERIAL_CONNECTED" desc="Extra tool tip text, when tab is connected to a serial port.">
-        This tab is connected to a serial port.
+        This tab is connected to a serial port
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_PIP_PLAYING" desc="Extra tool tip text, when tab is playing a video in Picture-in-Picture.">
-        This tab is playing a video in picture-in-picture mode.
+        This tab is playing a video in picture-in-picture mode
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_DESKTOP_CAPTURING" desc="Extra tool tip text, when the tab is capturing desktop contents.">
-        This tab is sharing your screen.
+        This tab is sharing your screen
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING" desc="Extra tool tip text, when the tab is presenting VR content to a headset.">
-        This tab is presenting VR content to a headset.
+        This tab is presenting VR content to a headset
       </message>
 
       <!-- Tab accessibility labels -->

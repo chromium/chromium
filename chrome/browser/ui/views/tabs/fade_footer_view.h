@@ -16,6 +16,7 @@
 #include "ui/views/layout/flex_layout.h"
 
 namespace {
+constexpr int kIconLabelSpacing = 8;
 constexpr int kFooterVerticalMargins = 8;
 constexpr int kFooterHorizontalMargins = 12;
 constexpr auto kFooterMargins =

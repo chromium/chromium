@@ -570,7 +570,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
                             tab_memory_usage_in_bytes > 0;
     absl::optional<ui::ColorId> icon_color =
         alert_state_.has_value()
-            ? absl::make_optional<SkColor>(
+            ? absl::make_optional<ui::ColorId>(
                   tab->GetAlertIndicatorColor(alert_state_.value()))
             : absl::nullopt;
     const int hover_card_width = views::View::GetContentsBounds().width();
@@ -604,18 +604,18 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
     }
   }
 
-    if (thumbnail_view_) {
-      // We only clip the corners of the fade image when there isn't a header
-      // or footer.
-      ThumbnailView::RoundedCorners corners =
-          ThumbnailView::RoundedCorners::kNone;
-      if (!show_header_or_footer) {
+  if (thumbnail_view_) {
+    // We only clip the corners of the fade image when there isn't a header
+    // or footer.
+    ThumbnailView::RoundedCorners corners =
+        ThumbnailView::RoundedCorners::kNone;
+    if (!show_header_or_footer) {
       corners = alternate_layout
                     ? ThumbnailView::RoundedCorners::kTopCorners
                     : ThumbnailView::RoundedCorners::kBottomCorners;
-      }
-      thumbnail_view_->SetRoundedCorners(corners, corner_radius_);
     }
+    thumbnail_view_->SetRoundedCorners(corners, corner_radius_);
+  }
 }
 
 void TabHoverCardBubbleView::SetTextFade(double percent) {
