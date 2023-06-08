@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
 #include "chrome/browser/enterprise/idle/idle_features.h"
+#include "chrome/browser/enterprise/idle/idle_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -55,7 +56,10 @@ class IdleService::BrowserObserver : public BrowserListObserver {
     auto* prefs = profile->GetPrefs();
     if (browser->is_type_normal() && profile == profile_ &&
         prefs->GetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup)) {
-      ShowIdleBubble(browser, base::Minutes(5), GetActionSet(prefs));
+      ShowIdleBubble(
+          browser,
+          IdleServiceFactory::GetForBrowserContext(profile)->GetTimeout(),
+          GetActionSet(prefs));
       prefs->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup, false);
     }
   }
