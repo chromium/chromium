@@ -6486,6 +6486,75 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_TRUE(network_responder_->ReportSent("/seller_debug_win_2"));
 }
 
+// TODO(crbug.com/1422301): The auction must operate on the same fenced frame
+// mapping that was used at the beginning of the auction. If not, we fail the
+// auction and dump without crashing the browser. Once the root cause is known
+// and the issue fixed, remove this test.
+TEST_F(AdAuctionServiceImplTest, FencedFrameUrlMappingChangedDuringAuction) {
+  network_responder_->RegisterDeferredScriptResponse(kBiddingUrlPath);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath,
+                                             BasicSellerReportScript());
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), ad_auction_service_.BindNewPipeAndPassReceiver());
+
+  // Start the auction.
+  base::RunLoop run_loop;
+  absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+  ad_auction_service_->RunAdAuction(
+      auction_config, mojo::NullReceiver(),
+      base::BindLambdaForTesting(
+          [&run_loop, &maybe_config](
+              bool manually_aborted,
+              const absl::optional<
+                  blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+            EXPECT_FALSE(manually_aborted);
+            maybe_config = config;
+            run_loop.Quit();
+          }));
+
+  // Wait for the NetworkResponder to see the request for the bidding URL, then
+  // respond.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  network_responder_->DoDeferredScriptResponse(kBiddingUrlPath,
+                                               BasicBiddingReportScript());
+
+  FencedFrameURLMapping& fenced_frame_urls_map =
+      static_cast<RenderFrameHostImpl*>(main_rfh())
+          ->GetPage()
+          .fenced_frame_urls_map();
+
+  FencedFrameURLMappingTestPeer test_peer(&fenced_frame_urls_map);
+
+  // Change the id of the fenced frame url mapping used by the current auction
+  // to simulate the scenario we've seen in crbug.com/1422301: the fenced frame
+  // url mapping used at the beginning of the auction is not the same as the one
+  // at the end of the auction.
+  test_peer.SetId(test_peer.GetNextId());
+
+  // Complete the auction. It should fail due to the fenced frame url mapping
+  // mismatch.
+  run_loop.Run();
+  EXPECT_FALSE(maybe_config.has_value());
+}
+
 class AdAuctionServiceImplSharedStorageEnabledTest
     : public AdAuctionServiceImplTest {
  public:
