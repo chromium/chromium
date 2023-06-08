@@ -616,6 +616,11 @@ void FocusFakebox() {
 }
 
 - (void)testOmniboxDefocusesOnTabSwitch {
+  // TODO(crbug.com/1453240): Test is failing on iPad devices and simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+
   [self openPage1];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:2];
