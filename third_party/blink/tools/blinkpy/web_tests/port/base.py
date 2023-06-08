@@ -2579,7 +2579,7 @@ class Port(object):
         if test_name in block_list:
             return False
 
-        return False
+        return True
 
     def _build_path(self, *comps):
         """Returns a path from the build directory."""
