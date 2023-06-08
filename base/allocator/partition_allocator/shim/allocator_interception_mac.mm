@@ -29,12 +29,12 @@
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "base/allocator/partition_allocator/third_party/apple_apsl/CFBase.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -90,7 +90,7 @@ bool DeprotectMallocZone(ChromeMallocZone* default_zone,
   mach_port_deallocate(mach_task_self(), unused);
 
   if (!(info.max_protection & VM_PROT_WRITE)) {
-    LOG(ERROR) << "Invalid max_protection " << info.max_protection;
+    PA_LOG(ERROR) << "Invalid max_protection " << info.max_protection;
     return false;
   }
 
@@ -505,9 +505,10 @@ void InterceptAllocationsMac() {
         << "Failed to get kCFAllocatorMallocZone allocation function.";
     context->allocate = oom_killer_cfallocator_malloc_zone;
   } else {
-    DLOG(WARNING) << "Internals of CFAllocator not known; out-of-memory "
-                     "failures via CFAllocator will not result in termination. "
-                     "http://crbug.com/45650";
+    PA_DLOG(WARNING) << "Internals of CFAllocator not known; out-of-memory "
+                        "failures via CFAllocator will not result in "
+                        "termination. "
+                        "http://crbug.com/45650";
   }
 #endif
 

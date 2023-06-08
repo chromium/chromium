@@ -9,9 +9,6 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
 #endif
@@ -23,9 +20,11 @@
 
 #include "base/allocator/early_zone_registration_mac.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/logging.h"
 
 namespace partition_alloc {
 
@@ -269,9 +268,9 @@ bool IsAlreadyRegistered() {
       //
       // This should be a crash, ideally, but callers do it, so only warn, for
       // now.
-      RAW_LOG(ERROR,
-              "Trying to load the allocator multiple times. This is *not* "
-              "supported.");
+      PA_RAW_LOG(ERROR,
+                 "Trying to load the allocator multiple times. This is *not* "
+                 "supported.");
       return true;
     }
   }
