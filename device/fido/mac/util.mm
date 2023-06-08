@@ -16,6 +16,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/branding_buildflags.h"
 #include "components/cbor/writer.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -36,9 +37,14 @@ using cbor::Writer;
 // The Touch ID authenticator AAGUID value. Despite using self-attestation,
 // Chrome will return this non-zero AAGUID for all MakeCredential
 // responses coming from the Touch ID platform authenticator.
-constexpr std::array<uint8_t, 16> kAaguid = {0xad, 0xce, 0x00, 0x02, 0x35, 0xbc,
-                                             0xc6, 0x0a, 0x64, 0x8b, 0x0b, 0x25,
-                                             0xf1, 0xf0, 0x55, 0x03};
+constexpr std::array<uint8_t, 16> kAaguid =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {0xad, 0xce, 0x00, 0x02, 0x35, 0xbc, 0xc6, 0x0a,
+     0x64, 0x8b, 0x0b, 0x25, 0xf1, 0xf0, 0x55, 0x03};
+#else
+    {0xb5, 0x39, 0x76, 0x66, 0x48, 0x85, 0xaa, 0x6b,
+     0xce, 0xbf, 0xe5, 0x22, 0x62, 0xa4, 0x39, 0xa2};
+#endif
 
 namespace {
 
