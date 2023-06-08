@@ -38,7 +38,6 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
-#include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/private/SkGainmapInfo.h"
@@ -236,13 +235,6 @@ void PaintOpReader::Read(SkRRect* rect) {
 
 void PaintOpReader::Read(SkColor4f* color) {
   ReadSimple(color);
-  // Colors are generally [0, 1], sometimes with a wider gamut, but
-  // infinite and NaN colors don't make sense and shouldn't be produced by a
-  // renderer, so encountering a non-finite color implies the paint op buffer
-  // is invalid.
-  if (!SkScalarsAreFinite(color->vec(), 4)) {
-    SetInvalid(DeserializationError::kNonFiniteSkColor4f);
-  }
 }
 
 void PaintOpReader::Read(SkPath* path) {
@@ -299,7 +291,7 @@ void PaintOpReader::Read(SkPath* path) {
 }
 
 void PaintOpReader::Read(PaintFlags* flags) {
-  Read(&flags->color_);
+  ReadSimple(&flags->color_);
   Read(&flags->width_);
   Read(&flags->miter_limit_);
 

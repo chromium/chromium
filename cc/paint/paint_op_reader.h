@@ -202,9 +202,8 @@ class CC_PAINT_EXPORT PaintOpReader {
     kInsufficientPixelData = 53,
     kSkGainmapInfoDeserializationFailure = 54,
     kHdrMetadataDeserializeFailure = 55,
-    kNonFiniteSkColor4f = 56,
 
-    kMaxValue = kNonFiniteSkColor4f
+    kMaxValue = kHdrMetadataDeserializeFailure
   };
 
   template <typename T>
