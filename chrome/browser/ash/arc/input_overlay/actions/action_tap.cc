@@ -273,7 +273,6 @@ gfx::PointF ActionTap::GetUICenterPosition() {
 std::unique_ptr<ActionView> ActionTap::CreateView(
     DisplayOverlayController* display_overlay_controller) {
   auto view = std::make_unique<ActionTapView>(this, display_overlay_controller);
-  view->set_editable(true);
   action_view_ = view.get();
   return view;
 }

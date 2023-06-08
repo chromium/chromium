@@ -39,10 +39,6 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
     return;
   }
 
-  if (!editable_ && mode == DisplayMode::kEdit) {
-    return;
-  }
-
   // Set display mode for ActionLabel first and then other components update the
   // layout according to ActionLabel.
   if (!editing_label) {
@@ -54,7 +50,6 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
 
   if (mode == DisplayMode::kView) {
     display_mode_ = DisplayMode::kView;
-    RemoveTrashButton();
     if (!IsInputBound(action_->GetCurrentDisplayedInput())) {
       SetVisible(false);
     }
@@ -224,15 +219,6 @@ void ActionView::SetTouchPointCenter(const gfx::Point& touch_point_center) {
 void ActionView::ShowButtonOptionsMenu() {
   DCHECK(display_overlay_controller_);
   display_overlay_controller_->AddButtonOptionsMenu(action_);
-}
-
-void ActionView::RemoveTrashButton() {
-  if (!editable_ || !trash_button_) {
-    return;
-  }
-
-  RemoveChildViewT(trash_button_);
-  trash_button_ = nullptr;
 }
 
 void ActionView::AddTouchPoint(ActionType action_type) {

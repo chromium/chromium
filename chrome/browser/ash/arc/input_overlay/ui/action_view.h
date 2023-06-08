@@ -101,7 +101,6 @@ class ActionView : public views::View {
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }
   TouchPoint* touch_point() { return touch_point_; }
-  void set_editable(bool editable) { editable_ = editable; }
   DisplayOverlayController* display_overlay_controller() {
     return display_overlay_controller_;
   }
@@ -123,8 +122,6 @@ class ActionView : public views::View {
   raw_ptr<Action> action_ = nullptr;
   // Reference to the owner class.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
-  // Some types are not supported to edit.
-  bool editable_ = false;
   // Labels for mapping hints.
   std::vector<ActionLabel*> labels_;
   // Current display mode.
@@ -144,9 +141,6 @@ class ActionView : public views::View {
 
   void ShowButtonOptionsMenu();
 
-  void RemoveTrashButton();
-  void OnTrashButtonPressed();
-
   void RemoveTouchPoint();
 
   void SetRepositionController();
@@ -155,9 +149,6 @@ class ActionView : public views::View {
 
   // By default, no label is unbound.
   int unbind_label_index_ = kDefaultLabelIndex;
-
-  // TODO(b/250900717): Update when the final UX/UI is ready.
-  raw_ptr<views::ImageButton> trash_button_ = nullptr;
 
   // Corresponding to |kArcInputOverlayBeta| flag to turn on/off the editor
   // feature of adding or removing actions.

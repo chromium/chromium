@@ -374,7 +374,6 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
         std::make_unique<ActionMoveKeyView>(this, display_overlay_controller);
   }
   action_view_ = view.get();
-  view->set_editable(true);
   return view;
 }
 
