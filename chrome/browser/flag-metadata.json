@@ -6293,7 +6293,7 @@
     "owners": [
       "//ash/webui/print_management/OWNERS"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "printer-settings-revamp",
