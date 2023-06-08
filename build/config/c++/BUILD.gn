@@ -94,7 +94,11 @@ config("runtime_library") {
       ]
     }
   }
-  if (use_custom_libcxx && enable_safe_libcxx) {
-    defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
-  }
+
+  # In a world without NaCl, the `runtime_library` config would also configure
+  # the `_LIBCPP_ENABLE_ASSERTIONS` define to enable hardening when using the
+  # custom hermetic libc++. However, this is currently added by the `compiler`
+  # config instead, since this hardening define should also be used by the NaCl
+  # saigo toolchain, which uses a prebuilt libc++ that is distinct from the
+  # custom hermetic libc++.
 }

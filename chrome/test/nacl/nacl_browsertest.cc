@@ -108,24 +108,27 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlib, BadNative) {
 
 #if BUILDFLAG(IS_WIN)
 // crbug.com/98721
-#  define MAYBE_CrashViaCheckFailure DISABLED_CrashViaCheckFailure
-#  define MAYBE_CrashViaExitCall DISABLED_CrashViaExitCall
-#  define MAYBE_CrashInCallback DISABLED_CrashInCallback
-#  define MAYBE_CrashOffMainThread DISABLED_CrashOffMainThread
-#  define MAYBE_CrashPPAPIOffMainThread DISABLED_CrashPPAPIOffMainThread
+#define MAYBE_CrashViaCheckFailure DISABLED_CrashViaCheckFailure
+#define MAYBE_CrashViaExitCall DISABLED_CrashViaExitCall
+#define MAYBE_CrashViaLibcxxAssertFailure DISABLED_CrashViaLibcxxAssertFailure
+#define MAYBE_CrashInCallback DISABLED_CrashInCallback
+#define MAYBE_CrashOffMainThread DISABLED_CrashOffMainThread
+#define MAYBE_CrashPPAPIOffMainThread DISABLED_CrashPPAPIOffMainThread
 #elif BUILDFLAG(IS_MAC)
 // crbug.com/425570
-#  define MAYBE_CrashViaCheckFailure DISABLED_CrashViaCheckFailure
-#  define MAYBE_CrashViaExitCall DISABLED_CrashViaExitCall
-#  define MAYBE_CrashInCallback DISABLED_CrashInCallback
-#  define MAYBE_CrashOffMainThread DISABLED_CrashOffMainThread
-#  define MAYBE_CrashPPAPIOffMainThread DISABLED_CrashPPAPIOffMainThread
+#define MAYBE_CrashViaCheckFailure DISABLED_CrashViaCheckFailure
+#define MAYBE_CrashViaExitCall DISABLED_CrashViaExitCall
+#define MAYBE_CrashViaLibcxxAssertFailure DISABLED_CrashViaLibcxxAssertFailure
+#define MAYBE_CrashInCallback DISABLED_CrashInCallback
+#define MAYBE_CrashOffMainThread DISABLED_CrashOffMainThread
+#define MAYBE_CrashPPAPIOffMainThread DISABLED_CrashPPAPIOffMainThread
 #else
-#  define MAYBE_CrashViaCheckFailure CrashViaCheckFailure
-#  define MAYBE_CrashViaExitCall CrashViaExitCall
-#  define MAYBE_CrashInCallback CrashInCallback
-#  define MAYBE_CrashOffMainThread CrashOffMainThread
-#  define MAYBE_CrashPPAPIOffMainThread CrashPPAPIOffMainThread
+#define MAYBE_CrashViaCheckFailure CrashViaCheckFailure
+#define MAYBE_CrashViaExitCall CrashViaExitCall
+#define MAYBE_CrashViaLibcxxAssertFailure CrashViaLibcxxAssertFailure
+#define MAYBE_CrashInCallback CrashInCallback
+#define MAYBE_CrashOffMainThread CrashOffMainThread
+#define MAYBE_CrashPPAPIOffMainThread CrashPPAPIOffMainThread
 #endif
 NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_CrashViaCheckFailure, {
   RunNaClIntegrationTest(
@@ -135,6 +138,11 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_CrashViaCheckFailure, {
 NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_CrashViaExitCall, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_crash_via_exit_call.html"));
 })
+
+IN_PROC_BROWSER_TEST_F(NaClBrowserTestIrt, MAYBE_CrashViaLibcxxAssertFailure) {
+  RunNaClIntegrationTest(
+      FILE_PATH_LITERAL("ppapi_crash_via_libcxx_assert_failure.html"));
+}
 
 NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_CrashInCallback, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_crash_in_callback.html"));

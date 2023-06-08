@@ -309,6 +309,10 @@ bool NaClBrowserTestPnacl::IsAPnaclTest() {
   return true;
 }
 
+base::FilePath::StringType NaClBrowserTestIrt::Variant() {
+  return FILE_PATH_LITERAL("test_irt");
+}
+
 void NaClBrowserTestPnaclSubzero::SetUpCommandLine(
     base::CommandLine* command_line) {
   NaClBrowserTestPnacl::SetUpCommandLine(command_line);

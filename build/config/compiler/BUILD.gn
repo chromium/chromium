@@ -1012,6 +1012,18 @@ config("compiler") {
       "-Zpanic_abort_tests",
     ]
   }
+
+  # Normally, this would be defined in the `runtime_library` config but NaCl
+  # saigo libc++ does not use the custom hermetic libc++. Unfortunately, there
+  # isn't really a better config to add this define for the define to
+  # consistently apply in both Chromium and non-Chromium code *and* non-NaCl
+  # and NaCl code.
+  #
+  # TODO(https://crbug.com/702997): Move this back to the `runtime_library`
+  # config when NaCl is removed.
+  if (use_safe_libcxx) {
+    defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
+  }
 }
 
 # The BUILDCONFIG file sets this config on targets by default, which means when

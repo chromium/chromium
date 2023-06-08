@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/nacl/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
 
@@ -52,6 +53,11 @@ declare_args() {
   # performance and memory use.
   libcxx_is_shared = use_custom_libcxx && is_component_build
 }
+
+# The saigo libc++ is distinct from the custom hermetic libc++. However, since
+# the Chrome team controls the saigo toolchain, it is safe to unconditionally
+# enable libc++ hardening there as well.
+use_safe_libcxx = (use_custom_libcxx && enable_safe_libcxx) || is_nacl_saigo
 
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.

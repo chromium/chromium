@@ -128,6 +128,11 @@ class NaClBrowserTestPnacl : public NaClBrowserTestBase {
   bool IsAPnaclTest() override;
 };
 
+class NaClBrowserTestIrt : public NaClBrowserTestBase {
+ public:
+  base::FilePath::StringType Variant() override;
+};
+
 // TODO(jvoung): We can remove this and test the Subzero translator
 // with NaClBrowserTestPnacl once Subzero is automatically chosen
 // (not behind a flag).

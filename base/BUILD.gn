@@ -2659,7 +2659,7 @@ static_library("base_static") {
   }
 }
 
-if (use_custom_libcxx && enable_safe_libcxx && !is_debug) {
+if (use_safe_libcxx && !is_debug) {
   # nodebug_assertion.cc has to be in its own source_set instead of being
   # included as a source in //base as otherwise its symbols won't be linked in
   # if they end up in an archive.
@@ -3458,7 +3458,7 @@ test("base_unittests") {
     ]
   }
 
-  if (use_custom_libcxx && enable_safe_libcxx) {
+  if (use_safe_libcxx) {
     sources += [ "libcpp_hardening_test.cc" ]
   }
 
