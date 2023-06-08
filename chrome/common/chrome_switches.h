@@ -108,6 +108,9 @@ extern const char kExtensionContentVerificationEnforceStrict[];
 extern const char kExtensionsInstallVerification[];
 extern const char kExtensionsNotWebstore[];
 extern const char kForceAppMode[];
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kForceDevToolsAvailable[];
+#endif
 extern const char kForceFirstRun[];
 extern const char kForceWhatsNew[];
 extern const char kHideCrashRestoreBubble[];

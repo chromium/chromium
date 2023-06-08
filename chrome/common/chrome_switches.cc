@@ -303,6 +303,12 @@ const char kExtensionsNotWebstore[] = "extensions-not-webstore";
 // the app to be installed if it hasn't been already.
 const char kForceAppMode[] = "force-app-mode";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Forces developer tools availability, no matter what values the enterprise
+// policies DeveloperToolsDisabled and DeveloperToolsAvailability are set to.
+const char kForceDevToolsAvailable[] = "force-devtools-available";
+#endif
+
 // Displays the First Run experience when the browser is started, regardless of
 // whether or not it's actually the First Run (this overrides kNoFirstRun).
 const char kForceFirstRun[] = "force-first-run";

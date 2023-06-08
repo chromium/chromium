@@ -137,10 +137,6 @@
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#endif
-
 using content::DevToolsAgentHost;
 using content::DevToolsAgentHostObserver;
 using content::NavigationController;
@@ -718,21 +714,6 @@ class DevToolsExtensionTest : public DevToolsTest {
   // Use std::deque to avoid dangling references to existing elements.
   std::deque<extensions::TestExtensionDir> test_extension_dirs_;
   const base::FilePath test_extensions_dir_;
-};
-
-class DevToolsExtensionChromeUrlTest : public DevToolsExtensionTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevToolsExtensionTest::SetUpCommandLine(command_line);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // These tests use chrome:// URLs and are written on the assumption devtools
-    // are always available, so guarantee that assumption holds. Tests that
-    // check if devtools can be disabled should use a test fixture without the
-    // kForceDevToolsAvailable switch set.
-    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
-#endif
-  }
 };
 
 class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
@@ -2640,13 +2621,12 @@ class DevToolsAllowedByCommandLineSwitch
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-    // Same as `ash::switches::kForceDevToolsAvailable`, but used as a
+    // Same as `switches::kForceDevToolsAvailable`, but used as a
     // literal here so it's possible to verify that the switch does not apply on
     // non-ChromeOS platforms.
     const std::string kForceDevToolsAvailableBase = "force-devtools-available";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ASSERT_EQ(kForceDevToolsAvailableBase,
-              ash::switches::kForceDevToolsAvailable);
+#if BUILDFLAG(IS_CHROMEOS)
+    ASSERT_EQ(kForceDevToolsAvailableBase, switches::kForceDevToolsAvailable);
 #endif
     command_line->AppendSwitch("--" + kForceDevToolsAvailableBase);
   }
@@ -2660,7 +2640,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
 
   DevToolsWindow::OpenDevToolsWindow(web_contents);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 #else
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
