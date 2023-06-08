@@ -1348,10 +1348,20 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
                                      line_opportunity, break_token,
                                      &ExclusionSpace());
         optimizer.BalanceBreakPoints(*score_line_break_context);
-      } else {
-        context_->SetBalancedAvailableWidth(
-            NGParagraphLineBreaker::AttemptParagraphBalancing(
-                Node(), ConstraintSpace(), line_opportunity));
+        if (score_line_break_context->LineBreakPoints().empty()) {
+          // Fallback to the bisection if `NGScoreLineBreaker` failed.
+          use_score_line_break = false;
+        }
+      }
+      if (!use_score_line_break) {
+        if (const absl::optional<LayoutUnit> balanced_available_width =
+                NGParagraphLineBreaker::AttemptParagraphBalancing(
+                    Node(), ConstraintSpace(), line_opportunity)) {
+          context_->SetBalancedAvailableWidth(balanced_available_width);
+          if (score_line_break_context) {
+            score_line_break_context->LineInfoList().Clear();
+          }
+        }
       }
     } else if (use_score_line_break) {
       DCHECK(score_line_break_context->LineBreakPoints().empty());
