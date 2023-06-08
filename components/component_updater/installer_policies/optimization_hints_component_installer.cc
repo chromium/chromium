@@ -77,17 +77,6 @@ void OptimizationHintsComponentInstallerPolicy::ComponentReady(
     base::Value::Dict manifest) {
   DCHECK(!install_dir.empty());
   DVLOG(1) << "Optimization Hints Version Ready: " << version.GetString();
-  std::string* ruleset_format = manifest.FindString(kManifestRulesetFormatKey);
-  if (!ruleset_format) {
-    DVLOG(1) << "No ruleset_format present in manifest";
-    return;
-  }
-  base::Version ruleset_format_version = base::Version(*ruleset_format);
-  if (!ruleset_format_version.IsValid() ||
-      ruleset_format_version.CompareTo(ruleset_format_version_) > 0) {
-    DVLOG(1) << "Got incompatible ruleset_format. Bailing out.";
-    return;
-  }
   optimization_guide::OptimizationHintsComponentUpdateListener*
       update_listener = optimization_guide::
           OptimizationHintsComponentUpdateListener::GetInstance();
