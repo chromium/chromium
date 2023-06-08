@@ -66,19 +66,21 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
 
         # Total image number does not reach the threshold, return no result.
         if total_image_num < self._image_num_threshold:
-            return 'Total image number is less than %d, no result' % \
-                   self._image_num_threshold
+            return ('Total image number is less than %d, no result' %
+                    self._image_num_threshold)
 
         # Total distinct image diff number does not reach the threshold, return all
         # these image diff as suggested matching.
         if len(image_diff_counts) < self._distinct_diff_num_threshold:
-            result = 'Total distinct image diff number is less than %d. Suggested ' \
-                     'make all following image diff (color_difference, ' \
-                     'pixel_difference) to match actual image result:' % \
-                     self._distinct_diff_num_threshold
-            for image_diff in image_diff_counts.keys():
-                result = result + ' (%d, %d)' % (image_diff.color_difference,
-                                                 image_diff.pixel_difference)
+            result = 'Total image diff number is %d. ' % total_image_num
+            result += 'Total distinct image diff number is less '
+            result += 'than %d. Suggested ' % self._distinct_diff_num_threshold
+            result += 'make all following image diff (color_difference, '
+            result += 'pixel_difference) to match actual image result:'
+            for image_diff, image_diff_number in image_diff_counts.items():
+                result = result + ' (%d, %d) with total %d' % (
+                    image_diff.color_difference, image_diff.pixel_difference,
+                    image_diff_number)
             return result
 
         # Calculate the suggested fuzzy match number.
@@ -88,7 +90,8 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
             color_diff_list += [image_diff.color_difference] * count
             pixel_diff_list += [image_diff.pixel_difference] * count
 
-        result = 'The list of fuzzy match range suggested for this test: '
+        result = 'Total image diff number is %d. ' % total_image_num
+        result += 'The list of fuzzy match range suggested for this test: '
         result += '\nFor color difference:\n'
         result += self._calculate_data_percentile(color_diff_list)
         result += '\nFor pixel difference:\n'
@@ -108,19 +111,23 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
         if len(data_list) > 0:
             data_list.sort()
             color_diff_length = len(data_list) - 1
-            result = '%d to cover 50 percentile, %d to cover 75 ' \
-                    'percentile, %d to cover 90 percentile, %d to cover 95' \
-                    ' percentile, %d to cover all.' % \
-                    (data_list[int(color_diff_length * 0.5)],
-                     data_list[int(color_diff_length * 0.75)],
-                     data_list[int(color_diff_length * 0.9)],
-                     data_list[int(color_diff_length * 0.95)],
-                     data_list[color_diff_length])
+            result = '%d to cover 50 percentile, ' % data_list[int(
+                color_diff_length * 0.5)]
+            result += '%d to cover 75 ' % data_list[int(
+                color_diff_length * 0.75)]
+            result += 'percentile, %d to ' % data_list[int(
+                color_diff_length * 0.9)]
+            result += 'cover 90 percentile, %d to cover 95' % data_list[int(
+                color_diff_length * 0.95)]
+            result += ' percentile, %d to cover all.' % data_list[
+                color_diff_length]
             return result
 
         return "No data."
 
     def description(self) -> str:
-        return 'Fuzzy match analyzer with image_num_threshold of %d and ' \
-               'distinct_diff_num_threshold of %d' % \
-                (self._image_num_threshold, self._distinct_diff_num_threshold)
+        des = ('Fuzzy match analyzer with image_num_threshold of %d and ' %
+               self._image_num_threshold)
+        des += ('distinct_diff_num_threshold of %d' %
+                self._distinct_diff_num_threshold)
+        return des
