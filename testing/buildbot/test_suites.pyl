@@ -851,20 +851,6 @@
       },
     },
 
-    'chromium_android_asan_gtests': {
-      # TODO(kbr): reduce duplication among these tests, and with other
-      # test suites.
-      'base_unittests': {
-        'args': [
-          '--tool=asan',
-        ],
-      },
-    },
-
-    'chromium_android_asan_junit_tests': {
-      'base_junit_tests': {},
-    },
-
     'chromium_android_scripts': {
       'check_network_annotations': {
         'script': 'check_network_annotations.py',
@@ -1658,6 +1644,10 @@
       'webkit_lint': {
         'script': 'blink_lint_expectations.py',
       },
+    },
+
+    'clang_tot_gtests' : {
+      'base_unittests': {},
     },
 
     'client_v8_chromium_gtests': {
@@ -3833,27 +3823,6 @@
       'viz_unittests': {},
       'wtf_unittests': {},
       'zlib_unittests': {},
-    },
-
-    'ios_clang_tests': {
-      'absl_hardening_tests': {},
-      'base_unittests': {},
-      'boringssl_crypto_tests': {},
-      'boringssl_ssl_tests': {},
-      'components_unittests': {},
-      'crypto_unittests': {},
-      'gfx_unittests': {},
-      'google_apis_unittests': {},
-      'ios_chrome_unittests': {},
-      'ios_net_unittests': {},
-      'ios_web_inttests': {},
-      'ios_web_unittests': {},
-      'ios_web_view_inttests': {},
-      'net_unittests': {},
-      'skia_unittests': {},
-      'sql_unittests': {},
-      'ui_base_unittests': {},
-      'url_unittests': {},
     },
 
     'ios_common_tests': {
@@ -6568,11 +6537,6 @@
     #  'telemetry_perf_unittests_isolated_scripts_android',
     #],
 
-    'monochrome_public_apk_checker_isolated_script_and_sizes': [
-      'chrome_sizes_android',
-      'monochrome_public_apk_checker_isolated_script',
-    ],
-
     'network_service_extra_gtests': [
       'network_service_fyi_gtests',
     ],
@@ -7022,7 +6986,7 @@
     },
 
     'ios_clang_tot_device_tests': {
-      'ios_clang_tests': {
+      'clang_tot_gtests': {
         'variants': [
           'IPHONE_7_15_4_1',
         ],
@@ -7030,7 +6994,7 @@
     },
 
     'ios_clang_tot_sim_tests': {
-      'ios_clang_tests': {
+      'clang_tot_gtests': {
         'variants': [
           'SIM_IPHONE_6S_15_5',
         ]

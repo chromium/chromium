@@ -1630,7 +1630,7 @@
           'linux-bionic',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_linux_and_gl_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
       },
       'CrWinAsan': {
@@ -1639,7 +1639,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
         'additional_compile_targets': [
           'chromium_builder_asan',
@@ -1651,7 +1651,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
         'additional_compile_targets': [
           'chromium_builder_asan',
@@ -1668,9 +1668,7 @@
         ],
         # This mirrors 'android-lollipop-arm-rel'.
         'test_suites': {
-          'gtest_tests': 'chromium_android_gtests',
-          'junit_tests': 'chromium_junit_tests_no_swarming',
-          'isolated_scripts': 'monochrome_public_apk_checker_isolated_script_and_sizes',
+          'gtest_tests': 'clang_tot_gtests',
         },
         'os_type': 'android',
       },
@@ -1710,8 +1708,7 @@
       },
       'ToTAndroidASan': {
         'test_suites': {
-          'gtest_tests': 'chromium_android_asan_gtests',
-          'junit_tests': 'chromium_android_asan_junit_tests',
+          'gtest_tests': 'clang_tot_gtests',
         },
         'mixins': [
           'has_native_resultdb_integration'
@@ -1770,14 +1767,13 @@
           ],
         },
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
         },
       },
       'ToTFuchsiaOfficial arm64': {
         'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
         'mixins': [
@@ -1791,7 +1787,7 @@
           'linux-bionic',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'chrome_sizes',
         },
         'additional_compile_targets': [
@@ -1817,7 +1813,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
         'args': [
           '--test-launcher-print-test-stdio=always',
@@ -1842,7 +1838,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'chrome_sizes',
         },
       },
@@ -1854,7 +1850,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'chrome_sizes',
         },
         'additional_compile_targets': [
@@ -1869,7 +1865,7 @@
           'linux-bionic',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
       },
       'ToTLinuxTSan': {
@@ -1880,7 +1876,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'chrome_sizes',
         },
       },
@@ -1892,9 +1888,7 @@
           'all',
         ],
         'test_suites': {
-          # no "_and_gl":gl_unittests doesn't pass yet,
-          # https://crbug.com/815183
-          'gtest_tests': 'chromium_linux_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'chrome_sizes',
         },
       },
@@ -1903,7 +1897,7 @@
           'mac_x64',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -1923,7 +1917,7 @@
           'mac_x64',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
         'args': [
           '--test-launcher-print-test-stdio=always',
@@ -1940,7 +1934,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -1952,7 +1946,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -1964,7 +1958,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           # Doesn't run win_specific_isolated_scripts because the mini
           # installer isn't hooked up in 32-bit debug builds.
           'isolated_scripts': 'chrome_sizes',
@@ -1978,7 +1972,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -1991,7 +1985,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -2004,7 +1998,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -2017,7 +2011,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -2033,7 +2027,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
       },
       'ToTWinASanLibfuzzer': {
@@ -2050,7 +2044,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -2070,7 +2064,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
@@ -2139,7 +2133,7 @@
           'win10',
         ],
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'clang_tot_gtests',
         },
         'additional_compile_targets': [
           'all',
