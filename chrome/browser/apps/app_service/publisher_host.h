@@ -14,6 +14,9 @@
 
 namespace web_app {
 class WebApps;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class BrowserShortcuts;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace web_app
 
 namespace apps {
@@ -66,6 +69,7 @@ class PublisherHost {
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
   std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
   std::unique_ptr<web_app::WebApps> web_apps_;
+  std::unique_ptr<web_app::BrowserShortcuts> browser_shortcuts_;
 #else
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> chrome_apps_;

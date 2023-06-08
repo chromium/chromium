@@ -30,6 +30,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "ui/gfx/native_widget_types.h"
 
 // Avoid including this header file directly or referring directly to
@@ -53,6 +54,8 @@ class BrowserAppInstanceRegistry;
 class BrowserAppInstanceTracker;
 class PromiseAppRegistryCache;
 class PromiseAppService;
+class ShortcutPublisher;
+class ShortcutRegistryCache;
 class UninstallDialog;
 
 struct PromiseApp;
@@ -152,6 +155,20 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // Add or update a promise app in the Promise App Registry Cache.
   void OnPromiseApp(PromiseAppPtr delta);
+
+  // Registers `publisher` with the App Service as exclusively publishing
+  // shortcut to app type `app_type`. `publisher` must have a lifetime equal to
+  // or longer than this object.
+  void RegisterShortcutPublisher(AppType app_type,
+                                 ShortcutPublisher* publisher);
+
+  // Update the shortcut with `delta`, which represents some state change of
+  // a shortcut.
+  void UpdateShortcut(ShortcutPtr delta);
+
+  // Get pointer to the Shortcut Registry Cache which holds all shortcuts.
+  // May return a nullptr if this cache doesn't exist.
+  apps::ShortcutRegistryCache* ShortcutRegistryCache();
 
  private:
   // For access to Initialize.
@@ -353,6 +370,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // from the outstanding callback queue.
   std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
       callback_list_;
+
+  base::flat_map<AppType, ShortcutPublisher*> shortcut_publishers_;
+
+  std::unique_ptr<apps::ShortcutRegistryCache> shortcut_registry_cache_;
 
   base::WeakPtrFactory<AppServiceProxyAsh> weak_ptr_factory_{this};
 };

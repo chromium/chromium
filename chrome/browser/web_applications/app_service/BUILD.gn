@@ -40,7 +40,10 @@ source_set("app_service") {
 
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
-
+    sources += [
+      "browser_shortcuts.cc",
+      "browser_shortcuts.h",
+    ]
     deps += [
       "//ash/components/arc:arc_base",
       "//ash/public/cpp",
@@ -51,8 +54,10 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/chromeos",
+      "//components/app_constants",
       "//components/app_restore",
       "//components/services/app_service/public/cpp:instance_update",
+      "//components/services/app_service/public/cpp/shortcut",
       "//extensions/browser/api/file_handlers",
     ]
   }
@@ -89,7 +94,19 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/system_web_apps/test_support" ]
+    sources += [ "browser_shortcuts_unittest.cc" ]
+    deps += [
+      "//base",
+      "//build:chromeos_buildflags",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/app_constants",
+      "//components/services/app_service/public/cpp/shortcut",
+      "//content/test:test_support",
+    ]
   }
 }
 

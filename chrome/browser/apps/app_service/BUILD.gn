@@ -188,6 +188,8 @@ source_set("app_service") {
       "publishers/plugin_vm_apps.h",
       "publishers/remote_apps.cc",
       "publishers/remote_apps.h",
+      "publishers/shortcut_publisher.cc",
+      "publishers/shortcut_publisher.h",
       "publishers/standalone_browser_apps.cc",
       "publishers/standalone_browser_apps.h",
       "publishers/standalone_browser_extension_apps.cc",
@@ -246,6 +248,7 @@ source_set("app_service") {
       "//components/image_fetcher/core",
       "//components/metrics/structured:structured_events",
       "//components/resources:components_resources",
+      "//components/services/app_service/public/cpp/shortcut",
       "//components/ukm",
       "//components/webapps/browser",
       "//services/metrics/public/cpp:ukm_builders",
@@ -401,6 +404,7 @@ source_set("unit_tests") {
       "publishers/crostini_apps_unittest.cc",
       "publishers/guest_os_apps_unittest.cc",
       "publishers/plugin_vm_apps_unittest.cc",
+      "publishers/shortcut_publisher_unittest.cc",
       "webapk/webapk_install_task_unittest.cc",
       "webapk/webapk_manager_unittest.cc",
     ]
@@ -425,6 +429,7 @@ source_set("unit_tests") {
       "//components/metrics/structured:structured_events",
       "//components/metrics/structured:structured_metrics_features",
       "//components/metrics/structured:test_support",
+      "//components/services/app_service/public/cpp/shortcut",
       "//components/webapk:proto",
     ]
   }
