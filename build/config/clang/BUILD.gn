@@ -222,7 +222,10 @@ clang_lib("compiler_profile") {
     if (target_environment == "simulator") {
       libname = "profile_iossim"
     } else {
-      libname = "profile_ios"
+      # We don't enable clang coverage on iOS device builds, and the library is
+      # not part of the Clang package tarball as a result.
+      #
+      # Don't define libname which makes this target do nothing.
     }
   } else {
     libname = "profile"

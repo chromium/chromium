@@ -21,10 +21,7 @@ config("default_coverage") {
       # However... some build targets have no C++ object file (they have Rust
       # instead), and thus the linker ends up not pulling in the profile
       # library. So we add an edge to it directly.
-      #
-      # TODO(crbug.com/1451949): Add IOS support when we include the
-      # profile_ios libs in the Clang tarball.
-      if (toolchain_has_rust && !is_ios) {
+      if (toolchain_has_rust) {
         configs += [ "//build/config/clang:compiler_profile" ]
       }
     }
