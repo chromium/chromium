@@ -104,7 +104,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // returned from a makeCredential operation.
     bool include_transports_in_attestation_certificate = true;
     // transports_in_get_info, if not empty, contains the transports that will
-    // be reported via getInfo.
+    // be reported via getInfo. Otherwise no transports will be reported.
     std::vector<FidoTransportProtocol> transports_in_get_info;
     // device_public_key_support controls whether the devicePubKey extension is
     // supported. See https://github.com/w3c/webauthn/pull/1663

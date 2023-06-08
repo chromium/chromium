@@ -1314,6 +1314,26 @@ TEST_F(AuthenticatorImplTest, NoSilentAuthenticationForCable) {
   }
 }
 
+TEST_F(AuthenticatorImplTest, GuessAtTransportsForCable) {
+  // Even without any reported transports, if the transaction was done over
+  // hybrid, we should guess at the transports and report them.
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  ResetVirtualDevice();
+  device::VirtualCtap2Device::Config config;
+  config.include_transports_in_attestation_certificate = false;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->SetTransport(device::FidoTransportProtocol::kHybrid);
+
+  const auto result = AuthenticatorMakeCredential();
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_THAT(
+      result.response->transports,
+      testing::UnorderedElementsAre(device::FidoTransportProtocol::kHybrid,
+                                    device::FidoTransportProtocol::kInternal));
+}
+
 TEST_F(AuthenticatorImplTest, TestGetAssertionU2fDeviceBackwardsCompatibility) {
   NavigateAndCommit(GURL(kTestOrigin1));
   PublicKeyCredentialRequestOptionsPtr options =

@@ -1699,6 +1699,16 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
         AddTransportsFromCertificate(*leaf_cert, &transports);
   }
 
+  if (!transports_authoritative &&
+      response_data.transport_used == device::FidoTransportProtocol::kHybrid) {
+    // Windows doesn't provide transport data, but can provide the transport
+    // used. If the transport was hybrid then we assume that ['hybrid',
+    // 'internal'] is a reasonable set of transports.
+    transports.insert(device::FidoTransportProtocol::kHybrid);
+    transports.insert(device::FidoTransportProtocol::kInternal);
+    transports_authoritative = true;
+  }
+
   // The order of transports doesn't matter because Blink will sort the
   // resulting strings before returning them.
   if (transports_authoritative) {
