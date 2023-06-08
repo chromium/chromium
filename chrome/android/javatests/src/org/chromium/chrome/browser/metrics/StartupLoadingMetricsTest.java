@@ -26,6 +26,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebApkActivityTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;

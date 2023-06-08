@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.metrics;
+package org.chromium.chrome.browser.page_load_metrics;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;

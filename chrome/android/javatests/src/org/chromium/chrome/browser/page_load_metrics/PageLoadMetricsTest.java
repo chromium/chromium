@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.metrics;
+package org.chromium.chrome.browser.page_load_metrics;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -102,7 +102,7 @@ public class PageLoadMetricsTest {
      * various page load metrics events. Observes only the first seen navigation, all other
      * navigations are ignored.
      */
-    static class PageLoadMetricsTestObserver implements PageLoadMetrics.Observer {
+    public static class PageLoadMetricsTestObserver implements PageLoadMetrics.Observer {
         private static final long NO_NAVIGATION_ID = -1;
 
         private final CountDownLatch mPrerenderingNavigationLatch = new CountDownLatch(1);

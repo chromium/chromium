@@ -5,9 +5,30 @@
 if (is_android) {
   import("//build/config/android/rules.gni")
 
-  _jni_sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java" ]
+  _jni_sources = [ "java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java" ]
 
   _test_jni_sources = [ "javatests/src/org/chromium/chrome/browser/metrics/util/UkmUtilsForTest.java" ]
+
+  android_library("java") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java",
+      "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java",
+      "java/src/org/chromium/chrome/browser/metrics/PackageMetrics.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/android/default_browser_promo:java",
+      "//components/browser_ui/util/android:java",
+      "//components/ukm/android:java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
 
   static_library("ukm_utils_for_test") {
     testonly = true
