@@ -2470,7 +2470,7 @@ StackingContext.prototype = {
     }
 
     // Create a new stacking context for any iframes.
-    if (elem.raw.tagName == "IFRAME") {
+    if (elem.raw.tagName == "IFRAME" && elem.raw.contentWindow?.document) {
       const { left, top } = elem.raw.getBoundingClientRect();
       this.addContext(elem, undefined, left, top);
       elem.context.addChildren(elem.raw.contentWindow.document);
