@@ -865,7 +865,21 @@ TEST(AggregatableReportProtoMigrationTest, NoAdditionalFields_ParsesCorrectly) {
       deserialized_request.value(), expected_request));
 }
 
+TEST(AggregatableReportTest, ProcessingUrlSet) {
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+  EXPECT_THAT(
+      request.processing_urls(),
+      ::testing::ElementsAre(GURL(
+          kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get())));
+}
+
 TEST(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"}});
+
   const struct {
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator;
@@ -873,7 +887,8 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
   } kTestCases[] = {
       {
           ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud,
-          kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get(),
+          "https://aws.example.test/.well-known/aggregation-service/"
+          "public-keys",
       },
   };
 
@@ -907,8 +922,10 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProtoSet) {
 }
 
 TEST(AggregatableReportTest, AggregationCoordinator_SetInReport) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"}});
 
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
@@ -925,7 +942,7 @@ TEST(AggregatableReportTest, AggregationCoordinator_SetInReport) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_identifier":"aws-cloud",)"
+      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"})"
       R"(],)"

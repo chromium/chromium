@@ -18,6 +18,8 @@ mojom("mojom") {
 
 component("aggregation_service") {
   sources = [
+    "aggregation_coordinator_utils.cc",
+    "aggregation_coordinator_utils.h",
     "features.cc",
     "features.h",
     "parsing_utils.cc",
@@ -27,7 +29,10 @@ component("aggregation_service") {
   public_deps = [
     ":mojom",
     "//base",
+    "//url",
   ]
+
+  deps = [ "//services/network/public/cpp" ]
 
   defines = [ "IS_AGGREGATION_SERVICE_IMPL" ]
 }
@@ -35,10 +40,14 @@ component("aggregation_service") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "parsing_utils_unittest.cc" ]
+  sources = [
+    "aggregation_coordinator_utils_unittest.cc",
+    "parsing_utils_unittest.cc",
+  ]
 
   deps = [
     ":aggregation_service",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }

@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_
+#define COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_
+
+#include "base/component_export.h"
+#include "components/aggregation_service/aggregation_service.mojom-forward.h"
+
+namespace url {
+class Origin;
+}  // namespace url
+
+namespace aggregation_service {
+
+constexpr char kDefaultAggregationCoordinatorAwsCloud[] =
+    "https://publickeyservice.aws.privacysandboxservices.com";
+
+COMPONENT_EXPORT(AGGREGATION_SERVICE)
+url::Origin GetAggregationCoordinatorOrigin(mojom::AggregationCoordinator);
+
+}  // namespace aggregation_service
+
+#endif  // COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_

@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
@@ -59,16 +60,32 @@ using DpfParameters = distributed_point_functions::DpfParameters;
 constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
 
+// TODO(linnan): Consider using origins instead of urls in the aggregation
+// service, including the storage.
+GURL GetProcessingUrl(::aggregation_service::mojom::AggregationCoordinator
+                          aggregation_coordinator) {
+  url::Origin origin = ::aggregation_service::GetAggregationCoordinatorOrigin(
+      aggregation_coordinator);
+
+  GURL::Replacements replacements;
+  static constexpr char kEndpointPath[] =
+      ".well-known/aggregation-service/public-keys";
+  replacements.SetPathStr(kEndpointPath);
+  return origin.GetURL().ReplaceComponents(replacements);
+}
+
 std::vector<GURL> GetDefaultProcessingUrls(
     blink::mojom::AggregationServiceMode aggregation_mode,
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator) {
   switch (aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased:
-      switch (aggregation_coordinator) {
-        case ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud:
-          return {GURL(
-              kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get())};
+      if (base::FeatureList::IsEnabled(
+              aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+        return {GetProcessingUrl(aggregation_coordinator)};
+      } else {
+        return {GURL(
+            kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get())};
       }
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
       // TODO(crbug.com/1295705): Update default processing urls.
@@ -859,7 +876,7 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
 
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-    value.Set("aggregation_coordinator_identifier",
+    value.Set("aggregation_coordinator_origin",
               ::aggregation_service::SerializeAggregationCoordinator(
                   aggregation_coordinator_));
   }

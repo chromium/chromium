@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/metrics/field_trial_params.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,9 +22,9 @@ TEST(AggregationServiceParsingUtilsTest, ParseAggregationCoordinator) {
     std::string str;
     absl::optional<mojom::AggregationCoordinator> expected;
   } kTestCases[] = {
-      {"aws-cloud", AggregationCoordinator::kAwsCloud},
-      {"AWS-CLOUD", absl::nullopt},
-      {"unknown", absl::nullopt},
+      {kAggregationServiceCoordinatorAwsCloud.Get(),
+       AggregationCoordinator::kAwsCloud},
+      {"https://a.test", absl::nullopt},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -33,9 +35,10 @@ TEST(AggregationServiceParsingUtilsTest, ParseAggregationCoordinator) {
 TEST(AggregationServiceParsingUtilsTest, SerializeAggregationCoordinator) {
   const struct {
     mojom::AggregationCoordinator coordinator;
-    const char* expected;
+    std::string expected;
   } kTestCases[] = {
-      {AggregationCoordinator::kAwsCloud, "aws-cloud"},
+      {AggregationCoordinator::kAwsCloud,
+       kAggregationServiceCoordinatorAwsCloud.Get()},
   };
 
   for (const auto& test_case : kTestCases) {

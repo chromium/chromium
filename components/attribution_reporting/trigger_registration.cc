@@ -35,8 +35,8 @@ namespace {
 using ::aggregation_service::mojom::AggregationCoordinator;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-constexpr char kAggregationCoordinatorIdentifier[] =
-    "aggregation_coordinator_identifier";
+constexpr char kAggregationCoordinatorOrigin[] =
+    "aggregation_coordinator_origin";
 constexpr char kAggregatableDeduplicationKeys[] =
     "aggregatable_deduplication_keys";
 constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
@@ -190,7 +190,7 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     auto parsed_aggregation_coordinator = ParseAggregationCoordinator(
-        registration.Find(kAggregationCoordinatorIdentifier));
+        registration.Find(kAggregationCoordinatorOrigin));
     if (!parsed_aggregation_coordinator.has_value()) {
       return base::unexpected(parsed_aggregation_coordinator.error());
     }
@@ -299,7 +299,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
 
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-    dict.Set(kAggregationCoordinatorIdentifier,
+    dict.Set(kAggregationCoordinatorOrigin,
              aggregation_service::SerializeAggregationCoordinator(
                  aggregation_coordinator));
   }

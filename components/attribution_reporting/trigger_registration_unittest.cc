@@ -346,22 +346,22 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
     base::expected<TriggerRegistration, TriggerRegistrationError> expected;
   } kTestCases[] = {
       {
-          "aggregation_coordinator_identifier_valid",
-          R"json({"aggregation_coordinator_identifier":"aws-cloud"})json",
+          "aggregation_coordinator_origin_valid",
+          R"json({"aggregation_coordinator_origin":"https://aws.example.test"})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
             r.aggregation_coordinator =
                 aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
           }),
       },
       {
-          "aggregation_coordinator_identifier_wrong_type",
-          R"json({"aggregation_coordinator_identifier":123})json",
+          "aggregation_coordinator_origin_wrong_type",
+          R"json({"aggregation_coordinator_origin":123})json",
           base::unexpected(
               TriggerRegistrationError::kAggregationCoordinatorWrongType),
       },
       {
-          "aggregation_coordinator_identifier_invalid_value",
-          R"json({"aggregation_coordinator_identifier":"unknown"})json",
+          "aggregation_coordinator_origin_invalid_value",
+          R"json({"aggregation_coordinator_origin":"https://unknown.example.test"})json",
           base::unexpected(
               TriggerRegistrationError::kAggregationCoordinatorUnknownValue),
       },
@@ -370,8 +370,10 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   static constexpr char kTriggerRegistrationErrorMetric[] =
       "Conversions.TriggerRegistrationError6";
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      aggregation_service::kAggregationServiceMultipleCloudProviders);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"}});
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -397,14 +399,16 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
           TriggerRegistration(),
           R"json({
             "aggregatable_source_registration_time": "exclude",
-            "aggregation_coordinator_identifier": "aws-cloud",
+            "aggregation_coordinator_origin": "https://aws.example.test",
             "debug_reporting": false
           })json",
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      aggregation_service::kAggregationServiceMultipleCloudProviders);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"}});
 
   for (const auto& test_case : kTestCases) {
     EXPECT_THAT(test_case.input.ToJson(),

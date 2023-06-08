@@ -14,8 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -105,7 +107,11 @@ AttributionReport IrreleventAggregatableReport() {
 
 class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
  public:
-  AttributionInternalsWebUiBrowserTest() = default;
+  AttributionInternalsWebUiBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+        {{"aws_cloud", "https://aws.example.test"}});
+  }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -166,6 +172,9 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
 
     return static_cast<MockAttributionManager*>(manager);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
@@ -1072,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(
             table.children[0].children[1]?.innerText === 'Pending' &&
             table.children[0].children[5]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
             table.children[0].children[6]?.innerText === '' &&
-            table.children[0].children[7]?.innerText === 'aws-cloud' &&
+            table.children[0].children[7]?.innerText === 'https://aws.example.test' &&
             table.children[0].children[8]?.innerText === 'false' &&
             table.children[1].children[1]?.innerText === 'Sent: HTTP 200' &&
             table.children[1].children[6]?.innerText === 'abc' &&

@@ -379,10 +379,10 @@ object_value {
     }
   }
   field {
-    name: "aggregation_coordinator_identifier"
+    name: "aggregation_coordinator_origin"
     value {
       string_value {
-        value: "aws-cloud"
+        value: "https://publickeyservice.aws.privacysandboxservices.com"
       }
     }
   }
