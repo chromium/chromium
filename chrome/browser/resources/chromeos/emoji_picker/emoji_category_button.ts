@@ -11,6 +11,13 @@ import {getTemplate} from './emoji_category_button.html.js';
 import {CATEGORY_BUTTON_CLICK, CategoryButtonClickEvent, createCustomEvent} from './events.js';
 import {CategoryEnum} from './types.js';
 
+const ARIA_LABELS_WITH_GIF_SUPPORT: Record<CategoryEnum, string> = {
+  [CategoryEnum.EMOJI]: 'Emoji category',
+  [CategoryEnum.SYMBOL]: 'Symbol category',
+  [CategoryEnum.EMOTICON]: 'Emoticon category',
+  [CategoryEnum.GIF]: 'GIF category',
+};
+
 export class EmojiCategoryButton extends PolymerElement {
   static get is() {
     return 'emoji-category-button' as const;
@@ -45,6 +52,16 @@ export class EmojiCategoryButton extends PolymerElement {
       return 'category-button-primary';
     }
     return active ? 'category-button-active' : '';
+  }
+
+  private getAriaLabel(name: CategoryEnum, gifSupport: boolean): string {
+    // TODO(b/281609806): Remove this condition once GIF support is fully
+    // launched.
+    if (!gifSupport) {
+      return name;
+    }
+
+    return ARIA_LABELS_WITH_GIF_SUPPORT[name] ?? name;
   }
 }
 
