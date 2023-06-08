@@ -128,8 +128,8 @@
   },
   {
     "name": "allow-scroll-settings",
-    "owners": [ "zentaro" ],
-    "expiry_milestone": 120
+    "owners": [ "zentaro", "cros-peripherals@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "alt-click-and-six-pack-customization",
