@@ -73,9 +73,16 @@ desc: |-
   This is the second line.
   This is a <ph name="PLACEHOLDER">placeholder</ph>
 
-# List of platforms where the policy is planned to be released.
-# The policy has to be listed in the EnableExperimentalPolicies policy to be
-# available in the Dev and Canary channel.
+# If a platform is listed as "future_on", it means that this policy:
+# 1. will be available on that platform if chrome is on
+#    - the Canary channel
+#    - the Dev channel
+#    - an Unknown channel (e.g. locally built chrome)
+# 2. will not be available by default on that platform if chrome is on
+#   - the Beta channel
+#   - the Stable channel
+# 3. will be available (overriding 2.) if this policy's name is listed in the
+#    EnableExperimentalPolicies policy
 # Currently supported platforms:
 #   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
 #   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`
