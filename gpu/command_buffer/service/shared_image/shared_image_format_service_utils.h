@@ -100,6 +100,7 @@ GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
     viz::SharedImageFormat format);
 // Returns wgpu::TextureFormat format for given `format` and `plane_index`. Note
 // that this returns a single plane Dawn format and not a multi-planar format.
+// `plane_index` must be 0 if `format` is single-plane.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
                                                   int plane_index);
 // Same as ToDawnFormat, except it casts from wgpu::TextureFormat to
@@ -108,9 +109,9 @@ GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
 GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format,
                                                 int plane_index);
 
-// Returns the supported Dawn texture usage for the given `format`. For single
-// plane formats i.e. `plane_index` = 0, `is_yuv_plane` indicates if the texture
-// corresponds to a plane of a multi-planar image.
+// Returns the supported Dawn texture usage for the given `format`. For
+// single-plane formats that are not legacy multiplanar, `is_yuv_plane`
+// indicates if the texture corresponds to a plane of a multi-planar image.
 wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
                                                 bool is_yuv_plane = false);
 
@@ -128,9 +129,9 @@ GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
 #endif
 
 // Returns the graphite::TextureInfo for a given `format` and `plane_index`. For
-// single plane formats i.e. `plane_index` = 0, `is_yuv_plane` indicates if the
-// texture corresponds to a plane of a multi-planar image. `mipmapped` indicates
-// if the texture has mipmaps.
+// single-plane formats that are not legacy multiplanar, `is_yuv_plane`
+// indicates if the texture corresponds to a plane of a multi-planar image.
+// `mipmapped` indicates if the texture has mipmaps.
 GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,

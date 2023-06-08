@@ -251,6 +251,9 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
 
 wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
                                  int plane_index) {
+  CHECK(format.is_multi_plane() || format.IsLegacyMultiplanar() ||
+        (plane_index == 0));
+
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format);
   if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
     // kNV12 creates a separate image per plane and returns the single planar
