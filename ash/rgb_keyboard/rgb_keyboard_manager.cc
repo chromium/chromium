@@ -24,6 +24,9 @@ namespace {
 
 RgbKeyboardManager* g_instance = nullptr;
 
+// The max number of zones possible across all RGB enabled devices.
+const int kMaxNumberOfZones = 5;
+
 }  // namespace
 
 RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
@@ -99,6 +102,17 @@ void RgbKeyboardManager::SetZoneColor(int zone,
                                       uint8_t g,
                                       uint8_t b) {
   DCHECK(RgbkbdClient::Get());
+  // Make sure the given zone is within the valid possible range
+  // of values for zones. The zone colors are stored even if the actual zone
+  // count is not known yet to solve a race condition where colors are set
+  // before rgbkbd is initialized.
+  if (zone < 0 || zone >= kMaxNumberOfZones) {
+    LOG(ERROR) << "Zone #" << zone
+               << " is outside the range for valid possible values [0,"
+               << kMaxNumberOfZones << ").";
+    return;
+  }
+
   background_type_ = BackgroundType::kStaticZones;
   zone_colors_[zone] = SkColorSetRGB(r, g, b);
 
