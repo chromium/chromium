@@ -384,8 +384,15 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   auto* dom_window = opener.openPictureInPictureWindow(
       script_state->GetIsolate(), web_options, exception_state);
 
+  if (!dom_window) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Internal error: no window");
+    resolver->Reject(exception_state);
+    return;
+  }
+
   // If we can't create a window, reject the promise with the exception state.
-  if (!dom_window || exception_state.HadException()) {
+  if (exception_state.HadException()) {
     resolver->Reject(exception_state);
     return;
   }

@@ -803,6 +803,69 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
 }
 
 TEST_F(PictureInPictureControllerTestWithChromeClient,
+       CreateDocumentPictureInPictureWindowThrowsExceptionWhenDomWindowNull) {
+  auto& document = GetDocument();
+  auto& controller = PictureInPictureControllerImpl::From(document);
+  EXPECT_EQ(controller.pictureInPictureWindow(), nullptr);
+
+  V8TestingScope v8_scope;
+  InitializeDocumentPictureInPictureOpener(v8_scope);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  // Enable the DocumentPictureInPictureAPI flag.
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
+
+  // Get past the LocalDOMWindow::isSecureContext() check.
+  const KURL opener_url = GetOpenerURL();
+  document.domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+      nullptr);
+  document.domWindow()->GetSecurityContext().SetSecurityOrigin(
+      SecurityOrigin::Create(opener_url));
+
+  // Set the kPopups sandbox flag. This prevents the creation of the document
+  // picture in picture window.
+  document.domWindow()->GetSecurityContext().SetSandboxFlags(
+      network::mojom::blink::WebSandboxFlags::kPopups);
+
+  // Get past the BindingSecurity::ShouldAllowAccessTo() check.
+  ScriptState* script_state = ToScriptStateForMainWorld(document.GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+
+  // Create the DocumentPictureInPictureOptions.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "DocumentPictureInPicture", "requestWindow");
+
+  v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
+  const auto promise = resolver->Promise();
+  DocumentPictureInPictureOptions* options =
+      DocumentPictureInPictureOptions::Create(promise.GetIsolate(), v8_object,
+                                              exception_state);
+
+  // Set a base URL for the opener window.
+  document.SetBaseURLOverride(opener_url);
+  EXPECT_EQ(opener_url.GetString(), document.BaseURL().GetString());
+
+  // Create document picture in picture window.
+  controller.CreateDocumentPictureInPictureWindow(
+      script_state, *document.domWindow(), options, resolver, exception_state);
+
+  // Verify the document picture in picture window was not created.
+  auto* pictureInPictureWindow = controller.documentPictureInPictureWindow();
+  ASSERT_EQ(pictureInPictureWindow, nullptr);
+
+  // Verify rejected with DOMExceptionCode::kInvalidStateError.
+  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
+  DOMException* dom_exception = V8DOMException::ToWrappable(
+      promise.GetIsolate(), promise.V8Promise()->Result());
+  ASSERT_NE(dom_exception, nullptr);
+  EXPECT_EQ(dom_exception->code(),
+            static_cast<int>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST_F(PictureInPictureControllerTestWithChromeClient,
        CopyStylesToDocumentPictureInPictureWindow) {
   V8TestingScope v8_scope;
   InitializeDocumentPictureInPictureOpener(v8_scope);
