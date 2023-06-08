@@ -73,7 +73,7 @@ class SplitViewDividerView : public views::View,
 
   // A vertical 3-dot button that shows on the split view divider when
   // `ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()` is true.
-  raw_ptr<IconButton, ExperimentalAsh> kebab_button_;
+  raw_ptr<IconButton, ExperimentalAsh> kebab_button_ = nullptr;
 
   // The snap group expanded menu widget and its contents view.
   views::UniqueWidgetPtr snap_group_expanded_menu_widget_;
