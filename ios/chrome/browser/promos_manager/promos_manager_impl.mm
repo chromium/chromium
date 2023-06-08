@@ -52,7 +52,7 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
 
   ScopedListPrefUpdate update(local_state, pref_path);
 
-  base::StringPiece promo_name = promos_manager::NameForPromo(promo);
+  std::string promo_name = promos_manager::NameForPromo(promo);
 
   // Erase `promo_name` if it already exists in `active_promos`; avoid polluting
   // `active_promos` with duplicate `promo_name` entries.
@@ -170,7 +170,7 @@ void PromosManagerImpl::RegisterPromoForSingleDisplay(
   // update the pending promos saved in pref.
   ScopedDictPrefUpdate pending_promos_update(
       local_state_, prefs::kIosPromosManagerSingleDisplayPendingPromos);
-  base::StringPiece promo_name = promos_manager::NameForPromo(promo);
+  std::string promo_name = promos_manager::NameForPromo(promo);
   base::Time becomes_active_time = clock_->Now() + becomes_active_after_period;
   pending_promos_update->Set(promo_name,
                              base::TimeToValue(becomes_active_time));
@@ -190,7 +190,7 @@ void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
   ScopedDictPrefUpdate pending_promos_update(
       local_state_, prefs::kIosPromosManagerSingleDisplayPendingPromos);
 
-  base::StringPiece promo_name = promos_manager::NameForPromo(promo);
+  std::string promo_name = promos_manager::NameForPromo(promo);
 
   // Erase `promo_name` from the single-display and continuous-display active
   // promos lists.

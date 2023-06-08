@@ -9,9 +9,11 @@
 
 #import "base/check.h"
 #import "base/containers/small_map.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/crash/core/common/crash_key.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
@@ -205,6 +207,16 @@
 - (void)displayPromo:(promos_manager::Promo)promo {
   if (tests_hook::DisablePromoManagerFullScreenPromos()) {
     return;
+  }
+
+  // Trying to display a promo while the previous dismissal was not communicated
+  // back to the promos manager.
+  // TODO(crbug.com/1452233): Remove once all promos dismiss themselves.
+  if (current_promo.has_value()) {
+    static crash_reporter::CrashKeyString<40> key("current-promo");
+    crash_reporter::ScopedCrashKeyString crashKey(
+        &key, ShortNameForPromo(current_promo.value()));
+    base::debug::DumpWithoutCrashing();
   }
 
   current_promo = promo;
