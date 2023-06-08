@@ -2007,8 +2007,6 @@ BASE_FEATURE(kRenderArcNotificationsByChrome,
              "RenderArcNotificationsByChrome",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables ChromeOS scalable IPH.
 BASE_FEATURE(kScalableIph, "ScalableIph", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3480,10 +3478,6 @@ bool IsPerDeskZOrderEnabled() {
 
 bool IsRenderArcNotificationsByChromeEnabled() {
   return base::FeatureList::IsEnabled(kRenderArcNotificationsByChrome);
-}
-
-bool IsRgbKeyboardEnabled() {
-  return base::FeatureList::IsEnabled(kRgbKeyboard);
 }
 
 bool IsSameAppWindowCycleEnabled() {

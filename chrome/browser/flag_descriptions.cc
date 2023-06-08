@@ -1149,10 +1149,6 @@ const char kEnableIwaControlledFrameDescription[] =
     "https://github.com/chasephillips/controlled-frame/blob/main/EXPLAINER.md "
     "for more information.";
 
-const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
-const char kEnableRgbKeyboardDescription[] =
-    "Enable RGB Keyboard support on supported devices.";
-
 const char kEnableShortcutCustomizationAppName[] =
     "Enable shortcut customization app";
 const char kEnableShortcutCustomizationAppDescription[] =

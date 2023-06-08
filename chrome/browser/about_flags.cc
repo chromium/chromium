@@ -7345,10 +7345,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePeripheralCustomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPeripheralCustomization)},
 
-    {"enable-rgb-keyboard", flag_descriptions::kEnableRgbKeyboardName,
-     flag_descriptions::kEnableRgbKeyboardDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kRgbKeyboard)},
-
     {"enable-accessibility-accelerators-notifications-timeout",
      flag_descriptions::kAccessibilityAcceleratorNotificationsTimeoutName,
      flag_descriptions::

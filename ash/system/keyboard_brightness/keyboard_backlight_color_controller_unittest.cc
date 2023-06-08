@@ -71,8 +71,8 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 class KeyboardBacklightColorControllerTest : public AshTestBase {
  public:
   KeyboardBacklightColorControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kRgbKeyboard, features::kMultiZoneRgbKeyboard}, {});
+    scoped_feature_list_.InitWithFeatures({features::kMultiZoneRgbKeyboard},
+                                          {});
     set_start_session(false);
   }
 

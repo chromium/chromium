@@ -236,9 +236,7 @@ void InitializeFeatureListDependentDBus() {
   if (shimless_rma::IsShimlessRmaAllowed()) {
     InitializeDBusClient<RmadClient>(bus);
   }
-  if (features::IsRgbKeyboardEnabled()) {
-    InitializeDBusClient<RgbkbdClient>(bus);
-  }
+  InitializeDBusClient<RgbkbdClient>(bus);
   InitializeDBusClient<WilcoDtcSupportdClient>(bus);
 
   if (features::IsSnoopingProtectionEnabled() ||
@@ -284,9 +282,7 @@ void ShutdownDBus() {
   SeneschalClient::Shutdown();
   RuntimeProbeClient::Shutdown();
   ResourcedClient::Shutdown();
-  if (features::IsRgbKeyboardEnabled()) {
-    RgbkbdClient::Shutdown();
-  }
+  RgbkbdClient::Shutdown();
   if (shimless_rma::IsShimlessRmaAllowed()) {
     RmadClient::Shutdown();
   }

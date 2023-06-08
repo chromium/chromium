@@ -194,8 +194,7 @@ void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(
     // User has made a brightness adjustment, or the KBL was made
     // no-longer-forced-off implicitly in response to a user adjustment.
     ShowBubble(SLIDER_TYPE_KEYBOARD_BRIGHTNESS);
-    if (features::IsRgbKeyboardEnabled() &&
-        Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+    if (Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
       // Show the education nudge to change the keyboard backlight color if
       // applicable. |bubble_view_| is used as the anchor view.
       Shell::Get()

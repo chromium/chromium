@@ -24,8 +24,7 @@ class RgbKeyboardManagerTest : public testing::Test {
  public:
   RgbKeyboardManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kRgbKeyboard,
-                              features::kExperimentalRgbKeyboardPatterns},
+        /*enabled_features=*/{features::kExperimentalRgbKeyboardPatterns},
         /*disabled_features=*/{});
     // ImeControllerImpl must be initialized before RgbKeyboardManager.
     ime_controller_ = std::make_unique<ImeControllerImpl>();

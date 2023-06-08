@@ -60,11 +60,6 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
 
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
     mojom::BacklightColor backlight_color) {
-  if (!ash::features::IsRgbKeyboardEnabled()) {
-    keyboard_backlight_receiver_.ReportBadMessage(
-        "Cannot call `SetBacklightColor()` without rgb keyboard enabled");
-    return;
-  }
   DVLOG(4) << __func__ << " backlight_color=" << backlight_color;
   LogKeyboardBacklightColor(backlight_color);
   GetKeyboardBacklightColorController()->SetBacklightColor(

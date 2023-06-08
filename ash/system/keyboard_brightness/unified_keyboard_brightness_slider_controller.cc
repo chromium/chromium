@@ -48,8 +48,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
                           kUnifiedMenuKeyboardBrightnessIcon,
                           IDS_ASH_STATUS_TRAY_BRIGHTNESS),
         model_(model) {
-    if (features::IsRgbKeyboardEnabled() &&
-        Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+    if (Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
       if (button()) {
         button()->SetBackgroundColor(keyboardBrightnessIconBackgroundColor);
       }

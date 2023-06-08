@@ -749,9 +749,6 @@ extern const char kEnablePeripheralCustomizationDescription[];
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 
-extern const char kEnableRgbKeyboardName[];
-extern const char kEnableRgbKeyboardDescription[];
-
 extern const char kEnableShortcutCustomizationAppName[];
 extern const char kEnableShortcutCustomizationAppDescription[];
 
