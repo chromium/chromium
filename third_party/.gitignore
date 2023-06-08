@@ -12,7 +12,6 @@
 /android_build_tools/aapt2/lib64/*.so
 /android_build_tools/apkanalyzer/apkanalyzer.jar
 /android_build_tools/bundletool/*.jar
-/android_ndk/
 /android_prebuilts/build_tools
 /android_protobuf/src
 /android_sdk/androidx_browser/src
@@ -20,6 +19,7 @@
 /android_sdk/sources/
 /android_support_test_runner/lib/
 /android_system_sdk/*.jar
+/android_toolchain/
 /android_tools_internal/
 /android_webview_glue/src
 /androidx/BUILD.gn
