@@ -396,22 +396,22 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         NOTREACHED_NORETURN();
       case DesktopMediaList::Type::kScreen: {
         const DesktopMediaSourceViewStyle kSingleScreenStyle(
-            1,                                       // columns
-            gfx::Size(360, 280),                     // item_size
-            gfx::Rect(),                             // icon_rect
-            gfx::Rect(),                             // label_rect
-            gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
-            gfx::Rect(20, 20, 320, 240),             // image_rect
-            5);                                      // focus_rectangle_inset
+            /*columns=*/1,
+            /*item_size=*/gfx::Size(360, 280),
+            /*icon_rect=*/gfx::Rect(),
+            /*label_rect=*/gfx::Rect(),
+            /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
+            /*image_rect=*/gfx::Rect(20, 20, 320, 240),
+            /*focus_rectangle_inset=*/5);
 
         const DesktopMediaSourceViewStyle kGenericScreenStyle(
-            2,                                       // columns
-            gfx::Size(270, 220),                     // item_size
-            gfx::Rect(),                             // icon_rect
-            gfx::Rect(15, 165, 240, 40),             // label_rect
-            gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
-            gfx::Rect(15, 15, 240, 150),             // image_rect
-            5);                                      // focus_rectangle_inset
+            /*columns=*/2,
+            /*item_size=*/gfx::Size(270, 220),
+            /*icon_rect=*/gfx::Rect(),
+            /*label_rect=*/gfx::Rect(15, 165, 240, 40),
+            /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
+            /*image_rect=*/gfx::Rect(15, 15, 240, 150),
+            /*focus_rectangle_inset=*/5);
 
         std::unique_ptr<views::ScrollView> screen_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
@@ -446,13 +446,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       }
       case DesktopMediaList::Type::kWindow: {
         const DesktopMediaSourceViewStyle kWindowStyle(
-            3,                                     // columns
-            gfx::Size(180, 160),                   // item_size
-            gfx::Rect(10, 120, 20, 20),            // icon_rect
-            gfx::Rect(32, 110, 138, 40),           // label_rect
-            gfx::HorizontalAlignment::ALIGN_LEFT,  // text_alignment
-            gfx::Rect(8, 8, 164, 104),             // image_rect
-            5);                                    // focus_rectangle_inset
+            /*columns=*/3,
+            /*item_size=*/gfx::Size(180, 160),
+            /*icon_rect=*/gfx::Rect(10, 120, 20, 20),
+            /*label_rect=*/gfx::Rect(32, 110, 138, 40),
+            /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_LEFT,
+            /*image_rect=*/gfx::Rect(8, 8, 164, 104),
+            /*focus_rectangle_inset=*/5);
 
         std::unique_ptr<views::ScrollView> window_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
@@ -504,13 +504,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       }
       case DesktopMediaList::Type::kCurrentTab: {
         const DesktopMediaSourceViewStyle kCurrentTabStyle(
-            1,                                       // columns
-            gfx::Size(360, 280),                     // item_size
-            gfx::Rect(),                             // icon_rect
-            gfx::Rect(),                             // label_rect
-            gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
-            gfx::Rect(20, 20, 320, 240),             // image_rect
-            5);                                      // focus_rectangle_inset
+            /*columns=*/1,
+            /*item_size=*/gfx::Size(360, 280),
+            /*icon_rect=*/gfx::Rect(),
+            /*label_rect=*/gfx::Rect(),
+            /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
+            /*image_rect=*/gfx::Rect(20, 20, 320, 240),
+            /*focus_rectangle_inset=*/5);
         std::unique_ptr<views::ScrollView> window_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
         const std::u16string title = l10n_util::GetStringUTF16(
