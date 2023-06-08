@@ -496,7 +496,7 @@ function _makeIconTemplateGetter() {
     r: getSymbolIcon('.readonlyicon'),
     t: getSymbolIcon('.codeicon'),
     R: getSymbolIcon('.relroicon'),
-    x: getSymbolIcon('.dexicon'),
+    x: getSymbolIcon('.dexothericon'),
     m: getSymbolIcon('.dexmethodicon'),
     p: getSymbolIcon('.localpakicon'),
     P: getSymbolIcon('.nonlocalpakicon'),
@@ -521,7 +521,7 @@ function _makeIconTemplateGetter() {
   const metricsIcons = {
     group: getSymbolIcon('.groupicon'),  // Reuse.
     elf: getMiscIcon('.elficon'),
-    dex: getSymbolIcon('.dexicon'),    // Reuse.
+    dex: getMiscIcon('.dexicon'),
     arsc: getSymbolIcon('.arscicon'),  // Reuse.
     metrics: getMiscIcon('.metricsicon'),
     other: getSymbolIcon('.othericon'),  // Reuse.
