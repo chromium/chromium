@@ -146,7 +146,7 @@ base::Time MediaFoundationServiceMonitor::GetEarliestEnableTime(
         ((max_disabling_duration - min_disabling_duration) / gap + 1) *
         min_disabling_duration;
     DVLOG(1) << __func__
-             << "disabling_duration =" << disabling_duration.InDays();
+             << ": disabling_duration=" << disabling_duration.InDays();
   }
 
   return last_disabled_time + disabling_duration;
@@ -158,9 +158,17 @@ bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionDisabledByPref() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto earliest_enable_time = GetEarliestEnableTime(GetDisabledTimesPref());
-  DVLOG(1) << __func__ << "earliest_enable_time =" << earliest_enable_time;
+  DVLOG(1) << __func__ << ": earliest_enable_time=" << earliest_enable_time;
 
   return base::Time::Now() < earliest_enable_time;
+}
+
+// static
+// TODO(crbug.com/1443038): Implement per site disabling.
+bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionAllowedForSite(
+    const GURL& site) {
+  DVLOG(1) << __func__ << ": site='" << site << "'";
+  return true;
 }
 
 // static

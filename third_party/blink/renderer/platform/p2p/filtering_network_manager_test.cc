@@ -111,8 +111,8 @@ class MockNetworkManager : public rtc::NetworkManagerBase {
 
 class MockMediaPermission : public media::MediaPermission {
  public:
-  MockMediaPermission() {}
-  ~MockMediaPermission() override {}
+  MockMediaPermission() = default;
+  ~MockMediaPermission() override = default;
 
   void RequestPermission(Type type,
                          PermissionStatusCB permission_status_cb) override {
@@ -132,6 +132,13 @@ class MockMediaPermission : public media::MediaPermission {
   }
 
   bool IsEncryptedMediaEnabled() override { return true; }
+
+#if BUILDFLAG(IS_WIN)
+  void IsHardwareSecureDecryptionAllowed(
+      IsHardwareSecureDecryptionAllowedCB cb) override {
+    std::move(cb).Run(true);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   void SetMicPermission(bool granted) {
     if (!mic_callback_)

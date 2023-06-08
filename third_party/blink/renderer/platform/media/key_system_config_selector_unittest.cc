@@ -395,9 +395,19 @@ class FakeMediaPermission : public media::MediaPermission {
 
   bool IsEncryptedMediaEnabled() override { return is_encrypted_media_enabled; }
 
+#if BUILDFLAG(IS_WIN)
+  void IsHardwareSecureDecryptionAllowed(
+      IsHardwareSecureDecryptionAllowedCB cb) override {
+    std::move(cb).Run(is_hardware_secure_decryption_allowed);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   int requests = 0;
   bool is_granted = false;
   bool is_encrypted_media_enabled = true;
+#if BUILDFLAG(IS_WIN)
+  bool is_hardware_secure_decryption_allowed = true;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 class FakeWebLocalFrameDelegate
@@ -1869,5 +1879,44 @@ TEST_F(KeySystemConfigSelectorTest,
   SelectConfigRequestsPermissionAndReturnsConfig();
   ASSERT_EQ("b", config_.label);
 }
+
+// hardware secure decryption preferences
+#if BUILDFLAG(IS_WIN)
+TEST_F(KeySystemConfigSelectorTest, HardwareDecryption_Allowed) {
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kRequireHwSecureCodec;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  media_permission_->is_hardware_secure_decryption_allowed = true;
+  SelectConfigReturnsConfig();
+}
+
+TEST_F(KeySystemConfigSelectorTest, HardwareDecryption_NotAllowed) {
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kRequireHwSecureCodec;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  media_permission_->is_hardware_secure_decryption_allowed = false;
+  SelectConfigReturnsError();
+}
+
+TEST_F(KeySystemConfigSelectorTest, NotHardwareSecureDecryption_Allowed) {
+  auto config = UsableConfiguration();
+  configs_.push_back(config);
+
+  media_permission_->is_hardware_secure_decryption_allowed = false;
+  SelectConfig();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace blink

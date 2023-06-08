@@ -305,6 +305,7 @@ static_library("content_shell_lib") {
     "//device/bluetooth",
     "//media",
     "//media/mojo:buildflags",
+    "//media/mojo/services",
     "//net",
     "//net:net_resources",
     "//ppapi/buildflags",

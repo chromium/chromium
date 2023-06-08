@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/eme_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_media_capability.h"
@@ -108,6 +107,12 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
 
   void OnPermissionResult(std::unique_ptr<SelectionRequest> request,
                           bool is_permission_granted);
+
+#if BUILDFLAG(IS_WIN)
+  void OnHardwareSecureDecryptionAllowedResult(
+      std::unique_ptr<SelectionRequest> request,
+      bool is_hardware_secure_decryption_allowed);
+#endif  // BUILDFLAG(IS_WIN)
 
   ConfigurationSupport GetSupportedConfiguration(
       const std::string& key_system,

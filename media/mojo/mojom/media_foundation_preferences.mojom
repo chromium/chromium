@@ -6,6 +6,6 @@ module media.mojom;
 
 // A service to get media foundation cdm preferences.
 interface MediaFoundationPreferences {
-  // Returns whether or not hardware decryption is preferred.
-  IsHardwareSecureDecryptionPreferred() => (bool result);
+  // Returns whether or not hardware secure decryption is allowed.
+  IsHardwareSecureDecryptionAllowed() => (bool allowed);
 };

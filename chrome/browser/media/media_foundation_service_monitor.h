@@ -30,6 +30,10 @@ class MediaFoundationServiceMonitor final
   // `disabled_times` from "Local State".
   static bool IsHardwareSecureDecryptionDisabledByPref();
 
+  // Returns whether or not hardware secure decryption is allowed for a `site`
+  // based on information from "Pref service".
+  static bool IsHardwareSecureDecryptionAllowedForSite(const GURL& site);
+
   // Returns the MediaFoundationServiceMonitor singleton.
   static MediaFoundationServiceMonitor* GetInstance();
 

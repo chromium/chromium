@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -125,6 +126,11 @@
 #include "content/shell/browser/bluetooth/shell_bluetooth_delegate_impl_client.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "media/mojo/mojom/media_foundation_preferences.mojom.h"
+#include "media/mojo/services/media_foundation_preferences.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace content {
 
 namespace {
@@ -228,6 +234,18 @@ void BindNetworkHintsHandler(
   network_hints::SimpleNetworkHintsHandlerImpl::Create(frame_host,
                                                        std::move(receiver));
 }
+
+#if BUILDFLAG(IS_WIN)
+void BindMediaFoundationPreferences(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::MediaFoundationPreferences> receiver) {
+  // Passing in a NullCallback since we don't have MediaFoundationServiceMonitor
+  // in content.
+  MediaFoundationPreferencesImpl::Create(
+      frame_host->GetSiteInstance()->GetSiteURL(), base::NullCallback(),
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
   std::string cmdline_origins(
@@ -568,6 +586,10 @@ void ShellContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       ->ExposeInterfacesToRenderFrame(map);
   map->Add<network_hints::mojom::NetworkHintsHandler>(
       base::BindRepeating(&BindNetworkHintsHandler));
+#if BUILDFLAG(IS_WIN)
+  map->Add<media::mojom::MediaFoundationPreferences>(
+      base::BindRepeating(&BindMediaFoundationPreferences));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void ShellContentBrowserClient::OpenURL(

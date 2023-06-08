@@ -11,22 +11,31 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 MediaFoundationPreferencesImpl::MediaFoundationPreferencesImpl(
-    IsHardwareSecureDecryptionDisabledCB cb)
-    : is_hardware_decryption_disabled_cb_(cb) {}
+    const GURL& site,
+    IsHardwareSecureDecryptionAllowedCB cb)
+    : site_(site), is_hardware_secure_decryption_allowed_cb_(cb) {}
 MediaFoundationPreferencesImpl::~MediaFoundationPreferencesImpl() = default;
 
 // static
 void MediaFoundationPreferencesImpl::Create(
-    IsHardwareSecureDecryptionDisabledCB cb,
+    const GURL& site,
+    IsHardwareSecureDecryptionAllowedCB cb,
     mojo::PendingReceiver<media::mojom::MediaFoundationPreferences> receiver) {
   DVLOG(2) << __func__;
 
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<MediaFoundationPreferencesImpl>(cb),
+      std::make_unique<MediaFoundationPreferencesImpl>(site, cb),
       std::move(receiver));
 }
 
-void MediaFoundationPreferencesImpl::IsHardwareSecureDecryptionPreferred(
-    IsHardwareSecureDecryptionPreferredCallback callback) {
-  std::move(callback).Run(!is_hardware_decryption_disabled_cb_.Run());
+void MediaFoundationPreferencesImpl::IsHardwareSecureDecryptionAllowed(
+    IsHardwareSecureDecryptionAllowedCallback cb) {
+  DVLOG(2) << __func__;
+
+  if (!is_hardware_secure_decryption_allowed_cb_) {
+    std::move(cb).Run(true);
+    return;
+  }
+
+  std::move(cb).Run(is_hardware_secure_decryption_allowed_cb_.Run(site_));
 }

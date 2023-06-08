@@ -6,6 +6,7 @@
 #define MEDIA_BASE_MEDIA_PERMISSION_H_
 
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -14,6 +15,9 @@ namespace media {
 class MEDIA_EXPORT MediaPermission {
  public:
   using PermissionStatusCB = base::OnceCallback<void(bool)>;
+#if BUILDFLAG(IS_WIN)
+  using IsHardwareSecureDecryptionAllowedCB = base::OnceCallback<void(bool)>;
+#endif  // BUILDFLAG(IS_WIN)
 
   enum Type {
     PROTECTED_MEDIA_IDENTIFIER,
@@ -43,6 +47,12 @@ class MEDIA_EXPORT MediaPermission {
   // the use of Clear Key key systems, which is always allowed as required by
   // the spec.
   virtual bool IsEncryptedMediaEnabled() = 0;
+
+#if BUILDFLAG(IS_WIN)
+  // Whether to allow the use of hardware secure decryption.
+  virtual void IsHardwareSecureDecryptionAllowed(
+      IsHardwareSecureDecryptionAllowedCB cb) = 0;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace media
