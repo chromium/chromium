@@ -16,7 +16,6 @@ include_rules = [
     "+base/files",
     "+base/functional/bind.h",
     "+base/functional/callback_helpers.h",
-    "+base/guid.h",
     "+base/i18n/icu_util.h",
     "+base/json",
     "+base/lazy_instance.h",

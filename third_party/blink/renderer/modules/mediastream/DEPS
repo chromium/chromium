@@ -29,7 +29,6 @@ include_rules = [
     "+base/files/file.h",
     "+base/metrics/field_trial.h",
 
-    "+base/guid.h",
     "+base/token.h",
     "+base/sequence_checker.h",
     "+base/trace_event/trace_event.h",

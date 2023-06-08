@@ -75,7 +75,6 @@ _CONFIG = [
             'base::FilePath',
             'base::FunctionRef',
             'base::GetUniqueIdForProcess',
-            'base::GUID',
             'base::HexStringToUInt64',
             'base::Hours',
             "base::i18n::TextDirection",

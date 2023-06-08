@@ -16,33 +16,6 @@
 
 namespace base {
 
-TEST(UuidTest, DeprecatedUuidCorrectlyFormatted) {
-  constexpr int kIterations = 10;
-  for (int i = 0; i < kIterations; ++i) {
-    const std::string guid = GenerateUuid();
-    EXPECT_TRUE(IsValidUuid(guid));
-    EXPECT_TRUE(IsValidUuidOutputString(guid));
-    EXPECT_TRUE(IsValidUuid(ToLowerASCII(guid)));
-    EXPECT_TRUE(IsValidUuid(ToUpperASCII(guid)));
-  }
-}
-
-TEST(UuidTest, DeprecatedUuidBasicUniqueness) {
-  constexpr int kIterations = 10;
-  for (int i = 0; i < kIterations; ++i) {
-    const std::string guid_str1 = GenerateUuid();
-    const std::string guid_str2 = GenerateUuid();
-    EXPECT_EQ(36U, guid_str1.length());
-    EXPECT_EQ(36U, guid_str2.length());
-    EXPECT_NE(guid_str1, guid_str2);
-
-    const Uuid guid1 = Uuid::ParseCaseInsensitive(guid_str1);
-    EXPECT_TRUE(guid1.is_valid());
-    const Uuid guid2 = Uuid::ParseCaseInsensitive(guid_str2);
-    EXPECT_TRUE(guid2.is_valid());
-  }
-}
-
 namespace {
 
 // The format of Uuid version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
