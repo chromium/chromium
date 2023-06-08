@@ -258,4 +258,13 @@ class StackVector
 
 }  // namespace base
 
+// Opt out of libc++ container annotations for StackAllocator. It seems to slow
+// down some tests enough to cause timeouts(?) crbug.com/1444659
+#ifdef _LIBCPP_HAS_ASAN_CONTAINER_ANNOTATIONS_FOR_ALL_ALLOCATORS
+template <typename T, size_t stack_capacity, typename FallbackAllocator>
+struct ::std::__asan_annotate_container_with_allocator<
+    base::StackAllocator<T, stack_capacity, FallbackAllocator>>
+    : ::std::false_type {};
+#endif  // _LIBCPP_HAS_ASAN_CONTAINER_ANNOTATIONS_FOR_ALL_ALLOCATORS
+
 #endif  // BASE_CONTAINERS_STACK_CONTAINER_H_
