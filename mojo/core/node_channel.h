@@ -208,7 +208,10 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   // for this channel.
   void InitializeLocalCapabilities();
 
-  const raw_ptr<Delegate> delegate_;
+  // This dangling raw_ptr occurred in:
+  // mojo_unittests: NodeChannelTest.MessagesCannotBeSmallerThanOldestVersion
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425190/test-results?q=ExactID%3Aninja%3A%2F%2Fmojo%3Amojo_unittests%2FNodeChannelTest.MessagesCannotBeSmallerThanOldestVersion+VHash%3A589215eb23c7875a
+  const raw_ptr<Delegate, FlakyDanglingUntriaged> delegate_;
   const ProcessErrorCallback process_error_callback_;
 
   base::Lock channel_lock_;

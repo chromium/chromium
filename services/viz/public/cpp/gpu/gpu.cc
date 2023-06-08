@@ -211,7 +211,10 @@ class Gpu::EstablishRequest
 
   virtual ~EstablishRequest() = default;
 
-  const raw_ptr<Gpu> parent_;
+  // This dangling raw_ptr occurred in:
+  // services_unittests: GpuTest.DestroyGpuWithPendingRequest
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425109/test-results?q=ExactID%3Aninja%3A%2F%2Fservices%3Aservices_unittests%2FGpuTest.DestroyGpuWithPendingRequest+VHash%3A90ed0003bfc678b9&sortby=&groupby=
+  const raw_ptr<Gpu, FlakyDanglingUntriaged> parent_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   raw_ptr<base::WaitableEvent> establish_event_ = nullptr;
 
