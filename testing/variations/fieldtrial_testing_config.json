@@ -4521,7 +4521,7 @@
             ]
         }
     ],
-    "DiacriticsOnPhysicalKeyboardLongpress": [
+    "DiacriticsOnPhysicalKeyboardLongpressOnByDefault": [
         {
             "platforms": [
                 "chromeos"
@@ -4530,7 +4530,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DiacriticsOnPhysicalKeyboardLongpress"
+                        "DiacriticsOnPhysicalKeyboardLongpress",
+                        "DiacriticsOnPhysicalKeyboardLongpressDefaultOn"
                     ]
                 }
             ]
