@@ -67,6 +67,9 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
   if (delegate_->SequenceNumber()) {
     metadata->setSequenceNumber(*delegate_->SequenceNumber());
   }
+  if (delegate_->AbsCaptureTime()) {
+    metadata->setAbsCaptureTime(*delegate_->AbsCaptureTime());
+  }
   return metadata;
 }
 

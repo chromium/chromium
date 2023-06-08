@@ -10,4 +10,5 @@ dictionary RTCEncodedAudioFrameMetadata {
     sequence<unsigned long> contributingSources;
     octet payloadType;
     unsigned short? sequenceNumber;
+    [RuntimeEnabled=RTCEncodedAudioFrameAbsCaptureTime] unsigned long long absCaptureTime;
 };

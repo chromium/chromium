@@ -2983,6 +2983,10 @@
       base_feature: "none",
     },
     {
+      name: "RTCEncodedAudioFrameAbsCaptureTime",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedAudioFrameClone",
       status: "experimental",
     },

@@ -30,15 +30,17 @@ DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer() const {
   ArrayBufferContents contents;
   {
     base::AutoLock lock(lock_);
-    if (!webrtc_frame_)
+    if (!webrtc_frame_) {
       return nullptr;
+    }
 
     auto data = webrtc_frame_->GetData();
     contents =
         ArrayBufferContents(data.size(), 1, ArrayBufferContents::kNotShared,
                             ArrayBufferContents::kDontInitialize);
-    if (UNLIKELY(!contents.Data()))
+    if (UNLIKELY(!contents.Data())) {
       OOM_CRASH(data.size());
+    }
     memcpy(contents.Data(), data.data(), data.size());
   }
   return DOMArrayBuffer::Create(std::move(contents));
@@ -72,6 +74,25 @@ absl::optional<uint16_t> RTCEncodedAudioFrameDelegate::SequenceNumber() const {
 Vector<uint32_t> RTCEncodedAudioFrameDelegate::ContributingSources() const {
   base::AutoLock lock(lock_);
   return contributing_sources_;
+}
+
+absl::optional<uint64_t> RTCEncodedAudioFrameDelegate::AbsCaptureTime() const {
+  base::AutoLock lock(lock_);
+  if (webrtc_frame_ &&
+      webrtc_frame_->GetDirection() ==
+          webrtc::TransformableFrameInterface::Direction::kReceiver) {
+    webrtc::TransformableAudioFrameInterface* incoming_audio_frame =
+        static_cast<webrtc::TransformableAudioFrameInterface*>(
+            webrtc_frame_.get());
+
+    auto abs_capture_time_struct =
+        incoming_audio_frame->GetHeader().extension.absolute_capture_time;
+    if (abs_capture_time_struct) {
+      return abs_capture_time_struct->absolute_capture_timestamp;
+    }
+  }
+
+  return absl::nullopt;
 }
 
 std::unique_ptr<webrtc::TransformableFrameInterface>
