@@ -7257,11 +7257,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOsFeedbackDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kOsFeedback)},
 
-    {"link-cross-device-dog-food-feedback",
-     flag_descriptions::kLinkCrossDeviceDogfoodFeedbackName,
-     flag_descriptions::kLinkCrossDeviceDogfoodFeedbackDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLinkCrossDeviceDogfoodFeedback)},
-
     {"fast-pair", flag_descriptions::kFastPairName,
      flag_descriptions::kFastPairDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPair)},

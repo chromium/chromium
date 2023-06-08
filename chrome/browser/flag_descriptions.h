@@ -3465,9 +3465,6 @@ extern const char kLacrosMoveProfileMigrationDescription[];
 extern const char kLacrosProfileMigrationForceOffName[];
 extern const char kLacrosProfileMigrationForceOffDescription[];
 
-extern const char kLinkCrossDeviceDogfoodFeedbackName[];
-extern const char kLinkCrossDeviceDogfoodFeedbackDescription[];
-
 extern const char kVirtualKeyboardNewHeaderName[];
 extern const char kVirtualKeyboardNewHeaderDescription[];
 
