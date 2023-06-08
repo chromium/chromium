@@ -138,7 +138,11 @@ bool CopyTreeWorkItem::IsFileInUse(const base::FilePath& path) {
                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                    nullptr, OPEN_EXISTING, 0, nullptr);
   if (handle == INVALID_HANDLE_VALUE) {
-    DPCHECK(::GetLastError() == ERROR_SHARING_VIOLATION);
+    // By and large, we expect the error to be ERROR_SHARING_VIOLATION if the
+    // file is being executed (see above). It may also be something like
+    // ERROR_ACCESS_DENIED; e.g., if the file was deleted but open handles to it
+    // remain. Consider any failure to open the file to mean that it's in-use
+    // and shouldn't be replaced.
     return true;
   }
 
