@@ -4537,23 +4537,6 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpc": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositorThreadIpc"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
