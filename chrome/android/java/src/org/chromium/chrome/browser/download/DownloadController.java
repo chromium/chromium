@@ -64,7 +64,6 @@ public class DownloadController {
      */
     @CalledByNative
     private static void onDownloadCompleted(DownloadInfo downloadInfo) {
-        DownloadMetrics.recordDownloadDirectoryType(downloadInfo.getFilePath());
         MediaStoreHelper.addImageToGalleryOnSDCard(
                 downloadInfo.getFilePath(), downloadInfo.getMimeType());
 

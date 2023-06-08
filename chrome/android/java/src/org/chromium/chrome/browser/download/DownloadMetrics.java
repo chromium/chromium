@@ -11,8 +11,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 
-import java.util.ArrayList;
-
 /**
  * Records download related metrics on Android.
  */
@@ -64,25 +62,5 @@ public class DownloadMetrics {
                     "Download.OpenDownloadsFromMenu.PerProfileType", type,
                     BrowserProfileType.MAX_VALUE + 1);
         }
-    }
-
-    /**
-     * Records download directory type when a download is completed.
-     * @param filePath The absolute file path of the download.
-     */
-    public static void recordDownloadDirectoryType(String filePath) {
-        if (filePath == null || filePath.isEmpty()) return;
-
-        DownloadDirectoryProvider.getInstance().getAllDirectoriesOptions(
-                (ArrayList<DirectoryOption> dirs) -> {
-                    for (DirectoryOption dir : dirs) {
-                        if (filePath.contains(dir.location)) {
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    "MobileDownload.Location.Download.DirectoryType", dir.type,
-                                    DirectoryOption.DownloadLocationDirectoryType.NUM_ENTRIES);
-                            return;
-                        }
-                    }
-                });
     }
 }
