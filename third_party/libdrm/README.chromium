@@ -1,7 +1,7 @@
 Name: libdrm
 Short Name: libdrm
 URL: https://chromium.googlesource.com/chromiumos/third_party/libdrm
-Version: 2.4.114
+Version: 2.4.115
 License: MIT, GPL
 License File: NOT_SHIPPED
 Security Critical: yes
