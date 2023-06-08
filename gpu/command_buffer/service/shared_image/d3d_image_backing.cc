@@ -346,28 +346,6 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   return backing;
 }
 
-std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromGLTexture(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    scoped_refptr<gles2::TexturePassthrough> gl_texture,
-    size_t array_slice) {
-  DCHECK(gl_texture);
-  GLenum texture_target = gl_texture->target();
-  auto gl_texture_holder = base::MakeRefCounted<GLTextureHolder>(
-      base::PassKey<D3DImageBacking>(), std::move(gl_texture),
-      gl::ScopedEGLImage());
-  return base::WrapUnique(new D3DImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), {std::move(gl_texture_holder)},
-      /*dxgi_shared_handle_state=*/nullptr, texture_target, array_slice));
-}
-
 // static
 std::vector<std::unique_ptr<SharedImageBacking>>
 D3DImageBacking::CreateFromVideoTexture(
