@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
@@ -208,17 +209,31 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
     // This is done regardless of GetAvatarSyncErrorType() because the icon
     // should reflect that sync-the-feature is off. The error will still be
     // highlighted by other parts of the UI.
-    return ColoredImageForMenu(kSyncPausedCircleIcon, ui::kColorIcon);
+    return features::IsChromeRefresh2023()
+               ? ColoredImageForMenu(kSyncDisabledChromeRefreshIcon,
+                                     kColorProfileMenuSyncOffIcon)
+               : ColoredImageForMenu(kSyncPausedCircleIcon, ui::kColorIcon);
   }
 
   absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
-  if (!error)
-    return ColoredImageForMenu(kSyncCircleIcon, ui::kColorAlertLowSeverity);
+  if (!error) {
+    return features::IsChromeRefresh2023()
+               ? ColoredImageForMenu(kSyncChromeRefreshIcon,
+                                     kColorProfileMenuSyncIcon)
+               : ColoredImageForMenu(kSyncCircleIcon,
+                                     ui::kColorAlertLowSeverity);
+  }
 
   ui::ColorId color_id = error == AvatarSyncErrorType::kSyncPaused
                              ? ui::kColorButtonBackgroundProminent
                              : ui::kColorAlertHighSeverity;
-  return ColoredImageForMenu(kSyncPausedCircleIcon, color_id);
+  ui::ColorId refreshed_color_id = error == AvatarSyncErrorType::kSyncPaused
+                                       ? kColorProfileMenuSyncPausedIcon
+                                       : kColorProfileMenuSyncErrorIcon;
+  return features::IsChromeRefresh2023()
+             ? ColoredImageForMenu(kSyncDisabledChromeRefreshIcon,
+                                   refreshed_color_id)
+             : ColoredImageForMenu(kSyncPausedCircleIcon, color_id);
 }
 
 std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
