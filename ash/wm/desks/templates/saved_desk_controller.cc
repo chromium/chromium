@@ -9,10 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
-#include "base/json/json_string_value_serializer.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/admin_template_model.h"
@@ -29,42 +26,6 @@ constexpr base::TimeDelta kAdminTemplateUpdateDelay = base::Seconds(5);
 // If the admin storage model isn't available when an auto launch is initiated,
 // we will keep retrying for this amount of time before giving up.
 constexpr base::TimeDelta kMaxAutoLaunchAttempt = base::Seconds(10);
-
-constexpr char kPlaceholderUuid[] = "2a0fe322-c912-468e-bd9c-5e8fddcc1606";
-constexpr char kPlaceholderName[] = "Test template";
-constexpr char kPlaceholderJson[] = R"json(
-{
-   "mgndgikekgjfcpckkfioiadnlibdjbkf": {
-      "1": {
-         "active_tab_index": 0,
-         "app_name": "",
-         "index": 0,
-         "title": "Chrome",
-         "urls": [ "https://www.google.com/" ],
-         "window_state_type": 0
-      }
-   }
-})json";
-
-// Creates a placeholder template that will be used during development.
-std::unique_ptr<DeskTemplate> CreatePlaceholderTemplate() {
-  auto desk_template = std::make_unique<DeskTemplate>(
-      base::Uuid::ParseLowercase(kPlaceholderUuid), DeskTemplateSource::kPolicy,
-      kPlaceholderName, base::Time::Now(), DeskTemplateType::kTemplate);
-
-  // Create restore data from json.
-  base::JSONReader::Result restore_data =
-      base::JSONReader::ReadAndReturnValueWithError(kPlaceholderJson);
-  if (!restore_data.has_value()) {
-    return nullptr;
-  }
-
-  desk_template->set_desk_restore_data(
-      std::make_unique<app_restore::RestoreData>(
-          std::move(restore_data).value()));
-
-  return desk_template;
-}
 
 void PopulateAdminTemplateMetadata(
     const desks_storage::DeskModel::GetAllEntriesResult& entries_lookup_result,
@@ -119,11 +80,6 @@ SavedDeskController::GetAdminTemplateMetadata() const {
   if (auto* admin_model = GetAdminModel()) {
     PopulateAdminTemplateMetadata(admin_model->GetAllEntries(), &metadata);
   }
-
-  // Make sure we always at least have the placeholder.
-  metadata.push_back(AdminTemplateMetadata{
-      .uuid = base::Uuid::ParseLowercase(kPlaceholderUuid),
-      .name = base::UTF8ToUTF16(base::StringPiece(kPlaceholderName))});
 
   return metadata;
 }
@@ -242,11 +198,6 @@ std::unique_ptr<DeskTemplate> SavedDeskController::GetAdminTemplate(
   if (admin_template_for_testing_ &&
       admin_template_for_testing_->uuid() == template_uuid) {
     return admin_template_for_testing_->Clone();
-  }
-
-  auto placeholder_template = CreatePlaceholderTemplate();
-  if (placeholder_template && template_uuid == placeholder_template->uuid()) {
-    return placeholder_template;
   }
 
   if (auto* admin_model = GetAdminModel()) {
