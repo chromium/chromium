@@ -898,6 +898,9 @@ extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 extern const char kFillingAcrossGroupedSitesName[];
 extern const char kFillingAcrossGroupedSitesDescription[];
 
+extern const char kHTMLPopoverAttributeName[];
+extern const char kHTMLPopoverAttributeDescription[];
+
 extern const char kFillOnAccountSelectName[];
 extern const char kFillOnAccountSelectDescription[];
 
