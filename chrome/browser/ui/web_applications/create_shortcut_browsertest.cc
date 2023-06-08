@@ -91,7 +91,13 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount("CreateShortcut"));
 }
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
+// TODO(crbug.com/1449002): flaky on Mac11 Tests builder.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InstallSourceRecorded DISABLED_InstallSourceRecorded
+#else
+#define MAYBE_InstallSourceRecorded InstallSourceRecorded
+#endif
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, MAYBE_InstallSourceRecorded) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // LatestWebAppInstallSource should be correctly set and reported to UMA for
