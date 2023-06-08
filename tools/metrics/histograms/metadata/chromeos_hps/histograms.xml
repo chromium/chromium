@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.TurnOn.Result" enum="HpsTurnOnResult"
-    expires_after="2023-10-01">
+    expires_after="2023-12-04">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>

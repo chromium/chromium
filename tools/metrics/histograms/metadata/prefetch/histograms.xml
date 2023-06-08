@@ -410,7 +410,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.Prefetch.NumExistingEligiblePrefetchWithMatchingURL"
-    units="count" expires_after="2023-09-24">
+    units="count" expires_after="2023-12-04">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.Prefetch.NumExistingPrefetchWithMatchingURLAndReferrer"
-    units="count" expires_after="2023-09-24">
+    units="count" expires_after="2023-12-04">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.Prefetch.NumExistingPrefetchWithMatchingURLAndRenderFrameHost"
-    units="count" expires_after="2023-09-24">
+    units="count" expires_after="2023-12-04">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.Prefetch.NumExistingServablePrefetchWithMatchingURL"
-    units="count" expires_after="2023-09-24">
+    units="count" expires_after="2023-12-04">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -491,7 +491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus"
-    enum="PrefetchStreamingURLLoaderStatus" expires_after="2023-09-24">
+    enum="PrefetchStreamingURLLoaderStatus" expires_after="2023-12-04">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>

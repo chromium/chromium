@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Action"
-    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2023-09-22">
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2023-12-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.IsOnline"
-    enum="BooleanYesNo" expires_after="2023-09-22">
+    enum="BooleanYesNo" expires_after="2023-12-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.IsTopLanguageSelected"
-    enum="BooleanYesNo" expires_after="2023-09-22">
+    enum="BooleanYesNo" expires_after="2023-12-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.OtherLanguagesShown"
-    enum="BooleanYesNo" expires_after="2023-09-22">
+    enum="BooleanYesNo" expires_after="2023-12-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.ChromeUILanguageInULP"
-    enum="ULPLanguageStatus" expires_after="2023-09-22">
+    enum="ULPLanguageStatus" expires_after="2023-12-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP"
-    enum="ULPLanguageStatus" expires_after="2023-09-22">
+    enum="ULPLanguageStatus" expires_after="2023-12-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

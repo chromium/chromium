@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Backend.TransactionCommitError"
-    enum="SqliteLoggedResultCode" expires_after="2023-10-01">
+    enum="SqliteLoggedResultCode" expires_after="2023-12-04">
   <owner>tommycli@chromium.org</owner>
   <owner>asully@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Backend.TransactionCommitSuccess"
-    enum="BooleanSuccess" expires_after="2023-10-01">
+    enum="BooleanSuccess" expires_after="2023-12-04">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.BrowsingDataLifetime.Duration.BrowserShutdownDeletion"
-    units="ms" expires_after="2023-10-01">
+    units="ms" expires_after="2023-12-04">
   <owner>ydago@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1366,7 +1366,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.HadUnclusteredVisitsToCluster"
-    enum="Boolean" expires_after="2023-10-01">
+    enum="Boolean" expires_after="2023-12-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1477,7 +1477,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence"
-    enum="Boolean" expires_after="2023-10-01">
+    enum="Boolean" expires_after="2023-12-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1517,7 +1517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.ContextClusterer.NumClusters.AtCleanUp"
-    units="num clusters" expires_after="2023-10-01">
+    units="num clusters" expires_after="2023-12-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1551,7 +1551,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.NumUnpersistedVisitsBeforeClusterPersisted"
-    units="num unpersisted visits" expires_after="2023-10-01">
+    units="num unpersisted visits" expires_after="2023-12-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1608,7 +1608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.KeywordCache.Latency" units="ms"
-    expires_after="2023-10-01">
+    expires_after="2023-12-04">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1867,7 +1867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UpdateClusters.TimeBetweenTasks" units="ms"
-    expires_after="2023-10-01">
+    expires_after="2023-12-04">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -2078,7 +2078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V3" units="domains"
-    expires_after="2023-09-24">
+    expires_after="2023-12-04">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2403,7 +2403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MigrateFailureFromVersion" units="units"
-    expires_after="2023-10-01">
+    expires_after="2023-12-04">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
