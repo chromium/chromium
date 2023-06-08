@@ -342,7 +342,7 @@ bool MainThreadDebugger::canExecuteScripts(int context_group_id) {
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kAllowDevToolsMainThreadDebuggerForMutipleMainFrames)) {
+          features::kAllowDevToolsMainThreadDebuggerForMultipleMainFrames)) {
     return true;
   }
 

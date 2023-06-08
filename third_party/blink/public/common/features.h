@@ -1165,7 +1165,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCSPWildcardsInPermissionsPolicies);
 // Allows running DevTools main thread debugger even when a renderer process
 // hosts multiple main frames.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAllowDevToolsMainThreadDebuggerForMutipleMainFrames);
+    kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
 
 // When enabled, LCP critical path predictor will optimize the subsequent visits
 // to websites using performance hints collected in the past page loads.

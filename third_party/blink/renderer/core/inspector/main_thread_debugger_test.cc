@@ -47,10 +47,10 @@ class MainThreadDebuggerMultipleMainFramesTest
   MainThreadDebuggerMultipleMainFramesTest() {
     if (IsDebuggerAllowed()) {
       scoped_feature_list_.InitAndEnableFeature(
-          features::kAllowDevToolsMainThreadDebuggerForMutipleMainFrames);
+          features::kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kAllowDevToolsMainThreadDebuggerForMutipleMainFrames);
+          features::kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
     }
   }
   ~MainThreadDebuggerMultipleMainFramesTest() override = default;

@@ -1917,8 +1917,8 @@ BASE_FEATURE(kCSPWildcardsInPermissionsPolicies,
              "CSPWildcardsInPermissionsPolicies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAllowDevToolsMainThreadDebuggerForMutipleMainFrames,
-             "AllowDevToolsMainThreadDebuggerForMutipleMainFrames",
+BASE_FEATURE(kAllowDevToolsMainThreadDebuggerForMultipleMainFrames,
+             "AllowDevToolsMainThreadDebuggerForMultipleMainFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLCPCriticalPathPredictor,
