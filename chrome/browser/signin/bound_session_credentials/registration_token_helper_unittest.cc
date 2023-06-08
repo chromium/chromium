@@ -53,7 +53,7 @@ TEST_F(RegistrationTokenHelperTest, Success) {
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id);
 
   EXPECT_TRUE(
-      signin::VefiryJwtSingature(registration_token, algorithm, pubkey));
+      signin::VerifyJwtSignature(registration_token, algorithm, pubkey));
 
   const auto& wrapped_key = future.Get()->wrapped_binding_key;
   EXPECT_EQ(wrapped_key, unexportable_key_service().GetWrappedKey(key_id));

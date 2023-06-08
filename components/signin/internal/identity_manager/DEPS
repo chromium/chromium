@@ -6,6 +6,7 @@ include_rules = [
   "+components/signin/public/android/jni_headers",
   "+components/signin/public/android/test_support_jni_headers",
   "+components/supervised_user/core/common",
+  "+components/unexportable_keys",
   "+google_apis",
   "+mojo/public",
 ]

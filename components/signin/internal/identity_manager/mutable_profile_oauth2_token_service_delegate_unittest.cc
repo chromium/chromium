@@ -45,6 +45,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/internal/identity_manager/token_binding_helper.h"  // nogncheck
+#include "components/unexportable_keys/fake_unexportable_key_service.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 class MutableProfileOAuth2TokenServiceDelegateTest
     : public testing::Test,
       public OAuth2AccessTokenConsumer,
@@ -106,11 +111,19 @@ class MutableProfileOAuth2TokenServiceDelegateTest
 
   std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate>
   CreateOAuth2ServiceDelegate(
-      signin::AccountConsistencyMethod account_consistency) {
+      signin::AccountConsistencyMethod account_consistency
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      std::unique_ptr<TokenBindingHelper> token_binding_helper = nullptr
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  ) {
     return std::make_unique<MutableProfileOAuth2TokenServiceDelegate>(
         client_.get(), &account_tracker_service_,
         network::TestNetworkConnectionTracker::GetInstance(), token_web_data_,
         account_consistency, revoke_all_tokens_on_load_,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+        std::move(token_binding_helper),
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
         MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback());
   }
 
@@ -1439,3 +1452,57 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {
   EXPECT_TRUE(other_delegate->RefreshTokenIsAvailable(account_id));
   EXPECT_EQ("token", other_delegate->GetRefreshToken(account_id));
 }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, UpdateBoundToken) {
+  unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service;
+  auto token_binding_helper =
+      std::make_unique<TokenBindingHelper>(fake_unexportable_key_service);
+  std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate =
+      CreateOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled,
+                                  std::move(token_binding_helper));
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  EXPECT_TRUE(delegate->GetWrappedBindingKey(account_id).empty());
+
+  // Set bound refresh token.
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  delegate->UpdateCredentials(account_id, "refresh_token",
+                              kFakeWrappedBindingKey);
+  EXPECT_EQ(delegate->GetWrappedBindingKey(account_id), kFakeWrappedBindingKey);
+
+  // Update bound refresh token.
+  const std::vector<uint8_t> kFakeWrappedBindingKey2 = {4, 5, 6};
+  delegate->UpdateCredentials(account_id, "refresh_token2",
+                              kFakeWrappedBindingKey2);
+  EXPECT_EQ(delegate->GetWrappedBindingKey(account_id),
+            kFakeWrappedBindingKey2);
+
+  // Invalidate bound refresh token.
+  delegate->UpdateCredentials(account_id, GaiaConstants::kInvalidRefreshToken);
+  EXPECT_TRUE(delegate->GetWrappedBindingKey(account_id).empty());
+  delegate->Shutdown();
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeBoundToken) {
+  unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service;
+  auto token_binding_helper =
+      std::make_unique<TokenBindingHelper>(fake_unexportable_key_service);
+  std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate =
+      CreateOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled,
+                                  std::move(token_binding_helper));
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId account_id2 = CoreAccountId::FromGaiaId("account_id2");
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  const std::vector<uint8_t> kFakeWrappedBindingKey2 = {4, 5, 6};
+  delegate->UpdateCredentials(account_id, "refresh_token",
+                              kFakeWrappedBindingKey);
+  delegate->UpdateCredentials(account_id2, "refresh_token2",
+                              kFakeWrappedBindingKey2);
+
+  delegate->RevokeCredentials(account_id);
+  EXPECT_TRUE(delegate->GetWrappedBindingKey(account_id).empty());
+  EXPECT_EQ(delegate->GetWrappedBindingKey(account_id2),
+            kFakeWrappedBindingKey2);
+  delegate->Shutdown();
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
