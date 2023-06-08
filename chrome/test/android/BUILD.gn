@@ -8,7 +8,6 @@ import("//components/feed/features.gni")
 
 android_library("pagecontroller_utils_java") {
   testonly = true
-  resources_package = "org.chromium.chrome"
   sources = [
     "javatests/src/org/chromium/chrome/test/pagecontroller/utils/BySelectorIndexUi2Locator.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/utils/BySelectorUi2Locator.java",
