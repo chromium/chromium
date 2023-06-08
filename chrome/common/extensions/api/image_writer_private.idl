@@ -79,10 +79,11 @@ namespace imageWriterPrivate {
     // temporary directory is desired
     // |callback|: The callback which signifies that the write operation has
     // been started by the system and provides a unique ID for this operation.
-    static void writeFromUrl(DOMString storageUnitId,
-                             DOMString imageUrl,
-                             optional UrlWriteOptions options,
-                             WriteImageCallback callback);
+    [supportsPromises] static void writeFromUrl(
+        DOMString storageUnitId,
+        DOMString imageUrl,
+        optional UrlWriteOptions options,
+        WriteImageCallback callback);
 
     // Write an image to the disk, prompting the user to supply the image from
     // a local file.  The callback will be called when the entire operation
@@ -92,16 +93,17 @@ namespace imageWriterPrivate {
     // |fileEntry|: The FileEntry object of the image to be burned.
     // |callback|: The callback which signifies that the write operation has
     // been started by the system and provides a unique ID for this operation.
-    static void writeFromFile(DOMString storageUnitId,
-                              [instanceOf=FileEntry] object fileEntry,
-                              WriteImageCallback callback);
+    [supportsPromises] static void writeFromFile(
+        DOMString storageUnitId,
+        [instanceOf=FileEntry] object fileEntry,
+        WriteImageCallback callback);
 
     // Cancel a current write operation.
     //
     // |callback|: The callback which is triggered with the write is
     // successfully cancelled, passing the $(ref:ProgressInfo) of the operation at
     // the time it was cancelled.
-    static void cancelWrite(WriteCancelCallback callback);
+    [supportsPromises] static void cancelWrite(WriteCancelCallback callback);
 
     // Destroys the partition table of a disk, effectively erasing it.  This is
     // a fairly quick operation and so it does not have complex stages or
@@ -110,12 +112,13 @@ namespace imageWriterPrivate {
     // |storageUnitId|: The identifier of the storage unit to wipe
     // |callback|: A callback that triggers when the operation has been
     // successfully started.
-    static void destroyPartitions(DOMString storageUnitId,
-                                  DestroyPartitionsCallback callback);
+    [supportsPromises] static void destroyPartitions(
+        DOMString storageUnitId,
+        DestroyPartitionsCallback callback);
 
     // List all the removable block devices currently attached to the system.
     // |callback|: A callback called with a list of removable storage devices
-    static void listRemovableStorageDevices(
+    [supportsPromises] static void listRemovableStorageDevices(
         ListRemovableStorageDevicesCallback callback);
   };
 

@@ -27,18 +27,17 @@
             "type": "integer",
             "minimum": 15,
             "description": "The system is considered idle if detectionIntervalInSeconds seconds have elapsed since the last user input detected."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "newState",
-                "$ref": "IdleState"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "newState",
+              "$ref": "IdleState"
+            }
+          ]
+        }
       },
       {
         "name": "setDetectionInterval",
@@ -57,19 +56,17 @@
         "name": "getAutoLockDelay",
         "type": "function",
         "description": "Gets the time, in seconds, it takes until the screen is locked automatically while idle. Returns a zero duration if the screen is never locked automatically. Currently supported on Chrome OS only.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "delay",
-                "type": "integer",
-                "description": "Time, in seconds, until the screen is locked automatically while idle. This is zero if the screen never locks automatically."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "delay",
+              "type": "integer",
+              "description": "Time, in seconds, until the screen is locked automatically while idle. This is zero if the screen never locks automatically."
+            }
+          ]
+        }
       }
     ],
     "events": [

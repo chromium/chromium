@@ -1514,15 +1514,17 @@ namespace autotestPrivate {
         VoidCallback callback);
 
     // Starts collection of ui::LoginEventRecorder data.
-    static void startLoginEventRecorderDataCollection(VoidCallback callback);
+    [supportsPromises] static void startLoginEventRecorderDataCollection(
+        VoidCallback callback);
 
     // Stops ui::LoginEventRecorder data collection and reports all the
     // collected data.
-    static void getLoginEventRecorderLoginEvents(
+    [supportsPromises] static void getLoginEventRecorderLoginEvents(
         GetLoginEventRecorderLoginEventsCallback callback);
 
     // Adds login event to test LoginEventRecorderDataCollection API.
-    static void addLoginEventForTesting(VoidCallback callback);
+    [supportsPromises] static void addLoginEventForTesting(
+        VoidCallback callback);
 
     // Force auto theme mode in dark mode or light mode for testing.
     [supportsPromises] static void forceAutoThemeMode(boolean darkModeEnabled, VoidCallback callback);
