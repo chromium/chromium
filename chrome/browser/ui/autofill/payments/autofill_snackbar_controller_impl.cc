@@ -27,18 +27,15 @@ AutofillSnackbarControllerImpl::~AutofillSnackbarControllerImpl() {
 void AutofillSnackbarControllerImpl::Show(
     AutofillSnackbarType autofill_snackbar_type) {
   CHECK_NE(autofill_snackbar_type, AutofillSnackbarType::kUnspecified);
-  autofill_snackbar_type_ = autofill_snackbar_type;
-  if (!autofill_snackbar_view_) {
-    autofill_snackbar_view_ = AutofillSnackbarView::Create(this);
+  if (autofill_snackbar_view_) {
+    // A snackbar is already showing. Ignore the new request.
+    return;
   }
+  autofill_snackbar_type_ = autofill_snackbar_type;
+  autofill_snackbar_view_ = AutofillSnackbarView::Create(this);
   autofill_snackbar_view_->Show();
   base::UmaHistogramBoolean(
       "Autofill.Snackbar." + GetSnackbarTypeForLogging() + ".Shown", true);
-}
-
-void AutofillSnackbarControllerImpl::SetViewForTesting(
-    AutofillSnackbarView* view) {
-  autofill_snackbar_view_ = view;
 }
 
 void AutofillSnackbarControllerImpl::OnActionClicked() {
