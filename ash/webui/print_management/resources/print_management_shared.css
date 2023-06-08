@@ -30,7 +30,8 @@
   background-color: var(--cros-sys-app_base);
   border-radius: 16px 16px 0 0;
   flex: 1 1 auto;
-  margin-top: 16px;
+  margin-inline: 16px;
+  padding-inline: 16px;
 }
 
 :host-context(body.jelly-enabled) .file-icon-blue {
@@ -63,6 +64,7 @@
   display: flex;
   flex: 0 1 auto;
   height: 64px;
+  margin: 8px 32px;
   padding: 0;
 }
 
@@ -151,14 +153,6 @@
     --padded-left: 32px;
   }
 
-  :host-context(body.jelly-enabled) #headerContainer {
-    margin-inline: 20px;
-  }
-
-  :host-context(body.jelly-enabled) .data-container {
-    padding: 0 20px;
-  }
-
   .date-column {
     width: 56px;
   }
@@ -195,14 +189,6 @@
 @media (min-width: 768px) and (max-width: 959px) {
   :host {
     --padded-left: 40px;
-  }
-
-  :host-context(body.jelly-enabled) #headerContainer {
-    margin-inline: 20px;
-  }
-
-  :host-context(body.jelly-enabled) .data-container {
-    padding: 0 20px;
   }
 
   .date-column {
@@ -243,14 +229,6 @@
     --padded-left: 48px;
   }
 
-  :host-context(body.jelly-enabled) #headerContainer {
-    margin-inline: 32px;
-  }
-
-  :host-context(body.jelly-enabled) .data-container {
-    padding: 0 32px;
-  }
-
   .date-column {
     width: 82px;
   }
@@ -287,14 +265,6 @@
 @media (min-width: 1280px) {
   :host {
     --padded-left: 56px;
-  }
-
-  :host-context(body.jelly-enabled) #headerContainer {
-    margin-inline: 72px;
-  }
-
-  :host-context(body.jelly-enabled) .data-container {
-    padding: 0 72px;
   }
 
   .date-column {
