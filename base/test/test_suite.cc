@@ -181,7 +181,13 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
     // ASAN.
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
     allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
-        "", /*configure_dangling_pointer_detector=*/false);
+        "",
+#if BUILDFLAG(IS_LINUX)
+        /*configure_dangling_pointer_detector=*/true
+#else
+        /*configure_dangling_pointer_detector=*/false
+#endif
+    );
 #endif
   }
 
