@@ -1307,10 +1307,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
             auto profile_chip_edge_spacing_view =
                 views::Builder<views::View>()
                     .SetPreferredSize(gfx::Size(
-                        config.arrow_to_edge_padding + config.arrow_width +
-                            layout_provider->GetDistanceMetric(
-                                views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
-                        0))
+                        config.arrow_to_edge_padding + config.arrow_width, 0))
                     .Build();
 
             profile_menu_item_selected_subscription_ =
