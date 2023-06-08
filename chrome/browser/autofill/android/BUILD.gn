@@ -21,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/LegalMessageLine.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditor.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldAdapter.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorBase.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/EditorDialog.java",
@@ -48,6 +49,8 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android:autofill_java_resources",
@@ -62,6 +65,8 @@ android_library("java") {
     "//components/image_fetcher:java",
     "//components/payments/mojom:mojom_java",
     "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
@@ -117,5 +122,71 @@ android_resources("java_resources") {
     "java/res/layout/payments_request_editor_textview.xml",
     "java/res/menu/prefeditor_editor_menu.xml",
     "java/res/values/dimens.xml",
+  ]
+}
+
+android_library("test_java") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.autofill"
+
+  sources = [ "javatest/src/org/chromium/chrome/browser/autofill/editors/AddressEditorRenderTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_java",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/util:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.autofill"
+
+  sources = [ "junit/src/org/chromium/chrome/browser/autofill/editors/AddressEditorTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
