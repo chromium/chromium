@@ -723,7 +723,7 @@
     },
     {
       name: "CriticalCHRestartNavigationTiming",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CrossFramePerformanceTimeline",
