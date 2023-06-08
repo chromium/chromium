@@ -193,6 +193,12 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
       return;
     }
 
+    if (!handshake_stream_->CanReadFromStream()) {
+      ReportFailureWithMessage("Handshake stream is not readable.",
+                               ERR_CONNECTION_CLOSED, absl::nullopt);
+      return;
+    }
+
     std::unique_ptr<URLRequest> url_request = std::move(url_request_);
     WebSocketHandshakeStreamBase* handshake_stream = handshake_stream_.get();
     handshake_stream_.reset();
