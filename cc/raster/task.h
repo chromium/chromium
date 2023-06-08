@@ -81,6 +81,11 @@ class CC_EXPORT Task : public base::RefCountedThreadSafe<Task> {
   void set_frame_number(int64_t frame_number) { frame_number_ = frame_number; }
   int64_t frame_number() { return frame_number_; }
 
+  // Unique trace flow id for the given task, used to connect the places where
+  // the task was posted from and the task itself.
+  uint64_t trace_task_id() { return trace_task_id_; }
+  void set_trace_task_id(uint64_t id) { trace_task_id_ = id; }
+
   // Subclasses should implement this method. RunOnWorkerThread may be called
   // on any thread, and subclasses are responsible for locking and thread
   // safety.
@@ -95,6 +100,7 @@ class CC_EXPORT Task : public base::RefCountedThreadSafe<Task> {
  private:
   TaskState state_;
   int64_t frame_number_ = -1;
+  int64_t trace_task_id_ = 0;
 };
 
 // A task dependency graph describes the order in which to execute a set
@@ -109,7 +115,7 @@ struct CC_EXPORT TaskGraph {
   struct CC_EXPORT Node {
     typedef std::vector<Node> Vector;
 
-    Node(scoped_refptr<Task> task,
+    Node(scoped_refptr<Task> new_task,
          uint16_t category,
          uint16_t priority,
          uint32_t dependencies);

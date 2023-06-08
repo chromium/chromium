@@ -13,6 +13,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/threading/simple_thread.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 
 namespace cc {
 
@@ -153,6 +155,9 @@ bool SingleThreadTaskGraphRunner::RunTaskWithLockAcquired() {
   auto prioritized_task = work_queue_.GetNextTaskToRun(category);
 
   {
+    TRACE_EVENT("toplevel", "cc::SingleThreadTaskGraphRunner::RunTask",
+                perfetto::TerminatingFlow::Global(
+                    prioritized_task.task->trace_task_id()));
     base::AutoUnlock unlock(lock_);
     prioritized_task.task->RunOnWorkerThread();
   }

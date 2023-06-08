@@ -12,7 +12,7 @@
 #include "base/threading/simple_thread.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event.h"
-
+#include "base/trace_event/typed_macros.h"
 namespace cc {
 
 SynchronousTaskGraphRunner::SynchronousTaskGraphRunner() = default;
@@ -87,6 +87,10 @@ bool SynchronousTaskGraphRunner::RunTask() {
   const uint16_t category = found->first;
   auto prioritized_task = work_queue_.GetNextTaskToRun(category);
   prioritized_task.task->RunOnWorkerThread();
+
+  TRACE_EVENT("toplevel", "cc::SynchronousTaskGraphRunner::RunTask",
+              perfetto::TerminatingFlow::Global(
+                  prioritized_task.task->trace_task_id()));
 
   work_queue_.CompleteTask(std::move(prioritized_task));
 

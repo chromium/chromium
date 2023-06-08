@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
 
 namespace cc {
 namespace {
@@ -153,6 +155,17 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
   for (auto& ready_to_run_tasks_it : task_namespace.ready_to_run_tasks) {
     ready_to_run_tasks_it.second.clear();
   }
+
+  TRACE_EVENT(
+      "toplevel", "cc::TaskGraphWorkQueue::ScheduleTasks",
+      [&](perfetto::EventContext ctx) {
+        for (const TaskGraph::Node& node : graph->nodes) {
+          DCHECK(node.task->trace_task_id() != 0)
+              << "Every raster task should be associated with a task id.\n";
+          ctx.event()->add_flow_ids(node.task->trace_task_id());
+        }
+      });
+
   for (const TaskGraph::Node& node : graph->nodes) {
     // Remove any old nodes that are associated with this task. The result is
     // that the old graph is left with all nodes not present in this graph,

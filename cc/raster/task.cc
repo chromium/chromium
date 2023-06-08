@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_id_helper.h"
 
 namespace cc {
 
@@ -98,14 +99,19 @@ TaskGraph::TaskGraph(TaskGraph&& other) = default;
 
 TaskGraph::~TaskGraph() = default;
 
-TaskGraph::Node::Node(scoped_refptr<Task> task,
+TaskGraph::Node::Node(scoped_refptr<Task> new_task,
                       uint16_t category,
                       uint16_t priority,
                       uint32_t dependencies)
-    : task(std::move(task)),
+    : task(std::move(new_task)),
       category(category),
       priority(priority),
-      dependencies(dependencies) {}
+      dependencies(dependencies) {
+  // Set a trace task id to use for connecting from where the task was posted.
+  if (task) {
+    task->set_trace_task_id(base::trace_event::GetNextGlobalTraceId());
+  }
+}
 
 TaskGraph::Node::Node(Node&& other) = default;
 TaskGraph::Node::~Node() = default;
