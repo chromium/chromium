@@ -1611,7 +1611,13 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInProfile) {
+// Flaky on Lacros. https://crbug.com/1453315.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_OpenLinkInProfile DISABLED_OpenLinkInProfile
+#else
+#define MAYBE_OpenLinkInProfile OpenLinkInProfile
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   // Create |num_profiles| extra profiles for testing.
   const int num_profiles = 8;
