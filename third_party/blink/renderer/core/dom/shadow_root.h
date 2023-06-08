@@ -125,8 +125,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
 
   void DistributeIfNeeded();
 
-  Element* ActiveElement() const;
-
   String innerHTML() const;
   String getInnerHTML(const GetInnerHTMLOptions* options) const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
@@ -187,11 +185,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
 
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
-  StyleSheetList& StyleSheets();
-  void SetStyleSheets(StyleSheetList* style_sheet_list) {
-    style_sheet_list_ = style_sheet_list;
-  }
-
   void Trace(Visitor*) const override;
 
  protected:
@@ -216,7 +209,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     --child_shadow_root_count_;
   }
 
-  Member<StyleSheetList> style_sheet_list_;
   Member<SlotAssignment> slot_assignment_;
   Member<CustomElementRegistry> registry_;
   unsigned child_shadow_root_count_ : 16;
@@ -230,10 +222,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   unsigned has_focusgroup_attribute_on_descendant_ : 1;
   unsigned unused_ : 7;
 };
-
-inline Element* ShadowRoot::ActiveElement() const {
-  return AdjustedFocusedElement();
-}
 
 inline bool Node::IsInUserAgentShadowRoot() const {
   return ContainingShadowRoot() && ContainingShadowRoot()->IsUserAgent();

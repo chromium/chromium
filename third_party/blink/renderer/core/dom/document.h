@@ -238,7 +238,6 @@ class SnapCoordinator;
 class StyleEngine;
 class StylePropertyMapReadOnly;
 class StyleResolver;
-class StyleSheetList;
 class Text;
 class TextAutosizer;
 class TransformSource;
@@ -627,9 +626,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   bool IsForExternalHandler() const { return is_for_external_handler_; }
-
-  // This is a DOM function.
-  StyleSheetList& StyleSheets();
 
   StyleEngine& GetStyleEngine() const {
     DCHECK(style_engine_.Get());
@@ -2363,7 +2359,6 @@ class CORE_EXPORT Document : public ContainerNode,
       document_explicit_root_intersection_observer_data_;
 
   Member<StyleEngine> style_engine_;
-  Member<StyleSheetList> style_sheet_list_;
 
   Member<FormController> form_controller_;
 

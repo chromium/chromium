@@ -616,7 +616,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_event.idl",
           "//third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_event_init.idl",
           "//third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.idl",
-          "//third_party/blink/renderer/modules/picture_in_picture/shadow_root_picture_in_picture.idl",
           "//third_party/blink/renderer/modules/plugins/mime_type.idl",
           "//third_party/blink/renderer/modules/plugins/mime_type_array.idl",
           "//third_party/blink/renderer/modules/plugins/navigator_plugins.idl",

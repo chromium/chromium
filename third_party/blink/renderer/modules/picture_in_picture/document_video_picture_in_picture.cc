@@ -55,11 +55,4 @@ ScriptPromise DocumentVideoPictureInPicture::exitPictureInPicture(
   return promise;
 }
 
-// static
-Element* DocumentVideoPictureInPicture::pictureInPictureElement(
-    TreeScope& scope) {
-  return PictureInPictureController::From(scope.GetDocument())
-      .PictureInPictureElement(scope);
-}
-
 }  // namespace blink

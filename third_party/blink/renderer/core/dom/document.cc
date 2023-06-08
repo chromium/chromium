@@ -4932,12 +4932,6 @@ void Document::CloneDataFromDocument(const Document& other) {
   SetMimeType(other.contentType());
 }
 
-StyleSheetList& Document::StyleSheets() {
-  if (!style_sheet_list_)
-    style_sheet_list_ = MakeGarbageCollected<StyleSheetList>(this);
-  return *style_sheet_list_;
-}
-
 void Document::EvaluateMediaQueryListIfNeeded() {
   if (!evaluate_media_queries_on_style_recalc_)
     return;
@@ -8599,9 +8593,7 @@ Element* Document::GetAutofocusDelegate() const {
 }
 
 Element* Document::ActiveElement() const {
-  if (Element* element = AdjustedFocusedElement())
-    return element;
-  return body();
+  return activeElement();
 }
 
 bool Document::hasFocus() const {
@@ -8818,7 +8810,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(parser_);
   visitor->Trace(context_features_);
   visitor->Trace(http_refresh_scheduler_);
-  visitor->Trace(style_sheet_list_);
   visitor->Trace(document_timing_);
   visitor->Trace(media_query_matcher_);
   visitor->Trace(scripted_animation_controller_);

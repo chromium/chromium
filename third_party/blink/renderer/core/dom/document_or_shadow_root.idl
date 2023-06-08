@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 // https://dom.spec.whatwg.org/#mixin-documentorshadowroot
-// https://w3c.github.io/webcomponents/spec/shadow/#extensions-to-the-documentorshadowroot-mixin
-[
-    LegacyTreatAsPartialInterface
-] interface mixin DocumentOrShadowRoot {
+interface mixin DocumentOrShadowRoot {
     // Selection API
     // https://w3c.github.io/selection-api/#extensions-to-document-interface
     [Affects=Nothing] Selection? getSelection();
@@ -26,4 +23,7 @@
     // https://fullscreen.spec.whatwg.org/
     [LegacyLenientSetter] readonly attribute Element? fullscreenElement;
     [MeasureAs=AdoptedStyleSheets] attribute ObservableArray<CSSStyleSheet> adoptedStyleSheets;
+    // Picture-in-picture API
+    // https://w3c.github.io/picture-in-picture/#documentorshadowroot-extension
+    [Measure] readonly attribute HTMLVideoElement? pictureInPictureElement;
 };

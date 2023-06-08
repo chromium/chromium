@@ -86,7 +86,6 @@ blink_core_sources_dom = [
   "document_init.h",
   "document_lifecycle.cc",
   "document_lifecycle.h",
-  "document_or_shadow_root.h",
   "document_parser.cc",
   "document_parser.h",
   "document_parser_client.h",

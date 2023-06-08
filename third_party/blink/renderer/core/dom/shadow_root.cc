@@ -51,7 +51,7 @@ namespace blink {
 struct SameSizeAsShadowRoot : public DocumentFragment,
                               public TreeScope,
                               public ElementRareDataField {
-  Member<void*> member[3];
+  Member<void*> member[2];
   unsigned flags[1];
 };
 
@@ -66,7 +66,6 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
               &ShadowRoot::OnAdoptedStyleSheetSet),
           static_cast<V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback>(
               &ShadowRoot::OnAdoptedStyleSheetDelete)),
-      style_sheet_list_(nullptr),
       child_shadow_root_count_(0),
       type_(static_cast<unsigned>(type)),
       registered_with_parent_shadow_root_(false),
@@ -247,12 +246,6 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
   }
 }
 
-StyleSheetList& ShadowRoot::StyleSheets() {
-  if (!style_sheet_list_)
-    SetStyleSheets(MakeGarbageCollected<StyleSheetList>(this));
-  return *style_sheet_list_;
-}
-
 void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {
   DCHECK(!registry_);
   DCHECK(!registry ||
@@ -261,7 +254,6 @@ void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {
 }
 
 void ShadowRoot::Trace(Visitor* visitor) const {
-  visitor->Trace(style_sheet_list_);
   visitor->Trace(slot_assignment_);
   visitor->Trace(registry_);
   ElementRareDataField::Trace(visitor);

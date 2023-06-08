@@ -42,6 +42,7 @@
 
 namespace blink {
 
+class Animation;
 class ContainerNode;
 class CSSStyleSheet;
 class DOMSelection;
@@ -54,6 +55,7 @@ class IdTargetObserverRegistry;
 class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
+class StyleSheetList;
 
 // The root node of a document tree (in which case this is a Document) or of a
 // shadow tree (in which case this is a ShadowRoot). Various things, like
@@ -68,6 +70,24 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
     kInternal = 1 << 1,
     kWebExposed = 1 << 2,
   };
+
+  // DocumentOrShadowRoot web-exposed:
+  Element* activeElement() const;
+  StyleSheetList* styleSheets() { return &StyleSheets(); }
+  V8ObservableArrayCSSStyleSheet* adoptedStyleSheets() {
+    return AdoptedStyleSheets();
+  }
+  DOMSelection* getSelection() { return GetSelection(); }
+  HeapVector<Member<Animation>> getAnimations();
+  Element* elementFromPoint(double x, double y) {
+    return ElementFromPoint(x, y);
+  }
+  HeapVector<Member<Element>> elementsFromPoint(double x, double y) {
+    return ElementsFromPoint(x, y);
+  }
+  Element* pointerLockElement();
+  Element* fullscreenElement();
+  Element* pictureInPictureElement();
 
   TreeScope* ParentTreeScope() const { return parent_tree_scope_; }
 
@@ -160,6 +180,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   SVGTreeScopeResources& EnsureSVGTreeScopedResources();
 
+  StyleSheetList& StyleSheets();
+
   V8ObservableArrayCSSStyleSheet* AdoptedStyleSheets() const {
     return adopted_style_sheets_;
   }
@@ -216,6 +238,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   RadioButtonGroupScope radio_button_group_scope_;
 
   Member<SVGTreeScopeResources> svg_tree_scoped_resources_;
+
+  Member<StyleSheetList> style_sheet_list_;
 
   Member<V8ObservableArrayCSSStyleSheet> adopted_style_sheets_;
 };
