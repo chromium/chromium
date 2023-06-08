@@ -438,6 +438,8 @@ HRESULT DWriteFontCollectionProxy::CreateStreamFromKey(
     const void* font_file_reference_key,
     UINT32 font_file_reference_key_size,
     IDWriteFontFileStream** font_file_stream) {
+  recordreplay::Assert("[RUN-2058] DWriteFontCollectionProxy::CreateStreamFromKey");
+
   if (font_file_reference_key_size != sizeof(HANDLE)) {
     return E_FAIL;
   }
@@ -458,6 +460,9 @@ HRESULT DWriteFontCollectionProxy::CreateStreamFromKey(
     return E_FAIL;
   }
   *font_file_stream = stream.Detach();
+
+  recordreplay::Assert("[RUN-2058] DWriteFontCollectionProxy::CreateStreamFromKey Done");
+
   return S_OK;
 }
 
