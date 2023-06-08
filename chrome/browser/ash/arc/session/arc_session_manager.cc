@@ -1003,6 +1003,16 @@ void ArcSessionManager::OnVmStarted(
   if (vm_signal.name() == kArcVmName) {
     vm_info_ = vm_signal.vm_info();
 
+    if (arcvm_mount_provider_id_.has_value()) {
+      // An old instance of ArcMountProvider can remain registered if the
+      // previous ARC session did not finish normally and OnVmStopped() was not
+      // called (due to concierge crash etc.). Unregister the old instance
+      // before registering a new one to prevent multiple registration like
+      // b/279378611.
+      guest_os::GuestOsService::GetForProfile(profile())
+          ->MountProviderRegistry()
+          ->Unregister(*arcvm_mount_provider_id_);
+    }
     arcvm_mount_provider_id_ =
         absl::optional<guest_os::GuestOsMountProviderRegistry::Id>(
             guest_os::GuestOsService::GetForProfile(profile())
