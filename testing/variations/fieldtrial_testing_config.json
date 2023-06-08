@@ -3979,24 +3979,6 @@
             ]
         }
     ],
-    "DefaultBrowserBlueDotPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledGroupAllDBPromosEnabled2023_05_08",
-                    "params": {
-                        "user-group": "all-db-promos-enabled"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserBlueDotPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultOfflineExperience": [
         {
             "platforms": [
