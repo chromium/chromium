@@ -29,6 +29,20 @@ enum DialogPage {
   kConnectToOneDrive,
 };
 
+// Used for metrics to represent each individual page of the dialog, and should
+// be kept in sync with OfficeSetupPage in enums.xml.  These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum MetricsRecordedSetupPage {
+  kFileHandlerPage = 0,
+  kMoveConfirmationOneDrive = 1,
+  kMoveConfirmationGoogleDrive = 2,
+  kOneDriveSetupWelcome = 3,
+  kOneDriveSetupPWAInstall = 4,
+  kOneDriveSetupODFSMount = 5,
+  kOneDriveSetupUpload = 6,
+};
+
 // Operation used to upload the source file.
 enum OperationType {
   kMove,
@@ -126,4 +140,7 @@ interface PageHandler {
   // Get the preference for whether the move to OneDrive confirmation dialog
   // has been shown before.
   GetOfficeMoveConfirmationShownForOneDrive() => (bool move_confirmation_shown);
+
+  // Records the page at which the setup was cancelled.
+  RecordCancel(MetricsRecordedSetupPage page);
 };

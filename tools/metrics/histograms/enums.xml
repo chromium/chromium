@@ -76452,6 +76452,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Quickoffice"/>
 </enum>
 
+<enum name="OfficeSetupPage">
+  <int value="0" label="File handler page"/>
+  <int value="1" label="Move confirmation page (Microsoft OneDrive)"/>
+  <int value="2" label="Move confirmation page (Google Drive)"/>
+  <int value="3" label="Microsoft OneDrive setup (welcome page)"/>
+  <int value="4" label="Microsoft OneDrive setup (PWA install page)"/>
+  <int value="5" label="Microsoft OneDrive setup (ODFS setup page)"/>
+  <int value="6" label="Microsoft OneDrive setup (upload page)"/>
+</enum>
+
 <enum name="OfficeTaskResult">
   <int value="0" label="Fallback (QuickOffice)"/>
   <int value="1" label="Fallback (Other)"/>

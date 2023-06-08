@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {OperationType, UserAction} from './cloud_upload.mojom-webui.js';
+import {MetricsRecordedSetupPage, OperationType, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {getTemplate} from './move_confirmation_page.html.js';
 
@@ -149,6 +149,13 @@ export class MoveConfirmationPageElement extends HTMLElement {
   }
 
   private onCancelButtonClick(): void {
+    if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
+      this.proxy.handler.recordCancel(
+          MetricsRecordedSetupPage.kMoveConfirmationOneDrive);
+    } else {
+      this.proxy.handler.recordCancel(
+          MetricsRecordedSetupPage.kMoveConfirmationGoogleDrive);
+    }
     this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
   }
 }

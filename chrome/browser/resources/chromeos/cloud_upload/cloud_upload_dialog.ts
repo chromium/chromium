@@ -7,7 +7,7 @@ import './setup_cancel_dialog.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
-import {UserAction} from './cloud_upload.mojom-webui.js';
+import {MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {OfficePwaInstallPageElement} from './office_pwa_install_page.js';
 import {OneDriveUploadPageElement} from './one_drive_upload_page.js';
@@ -136,6 +136,19 @@ export class CloudUploadElement extends HTMLElement {
     }
   }
 
+  private currentPageToMetricsPage(): MetricsRecordedSetupPage|null {
+    if (this.currentPage instanceof WelcomePageElement) {
+      return MetricsRecordedSetupPage.kOneDriveSetupWelcome;
+    } else if (this.currentPage instanceof OfficePwaInstallPageElement) {
+      return MetricsRecordedSetupPage.kOneDriveSetupPWAInstall;
+    } else if (this.currentPage instanceof SignInPageElement) {
+      return MetricsRecordedSetupPage.kOneDriveSetupODFSMount;
+    } else if (this.currentPage instanceof OneDriveUploadPageElement) {
+      return MetricsRecordedSetupPage.kOneDriveSetupUpload;
+    }
+    return null;
+  }
+
   /**
    * Invoked when a page fires a `CANCEL_SETUP_EVENT` event.
    */
@@ -145,9 +158,13 @@ export class CloudUploadElement extends HTMLElement {
       this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
       return;
     }
-    this.cancelDialog.show(
-        () => this.proxy.handler.respondWithUserActionAndClose(
-            UserAction.kCancel));
+    this.cancelDialog.show(() => {
+      const metricsPage = this.currentPageToMetricsPage();
+      if (metricsPage != null) {
+        this.proxy.handler.recordCancel(metricsPage);
+      }
+      this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
+    });
   }
 
   /**

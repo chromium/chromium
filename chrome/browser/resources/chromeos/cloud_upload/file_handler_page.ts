@@ -5,7 +5,7 @@
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {DialogTask, UserAction} from './cloud_upload.mojom-webui.js';
+import {DialogTask, MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {AccordionTopCardElement, BaseCardElement, CloudProviderCardElement, CloudProviderType, FileHandlerCardElement, LocalHandlerCardElement} from './file_handler_card.js';
 import {getTemplate} from './file_handler_page.html.js';
@@ -294,6 +294,7 @@ export class FileHandlerPageElement extends HTMLElement {
   }
 
   private onCancelButtonClick(): void {
+    this.proxy.handler.recordCancel(MetricsRecordedSetupPage.kFileHandlerPage);
     this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
   }
 
