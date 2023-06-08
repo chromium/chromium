@@ -2,6 +2,7 @@ dtrainor@chromium.org
 mdjones@chromium.org
 
 per-file *contextual_search*=gangwu@chromium.org
+per-file *tab_content_manager*=ckitagawa@chromium.org
 
 # Secondary
 per-file *contextual_search*=donnd@chromium.org
