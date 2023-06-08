@@ -34,7 +34,6 @@
 #include "media/video/h265_parser.h"
 #include "media/video/h265_poc.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#include "media/gpu/mac/gl_image_io_surface.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
@@ -169,17 +168,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
     ~PictureInfo();
 
-    // If true, then |scoped_shared_images| is used and |client_texture_id| and
-    // |service_texture_id| are not used.
-    const bool uses_shared_images;
-
-    // Information about the currently bound image, for OnMemoryDump().
-    std::vector<scoped_refptr<GLImageIOSurface>> gl_images;
     int32_t bitstream_id = 0;
-
-    // Texture IDs for the image buffer.
-    const uint32_t client_texture_id = 0;
-    const uint32_t service_texture_id = 0;
 
     // The shared image holder that will be passed to the client.
     std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
