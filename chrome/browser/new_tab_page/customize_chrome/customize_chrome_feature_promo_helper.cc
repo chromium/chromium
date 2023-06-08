@@ -5,6 +5,8 @@
 #include "chrome/browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper.h"
 
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -42,4 +44,10 @@ void CustomizeChromeFeaturePromoHelper::CloseCustomizeChromeFeaturePromo(
           feature_engagement::kIPHDesktopCustomizeChromeFeature);
     }
   }
+}
+
+bool CustomizeChromeFeaturePromoHelper::IsSigninModalDialogOpen(
+    content::WebContents* web_contents) {
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
+  return browser->signin_view_controller()->ShowsModalDialog();
 }
