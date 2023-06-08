@@ -231,7 +231,7 @@ projectorApp.NewScreencastPreconditionState.prototype.state;
 
 /**
  * The reasons of type NEW_SCREENCAST_PRECONDITION_REASON for the precondition.
- * @type {?Array<number>}
+ * @type {!Array<number>}
  */
 projectorApp.NewScreencastPreconditionState.prototype.reasons;
 
