@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 
+import {COLORS_CSS_SELECTOR, startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -169,6 +172,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
   private demos_: Demo[];
   private path_: string;
 
+  override ready() {
+    super.ready();
+    startColorChangeUpdater();
+  }
+
   private async onPathChanged_() {
     const path = this.path_.substring(1);
     const demoIndex =
@@ -184,6 +192,21 @@ export class WebuiGalleryAppElement extends PolymerElement {
     const demoElement = document.createElement(tagName);
     this.$.main.innerHTML = window.trustedTypes!.emptyHTML;
     this.$.main.appendChild(demoElement);
+  }
+
+  private onFollowColorPipelineChange_(e: CustomEvent<boolean>) {
+    if (e.detail) {
+      assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'chrome://theme/colors.css?sets=ui,chrome';
+      document.body.appendChild(link);
+      return;
+    }
+
+    const link = document.body.querySelector(COLORS_CSS_SELECTOR);
+    assert(link);
+    link.remove();
   }
 }
 
