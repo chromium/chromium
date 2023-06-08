@@ -178,15 +178,18 @@ Harness::Harness() {
 
 Harness::~Harness() {
   {% for interface in interfaces %}
-    for (auto ifc : {{interface.name}}_list_) {
-      if (ifc)
-        {% if interface.name == "wl_display" %}
-          wl_display_disconnect(ifc);
-        {% else %}
-          free(ifc);
-        {% endif %}
-    }
+    {% if interface.name != "wl_display" %}
+      for (auto ifc : {{interface.name}}_list_) {
+        if (ifc)
+          {{interface.name}}_destroy(ifc);
+      }
+    {% endif %}
   {% endfor %}
+
+  // Destroy display last since it is the parent of all the others.
+  for (auto display_interface : wl_display_list_) {
+    wl_display_disconnect(display_interface);
+  }
 }
 
 void Harness::Run(const actions::actions& all_steps) {
