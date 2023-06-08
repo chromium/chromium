@@ -1,0 +1,26 @@
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+Slow scripts that fail to load should not dispatch multiple error events
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL Unexpected error: Uncaught SyntaxError: Unexpected token '<'
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+
+FAIL Script should not have loaded
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+
+FAIL Unexpected error: Uncaught SyntaxError: Unexpected token '<'
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+
+FAIL Script should not have loaded
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+

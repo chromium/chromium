@@ -1,0 +1,48 @@
+CONSOLE ERROR: Refused to execute script from 'http://127.0.0.1:8000/resources/redirect.php?url=http://localhost:8000/workers/resources/worker-importScripts-differentOrigin.js' because its MIME type ('text/html') is not executable.
+Test importScripts.
+
+Test started.
+PASS: importScripts(), exists, is a function, and doesn't throw when not given any arguments
+Loaded message from different origin
+PASS: executed script from different origin
+FAIL: Threw NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'http://127.0.0.1:8000/resources/redirect.php?url=http://localhost:8000/workers/resources/worker-importScripts-differentOrigin.js' failed to load. when attempting load from different origin through a redirect
+FAIL: did not load script from different origin through a redirect
+Testing single argument:
+Loaded resource 1
+PASS: loaded first source
+Testing multiple arguments:
+Loaded resource 1
+Loaded resource 2
+PASS: Both sources loaded and executed.
+Testing multiple arguments (different order):
+Resource 2 loaded before resource 1
+Loaded resource 2
+Loaded resource 1
+PASS: Both sources loaded and executed.
+Testing multiple arguments, with different origin for one argument:
+Loaded resource 1
+Loaded message from different origin
+Loaded resource 2
+PASS: all resources executed.
+Loaded resource 1
+PASS: Threw NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'http://127.0.0.1:8000/workers/resources/nonexistant' failed to load. when load failed
+PASS: some resources were loaded despite the network error
+Loaded resource 1
+PASS: Threw SyntaxError: Unexpected identifier 'syntax' when encountering a syntax error in imported script
+PASS: some resources were loaded despite the presence of a syntax error
+Testing multiple arguments, with first resource throwing an exception:
+Loaded resource 1
+First resource throwing an exception
+PASS: Propagated 'Thrown by first resource' from script
+PASS: First resource was executed, and second resource was not
+Testing multiple arguments, with second resource throwing an exception:
+Loaded resource 1
+Loaded resource 2
+Second resource throwing an exception
+PASS: Propagated 'Thrown by second resource' from script
+PASS: Both scripts were executed
+Testing multiple arguments, with second argument throwing in toString():
+PASS: User error recieved in toString
+PASS: No script was executed
+DONE
+

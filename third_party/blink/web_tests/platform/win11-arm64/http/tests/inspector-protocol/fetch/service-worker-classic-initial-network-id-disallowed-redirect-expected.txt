@@ -1,0 +1,7 @@
+Tests Service Worker (classic) Initial Registration emits Network Events for disllowed redirect
+==== INITIAL service worker request ====
+Registration Result: FAILURE: SecurityError: Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/') with script ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?redirect_to=%2Ffoo'): The script has an unsupported MIME type ('text/html').
+requestWillBeSent url: http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?redirect_to=%2Ffoo
+responseReceived status: 200
+requestIds match: true
+

@@ -1,0 +1,4 @@
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+Test that a script element with a crossorigin attribute (pre)loads a cross-origin script correctly.
+
+FAIL

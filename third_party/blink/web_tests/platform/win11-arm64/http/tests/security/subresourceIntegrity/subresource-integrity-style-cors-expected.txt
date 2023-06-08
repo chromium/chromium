@@ -1,0 +1,7 @@
+CONSOLE ERROR: Access to CSS stylesheet at 'http://localhost:8000/security/resources/cors-style.php' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+CONSOLE ERROR: Uncaught Error: assert_unreached: Style did not load. Reached unreachable code
+CONSOLE ERROR: Uncaught Error: assert_equals: expected "rgb(255, 255, 0)" but got "rgb(255, 0, 0)"
+This is a testharness.js-based test.
+FAIL SRI on cross origin CORS enabled style Uncaught Error: assert_unreached: Style did not load. Reached unreachable code
+Harness: the test ran to completion.
+

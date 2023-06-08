@@ -1,0 +1,7 @@
+CONSOLE ERROR: Uncaught SyntaxError: Invalid or unexpected token
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: Invalid or unexpected token
+PASS Meta referrer policy is not set on subresource before meta tag
+FAIL Meta referrer policy is set on subresource assert_equals: expected "http://127.0.0.1:8000/security/referrer-policy-subresource.html" but got "none"
+Harness: the test ran to completion.
+

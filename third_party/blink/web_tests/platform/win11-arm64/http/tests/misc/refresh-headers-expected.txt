@@ -1,0 +1,9 @@
+
+Warning: Undefined array key "HTTP_PRAGMA" in C:\b\s\w\ir\third_party\blink\web_tests\http\tests\misc\refresh-headers.php on line 11
+
+Deprecated: strcasecmp(): Passing null to parameter #1 ($string1) of type string is deprecated in C:\b\s\w\ir\third_party\blink\web_tests\http\tests\misc\refresh-headers.php on line 11
+
+
+SUCCESS
+
+Test for bug 5499: Page reload does not send any cache control headers.

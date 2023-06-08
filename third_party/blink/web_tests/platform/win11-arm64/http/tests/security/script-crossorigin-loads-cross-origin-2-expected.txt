@@ -1,0 +1,4 @@
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+In an XHTML document, test that a script element with a crossorigin attribute loads a cross-origin script correctly when the CORS check passes on the response.
+
+FAIL

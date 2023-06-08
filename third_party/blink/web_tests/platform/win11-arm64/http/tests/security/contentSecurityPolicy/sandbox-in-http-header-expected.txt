@@ -1,0 +1,5 @@
+CONSOLE MESSAGE: Script executed in iframe.
+This is a testharness.js-based test.
+FAIL contentDocument should return null for sandboxed iframe assert_equals: expected null but got Document node with 1 child
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+CONSOLE MESSAGE: fail 2
+This is a testharness.js-based test.
+FAIL Verify that hints were sent on iframe subresources since parent opt-in. assert_equals: expected "success" but got "fail 2"
+Harness: the test ran to completion.
+

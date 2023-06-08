@@ -1,0 +1,3 @@
+CONSOLE MESSAGE: Script executed in iframe.
+CONSOLE MESSAGE: FAIL: Iframe was not in a unique origin: I am a secret
+

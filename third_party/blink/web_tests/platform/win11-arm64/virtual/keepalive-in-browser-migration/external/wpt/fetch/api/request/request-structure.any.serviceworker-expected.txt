@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to register a ServiceWorker for scope ('https://web-platform.test:8444/fetch/api/request/does/not/exist') with script ('https://web-platform.test:8444/fetch/api/request/request-structure.any.worker.js'): ServiceWorker script evaluation failed
+Harness: the test ran to completion.
+

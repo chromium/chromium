@@ -1,0 +1,7 @@
+Tests the signed exchange information are available when the navigation succeeded after redirect.
+
+* http://localhost:8000/resources/redirect.php?url=http%3A%2F%2F127.0.0.1%3A8000%2Floading%2Fsxg%2Fresources%2Fsxg-location.sxg
+  failed: false
+  statusCode: 200
+  resourceType: document
+

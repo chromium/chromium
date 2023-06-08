@@ -1,0 +1,5 @@
+Test to ensure devtools gets post data for redirected navigation requests.
+
+Got request: http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?status=302
+Post Data: foo=bar
+

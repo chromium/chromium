@@ -1,0 +1,5 @@
+CONSOLE ERROR: Access to fetch at 'https://127.0.0.1:8443/cookies/resources/echo-json.php' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+This is a testharness.js-based test.
+FAIL HTTPS is not same-site with HTTP. promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+Harness: the test ran to completion.
+

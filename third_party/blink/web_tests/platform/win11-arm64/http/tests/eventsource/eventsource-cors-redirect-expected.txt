@@ -1,0 +1,11 @@
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+Test that basic EventSource cross-origin requests fail on redirect.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS es = new EventSource("/resources/redirect.php?code=307&url=http://127.0.0.1:8080/eventsource/resources/es-cors-basic.php") did not throw exception.
+PASS es.readyState is EventSource.CLOSED
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

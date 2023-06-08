@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test srcset and sizes with a meta viewport assert_equals: expected 25 but got 0
+Harness: the test ran to completion.
+

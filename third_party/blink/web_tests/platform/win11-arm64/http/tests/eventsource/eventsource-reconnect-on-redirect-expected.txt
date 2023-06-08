@@ -1,0 +1,12 @@
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+Test EventSource reconnect after end of event stream.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS es.readyState is es.CONNECTING
+FAIL es.readyState should be 0. Was 2.
+FAIL reconnect timed out
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

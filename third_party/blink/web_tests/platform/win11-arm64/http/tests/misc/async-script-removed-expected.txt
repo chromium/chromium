@@ -1,0 +1,7 @@
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+Test that a synchronous script tag is executed in the right order, even if it's removed from the document before it was loaded.
+
+This test passes if the number "4123" is displayed below.
+
+43
