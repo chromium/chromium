@@ -219,41 +219,15 @@ inline MinMaxSizesResult ComputeMinMaxSizesWithAlgorithm(
   return result;
 }
 
-LayoutUnit CalculateAvailableInlineSizeForLegacy(
-    const LayoutBox& box,
-    const NGConstraintSpace& space) {
-  if (box.ShouldComputeSizeAsReplaced()) {
-    return space.ReplacedPercentageResolutionInlineSize()
-        .ClampIndefiniteToZero();
-  }
-
-  return space.PercentageResolutionInlineSize().ClampIndefiniteToZero();
-}
-
-LayoutUnit CalculateAvailableBlockSizeForLegacy(
-    const LayoutBox& box,
-    const NGConstraintSpace& space) {
-  if (box.ShouldComputeSizeAsReplaced())
-    return space.ReplacedPercentageResolutionBlockSize();
-
-  return space.PercentageResolutionBlockSize();
-}
-
-void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
-                              const LayoutBox& box,
-                              BoxLayoutExtraInput* input) {
-  input->containing_block_content_inline_size =
-      CalculateAvailableInlineSizeForLegacy(box, space);
-  LayoutUnit containing_block_content_block_size =
-      CalculateAvailableBlockSizeForLegacy(box, space);
-
+LayoutUnit ContainingBlockContentInlineSize(const NGConstraintSpace& space,
+                                            const LayoutBox& box) {
+  DCHECK(box.ShouldComputeSizeAsReplaced());
   WritingMode writing_mode = box.StyleRef().GetWritingMode();
   if (LayoutObject* containing_block = box.ContainingBlock()) {
     if (!IsParallelWritingMode(containing_block->StyleRef().GetWritingMode(),
                                writing_mode)) {
-      // The sizes should be in the containing block writing mode.
-      std::swap(containing_block_content_block_size,
-                input->containing_block_content_inline_size);
+      // The size should be in the containing block writing mode.
+      LayoutUnit inline_size = space.ReplacedPercentageResolutionBlockSize();
 
       // We cannot lay out without a definite containing block inline-size. We
       // end up here if we're performing a measure pass (as part of resolving
@@ -261,14 +235,10 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
       // Legacy layout has a tendency of clamping negative sizes to 0 anyway,
       // but this is missing when it comes to resolving percentage-based
       // padding, for instance.
-      if (input->containing_block_content_inline_size == kIndefiniteSize)
-        input->containing_block_content_inline_size = LayoutUnit();
+      return inline_size.ClampIndefiniteToZero();
     }
   }
-
-  // We need a definite containing block inline-size, or we'd be unable to
-  // resolve percentages.
-  DCHECK_GE(input->containing_block_content_inline_size, LayoutUnit());
+  return space.ReplacedPercentageResolutionInlineSize().ClampIndefiniteToZero();
 }
 
 bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
@@ -837,7 +807,8 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     // don't want to use the size that legacy calculates, so we force legacy to
     // use NG's size via BoxLayoutExtraInput's override fields.
     BoxLayoutExtraInput input(*box_);
-    SetupBoxLayoutExtraInput(constraint_space, *box_, &input);
+    input.containing_block_content_inline_size =
+        ContainingBlockContentInlineSize(constraint_space, *box_);
     input.size = physical_fragment.Size();
     input.border_padding_for_replaced =
         physical_fragment.Borders() + physical_fragment.Padding();
