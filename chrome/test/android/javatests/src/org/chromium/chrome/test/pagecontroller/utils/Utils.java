@@ -5,11 +5,10 @@
 package org.chromium.chrome.test.pagecontroller.utils;
 
 import android.os.SystemClock;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.chromium.base.Log;
 
 import java.util.Collections;
 import java.util.List;

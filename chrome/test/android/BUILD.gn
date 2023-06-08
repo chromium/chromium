@@ -6,6 +6,34 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//components/feed/features.gni")
 
+android_library("pagecontroller_utils_java") {
+  testonly = true
+  resources_package = "org.chromium.chrome"
+  sources = [
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/BySelectorIndexUi2Locator.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/BySelectorUi2Locator.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/ChildIndexUi2Locator.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/IUi2Locator.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/IndexUi2Locator.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/NonInstrumentedCrashDetector.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/PathUi2Locator.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/Ui2Locators.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/UiAutomatorUtils.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/UiLocationException.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/UiLocatorHelper.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/Utils.java",
+  ]
+  deps = [
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+  ]
+}
+
 android_library("chrome_java_test_pagecontroller") {
   testonly = true
   resources_package = "org.chromium.chrome"
@@ -25,18 +53,6 @@ android_library("chrome_java_test_pagecontroller") {
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/webapk/first_run/LightWeightTOSController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/rules/ChromeUiApplicationTestRule.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/rules/ChromeUiAutomatorTestRule.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/BySelectorIndexUi2Locator.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/BySelectorUi2Locator.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/ChildIndexUi2Locator.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/IUi2Locator.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/IndexUi2Locator.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/NonInstrumentedCrashDetector.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/PathUi2Locator.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/Ui2Locators.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/UiAutomatorUtils.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/UiLocationException.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/UiLocatorHelper.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/utils/Utils.java",
   ]
   deps = [
     ":chrome_java_integration_test_support",
@@ -53,6 +69,7 @@ android_library("chrome_java_test_pagecontroller") {
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/junit",
   ]
+  public_deps = [ ":pagecontroller_utils_java" ]
 }
 
 chrome_public_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
@@ -89,6 +106,7 @@ android_test_apk("baseline_profile_test_apk") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/perf/BaselineProfileTest.java",
   ]
+  data = [ "javatests/src/org/chromium/chrome/browser/perf/test.html" ]
 
   if (!is_java_debug) {
     proguard_enabled = true
@@ -96,7 +114,9 @@ android_test_apk("baseline_profile_test_apk") {
   }
 
   deps = [
+    ":pagecontroller_utils_java",
     "//base:base_java_test_support",
+    "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_benchmark_benchmark_junit4_java",
     "//third_party/androidx:androidx_benchmark_benchmark_macro_java",
     "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java",
@@ -113,6 +133,7 @@ android_test_apk("baseline_profile_test_apk") {
 instrumentation_test_runner("chrome_public_apk_baseline_profile_generator") {
   android_test_apk = ":baseline_profile_test_apk"
   apk_under_test = "//chrome/android:chrome_public_apk"
+  additional_apks = [ "//net/android:net_test_support_apk" ]
   never_incremental = true
   extra_args = [
     "--use-apk-under-test-flags-file",
