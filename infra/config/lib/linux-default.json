@@ -1,2 +1,12 @@
 {
+  "ci": {
+    "Android arm64 Builder All Targets (dbg)": "Ubuntu-22.04",
+    "Android x64 Builder (dbg)": "Ubuntu-22.04",
+    "android-official": "Ubuntu-22.04",
+    "fuchsia-official": "Ubuntu-22.04",
+    "linux-chromeos-rel": "Ubuntu-22.04",
+    "linux-lacros-builder-rel": "Ubuntu-22.04",
+    "linux-lacros-dbg": "Ubuntu-22.04",
+    "linux-official": "Ubuntu-22.04"
+  }
 }
