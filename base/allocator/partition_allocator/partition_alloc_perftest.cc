@@ -132,8 +132,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
 #endif
     .cookie = PartitionOptions::Cookie::kAllowed,
   };
-  PartitionAllocatorForTesting<internal::ThreadSafe, internal::DisallowLeaks>
-      allocator_{kOpts};
+  PartitionAllocatorForTesting<internal::DisallowLeaks> allocator_{kOpts};
   internal::ThreadCacheProcessScopeForTesting scope_;
 };
 

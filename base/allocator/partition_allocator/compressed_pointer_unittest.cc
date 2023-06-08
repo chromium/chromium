@@ -26,7 +26,7 @@ struct DerivedWithMixin : Base, Mixin {
   double d;
 };
 
-using PAAllocator = internal::PartitionAllocator<internal::ThreadSafe>;
+using PAAllocator = internal::PartitionAllocator;
 
 struct PADeleter final {
   void operator()(void* ptr) const { allocator_.root()->Free(ptr); }
@@ -88,7 +88,7 @@ class CompressedPointerTest : public ::testing::Test {
   CompressedPointerTest() { allocator_.init(PartitionOptions{}); }
 
  protected:
-  internal::PartitionAllocator<internal::ThreadSafe> allocator_;
+  internal::PartitionAllocator allocator_;
 };
 
 #if BUILDFLAG(ENABLE_POINTER_COMPRESSION)

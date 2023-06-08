@@ -221,12 +221,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // partition lock held.
   //
   // May only be called by a single PartitionRoot.
-  static void Init(PartitionRoot<>* root);
+  static void Init(PartitionRoot* root);
 
   static void DeleteForTesting(ThreadCache* tcache);
 
   // Deletes existing thread cache and creates a new one for |root|.
-  static void SwapForTesting(PartitionRoot<>* root);
+  static void SwapForTesting(PartitionRoot* root);
 
   // Removes the tombstone marker that would be returned by Get() otherwise.
   static void RemoveTombstoneForTesting();
@@ -257,7 +257,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   // Create a new ThreadCache associated with |root|.
   // Must be called without the partition locked, as this may allocate.
-  static ThreadCache* Create(PartitionRoot<>* root);
+  static ThreadCache* Create(PartitionRoot* root);
 
   ~ThreadCache();
 
@@ -368,7 +368,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   };
   static_assert(sizeof(Bucket) <= 2 * sizeof(void*), "Keep Bucket small.");
 
-  explicit ThreadCache(PartitionRoot<>* root);
+  explicit ThreadCache(PartitionRoot* root);
   static void Delete(void* thread_cache_ptr);
 
   void PurgeInternal();
@@ -386,7 +386,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Releases the entire freelist starting at |head| to the root.
   template <bool crash_on_corruption>
   void FreeAfter(internal::PartitionFreelistEntry* head, size_t slot_size);
-  static void SetGlobalLimits(PartitionRoot<>* root, float multiplier);
+  static void SetGlobalLimits(PartitionRoot* root, float multiplier);
 
   static constexpr uint16_t kBucketCount =
       internal::BucketIndexLookup::GetIndex(ThreadCache::kLargeSizeThreshold) +
@@ -426,7 +426,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   Bucket buckets_[kBucketCount];
 
   // Cold data below.
-  PartitionRoot<>* const root_;
+  PartitionRoot* const root_;
 
   const internal::base::PlatformThreadId thread_id_;
 #if BUILDFLAG(PA_DCHECK_IS_ON)

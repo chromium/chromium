@@ -22,15 +22,14 @@ MemoryReclaimer* MemoryReclaimer::Instance() {
   return instance.get();
 }
 
-void MemoryReclaimer::RegisterPartition(PartitionRoot<>* partition) {
+void MemoryReclaimer::RegisterPartition(PartitionRoot* partition) {
   internal::ScopedGuard lock(lock_);
   PA_DCHECK(partition);
   auto it_and_whether_inserted = partitions_.insert(partition);
   PA_DCHECK(it_and_whether_inserted.second);
 }
 
-void MemoryReclaimer::UnregisterPartition(
-    PartitionRoot<internal::ThreadSafe>* partition) {
+void MemoryReclaimer::UnregisterPartition(PartitionRoot* partition) {
   internal::ScopedGuard lock(lock_);
   PA_DCHECK(partition);
   size_t erased_count = partitions_.erase(partition);

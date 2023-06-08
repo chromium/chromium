@@ -19,31 +19,29 @@ constexpr bool DisallowLeaks = false;
 // If need to check if there are any memory allocated but not freed yet,
 // use allow_leaks=false. We will see CHECK failure inside reset() if any
 // leak is detected. Otherwise (e.g. intentional leaks), use allow_leaks=true.
-template <bool thread_safe, bool allow_leaks>
-struct PartitionAllocatorForTesting : public PartitionAllocator<thread_safe> {
-  PartitionAllocatorForTesting() : PartitionAllocator<thread_safe>() {}
+template <bool allow_leaks>
+struct PartitionAllocatorForTesting : public PartitionAllocator {
+  PartitionAllocatorForTesting() : PartitionAllocator() {}
 
   explicit PartitionAllocatorForTesting(PartitionOptions opts)
-      : PartitionAllocator<thread_safe>() {
-    PartitionAllocator<thread_safe>::init(opts);
+      : PartitionAllocator() {
+    PartitionAllocator::init(opts);
   }
 
   ~PartitionAllocatorForTesting() { reset(); }
 
   PA_ALWAYS_INLINE void reset() {
-    PartitionAllocator<thread_safe>::root()->ResetForTesting(allow_leaks);
+    PartitionAllocator::root()->ResetForTesting(allow_leaks);
   }
 };
 
 }  // namespace internal
 
 using PartitionAllocatorForTesting =
-    internal::PartitionAllocatorForTesting<internal::ThreadSafe,
-                                           internal::DisallowLeaks>;
+    internal::PartitionAllocatorForTesting<internal::DisallowLeaks>;
 
 using PartitionAllocatorAllowLeaksForTesting =
-    internal::PartitionAllocatorForTesting<internal::ThreadSafe,
-                                           internal::AllowLeaks>;
+    internal::PartitionAllocatorForTesting<internal::AllowLeaks>;
 
 }  // namespace partition_alloc
 

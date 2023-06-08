@@ -51,8 +51,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   STATIC_ASSERT_OR_PA_CHECK(
       (internal::PartitionPageSize() & internal::SystemPageOffsetMask()) == 0,
       "ok partition page multiple");
-  static_assert(sizeof(internal::PartitionPage<internal::ThreadSafe>) <=
-                    internal::kPageMetadataSize,
+  static_assert(sizeof(internal::PartitionPage) <= internal::kPageMetadataSize,
                 "PartitionPage should not be too big");
   STATIC_ASSERT_OR_PA_CHECK(
       internal::kPageMetadataSize * internal::NumPartitionPagesPerSuperPage() <=
@@ -109,13 +108,11 @@ void PartitionAllocGlobalUninitForTesting() {
 
 namespace internal {
 
-template <bool thread_safe>
-PartitionAllocator<thread_safe>::~PartitionAllocator() {
+PartitionAllocator::~PartitionAllocator() {
   MemoryReclaimer::Instance()->UnregisterPartition(&partition_root_);
 }
 
-template <bool thread_safe>
-void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
+void PartitionAllocator::init(PartitionOptions opts) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PA_CHECK(opts.thread_cache == PartitionOptions::ThreadCache::kDisabled)
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
@@ -123,9 +120,6 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
   partition_root_.Init(opts);
   MemoryReclaimer::Instance()->RegisterPartition(&partition_root_);
 }
-
-template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
-template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
 
 }  // namespace internal
 

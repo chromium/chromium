@@ -51,7 +51,7 @@ thread_local ThreadCache* g_thread_cache;
 namespace {
 // Since |g_thread_cache_key| is shared, make sure that no more than one
 // PartitionRoot can use it.
-static std::atomic<PartitionRoot<>*> g_thread_cache_root;
+static std::atomic<PartitionRoot*> g_thread_cache_root;
 
 #if BUILDFLAG(IS_WIN)
 void OnDllProcessDetach() {
@@ -339,7 +339,7 @@ void ThreadCache::DeleteForTesting(ThreadCache* tcache) {
 }
 
 // static
-void ThreadCache::SwapForTesting(PartitionRoot<>* root) {
+void ThreadCache::SwapForTesting(PartitionRoot* root) {
   auto* old_tcache = ThreadCache::Get();
   g_thread_cache_root.store(nullptr, std::memory_order_relaxed);
   if (old_tcache) {
@@ -363,7 +363,7 @@ void ThreadCache::RemoveTombstoneForTesting() {
 }
 
 // static
-void ThreadCache::Init(PartitionRoot<>* root) {
+void ThreadCache::Init(PartitionRoot* root) {
 #if BUILDFLAG(IS_NACL)
   static_assert(false, "PartitionAlloc isn't supported for NaCl");
 #endif
@@ -375,7 +375,7 @@ void ThreadCache::Init(PartitionRoot<>* root) {
   EnsureThreadSpecificDataInitialized();
 
   // Make sure that only one PartitionRoot wants a thread cache.
-  PartitionRoot<>* expected = nullptr;
+  PartitionRoot* expected = nullptr;
   if (!g_thread_cache_root.compare_exchange_strong(expected, root,
                                                    std::memory_order_seq_cst,
                                                    std::memory_order_seq_cst)) {
@@ -391,7 +391,7 @@ void ThreadCache::Init(PartitionRoot<>* root) {
 }
 
 // static
-void ThreadCache::SetGlobalLimits(PartitionRoot<>* root, float multiplier) {
+void ThreadCache::SetGlobalLimits(PartitionRoot* root, float multiplier) {
   size_t initial_value =
       static_cast<size_t>(kSmallBucketBaseCount) * multiplier;
 
@@ -434,17 +434,15 @@ void ThreadCache::SetLargestCachedSize(size_t size) {
   if (size > ThreadCache::kLargeSizeThreshold) {
     size = ThreadCache::kLargeSizeThreshold;
   }
-  largest_active_bucket_index_ =
-      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-          size,
-          PartitionRoot<internal::ThreadSafe>::BucketDistribution::kDefault);
+  largest_active_bucket_index_ = PartitionRoot::SizeToBucketIndex(
+      size, PartitionRoot::BucketDistribution::kDefault);
   PA_CHECK(largest_active_bucket_index_ < kBucketCount);
   ThreadCacheRegistry::Instance().SetLargestActiveBucketIndex(
       largest_active_bucket_index_);
 }
 
 // static
-ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
+ThreadCache* ThreadCache::Create(PartitionRoot* root) {
   PA_CHECK(root);
   // See comment in thread_cache.h, this is used to make sure
   // kThreadCacheNeedleArray is kept in the final binary.
@@ -460,9 +458,8 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   size_t usable_size;
   bool already_zeroed;
 
-  auto* bucket =
-      root->buckets + PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-                          raw_size, root->GetBucketDistribution());
+  auto* bucket = root->buckets + PartitionRoot::SizeToBucketIndex(
+                                     raw_size, root->GetBucketDistribution());
   uintptr_t buffer = root->RawAlloc(bucket, AllocFlags::kZeroFill, raw_size,
                                     internal::PartitionPageSize(), &usable_size,
                                     &already_zeroed);
@@ -487,7 +484,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   return tcache;
 }
 
-ThreadCache::ThreadCache(PartitionRoot<>* root)
+ThreadCache::ThreadCache(PartitionRoot* root)
     : should_purge_(false),
       root_(root),
       thread_id_(internal::base::PlatformThread::CurrentId()),
@@ -607,7 +604,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
 
   size_t allocated_slots = 0;
   // Same as calling RawAlloc() |count| times, but acquires the lock only once.
-  internal::ScopedGuard guard(root_->lock_);
+  internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   for (int i = 0; i < count; i++) {
     // Thread cache fill should not trigger expensive operations, to not grab
     // the lock for a long time needlessly, but also to not inflate memory
@@ -699,7 +696,7 @@ void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
   // Acquire the lock once. Deallocation from the same bucket are likely to be
   // hitting the same cache lines in the central allocator, and lock
   // acquisitions can be expensive.
-  internal::ScopedGuard guard(root_->lock_);
+  internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   while (head) {
     uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
     head = head->GetNextForThreadCache<crash_on_corruption>(slot_size);

@@ -72,7 +72,7 @@ class MemoryReclaimerTest : public ::testing::Test {
 };
 
 TEST_F(MemoryReclaimerTest, FreesMemory) {
-  PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
+  PartitionRoot* root = allocator_->root();
 
   size_t committed_initially = root->get_total_size_of_committed_pages();
   AllocateAndFree();
@@ -87,7 +87,7 @@ TEST_F(MemoryReclaimerTest, FreesMemory) {
 }
 
 TEST_F(MemoryReclaimerTest, Reclaim) {
-  PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
+  PartitionRoot* root = allocator_->root();
   size_t committed_initially = root->get_total_size_of_committed_pages();
 
   {

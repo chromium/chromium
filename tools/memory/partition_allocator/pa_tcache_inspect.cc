@@ -161,12 +161,12 @@ class PartitionRootInspector {
     size_t allocated_slots = 0;
     size_t freelist_size = 0;
 
-    PartitionBucket<ThreadSafe> bucket;
+    PartitionBucket bucket;
     std::vector<size_t> freelist_sizes;
     // Flattened versions of the lists.
-    std::vector<SlotSpanMetadata<ThreadSafe>> active_slot_spans;
-    std::vector<SlotSpanMetadata<ThreadSafe>> empty_slot_spans;
-    std::vector<SlotSpanMetadata<ThreadSafe>> decommitted_slot_spans;
+    std::vector<SlotSpanMetadata> active_slot_spans;
+    std::vector<SlotSpanMetadata> empty_slot_spans;
+    std::vector<SlotSpanMetadata> decommitted_slot_spans;
   };
 
   PartitionRootInspector(uintptr_t root_addr, pid_t pid)
@@ -174,7 +174,7 @@ class PartitionRootInspector {
   // Returns true for success.
   bool GatherStatistics();
   const std::vector<BucketStats>& bucket_stats() const { return bucket_stats_; }
-  const PartitionRoot<ThreadSafe>* root() { return root_.get(); }
+  const PartitionRoot* root() { return root_.get(); }
 
  private:
   void Update();
@@ -182,7 +182,7 @@ class PartitionRootInspector {
   uintptr_t root_addr_;
   pid_t pid_;
   RemoteProcessMemoryReader reader_;
-  RawBuffer<PartitionRoot<ThreadSafe>> root_;
+  RawBuffer<PartitionRoot> root_;
   std::vector<BucketStats> bucket_stats_;
 };
 
@@ -251,22 +251,22 @@ ThreadCacheInspector::AccumulateThreadCacheBuckets() {
 }
 
 void PartitionRootInspector::Update() {
-  auto root = RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromProcessMemory(
-      reader_, root_addr_);
+  auto root =
+      RawBuffer<PartitionRoot>::ReadFromProcessMemory(reader_, root_addr_);
   if (root.has_value())
     root_ = *root;
 }
 
 namespace {
 
-bool CopySlotSpanList(std::vector<SlotSpanMetadata<ThreadSafe>>& list,
+bool CopySlotSpanList(std::vector<SlotSpanMetadata>& list,
                       uintptr_t head_address,
                       RemoteProcessMemoryReader& reader) {
-  absl::optional<RawBuffer<SlotSpanMetadata<ThreadSafe>>> metadata;
+  absl::optional<RawBuffer<SlotSpanMetadata>> metadata;
   for (uintptr_t slot_span_address = head_address; slot_span_address;
        slot_span_address =
            reinterpret_cast<uintptr_t>(metadata->get()->next_slot_span)) {
-    metadata = RawBuffer<SlotSpanMetadata<ThreadSafe>>::ReadFromProcessMemory(
+    metadata = RawBuffer<SlotSpanMetadata>::ReadFromProcessMemory(
         reader, slot_span_address);
     if (!metadata.has_value())
       return false;
@@ -483,7 +483,7 @@ void DisplayRootData(PartitionRootInspector& root_inspector,
 }
 
 base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
-  auto slot_span_to_value = [](const SlotSpanMetadata<ThreadSafe>& slot_span,
+  auto slot_span_to_value = [](const SlotSpanMetadata& slot_span,
                                size_t slots_per_span) {
     base::Value::Dict result;
 

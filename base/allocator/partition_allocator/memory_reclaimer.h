@@ -33,10 +33,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
 
   // Internal. Do not use.
   // Registers a partition to be tracked by the reclaimer.
-  void RegisterPartition(PartitionRoot<>* partition);
+  void RegisterPartition(PartitionRoot* partition);
   // Internal. Do not use.
   // Unregisters a partition to be tracked by the reclaimer.
-  void UnregisterPartition(PartitionRoot<>* partition);
+  void UnregisterPartition(PartitionRoot* partition);
 
   // Triggers an explicit reclaim now to reclaim as much free memory as
   // possible. The API callers need to invoke this method periodically
@@ -61,7 +61,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
   void ResetForTesting();
 
   internal::Lock lock_;
-  std::set<PartitionRoot<>*> partitions_ PA_GUARDED_BY(lock_);
+  std::set<PartitionRoot*> partitions_ PA_GUARDED_BY(lock_);
 
   friend class internal::base::NoDestructor<MemoryReclaimer>;
   friend class MemoryReclaimerTest;

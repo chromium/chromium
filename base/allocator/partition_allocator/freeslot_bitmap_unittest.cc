@@ -67,7 +67,7 @@ class PartitionAllocFreeSlotBitmapTest : public ::testing::Test {
  private:
   uintptr_t allocated_ptr_;
   uintptr_t super_page_;
-  PartitionAllocator<ThreadSafe> allocator_;
+  PartitionAllocator allocator_;
 };
 
 }  // namespace

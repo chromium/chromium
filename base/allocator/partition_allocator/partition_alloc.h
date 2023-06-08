@@ -49,27 +49,23 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void PartitionAllocGlobalUninitForTesting();
 
 namespace internal {
-template <bool thread_safe>
 struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocator {
-  PartitionAllocator() = default;
   ~PartitionAllocator();
 
   void init(PartitionOptions);
 
-  PA_ALWAYS_INLINE PartitionRoot<thread_safe>* root() {
-    return &partition_root_;
-  }
-  PA_ALWAYS_INLINE const PartitionRoot<thread_safe>* root() const {
+  PA_ALWAYS_INLINE PartitionRoot* root() { return &partition_root_; }
+  PA_ALWAYS_INLINE const PartitionRoot* root() const {
     return &partition_root_;
   }
 
  private:
-  PartitionRoot<thread_safe> partition_root_;
+  PartitionRoot partition_root_;
 };
 
 }  // namespace internal
 
-using PartitionAllocator = internal::PartitionAllocator<internal::ThreadSafe>;
+using PartitionAllocator = internal::PartitionAllocator;
 
 }  // namespace partition_alloc
 

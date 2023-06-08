@@ -30,9 +30,8 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   static internal::base::NoDestructor<ThreadSafePartitionRoot> root(kConfig);
 
   const size_t kSlotSize = 2 * internal::SystemPageSize();
-  uint16_t bucket_index =
-      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-          kSlotSize, root->GetBucketDistribution());
+  uint16_t bucket_index = PartitionRoot::SizeToBucketIndex(
+      kSlotSize, root->GetBucketDistribution());
   auto* bucket = root->buckets + bucket_index;
 
   const size_t kSuperPagePayloadStartOffset =
@@ -55,7 +54,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
            std::numeric_limits<size_t>::max() / kSuperPageSize);
   uintptr_t super_page_span_start;
   {
-    internal::ScopedGuard locker{root->lock_};
+    internal::ScopedGuard locker{internal::PartitionRootLock(root.get())};
     super_page_span_start = bucket->AllocNewSuperPageSpanForGwpAsan(
         root.get(), super_page_count, 0);
 
@@ -79,8 +78,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
     for (uintptr_t super_page = super_page_span_start;
          super_page < super_page_span_end; super_page += kSuperPageSize) {
       auto* page_metadata =
-          internal::PartitionSuperPageToMetadataArea<internal::ThreadSafe>(
-              super_page);
+          internal::PartitionSuperPageToMetadataArea(super_page);
 
       // Index 0 is invalid because it is the super page extent metadata.
       for (size_t partition_page_idx =
@@ -92,8 +90,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
             &page_metadata[partition_page_idx].slot_span_metadata;
         bucket->InitializeSlotSpanForGwpAsan(slot_span_metadata);
         auto slot_span_start =
-            internal::SlotSpanMetadata<internal::ThreadSafe>::ToSlotSpanStart(
-                slot_span_metadata);
+            internal::SlotSpanMetadata::ToSlotSpanStart(slot_span_metadata);
 
         for (uintptr_t slot_idx = 0; slot_idx < kSlotsPerSlotSpan; ++slot_idx) {
           auto slot_start = slot_span_start + slot_idx * kSlotSize;

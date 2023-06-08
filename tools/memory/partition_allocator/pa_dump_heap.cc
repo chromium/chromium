@@ -85,8 +85,8 @@ class HeapDumper {
   bool FindRoot() {
     root_address_ = FindRootAddress(reader_);
     CHECK(root_address_);
-    auto root = RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromProcessMemory(
-        reader_, root_address_);
+    auto root =
+        RawBuffer<PartitionRoot>::ReadFromProcessMemory(reader_, root_address_);
     CHECK(root);
     root_ = *root;
 
@@ -103,7 +103,7 @@ class HeapDumper {
     // Copy at the same address as in the remote process. Since the root is not
     // page-aligned in the remote process, need to pad the mapping a bit.
     size_t size_to_map = ::base::bits::AlignUp(
-        sizeof(PartitionRoot<ThreadSafe>) + SystemPageSize(), SystemPageSize());
+        sizeof(PartitionRoot) + SystemPageSize(), SystemPageSize());
     uintptr_t address_to_map =
         ::base::bits::AlignDown(root_address_, SystemPageSize());
     char* local_memory = CreateMappingAtAddress(address_to_map, size_to_map);
@@ -116,7 +116,7 @@ class HeapDumper {
     local_root_copy_ = local_memory;
 
     memcpy(reinterpret_cast<void*>(root_address_), root_.get(),
-           sizeof(PartitionRoot<ThreadSafe>));
+           sizeof(PartitionRoot));
     local_root_copy_mapping_base_ = reinterpret_cast<void*>(address_to_map);
     local_root_copy_mapping_size_ = size_to_map;
 
@@ -130,11 +130,11 @@ class HeapDumper {
     uintptr_t extent_address =
         reinterpret_cast<uintptr_t>(root_.get()->first_extent);
     while (extent_address) {
-      auto extent = RawBuffer<PartitionSuperPageExtentEntry<ThreadSafe>>::
-          ReadFromProcessMemory(reader_, extent_address);
+      auto extent =
+          RawBuffer<PartitionSuperPageExtentEntry>::ReadFromProcessMemory(
+              reader_, extent_address);
       uintptr_t first_super_page_address = SuperPagesBeginFromExtent(
-          reinterpret_cast<PartitionSuperPageExtentEntry<ThreadSafe>*>(
-              extent_address));
+          reinterpret_cast<PartitionSuperPageExtentEntry*>(extent_address));
       for (uintptr_t super_page = first_super_page_address;
            super_page < first_super_page_address +
                             extent->get()->number_of_consecutive_super_pages *
@@ -175,8 +175,8 @@ class HeapDumper {
       ret.Set("type", value);
 
       if (value != "metadata" && value != "guard") {
-        const auto* partition_page = PartitionPage<ThreadSafe>::FromAddr(
-            reinterpret_cast<uintptr_t>(data + offset));
+        const auto* partition_page =
+            PartitionPage::FromAddr(reinterpret_cast<uintptr_t>(data + offset));
         ret.Set("page_index_in_span",
                 partition_page->slot_span_metadata_offset);
         if (partition_page->slot_span_metadata_offset == 0 &&
@@ -302,8 +302,7 @@ class HeapDumper {
       while (partition_page_index < kSuperPageSize / PartitionPageSize() - 1) {
         uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
             data + partition_page_index * PartitionPageSize());
-        const auto* partition_page =
-            PartitionPage<ThreadSafe>::FromAddr(slot_span_start);
+        const auto* partition_page = PartitionPage::FromAddr(slot_span_start);
         // No bucket for PartitionPages that were never provisioned.
         if (!partition_page->slot_span_metadata.bucket) {
           partition_page_index++;
@@ -411,7 +410,7 @@ class HeapDumper {
   const int pagemap_fd_;
   uintptr_t root_address_ = 0;
   RemoteProcessMemoryReader reader_;
-  RawBuffer<PartitionRoot<ThreadSafe>> root_ = {};
+  RawBuffer<PartitionRoot> root_ = {};
   std::map<uintptr_t, char*> super_pages_ = {};
 
   char* local_root_copy_ = nullptr;
