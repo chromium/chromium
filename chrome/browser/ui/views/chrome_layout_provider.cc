@@ -96,6 +96,9 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
+    case INSETS_INFOBAR_VIEW:
+      return features::IsChromeRefresh2023() ? gfx::Insets::VH(8, 0)
+                                             : gfx::Insets::VH(0, 0);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -167,6 +170,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 20;
     case DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL:
       return 4;
+    case DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING:
+      return features::IsChromeRefresh2023() ? 16 : 12;
   }
   NOTREACHED_NORETURN();
 }

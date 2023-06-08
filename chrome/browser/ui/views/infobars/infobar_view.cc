@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -135,7 +136,9 @@ void InfoBarView::RecalculateHeight() {
     const int margin_height = margins ? margins->height() : 0;
     height = std::max(height, child->height() + margin_height);
   }
-  SetTargetHeight(height + kSeparatorHeightDip);
+  const gfx::Insets infobar_margins =
+      ChromeLayoutProvider::Get()->GetInsetsMetric(INSETS_INFOBAR_VIEW);
+  SetTargetHeight(height + kSeparatorHeightDip + infobar_margins.height());
 }
 
 void InfoBarView::Layout() {

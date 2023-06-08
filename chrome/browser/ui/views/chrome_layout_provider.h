@@ -21,6 +21,8 @@ enum ChromeInsetsMetric {
   INSETS_OMNIBOX_PILL_BUTTON,
   // Padding used in an page info hover button.
   INSETS_PAGE_INFO_HOVER_BUTTON,
+  // Padding used in Infobar view.
+  INSETS_INFOBAR_VIEW,
 };
 
 enum ChromeDistanceMetric {
@@ -92,6 +94,8 @@ enum ChromeDistanceMetric {
   DISTANCE_SIDE_PANEL_HEADER_BUTTON_MINIMUM_SIZE,
   // Horizontal spacing for separating side panel header border from controls.
   DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL,
+  // Horizontal padding applied between the icon and label in the infobar.
+  DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -53,6 +54,9 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   if (buttons & ConfirmInfoBarDelegate::BUTTON_CANCEL) {
     cancel_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_CANCEL,
                                    &ConfirmInfoBar::CancelButtonPressed);
+    if (features::IsChromeRefresh2023()) {
+      cancel_button_->SetStyle(ui::ButtonStyle::kTonal);
+    }
     if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL) {
       cancel_button_->SetProminent(true);
     }
@@ -68,6 +72,9 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   if (buttons & ConfirmInfoBarDelegate::BUTTON_EXTRA) {
     extra_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_EXTRA,
                                   &ConfirmInfoBar::ExtraButtonPressed);
+    if (features::IsChromeRefresh2023()) {
+      extra_button_->SetStyle(ui::ButtonStyle::kTonal);
+    }
     if (buttons == ConfirmInfoBarDelegate::BUTTON_EXTRA) {
       extra_button_->SetProminent(true);
     }
@@ -112,7 +119,7 @@ void ConfirmInfoBar::Layout() {
   if (!label_->GetText().empty()) {
     x = label_->bounds().right() +
         layout_provider->GetDistanceMetric(
-            views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+            DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING);
   }
 
   if (ok_button_) {
