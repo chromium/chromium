@@ -8,7 +8,9 @@
 #include <string>
 #include <tuple>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -304,6 +306,46 @@ TYPED_TEST_P(ProtoFetcherTest, HandlesServerError) {
       ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_BAD_REQUEST));
 }
 
+TYPED_TEST_P(ProtoFetcherTest, RecordsMetrics) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+  Response response;
+  base::HistogramTester histogram_tester;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto fetcher = this->GetFetcher(receiver);
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
+                                                               Time::Max());
+
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      this->test_url_loader_factory_.GetPendingRequest(0);
+
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), response.SerializeAsString());
+
+  ASSERT_TRUE(receiver.GetResult().has_value());
+
+  // The actual latency of mocked fetch is variable, so only expect that some
+  // value was recorded.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({this->GetConfig().histogram_basename, ".Latency"}),
+      /*expected_count(grew by)*/ 1);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          base::StrCat({this->GetConfig().histogram_basename, ".Status"})),
+      base::BucketsInclude(base::Bucket(ProtoFetcherStatus::State::OK, 1)));
+
+  // Tests that no enum above ::OK was emitted:
+  EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
+                  {this->GetConfig().histogram_basename, ".Status"})),
+              base::BucketsInclude(base::Bucket(
+                  ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR, 0)));
+}
+
 REGISTER_TYPED_TEST_SUITE_P(ProtoFetcherTest,
                             ConfiguresEndpoint,
                             AddsPayload,
@@ -311,7 +353,8 @@ REGISTER_TYPED_TEST_SUITE_P(ProtoFetcherTest,
                             NoAccessToken,
                             HandlesMalformedResponse,
                             CreatesToken,
-                            HandlesServerError);
+                            HandlesServerError,
+                            RecordsMetrics);
 
 using Fetchers = ::testing::Types<ClassifyUrl, ListFamilyMembers>;
 INSTANTIATE_TYPED_TEST_SUITE_P(AllFetchers, ProtoFetcherTest, Fetchers);

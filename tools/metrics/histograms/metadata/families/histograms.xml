@@ -271,14 +271,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.NetOrHttpStatus"
+<histogram name="FamilyLinkUser.ClassifyUrlRequest.HttpStatusOrNetError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    The status of the net or http communication to the Kids Management
-    API::ClassifyURL with JSON message format in expected response. This is
-    recorded for each request to the Kids Management API.
+    The status of the net or http communication in calls to Kids Management
+    API::ClassifyURL. This is recorded for each request to the Kids Management
+    API.
+  </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.ClassifyUrlRequest.Latency" units="ms"
+    expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Tracks the latency in calls to Kids Management API::ClassifyURL.
   </summary>
 </histogram>
 
@@ -290,6 +299,34 @@ chromium-metrics-reviews@google.com.
     Indicates success of a JSON response parsing from Kids Management
     API::ClassifyURL, or a stage at which it failed.
   </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.ClassifyUrlRequest.Status"
+    enum="SupervisedUserProtoFetcherStatus" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The status of the fetch in calls to Kids Management API::ClassifyURL.
+  </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.ClassifyUrlRequest.{Status}.Latency" units="ms"
+    expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Latency of the calls in calls to Kids Management API::ClassifyURL that
+    resulted with &quot;{Status}&quot; status.
+  </summary>
+  <token key="Status">
+    <variant name="AuthError"/>
+    <variant name="DataError"
+        summary="contract error (data in the response missing despite
+                 succesful parsing)"/>
+    <variant name="HttpStatusOrNetError"/>
+    <variant name="NoError"/>
+    <variant name="ParseError"/>
+  </token>
 </histogram>
 
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
