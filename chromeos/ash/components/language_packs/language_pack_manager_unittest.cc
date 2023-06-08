@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,6 +55,11 @@ class CallbackForTesting {
                           base::Unretained(this));
   }
 
+  OnUpdatePacksForOobeCallback GetOobeCallback() {
+    return base::BindOnce(&CallbackForTesting::Callback,
+                          base::Unretained(this));
+  }
+
   MOCK_METHOD(void, Callback, (const PackResult&), ());
 };
 
@@ -83,6 +89,8 @@ class LanguagePackManagerTest : public testing::Test {
     dlcservice_client_ =
         static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
 
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+
     manager_ = LanguagePackManager::GetInstance();
     manager_->Initialize();
     ResetPackResult();
@@ -107,10 +115,15 @@ class LanguagePackManagerTest : public testing::Test {
     pack_result_ = pack_result;
   }
 
+  void OobeTestCallback(const PackResult& pack_result) {
+    pack_result_ = pack_result;
+  }
+
  protected:
   raw_ptr<LanguagePackManager, ExperimentalAsh> manager_;
   PackResult pack_result_;
   raw_ptr<FakeDlcserviceClient, ExperimentalAsh> dlcservice_client_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -472,6 +485,68 @@ TEST_F(LanguagePackManagerTest, InstallBasePackFailureTestFailure) {
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
                                      FeatureIdsEnum::kHandwriting, 1);
+}
+
+// If we are not in OOBE nothing should happen.
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeNotOobeTest) {
+  // Set session as user logged in.
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  testing::StrictMock<CallbackForTesting> callback;
+  EXPECT_CALL(callback, Callback(_)).Times(0);
+
+  manager_->UpdatePacksForOobe(kSupportedLocale, callback.GetInstallCallback());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccessTest) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  manager_->UpdatePacksForOobe(
+      "en-au", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                              base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.language_code, "en-au");
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  manager_->UpdatePacksForOobe(
+      "it-it", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                              base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.language_code, "it");
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeFailureTest) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorInternal);
+
+  manager_->UpdatePacksForOobe(
+      "es-es", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                              base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
+  EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
 }
 
 }  // namespace ash::language_packs

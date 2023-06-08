@@ -100,39 +100,39 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kHandwritingFeatureId, "zh-HK"}, "handwriting-zh-HK"},
 
           // Text-To-Speech.
-          {{kTtsFeatureId, "bn-bd"}, "tts-bn-bd"},
-          {{kTtsFeatureId, "cs-cz"}, "tts-cs-cz"},
-          {{kTtsFeatureId, "da-dk"}, "tts-da-dk"},
-          {{kTtsFeatureId, "de-de"}, "tts-de-de"},
-          {{kTtsFeatureId, "el-gr"}, "tts-el-gr"},
+          {{kTtsFeatureId, "bn"}, "tts-bn-bd"},
+          {{kTtsFeatureId, "cs"}, "tts-cs-cz"},
+          {{kTtsFeatureId, "da"}, "tts-da-dk"},
+          {{kTtsFeatureId, "de"}, "tts-de-de"},
+          {{kTtsFeatureId, "el"}, "tts-el-gr"},
           {{kTtsFeatureId, "en-au"}, "tts-en-au"},
           {{kTtsFeatureId, "en-gb"}, "tts-en-gb"},
           {{kTtsFeatureId, "en-us"}, "tts-en-us"},
           {{kTtsFeatureId, "es-es"}, "tts-es-es"},
           {{kTtsFeatureId, "es-us"}, "tts-es-us"},
-          {{kTtsFeatureId, "fi-fi"}, "tts-fi-fi"},
-          {{kTtsFeatureId, "fil-ph"}, "tts-fil-ph"},
-          {{kTtsFeatureId, "fr-fr"}, "tts-fr-fr"},
-          {{kTtsFeatureId, "hi-in"}, "tts-hi-in"},
-          {{kTtsFeatureId, "hu-hu"}, "tts-hu-hu"},
-          {{kTtsFeatureId, "id-id"}, "tts-id-id"},
-          {{kTtsFeatureId, "it-it"}, "tts-it-it"},
-          {{kTtsFeatureId, "ja-jp"}, "tts-ja-jp"},
-          {{kTtsFeatureId, "km-kh"}, "tts-km-kh"},
-          {{kTtsFeatureId, "ko-kr"}, "tts-ko-kr"},
-          {{kTtsFeatureId, "nb-no"}, "tts-nb-no"},
-          {{kTtsFeatureId, "ne-np"}, "tts-ne-np"},
-          {{kTtsFeatureId, "nl-nl"}, "tts-nl-nl"},
-          {{kTtsFeatureId, "pl-pl"}, "tts-pl-pl"},
-          {{kTtsFeatureId, "pt-br"}, "tts-pt-br"},
-          {{kTtsFeatureId, "si-lk"}, "tts-si-lk"},
-          {{kTtsFeatureId, "sk-sk"}, "tts-sk-sk"},
-          {{kTtsFeatureId, "sv-se"}, "tts-sv-se"},
-          {{kTtsFeatureId, "th-th"}, "tts-th-th"},
-          {{kTtsFeatureId, "tr-tr"}, "tts-tr-tr"},
-          {{kTtsFeatureId, "uk-ua"}, "tts-uk-ua"},
-          {{kTtsFeatureId, "vi-vn"}, "tts-vi-vn"},
-          {{kTtsFeatureId, "yue-hk"}, "tts-yue-hk"},
+          {{kTtsFeatureId, "fi"}, "tts-fi-fi"},
+          {{kTtsFeatureId, "fil"}, "tts-fil-ph"},
+          {{kTtsFeatureId, "fr"}, "tts-fr-fr"},
+          {{kTtsFeatureId, "hi"}, "tts-hi-in"},
+          {{kTtsFeatureId, "hu"}, "tts-hu-hu"},
+          {{kTtsFeatureId, "id"}, "tts-id-id"},
+          {{kTtsFeatureId, "it"}, "tts-it-it"},
+          {{kTtsFeatureId, "ja"}, "tts-ja-jp"},
+          {{kTtsFeatureId, "km"}, "tts-km-kh"},
+          {{kTtsFeatureId, "ko"}, "tts-ko-kr"},
+          {{kTtsFeatureId, "nb"}, "tts-nb-no"},
+          {{kTtsFeatureId, "ne"}, "tts-ne-np"},
+          {{kTtsFeatureId, "nl"}, "tts-nl-nl"},
+          {{kTtsFeatureId, "pl"}, "tts-pl-pl"},
+          {{kTtsFeatureId, "pt"}, "tts-pt-br"},
+          {{kTtsFeatureId, "si"}, "tts-si-lk"},
+          {{kTtsFeatureId, "sk"}, "tts-sk-sk"},
+          {{kTtsFeatureId, "sv"}, "tts-sv-se"},
+          {{kTtsFeatureId, "th"}, "tts-th-th"},
+          {{kTtsFeatureId, "tr"}, "tts-tr-tr"},
+          {{kTtsFeatureId, "uk"}, "tts-uk-ua"},
+          {{kTtsFeatureId, "vi"}, "tts-vi-vn"},
+          {{kTtsFeatureId, "yue"}, "tts-yue-hk"},
       });
 
   return *all_dlc_ids;
@@ -272,15 +272,18 @@ PackResult::PackResult(const PackResult& pr)
 ///////////////////////////////////////////////////////////
 
 bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
-                                          const std::string& locale) {
+                                          const std::string& input_locale) {
+  const std::string locale = ResolveLocale(feature_id, input_locale);
+
   // We search in the static list for the given Pack spec.
   const PackSpecPair spec(feature_id, locale);
   return base::Contains(GetAllLanguagePackDlcIds(), spec);
 }
 
 void LanguagePackManager::InstallPack(const std::string& feature_id,
-                                      const std::string& locale,
+                                      const std::string& input_locale,
                                       OnInstallCompleteCallback callback) {
+  const std::string locale = ResolveLocale(feature_id, input_locale);
   const absl::optional<std::string> dlc_id =
       GetDlcIdForLanguagePack(feature_id, locale);
 
@@ -296,8 +299,9 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
 }
 
 void LanguagePackManager::GetPackState(const std::string& feature_id,
-                                       const std::string& locale,
+                                       const std::string& input_locale,
                                        GetPackStateCallback callback) {
+  const std::string locale = ResolveLocale(feature_id, input_locale);
   const absl::optional<std::string> dlc_id =
       GetDlcIdForLanguagePack(feature_id, locale);
 
@@ -318,8 +322,9 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
 }
 
 void LanguagePackManager::RemovePack(const std::string& feature_id,
-                                     const std::string& locale,
+                                     const std::string& input_locale,
                                      OnUninstallCompleteCallback callback) {
+  const std::string locale = ResolveLocale(feature_id, input_locale);
   const absl::optional<std::string> dlc_id =
       GetDlcIdForLanguagePack(feature_id, locale);
 
@@ -355,7 +360,9 @@ void LanguagePackManager::InstallBasePack(
                                      feature_id, ""));
 }
 
-void LanguagePackManager::UpdatePacksForOobe(const std::string& locale) {
+void LanguagePackManager::UpdatePacksForOobe(
+    const std::string& input_locale,
+    OnUpdatePacksForOobeCallback callback) {
   if (!IsOobe()) {
     DLOG(ERROR) << "Language Packs: UpdatePackForOobe called while not in OOBE";
     return;
@@ -364,13 +371,16 @@ void LanguagePackManager::UpdatePacksForOobe(const std::string& locale) {
   // For now, TTS is the only feature we want to install during OOBE.
   // In the future we'll have a function that returns the list of features to
   // install.
-  const std::string final_locale = ResolveLocaleForTts(locale);
+  const std::string locale = ResolveLocale(kTtsFeatureId, input_locale);
   const absl::optional<std::string> dlc_id =
-      GetDlcIdForLanguagePack(kTtsFeatureId, final_locale);
+      GetDlcIdForLanguagePack(kTtsFeatureId, locale);
 
   if (dlc_id) {
-    InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, base::DoNothing(),
-                                       kTtsFeatureId, locale));
+    InstallDlc(*dlc_id,
+               base::BindOnce(&OnInstallDlcComplete, std::move(callback),
+                              kTtsFeatureId, locale));
+  } else {
+    DLOG(ERROR) << "Language Packs: UpdatePacksForOobe locale does not exist";
   }
 }
 

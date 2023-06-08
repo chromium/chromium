@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/dlcservice",
+    "//components/session_manager/core:core",
     "//testing/gmock",
     "//testing/gtest",
   ]

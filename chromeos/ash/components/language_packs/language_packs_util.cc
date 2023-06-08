@@ -13,6 +13,30 @@
 
 namespace ash::language_packs {
 
+namespace {
+
+const std::string ResolveLocaleForHandwriting(const std::string& input_locale) {
+  // Chinese HongKong is an exception.
+  if (base::EqualsCaseInsensitiveASCII(input_locale, "zh-hk")) {
+    return "zh-HK";
+  }
+  return std::string(language::ExtractBaseLanguage(input_locale));
+}
+
+const std::string ResolveLocaleForTts(const std::string& input_locale) {
+  // Consider exceptions first.
+  if (base::EqualsCaseInsensitiveASCII(input_locale, "en-au") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "en-gb") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "en-us") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "es-es") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "es-us")) {
+    return base::ToLowerASCII(input_locale);
+  }
+  return std::string(language::ExtractBaseLanguage(input_locale));
+}
+
+}  // namespace
+
 FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
   if (feature_id == kHandwritingFeatureId) {
     return FeatureIdsEnum::kHandwriting;
@@ -101,24 +125,16 @@ PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
   return result;
 }
 
-const std::string ResolveLocaleForHandwriting(const std::string& input_locale) {
-  // Chinese HongKong is an exception.
-  if (base::EqualsCaseInsensitiveASCII(input_locale, "zh-hk")) {
-    return "zh-HK";
+const std::string ResolveLocale(const std::string& feature_id,
+                                const std::string& locale) {
+  if (feature_id == kHandwritingFeatureId) {
+    return ResolveLocaleForHandwriting(locale);
+  } else if (feature_id == kTtsFeatureId) {
+    return ResolveLocaleForTts(locale);
+  } else {
+    DLOG(ERROR) << "ResolveLocale called with wrong feature_id";
+    return "";
   }
-  return std::string(language::ExtractBaseLanguage(input_locale));
-}
-
-const std::string ResolveLocaleForTts(const std::string& input_locale) {
-  // Consider exceptions first.
-  if (base::EqualsCaseInsensitiveASCII(input_locale, "en-au") ||
-      base::EqualsCaseInsensitiveASCII(input_locale, "en-gb") ||
-      base::EqualsCaseInsensitiveASCII(input_locale, "en-us") ||
-      base::EqualsCaseInsensitiveASCII(input_locale, "es-es") ||
-      base::EqualsCaseInsensitiveASCII(input_locale, "es-us")) {
-    return base::ToLowerASCII(input_locale);
-  }
-  return std::string(language::ExtractBaseLanguage(input_locale));
 }
 
 bool IsOobe() {

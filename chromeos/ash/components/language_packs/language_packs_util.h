@@ -33,8 +33,8 @@ PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state);
 
 // Resolves the received locale to a canonical one that we keep in our mapping
 // from locales to DLC IDs.
-const std::string ResolveLocaleForHandwriting(const std::string& input_locale);
-const std::string ResolveLocaleForTts(const std::string& input_locale);
+const std::string ResolveLocale(const std::string& feature_id,
+                                const std::string& input_locale);
 
 // Returns true if we currently are in the OOBE flow.
 bool IsOobe();

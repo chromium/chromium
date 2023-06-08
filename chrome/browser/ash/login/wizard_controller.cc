@@ -1779,7 +1779,7 @@ void WizardController::OnUpdateCompleted() {
   if (ash::features::IsLanguagePacksInOobeEnabled()) {
     const std::string locale = GetApplicationLocale();
     language_packs::LanguagePackManager::GetInstance()->UpdatePacksForOobe(
-        locale);
+        locale, base::DoNothing());
   }
 
   if (demo_setup_controller_) {

@@ -133,6 +133,8 @@ using OnUninstallCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
 using OnInstallBasePackCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
+using OnUpdatePacksForOobeCallback =
+    base::OnceCallback<void(const PackResult& pack_result)>;
 
 // This class manages all Language Packs and their dependencies (called Base
 // Packs) on the device.
@@ -194,7 +196,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Installs relevant language packs during OOBE.
   // This method should only be called during OOBE and will do nothing if called
   // outside it.
-  void UpdatePacksForOobe(const std::string& locale);
+  void UpdatePacksForOobe(const std::string& locale,
+                          OnUpdatePacksForOobeCallback callback);
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
