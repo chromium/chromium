@@ -22,7 +22,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace content::js_bridge_unittest {
 
 namespace {
 
@@ -206,4 +206,4 @@ TEST_F(WebUIJsBridgeTest, IncorrectWebUIControllerCrash) {
       mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing()), "");
 }
 
-}  // namespace content
+}  // namespace content::js_bridge_unittest

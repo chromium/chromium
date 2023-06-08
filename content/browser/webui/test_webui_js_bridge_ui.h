@@ -7,18 +7,32 @@
 
 #include "content/public/browser/web_ui_controller.h"
 
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+
 namespace content {
+
+const static constexpr char kTestWebUIJsBridgeUIUrl[] = "chrome://foo";
+const static constexpr char kTestWebUIJsBridgeUIHost[] = "foo";
 
 // WebUIController for WebUIJsBridge unittests.
 class TestWebUIJsBridgeUI : public WebUIController {
  public:
-  explicit TestWebUIJsBridgeUI(WebUI* web_ui) : WebUIController(web_ui) {}
+  explicit TestWebUIJsBridgeUI(WebUI* web_ui);
   ~TestWebUIJsBridgeUI() override = default;
 
   TestWebUIJsBridgeUI(const TestWebUIJsBridgeUI&) = delete;
   TestWebUIJsBridgeUI& operator=(const TestWebUIJsBridgeUI&) = delete;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+// WebUIConfig for TestWebUIJsBridgeUI.
+class TestWebUIJsBridgeUIConfig
+    : public DefaultWebUIConfig<TestWebUIJsBridgeUI> {
+ public:
+  explicit TestWebUIJsBridgeUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kTestWebUIJsBridgeUIHost) {}
 };
 
 // Additional WebUIController for WebUIJsBridge unittests.

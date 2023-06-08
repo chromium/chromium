@@ -134,6 +134,8 @@ static_library("test_support") {
     "../browser/web_package/mock_signed_exchange_handler.cc",
     "../browser/web_package/mock_signed_exchange_handler.h",
     "../browser/web_package/signed_exchange_test_utils.h",
+    "../browser/webui/test_web_ui_js_bridge_impl.cc",
+    "../browser/webui/test_web_ui_js_bridge_impl.h",
     "../browser/webui/test_webui_js_bridge_ui.cc",
     "../browser/webui/test_webui_js_bridge_ui.h",
     "../browser/worker_host/test_shared_worker_service_impl.cc",
@@ -503,6 +505,8 @@ static_library("test_support") {
 
   deps = [
     ":content_test_mojo_bindings",
+    ":web_ui_mojo_test_resources",
+    ":web_ui_test_mojo_bindings",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",
@@ -1564,6 +1568,7 @@ test("content_browsertests") {
     "../browser/webrtc/webrtc_video_capture_shared_device_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.h",
+    "../browser/webui/web_ui_browser_interface_broker_registry_browsertest.cc",
     "../browser/webui/web_ui_browsertest.cc",
     "../browser/webui/web_ui_managed_interface_browsertest.cc",
     "../browser/webui/web_ui_mojo_browsertest.cc",

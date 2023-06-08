@@ -37,15 +37,16 @@ class WebUIManagedInterfaceStorage
 
 DOCUMENT_USER_DATA_KEY_IMPL(WebUIManagedInterfaceStorage);
 
+}  // namespace internal
+
 void SaveWebUIManagedInterfaceInDocument(
     WebUIController* controller,
     std::unique_ptr<WebUIManagedInterfaceBase> data) {
-  auto* storage = WebUIManagedInterfaceStorage::GetOrCreateForCurrentDocument(
-      controller->web_ui()->GetRenderFrameHost());
+  auto* storage =
+      internal::WebUIManagedInterfaceStorage::GetOrCreateForCurrentDocument(
+          controller->web_ui()->GetRenderFrameHost());
   storage->AddInterfaceImpl(std::move(data));
 }
-
-}  // namespace internal
 
 void RemoveWebUIManagedInterfaces(WebUIController* webui_controller) {
   RenderFrameHost* rfh = webui_controller->web_ui()->GetRenderFrameHost();
