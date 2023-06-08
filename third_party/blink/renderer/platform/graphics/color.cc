@@ -25,7 +25,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
-#include <cmath>
+#include <math.h>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
