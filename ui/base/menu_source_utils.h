@@ -6,6 +6,7 @@
 #define UI_BASE_MENU_SOURCE_UTILS_H_
 
 #include "base/component_export.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/ui_base_types.h"
 
 namespace ui {
@@ -14,6 +15,12 @@ class Event;
 
 COMPONENT_EXPORT(UI_BASE)
 MenuSourceType GetMenuSourceTypeForEvent(const Event& event);
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Returns the menu source type based on `event_flags`.
+COMPONENT_EXPORT(UI_BASE)
+MenuSourceType GetMenuSourceType(int event_flags);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace ui
 

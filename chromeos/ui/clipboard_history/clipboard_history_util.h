@@ -46,7 +46,7 @@ COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
 void PasteClipboardItemById(
     const base::UnguessableToken& id,
     int event_flags,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source);
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source);
 
 // Returns the icon that represents the `descriptor`.
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)

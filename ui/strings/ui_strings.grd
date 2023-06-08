@@ -648,6 +648,9 @@ need to be translated for each locale.-->
         <message name="IDS_APP_SHOW_CLIPBOARD_HISTORY" desc="The context menu item to show the clipboard history menu.">
           Clipboard
         </message>
+        <message name="IDS_APP_PASTE_FROM_CLIPBOARD" desc="The context menu item to show the submenu of clipboard history items the user can paste.">
+          Paste from clipboard
+        </message>
       </if>
 
       <!-- Generic terms -->

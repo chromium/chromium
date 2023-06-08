@@ -383,6 +383,12 @@ class RenderViewContextMenu
   // or whether the current page can be translated.
   bool CanTranslate(bool menu_logging);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Shows the standalone clipboard history menu. `event_flags` describes the
+  // event that caused the menu to show.
+  void ShowClipboardHistoryMenu(int event_flags);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // The destination URL to use if the user tries to search for or navigate to
   // a text selection.
   GURL selection_navigation_url_;

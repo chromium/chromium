@@ -16,4 +16,16 @@ MenuSourceType GetMenuSourceTypeForEvent(const Event& event) {
   return MENU_SOURCE_MOUSE;
 }
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+MenuSourceType GetMenuSourceType(int event_flags) {
+  if (event_flags & EF_MOUSE_BUTTON) {
+    return MENU_SOURCE_MOUSE;
+  }
+  if (event_flags & EF_FROM_TOUCH) {
+    return MENU_SOURCE_TOUCH;
+  }
+  return MENU_SOURCE_KEYBOARD;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 }  // namespace ui

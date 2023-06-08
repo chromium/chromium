@@ -56,8 +56,8 @@ void SetPasteClipboardItemByIdImpl(PasteClipboardItemByIdImpl impl) {
 void PasteClipboardItemById(
     const base::UnguessableToken& id,
     int event_flags,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
-  GetPasteClipboardItemByIdImpl().Run(id, event_flags, show_source);
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
+  GetPasteClipboardItemByIdImpl().Run(id, event_flags, paste_source);
 }
 
 ui::ImageModel GetIconForDescriptor(

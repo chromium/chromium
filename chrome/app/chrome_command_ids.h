@@ -430,6 +430,7 @@
 #define IDC_CONTENT_CONTEXT_SHARING_SUBMENU 51035
 // Context menu item to show the clipboard history menu
 #define IDC_CONTENT_CLIPBOARD_HISTORY_MENU 51036
+#define IDC_CONTENT_PASTE_FROM_CLIPBOARD 51037
 
 // Context menu items in the status tray
 #define IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND 51100

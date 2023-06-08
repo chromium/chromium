@@ -11,6 +11,7 @@
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
@@ -19,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -93,6 +95,11 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
   params.is_editable = true;
   params.edit_flags = blink::ContextMenuDataEditFlags::kCanPaste;
 
+  const int clipboard_history_command_id =
+      chromeos::features::IsClipboardHistoryRefreshEnabled()
+          ? IDC_CONTENT_PASTE_FROM_CLIPBOARD
+          : IDC_CONTENT_CLIPBOARD_HISTORY_MENU;
+
   {
     TestRenderViewContextMenu menu(*browser()
                                         ->tab_strip_model()
@@ -102,8 +109,8 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
     menu.Init();
 
     // When clipboard history is empty, the Clipboard option should be disabled.
-    EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
-    EXPECT_FALSE(menu.IsItemEnabled(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
+    EXPECT_TRUE(menu.IsItemPresent(clipboard_history_command_id));
+    EXPECT_FALSE(menu.IsItemEnabled(clipboard_history_command_id));
   }
 
   // Populate the clipboard so that the menu can be shown.
@@ -119,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
 
     const ui::SimpleMenuModel& menu_model = menu.menu_model();
     absl::optional<size_t> target_command_index =
-        menu_model.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
+        menu_model.GetIndexOfCommandId(clipboard_history_command_id);
     ASSERT_TRUE(target_command_index);
 
     // The clipboard history menu option should be enabled since clipboard
@@ -132,8 +139,11 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
       ui::MenuModel* const submenu_model =
           menu_model.GetSubmenuModelAt(*target_command_index);
       ASSERT_TRUE(submenu_model);
-      ASSERT_EQ(submenu_model->GetItemCount(), 1u);
+      ASSERT_EQ(submenu_model->GetItemCount(), 2u);
       EXPECT_EQ(submenu_model->GetLabelAt(0), u"text");
+      EXPECT_EQ(submenu_model->GetLabelAt(1),
+                l10n_util::GetStringUTF16(
+                    IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU));
     } else {
       // Because the refresh feature is disabled, the clipboard history menu
       // item should be a command item.
@@ -169,11 +179,16 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
   views::TextfieldTestApi api(textfield);
   api.UpdateContextMenu();
 
+  const int clipboard_history_command_id =
+      chromeos::features::IsClipboardHistoryRefreshEnabled()
+          ? IDS_APP_PASTE_FROM_CLIPBOARD
+          : IDS_APP_SHOW_CLIPBOARD_HISTORY;
+
   // Search the parent model and the command index of
-  // `IDS_APP_SHOW_CLIPBOARD_HISTORY`.
+  // `clipboard_history_command_id`.
   ui::MenuModel* target_command_parent_model = api.context_menu_contents();
   size_t target_command_index = 0u;
-  ui::MenuModel::GetModelAndIndexForCommandId(IDS_APP_SHOW_CLIPBOARD_HISTORY,
+  ui::MenuModel::GetModelAndIndexForCommandId(clipboard_history_command_id,
                                               &target_command_parent_model,
                                               &target_command_index);
   ASSERT_EQ(target_command_parent_model, api.context_menu_contents());
@@ -202,9 +217,11 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
     ui::MenuModel* const submenu_model =
         target_command_parent_model->GetSubmenuModelAt(target_command_index);
     ASSERT_TRUE(submenu_model);
-    ASSERT_EQ(submenu_model->GetItemCount(), 2u);
+    ASSERT_EQ(submenu_model->GetItemCount(), 3u);
     EXPECT_EQ(submenu_model->GetLabelAt(0), u"a");
     EXPECT_EQ(submenu_model->GetLabelAt(1), u"b");
+    EXPECT_EQ(submenu_model->GetLabelAt(2),
+              l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
   } else {
     // Because the refresh feature is disabled, the clipboard history menu item
     // should be a command item.

@@ -40,6 +40,11 @@ class VIEWS_EXPORT ViewsTextServicesContextMenuBase
   const Textfield* client() const { return client_; }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns the string ID of the clipboard history menu option.
+  int GetClipboardHistoryStringId() const;
+#endif
+
  private:
   // The view associated with the menu. Weak. Owns |this|.
   const raw_ptr<Textfield> client_;

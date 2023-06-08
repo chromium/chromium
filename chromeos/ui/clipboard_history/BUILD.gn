@@ -23,5 +23,6 @@ component("clipboard_history") {
     "//components/vector_icons",
     "//ui/base",
     "//ui/base:constants",
+    "//ui/strings:ui_strings_grit",
   ]
 }

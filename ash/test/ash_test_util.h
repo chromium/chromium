@@ -12,16 +12,20 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace base {
 class FilePath;
 class TimeDelta;
-}
+}  // namespace base
 
 namespace gfx {
 class Size;
-}
+}  // namespace gfx
+
+namespace views {
+class MenuItemView;
+}  // namespace views
 
 namespace ash {
 
@@ -51,6 +55,10 @@ gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
 void DecorateWindow(aura::Window* window,
                     const std::u16string& title,
                     SkColor color);
+
+// Returns the first visible menu item view found with the specified `label`.
+// Returns `nullptr` if there are no such menu item views.
+views::MenuItemView* FindMenuItemByLabel(const std::u16string& label);
 
 }  // namespace ash
 

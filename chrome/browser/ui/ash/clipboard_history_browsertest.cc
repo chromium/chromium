@@ -33,6 +33,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/ash/clipboard_history_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -1577,6 +1578,9 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
   auto* browser = CreateBrowser(
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
 
+  const bool is_refresh_enabled =
+      chromeos::features::IsClipboardHistoryRefreshEnabled();
+
   {
     TestRenderViewContextMenu menu(*browser->tab_strip_model()
                                         ->GetActiveWebContents()
@@ -1584,7 +1588,8 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
                                    context_menu_params);
     menu.Init();
     absl::optional<size_t> found_index = menu.menu_model().GetIndexOfCommandId(
-        IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
+        is_refresh_enabled ? IDC_CONTENT_PASTE_FROM_CLIPBOARD
+                           : IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
     ASSERT_TRUE(found_index);
 
     // The clipboard history menu option should be disabled if clipboard history
@@ -1603,15 +1608,16 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
                                    context_menu_params);
     menu.Init();
     const ui::SimpleMenuModel& menu_model = menu.menu_model();
-    absl::optional<size_t> found_index =
-        menu_model.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
+    absl::optional<size_t> found_index = menu_model.GetIndexOfCommandId(
+        is_refresh_enabled ? IDC_CONTENT_PASTE_FROM_CLIPBOARD
+                           : IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
     ASSERT_TRUE(found_index);
 
     // The clipboard history menu option should be enabled since clipboard
     // history is non-empty.
     EXPECT_TRUE(menu_model.IsEnabledAt(*found_index));
 
-    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    if (is_refresh_enabled) {
       // The clipboard history menu option is a submenu if the clipboard history
       // refresh feature is enabled.
       EXPECT_EQ(menu_model.GetTypeAt(*found_index),
@@ -1621,9 +1627,12 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
       ASSERT_TRUE(submenu_model);
 
       // Check the submenu model contents.
-      ASSERT_EQ(submenu_model->GetItemCount(), 2u);
+      ASSERT_EQ(submenu_model->GetItemCount(), 3u);
       EXPECT_EQ(submenu_model->GetLabelAt(0), u"B");
       EXPECT_EQ(submenu_model->GetLabelAt(1), u"A");
+      EXPECT_EQ(submenu_model->GetLabelAt(2),
+                l10n_util::GetStringUTF16(
+                    IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU));
     } else {
       // The clipboard history menu option is a command item if the feature is
       // not enabled.

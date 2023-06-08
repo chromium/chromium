@@ -10345,6 +10345,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           desc="Show the clipboard history menu.">
           Clipboard
       </message>
+      <message name="IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD"
+          desc="Open the context menu submenu that shows clipboard history items the user can paste.">
+          Paste from clipboard
+      </message>
 
       <!-- Sharing features. -->
       <message name="IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT_UNKNOWN_DEVICE" desc="Title text displayed in a Remote Copy (for text content) notification when the source device name is unknown.">

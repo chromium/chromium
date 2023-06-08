@@ -262,6 +262,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "ui/base/menu_source_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/open_with_menu.h"
 #include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
@@ -696,16 +700,23 @@ absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
-ui::MenuSourceType GetMenuSourceType(int event_flags) {
-  if (event_flags & ui::EF_MOUSE_BUTTON)
-    return ui::MENU_SOURCE_MOUSE;
-  else if (event_flags & ui::EF_FROM_TOUCH)
-    return ui::MENU_SOURCE_TOUCH;
-  else
-    return ui::MENU_SOURCE_KEYBOARD;
+#if BUILDFLAG(IS_CHROMEOS)
+
+// Returns the string ID of the clipboard history menu option.
+int GetClipboardHistoryStringId() {
+  return chromeos::features::IsClipboardHistoryRefreshEnabled()
+             ? IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD
+             : IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU;
 }
-#endif
+
+// Returns the command ID of the clipboard history menu option.
+int GetClipboardHistoryCommandId() {
+  return chromeos::features::IsClipboardHistoryRefreshEnabled()
+             ? IDC_CONTENT_PASTE_FROM_CLIPBOARD
+             : IDC_CONTENT_CLIPBOARD_HISTORY_MENU;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsFrameInPdfViewer(content::RenderFrameHost* rfh) {
   if (!rfh)
@@ -2193,17 +2204,21 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
     // clipboard history descriptors; otherwise, insert a menu option to trigger
     // the clipboard history menu.
     if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+      // `submenu_model_` is a class member. Therefore, it is safe to use `this`
+      // pointer in the callback.
       submenu_model_ = chromeos::clipboard_history::
           ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
               crosapi::mojom::ClipboardHistoryControllerShowSource::
-                  kRenderViewContextMenu);
-      menu_model_.AddSubMenuWithStringId(
-          IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
-          IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU, submenu_model_.get());
+                  kRenderViewContextMenu,
+              base::BindRepeating(
+                  &RenderViewContextMenu::ShowClipboardHistoryMenu,
+                  base::Unretained(this)));
+      menu_model_.AddSubMenuWithStringId(GetClipboardHistoryCommandId(),
+                                         GetClipboardHistoryStringId(),
+                                         submenu_model_.get());
     } else {
-      menu_model_.AddItemWithStringId(
-          IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
-          IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
+      menu_model_.AddItemWithStringId(GetClipboardHistoryCommandId(),
+                                      GetClipboardHistoryStringId());
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -2664,6 +2679,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return true;
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
+    case IDC_CONTENT_PASTE_FROM_CLIPBOARD:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       return ash::ClipboardHistoryController::Get()->HasAvailableHistoryItems();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -3156,40 +3172,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       // for a submenu.
       CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
 
-      auto* host_native_view = GetRenderFrameHost()
-                                   ? GetRenderFrameHost()->GetNativeView()
-                                   : nullptr;
-      if (!host_native_view)
-        break;
-
-      // Calculate the anchor point in screen coordinates.
-      gfx::Point anchor_point_in_screen =
-          host_native_view->GetBoundsInScreen().origin();
-      anchor_point_in_screen.Offset(params_.x, params_.y);
-
-      // Calculate the menu source type from `event_flags`.
-      ui::MenuSourceType source_type = GetMenuSourceType(event_flags);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      ash::ClipboardHistoryController::Get()->ShowMenu(
-          gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
-          crosapi::mojom::ClipboardHistoryControllerShowSource::
-              kRenderViewContextMenu);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      {
-        auto* service = chromeos::LacrosService::Get();
-        if (service &&
-            service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
-          service->GetRemote<crosapi::mojom::ClipboardHistory>()->ShowClipboard(
-              gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
-              crosapi::mojom::ClipboardHistoryControllerShowSource::
-                  kRenderViewContextMenu);
-        }
-      }
-#endif
+      ShowClipboardHistoryMenu(event_flags);
 #else
       NOTREACHED() << "Unhandled id: " << id;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
       break;
     }
 
@@ -3903,7 +3889,7 @@ void RenderViewContextMenu::ExecRegionSearch(
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
   bool use_fullscreen_capture =
-      GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD ||
+      ui::GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD ||
       lens::features::IsLensFullscreenSearchEnabled();
 
   auto* companion_helper =
@@ -4203,3 +4189,36 @@ bool RenderViewContextMenu::CanTranslate(bool menu_logging) {
          chrome_translate_client->GetTranslateManager()->CanManuallyTranslate(
              menu_logging);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
+  auto* const host_native_view =
+      GetRenderFrameHost() ? GetRenderFrameHost()->GetNativeView() : nullptr;
+  if (!host_native_view) {
+    return;
+  }
+
+  // Calculate the anchor point in screen coordinates.
+  gfx::Point anchor_point_in_screen =
+      host_native_view->GetBoundsInScreen().origin();
+  anchor_point_in_screen.Offset(params_.x, params_.y);
+
+  // Calculate the menu source type from `event_flags`.
+  const ui::MenuSourceType source_type = ui::GetMenuSourceType(event_flags);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ClipboardHistoryController::Get()->ShowMenu(
+      gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (auto* service = chromeos::LacrosService::Get();
+      service && service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
+    service->GetRemote<crosapi::mojom::ClipboardHistory>()->ShowClipboard(
+        gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
+        crosapi::mojom::ClipboardHistoryControllerShowSource::
+            kRenderViewContextMenu);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
