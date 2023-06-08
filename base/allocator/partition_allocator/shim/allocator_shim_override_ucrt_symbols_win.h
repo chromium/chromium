@@ -17,6 +17,7 @@
 #include <windows.h>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 
 // Even though most C++ allocation operators can be left alone since the
@@ -146,19 +147,19 @@ __declspec(restrict) void* _aligned_recalloc(void* address,
                                              size_t num,
                                              size_t size,
                                              size_t alignment) {
-  CHECK(false) << "This routine has not been implemented";
+  PA_CHECK(false) << "This routine has not been implemented";
   __builtin_unreachable();
 }
 
 size_t _aligned_msize(void* address, size_t alignment, size_t offset) {
-  CHECK(false) << "This routine has not been implemented";
+  PA_CHECK(false) << "This routine has not been implemented";
   __builtin_unreachable();
 }
 
 __declspec(restrict) void* _aligned_offset_malloc(size_t size,
                                                   size_t alignment,
                                                   size_t offset) {
-  CHECK(false) << "This routine has not been implemented";
+  PA_CHECK(false) << "This routine has not been implemented";
   __builtin_unreachable();
 }
 
@@ -166,7 +167,7 @@ __declspec(restrict) void* _aligned_offset_realloc(void* address,
                                                    size_t size,
                                                    size_t alignment,
                                                    size_t offset) {
-  CHECK(false) << "This routine has not been implemented";
+  PA_CHECK(false) << "This routine has not been implemented";
   __builtin_unreachable();
 }
 
@@ -175,7 +176,7 @@ __declspec(restrict) void* _aligned_offset_recalloc(void* address,
                                                     size_t size,
                                                     size_t alignment,
                                                     size_t offset) {
-  CHECK(false) << "This routine has not been implemented";
+  PA_CHECK(false) << "This routine has not been implemented";
   __builtin_unreachable();
 }
 

@@ -10,6 +10,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
@@ -396,7 +397,7 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   malloc_zone_register(system_default_zone);
 
   // Confirm that our own zone is now the default zone.
-  CHECK_EQ(GetDefaultMallocZone(), &g_mac_malloc_zone);
+  PA_CHECK(GetDefaultMallocZone() == &g_mac_malloc_zone);
   g_initialization_is_done.store(true, std::memory_order_release);
 }
 

@@ -538,9 +538,9 @@ TEST_F(AllocatorShimTest, InterceptUcrtAlignedAllocationSymbols) {
 
 TEST_F(AllocatorShimTest, AlignedReallocSizeZeroFrees) {
   void* alloc_ptr = _aligned_malloc(123, 16);
-  CHECK(alloc_ptr);
+  ASSERT_TRUE(alloc_ptr);
   alloc_ptr = _aligned_realloc(alloc_ptr, 0, 16);
-  CHECK(!alloc_ptr);
+  ASSERT_TRUE(!alloc_ptr);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
