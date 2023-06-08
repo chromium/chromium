@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
 
 import java.util.Collections;
@@ -42,7 +41,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnableDefaultNetworkConnectionMigrationApi_noBuilderSupport() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
@@ -58,7 +56,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void enableDefaultNetworkConnectionMigrationApi_builderSupport() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withNativeSetterSupport();
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
@@ -73,7 +70,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void
     testEnableDefaultNetworkConnectionMigrationApi_noBuilderSupport_setterTakesPrecedence() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
@@ -96,7 +92,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnablePathDegradingConnectionMigration_justNonDefaultNetwork() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
@@ -111,7 +106,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnablePathDegradingConnectionMigration_justPort() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
@@ -127,7 +121,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnablePathDegradingConnectionMigration_bothTrue() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
@@ -144,7 +137,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnablePathDegradingConnectionMigration_trueAndFalse() throws Exception {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
@@ -162,7 +154,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnablePathDegradingConnectionMigration_invalid() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
@@ -183,7 +174,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testExperimentalOptions_allSet_viaExperimentalEngine() throws Exception {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         testExperimentalOptionsAllSetImpl(
@@ -192,7 +182,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testExperimentalOptions_allSet_viaNonExperimentalEngine() throws Exception {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         testExperimentalOptionsAllSetImpl(
@@ -329,7 +318,6 @@ public class ExperimentalOptionsTranslationTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testExperimentalOptions_noneSet() {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         CronetEngine.Builder builder =
