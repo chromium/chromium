@@ -175,6 +175,8 @@ void LogCaptureDeviceMetrics(
       }
     }
   }
+  base::UmaHistogramCustomCounts("Media.VideoCapture.Device.TotalAvailable",
+                                 devices_info.size(), 0, 5, 5);
 }
 
 void LogCaptureDeviceHashedModelId(

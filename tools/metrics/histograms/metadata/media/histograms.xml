@@ -5253,6 +5253,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Device.TotalAvailable" units="count"
+    expires_after="2024-05-23">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    This metric counts the number of webcams that are accessible to the user at
+    the start of a video session.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Error" enum="VideoCaptureError"
     expires_after="2023-11-05">
   <owner>mcasas@chromium.org</owner>
