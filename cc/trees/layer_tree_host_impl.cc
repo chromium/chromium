@@ -394,12 +394,6 @@ const LayerTreeHostImpl& LayerTreeHostImpl::GetImplDeprecated() const {
   return *this;
 }
 
-bool LayerTreeHostImpl::CanInjectJankOnMain() const {
-  return !!frame_trackers_.FrameSequenceTrackerActiveTypes() &&
-         compositor_frame_reporting_controller_
-             ->is_main_thread_driving_smoothness();
-}
-
 LayerTreeHostImpl::FrameData::FrameData() = default;
 LayerTreeHostImpl::FrameData::~FrameData() = default;
 LayerTreeHostImpl::UIResourceData::UIResourceData() = default;

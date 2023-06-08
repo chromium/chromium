@@ -25,7 +25,6 @@
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/metrics/compositor_timing_history.h"
-#include "cc/metrics/jank_injector.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -727,10 +726,6 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
     const viz::BeginFrameArgs& args) {
   DCHECK(IsImplThread());
 
-  if (is_jank_injection_enabled_ && host_impl_->CanInjectJankOnMain()) {
-    jank_injector_.ScheduleJankIfNeeded(args, MainThreadTaskRunner());
-  }
-
   benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
       benchmark_instrumentation::kSendBeginFrame,
       args.frame_id.sequence_number);
@@ -978,7 +973,6 @@ base::SingleThreadTaskRunner* ProxyImpl::MainThreadTaskRunner() {
 
 void ProxyImpl::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   DCHECK(IsImplThread());
-  is_jank_injection_enabled_ = JankInjector::IsEnabled(url);
   host_impl_->SetActiveURL(url, source_id);
 }
 

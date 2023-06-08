@@ -382,7 +382,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                   bool animate) override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
-  bool CanInjectJankOnMain() const;
   FrameSequenceTrackerCollection& frame_trackers() { return frame_trackers_; }
 
   // VisualDeviceViewportSize is the size of the global viewport across all

@@ -95,9 +95,6 @@ class CC_EXPORT CompositorFrameReportingController {
   void SetThreadAffectsSmoothness(
       FrameInfo::SmoothEffectDrivingThread thread_type,
       bool affects_smoothness);
-  bool is_main_thread_driving_smoothness() const {
-    return is_main_thread_driving_smoothness_;
-  }
 
   void set_tick_clock(const base::TickClock* tick_clock) {
     DCHECK(tick_clock);

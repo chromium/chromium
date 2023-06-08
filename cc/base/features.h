@@ -44,9 +44,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSchedulerSmoothnessForAnimatedScrolls);
 // display.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
 
-// When enabled, some jank is injected to the animation/scrolling pipeline.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kJankInjectionAblationFeature);
-
 // When enabled, scheduler tree priority will change to
 // NEW_CONTENT_TAKES_PRIORITY if during a scrollbar scroll, CC has to
 // checkerboard.
