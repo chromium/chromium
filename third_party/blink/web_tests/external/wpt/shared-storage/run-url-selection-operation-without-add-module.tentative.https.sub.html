@@ -11,7 +11,7 @@ for (const resolve_to_config of [true, false]) {
     return promise_rejects_dom(t, "OperationError",
       sharedStorage.selectURL(
           "test-url-selection-operation",
-          [{url: "resources/frame0.html"}],
+          [{url: "/shared-storage/resources/frame0.html"}],
           {resolveToConfig: resolve_to_config, keepAlive: true}));
   }, 'selectURL() without addModule, ' +
      'selectURL() resolves to ' + (resolve_to_config ? 'config' : 'urn:uuid'));
@@ -91,7 +91,7 @@ for (const resolve_to_config of [true, false]) {
     try {
         await sharedStorage.selectURL(
             "test-url-selection-operation", [{
-                url: "resources/frame0.html",
+                url: "/shared-storage/resources/frame0.html",
                 reportingMetadata: {
                     'click': "https://#"
                 }
@@ -112,7 +112,7 @@ for (const resolve_to_config of [true, false]) {
     try {
         await sharedStorage.selectURL(
             "test-url-selection-operation", [{
-                url: "resources/frame0.html",
+                url: "/shared-storage/resources/frame0.html",
                 reportingMetadata: {
                     'click': "http://google.com"
                 }
@@ -132,7 +132,7 @@ for (const resolve_to_config of [true, false]) {
     try {
         await sharedStorage.selectURL(
             "test-url-selection-operation", [{
-                url: "resources/frame0.html",
+                url: "/shared-storage/resources/frame0.html",
                 reportingMetadata: {}
             }],
             {resolveToConfig: resolve_to_config, keepAlive: true});

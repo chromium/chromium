@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,8 @@ class VerifyStorageEntriesURLSelectionOperation {
   }
 }
 
-register("set-key0-operation", SetKey0Operation);
+register('set-key0-operation', SetKey0Operation);
 
-register("verify-storage-entries-url-selection-operation",
-         VerifyStorageEntriesURLSelectionOperation);
+register(
+    'verify-storage-entries-url-selection-operation',
+    VerifyStorageEntriesURLSelectionOperation);

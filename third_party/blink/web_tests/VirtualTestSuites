@@ -1462,7 +1462,6 @@
     "prefix": "shared-storage-fenced-frame-mparch",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "wpt_internal/shared_storage",
       "external/wpt/shared-storage",
       "http/tests/inspector-protocol/storage/shared-storage.js",
       "http/tests/inspector-protocol/storage/shared-storage-delete.js",
@@ -1470,7 +1469,6 @@
       "http/tests/inspector-protocol/storage/shared-storage-tracking-disabled.js"
     ],
     "exclusive_tests": [
-      "wpt_internal/shared_storage",
       "external/wpt/shared-storage"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode"],
@@ -1480,10 +1478,10 @@
     "prefix": "shared-storage-fenced-frame-mparch-selecturl-limit",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "wpt_internal/shared_storage_selecturl_limit/"
+      "external/wpt/shared-storage-selecturl-limit/"
     ],
     "exclusive_tests": [
-      "wpt_internal/shared_storage_selecturl_limit/"
+      "external/wpt/shared-storage-selecturl-limit/"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit"],
     "expires": "Jan 1, 2024"

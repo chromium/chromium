@@ -1,4 +1,4 @@
-// META: script=../../fenced_frame/resources/utils.js
+// META: script=/fenced-frame/resources/utils.js
 
 // Generate a list of URLs to use as input to sharedStorage.selectURL.
 // @param {integer} size - The number of URLs to generate

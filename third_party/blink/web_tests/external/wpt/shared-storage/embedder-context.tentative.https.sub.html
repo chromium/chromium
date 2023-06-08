@@ -3,8 +3,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
-<script src="resources/utils.js"></script>
-<script src="../fenced_frame/resources/utils.js"></script>
+<script src="/shared-storage/resources/util.js"></script>
+<script src="/fenced-frame/resources/utils.js"></script>
 
 <body>
 <script>
@@ -14,7 +14,7 @@ promise_test(async () => {
   const ancestorKey = token();
 
   let fencedFrameConfig0 = await runSelectURL(
-    "resources/embedder-context-inner.https.html",
+    "/shared-storage/resources/embedder-context-inner.https.html",
     [ancestorKey], true);
   assert_true(validateSelectURLResult(fencedFrameConfig0, true));
 
@@ -24,8 +24,8 @@ promise_test(async () => {
   const result0 = await nextValueFromServer(ancestorKey);
   assert_equals(result0, "embedder_context_inner_loaded");
 
-  let url0 = generateURL("resources/frame0.html", [ancestorKey]);
-  let url1 = generateURL("resources/frame1.html", [ancestorKey]);
+  let url0 = generateURL("/shared-storage/resources/frame0.html", [ancestorKey]);
+  let url1 = generateURL("/shared-storage/resources/frame1.html", [ancestorKey]);
 
   let fencedFrameConfig1 = await sharedStorage.selectURL(
     "verify-key-value", [{url: url0}, {url: url1}],
@@ -44,7 +44,7 @@ promise_test(async () => {
   const ancestorKey = token();
 
   let fencedFrameConfig0 = await runSelectURL(
-    "resources/embedder-context-inner.https.html",
+    "/shared-storage/resources/embedder-context-inner.https.html",
     [ancestorKey], true);
   assert_true(validateSelectURLResult(fencedFrameConfig0, true));
 
@@ -52,8 +52,8 @@ promise_test(async () => {
   const result0 = await nextValueFromServer(ancestorKey);
   assert_equals(result0, "embedder_context_inner_loaded");
 
-  let url0 = generateURL("resources/frame0.html", [ancestorKey]);
-  let url1 = generateURL("resources/frame1.html", [ancestorKey]);
+  let url0 = generateURL("/shared-storage/resources/frame0.html", [ancestorKey]);
+  let url1 = generateURL("/shared-storage/resources/frame1.html", [ancestorKey]);
 
   let fencedFrameConfig1 = await sharedStorage.selectURL(
     "verify-key-value", [{url: url0}, {url: url1}],
@@ -73,7 +73,7 @@ promise_test(async () => {
   const innerKey1 = token();
 
   let fencedFrameConfig0 = await runSelectURL(
-    "resources/embedder-context-nested-inner.https.html",
+    "/shared-storage/resources/embedder-context-nested-inner.https.html",
     [outerKey, innerKey0, innerKey1], true);
   assert_true(validateSelectURLResult(fencedFrameConfig0, true));
 
@@ -83,8 +83,8 @@ promise_test(async () => {
   const result0 = await nextValueFromServer(outerKey);
   assert_equals(result0, "embedder_context_nested_inner_loaded");
 
-  let url0 = generateURL("resources/frame0.html", [outerKey]);
-  let url1 = generateURL("resources/frame1.html", [outerKey]);
+  let url0 = generateURL("/shared-storage/resources/frame0.html", [outerKey]);
+  let url1 = generateURL("/shared-storage/resources/frame1.html", [outerKey]);
 
   let fencedFrameConfig1 = await sharedStorage.selectURL(
     "verify-key-value", [{url: url0}, {url: url1}],
@@ -98,7 +98,7 @@ promise_test(async () => {
   assert_equals(result1, "frame1_loaded");
 
   let iframeURL =
-    generateURL("resources/embedder-context-nested-iframe.https.html",
+    generateURL("/shared-storage/resources/embedder-context-nested-iframe.https.html",
                 [outerKey, innerKey1]);
   iframeURL = getRemoteOriginURL(iframeURL);
   attachIFrame(iframeURL);

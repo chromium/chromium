@@ -17,7 +17,8 @@ promise_test(async t => {
 }, 'addModule with cross-origin url');
 
 promise_test(() => {
-  return sharedStorage.worklet.addModule("resources/simple-module.js");
+  return sharedStorage.worklet.addModule(
+      "/shared-storage/resources/simple-module.js");
 }, 'addModule');
 
 </script>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <script src="/resources/testharness.js"></script>
-<script src="utils.js"></script>
-<script src="../../fenced_frame/resources/utils.js"></script>
+<script src="/shared-storage/resources/util.js"></script>
+<script src="/fenced-frame/resources/utils.js"></script>
 <body>
 <script>
 
 async function init() {
   const [outerKey, innerKey] = parseKeylist();
-  let url0 = generateURL("frame0.html", [innerKey]);
-  let url1 = generateURL("frame1.html", [innerKey]);
+  let url0 = generateURL("/shared-storage/resources/frame0.html", [innerKey]);
+  let url1 = generateURL("/shared-storage/resources/frame1.html", [innerKey]);
 
   await addModuleOnce("simple-module.js");
   let fencedFrameConfig = await sharedStorage.selectURL(

@@ -2,9 +2,9 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
-<script src="resources/utils.js"></script>
-<script src="../shared_storage/resources/utils.js"></script>
-<script src="../fenced_frame/resources/utils.js"></script>
+<script src="/shared-storage-selecturl-limit/resources/utils.js"></script>
+<script src="/shared-storage/resources/util.js"></script>
+<script src="/fenced-frame/resources/utils.js"></script>
 
 <body>
 <script>
@@ -14,11 +14,12 @@ promise_test(async () => {
   const ancestorKey = token();
   const perOriginBitLimit = 6;
   const numUrls = 8;
-  const urls = generateUrls(numUrls, "../shared_storage/resources/frame",
+  const urls = generateUrls(numUrls, "/shared-storage/resources/frame",
                             [ancestorKey]);
   const bitsPerCall = Math.log2(numUrls);
 
-  await sharedStorage.worklet.addModule("../shared_storage/resources/simple-module.js");
+  await sharedStorage.worklet.addModule(
+      "/shared-storage/resources/simple-module.js");
 
 
   for (let i = 0; i < Math.floor(perOriginBitLimit / bitsPerCall); ++i) {

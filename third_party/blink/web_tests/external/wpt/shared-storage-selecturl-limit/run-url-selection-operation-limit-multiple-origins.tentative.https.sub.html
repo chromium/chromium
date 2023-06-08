@@ -3,9 +3,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
-<script src="resources/utils.js"></script>
-<script src="../shared_storage/resources/utils.js"></script>
-<script src="../fenced_frame/resources/utils.js"></script>
+<script src="/shared-storage-selecturl-limit/resources/utils.js"></script>
+<script src="/shared-storage/resources/util.js"></script>
+<script src="/fenced-frame/resources/utils.js"></script>
 
 <body>
 <script>
@@ -22,7 +22,8 @@ promise_test(async () => {
   const bitsKey = "bits";
 
   let url0 = generateURL(
-      "resources/run-url-selection-operation-limit-inner.https.html",
+      "/shared-storage-selecturl-limit/" +
+        "resources/run-url-selection-operation-limit-inner.https.html",
       [ancestorKey]);
 
   // The per origin per pageload limit is 6 bits.
@@ -38,7 +39,8 @@ promise_test(async () => {
   assert_equals(result1, "run_url_selection_limit_inner_succeeded");
 
   let url2 = generateURL(
-      "resources/run-url-selection-operation-limit-inner.https.html",
+      "/shared-storage-selecturl-limit/" +
+        "resources/run-url-selection-operation-limit-inner.https.html",
       [ancestorKey]);
 
   // Since the overall per pageload limit is 12 bits, it should have already
