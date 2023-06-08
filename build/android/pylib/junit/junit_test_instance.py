@@ -25,8 +25,11 @@ class JunitTestInstance(test_instance.TestInstance):
     if args.shard_filter:
       self._shard_filter = {int(x) for x in args.shard_filter.split(',')}
     self._test_filters = test_filter.InitializeFiltersFromArgs(args)
-    self._has_literal_filters = (args.isolated_script_test_filters
-                                 or args.test_filters)
+    self._has_literal_filters = bool(args.isolated_script_test_filters
+                                     or args.test_filters)
+    if not self._has_literal_filters and args.test_filter_files:
+      self._has_literal_filters = len(args.test_filter_files) == 1 and (
+          args.test_filter_files[0].endswith('rerun_failed_tests.filter'))
     self._test_suite = args.test_suite
 
   #override

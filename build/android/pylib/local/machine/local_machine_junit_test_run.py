@@ -256,7 +256,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         print(
             f'{len(failed_shards)} shards had failing tests. To re-run only '
             f'these shards, use the above filter flags, or use: '
-            '--shards {shards} --shard-filter',
+            f'--shards {shards} --shard-filter',
             ','.join(str(x) for x in failed_shards))
 
       test_run_results = base_test_result.TestRunResults()
