@@ -2410,6 +2410,11 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
   if (!ui::IsTextField(RoleValue()))
     return nullptr;
 
+  // Object is ignored for some reason, most likely hidden.
+  if (AccessibilityIsIgnored()) {
+    return nullptr;
+  }
+
   // Authors used to be told to use aria-owns to point from the textfield to the
   // listbox. However, the aria-owns  on a textfield must be ignored for its
   // normal purpose because a textfield cannot have children. This code allows
