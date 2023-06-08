@@ -73,9 +73,14 @@ export class CupsPrintersEntryManager {
 
     this.onEnterprisePrintersChangedListener_ = addWebUiListener(
         'on-enterprise-printers-changed',
-        this.setEnterprisePrintersList.bind(this));
+        this.onEnterprisePrintersChanged.bind(this));
 
     CupsPrintersBrowserProxyImpl.getInstance().startDiscoveringPrinters();
+  }
+
+  onEnterprisePrintersChanged(cupsPrintersList: CupsPrintersList): void {
+    this.setEnterprisePrintersList(cupsPrintersList.printerList.map(
+        printerInfo => ({printerInfo, printerType: PrinterType.ENTERPRISE})));
   }
 
   removeWebUiListeners(): void {
