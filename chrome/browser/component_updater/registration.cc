@@ -217,7 +217,7 @@ void RegisterComponentsForUpdate() {
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS)
-  RegisterScreenAIComponent(cus, g_browser_process->local_state());
+  ManageScreenAIComponentRegistration(cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS)
 
   RegisterCommerceHeuristicsComponent(cus);

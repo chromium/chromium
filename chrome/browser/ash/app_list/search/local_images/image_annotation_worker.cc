@@ -26,6 +26,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace app_list {
 namespace {
@@ -55,6 +56,12 @@ std::set<base::FilePath> GetDeletedPaths(const std::vector<ImageInfo>& images) {
   return deleted_paths;
 }
 
+bool IsOcrServiceReady() {
+  return (
+      screen_ai::ScreenAIInstallState::GetInstance() &&
+      screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable());
+}
+
 }  // namespace
 
 ImageAnnotationWorker::ImageAnnotationWorker(const base::FilePath& root_path,
@@ -81,7 +88,19 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 
   if (use_ocr_) {
     DVLOG(1) << "Initializing OCR DLC.";
-    screen_ai_service_router_.InitializeOCRIfNeeded();
+    if (IsOcrServiceReady()) {
+      EnsureOcrAnnotatorIsConnected();
+    } else {
+      // DLC downloader cannot run from current sequence.
+      content::GetUIThreadTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce([]() {
+            // Screen AI Install State may be unavailable for tests.
+            if (screen_ai::ScreenAIInstallState::GetInstance()) {
+              screen_ai::ScreenAIInstallState::GetInstance()
+                  ->DownloadComponent();
+            }
+          }));
+    }
   }
 
   if (use_ica_) {
@@ -97,13 +116,9 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 }
 
 void ImageAnnotationWorker::OnDlcInstalled() {
-  if ((use_ocr_ &&
-       (screen_ai::ScreenAIInstallState::GetInstance()->get_state() !=
-        screen_ai::ScreenAIInstallState::State::kReady)) ||
-      (use_ica_ && !ica_dlc_initialized_)) {
-    DVLOG(1) << "DLC is not ready. OCR: "
-             << (screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-                 screen_ai::ScreenAIInstallState::State::kReady)
+  bool ocr_dlc_installed = IsOcrServiceReady();
+  if ((use_ocr_ && !ocr_dlc_installed) || (use_ica_ && !ica_dlc_initialized_)) {
+    DVLOG(1) << "DLC is not ready. OCR: " << ocr_dlc_installed
              << " ICA: " << ica_dlc_initialized_ << " Waiting.";
     // It is expected to be ready on a first try. Also, it is not a time
     // sensitive task, so we do not need to implement a full-fledged observer.
@@ -181,6 +196,7 @@ void ImageAnnotationWorker::EnsureOcrAnnotatorIsConnected() {
     return;
   }
 
+  DCHECK(IsOcrServiceReady());
   screen_ai_service_router_.BindScreenAIAnnotator(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
   screen_ai_annotator_.reset_on_disconnect();

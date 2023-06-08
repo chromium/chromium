@@ -16,6 +16,7 @@
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -25,9 +26,6 @@
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
 const char kMinExpectedVersion[] = "114.0";
-}  // namespace
-
-namespace {
 
 bool IsDeviceCompatible() {
   // Check if the CPU has the required instruction set to run the Screen AI
@@ -38,6 +36,12 @@ bool IsDeviceCompatible() {
   }
 #endif
   return true;
+}
+
+void SetLastUsageTimeToNow() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  g_browser_process->local_state()->SetTime(
+      prefs::kScreenAILastUsedTimePrefName, base::Time::Now());
 }
 
 }  // namespace
@@ -96,8 +100,12 @@ bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
 }
 
 void ScreenAIInstallState::SetLastUsageTime() {
-  g_browser_process->local_state()->SetTime(
-      prefs::kScreenAILastUsedTimePrefName, base::Time::Now());
+  if (::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    SetLastUsageTimeToNow();
+  } else {
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&SetLastUsageTimeToNow));
+  }
 }
 
 void ScreenAIInstallState::AddObserver(

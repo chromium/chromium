@@ -11,9 +11,12 @@ class PrefService;
 
 namespace screen_ai::chrome_os_installer {
 
-// If ScreenAI library is needed, registers for installation of its DLC. If not,
-// and after some delay, uninstalls the DLC.
+// If Screen AI library is needed, registers for installation of its DLC.
+// If not and after some delay, uninstalls the DLC.
 void ManageInstallation(PrefService* local_state);
+
+// Requests installation of Screen AI DLC.
+void Install();
 
 }  // namespace screen_ai::chrome_os_installer
 

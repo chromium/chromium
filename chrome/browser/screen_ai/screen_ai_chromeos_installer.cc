@@ -58,6 +58,15 @@ void OnInstallProgress(double progress) {
   screen_ai::ScreenAIInstallState::GetInstance()->SetDownloadProgress(progress);
 }
 
+void Uninstall() {
+  ash::DlcserviceClient::Get()->Uninstall(
+      kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
+}
+
+}  // namespace
+
+namespace screen_ai::chrome_os_installer {
+
 void Install() {
   screen_ai::ScreenAIInstallState::GetInstance()->SetState(
       screen_ai::ScreenAIInstallState::State::kDownloading);
@@ -68,15 +77,6 @@ void Install() {
       install_request, base::BindOnce(&OnInstallCompleted),
       base::BindRepeating(&OnInstallProgress));
 }
-
-void Uninstall() {
-  ash::DlcserviceClient::Get()->Uninstall(
-      kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
-}
-
-}  // namespace
-
-namespace screen_ai::chrome_os_installer {
 
 void ManageInstallation(PrefService* local_state) {
   if (screen_ai::ScreenAIInstallState::ShouldInstall(local_state)) {

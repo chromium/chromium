@@ -32,6 +32,7 @@ source_set("screen_ai_install_state") {
     "//chrome/browser:browser_process",
     "//components/prefs",
     "//components/services/screen_ai/public/cpp:utilities",
+    "//content/public/browser",
     "//ui/accessibility:ax_base",
   ]
 }
