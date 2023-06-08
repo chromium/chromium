@@ -25,6 +25,8 @@ std::string ToResultHistogram(WallpaperType type) {
       return "Ash.Wallpaper.Online.Result";
     case WallpaperType::kCustomized:
       return "Ash.Wallpaper.Customized.Result";
+    case WallpaperType::kOnceGooglePhotos:
+      return "Ash.Wallpaper.OnceGooglePhotos.Result";
     default:
       // TODO(b/285387348): Implement other WallpaperType.
       NOTIMPLEMENTED_LOG_ONCE();

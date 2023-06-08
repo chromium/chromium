@@ -21,7 +21,10 @@ enum class SetWallpaperResult {
   kPermissionDenied,
   kNetworkError,
   kDecodingError,
-  kMaxValue = kDecodingError,
+  kInvalidState,
+  kRequestFailure,
+  kFileNotFound,
+  kMaxValue = kFileNotFound,
 };
 
 // The implementation of WallpaperControllerObserver that saves metrics.

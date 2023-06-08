@@ -1009,6 +1009,9 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
     WallpaperController::SetWallpaperCallback callback) {
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
       !CanSetUserWallpaper(params.account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnceGooglePhotos,
+        SetWallpaperResult::kPermissionDenied);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -1016,7 +1019,7 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
 
   if (params.daily_refresh_enabled) {
     // If `params.id` is empty, then we are disabling Daily Refresh, so we set
-    // the currently shown wallpaper as a `WallpaperType::kGooglePhotos`
+    // the currently shown wallpaper as a `WallpaperType::kOnceGooglePhotos`
     // Wallpaper.
     if (params.id.empty()) {
       WallpaperInfo info;
@@ -1024,6 +1027,9 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
           info.type != WallpaperType::kDailyGooglePhotos) {
         LOG(ERROR) << "Failed to get wallpaper info when disabling google "
                       "photos daily refresh.";
+        wallpaper_metrics_manager_->LogWallpaperResult(
+            WallpaperType::kOnceGooglePhotos,
+            SetWallpaperResult::kInvalidState);
         std::move(callback).Run(false);
         return;
       }
@@ -2248,6 +2254,8 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
   // If the request failed, there's nothing to do here, since we can't update
   // the wallpaper but also don't want to delete the cache.
   if (!success) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnceGooglePhotos, SetWallpaperResult::kRequestFailure);
     std::move(callback).Run(false);
     return;
   }
@@ -2264,6 +2272,8 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
                               /*show_wallpaper=*/true, base::DoNothing());
       return;
     }
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnceGooglePhotos, SetWallpaperResult::kFileNotFound);
     std::move(callback).Run(false);
     return;
   }
@@ -2390,6 +2400,12 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
     const base::FilePath& path,
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
+  if (info.type == WallpaperType::kOnceGooglePhotos) {
+    const auto wallpaper_result = image.isNull()
+                                      ? SetWallpaperResult::kDecodingError
+                                      : SetWallpaperResult::kSuccess;
+    wallpaper_metrics_manager_->LogWallpaperResult(info.type, wallpaper_result);
+  }
   std::move(callback).Run(!image.isNull());
   OnWallpaperDecoded(account_id, path, info, /*show_wallpaper=*/true, image);
 }
@@ -2409,12 +2425,16 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
     const gfx::ImageSkia& image) {
   DCHECK(callback);
   if (image.isNull()) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnceGooglePhotos, SetWallpaperResult::kNetworkError);
     std::move(callback).Run(false);
     return;
   }
   // Image returned successfully. We can reliably assume success from here, and
   // we need to call the callback before `ShowWallpaperImage` to ensure proper
   // propagation of `CurrentWallpaper` to the WebUI.
+  wallpaper_metrics_manager_->LogWallpaperResult(
+      WallpaperType::kOnceGooglePhotos, SetWallpaperResult::kSuccess);
   std::move(callback).Run(true);
 
   bool is_active_user = IsActiveUser(params.account_id);

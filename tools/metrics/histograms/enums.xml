@@ -95609,6 +95609,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Permission Denied"/>
   <int value="2" label="Network Error"/>
   <int value="3" label="Decoding Error"/>
+  <int value="4" label="Invalid State"/>
+  <int value="5" label="Request Failure"/>
+  <int value="6" label="File Not Found"/>
 </enum>
 
 <enum name="SevenZipResult">

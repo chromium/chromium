@@ -6890,6 +6890,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="WallpaperType">
     <variant name="Customized"/>
+    <variant name="OnceGooglePhotos"/>
     <variant name="Online"/>
   </token>
 </histogram>
