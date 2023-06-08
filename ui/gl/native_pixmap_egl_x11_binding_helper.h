@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_export.h"
 
@@ -18,7 +17,7 @@ namespace gl {
 
 class GL_EXPORT NativePixmapEGLX11BindingHelper {
  public:
-  explicit NativePixmapEGLX11BindingHelper(const gfx::Size& size);
+  NativePixmapEGLX11BindingHelper();
 
   NativePixmapEGLX11BindingHelper(const NativePixmapEGLX11BindingHelper&) =
       delete;
@@ -26,8 +25,6 @@ class GL_EXPORT NativePixmapEGLX11BindingHelper {
       const NativePixmapEGLX11BindingHelper&) = delete;
 
   bool Initialize(x11::Pixmap pixmap);
-
-  gfx::Size GetSize();
 
   // Binds image to texture currently bound to |target|. Returns true on
   // success.
@@ -40,7 +37,6 @@ class GL_EXPORT NativePixmapEGLX11BindingHelper {
 
  private:
   EGLSurface surface_ = nullptr;
-  const gfx::Size size_;
   EGLDisplay display_;
 };
 

@@ -174,8 +174,7 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     return nullptr;
   }
 
-  auto binding_helper =
-      std::make_unique<gl::NativePixmapEGLX11BindingHelper>(plane_size);
+  auto binding_helper = std::make_unique<gl::NativePixmapEGLX11BindingHelper>();
   x11::Pixmap pixmap =
       gl::XPixmapFromNativePixmap(*native_pixmap, plane_format);
   if (pixmap == x11::Pixmap::None) {

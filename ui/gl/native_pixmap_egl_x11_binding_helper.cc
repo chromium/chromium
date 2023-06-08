@@ -16,9 +16,8 @@ inline EGLDisplay FromXDisplay() {
   return eglGetDisplay(reinterpret_cast<EGLNativeDisplayType>(x_display));
 }
 
-NativePixmapEGLX11BindingHelper::NativePixmapEGLX11BindingHelper(
-    const gfx::Size& size)
-    : size_(size), display_(FromXDisplay()) {}
+NativePixmapEGLX11BindingHelper::NativePixmapEGLX11BindingHelper()
+    : display_(FromXDisplay()) {}
 
 NativePixmapEGLX11BindingHelper::~NativePixmapEGLX11BindingHelper() {
   if (surface_) {
@@ -62,10 +61,6 @@ bool NativePixmapEGLX11BindingHelper::Initialize(x11::Pixmap pixmap) {
   surface_ = eglCreatePixmapSurface(
       display_, config, static_cast<EGLNativePixmapType>(pixmap), attrs.data());
   return surface_ != EGL_NO_SURFACE;
-}
-
-gfx::Size NativePixmapEGLX11BindingHelper::GetSize() {
-  return size_;
 }
 
 bool NativePixmapEGLX11BindingHelper::BindTexImage(unsigned target) {
