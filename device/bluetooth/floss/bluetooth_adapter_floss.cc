@@ -854,7 +854,10 @@ void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
     case FlossAdapterClient::BtPropertyType::kBdName:
       if (device.name.size() != 0) {
         device_ptr->SetName(device.name);
-        NotifyDeviceChanged(device_ptr);
+        device_ptr->InitializeDeviceProperties(
+            BluetoothDeviceFloss::PropertiesState::kTriggeredByScan,
+            base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
+                           weak_ptr_factory_.GetWeakPtr(), device_ptr));
       }
       break;
     default:;  // Do nothing for other property types for now
