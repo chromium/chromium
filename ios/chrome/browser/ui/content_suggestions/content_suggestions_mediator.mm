@@ -712,7 +712,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (BOOL)shouldShowWhatsNewActionItem {
-  if (!IsWhatsNewEnabled() || WasWhatsNewUsed()) {
+  if (WasWhatsNewUsed()) {
     return NO;
   }
 

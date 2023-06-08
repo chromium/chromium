@@ -205,7 +205,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/ui/webui",
     "//ios/chrome/browser/ui/whats_new",
-    "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:new_tab_animation_tab_helper",

@@ -33,9 +33,6 @@ bool WasWhatsNewUsed();
 // Set that What's New was used in the overflow menu.
 void SetWhatsNewUsed(PromosManager* promosManager);
 
-// Returns whether What's New is enabled.
-bool IsWhatsNewEnabled();
-
 // Set that What's New has been registered in the promo manager.
 void setWhatsNewPromoRegistration();
 

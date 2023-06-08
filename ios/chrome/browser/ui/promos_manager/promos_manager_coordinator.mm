@@ -546,12 +546,10 @@
       [[PostRestoreSignInProvider alloc] init];
 
   // WhatsNewPromoHandler promo below:
-  if (IsWhatsNewEnabled()) {
-    _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
-        [[WhatsNewPromoDisplayHandler alloc]
-            initWithPromosManager:PromosManagerFactory::GetForBrowserState(
-                                      self.browser->GetBrowserState())];
-  }
+  _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
+      [[WhatsNewPromoDisplayHandler alloc]
+          initWithPromosManager:PromosManagerFactory::GetForBrowserState(
+                                    self.browser->GetBrowserState())];
 
   // CredentialProvider Promo handler
   if (IsCredentialProviderExtensionPromoEnabled() || IsIOSSetUpListEnabled()) {

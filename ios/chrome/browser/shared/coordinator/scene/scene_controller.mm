@@ -142,7 +142,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -933,10 +932,8 @@ void InjectNTP(Browser* browser) {
                                   initWithPromosManager:promosManager]];
   }
 
-  if (IsWhatsNewEnabled()) {
-    [self.sceneState addAgent:[[WhatsNewSceneAgent alloc]
-                                  initWithPromosManager:promosManager]];
-  }
+  [self.sceneState addAgent:[[WhatsNewSceneAgent alloc]
+                                initWithPromosManager:promosManager]];
 
   if (ios::provider::IsChoiceEnabled()) {
     [self.sceneState

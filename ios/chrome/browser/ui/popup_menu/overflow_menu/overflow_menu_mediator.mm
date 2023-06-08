@@ -861,9 +861,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     [baseDestinations addObject:self.priceNotificationsDestination];
   }
 
-  if (IsWhatsNewEnabled()) {
-    [baseDestinations addObject:self.whatsNewDestination];
-  }
+  [baseDestinations addObject:self.whatsNewDestination];
 
   return baseDestinations;
 }
@@ -890,7 +888,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     [self maybeHighlightSettingsWithPromoBadge];
   }
 
-  if (IsWhatsNewEnabled() && !WasWhatsNewUsed()) {
+  if (!WasWhatsNewUsed()) {
     // Highlight What's New with a badge if it was never used before.
     self.whatsNewDestination.badge = BadgeTypeNew;
   }

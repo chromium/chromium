@@ -4,8 +4,6 @@
 
 source_set("cells") {
   sources = [
-    "whats_new_table_view_banner_item.h",
-    "whats_new_table_view_banner_item.mm",
     "whats_new_table_view_fake_header_item.h",
     "whats_new_table_view_fake_header_item.mm",
     "whats_new_table_view_item.h",
@@ -30,10 +28,7 @@ source_set("cells") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "whats_new_table_view_banner_item_unittest.mm",
-    "whats_new_table_view_item_unittest.mm",
-  ]
+  sources = [ "whats_new_table_view_item_unittest.mm" ]
 
   deps = [
     ":cells",

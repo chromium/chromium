@@ -97,7 +97,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -218,14 +217,6 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
      nullptr},
     {"7 matches", kOmniboxMaxURLMatches7, std::size(kOmniboxMaxURLMatches7),
      nullptr},
-};
-
-const FeatureEntry::FeatureParam kWhatsNewModuleLayout[] = {
-    {kWhatsNewModuleBasedLayoutParam, "true"}};
-
-const FeatureEntry::FeatureVariation kWhatsNewLayoutVariations[] = {
-    {"Display module layout", kWhatsNewModuleLayout,
-     std::size(kWhatsNewModuleLayout), nullptr},
 };
 
 const FeatureEntry::FeatureParam kDefaultBrowserVideoPromoHalfscreen[] = {
@@ -1227,12 +1218,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxKeyboardPasteButtonName,
      flag_descriptions::kOmniboxKeyboardPasteButtonDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxKeyboardPasteButton)},
-
-    {"whats-new-ios", flag_descriptions::kWhatsNewIOSName,
-     flag_descriptions::kWhatsNewIOSDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kWhatsNewIOS,
-                                    kWhatsNewLayoutVariations,
-                                    "WhatsNewLayoutVariations")},
     {"whats-new-ios-m116", flag_descriptions::kWhatsNewIOSM116Name,
      flag_descriptions::kWhatsNewIOSM116Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kWhatsNewIOSM116)},

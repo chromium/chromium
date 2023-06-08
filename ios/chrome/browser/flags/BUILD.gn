@@ -84,7 +84,6 @@ source_set("flags") {
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
-    "//ios/chrome/browser/ui/whats_new:feature_flags",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/components/security_interstitials/https_only_mode:feature",

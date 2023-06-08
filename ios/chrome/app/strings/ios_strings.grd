@@ -4478,9 +4478,6 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE" desc="Title of a section in a table view to inform users about a chrome tip.">
         Chrome Tip
       </message>
-      <message name="IDS_IOS_WHATS_NEW_SECTION_FEATURED_TITLE" desc="Title of a section in a table view to inform users about the newest feature.">
-        Featured
-      </message>
       <message name="IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE" desc="Title of a section in a table view to inform users about new features.">
         New
       </message>

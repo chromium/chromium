@@ -22,7 +22,6 @@ source_set("whats_new") {
     "whats_new_table_view_delegate.h",
   ]
   deps = [
-    ":feature_flags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -51,15 +50,6 @@ source_set("whats_new") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -68,7 +58,6 @@ source_set("util") {
   ]
   deps = [
     ":constants",
-    ":feature_flags",
     "//base",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",

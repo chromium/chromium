@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/whats_new/constants.h"
-#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -218,7 +217,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   AppLaunchConfiguration config;
   // Enable Overflow Menu destinations highlight features.
-  config.features_enabled.push_back(kWhatsNewIOS);
   config.additional_args.push_back(
       "--enable-features=IPH_DemoMode:chosen_feature"
       "/IPH_iOSDefaultBrowserOverflowMenuBadge");

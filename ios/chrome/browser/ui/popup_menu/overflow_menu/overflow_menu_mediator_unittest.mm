@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
-#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -617,9 +616,6 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
 // Tests that WhatsNew destination was added to the OverflowMenuModel when
 // What's New is enabled.
 TEST_F(OverflowMenuMediatorTest, TestWhatsNewEnabled) {
-  base::test::ScopedFeatureList feature_on;
-  feature_on.InitAndEnableFeature(kWhatsNewIOS);
-
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
   CreateBrowserStatePrefs();
@@ -635,37 +631,12 @@ TEST_F(OverflowMenuMediatorTest, TestWhatsNewEnabled) {
   // Force creation of the model.
   [mediator_ overflowMenuModel];
 
-  EXPECT_TRUE(HasItem(kToolsMenuWhatsNewId, /*enabled=*/NO));
-}
-
-// Tests that WhatsNew destination was not added to the OverflowMenuModel when
-// What's New is disabled.
-TEST_F(OverflowMenuMediatorTest, TestWhatsNewDisabled) {
-  base::test::ScopedFeatureList feature_off;
-  feature_off.InitAndDisableFeature(kWhatsNewIOS);
-
-  const GURL kUrl("https://chromium.test");
-  web_state_->SetCurrentURL(kUrl);
-  CreateBrowserStatePrefs();
-  CreateMediator(/*is_incognito=*/NO);
-  SetUpActiveWebState();
-  mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
-      browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.browserStatePrefs = browserStatePrefs_.get();
-
-  // Force creation of the model.
-  [mediator_ overflowMenuModel];
-
-  EXPECT_FALSE(HasItem(kToolsMenuWhatsNewId, /*enabled=*/NO));
+  EXPECT_TRUE(HasItem(kToolsMenuWhatsNewId, /*enabled=*/YES));
 }
 
 // This tests that crbug.com/1404673 does not regress. It isn't perfect, as
 // that bug was never reproduced, but it tests part of the issue.
 TEST_F(OverflowMenuMediatorTest, TestOpenWhatsNewDoesntCrashWithNoTracker) {
-  base::test::ScopedFeatureList feature_on;
-  feature_on.InitAndEnableFeature(kWhatsNewIOS);
-
   // Create Mediator and DO NOT set the Tracker on it.
   CreateMediator(/*is_incognito=*/NO);
 
@@ -812,7 +783,7 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
+       syncer::kIndicateAccountStorageErrorInAccountCell},
       {});
 
   const GURL kUrl("https://chromium.test");
@@ -852,7 +823,7 @@ TEST_F(OverflowMenuMediatorTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kIndicateSyncErrorInOverflowMenu,
-       syncer::kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
+       syncer::kIndicateAccountStorageErrorInAccountCell},
       {});
 
   CreateMediator(/*is_incognito=*/NO);

@@ -368,7 +368,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public:constants",
-    "//ios/chrome/browser/ui/whats_new:feature_flags",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test:eg_test_support+eg2",

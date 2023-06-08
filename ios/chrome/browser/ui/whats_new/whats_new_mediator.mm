@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
-#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -20,15 +19,8 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// The highlighted feature type.
-WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
-}  // namespace
-
 @interface WhatsNewMediator ()
 
-@property(nonatomic, strong) WhatsNewItem* highlightedFeatureEntry;
-@property(nonatomic, strong) NSMutableArray<WhatsNewItem*>* featureShortEntries;
 @property(nonatomic, strong) NSMutableArray<WhatsNewItem*>* chromeTipEntries;
 @property(nonatomic, strong) WhatsNewItem* useChromeByDefaultEntry;
 
@@ -42,17 +34,6 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    // Serialize What's New Features
-    self.featureShortEntries = [[NSMutableArray alloc] init];
-    for (WhatsNewItem* item in WhatsNewFeatureEntries(WhatsNewFilePath())) {
-      // Save the highlighted feature entry separately.
-      if (item.type == kHighlightedFeature) {
-        self.highlightedFeatureEntry = item;
-        continue;
-      }
-      [self.featureShortEntries addObject:item];
-    }
-
     // Serialize What's New Chrome Tips
     self.chromeTipEntries = [[NSMutableArray alloc] init];
     for (WhatsNewItem* item in WhatsNewChromeTipEntries(WhatsNewFilePath())) {
@@ -160,16 +141,7 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
 
 // Returns an Array of `WhatsNewItem` features.
 - (NSArray<WhatsNewItem*>*)whatsNewFeatureItems {
-  if (IsWhatsNewModuleBasedLayout()) {
-    return self.featureShortEntries;
-  }
-
   return WhatsNewFeatureEntries(WhatsNewFilePath());
-}
-
-// Returns a `WhatsNewItem` representing the highlighted feature.
-- (WhatsNewItem*)whatsNewHighlightedFeatureItem {
-  return self.highlightedFeatureEntry;
 }
 
 // Called to allow the user to go to Chrome's settings.
@@ -180,13 +152,10 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
       completionHandler:nil];
 }
 
-// Update the consumer with What's New items and whether to display them as
-// module or cell based.
+// Update the consumer with What's New items.
 - (void)updateConsumer {
-  [self.consumer setWhatsNewProperties:[self whatsNewHighlightedFeatureItem]
-                             chromeTip:[self whatsNewChromeTipItem]
-                          featureItems:[self whatsNewFeatureItems]
-                         isModuleBased:IsWhatsNewModuleBasedLayout()];
+  [self.consumer setWhatsNewProperties:[self whatsNewChromeTipItem]
+                          featureItems:[self whatsNewFeatureItems]];
 }
 
 // Record when a user tap on learn more.

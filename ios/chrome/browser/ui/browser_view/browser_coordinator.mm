@@ -174,7 +174,6 @@
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_coordinator.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -1594,10 +1593,6 @@ enum class ToolbarKind {
 }
 
 - (void)showWhatsNew {
-  if (!IsWhatsNewEnabled()) {
-    return;
-  }
-
   self.whatsNewCoordinator = [[WhatsNewCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];

@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/whats_new/constants.h"
-#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -86,10 +85,6 @@ void SetWhatsNewUsed(PromosManager* promosManager) {
 
   [[NSUserDefaults standardUserDefaults] setBool:YES
                                           forKey:kWhatsNewUsageEntryKey];
-}
-
-bool IsWhatsNewEnabled() {
-  return base::FeatureList::IsEnabled(kWhatsNewIOS);
 }
 
 void setWhatsNewPromoRegistration() {
