@@ -183,6 +183,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/companion/exps_registration_success_observer.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
@@ -544,6 +545,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion)) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);
+  }
+  if (base::FeatureList::IsEnabled(
+          companion::features::kCompanionEnabledByObservingExpsNavigations)) {
+    companion::ExpsRegistrationSuccessObserver::CreateForWebContents(
+        web_contents);
   }
 #endif
 

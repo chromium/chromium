@@ -26,6 +26,7 @@ void PromoHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kExpsPromoShownCountPref, 0);
   // TODO(shaktisahu): Move the pref registration to a better location.
   registry->RegisterBooleanPref(kExpsOptInStatusGrantedPref, false);
+  registry->RegisterBooleanPref(kHasNavigatedToExpsSuccessPage, false);
 }
 
 void PromoHandler::OnPromoAction(PromoType promo_type,
