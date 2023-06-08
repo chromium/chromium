@@ -116,7 +116,7 @@ luci.notifier(
     name = "chrome-build-perf",
     on_new_status = ["FAILURE"],
     notify_emails = [
-        "chrome-buld-team+alert@google.com",
+        "chrome-build-team+alert@google.com",
     ],
 )
 
