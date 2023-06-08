@@ -48,6 +48,9 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       int plane_index,
       bool is_yuv_plane);
 
+  std::vector<skgpu::graphite::BackendTexture> CreateBackendTextures(
+      wgpu::Texture texture);
+
   std::unique_ptr<DawnImageRepresentation> dawn_representation_;
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> dawn_scoped_access_;
   scoped_refptr<SharedContextState> context_state_;

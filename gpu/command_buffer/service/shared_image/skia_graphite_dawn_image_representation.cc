@@ -76,79 +76,9 @@ SkiaGraphiteDawnImageRepresentation::~SkiaGraphiteDawnImageRepresentation() {
   }
 }
 
-std::vector<sk_sp<SkSurface>>
-SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
-    const SkSurfaceProps& surface_props,
-    const gfx::Rect& update_rect) {
-  CHECK_EQ(mode_, RepresentationAccessMode::kNone);
-  CHECK(!dawn_scoped_access_);
-  dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedWGPUTextureUsage(format()), AllowUnclearedAccess::kYes);
-  if (!dawn_scoped_access_) {
-    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
-    return {};
-  }
-
-  SkColorType sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, format());
-  // Gray is not a renderable single channel format, but alpha is.
-  if (sk_color_type == kGray_8_SkColorType) {
-    sk_color_type = kAlpha_8_SkColorType;
-  }
-
-  auto surface = SkSurfaces::WrapBackendTexture(
-      recorder_,
-      skgpu::graphite::BackendTexture(dawn_scoped_access_->texture()),
-      sk_color_type,
-      backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
-      &surface_props);
-  if (!surface) {
-    DLOG(ERROR) << "Could not create SkSurface";
-    dawn_scoped_access_.reset();
-    return {};
-  }
-  mode_ = RepresentationAccessMode::kWrite;
-  return {std::move(surface)};
-}
-
 std::vector<skgpu::graphite::BackendTexture>
-SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
-  CHECK_EQ(mode_, RepresentationAccessMode::kNone);
-  CHECK(!dawn_scoped_access_);
-
-  dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedWGPUTextureUsage(format()), AllowUnclearedAccess::kYes);
-  if (!dawn_scoped_access_) {
-    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
-    return {};
-  }
-  mode_ = RepresentationAccessMode::kWrite;
-  return {skgpu::graphite::BackendTexture(dawn_scoped_access_->texture())};
-}
-
-void SkiaGraphiteDawnImageRepresentation::EndWriteAccess() {
-  CHECK_EQ(mode_, RepresentationAccessMode::kWrite);
-  dawn_scoped_access_.reset();
-  mode_ = RepresentationAccessMode::kNone;
-}
-
-std::vector<skgpu::graphite::BackendTexture>
-SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
-  CHECK_EQ(mode_, RepresentationAccessMode::kNone);
-  CHECK(!dawn_scoped_access_);
-
-  dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
-      AllowUnclearedAccess::kNo);
-
-  if (!dawn_scoped_access_) {
-    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
-    return {};
-  }
-
-  mode_ = RepresentationAccessMode::kRead;
-
-  wgpu::Texture texture(dawn_scoped_access_->texture());
+SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
+    wgpu::Texture texture) {
   std::vector<skgpu::graphite::BackendTexture> backend_textures;
   CHECK(plane_views_.empty());
   if (format() == viz::MultiPlaneFormat::kNV12) {
@@ -177,7 +107,92 @@ SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
     CHECK(format().is_single_plane() && !format().IsLegacyMultiplanar());
     backend_textures = {skgpu::graphite::BackendTexture(texture.Get())};
   }
+
   return backend_textures;
+}
+
+std::vector<sk_sp<SkSurface>>
+SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
+    const SkSurfaceProps& surface_props,
+    const gfx::Rect& update_rect) {
+  CHECK_EQ(mode_, RepresentationAccessMode::kNone);
+  CHECK(!dawn_scoped_access_);
+  dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
+      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
+      AllowUnclearedAccess::kYes);
+  if (!dawn_scoped_access_) {
+    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
+    return {};
+  }
+
+  mode_ = RepresentationAccessMode::kWrite;
+  std::vector<skgpu::graphite::BackendTexture> backend_textures =
+      CreateBackendTextures(dawn_scoped_access_->texture());
+
+  std::vector<sk_sp<SkSurface>> surfaces;
+  surfaces.reserve(format().NumberOfPlanes());
+  for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
+    SkColorType sk_color_type = viz::ToClosestSkColorType(
+        /*gpu_compositing=*/true, format(), plane);
+    // Gray is not a renderable single channel format, but alpha is.
+    if (sk_color_type == kGray_8_SkColorType) {
+      sk_color_type = kAlpha_8_SkColorType;
+    }
+
+    auto surface = SkSurfaces::WrapBackendTexture(
+        recorder_, backend_textures[plane], sk_color_type,
+        backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
+        &surface_props);
+    if (!surface) {
+      DLOG(ERROR) << "Could not create SkSurface";
+      dawn_scoped_access_.reset();
+      return {};
+    }
+    surfaces.push_back(std::move(surface));
+  }
+  return surfaces;
+}
+
+std::vector<skgpu::graphite::BackendTexture>
+SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
+  CHECK_EQ(mode_, RepresentationAccessMode::kNone);
+  CHECK(!dawn_scoped_access_);
+
+  dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
+      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
+      AllowUnclearedAccess::kYes);
+  if (!dawn_scoped_access_) {
+    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
+    return {};
+  }
+
+  mode_ = RepresentationAccessMode::kWrite;
+  return CreateBackendTextures(dawn_scoped_access_->texture());
+}
+
+void SkiaGraphiteDawnImageRepresentation::EndWriteAccess() {
+  CHECK_EQ(mode_, RepresentationAccessMode::kWrite);
+  plane_views_.clear();
+  dawn_scoped_access_.reset();
+  mode_ = RepresentationAccessMode::kNone;
+}
+
+std::vector<skgpu::graphite::BackendTexture>
+SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
+  CHECK_EQ(mode_, RepresentationAccessMode::kNone);
+  CHECK(!dawn_scoped_access_);
+
+  dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
+      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
+      AllowUnclearedAccess::kNo);
+
+  if (!dawn_scoped_access_) {
+    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
+    return {};
+  }
+
+  mode_ = RepresentationAccessMode::kRead;
+  return CreateBackendTextures(dawn_scoped_access_->texture());
 }
 
 void SkiaGraphiteDawnImageRepresentation::EndReadAccess() {

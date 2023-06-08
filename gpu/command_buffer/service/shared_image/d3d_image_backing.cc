@@ -707,6 +707,11 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     return nullptr;
   }
 
+  // The below usages are not supported for multiplanar formats in Dawn.
+  // TODO(crbug.com/1451784): Use read/write intent instead of format to get
+  // correct usages. This needs support in Skia to loosen TextureUsage
+  // validation. Alternatively, add support in Dawn for multiplanar formats to
+  // be Renderable.
   WGPUTextureUsageFlags allowed_usage =
       GetAllowedDawnUsages(device, wgpu_format);
   if (allowed_usage == WGPUTextureUsage_None) {
