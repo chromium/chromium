@@ -46,11 +46,11 @@ CGFloat const kTableViewEstimatedRowHeight = 75;
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
 
-// TableView's width constraint multiplier in portrait mode.
-CGFloat const kPortraitTableViewWidthMultiplier = 0.95;
+// TableView's width constraint multiplier in Portrait mode for iPhone only.
+CGFloat const kPortraitIPhoneTableViewWidthMultiplier = 0.95;
 
-// TableView's width constraint multiplier in landscape mode.
-CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
+// TableView's width constraint multiplier in all mode (except iPhone Portrait).
+CGFloat const kTableViewWidthMultiplier = 0.65;
 
 // Scroll view's bottom anchor constant.
 CGFloat const kScrollViewBottomAnchorConstant = 10;
@@ -441,12 +441,16 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
 
 // Creates the tableview's width constraints and set their initial active state.
 - (void)createTableViewWidthConstraint:(UILayoutGuide*)margins {
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   _portraitTableWidthConstraint = [_tableView.widthAnchor
       constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
-                                multiplier:kPortraitTableViewWidthMultiplier];
+                                multiplier:
+                                    (idiom == UIUserInterfaceIdiomPad)
+                                        ? kTableViewWidthMultiplier
+                                        : kPortraitIPhoneTableViewWidthMultiplier];
   _landscapeTableWidthConstraint = [_tableView.widthAnchor
       constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
-                                multiplier:kLandscapeTableViewWidthMultiplier];
+                                multiplier:kTableViewWidthMultiplier];
   [self adjustTableViewWidthConstraint];
 }
 
