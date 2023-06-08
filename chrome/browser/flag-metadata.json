@@ -134,7 +134,7 @@
   {
     "name": "alt-click-and-six-pack-customization",
     "owners": [ "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "always-enable-hdcp",
