@@ -93550,6 +93550,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="RendererOtherBlinkThread"/>
 </enum>
 
+<enum name="ScopedTerminationCheckerStatus">
+  <int value="0" label="Started"/>
+  <int value="1" label="Finished"/>
+</enum>
+
 <enum name="ScoutActiveExtendedReportingPref">
   <int value="0" label="Active pref is the legacy SBER pref"/>
   <int value="1" label="Active pref is the new Scout pref"/>

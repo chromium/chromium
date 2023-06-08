@@ -483,6 +483,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.MetricsService.OnBackgroundedScopedTerminationChecker"
+    enum="ScopedTerminationCheckerStatus" expires_after="2023-12-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Tentative histogram to quantify how often the browser is ungracefully killed
+    while finalizing a UMA log right after the browser is backgrounded. Emitted
+    before starting to finalize the log (Started bucket), and right after
+    (Finished bucket). Emitted only on mobile platforms.
+  </summary>
+</histogram>
+
 <histogram name="UMA.MetricsService.PendingOngoingLog" enum="Boolean"
     expires_after="2023-10-08">
   <owner>lucnguyen@google.com</owner>
