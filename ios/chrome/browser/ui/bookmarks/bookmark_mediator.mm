@@ -155,7 +155,7 @@ const int64_t kLastUsedFolderNone = -1;
   const BookmarkNode* result =
       bookmarks::GetBookmarkNodeByID(_profileBookmarkModel.get(), node_id);
 
-  if (result) {
+  if (result && result->is_folder()) {
     return result;
   }
 
