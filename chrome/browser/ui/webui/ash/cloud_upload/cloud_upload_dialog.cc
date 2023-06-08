@@ -1259,8 +1259,6 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
-  DCHECK(modal_parent);
-
   // Allow no more than one upload dialog at a time. Only one of either this
   // dialog, or CloudOpenTask can be shown at a time because they use the same
   // WebUI for dialogs.
