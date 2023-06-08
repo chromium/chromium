@@ -24,10 +24,16 @@ namespace {
 
 // List of keys in the SystemLogsResponse map whose corresponding values will
 // not be redacted.
-constexpr const char* const kExemptKeysOfUUIDs[] = {
+constexpr const char* const kKeysExemptOfRedaction[] = {
     "CHROMEOS_BOARD_APPID",
     "CHROMEOS_CANARY_APPID",
     "CHROMEOS_RELEASE_APPID",
+    // Base64-encoded binary data are exempted to keep them from getting
+    // corrupted by individual redaction tools.
+    "cros_ec_panicinfo",
+    "i915_error_state",
+    "perf-data",
+    "perfetto-data"
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -37,7 +43,7 @@ constexpr char kLacrosLogEntryPrefix[] = "Lacros ";
 // Returns true if the given |key| and its corresponding value are exempt from
 // redaction.
 bool IsKeyExempt(const std::string& key) {
-  for (auto* const exempt_key : kExemptKeysOfUUIDs) {
+  for (auto* const exempt_key : kKeysExemptOfRedaction) {
     if (key == exempt_key)
       return true;
   }
