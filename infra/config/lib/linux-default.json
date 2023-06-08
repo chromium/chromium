@@ -43,6 +43,7 @@
     "Dawn Win10 x86 Experimental Release (Intel)": "Ubuntu-22.04",
     "Dawn Win10 x86 Release (Intel)": "Ubuntu-22.04",
     "Dawn Win10 x86 Release (NVIDIA)": "Ubuntu-22.04",
+    "Deterministic Android": "Ubuntu-22.04",
     "Lacros FYI x64 Release (AMD)": "Ubuntu-22.04",
     "Lacros FYI x64 Release (Intel)": "Ubuntu-22.04",
     "Leak Detection Linux": "Ubuntu-22.04",
