@@ -535,7 +535,6 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
 bool IsFooterFrontendId(PopupItemId frontend_id) {
   switch (frontend_id) {
     case PopupItemId::kScanCreditCard:
-    case PopupItemId::kCreditCardSigninPromo:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kPasswordAccountStorageOptIn:
     case PopupItemId::kPasswordAccountStorageReSignin:

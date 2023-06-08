@@ -221,7 +221,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kTitle:
-    case PopupItemId::kCreditCardSigninPromo:
     case PopupItemId::kUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kGeneratePasswordEntry:

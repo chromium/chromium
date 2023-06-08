@@ -447,8 +447,6 @@ class TestAutofillClientTemplate : public T {
     return form_origin_.SchemeIs("https");
   }
 
-  void ExecuteCommand(PopupItemId popup_item_id) override {}
-
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override {}
 
   LogManager* GetLogManager() const override { return log_manager_.get(); }

@@ -85,7 +85,6 @@ class MockAutofillClient : public TestAutofillClient {
                const std::vector<std::u16string>& lables),
               (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
-  MOCK_METHOD(void, ExecuteCommand, (PopupItemId), (override));
   MOCK_METHOD(void,
               OpenPromoCodeOfferDetailsURL,
               (const GURL& url),
@@ -766,18 +765,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
     external_delegate_->OnPopupShown();
     histogram.ExpectTotalCount("Autofill.ScanCreditCardPrompt", 0);
   }
-}
-
-// Test that autofill client will start the signin flow after the user accepted
-// the suggestion to sign in.
-TEST_F(AutofillExternalDelegateUnitTest, SigninPromoMenuItem) {
-  EXPECT_CALL(autofill_client_,
-              ExecuteCommand(PopupItemId::kCreditCardSigninPromo));
-  EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-
-  external_delegate_->DidAcceptSuggestion(
-      Suggestion(PopupItemId::kCreditCardSigninPromo), 0);
 }
 
 MATCHER_P(CreditCardMatches, card, "") {

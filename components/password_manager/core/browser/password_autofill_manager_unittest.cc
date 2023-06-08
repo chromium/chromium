@@ -228,7 +228,6 @@ class MockAutofillClient : public autofill::TestAutofillClient {
               HideAutofillPopup,
               (autofill::PopupHidingReason),
               (override));
-  MOCK_METHOD(void, ExecuteCommand, (autofill::PopupItemId), (override));
 };
 
 base::CancelableTaskTracker::TaskId

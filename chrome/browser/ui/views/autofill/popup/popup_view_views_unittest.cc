@@ -56,7 +56,6 @@ const std::vector<PopupItemId> kClickablePopupItemIds{
     PopupItemId::kDatalistEntry,
     PopupItemId::kScanCreditCard,
     PopupItemId::kTitle,
-    PopupItemId::kCreditCardSigninPromo,
     PopupItemId::kUsernameEntry,
     PopupItemId::kAllSavedPasswordsEntry,
     PopupItemId::kPasswordAccountStorageOptIn,

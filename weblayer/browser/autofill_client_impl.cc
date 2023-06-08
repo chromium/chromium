@@ -362,10 +362,6 @@ bool AutofillClientImpl::IsContextSecure() const {
   return false;
 }
 
-void AutofillClientImpl::ExecuteCommand(autofill::PopupItemId popup_item_id) {
-  NOTREACHED();
-}
-
 void AutofillClientImpl::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTREACHED();
 }

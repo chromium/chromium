@@ -1079,18 +1079,6 @@ bool ChromeAutofillClient::IsContextSecure() const {
          security_level != security_state::DANGEROUS;
 }
 
-void ChromeAutofillClient::ExecuteCommand(PopupItemId popup_item_id) {
-#if BUILDFLAG(IS_ANDROID)
-  if (popup_item_id == PopupItemId::kCreditCardSigninPromo) {
-    auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
-    if (window) {
-      SigninBridge::LaunchSigninActivity(
-          window, signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN);
-    }
-  }
-#endif
-}
-
 void ChromeAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   web_contents()->OpenURL(content::OpenURLParams(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,

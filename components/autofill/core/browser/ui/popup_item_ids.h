@@ -21,7 +21,6 @@ enum class PopupItemId : int {
   kDatalistEntry,
   kScanCreditCard,
   kTitle,
-  kCreditCardSigninPromo,
   kUsernameEntry,
   kAllSavedPasswordsEntry,
   kGeneratePasswordEntry,

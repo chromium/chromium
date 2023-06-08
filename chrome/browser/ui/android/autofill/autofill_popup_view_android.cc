@@ -135,7 +135,6 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
     bool is_label_multiline =
         suggestion.popup_item_id ==
             PopupItemId::kInsecureContextPaymentDisabledMessage ||
-        suggestion.popup_item_id == PopupItemId::kCreditCardSigninPromo ||
         suggestion.popup_item_id == PopupItemId::kMixedFormMessage;
 
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(

@@ -150,7 +150,6 @@ class KeyboardAccessoryMediator
                 // The insecure context warning has a replacement in the fallback sheet.
             case PopupItemId.SEPARATOR:
             case PopupItemId.CLEAR_FORM:
-            case PopupItemId.CREDIT_CARD_SIGNIN_PROMO:
             case PopupItemId.ALL_SAVED_PASSWORDS_ENTRY:
             case PopupItemId.GENERATE_PASSWORD_ENTRY:
             case PopupItemId.SHOW_ACCOUNT_CARDS:

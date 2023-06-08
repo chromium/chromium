@@ -267,9 +267,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
           base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
                          GetWeakPtr(), AutofillTriggerSource::kPopup));
       break;
-    case PopupItemId::kCreditCardSigninPromo:
-      manager_->client()->ExecuteCommand(suggestion.popup_item_id);
-      break;
     case PopupItemId::kShowAccountCards:
       manager_->OnUserAcceptedCardsFromAccountOption();
       break;

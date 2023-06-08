@@ -519,10 +519,6 @@ bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-void ChromeAutofillClientIOS::ExecuteCommand(PopupItemId popup_item_id) {
-  NOTIMPLEMENTED();
-}
-
 void ChromeAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,

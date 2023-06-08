@@ -780,9 +780,6 @@ class AutofillClient : public RiskDataLoader {
   // If the context is secure.
   virtual bool IsContextSecure() const = 0;
 
-  // Handles simple actions for the autofill popups.
-  virtual void ExecuteCommand(PopupItemId popup_item_id) = 0;
-
   // Returns a LogManager instance. May be null for platforms that don't support
   // this.
   virtual LogManager* GetLogManager() const;

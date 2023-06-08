@@ -359,10 +359,6 @@ bool AwAutofillClient::IsContextSecure() const {
            content::SSLStatus::RAN_INSECURE_CONTENT);
 }
 
-void AwAutofillClient::ExecuteCommand(autofill::PopupItemId popup_item_id) {
-  NOTIMPLEMENTED();
-}
-
 void AwAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTIMPLEMENTED();
 }
