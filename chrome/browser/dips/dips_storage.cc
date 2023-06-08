@@ -15,9 +15,15 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#endif
 
 namespace {
 
@@ -248,6 +254,7 @@ std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
 }
 
 std::vector<std::string> DIPSStorage::GetSitesToClear(
+    content::BrowserContext* context,
     absl::optional<base::TimeDelta> custom_period) const {
   std::vector<std::string> sites_to_clear;
   base::TimeDelta grace_period =
@@ -270,6 +277,26 @@ std::vector<std::string> DIPSStorage::GetSitesToClear(
       break;
     }
   }
+
+// Do not clear sites from currently open tabs.
+// BrowserList::GetInstance is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  for (auto* browser : *BrowserList::GetInstance()) {
+    // Only check tabs with the same profile.
+    if (browser->profile() != Profile::FromBrowserContext(context)) {
+      continue;
+    }
+    for (int tab_index = 0; tab_index < browser->tab_strip_model()->count();
+         ++tab_index) {
+      content::WebContents* contents =
+          browser->tab_strip_model()->GetWebContentsAt(tab_index);
+      const std::string site = GetSiteForDIPS(contents->GetURL());
+      sites_to_clear.erase(
+          std::remove(sites_to_clear.begin(), sites_to_clear.end(), site),
+          sites_to_clear.end());
+    }
+  }
+#endif
 
   return sites_to_clear;
 }
