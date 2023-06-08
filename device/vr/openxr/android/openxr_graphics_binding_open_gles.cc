@@ -8,7 +8,6 @@
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_context.h"
@@ -135,10 +134,9 @@ int64_t OpenXrGraphicsBindingOpenGLES::GetSwapchainFormat(
 }
 
 XrResult OpenXrGraphicsBindingOpenGLES::EnumerateSwapchainImages(
-    const XrSwapchain& color_swapchain,
-    std::vector<SwapChainInfo>& color_swapchain_images) const {
+    const XrSwapchain& color_swapchain) {
   CHECK(color_swapchain != XR_NULL_HANDLE);
-  CHECK(color_swapchain_images.empty());
+  CHECK(color_swapchain_images_.empty());
 
   uint32_t chain_length;
   RETURN_IF_XR_FAILED(
@@ -151,12 +149,20 @@ XrResult OpenXrGraphicsBindingOpenGLES::EnumerateSwapchainImages(
       reinterpret_cast<XrSwapchainImageBaseHeader*>(
           xr_color_swapchain_images.data())));
 
-  color_swapchain_images.reserve(xr_color_swapchain_images.size());
-  for (size_t i = 0; i < xr_color_swapchain_images.size(); i++) {
-    color_swapchain_images.emplace_back();
+  color_swapchain_images_.reserve(xr_color_swapchain_images.size());
+  for (const auto& swapchain_image : xr_color_swapchain_images) {
+    color_swapchain_images_.emplace_back(swapchain_image.image);
   }
 
   return XR_SUCCESS;
+}
+
+void OpenXrGraphicsBindingOpenGLES::ClearSwapChainInfo() {
+  color_swapchain_images_.clear();
+}
+
+base::span<SwapChainInfo> OpenXrGraphicsBindingOpenGLES::GetSwapChainInfo() {
+  return color_swapchain_images_;
 }
 
 }  // namespace device
