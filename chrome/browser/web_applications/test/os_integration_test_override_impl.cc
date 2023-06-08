@@ -743,9 +743,11 @@ OsIntegrationTestOverrideImpl::OsIntegrationTestOverrideImpl(
   base::win::RegKey key;
   // In a real registry, this key would exist, but since we're using
   // hive override, it's empty, so we create this key.
-  key.Create(HKEY_CURRENT_USER,
-             L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-             KEY_SET_VALUE);
+  const LONG result =
+      key.Create(HKEY_CURRENT_USER,
+                 L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+                 KEY_SET_VALUE);
+  CHECK_EQ(result, ERROR_SUCCESS);
 #endif
 }
 

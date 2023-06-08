@@ -438,9 +438,9 @@ GenericRegKey<Reg>::GenericRegKey(HKEY rootkey,
                                   REGSAM access) {
   if (rootkey) {
     if (access & (KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_CREATE_LINK)) {
-      Create(rootkey, subkey, access);
+      (void)Create(rootkey, subkey, access);
     } else {
-      Open(rootkey, subkey, access);
+      (void)Open(rootkey, subkey, access);
     }
   } else {
     DCHECK(!subkey);

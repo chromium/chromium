@@ -223,12 +223,12 @@ void ScopedGroupPolicyRegistrySandbox::ActivateOverrides() {
 
   // Create the subkeys to hold the overridden HKLM and HKCU
   // policy settings.
-  temp_hklm_hive_key_.Create(HKEY_CURRENT_USER,
-                             hklm_key_name.c_str(),
-                             KEY_ALL_ACCESS);
-  temp_hkcu_hive_key_.Create(HKEY_CURRENT_USER,
-                             hkcu_key_name.c_str(),
-                             KEY_ALL_ACCESS);
+  ASSERT_EQ(temp_hklm_hive_key_.Create(HKEY_CURRENT_USER, hklm_key_name.c_str(),
+                                       KEY_ALL_ACCESS),
+            ERROR_SUCCESS);
+  ASSERT_EQ(temp_hkcu_hive_key_.Create(HKEY_CURRENT_USER, hkcu_key_name.c_str(),
+                                       KEY_ALL_ACCESS),
+            ERROR_SUCCESS);
 
   auto result_override_hklm =
       RegOverridePredefKey(HKEY_LOCAL_MACHINE, temp_hklm_hive_key_.Handle());

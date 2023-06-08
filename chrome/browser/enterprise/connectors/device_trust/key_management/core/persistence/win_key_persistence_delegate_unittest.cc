@@ -88,6 +88,7 @@ class WinKeyPersistenceDelegateTest : public testing::Test {
         InstallUtil::GetDeviceTrustSigningKeyLocation(
             InstallUtil::ReadOnly(false));
 
+    ASSERT_TRUE(key.Valid());
     EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), wrapped.data(),
                                wrapped.size(), REG_BINARY) == ERROR_SUCCESS);
     EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), trust_level) ==
@@ -145,6 +146,7 @@ TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_InvalidTrustLevel) {
   std::tie(key, signingkey_name, trustlevel_name) =
       InstallUtil::GetDeviceTrustSigningKeyLocation(
           InstallUtil::ReadOnly(false));
+  ASSERT_TRUE(key.Valid());
   EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), wrapped.data(),
                              wrapped.size(), REG_BINARY) == ERROR_SUCCESS);
   EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), 20) == ERROR_SUCCESS);
@@ -170,6 +172,7 @@ TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_InvalidSigningKey) {
   std::tie(key, signingkey_name, trustlevel_name) =
       InstallUtil::GetDeviceTrustSigningKeyLocation(
           InstallUtil::ReadOnly(false));
+  ASSERT_TRUE(key.Valid());
   EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), invalid_key.c_str()) ==
               ERROR_SUCCESS);
   EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), trust_level) ==

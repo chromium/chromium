@@ -56,21 +56,27 @@ class GenericRegKey {
 
   virtual ~GenericRegKey();
 
-  LONG Create(HKEY rootkey, const wchar_t* subkey, REGSAM access);
+  // Creates a new reg key, replacing `this` with a reference to the
+  // newly-opened key. In case of error, `this` is unchanged.
+  [[nodiscard]] LONG Create(HKEY rootkey, const wchar_t* subkey, REGSAM access);
 
-  LONG CreateWithDisposition(HKEY rootkey,
-                             const wchar_t* subkey,
-                             DWORD* disposition,
-                             REGSAM access);
+  // Creates a new reg key, replacing `this` with a reference to the
+  // newly-opened key. In case of error, `this` is unchanged.
+  [[nodiscard]] LONG CreateWithDisposition(HKEY rootkey,
+                                           const wchar_t* subkey,
+                                           DWORD* disposition,
+                                           REGSAM access);
 
-  // Creates a subkey or open it if it already exists.
-  LONG CreateKey(const wchar_t* name, REGSAM access);
+  // Creates a subkey or opens it if it already exists. In case of error, `this`
+  // is unchanged.
+  [[nodiscard]] LONG CreateKey(const wchar_t* name, REGSAM access);
 
-  // Opens an existing reg key.
-  LONG Open(HKEY rootkey, const wchar_t* subkey, REGSAM access);
+  // Opens an existing reg key, replacing `this` with a reference to the
+  // newly-opened key. In case of error, `this` is unchanged.
+  [[nodiscard]] LONG Open(HKEY rootkey, const wchar_t* subkey, REGSAM access);
 
   // Opens an existing reg key, given the relative key name.
-  LONG OpenKey(const wchar_t* relative_key_name, REGSAM access);
+  [[nodiscard]] LONG OpenKey(const wchar_t* relative_key_name, REGSAM access);
 
   // Closes this reg key.
   void Close();

@@ -145,10 +145,11 @@ class ScopedCreateDCWithBitmap {
 
 base::win::RegKey OpenThemeRegKey(REGSAM access) {
   base::win::RegKey hkcu_themes_regkey;
-  hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
-                          L"Software\\Microsoft\\Windows\\CurrentVersion\\"
-                          L"Themes\\Personalize",
-                          access);
+  // Validity is checked at time-of-use.
+  (void)hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
+                                L"Software\\Microsoft\\Windows\\"
+                                L"CurrentVersion\\Themes\\Personalize",
+                                access);
   return hkcu_themes_regkey;
 }
 

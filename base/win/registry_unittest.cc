@@ -563,8 +563,10 @@ class RegistryTestHKLMAdmin : public RegistryTestHKLM<Traits> {
     for (const REGSAM mask :
          {this->kNativeViewMask, this->kRedirectedViewMask}) {
       typename Traits::RegType key(Traits::Create());
-      key.Open(HKEY_LOCAL_MACHINE, L"Software", KEY_SET_VALUE | mask);
-      key.DeleteKey(kRootKey);
+      if (key.Open(HKEY_LOCAL_MACHINE, L"Software", KEY_SET_VALUE | mask) ==
+          ERROR_SUCCESS) {
+        key.DeleteKey(kRootKey);
+      }
     }
   }
 };
