@@ -5,12 +5,8 @@
 #ifndef REMOTING_HOST_CHROMEOS_REMOTING_SERVICE_H_
 #define REMOTING_HOST_CHROMEOS_REMOTING_SERVICE_H_
 
-#include <memory>
-
 namespace remoting {
 
-class ChromotingHostContext;
-class PolicyWatcher;
 class RemoteSupportHostAsh;
 
 // The RemotingService is a singleton which provides access to remoting
@@ -25,12 +21,6 @@ class RemotingService {
 
   // Must be called on the sequence the service was created on.
   virtual RemoteSupportHostAsh& GetSupportHost() = 0;
-
-  // Can be called on any sequence.
-  virtual std::unique_ptr<ChromotingHostContext> CreateHostContext() = 0;
-
-  // Can be called on any sequence.
-  virtual std::unique_ptr<PolicyWatcher> CreatePolicyWatcher() = 0;
 };
 
 }  // namespace remoting

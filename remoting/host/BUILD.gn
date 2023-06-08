@@ -857,6 +857,7 @@ source_set("unit_tests") {
     "//remoting/signaling",
     "//remoting/signaling:test_support",
     "//remoting/signaling:unit_tests",
+    "//services/network:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

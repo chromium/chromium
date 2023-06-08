@@ -31,6 +31,7 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "remoting/signaling/xmpp_log_to_server.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -252,6 +253,8 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   scoped_refptr<AutoThreadTaskRunner> network_task_runner_;
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner_;
 
+  scoped_refptr<network::TestSharedURLLoaderFactory> test_url_loader_factory_;
+
   base::WeakPtrFactory<It2MeHostTest> weak_factory_{this};
 };
 
@@ -265,13 +268,19 @@ void It2MeHostTest::SetUp() {
   base::GetLinuxDistro();
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  test_url_loader_factory_ = new network::TestSharedURLLoaderFactory();
+#endif
+
   run_loop_ = std::make_unique<base::RunLoop>();
 
   network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
 
-  host_context_ = ChromotingHostContext::Create(new AutoThreadTaskRunner(
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      run_loop_->QuitClosure()));
+  host_context_ = ChromotingHostContext::CreateForTesting(
+      new AutoThreadTaskRunner(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          run_loop_->QuitClosure()),
+      test_url_loader_factory_);
   network_task_runner_ = host_context_->network_task_runner();
   ui_task_runner_ = host_context_->ui_task_runner();
   fake_bot_signal_strategy_ =

@@ -9,17 +9,8 @@
 
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "chrome/browser/browser_process.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
-#include "remoting/host/chromoting_host_context.h"
-#include "remoting/host/policy_watcher.h"
 
 namespace remoting {
 
@@ -34,8 +25,6 @@ class RemotingServiceImpl : public RemotingService {
 
   // RemotingService implementation.
   RemoteSupportHostAsh& GetSupportHost() override;
-  std::unique_ptr<ChromotingHostContext> CreateHostContext() override;
-  std::unique_ptr<PolicyWatcher> CreatePolicyWatcher() override;
 
  private:
   void ReleaseSupportHost();
@@ -57,19 +46,6 @@ RemoteSupportHostAsh& RemotingServiceImpl::GetSupportHost() {
             &RemotingServiceImpl::ReleaseSupportHost, base::Unretained(this)));
   }
   return *remote_support_host_;
-}
-
-std::unique_ptr<ChromotingHostContext>
-RemotingServiceImpl::CreateHostContext() {
-  return ChromotingHostContext::CreateForChromeOS(
-      content::GetIOThreadTaskRunner({}), content::GetUIThreadTaskRunner({}),
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
-}
-
-std::unique_ptr<PolicyWatcher> RemotingServiceImpl::CreatePolicyWatcher() {
-  return PolicyWatcher::CreateWithPolicyService(
-      g_browser_process->policy_service());
 }
 
 void RemotingServiceImpl::ReleaseSupportHost() {

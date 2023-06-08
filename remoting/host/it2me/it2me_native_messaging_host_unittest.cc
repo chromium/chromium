@@ -36,6 +36,7 @@
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/ice_config.h"
 #include "remoting/signaling/log_to_server.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -285,6 +286,8 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   // Task runner of the host thread.
   scoped_refptr<AutoThreadTaskRunner> host_task_runner_;
   std::unique_ptr<remoting::NativeMessagingPipe> pipe_;
+
+  scoped_refptr<network::TestSharedURLLoaderFactory> test_url_loader_factory_;
 };
 
 void It2MeNativeMessagingHostTest::SetUp() {
@@ -299,6 +302,10 @@ void It2MeNativeMessagingHostTest::SetUp() {
       host_thread_->task_runner(),
       base::BindOnce(&It2MeNativeMessagingHostTest::ExitTest,
                      base::Unretained(this)));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  test_url_loader_factory_ = new network::TestSharedURLLoaderFactory();
+#endif
 
   host_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&It2MeNativeMessagingHostTest::StartHost,
@@ -558,7 +565,8 @@ void It2MeNativeMessagingHostTest::StartHost() {
   // Creating a native messaging host with a mock It2MeHostFactory and policy
   // loader.
   std::unique_ptr<ChromotingHostContext> context =
-      ChromotingHostContext::Create(host_task_runner_);
+      ChromotingHostContext::CreateForTesting(host_task_runner_,
+                                              test_url_loader_factory_);
   auto policy_loader =
       std::make_unique<policy::FakeAsyncPolicyLoader>(host_task_runner_);
   policy_loader_ = policy_loader.get();

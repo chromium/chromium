@@ -10,7 +10,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/stringize_macros.h"
-#include "remoting/host/chromeos/remoting_service.h"
+#include "remoting/host/chromeos/browser_interop.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
@@ -40,9 +40,8 @@ void RemoteSupportHostAsh::StartSession(
       std::make_unique<It2MeNativeMessageHostAsh>();
 
   mojo::PendingReceiver<mojom::SupportHostObserver> pending_receiver =
-      it2me_native_message_host_ash_->Start(
-          RemotingService::Get().CreateHostContext(),
-          RemotingService::Get().CreatePolicyWatcher());
+      it2me_native_message_host_ash_->Start(CreateChromotingHostContext(),
+                                            CreatePolicyWatcher());
 
   mojom::StartSupportSessionResponsePtr response =
       mojom::StartSupportSessionResponse::NewObserver(

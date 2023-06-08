@@ -22,7 +22,6 @@ class URLRequestContextGetter;
 
 namespace network {
 class SharedURLLoaderFactory;
-class TransitionalURLLoaderFactoryOwner;
 }  // namespace network
 
 namespace remoting {
@@ -30,38 +29,41 @@ namespace remoting {
 class AutoThreadTaskRunner;
 
 // A class that manages threads and running context for the chromoting host
-// process.  This class is virtual only for testing purposes (see below).
+// process. This class is virtual to allow for platform specialization and
+// testing purposes.
 class ChromotingHostContext {
  public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Attaches task runners to the relevant browser threads for the chromoting
+  // host. Must be called on the UI thread of the browser process.
+  static std::unique_ptr<ChromotingHostContext> CreateForChromeOS(
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+#else
   // Create threads and URLRequestContextGetter for use by a host.
   // During shutdown the caller should tear-down the ChromotingHostContext and
   // then continue to run until |ui_task_runner| is no longer referenced.
   // nullptr is returned if any threads fail to start.
   static std::unique_ptr<ChromotingHostContext> Create(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Attaches task runners to the relevant browser threads for the chromoting
-  // host.  Must be called on the UI thread of the browser process.
-  // remoting::UrlRequestContextGetter returns ContainerURLRequestContext under
-  // the hood which spawns two new threads per instance.  Since
-  // ChromotingHostContext can be destroyed from any thread, as its owner
-  // (It2MeHost) is ref-counted, joining the created threads during shutdown
-  // violates the "Disallow IO" thread restrictions on some task runners (e.g.
-  // the IO Thread of the browser process).
-  // Instead, we re-use the |url_request_context_getter| in the browser process.
-  static std::unique_ptr<ChromotingHostContext> CreateForChromeOS(
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  static std::unique_ptr<ChromotingHostContext> CreateForTesting(
+      scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   ChromotingHostContext(const ChromotingHostContext&) = delete;
   ChromotingHostContext& operator=(const ChromotingHostContext&) = delete;
 
-  ~ChromotingHostContext();
+  virtual ~ChromotingHostContext();
 
-  std::unique_ptr<ChromotingHostContext> Copy();
+  // Per-platform classes must implement these methods.
+  virtual std::unique_ptr<ChromotingHostContext> Copy() = 0;
+  virtual scoped_refptr<net::URLRequestContextGetter>
+  url_request_context_getter() const = 0;
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  url_loader_factory() = 0;
 
   // Task runner for the thread that is used for the UI.
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner() const;
@@ -92,14 +94,9 @@ class ChromotingHostContext {
   // Task runner for the thread used to encode video streams.
   scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner() const;
 
-  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter()
-      const;
-
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory();
-
   policy::ManagementService* management_service();
 
- private:
+ protected:
   ChromotingHostContext(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
       scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
@@ -107,9 +104,9 @@ class ChromotingHostContext {
       scoped_refptr<AutoThreadTaskRunner> input_task_runner,
       scoped_refptr<AutoThreadTaskRunner> network_task_runner,
       scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
-      scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
-      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
+      scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner);
 
+ private:
   // Caller-supplied UI thread. This is usually the application main thread.
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner_;
 
@@ -130,13 +127,6 @@ class ChromotingHostContext {
 
   // Thread for video encoding.
   scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner_;
-
-  // Serves URLRequestContexts that use the network and UI task runners.
-  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
-
-  // Makes a SharedURLLoaderFactory out of |url_request_context_getter_|
-  std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
-      url_loader_factory_owner_;
 };
 
 }  // namespace remoting

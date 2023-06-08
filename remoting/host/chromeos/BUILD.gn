@@ -58,6 +58,20 @@ source_set("enterprise_support") {
   sources = [ "chromeos_enterprise_params.h" ]
 }
 
+source_set("browser_interop") {
+  sources = [
+    "browser_interop.cc",
+    "browser_interop.h",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//content/public/browser:browser",
+    "//remoting/base:base",
+    "//remoting/host",
+  ]
+}
+
 source_set("remoting_service") {
   sources = [
     "remote_support_host_ash.cc",
@@ -74,8 +88,7 @@ source_set("remoting_service") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
-    "//chrome/browser:browser_process",
-    "//content/public/browser:browser",
+    ":browser_interop",
     "//mojo/public/cpp/bindings",
     "//remoting/base:base",
     "//remoting/host",

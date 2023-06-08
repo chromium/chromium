@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -18,9 +19,16 @@ TEST(ChromotingHostContextTest, StartAndStop) {
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   base::RunLoop run_loop;
 
+  scoped_refptr<network::TestSharedURLLoaderFactory> test_url_loader_factory;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  test_url_loader_factory = new network::TestSharedURLLoaderFactory();
+#endif
+
   std::unique_ptr<ChromotingHostContext> context =
-      ChromotingHostContext::Create(new AutoThreadTaskRunner(
-          task_environment.GetMainThreadTaskRunner(), run_loop.QuitClosure()));
+      ChromotingHostContext::CreateForTesting(
+          new AutoThreadTaskRunner(task_environment.GetMainThreadTaskRunner(),
+                                   run_loop.QuitClosure()),
+          test_url_loader_factory);
 
   EXPECT_TRUE(context);
   if (!context) {

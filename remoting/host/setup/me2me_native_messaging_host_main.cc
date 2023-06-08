@@ -54,6 +54,10 @@
 #include <glib-object.h>
 #endif  // defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "remoting/host/chromeos/browser_interop.h"
+#endif
+
 using remoting::protocol::PairingRegistry;
 
 namespace remoting {
@@ -276,8 +280,12 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 #endif  // BUILDFLAG(IS_POSIX)
 
   std::unique_ptr<ChromotingHostContext> context =
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
           main_task_executor.task_runner(), run_loop.QuitClosure()));
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+      CreateChromotingHostContext();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Create the native messaging host.
   std::unique_ptr<extensions::NativeMessageHost> host(
