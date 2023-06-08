@@ -1032,10 +1032,12 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
   if (data_dir_result == DirResult::kCreated &&
       GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce)) {
     LOG(WARNING) << "DriveFS data directory '" << data_dir
-                 << "' was missing and got created again";
+                 << "' went missing and got created again";
 
     if (util::IsDriveFsBulkPinningEnabled(profile_)) {
-      VLOG(1) << "Displaying system notification";
+      LOG(WARNING)
+          << "Displaying system notification and disabling bulk-pinning";
+
       // Show system notification.
       file_manager::SystemNotificationManager snm(profile_);
       const std::unique_ptr<const message_center::Notification> notification =
@@ -1045,6 +1047,9 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
       DCHECK(notification);
       snm.GetNotificationDisplayService()->Display(
           NotificationHandler::Type::TRANSIENT, *notification, nullptr);
+
+      // Disable bulk-pinning.
+      GetPrefs()->SetBoolean(prefs::kDriveFsBulkPinningEnabled, false);
     }
   }
 
