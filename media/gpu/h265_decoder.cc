@@ -387,16 +387,18 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
               // 3. Both container and bitstream.
               // Thus we should also extract HDR metadata here in case we
               // miss the information.
-              if (!hdr_metadata_)
-                hdr_metadata_ = gfx::HDRMetadata();
-              sei_msg.content_light_level_info.PopulateHDRMetadata(
-                  hdr_metadata_.value());
+              if (!hdr_metadata_.has_value()) {
+                hdr_metadata_.emplace();
+              }
+              hdr_metadata_->cta_861_3 =
+                  sei_msg.content_light_level_info.ToGfx();
               break;
             case H265SEIMessage::kSEIMasteringDisplayInfo:
-              if (!hdr_metadata_)
-                hdr_metadata_ = gfx::HDRMetadata();
-              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  hdr_metadata_->smpte_st_2086);
+              if (!hdr_metadata_.has_value()) {
+                hdr_metadata_.emplace();
+              }
+              hdr_metadata_->smpte_st_2086 =
+                  sei_msg.mastering_display_info.ToGfx();
               break;
             default:
               break;

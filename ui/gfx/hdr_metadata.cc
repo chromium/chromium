@@ -19,19 +19,8 @@ std::string HdrMetadataCta861_3::ToString() const {
   return ss.str();
 }
 
-HdrMetadataSmpteSt2086::HdrMetadataSmpteSt2086() = default;
-HdrMetadataSmpteSt2086::HdrMetadataSmpteSt2086(
-    const HdrMetadataSmpteSt2086& rhs) = default;
 HdrMetadataSmpteSt2086& HdrMetadataSmpteSt2086::operator=(
     const HdrMetadataSmpteSt2086& rhs) = default;
-
-HdrMetadataSmpteSt2086::HdrMetadataSmpteSt2086(
-    const SkColorSpacePrimaries& primaries,
-    float luminance_max,
-    float luminance_min)
-    : primaries(primaries),
-      luminance_max(luminance_max),
-      luminance_min(luminance_min) {}
 
 std::string HdrMetadataSmpteSt2086::ToString() const {
   std::stringstream ss;

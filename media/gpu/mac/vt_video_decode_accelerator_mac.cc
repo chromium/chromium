@@ -1105,15 +1105,15 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
               if (!config_.hdr_metadata) {
                 config_.hdr_metadata = gfx::HDRMetadata();
               }
-              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  config_.hdr_metadata->smpte_st_2086);
+              config_.hdr_metadata->smpte_st_2086 =
+                  sei_msg.mastering_display_info.ToGfx();
               break;
             case H264SEIMessage::kSEIContentLightLevelInfo:
               if (!config_.hdr_metadata) {
                 config_.hdr_metadata = gfx::HDRMetadata();
               }
-              sei_msg.content_light_level_info.PopulateHDRMetadata(
-                  config_.hdr_metadata.value());
+              config_.hdr_metadata->cta_861_3 =
+                  sei_msg.content_light_level_info.ToGfx();
               break;
             default:
               break;
@@ -1499,16 +1499,18 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
                   sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0;
               break;
             case H265SEIMessage::kSEIMasteringDisplayInfo:
-              if (!config_.hdr_metadata)
-                config_.hdr_metadata = gfx::HDRMetadata();
-              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  config_.hdr_metadata->smpte_st_2086);
+              if (config_.hdr_metadata.has_value()) {
+                config_.hdr_metadata.emplace();
+              }
+              config_.hdr_metadata->smpte_st_2086 =
+                  sei_msg.mastering_display_info.ToGfx();
               break;
             case H265SEIMessage::kSEIContentLightLevelInfo:
-              if (!config_.hdr_metadata)
-                config_.hdr_metadata = gfx::HDRMetadata();
-              sei_msg.content_light_level_info.PopulateHDRMetadata(
-                  config_.hdr_metadata.value());
+              if (config_.hdr_metadata.has_value()) {
+                config_.hdr_metadata.emplace();
+              }
+              config_.hdr_metadata->cta_861_3 =
+                  sei_msg.content_light_level_info.ToGfx();
               break;
             default:
               break;

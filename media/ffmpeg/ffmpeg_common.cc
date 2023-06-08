@@ -739,8 +739,9 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
 
       AVMasteringDisplayMetadata* metadata =
           reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
+      gfx::HdrMetadataSmpteSt2086 smpte_st_2086;
       if (metadata->has_primaries) {
-        hdr_metadata.smpte_st_2086.primaries = {
+        smpte_st_2086.primaries = {
             static_cast<float>(av_q2d(metadata->display_primaries[0][0])),
             static_cast<float>(av_q2d(metadata->display_primaries[0][1])),
             static_cast<float>(av_q2d(metadata->display_primaries[1][0])),
@@ -752,10 +753,14 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         };
       }
       if (metadata->has_luminance) {
-        hdr_metadata.smpte_st_2086.luminance_max =
-            av_q2d(metadata->max_luminance);
-        hdr_metadata.smpte_st_2086.luminance_min =
-            av_q2d(metadata->min_luminance);
+        smpte_st_2086.luminance_max = av_q2d(metadata->max_luminance);
+        smpte_st_2086.luminance_min = av_q2d(metadata->min_luminance);
+      }
+
+      // TODO(https://crbug.com/1446302): Consider rejecting metadata that does
+      // not specify all values.
+      if (metadata->has_primaries || metadata->has_luminance) {
+        hdr_metadata.smpte_st_2086 = smpte_st_2086;
       }
     }
   }

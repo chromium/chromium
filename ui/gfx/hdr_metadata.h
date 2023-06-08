@@ -29,9 +29,9 @@ enum class HDRMode : uint8_t {
 
 // Content light level info (CLLI) metadata from CTA 861.3.
 struct COLOR_SPACE_EXPORT HdrMetadataCta861_3 {
-  HdrMetadataCta861_3() = default;
-  HdrMetadataCta861_3(unsigned max_content_light_level,
-                      unsigned max_frame_average_light_level)
+  constexpr HdrMetadataCta861_3() = default;
+  constexpr HdrMetadataCta861_3(unsigned max_content_light_level,
+                                unsigned max_frame_average_light_level)
       : max_content_light_level(max_content_light_level),
         max_frame_average_light_level(max_frame_average_light_level) {}
 
@@ -62,11 +62,14 @@ struct COLOR_SPACE_EXPORT HdrMetadataSmpteSt2086 {
   float luminance_max = 0;
   float luminance_min = 0;
 
-  HdrMetadataSmpteSt2086();
-  HdrMetadataSmpteSt2086(const HdrMetadataSmpteSt2086& rhs);
-  HdrMetadataSmpteSt2086(const SkColorSpacePrimaries& primaries,
-                         float luminance_max,
-                         float luminance_min);
+  constexpr HdrMetadataSmpteSt2086() = default;
+  constexpr HdrMetadataSmpteSt2086(const HdrMetadataSmpteSt2086& rhs) = default;
+  constexpr HdrMetadataSmpteSt2086(const SkColorSpacePrimaries& primaries,
+                                   float luminance_max,
+                                   float luminance_min)
+      : primaries(primaries),
+        luminance_max(luminance_max),
+        luminance_min(luminance_min) {}
   HdrMetadataSmpteSt2086& operator=(const HdrMetadataSmpteSt2086& rhs);
 
   std::string ToString() const;

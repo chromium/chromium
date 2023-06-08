@@ -212,11 +212,12 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
   // Values from real YouTube HDR content.
   gfx::HDRMetadata hdr_meta;
   hdr_meta.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 600);
-  auto& cv_metadata = hdr_meta.smpte_st_2086;
+  gfx::HdrMetadataSmpteSt2086 cv_metadata;
   cv_metadata.luminance_min = 0;
   cv_metadata.luminance_max = 1000;
   cv_metadata.primaries = {0.6800f, 0.3200f, 0.2649f, 0.6900f,
                            0.1500f, 0.0600f, 0.3127f, 0.3290f};
+  hdr_meta.smpte_st_2086 = cv_metadata;
 
   base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,

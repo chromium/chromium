@@ -22,7 +22,7 @@
 #include "media/video/h265_nalu_parser.h"
 
 namespace gfx {
-struct HDRMetadata;
+struct HdrMetadataCta861_3;
 struct HdrMetadataSmpteSt2086;
 }  // namespace gfx
 
@@ -442,7 +442,7 @@ struct MEDIA_EXPORT H265SEIContentLightLevelInfo {
   uint16_t max_content_light_level;
   uint16_t max_picture_average_light_level;
 
-  void PopulateHDRMetadata(gfx::HDRMetadata& hdr_metadata) const;
+  gfx::HdrMetadataCta861_3 ToGfx() const;
 };
 
 struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
@@ -456,8 +456,7 @@ struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
   uint32_t max_luminance;
   uint32_t min_luminance;
 
-  void PopulateColorVolumeMetadata(
-      gfx::HdrMetadataSmpteSt2086& smpte_st_2086) const;
+  gfx::HdrMetadataSmpteSt2086 ToGfx() const;
 };
 
 struct MEDIA_EXPORT H265SEIMessage {
