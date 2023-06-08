@@ -714,7 +714,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
   test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
+// Flaky. https://crbug.com/1453362.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       DISABLED_ClickNetworkOnNetworkScreen) {
   TriggerDemoModeOnWelcomeScreen();
   test::WaitForNetworkSelectionScreen();
 
