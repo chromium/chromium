@@ -178,8 +178,6 @@ function getEntryIcon(
       case VolumeManagerCommon.VolumeType.SMB:
         return constants.ICON_TYPES.SMB;
       case VolumeManagerCommon.VolumeType.PROVIDED:
-        // TODO: FSP icon
-        return '';
       case VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER:
         return entry.volumeInfo.iconSet!;
       case VolumeManagerCommon.VolumeType.MTP:
