@@ -784,6 +784,9 @@ TEST_F(ClientSessionTest, Extensions) {
 
   // ext3 was sent a message but not instantiated.
   EXPECT_FALSE(extension3.was_instantiated());
+
+  // Drop references to locals before they go out of scope.
+  extensions_.clear();
 }
 
 TEST_F(ClientSessionTest, DataChannelCallbackIsCalled) {
