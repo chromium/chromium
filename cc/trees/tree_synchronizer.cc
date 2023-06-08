@@ -219,11 +219,6 @@ void TreeSynchronizer::PushLayerProperties(
       commit_state.layers_that_should_push_properties.end();
   for (auto it = source_layers_begin; it != source_layers_end; ++it) {
     auto* source_layer = *it;
-    recordreplay::Assert(
-        "[RUN-1229-1342] TreeSynchronizer::PushLayerProperties source_layer %lld %d",
-        (long long)(it - source_layers_begin),
-        source_layer->id());
-
     LayerImpl* target_layer = impl_tree->LayerById(source_layer->id());
     DCHECK(target_layer);
     source_layer->PushPropertiesTo(target_layer, commit_state, unsafe_state);
