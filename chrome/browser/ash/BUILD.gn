@@ -3664,6 +3664,7 @@ source_set("ash") {
     "//services/data_decoder/public/cpp",
     "//services/device/public/mojom",
     "//services/device/public/mojom:usb",
+    "//services/device/wake_lock/power_save_blocker",
     "//services/media_session/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
