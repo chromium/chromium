@@ -1824,7 +1824,7 @@
           'all',
         ],
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
