@@ -112,11 +112,6 @@ void AuthFactorConfig::GetManagementType(
       CHECK(user);
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
       CHECK(prefs);
-      // TODO(272474463): remove the child user check.
-      if (user->IsChild()) {
-        std::move(callback).Run(mojom::ManagementType::kChildRestriction);
-        return;
-      }
       const mojom::ManagementType result =
           prefs->IsManagedPreference(prefs::kRecoveryFactorBehavior)
               ? mojom::ManagementType::kUser
@@ -152,12 +147,6 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
       DCHECK(features::IsCryptohomeRecoveryEnabled());
       const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
       CHECK(user);
-
-      // TODO(272474463): remove the child user check.
-      if (user->IsChild()) {
-        std::move(callback).Run(false);
-        return;
-      }
 
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
       CHECK(prefs);

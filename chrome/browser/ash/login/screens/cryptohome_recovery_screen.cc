@@ -43,6 +43,7 @@ std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
   }
 }
 
+// TODO(b/285079648): add browser test for the recovery flow.
 CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(
     base::WeakPtr<CryptohomeRecoveryScreenView> view,
     const ScreenExitCallback& exit_callback)
@@ -95,17 +96,6 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
                << error->get_cryptohome_code();
     context()->user_context = std::move(user_context);
     view_->OnRecoveryFailed();
-    return;
-  }
-
-  // TODO(b/272474463): remove the child user check.
-  // TODO(b/278780685): add browser test for the password change flow for child
-  // accounts.
-  auto* user =
-      user_manager::UserManager::Get()->FindUser(user_context->GetAccountId());
-  if (user && user->IsChild()) {
-    context()->user_context = std::move(user_context);
-    exit_callback_.Run(Result::kNotApplicable);
     return;
   }
 

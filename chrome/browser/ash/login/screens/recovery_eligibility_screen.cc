@@ -20,11 +20,11 @@ namespace ash {
 
 namespace {
 
-// Returns `true` if the active Profile is under any kind of policy management.
-bool IsUserManaged() {
-  return ProfileManager::GetActiveUserProfile()
-      ->GetProfilePolicyConnector()
-      ->IsManaged();
+// Returns `true` if the active Profile is enterprise managed.
+bool IsUserEnterpriseManaged() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  return profile->GetProfilePolicyConnector()->IsManaged() &&
+         !profile->IsChild();
 }
 
 }  // namespace
@@ -41,9 +41,9 @@ std::string RecoveryEligibilityScreen::GetResultString(Result result) {
 
 // static
 bool RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy() {
-  return IsUserManaged() &&
+  return IsUserEnterpriseManaged() &&
          !GetRecoveryDefaultState(
-             IsUserManaged(),
+             IsUserEnterpriseManaged(),
              ProfileManager::GetActiveUserProfile()->GetPrefs());
 }
 
@@ -81,10 +81,10 @@ void RecoveryEligibilityScreen::ShowImpl() {
     // Don't ask about recovery consent for managed users - use the policy value
     // instead.
     context()->recovery_setup.ask_about_recovery_consent =
-        IsRecoveryOptInAvailable(IsUserManaged());
+        IsRecoveryOptInAvailable(IsUserEnterpriseManaged());
     context()->recovery_setup.recovery_factor_opted_in =
         GetRecoveryDefaultState(
-            IsUserManaged(),
+            IsUserEnterpriseManaged(),
             ProfileManager::GetActiveUserProfile()->GetPrefs());
   }
   exit_callback_.Run(Result::PROCEED);
