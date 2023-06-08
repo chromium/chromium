@@ -110,6 +110,8 @@ constexpr char kCustomCapturePathPrefName[] =
 constexpr char kUsesDefaultCapturePathPrefName[] =
     "ash.capture_mode.uses_default_capture_path";
 
+constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
+
 // The name of a boolean pref that determines whether we can show the selfie
 // camera user nudge. When this pref is false, it means that we showed the
 // nudge at some point and the user interacted with the capture mode session UI
@@ -248,6 +250,15 @@ void DeleteFileAsync(scoped_refptr<base::SequencedTaskRunner> task_runner,
                          LOG(ERROR) << "Failed to delete the file: " << path;
                      },
                      path));
+}
+
+// Called when the "Share to YouTube" button is pressed to
+// open the YouTube share video page.
+void OnShareToYouTubeButtonPressed() {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kShareToYouTubeURL),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 // Adds the given `notification` to the message center after it removes any
@@ -460,8 +471,6 @@ int GetFileSizeInKB(const base::FilePath& file_path) {
   // Convert the value to KBs.
   return size_in_bytes / 1024;
 }
-
-constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 
 }  // namespace
 
@@ -2082,13 +2091,6 @@ CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
       return CaptureModeSaveToLocation::kDriveFolder;
   }
   return CaptureModeSaveToLocation::kCustomizedFolder;
-}
-
-void CaptureModeController::OnShareToYouTubeButtonPressed() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kShareToYouTubeURL),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 CaptureModeBehavior* CaptureModeController::GetBehavior(

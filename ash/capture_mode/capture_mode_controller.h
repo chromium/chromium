@@ -300,12 +300,6 @@ class ASH_EXPORT CaptureModeController
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
 
-  // Called when the "Share to YouTube" button is pressed to
-  // open the YouTube share video page.
-  // TODO(b/276982457): Hook this function with the "Share to YouTube" button to
-  // be shown in the notification area once implemented.
-  void OnShareToYouTubeButtonPressed();
-
   void AddObserver(CaptureModeObserver* observer);
   void RemoveObserver(CaptureModeObserver* observer);
 
