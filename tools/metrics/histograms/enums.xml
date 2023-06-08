@@ -4744,6 +4744,7 @@ Unknown properties are collapsed to zero. -->
   <int value="26" label="credentialsConfigDisabled"/>
   <int value="27" label="caCerts"/>
   <int value="28" label="requiredKeyPairs"/>
+  <int value="29" label="enabledSystemAppPackageNames"/>
 </enum>
 
 <enum name="ArcProvisioningCheckInError">
