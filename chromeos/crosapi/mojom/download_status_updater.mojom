@@ -48,14 +48,46 @@ struct DownloadStatus {
 
 };
 
+// The interface for the client of the `DownloadStatusUpdater` in Ash Chrome
+// which is implemented in Lacros Chrome.
+//
+// Next MinVersion: 1
+// Next ID: 4
+//
+[Stable, Uuid="a62293a0-4404-42d3-9bb6-0f0232ddf1af"]
+interface DownloadStatusUpdaterClient {
+
+  // Invoked to cancel the download associated with the specified `guid`.
+  // Asynchronously returns whether the command was handled successfully.
+  Cancel@0(string guid) => (bool handled);
+
+  // Invoked to pause the download associated with the specified `guid`.
+  // Asynchronously returns whether the command was handled successfully.
+  Pause@1(string guid) => (bool handled);
+
+  // Invoked to resume the download associated with the specified `guid`.
+  // Asynchronously returns whether the command was handled successfully.
+  Resume@2(string guid) => (bool handled);
+
+  // Invoked to show the download associated with the specified `guid` in the
+  // browser. Asynchronously returns whether the command was handled
+  // successfully.
+  ShowInBrowser@3(string guid) => (bool handled);
+
+};
+
 // The interface which allows Lacros download status updates to be passed into
 // Ash Chrome for rendering in the appropriate System UI surface(s).
 //
-// Next MinVersion: 1
-// Next ID: 1
+// Next MinVersion: 2
+// Next ID: 2
 //
 [Stable, Uuid="2f06d2a1-7c81-4418-affe-bc821f43594e"]
 interface DownloadStatusUpdater {
+
+  // Invoked to bind the `client` which is implemented in Lacros Chrome.
+  [MinVersion=1] BindClient@1(
+    pending_remote<DownloadStatusUpdaterClient> client);
 
   // Invoked when `status` for a download should be updated.
   Update@0(DownloadStatus status);

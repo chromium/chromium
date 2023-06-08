@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "build/chromeos_buildflags.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
@@ -69,6 +70,11 @@ class DownloadStatusUpdater
   std::vector<std::unique_ptr<download::AllDownloadItemNotifier>> notifiers_;
   std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
       profile_keep_alives_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  class Delegate;
+  std::unique_ptr<Delegate> delegate_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_STATUS_UPDATER_H_

@@ -8,6 +8,7 @@
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace crosapi {
 
@@ -26,10 +27,15 @@ class DownloadStatusUpdaterAsh : public mojom::DownloadStatusUpdater {
 
  private:
   // DownloadStatusUpdater:
+  void BindClient(
+      mojo::PendingRemote<mojom::DownloadStatusUpdaterClient> client) override;
   void Update(mojom::DownloadStatusPtr status) override;
 
   // The set of receivers bound to `this` for use by crosapi.
   mojo::ReceiverSet<mojom::DownloadStatusUpdater> receivers_;
+
+  // The set of remotely bound clients for use by crosapi.
+  mojo::RemoteSet<mojom::DownloadStatusUpdaterClient> clients_;
 };
 
 }  // namespace crosapi

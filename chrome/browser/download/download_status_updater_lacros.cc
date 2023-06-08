@@ -4,21 +4,43 @@
 
 #include "chrome/browser/download/download_status_updater.h"
 
+#include <memory>
+#include <string>
+
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/download/public/common/download_item_utils.h"
 #include "content/public/browser/download_item_utils.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 // Helpers ---------------------------------------------------------------------
+
+crosapi::mojom::DownloadStatusUpdater* GetRemote(
+    absl::optional<uint32_t> min_version = absl::nullopt) {
+  using DownloadStatusUpdater = crosapi::mojom::DownloadStatusUpdater;
+  auto* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<DownloadStatusUpdater>()) {
+    return nullptr;
+  }
+  // NOTE: Use `remote.version()` rather than `service->GetInterfaceVersion()`
+  // as the latter does not respect versions of remotes injected for testing.
+  auto& remote = service->GetRemote<DownloadStatusUpdater>();
+  return remote.version() >= min_version.value_or(remote.version())
+             ? remote.get()
+             : nullptr;
+}
 
 bool IsCommandEnabled(DownloadItemModel& model,
                       DownloadCommands::Command command) {
@@ -72,14 +94,66 @@ crosapi::mojom::DownloadStatusPtr ConvertToMojoDownloadStatus(
 
 }  // namespace
 
+// DownloadStatusUpdater::Delegate ---------------------------------------------
+
+// The delegate of the `DownloadStatusUpdater` in Lacros Chrome which serves as
+// the client for the `DownloadStatusUpdater` in Ash Chrome.
+class DownloadStatusUpdater::Delegate
+    : public crosapi::mojom::DownloadStatusUpdaterClient {
+ public:
+  Delegate() {
+    using crosapi::mojom::DownloadStatusUpdater;
+    if (auto* remote =
+            GetRemote(DownloadStatusUpdater::kBindClientMinVersion)) {
+      remote->BindClient(receiver_.BindNewPipeAndPassRemoteWithVersion());
+    }
+  }
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+  ~Delegate() override = default;
+
+ private:
+  // crosapi::mojom::DownloadStatusUpdaterClient:
+  void Cancel(const std::string& guid, CancelCallback callback) override {
+    // TODO(http://b/279794441): Implement.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(/*handled=*/false);
+  }
+
+  void Pause(const std::string& guid, PauseCallback callback) override {
+    // TODO(http://b/279794441): Implement.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(/*handled=*/false);
+  }
+
+  void Resume(const std::string& guid, ResumeCallback callback) override {
+    // TODO(http://b/279794441): Implement.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(/*handled=*/false);
+  }
+
+  void ShowInBrowser(const std::string& guid,
+                     ShowInBrowserCallback callback) override {
+    // TODO(http://b/279794441): Implement.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(/*handled=*/false);
+  }
+
+  // The receiver bound to `this` for use by crosapi.
+  mojo::Receiver<crosapi::mojom::DownloadStatusUpdaterClient> receiver_{this};
+};
+
 // DownloadStatusUpdater -------------------------------------------------------
+
+DownloadStatusUpdater::DownloadStatusUpdater()
+    : delegate_(std::make_unique<Delegate>()) {}
+
+DownloadStatusUpdater::~DownloadStatusUpdater() = default;
 
 void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
     download::DownloadItem* download) {
-  using DownloadStatusUpdater = crosapi::mojom::DownloadStatusUpdater;
-  if (auto* service = chromeos::LacrosService::Get();
-      service && service->IsAvailable<DownloadStatusUpdater>()) {
-    service->GetRemote<DownloadStatusUpdater>()->Update(
-        ConvertToMojoDownloadStatus(download));
+  if (auto* remote = GetRemote()) {
+    remote->Update(ConvertToMojoDownloadStatus(download));
   }
 }

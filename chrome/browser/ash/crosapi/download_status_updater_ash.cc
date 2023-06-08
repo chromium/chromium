@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 
 #include "base/notreached.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace crosapi {
 
@@ -15,6 +16,11 @@ DownloadStatusUpdaterAsh::~DownloadStatusUpdaterAsh() = default;
 void DownloadStatusUpdaterAsh::BindReceiver(
     mojo::PendingReceiver<mojom::DownloadStatusUpdater> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
+}
+
+void DownloadStatusUpdaterAsh::BindClient(
+    mojo::PendingRemote<mojom::DownloadStatusUpdaterClient> client) {
+  clients_.Add(std::move(client));
 }
 
 // TODO(http://b/279831939): Render in the appropriate System UI surface(s).
