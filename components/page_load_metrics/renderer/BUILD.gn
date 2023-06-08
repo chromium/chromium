@@ -13,6 +13,7 @@ source_set("renderer") {
     "page_timing_metrics_sender.cc",
     "page_timing_metrics_sender.h",
     "page_timing_sender.h",
+    "soft_navigation_metrics_type_converter.h",
   ]
   deps = [
     "//base",

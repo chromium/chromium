@@ -126,6 +126,10 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   void AddLargestContentfulPaintGreaterThanExpectation(double timestamp);
 
+  void AddSoftNavigationCountExpectation(int expected_count);
+
+  bool SoftNavigationCountExpectationSatisfied() const;
+
   // Add a main/sub frame layout shift expectation.
   void AddPageLayoutShiftExpectation(
       ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
@@ -237,7 +241,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   void OnTimingUpdated(content::RenderFrameHost* subframe_rfh,
                        const page_load_metrics::mojom::PageLoadTiming& timing);
 
-  void OnSoftNavigationCountUpdated();
+  void OnSoftNavigationCountUpdated(uint64_t soft_navigation_count);
 
   // Updates observed page fields when a input timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
@@ -384,6 +388,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   uint64_t expected_num_largest_contentful_paint_text_ = 0;
   uint64_t current_num_largest_contentful_paint_text_ = 0;
+
+  uint64_t expected_soft_navigation_count_ = 0;
+  uint64_t current_soft_navigation_count_ = 0;
 
   double expected_min_largest_contentful_paint_ = -1.0;
   double observed_largest_contentful_paint_ = 0.0;

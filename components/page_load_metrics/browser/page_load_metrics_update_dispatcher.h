@@ -136,8 +136,8 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnSubFrameRenderDataChanged(
         content::RenderFrameHost* rfh,
         const mojom::FrameRenderDataUpdate& render_data) = 0;
-    virtual void OnSoftNavigationCountChanged(
-        uint32_t soft_navigation_count) = 0;
+    virtual void OnSoftNavigationChanged(
+        const mojom::SoftNavigationMetrics& soft_navigation_metrics) = 0;
     virtual void UpdateFeaturesUsage(
         content::RenderFrameHost* rfh,
         const std::vector<blink::UseCounterFeature>& new_features) = 0;
@@ -180,7 +180,7 @@ class PageLoadMetricsUpdateDispatcher {
                      mojom::InputTimingPtr input_timing_delta,
                      const absl::optional<blink::SubresourceLoadMetrics>&
                          subresource_load_metrics,
-                     uint32_t soft_navigation_count,
+                     mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
                      internal::PageLoadTrackerPageType page_type);
 
   void SetUpSharedMemoryForSmoothness(
@@ -265,7 +265,8 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateMainFrameSubresourceLoadMetrics(
       const blink::SubresourceLoadMetrics& subresource_load_metrics);
 
-  void UpdateSoftNavigationCount(uint32_t soft_navigation_count);
+  void UpdateSoftNavigation(
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
   void UpdatePageInputTiming(const mojom::InputTiming& input_timing_delta);
 

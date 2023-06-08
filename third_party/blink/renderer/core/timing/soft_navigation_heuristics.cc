@@ -208,9 +208,32 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
 
   ResetHeuristic();
   LogAndTraceDetectedSoftNavigation(frame, window, url_, user_click_timestamp_);
+
+  ReportSoftNavigationToMetrics(frame);
+}
+
+void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
+    LocalFrame* frame) const {
+  auto* loader = frame->Loader().GetDocumentLoader();
+
+  if (!loader) {
+    return;
+  }
+
+  auto soft_navigation_start_time =
+      loader->GetTiming().MonotonicTimeToPseudoWallTime(user_click_timestamp_);
+
+  LocalDOMWindow* window = frame->DomWindow();
+
+  CHECK(window);
+
+  blink::SoftNavigationMetrics metrics = {soft_navigation_count_,
+                                          soft_navigation_start_time,
+                                          window->GetNavigationId().Utf8()};
+
   if (LocalFrameClient* frame_client = frame->Client()) {
     // This notifies UKM about this soft navigation.
-    frame_client->DidObserveSoftNavigation(soft_navigation_count_);
+    frame_client->DidObserveSoftNavigation(metrics);
   }
 }
 

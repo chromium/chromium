@@ -27,10 +27,10 @@ void FakePageTimingSender::SendTiming(
     const mojom::InputTimingPtr new_input_timing,
     const absl::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, new_input_timing,
-                           subresource_load_metrics, soft_navigation_count);
+                           subresource_load_metrics, soft_navigation_metrics);
 }
 
 void FakePageTimingSender::SetUpSmoothnessReporting(
@@ -148,7 +148,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::InputTimingPtr& new_input_timing,
     const absl::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
   actual_timings_.push_back(timing.Clone());
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());

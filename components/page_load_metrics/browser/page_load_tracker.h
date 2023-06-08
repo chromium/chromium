@@ -23,7 +23,9 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "ui/base/scoped_visibility_tracker.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -237,7 +239,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnMainFrameMetadataChanged() override;
   void OnSubframeMetadataChanged(content::RenderFrameHost* rfh,
                                  const mojom::FrameMetadata& metadata) override;
-  void OnSoftNavigationCountChanged(uint32_t soft_navigation_count) override;
+  void OnSoftNavigationChanged(
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
   void UpdateFeaturesUsage(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& new_features) override;
@@ -295,6 +298,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
   uint32_t GetSoftNavigationCount() const override;
+  ukm::SourceId GetUkmSourceIdForSoftNavigation() const override;
   bool IsFirstNavigationInWebContents() const override;
 
   void Redirect(content::NavigationHandle* navigation_handle);
@@ -440,7 +444,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                      mojom::InputTimingPtr input_timing_delta,
                      const absl::optional<blink::SubresourceLoadMetrics>&
                          subresource_load_metrics,
-                     uint32_t soft_navigation_count);
+                     mojom::SoftNavigationMetricsPtr soft_navigation_metrics);
 
   // Set RenderFrameHost for the main frame of the page this tracker instance is
   // bound. This is called on moving the tracker to the active / inactive
@@ -570,7 +574,14 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   page_load_metrics::LargestContentfulPaintHandler
       experimental_largest_contentful_paint_handler_;
 
-  uint32_t soft_navigation_count_ = 0;
+  mojom::SoftNavigationMetricsPtr soft_navigation_metrics_ =
+      mojom::SoftNavigationMetrics::New(blink::kSoftNavigationCountDefaultValue,
+                                        base::TimeDelta(),
+                                        base::EmptyString());
+
+  GURL potential_soft_navigation_url_;
+
+  ukm::SourceId potential_soft_navigation_source_id_ = ukm::kInvalidSourceId;
 
   absl::optional<base::TimeTicks> main_frame_receive_headers_start_;
 

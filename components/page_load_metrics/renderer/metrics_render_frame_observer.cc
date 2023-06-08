@@ -54,22 +54,23 @@ class MojoPageTimingSender : public PageTimingSender {
 
   ~MojoPageTimingSender() override = default;
 
-  void SendTiming(const mojom::PageLoadTimingPtr& timing,
-                  const mojom::FrameMetadataPtr& metadata,
-                  const std::vector<blink::UseCounterFeature>& new_features,
-                  std::vector<mojom::ResourceDataUpdatePtr> resources,
-                  const mojom::FrameRenderDataUpdate& render_data,
-                  const mojom::CpuTimingPtr& cpu_timing,
-                  mojom::InputTimingPtr input_timing_delta,
-                  const absl::optional<blink::SubresourceLoadMetrics>&
-                      subresource_load_metrics,
-                  uint32_t soft_navigation_count) override {
+  void SendTiming(
+      const mojom::PageLoadTimingPtr& timing,
+      const mojom::FrameMetadataPtr& metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
+      std::vector<mojom::ResourceDataUpdatePtr> resources,
+      const mojom::FrameRenderDataUpdate& render_data,
+      const mojom::CpuTimingPtr& cpu_timing,
+      mojom::InputTimingPtr input_timing_delta,
+      const absl::optional<blink::SubresourceLoadMetrics>&
+          subresource_load_metrics,
+      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(input_timing_delta),
-        subresource_load_metrics, soft_navigation_count);
+        subresource_load_metrics, soft_navigation_metrics->Clone());
   }
 
   void SetUpSmoothnessReporting(
@@ -161,9 +162,10 @@ void MetricsRenderFrameObserver::DidObserveNewFeatureUsage(
     page_timing_metrics_sender_->DidObserveNewFeatureUsage(feature);
 }
 
-void MetricsRenderFrameObserver::DidObserveSoftNavigation(uint32_t count) {
+void MetricsRenderFrameObserver::DidObserveSoftNavigation(
+    blink::SoftNavigationMetrics metrics) {
   if (page_timing_metrics_sender_) {
-    page_timing_metrics_sender_->DidObserveSoftNavigation(count);
+    page_timing_metrics_sender_->DidObserveSoftNavigation(metrics);
   }
 }
 

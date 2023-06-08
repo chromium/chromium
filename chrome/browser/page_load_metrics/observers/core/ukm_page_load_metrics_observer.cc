@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/hash/sha1.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -71,6 +72,23 @@ using page_load_metrics::PageVisitFinalStatus;
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
+
+template <size_t N>
+uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
+  static_assert(N <= 8u,
+                "Error: Can't pack more than 8 bytes into a uint64_t.");
+  uint64_t result = 0;
+  for (auto byte : bytes) {
+    result = (result << 8) | byte;
+  }
+  return result;
+}
+
+uint64_t StrToHash64Bit(base::StringPiece str) {
+  auto bytes = base::as_bytes(base::make_span(str));
+  const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
+  return PackBytes(base::make_span(digest).subspan<0, 8>());
+}
 
 bool IsSupportedProtocol(page_load_metrics::NetworkProtocol protocol) {
   switch (protocol) {
@@ -619,6 +637,18 @@ void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
+    page_load_metrics::mojom::SoftNavigationMetricsPtr
+        soft_navigation_metrics) {
+  ukm::builders::SoftNavigation builder(
+      GetDelegate().GetUkmSourceIdForSoftNavigation());
+
+  builder.SetNavigationId(
+      StrToHash64Bit(soft_navigation_metrics->navigation_id));
+  builder.SetStartTime(soft_navigation_metrics->start_time.InMilliseconds());
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
 const page_load_metrics::ContentfulPaintTimingInfo&
 UkmPageLoadMetricsObserver::GetCoreWebVitalsLcpTimingInfo() {
   return GetDelegate()
