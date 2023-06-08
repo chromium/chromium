@@ -176,20 +176,16 @@ static_library("test_support") {
 
   if (enable_base_tracing) {
     public_deps += [ "//third_party/perfetto:perfetto_test_support" ]
-    if (!is_chromeos) {
-      # TODO(rasikan): Add to ios and chromeos when unblocked by the chromiumos
-      # change to add the shared lib to the chrome-binary-tests directory.
-      public_deps += [ ":test_trace_processor" ]
-      sources += [
-        "test_trace_processor.cc",
-        "test_trace_processor.h",
+    public_deps += [ ":test_trace_processor" ]
+    sources += [
+      "test_trace_processor.cc",
+      "test_trace_processor.h",
+    ]
+    if (is_ios) {
+      deps += [
+        ":test_trace_processor+bundle",
+        ":test_trace_processor+link",
       ]
-      if (is_ios) {
-        deps += [
-          ":test_trace_processor+bundle",
-          ":test_trace_processor+link",
-        ]
-      }
     }
   }
 
