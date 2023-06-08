@@ -24,8 +24,7 @@ const std::vector<std::string> kCrossTabCommunicationTypes{
 
 constexpr char kRequestStorageAccess[] =
     "document.requestStorageAccess()"
-    "  .then(() => document.hasStorageAccess())"
-    "  .catch(() => false);";
+    "  .then(() => document.hasStorageAccess())";
 
 constexpr char kRequestStorageAccessFor[] =
     "document.requestStorageAccessFor($1)";

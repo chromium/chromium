@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, OpaqueOriginRejects) {
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  EXPECT_FALSE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
@@ -842,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  EXPECT_FALSE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
@@ -1299,7 +1299,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIPromptBrowserTest,
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::DENY_ALL);
 
-  EXPECT_FALSE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
   EXPECT_EQ(1, prompt_factory()->RequestTypeSeen(
                    permissions::RequestType::kStorageAccess));
@@ -1534,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // The promise should be rejected; `khostD` is a service domain.
-  EXPECT_FALSE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   NavigateFrameTo(EchoCookiesURL(kHostA));
@@ -1565,7 +1565,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // kHostC cannot request storage access.
-  EXPECT_FALSE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   NavigateFrameTo(EchoCookiesURL(kHostC));
@@ -1777,7 +1777,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
         browser()->tab_strip_model()->GetActiveWebContents());
     ASSERT_FALSE(pre_observer.request_shown());
     ASSERT_FALSE(
-        storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+        content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
     ASSERT_TRUE(pre_observer.request_shown());
     ASSERT_EQ(prompt_factory()->TotalRequestCount(), 1);
   }
@@ -1789,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
     ASSERT_FALSE(post_observer.request_shown());
 
     EXPECT_FALSE(
-        storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+        content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
     // Verify no prompt was shown after the first one was already denied.
     EXPECT_FALSE(post_observer.request_shown());
     EXPECT_EQ(prompt_factory()->TotalRequestCount(), 1);

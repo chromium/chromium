@@ -33,9 +33,8 @@ void SetCrossTabInfoForFrame(content::RenderFrameHost* frame);
 void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame, bool expected);
 
 // Helper to request storage access for a frame using
-// document.requestStorageAccess(). Returns true if the promise resolves *and*
-// if a subsequent call to `document.hasStorageAccess()` resolves and returns
-// true; false otherwise.
+// document.requestStorageAccess() and then get the value of
+// document.hasStorageAccess(). If either call rejects, this helper DCHECKs.
 bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame);
 // Helper to request storage access with a site override for a frame using
 // document.requestStorageAccessFor(origin). Returns true if the promise
