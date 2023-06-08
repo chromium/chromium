@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "base/check_deref.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -518,6 +519,12 @@ TEST(CheckDeathTest, NotReached) {
 #endif
   EXPECT_DEATH_IF_SUPPORTED(NotReachedNoreturnInFunction(),
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
+}
+
+TEST(CheckDeathTest, NotReachedFatalExperiment) {
+  base::test::ScopedFeatureList feature_list(
+      base::features::kNotReachedIsFatal);
+  EXPECT_CHECK_DEATH(NOTREACHED());
 }
 
 TEST(CheckDeathTest, DumpWillBeCheck) {

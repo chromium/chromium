@@ -8,6 +8,8 @@
 #include "base/debug/alias.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -274,8 +276,14 @@ CheckError::~CheckError() {
 }
 
 NotReachedError NotReachedError::NotReached(const base::Location& location) {
-  // Outside DCHECK builds NOTREACHED() should not be FATAL. For now.
-  const LogSeverity severity = DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR;
+  const LogSeverity severity = []() {
+    // NOTREACHED() instances may be hit before base::FeatureList is enabled.
+    if (base::FeatureList::GetInstance() &&
+        base::FeatureList::IsEnabled(base::features::kNotReachedIsFatal)) {
+      return LOGGING_FATAL;
+    }
+    return DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR;
+  }();
   auto* const log_message = new NotReachedLogMessage(location, severity);
 
   // TODO(pbos): Consider a better message for NotReached(), this is here to
