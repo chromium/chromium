@@ -14,6 +14,7 @@ java_cpp_enum("autofill_generated_enums") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/autofill/AutofillAddress.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillEditorBase.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillUiUtils.java",
@@ -59,6 +60,7 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/image_fetcher:java",
+    "//components/payments/mojom:mojom_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",

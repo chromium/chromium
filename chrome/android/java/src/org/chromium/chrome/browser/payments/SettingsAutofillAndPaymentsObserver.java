@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.autofill.AutofillAddress;
 
 import java.util.ArrayList;
 import java.util.List;

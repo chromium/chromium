@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.telephony.PhoneNumberUtils;
@@ -13,10 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressField;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.payments.mojom.PaymentAddress;
@@ -53,13 +50,17 @@ public class AutofillAddress extends EditableOption {
         int MAX_VALUE = 1 << 4;
     }
 
-    @Nullable private static Pattern sRegionCodePattern;
+    @Nullable
+    private static Pattern sRegionCodePattern;
 
     private final Context mContext;
     private AutofillProfile mProfile;
-    @Nullable private String mShippingLabelWithCountry;
-    @Nullable private String mShippingLabelWithoutCountry;
-    @Nullable private String mBillingLabel;
+    @Nullable
+    private String mShippingLabelWithCountry;
+    @Nullable
+    private String mShippingLabelWithoutCountry;
+    @Nullable
+    private String mBillingLabel;
 
     /**
      * Builds the autofill address.
@@ -295,7 +296,8 @@ public class AutofillAddress extends EditableOption {
 
         return profile == null || TextUtils.isEmpty(profile.getCountryCode())
                         || !sRegionCodePattern.matcher(profile.getCountryCode()).matches()
-                ? Locale.getDefault().getCountry() : profile.getCountryCode();
+                ? Locale.getDefault().getCountry()
+                : profile.getCountryCode();
     }
 
     /** @return The address for the merchant. */

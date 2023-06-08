@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;

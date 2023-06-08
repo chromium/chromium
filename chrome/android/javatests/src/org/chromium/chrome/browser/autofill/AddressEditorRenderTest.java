@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;

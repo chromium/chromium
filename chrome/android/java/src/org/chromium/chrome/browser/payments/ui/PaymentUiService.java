@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
@@ -23,7 +24,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.AddressEditor;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.chrome.browser.payments.ContactEditor;

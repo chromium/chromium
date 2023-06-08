@@ -9,8 +9,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.components.payments.JourneyLogger;

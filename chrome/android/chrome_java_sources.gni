@@ -905,7 +905,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosure.java",
   "java/src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayer.java",
   "java/src/org/chromium/chrome/browser/payments/AddressEditor.java",
-  "java/src/org/chromium/chrome/browser/payments/AutofillAddress.java",
   "java/src/org/chromium/chrome/browser/payments/AutofillContact.java",
   "java/src/org/chromium/chrome/browser/payments/ChromePaymentRequestFactory.java",
   "java/src/org/chromium/chrome/browser/payments/ChromePaymentRequestService.java",

@@ -36,7 +36,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
