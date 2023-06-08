@@ -308,12 +308,7 @@ struct DisabledByLineBreakerData {
     )HTML"},
     // `break-sapces` is not supported.
     {true, R"HTML(
-      <div id="target" style="white-space: break-spaces">
-        0123 5678
-        1234 6789
-        23 567 90
-        45
-      </div>
+      <div id="target" style="white-space: break-spaces">0123 5678 1234 6789 23 567 90 45</div>
     )HTML"},
     // `box-decoration-break: clone` is not supported.
     {true, R"HTML(

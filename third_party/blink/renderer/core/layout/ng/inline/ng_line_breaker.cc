@@ -680,6 +680,7 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   //   <p>...<span>....</span></p>
   // When the line wraps in <span>, the 2nd line needs to start with the style
   // of the <span>.
+  disable_score_line_break_ = false;
   if (!current_style_)
     SetCurrentStyle(line_info->LineStyle());
   ComputeBaseDirection();
@@ -690,8 +691,6 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   // Use 'text-indent' as the initial position. This lets tab positions to align
   // regardless of 'text-indent'.
   position_ = line_info->TextIndent();
-
-  disable_score_line_break_ = false;
 
   has_cloned_box_decorations_ = false;
   if (UNLIKELY((break_token_ && break_token_->HasClonedBoxDecorations()) ||
