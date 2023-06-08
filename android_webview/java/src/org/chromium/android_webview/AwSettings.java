@@ -314,7 +314,7 @@ public class AwSettings {
             mAllowFileUrlAccess =
                     ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
                     < Build.VERSION_CODES.R;
-            if (AwFeatureMap.getInstance().isEnabled(
+            if (AwFeatureMap.isEnabled(
                         AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
                 mRequestedWithHeaderAllowedOriginRules =
                         ManifestMetadataUtil.getXRequestedWithAllowList();
@@ -1845,7 +1845,7 @@ public class AwSettings {
 
     @CalledByNative
     private boolean getAllowMixedContentAutoupgradesLocked() {
-        if (AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
             // We only allow mixed content autoupgrades (upgrading HTTP subresources to HTTPS in
             // HTTPS sites) when the mixed content mode is set to MIXED_CONTENT_COMPATIBILITY,
             // which keeps it in line with the behavior in Chrome. With

@@ -478,8 +478,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param soundRecorder A soundRecorder intent to supply as extra Intent data.
      */
     private void showExternalPicker(Intent camera, Intent camcorder, Intent soundRecorder) {
-        if (UiAndroidFeatureMap.getInstance().isEnabled(
-                    UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION)) {
+        if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION)) {
             showExternalPickerDeprecated(camera, camcorder, soundRecorder);
             return;
         }

@@ -62,7 +62,7 @@ public class AwServiceWorkerSettings {
             // hitting assets in the application context.
             mBlockSpecialFileUrls = ContextUtils.isSdkSandboxProcess();
 
-            if (AwFeatureMap.getInstance().isEnabled(
+            if (AwFeatureMap.isEnabled(
                         AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
                 mRequestedWithHeaderAllowedOriginRules =
                         ManifestMetadataUtil.getXRequestedWithAllowList();

@@ -244,7 +244,7 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
             return false;
         }
 
-        if (DeviceFeatureMap.getInstance().isEnabled(
+        if (DeviceFeatureMap.isEnabled(
                     DeviceFeatureList.WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS)) {
             return true;
         }

@@ -157,8 +157,7 @@ public class TranslateCompactInfoBar
         super(R.drawable.infobar_translate_compact, 0, null, null);
         mWindowAndroid = windowAndroid;
 
-        if (TranslateFeatureMap.getInstance().isEnabled(
-                    TranslateFeatureMap.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)
+        if (TranslateFeatureMap.isEnabled(TranslateFeatureMap.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)
                 && !TranslateFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
                         TranslateFeatureMap.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER,
                         TranslateFeatureMap.CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM, false)) {

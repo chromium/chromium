@@ -47,7 +47,7 @@ public abstract class FeatureMap {
      * @param featureName The name of the feature to query.
      * @return Whether the feature is enabled or not.
      */
-    public boolean isEnabled(String featureName) {
+    public boolean isEnabledInNative(String featureName) {
         Boolean testValue = FeatureList.getTestValueForFeature(featureName);
         if (testValue != null) return testValue;
         ensureNativeMapInit();

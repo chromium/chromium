@@ -3358,8 +3358,7 @@ public class AwSettingsTest {
             Assert.assertEquals(1, httpServer.getRequestCount(imageUrl));
 
             awSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-            if (AwFeatureMap.getInstance().isEnabled(
-                        AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
                 // COMPATIBILITY_MODE enables autoupgrades for passive mixed content (including
                 // images), so we set the image url to the HTTP version of the HTTPS server, and
                 // check it was autoupgraded by expecting the HTTPS server to be hit.

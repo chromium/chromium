@@ -40,7 +40,7 @@ public class AwKeyboardShortcuts {
         int metaState = getMetaState(event);
         int keyCodeAndMeta = keyCode | metaState;
 
-        if (AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS)) {
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS)) {
             return handleZoomShortcut(awContents, keyCodeAndMeta);
         }
         return false;

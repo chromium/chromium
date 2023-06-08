@@ -1050,7 +1050,7 @@ public class AwContents implements SmartClipProvider {
                         }
                     }, containerView);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                    && AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_DISPLAY_CUTOUT)) {
+                    && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DISPLAY_CUTOUT)) {
                 mDisplayCutoutController =
                         new AwDisplayCutoutController(new AwDisplayCutoutController.Delegate() {
                             @Override
@@ -1629,8 +1629,8 @@ public class AwContents implements SmartClipProvider {
 
     private JavascriptInjector getJavascriptInjector() {
         if (mJavascriptInjector == null) {
-            mJavascriptInjector = JavascriptInjector.fromWebContents(mWebContents,
-                    AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO));
+            mJavascriptInjector = JavascriptInjector.fromWebContents(
+                    mWebContents, AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO));
         }
         return mJavascriptInjector;
     }
@@ -3311,8 +3311,7 @@ public class AwContents implements SmartClipProvider {
 
     private void afterWindowHiddenTask() {
         try (TraceEvent e = TraceEvent.scoped("afterWindowHiddenTask")) {
-            if (!AwFeatureMap.getInstance().isEnabled(
-                        AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND)) {
+            if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND)) {
                 return;
             }
 
@@ -4029,8 +4028,8 @@ public class AwContents implements SmartClipProvider {
             boolean visibleRectEmpty = getGlobalVisibleRect().isEmpty();
             final boolean visible = mIsViewVisible && mIsWindowVisible && !visibleRectEmpty;
 
-            boolean clearFunctor = AwFeatureMap.getInstance().isEnabled(
-                    AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND);
+            boolean clearFunctor =
+                    AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND);
             int trimThreshold = clearFunctor ? ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
                                              : ComponentCallbacks2.TRIM_MEMORY_MODERATE;
             ThreadUtils.runOnUiThreadBlocking(() -> {

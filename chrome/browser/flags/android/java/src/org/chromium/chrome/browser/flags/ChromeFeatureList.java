@@ -33,7 +33,7 @@ public abstract class ChromeFeatureList {
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      */
     public static boolean isEnabled(String featureName) {
-        return ChromeFeatureMap.getInstance().isEnabled(featureName);
+        return ChromeFeatureMap.isEnabled(featureName);
     }
 
     /**

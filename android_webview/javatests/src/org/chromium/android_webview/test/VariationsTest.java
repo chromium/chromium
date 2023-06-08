@@ -97,7 +97,7 @@ public class VariationsTest {
 
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 Assert.assertTrue("TEST_FEATURE_NAME should be enabled",
-                        AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
+                        AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
             });
         } finally {
             VariationsTestUtils.deleteSeeds();

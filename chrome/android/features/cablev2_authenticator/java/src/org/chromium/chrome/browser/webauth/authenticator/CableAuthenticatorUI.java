@@ -246,7 +246,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                         ViewGroup top = (ViewGroup) getView();
                         boolean link = ((CheckBox) top.findViewById(R.id.qr_link)).isChecked();
                         if (link
-                                && !DeviceFeatureMap.getInstance().isEnabled(
+                                && !DeviceFeatureMap.isEnabled(
                                         DeviceFeatureList
                                                 .WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS)) {
                             link = NotificationManagerCompat.from(getContext())

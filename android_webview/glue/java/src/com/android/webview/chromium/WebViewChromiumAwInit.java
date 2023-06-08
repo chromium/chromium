@@ -234,8 +234,7 @@ public class WebViewChromiumAwInit {
                         mFactory, awBrowserContext.getGeolocationPermissions());
                 mWebStorage =
                         new WebStorageAdapter(mFactory, mBrowserContext.getQuotaManagerBridge());
-                if (AwFeatureMap.getInstance().isEnabled(
-                            AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT)) {
+                if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT)) {
                     AwOriginVerificationScheduler.initAndScheduleAll(null);
                 }
                 mAwTracingController = getTracingController();

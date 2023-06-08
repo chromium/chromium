@@ -150,8 +150,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private boolean isCredManEnabled() {
         if (sIsCredManEnabled == null) {
-            sIsCredManEnabled = DeviceFeatureMap.getInstance().isEnabled(
-                                        DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
+            sIsCredManEnabled =
+                    DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
                     && (BuildCompat.isAtLeastU() || mOverrideVersionCheckForTesting);
         }
         return sIsCredManEnabled;
@@ -1288,8 +1288,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private boolean isHybridClientApiAvailable() {
         return PackageUtils.getPackageVersion("com.google.android.gms")
                 >= GMSCORE_MIN_VERSION_HYBRID_API
-                && DeviceFeatureMap.getInstance().isEnabled(
-                        DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
+                && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
     }
 
     private static final String getChannel() {

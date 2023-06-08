@@ -19,7 +19,7 @@ public class ContentFeatureList {
      * @return Whether the feature is enabled or not.
      */
     public static boolean isEnabled(String featureName) {
-        return ContentFeatureMap.getInstance().isEnabled(featureName);
+        return ContentFeatureMap.isEnabled(featureName);
     }
 
     /**

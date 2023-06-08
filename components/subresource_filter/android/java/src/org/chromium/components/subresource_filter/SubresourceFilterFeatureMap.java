@@ -32,10 +32,17 @@ public final class SubresourceFilterFeatureMap extends FeatureMap {
     }
 
     /**
+     * Convenience method to call {@link #isEnabledInNative(String)} statically.
+     */
+    public static boolean isEnabled(String featureName) {
+        return getInstance().isEnabledInNative(featureName);
+    }
+
+    /**
      * @return whether SubresourceFilter is enabled.
      */
     public static boolean isSubresourceFilterEnabled() {
-        return getInstance().isEnabled(SUBRESOURCE_FILTER);
+        return isEnabled(SUBRESOURCE_FILTER);
     }
 
     @Override

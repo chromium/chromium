@@ -82,8 +82,7 @@ public class EventForwarder {
     @CalledByNative
     private static EventForwarder create(long nativeEventForwarder, boolean isDragDropEnabled) {
         return new EventForwarder(nativeEventForwarder, isDragDropEnabled,
-                UiAndroidFeatureMap.getInstance().isEnabled(
-                        UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE));
+                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
