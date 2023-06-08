@@ -569,6 +569,40 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.files_to_pin, 3);
     EXPECT_EQ(progress.skipped_items, 1);
   }
+
+  // Pretend that all the files have already been synchronised.
+  EXPECT_FALSE(manager.progress_.emptied_queue);
+  manager.progress_.pinned_files = 3;
+  manager.progress_.pinned_bytes = size1 + size2 + size3;
+  manager.progress_.files_to_pin = 0;
+  manager.progress_.required_space = 0;
+  manager.progress_.syncing_files = 0;
+  manager.progress_.emptied_queue = true;
+  manager.files_to_pin_.clear();
+  manager.files_to_track_.clear();
+
+  // Add an item.
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id1);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size1;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = false;
+    md.available_offline = false;
+    EXPECT_TRUE(manager.Add(md, path1));
+  }
+
+  // The pinned files and bytes should have been reset.
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, size1);
+    EXPECT_EQ(progress.required_space, 698249216);
+    EXPECT_EQ(progress.syncing_files, 0);
+    EXPECT_EQ(progress.files_to_pin, 1);
+  }
 }
 
 // Tests PinManager::Update().
