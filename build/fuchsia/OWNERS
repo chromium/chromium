@@ -9,7 +9,6 @@ sergeyu@chromium.org
 wez@chromium.org
 
 per-file *.py=chonggu@google.com
-per-file *.py=rohpavone@chromium.org
 per-file *.py=zijiehe@google.com
 
 per-file linux_internal.sdk.sha1=chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com
