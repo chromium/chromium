@@ -2148,12 +2148,14 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
                      To<DocumentTimeline>(*timeline_).PlaybackRate() != 1))
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
 
-  // If the scroll source is not composited, fall back to main thread.
+  // If the scroll source is not composited, or we have not enabled scroll
+  // driven animations on the compositor, fall back to main thread.
   // TODO(crbug.com/476553): Once all ScrollNodes including uncomposited ones
   // are in the compositor, the animation should be composited.
   if (timeline_ && timeline_->IsScrollSnapshotTimeline() &&
-      !CompositorAnimations::CheckUsesCompositedScrolling(
-          To<ScrollSnapshotTimeline>(*timeline_).ResolvedSource())) {
+      (!RuntimeEnabledFeatures::ScrollTimelineOnCompositorEnabled() ||
+       !CompositorAnimations::CheckUsesCompositedScrolling(
+           To<ScrollSnapshotTimeline>(*timeline_).ResolvedSource()))) {
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;
   }
 

@@ -3126,6 +3126,10 @@
       name: "ScrollTimelineCurrentTime",
       status: "experimental"
     },
+    {
+      name: "ScrollTimelineOnCompositor",
+      status: "test"
+    },
     // Implements documentElement.scrollTop/Left and bodyElement.scrollTop/Left
     // as per the spec, matching other Web engines.
     {
