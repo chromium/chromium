@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
@@ -131,6 +132,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest, InstallOemApp) {
   // Check the app is installed in app_registry_cache.
   auto app_id = web_app::GenerateAppId(
       absl::nullopt, GURL("https://www.example.com/index.html"));
+
+  // Wait for update to be registered with the app registry cache.
+  web_app::AppReadinessWaiter(profile(), app_id).Await();
   bool found =
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
         EXPECT_EQ(update.Name(), "Example App");
