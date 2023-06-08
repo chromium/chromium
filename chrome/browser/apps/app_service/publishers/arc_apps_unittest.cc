@@ -41,6 +41,7 @@
 #include "components/arc/intent_helper/intent_filter.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
@@ -689,4 +690,58 @@ TEST_F(ArcAppsPublisherTest, OnInstallationActiveChanged_UpdatesPromiseApp) {
   promise_app_result = cache->GetPromiseAppForTesting(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
+}
+
+// Verifies that only valid intent filters will be published from ARC.
+TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
+  const GURL kTestUrl("https://www.example.com");
+  const auto& fake_apps = arc_test()->fake_apps();
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+
+  std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities1;
+  filter_authorities1.emplace_back(kTestUrl.host(), 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+  patterns.emplace_back(kTestUrl.path(),
+                        arc::mojom::PatternType::PATTERN_PREFIX);
+
+  auto filter = arc::IntentFilter(package_name, {arc::kIntentActionView},
+                                  std::move(filter_authorities1),
+                                  std::move(patterns), {kTestUrl.scheme()}, {});
+  std::vector<arc::IntentFilter> filters;
+  filters.push_back(std::move(filter));
+
+  std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities2;
+  filter_authorities2.emplace_back(kTestUrl.host(), 0);
+  int invalid_pattern_type =
+      static_cast<int>(arc::mojom::PatternType::kMaxValue) + 1;
+  std::vector<arc::IntentFilter::PatternMatcher> invalid_pattern;
+  invalid_pattern.emplace_back(
+      kTestUrl.path(),
+      static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+
+  auto invalid_filter = arc::IntentFilter(
+      package_name, {arc::kIntentActionView}, std::move(filter_authorities2),
+      std::move(invalid_pattern), {"https"}, {});
+  filters.push_back(std::move(invalid_filter));
+
+  // Update intent filters and supported links for the app, as if it was just
+  // installed.
+  intent_helper()->OnIntentFiltersUpdatedForPackage(package_name,
+                                                    std::move(filters));
+
+  apps::IntentFilters published_filters;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&published_filters](const apps::AppUpdate& update) {
+        published_filters = update.IntentFilters();
+      });
+  // Only one valid filter should be published.
+  EXPECT_EQ(published_filters.size(), 1u);
+
+  apps::IntentFilterPtr expected_filter =
+      apps_util::MakeIntentFilterForUrlScope(kTestUrl);
+  EXPECT_EQ(*published_filters[0], *expected_filter);
 }

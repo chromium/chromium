@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -157,7 +158,16 @@ bool IsPrefixOnlyGlob(base::StringPiece pattern) {
 apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
     const arc::IntentFilter::PatternMatcher& path) {
   apps::PatternMatchType match_type;
-
+  if (path.match_type() < arc::mojom::PatternType::kMinValue ||
+      path.match_type() > arc::mojom::PatternType::kMaxValue) {
+    LOG(ERROR)
+        << " Received an ARC intent filter with unsupported PatternType: "
+        << path.match_type()
+        << " for the filter path, need to update ARC code to support new "
+           "pattern types.";
+    base::debug::DumpWithoutCrashing();
+    return nullptr;
+  }
   switch (path.match_type()) {
     case arc::mojom::PatternType::PATTERN_LITERAL:
       match_type = apps::PatternMatchType::kLiteral;
@@ -245,7 +255,10 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
   const std::vector<arc::IntentFilter>& arc_intent_filters =
       intent_helper_bridge->GetIntentFilterForPackage(package_name);
   for (const auto& arc_intent_filter : arc_intent_filters) {
-    filters.push_back(CreateIntentFilterForArc(arc_intent_filter));
+    apps::IntentFilterPtr filter = CreateIntentFilterForArc(arc_intent_filter);
+    if (filter) {
+      filters.push_back(std::move(filter));
+    }
   }
   return filters;
 }
@@ -654,9 +667,24 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
   }
 
   apps::ConditionValues path_condition_values;
+  bool has_invalid_path = false;
   for (auto& path : arc_intent_filter.paths()) {
-    path_condition_values.push_back(
-        ConvertArcPatternMatcherToConditionValue(path));
+    apps::ConditionValuePtr path_condition_value =
+        ConvertArcPatternMatcherToConditionValue(path);
+    if (path_condition_value) {
+      path_condition_values.push_back(std::move(path_condition_value));
+    } else {
+      has_invalid_path = true;
+    }
+  }
+
+  // If there is path condition set in ARC app, but we cannot get valid path,
+  // it is likely that the only path condition set in ARC is value that we
+  // cannot handle. We should not create this intent filter because empty path
+  // condition means it matches with any path, which is different from what it
+  // is expected.
+  if (path_condition_values.empty() && has_invalid_path) {
+    return nullptr;
   }
 
   // For ARC apps, specifying a path is optional. For any intent filters which

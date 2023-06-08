@@ -488,9 +488,12 @@ std::vector<apps::IntentFilterPtr> GetHardcodedPlayStoreIntentFilters() {
   paths.emplace_back("/protect/home", arc::mojom::PatternType::PATTERN_PREFIX);
 
   std::vector<apps::IntentFilterPtr> intent_filters;
-  intent_filters.push_back(apps_util::CreateIntentFilterForArc(
+  apps::IntentFilterPtr filter = apps_util::CreateIntentFilterForArc(
       arc::IntentFilter(arc::kPlayStorePackage, actions, std::move(authorities),
-                        std::move(paths), schemes, mime_types)));
+                        std::move(paths), schemes, mime_types));
+  if (filter) {
+    intent_filters.push_back(std::move(filter));
+  }
   return intent_filters;
 }
 

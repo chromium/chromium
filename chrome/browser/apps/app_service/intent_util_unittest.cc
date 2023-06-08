@@ -519,6 +519,59 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
   ASSERT_EQ(*app_service_filter1, *app_service_filter2);
 }
 
+// Converting an Arc Intent filter with invalid path.
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_InvalidPath) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kHost = "www.google.com";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+
+  // If all paths are invalid, return nullptr.
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities1;
+  authorities1.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns1;
+  int invalid_pattern_type =
+      static_cast<int>(arc::mojom::PatternType::kMaxValue) + 1;
+  patterns1.emplace_back(
+      kPath, static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+
+  arc::IntentFilter filter_with_only_invalid_path(
+      kPackageName, {arc::kIntentActionView}, std::move(authorities1),
+      std::move(patterns1), {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter1 =
+      apps_util::CreateIntentFilterForArc(filter_with_only_invalid_path);
+
+  ASSERT_FALSE(app_service_filter1);
+
+  // If at least one path is valid, return intent filter with the valid path.
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities2;
+  authorities2.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns2;
+  patterns2.emplace_back(
+      kPath, static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+  patterns2.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  arc::IntentFilter filter_with_some_valid_path(
+      kPackageName, {arc::kIntentActionView}, std::move(authorities2),
+      std::move(patterns2), {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter2 =
+      apps_util::CreateIntentFilterForArc(filter_with_some_valid_path);
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities3;
+  authorities3.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns3;
+  patterns3.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  arc::IntentFilter filter_with_valid_path(
+      kPackageName, {arc::kIntentActionView}, std::move(authorities3),
+      std::move(patterns3), {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter3 =
+      apps_util::CreateIntentFilterForArc(filter_with_valid_path);
+
+  ASSERT_EQ(*app_service_filter2, *app_service_filter3);
+}
+
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
   const char* kPackageName = "com.foo.bar";
   const char* kHost = "www.google.com";
