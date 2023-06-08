@@ -79,11 +79,9 @@ def find_unused(flags):
   return unused_flags
 
 
-def filter_by_owner(flags, owner):
-  """Filter by owner flag.
-
-  Only support single owner.
-  TODO(zhagnwenyu): Support filter by multiple owners.
+def filter_by_owners(flags, owners):
+  """Given a list of owners, returns all flags which have any owner appearing
+  in the list. The `owners` arg is a list of owners.
 
   Need exact match and need to include @google.com or @chromium.org in the
   argument. This is because the owner with ldap only is extended with
@@ -94,24 +92,29 @@ def filter_by_owner(flags, owner):
   >>> f1['resolved_owners'] = ['b@g.com']
   >>> f2 = {'name': 'f_2', 'owners': ['z']}
   >>> f2['resolved_owners'] = ['z@c.org']
+  >>> f3 = {'name': 'f_3', 'owners': ['c@g.com', 'd@g.com']}
+  >>> f3['resolved_owners'] = ['c@g.com', 'd@g.com']
 
-  >>> filter_by_owner([f1, f2], 'b@g.com')
+  >>> filter_by_owners([f1, f2, f3], ['b@g.com'])
   [{'name': 'f_1', 'owners': ['b@g.com'], 'resolved_owners': ['b@g.com']}]
-  >>> filter_by_owner([f1, f2], 'z@c.org')
+  >>> filter_by_owners([f1, f2, f3], ['z@c.org'])
   [{'name': 'f_2', 'owners': ['z'], 'resolved_owners': ['z@c.org']}]
-  >>> filter_by_owner([f1, f2], 'z') # Filter by ldap not supported.
+  >>> filter_by_owners([f1, f2, f3], ['z']) # Filter by ldap not supported.
   []
-  >>> filter_by_owner([f1, f2], 'b@g.co') # Need exact match.
+  >>> filter_by_owners([f1, f2, f3], ['b@g.co']) # Need exact match.
   []
-  >>> filter_by_owner([f1, f2], 'b@g.com,z@c.org') # Multi owners not supported.
-  []
+  >>> filter_by_owners([f1, f2, f3], ['b@g.com', 'z@c.org'])
+  [{'name': 'f_1', 'owners': ['b@g.com'], 'resolved_owners': ['b@g.com']}, {'name': 'f_2', 'owners': ['z'], 'resolved_owners': ['z@c.org']}]
+  >>> filter_by_owners([f1, f2, f3], ['c@g.com', 'd@g.com'])
+  [{'name': 'f_3', 'owners': ['c@g.com', 'd@g.com'], 'resolved_owners': ['c@g.com', 'd@g.com']}]
   """
 
-  filtered_flags = []
-  for f in flags:
-    if any([owner == o for o in f['resolved_owners']]):
-      filtered_flags.append(f)
-  return filtered_flags
+  # A helper function to check if there is any intersection between flag's
+  # owners and targeted owners.
+  def matches_any_owner(flag):
+    return set(flag['resolved_owners']) & set(owners)
+
+  return list(filter(matches_any_owner, flags))
 
 
 def print_flags(flags, verbose):
@@ -152,6 +155,7 @@ def main():
   group.add_argument('-n', '--never-expires', action='store_true')
   group.add_argument('-e', '--expired-by', type=int)
   group.add_argument('-u', '--find-unused', action='store_true')
+  # The -o argument could be a single owner or multiple owners joined by ','.
   group.add_argument('-o', '--has-owner', type=str)
   parser.add_argument('-v', '--verbose', action='store_true')
   parser.add_argument('--testonly', action='store_true')
@@ -171,7 +175,8 @@ def main():
   # Filter by owner after resolving owners completed, so it understands
   # owners file.
   if args.has_owner:
-    flags = filter_by_owner(flags, args.has_owner)
+    owners = [o.strip() for o in args.has_owner.split(',')]
+    flags = filter_by_owners(flags, owners)
   print_flags(flags, args.verbose)
 
 
