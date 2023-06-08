@@ -566,7 +566,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (mCallbackController != null) {
             mCallbackController.destroy();
         }
-        if (mProfileSupplier.get() != null) {
+        if (mProfileSupplier.hasValue()) {
             TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
                     .removeObserver(this::updateLensVisibility);
         }

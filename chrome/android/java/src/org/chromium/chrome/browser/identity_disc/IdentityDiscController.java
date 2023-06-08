@@ -365,7 +365,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     }
 
     private boolean isProfileInitialized() {
-        return mProfileSupplier != null && mProfileSupplier.get() != null;
+        return mProfileSupplier != null && mProfileSupplier.hasValue();
     }
 
     @VisibleForTesting

@@ -74,7 +74,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -200,8 +199,6 @@ public class StartSurfaceMediatorUnitTest {
     @Mock
     private Profile mProfile;
     @Mock
-    private ObservableSupplier<Profile> mProfileSupplier;
-    @Mock
     private TemplateUrlService mTemplateUrlService;
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -241,13 +238,14 @@ public class StartSurfaceMediatorUnitTest {
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mSecondaryControllerDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         doReturn(false).when(mProfile).isOffTheRecord();
-        doReturn(mProfile).when(mProfileSupplier).get();
+        mProfileSupplier.set(mProfile);
         Profile.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
@@ -1838,11 +1836,12 @@ public class StartSurfaceMediatorUnitTest {
     public void testDefaultSearchEngineChanged() {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 
+        mProfileSupplier = new ObservableSupplierImpl<>();
         StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
                 /* isRefactorEnabled */ false, /* hadWarmStart= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
-        mediator.onProfileAvailable(mProfile);
+        mProfileSupplier.set(mProfile);
         verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();

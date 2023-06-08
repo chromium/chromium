@@ -316,7 +316,7 @@ class LocationBarMediator
                 (templateUrlService) -> { templateUrlService.addObserver(this); });
 
         mLocationBarLayout.onFinishNativeInitialization();
-        setProfile(mProfileSupplier.get());
+        if (mProfileSupplier.hasValue()) setProfile(mProfileSupplier.get());
         onPrimaryColorChanged();
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
@@ -1107,9 +1107,8 @@ class LocationBarMediator
     private void updateOmniboxPrerender() {
         if (mOmniboxPrerender == null) return;
         // Profile may be null if switching to a tab that has not yet been initialized.
-        Profile profile = mProfileSupplier.get();
-        if (profile == null) return;
-        mOmniboxPrerender.clear(profile);
+        if (!mProfileSupplier.hasValue()) return;
+        mOmniboxPrerender.clear(mProfileSupplier.get());
     }
 
     @SuppressLint("GestureBackNavigation")

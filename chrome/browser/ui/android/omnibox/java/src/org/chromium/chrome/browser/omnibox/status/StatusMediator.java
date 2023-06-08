@@ -310,7 +310,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         setShowIconsWhenUrlFocused(shouldShowLogo);
         if (!shouldShowLogo) return;
 
-        if (mProfileSupplier.get() != null && isNTPOrStartSurfaceVisible()) {
+        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
             setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
         } else {
             setStatusIconShown(true);
@@ -339,7 +339,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         updateStatusVisibility();
 
         // Only fade the animation on the new tab page or start surface.
-        if (mProfileSupplier.get() != null && isNTPOrStartSurfaceVisible()) {
+        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
             setStatusIconAlpha(percent);
         } else {
             setStatusIconAlpha(1f);
@@ -538,7 +538,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         }
 
         return (mUrlHasFocus || mUrlFocusPercent > 0) && isNTPOrStartSurfaceVisible()
-                && mProfileSupplier.get() != null;
+                && mProfileSupplier.hasValue();
     }
 
     /**
