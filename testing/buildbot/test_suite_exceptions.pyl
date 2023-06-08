@@ -1467,6 +1467,11 @@
           'hard_timeout': 10800,
         }
       },
+      'chromeos-reven-chrome': {
+        'args': [
+          '--tast-shard-method=hash',
+        ],
+      },
     },
   },
   'chrome_java_test_pagecontroller_tests': {
