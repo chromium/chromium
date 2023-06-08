@@ -189,6 +189,8 @@ void Sensor::ContextDestroyed() {
   if (!IsIdleOrErrored())
     Deactivate();
 
+  state_ = SensorState::kIdle;
+
   if (sensor_proxy_)
     sensor_proxy_->Detach();
 }
