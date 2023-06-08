@@ -21,6 +21,9 @@
                 "target_bits": 64
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
                 "config": "chromium"
               }
             }
@@ -35,6 +38,13 @@
         }
       ]
     }
+  },
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",

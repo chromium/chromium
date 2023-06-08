@@ -21,6 +21,9 @@
                 "target_bits": 64
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
                 "config": "chromium"
               }
             }
