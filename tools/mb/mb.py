@@ -15,7 +15,7 @@ import collections
 import errno
 import json
 import os
-import pipes
+import shlex
 import platform
 import re
 import shutil
@@ -2072,7 +2072,7 @@ class MetaBuildWrapper:
     if self.platform == 'win32':
       shell_quoter = QuoteForCmd
     else:
-      shell_quoter = pipes.quote
+      shell_quoter = shlex.quote
 
     if cmd[0] == self.executable:
       cmd = ['python'] + cmd[1:]
