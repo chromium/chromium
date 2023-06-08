@@ -325,14 +325,15 @@ bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
     DVLOG(1) << "Attempted to update non existent passkey";
     return false;
   }
-  sync_pb::WebauthnCredentialSpecifics passkey = passkey_it->second;
-  passkey.set_user_name(std::move(change.user_name));
-  passkey.set_user_display_name(std::move(change.user_display_name));
+  passkey_it->second.set_user_name(std::move(change.user_name));
+  passkey_it->second.set_user_display_name(std::move(change.user_display_name));
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
-  change_processor()->Put(passkey.sync_id(), CreateEntityData(passkey),
+  change_processor()->Put(passkey_it->second.sync_id(),
+                          CreateEntityData(passkey_it->second),
                           write_batch->GetMetadataChangeList());
-  write_batch->WriteData(passkey.sync_id(), passkey.SerializeAsString());
+  write_batch->WriteData(passkey_it->second.sync_id(),
+                         passkey_it->second.SerializeAsString());
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,

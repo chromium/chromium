@@ -334,6 +334,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
                                      EntityHasDisplayName(kDisplayName2))))
           .Wait());
   EXPECT_TRUE(change_checker.Wait());
+  EXPECT_EQ(GetModel().GetAllPasskeys().at(0).user_name(), kUsername2);
+  EXPECT_EQ(GetModel().GetAllPasskeys().at(0).user_display_name(),
+            kDisplayName2);
 }
 
 // Tests that attempting to update a non existing passkey returns false.
