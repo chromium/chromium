@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -54,6 +55,7 @@
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -92,6 +94,24 @@ constexpr char kUpdateUrlPathB[] =
     "/interest_group/daily_update_partial_b.json";
 constexpr char kUpdateUrlPathC[] =
     "/interest_group/daily_update_partial_c.json";
+constexpr char kBAndAKeyPath[] = "/interest_group/b_and_a_keys.json";
+
+// These keys were randomly generated as follows:
+// EVP_HPKE_KEY keys;
+// EVP_HPKE_KEY_generate(&keys, EVP_hpke_x25519_hkdf_sha256());
+// and then EVP_HPKE_KEY_public_key and EVP_HPKE_KEY_private_key were used to
+// extract the keys.
+const uint8_t kTestPrivateKey[] = {
+    0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
+    0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
+    0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
+};
+
+const uint8_t kTestPublicKey[] = {
+    0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+    0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+    0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+};
 
 // Returns a basic bidder script that sends reports to
 // kOriginStringA/report_bidder.
@@ -7516,6 +7536,62 @@ INSTANTIATE_TEST_SUITE_P(
                       auction_worklet::mojom::KAnonymityBidMode::kSimulate,
                       auction_worklet::mojom::KAnonymityBidMode::kEnforce));
 
+class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplBAndATest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeBiddingAndAuctionServer,
+        {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}});
+  }
+
+  void ProvideKeys() {
+    base::Value::Dict key;
+    key.Set("key", base::Base64Encode(kTestPublicKey));
+    key.Set("id", "12345678-9abc-def0-1234-56789abcdef0");
+    base::Value::List keys;
+    keys.Append(std::move(key));
+    base::Value::Dict outer;
+    outer.Set("keys", std::move(keys));
+
+    std::string json_output;
+    JSONStringValueSerializer serializer(&json_output);
+    serializer.Serialize(outer);
+
+    network_responder_->RegisterUpdateResponse(kBAndAKeyPath, json_output);
+  }
+
+  // Gets auction data in the frame `rfh`. If `rfh` is nullptr, uses the main
+  // frame. Returns the auction data.
+  absl::optional<std::string> GetAdAuctionDataAndFlushForFrame(
+      url::Origin seller,
+      RenderFrameHost* rfh = nullptr) {
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
+        rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    absl::optional<std::string> output;
+    std::string output_id;
+    interest_service->GetInterestGroupAdAuctionData(
+        seller, base::BindLambdaForTesting([&run_loop, &output, &output_id](
+                                               mojo_base::BigBuffer result,
+                                               const std::string& id) {
+          output = std::string(reinterpret_cast<char*>(result.data()),
+                               result.size());
+          output_id = id;
+          run_loop.Quit();
+        }));
+    interest_service.FlushForTesting();
+    run_loop.Run();
+    return output;
+  }
+
+ protected:
+  const GURL kKeyUrl = kUrlA.Resolve(kBAndAKeyPath);
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that interest_group_manager serialize the blob correctly.
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
   manager_->JoinInterestGroup(
@@ -7701,6 +7777,94 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
       "LzUvJLiRogC47ykovzy4tSi4Mz0vMSc4iXpRanJqXnJlYwZSZlA5aV5JQwZBUWpZeFAAxoys"
       "/Iz88CCjADfoTrIbgAAAA==";
   EXPECT_EQ(expected, base::Base64Encode(msg));
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "456"}}})
+          .SetAdComponents(
+              {{{GURL("https://c.test/ad4.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "789"}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  manager_->RecordInterestGroupWin(
+      {test_origin, "cars"},
+      R"({"renderUrl": "https://c.test/ad.html", "adRenderId": "1234"})");
+  task_environment()->FastForwardBy(base::Seconds(1));
+  manager_->RecordInterestGroupWin(
+      {test_origin, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
+  task_environment()->FastForwardBy(base::Seconds(1));
+  absl::optional<std::string> result =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+  EXPECT_TRUE(result.has_value());
+
+  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+                        '0', EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+                        .value();
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                      sizeof(kTestPrivateKey)),
+          key_config)
+          .value();
+  auto request = ohttp_gateway.DecryptObliviousHttpRequest(result.value());
+  EXPECT_TRUE(request.ok()) << request.status();
+  std::string expected =
+      "o2d2ZXJzaW9uAGlwdWJsaXNoZXJuaHR0cHM6Ly9hLnRlc3RuaW50ZXJlc3RHcm91cHOhbmh0"
+      "dHBzOi8vYS50ZXN0WHkfiwgAAAAAAAAAHcxLDoJQDEZh0RWp+"
+      "Bq7BAdOLW0DNfBf0qKEIXctLFTD+Hw588IkkWV/"
+      "OJZcns4C6lSYPFqSe+r6BMUQM1+uN1SexlB/"
+      "WA1qY6ldWcHTrqnsbz8YNk3v+n0aIufilbfr1t7JsObiB1scuEduAAAA";
+  const auto got = request->GetPlaintextData();
+  const auto* bytes = reinterpret_cast<const uint8_t*>(got.data());
+  EXPECT_EQ(expected, base::Base64Encode(
+                          base::make_span(bytes, got.size() * sizeof(char))));
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
+  ProvideKeys();
+  NavigateAndCommit(GURL("https://not.allowed.test/"));
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "456"}}})
+          .SetAdComponents(
+              {{{GURL("https://c.test/ad4.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "789"}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+  absl::optional<std::string> result =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ("", result.value());
 }
 
 }  // namespace content

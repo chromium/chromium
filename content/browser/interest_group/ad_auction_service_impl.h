@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -37,6 +38,7 @@
 namespace content {
 
 class InterestGroupManagerImpl;
+struct BiddingAndAuctionServerKey;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class PrivateAggregationManager;
@@ -100,6 +102,18 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
  private:
   using ReporterList = std::list<std::unique_ptr<InterestGroupAuctionReporter>>;
 
+  class BiddingAndAuctionDataConstructionState {
+   public:
+    BiddingAndAuctionDataConstructionState();
+    BiddingAndAuctionDataConstructionState(
+        BiddingAndAuctionDataConstructionState&& other);
+    ~BiddingAndAuctionDataConstructionState();
+
+    std::vector<uint8_t> plaintext;  // unencrypted auction request blob
+    base::Uuid uuid;                 // request ID
+    GetInterestGroupAdAuctionDataCallback callback;
+  };
+
   // `render_frame_host` must not be null, and DocumentService guarantees
   // `this` will not outlive the `render_frame_host`.
   AdAuctionServiceImpl(
@@ -140,6 +154,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void MaybeLogPrivateAggregationFeatures(
       const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
           private_aggregation_requests);
+
+  void OnGotAuctionData(BiddingAndAuctionDataConstructionState state,
+                        std::vector<uint8_t> plaintext);
+  void OnGotBiddingAndAuctionServerKey(
+      BiddingAndAuctionDataConstructionState state,
+      absl::optional<BiddingAndAuctionServerKey> key);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;
 

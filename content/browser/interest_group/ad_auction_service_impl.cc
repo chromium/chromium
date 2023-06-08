@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -84,6 +85,15 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
 }
 
 }  // namespace
+
+AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
+    BiddingAndAuctionDataConstructionState()
+    : uuid(base::Uuid::GenerateRandomV4()) {}
+AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
+    BiddingAndAuctionDataConstructionState(
+        BiddingAndAuctionDataConstructionState&& other) = default;
+AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
+    ~BiddingAndAuctionDataConstructionState() = default;
 
 // static
 void AdAuctionServiceImpl::CreateMojoService(
@@ -361,8 +371,20 @@ void AdAuctionServiceImpl::DeprecatedReplaceInURN(
 void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
     GetInterestGroupAdAuctionDataCallback callback) {
-  // TODO(behamilton): Implement this functionality.
-  std::move(callback).Run({}, "");
+  // If the interest group API is not allowed for this origin do nothing.
+  if (!IsInterestGroupAPIAllowed(
+          ContentBrowserClient::InterestGroupApiOperation::kSell, origin())) {
+    std::move(callback).Run({}, "");
+    return;
+  }
+
+  BiddingAndAuctionDataConstructionState state;
+  state.callback = std::move(callback);
+
+  GetInterestGroupManager().GetInterestGroupAdAuctionData(
+      seller, GetTopWindowOrigin(),
+      base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }
 
 void AdAuctionServiceImpl::CreateAdRequest(
@@ -673,6 +695,52 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
         &render_frame_host(),
         blink::mojom::WebFeature::kPrivateAggregationApiFledge);
   }
+}
+
+void AdAuctionServiceImpl::OnGotAuctionData(
+    BiddingAndAuctionDataConstructionState state,
+    std::vector<uint8_t> plaintext) {
+  if (plaintext.empty()) {
+    std::move(state.callback).Run({}, "");
+    return;
+  }
+
+  state.plaintext = std::move(plaintext);
+  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
+      GetRefCountedTrustedURLLoaderFactory().get(),
+      base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+}
+
+void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
+    BiddingAndAuctionDataConstructionState state,
+    absl::optional<BiddingAndAuctionServerKey> maybe_key) {
+  if (!maybe_key) {
+    std::move(state.callback).Run({}, "");
+    return;
+  }
+
+  auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      maybe_key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
+  CHECK(maybe_key_config.ok()) << maybe_key_config.status();
+
+  auto maybe_request =
+      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+          std::string(state.plaintext.begin(), state.plaintext.end()),
+          maybe_key->key, maybe_key_config.value());
+  if (!maybe_request.ok()) {
+    std::move(state.callback).Run({}, "");
+    return;
+  }
+
+  std::string data = maybe_request->EncapsulateAndSerialize();
+  const auto* bytes = reinterpret_cast<const uint8_t*>(data.data());
+  std::move(state.callback)
+      .Run(mojo_base::BigBuffer(
+               base::make_span(bytes, data.size() * sizeof(char))),
+           state.uuid.AsLowercaseString());
+  // TODO(behamilton): Save request context for decryption.
 }
 
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()
