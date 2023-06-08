@@ -15,7 +15,7 @@ libgtk-3-0 (>= 3.9.10) | libgtk-4-1
 
 # Pull a more recent version of NSS than required by runtime linking, for
 # security and stability updates in NSS.
-libnss3 (>= 2:3.26)
+libnss3 (>= 2:3.35)
 
 # For uploading crash reports with Breakpad.
 wget
