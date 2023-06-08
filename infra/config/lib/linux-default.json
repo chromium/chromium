@@ -89,6 +89,7 @@
     "ToTLinux (dbg)": "Ubuntu-22.04",
     "ToTLinuxASan": "Ubuntu-22.04",
     "ToTLinuxASanLibfuzzer": "Ubuntu-22.04",
+    "ToTLinuxCoverage": "Ubuntu-22.04",
     "ToTLinuxTSan": "Ubuntu-22.04",
     "VR Linux": "Ubuntu-22.04",
     "Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)": "Ubuntu-22.04",
