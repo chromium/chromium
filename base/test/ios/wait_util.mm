@@ -7,14 +7,15 @@
 #import <Foundation/Foundation.h>
 
 #include "base/check.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/elapsed_timer.h"
 
-namespace base {
-namespace test {
-namespace ios {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace base::test::ios {
 
 bool WaitUntilConditionOrTimeout(TimeDelta timeout, ConditionBlock condition) {
   NSDate* deadline = [NSDate dateWithTimeIntervalSinceNow:timeout.InSecondsF()];
@@ -62,10 +63,10 @@ void WaitUntilCondition(ConditionBlock condition) {
 }
 
 void SpinRunLoopWithMaxDelay(TimeDelta max_delay) {
-  scoped_nsobject<NSDate> beforeDate(
-      [[NSDate alloc] initWithTimeIntervalSinceNow:max_delay.InSecondsF()]);
-  [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                           beforeDate:beforeDate];
+  NSDate* before_date =
+      [NSDate dateWithTimeIntervalSinceNow:max_delay.InSecondsF()];
+  [NSRunLoop.currentRunLoop runMode:NSDefaultRunLoopMode
+                         beforeDate:before_date];
 }
 
 void SpinRunLoopWithMinDelay(TimeDelta min_delay) {
@@ -75,6 +76,4 @@ void SpinRunLoopWithMinDelay(TimeDelta min_delay) {
   }
 }
 
-}  // namespace ios
-}  // namespace test
-}  // namespace base
+}  // namespace base::test::ios

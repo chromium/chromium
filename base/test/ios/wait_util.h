@@ -10,9 +10,7 @@
 #include "base/ios/block_types.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace test {
-namespace ios {
+namespace base::test::ios {
 
 // Constant for UI wait loop.
 constexpr TimeDelta kSpinDelaySeconds = Milliseconds(10);
@@ -79,8 +77,6 @@ void SpinRunLoopWithMaxDelay(TimeDelta max_delay);
 // elapsed.
 void SpinRunLoopWithMinDelay(TimeDelta min_delay);
 
-}  // namespace ios
-}  // namespace test
-}  // namespace base
+}  // namespace base::test::ios
 
 #endif  // BASE_TEST_IOS_WAIT_UTIL_H_

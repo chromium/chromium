@@ -8,6 +8,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // The iOS watchdog timer will kill an app that doesn't spin the main event
 // loop often enough. This uses a Gtest TestEventListener to spin the current
 // loop after each test finishes. However, if any individual test takes too
@@ -17,22 +21,20 @@ namespace {
 
 class IOSRunLoopListener : public testing::EmptyTestEventListener {
  public:
-  virtual void OnTestEnd(const testing::TestInfo& test_info);
+  void OnTestEnd(const testing::TestInfo& test_info) override;
 };
 
 void IOSRunLoopListener::OnTestEnd(const testing::TestInfo& test_info) {
   @autoreleasepool {
     // At the end of the test, spin the default loop for a moment.
     NSDate* stop_date = [NSDate dateWithTimeIntervalSinceNow:0.001];
-    [[NSRunLoop currentRunLoop] runUntilDate:stop_date];
+    [NSRunLoop.currentRunLoop runUntilDate:stop_date];
   }
 }
 
 }  // namespace
 
-
-namespace base {
-namespace test_listener_ios {
+namespace base::test_listener_ios {
 
 void RegisterTestEndListener() {
   testing::TestEventListeners& listeners =
@@ -40,5 +42,4 @@ void RegisterTestEndListener() {
   listeners.Append(new IOSRunLoopListener);
 }
 
-}  // namespace test_listener_ios
-}  // namespace base
+}  // namespace base::test_listener_ios

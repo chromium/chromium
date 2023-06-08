@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_mac.h"
 #import "base/test/ios/google_test_runner_delegate.h"
@@ -17,6 +16,10 @@
 #include "base/test/test_switches.h"
 #include "build/blink_buildflags.h"
 #include "testing/coverage_util_ios.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // Springboard will kill any iOS app that fails to check in after launch within
 // a given time. Starting a UIApplication before invoking TestSuite::Run
@@ -38,22 +41,22 @@ static char** g_argv;
 
 namespace {
 void PopulateUIWindow(UIWindow* window) {
-  [window setBackgroundColor:[UIColor whiteColor]];
+  window.backgroundColor = UIColor.whiteColor;
   [window makeKeyAndVisible];
-  CGRect bounds = [[UIScreen mainScreen] bounds];
+  CGRect bounds = UIScreen.mainScreen.bounds;
   // Add a label with the app name.
-  UILabel* label = [[[UILabel alloc] initWithFrame:bounds] autorelease];
-  label.text = [[NSProcessInfo processInfo] processName];
+  UILabel* label = [[UILabel alloc] initWithFrame:bounds];
+  label.text = NSProcessInfo.processInfo.processName;
   label.textAlignment = NSTextAlignmentCenter;
   [window addSubview:label];
 
   // An NSInternalInconsistencyException is thrown if the app doesn't have a
   // root view controller. Set an empty one here.
-  [window setRootViewController:[[[UIViewController alloc] init] autorelease]];
+  window.rootViewController = [[UIViewController alloc] init];
 }
 
 bool IsSceneStartupEnabled() {
-  return [[NSBundle mainBundle].infoDictionary
+  return [NSBundle.mainBundle.infoDictionary
       objectForKey:@"UIApplicationSceneManifest"];
 }
 }
@@ -65,7 +68,7 @@ bool IsSceneStartupEnabled() {
 #if TARGET_IPHONE_SIMULATOR
 // Xcode 6 introduced behavior in the iOS Simulator where the software
 // keyboard does not appear if a hardware keyboard is connected. The following
-// declaration allows this behavior to be overriden when the app starts up.
+// declaration allows this behavior to be overridden when the app starts up.
 @interface UIKeyboardImpl
 + (instancetype)sharedInstance;
 - (void)setAutomaticMinimizationEnabled:(BOOL)enabled;
@@ -90,13 +93,13 @@ bool IsSceneStartupEnabled() {
 // object can't be both the app and scene delegate, since new scene delegates
 // are created for each scene).
 @interface ChromeUnitTestSceneDelegate : NSObject <UIWindowSceneDelegate> {
-  base::scoped_nsobject<UIWindow> _window;
+  UIWindow* __strong _window;
 }
 
 @end
 
 @interface ChromeUnitTestDelegate : NSObject <GoogleTestRunnerDelegate> {
-  base::scoped_nsobject<UIWindow> _window;
+  UIWindow* __strong _window;
 }
 - (void)runTests;
 @end
@@ -107,23 +110,21 @@ bool IsSceneStartupEnabled() {
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions
     API_AVAILABLE(ios(13)) {
-  // Yes, this is leaked, it's just to make what's running visible.
-  _window.reset([[UIWindow alloc]
-      initWithWindowScene:static_cast<UIWindowScene*>(scene)]);
+  _window =
+      [[UIWindow alloc] initWithWindowScene:static_cast<UIWindowScene*>(scene)];
   PopulateUIWindow(_window);
 }
 
 - (void)sceneDidDisconnect:(UIScene*)scene API_AVAILABLE(ios(13)) {
-  _window.reset();
+  _window = nil;
 }
 
 @end
 
 @implementation ChromeUnitTestDelegate
 
-- (BOOL)application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
+- (BOOL)application:(UIApplication*)application
+    didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
 #if TARGET_IPHONE_SIMULATOR
   // Xcode 6 introduced behavior in the iOS Simulator where the software
   // keyboard does not appear if a hardware keyboard is connected. The following
@@ -137,10 +138,9 @@ bool IsSceneStartupEnabled() {
 #endif  // TARGET_IPHONE_SIMULATOR
 
   if (!IsSceneStartupEnabled()) {
-    CGRect bounds = [[UIScreen mainScreen] bounds];
+    CGRect bounds = UIScreen.mainScreen.bounds;
 
-    // Yes, this is leaked, it's just to make what's running visible.
-    _window.reset([[UIWindow alloc] initWithFrame:bounds]);
+    _window = [[UIWindow alloc] initWithFrame:bounds];
     PopulateUIWindow(_window);
   }
 
@@ -178,8 +178,8 @@ bool IsSceneStartupEnabled() {
       NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                           NSUserDomainMask,
                                           YES);
-  CHECK([searchPath count] > 0) << "Failed to get the Documents folder";
-  return [searchPath objectAtIndex:0];
+  CHECK(searchPath.count > 0) << "Failed to get the Documents folder";
+  return searchPath[0];
 }
 
 // Returns the path to file that stdout is redirected to.
@@ -208,9 +208,10 @@ bool IsSceneStartupEnabled() {
   for (NSString* path in @[ [self stdoutPath], [self stderrPath]]) {
     NSString* content = [NSString stringWithContentsOfFile:path
                                                   encoding:NSUTF8StringEncoding
-                                                     error:NULL];
-    NSArray* lines = [content componentsSeparatedByCharactersInSet:
-        [NSCharacterSet newlineCharacterSet]];
+                                                     error:nil];
+    NSArray* lines =
+        [content componentsSeparatedByCharactersInSet:NSCharacterSet
+                                                          .newlineCharacterSet];
 
     NSLog(@"Writing contents of %@ to NSLog", path);
     for (NSString* line in lines) {
@@ -239,14 +240,14 @@ bool IsSceneStartupEnabled() {
 
   int exitStatus = [self runGoogleTests];
 
-  // The blink code path uses a spawning test launcher and this wait isn't
+  // The Blink code path uses a spawning test launcher and this wait isn't
   // really necessary for that code path.
 #if !BUILDFLAG(USE_BLINK)
   // If a test app is too fast, it will exit before Instruments has has a
   // a chance to initialize and no test results will be seen.
   [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:2.0]];
 #endif
-  _window.reset();
+  _window = nil;
 
   // Use the hidden selector to try and cleanly take down the app (otherwise
   // things can think the app crashed even on a zero exit status).
