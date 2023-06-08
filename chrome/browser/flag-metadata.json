@@ -775,7 +775,7 @@
   {
     "name": "bluetooth-use-floss",
     "owners": ["sonnysasaka", "abhishekpandit", "chromeos-bt-champs@google.com"],
-    "expiry_milestone": 116
+    "expiry_milestone": 120
   },
   {
     "name": "bluetooth-use-llprivacy",
