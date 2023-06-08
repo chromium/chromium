@@ -1464,7 +1464,8 @@ void Shell::Init(
       std::make_unique<PartialMagnifierController>();
   if (::features::IsTouchTextEditingRedesignEnabled()) {
     touch_selection_magnifier_runner_ash_ =
-        std::make_unique<TouchSelectionMagnifierRunnerAsh>();
+        std::make_unique<TouchSelectionMagnifierRunnerAsh>(
+            kShellWindowId_ImeWindowParentContainer);
   }
 
   fullscreen_magnifier_controller_ =

@@ -4,7 +4,6 @@
 
 #include "ash/touch/touch_selection_magnifier_runner_ash.h"
 
-#include "ash/public/cpp/shell_window_ids.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -104,11 +103,6 @@ SkColor GetBorderColor() {
       ->GetColor(cros_tokens::kCrosSysSeparator);
 }
 
-// Returns the child container in `root` that should parent the magnifier layer.
-aura::Window* GetMagnifierParentContainerForRoot(aura::Window* root) {
-  return root->GetChildById(kShellWindowId_ImeWindowParentContainer);
-}
-
 }  // namespace
 
 // Delegate for drawing the magnifier border and shadows onto the border layer.
@@ -158,7 +152,9 @@ class TouchSelectionMagnifierRunnerAsh::BorderRenderer
                                   float new_device_scale_factor) override {}
 };
 
-TouchSelectionMagnifierRunnerAsh::TouchSelectionMagnifierRunnerAsh() = default;
+TouchSelectionMagnifierRunnerAsh::TouchSelectionMagnifierRunnerAsh(
+    int parent_container_id)
+    : parent_container_id_(parent_container_id) {}
 
 TouchSelectionMagnifierRunnerAsh::~TouchSelectionMagnifierRunnerAsh() = default;
 
@@ -170,11 +166,6 @@ void TouchSelectionMagnifierRunnerAsh::ShowMagnifier(
   if (!current_context_) {
     current_context_ = context;
   }
-
-  aura::Window* root_window = current_context_->GetRootWindow();
-  DCHECK(root_window);
-  aura::Window* parent_container =
-      GetMagnifierParentContainerForRoot(root_window);
 
   bool created_new_magnifier_layer = false;
   if (!magnifier_layer_) {
@@ -205,6 +196,7 @@ void TouchSelectionMagnifierRunnerAsh::ShowMagnifier(
   // Update magnifier bounds and background offset.
   gfx::Rect focus_rect = gfx::ToRoundedRect(
       gfx::BoundingRect(focus_bound.edge_start(), focus_bound.edge_end()));
+  aura::Window* parent_container = GetParentContainer();
   aura::Window::ConvertRectToTarget(context, parent_container, &focus_rect);
   const gfx::Rect magnifier_layer_bounds = GetMagnifierLayerBounds(
       parent_container->bounds().size(), focus_rect.top_center());
@@ -265,6 +257,16 @@ void TouchSelectionMagnifierRunnerAsh::CreateMagnifierLayer() {
   border_layer_->set_delegate(border_renderer_.get());
   border_layer_->SetFillsBoundsOpaquely(false);
   magnifier_layer_->Add(border_layer_.get());
+}
+
+aura::Window* TouchSelectionMagnifierRunnerAsh::GetParentContainer() const {
+  DCHECK(current_context_);
+  aura::Window* root_window = current_context_->GetRootWindow();
+  DCHECK(root_window);
+  aura::Window* parent_container =
+      root_window->GetChildById(parent_container_id_);
+  DCHECK(parent_container);
+  return parent_container;
 }
 
 }  // namespace ash

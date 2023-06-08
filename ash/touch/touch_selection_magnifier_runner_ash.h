@@ -27,7 +27,7 @@ namespace ash {
 class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
     : public ui::TouchSelectionMagnifierRunner {
  public:
-  TouchSelectionMagnifierRunnerAsh();
+  explicit TouchSelectionMagnifierRunnerAsh(int parent_container_id);
 
   TouchSelectionMagnifierRunnerAsh(const TouchSelectionMagnifierRunnerAsh&) =
       delete;
@@ -49,6 +49,12 @@ class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
   class BorderRenderer;
 
   void CreateMagnifierLayer();
+
+  // Returns the container window that should parent the magnifier layer.
+  aura::Window* GetParentContainer() const;
+
+  // The id of the container window that should parent the magnifier layer.
+  const int parent_container_id_;
 
   // Current context window in which the magnifier is being shown, or `nullptr`
   // if no magnifier is running.
