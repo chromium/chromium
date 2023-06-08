@@ -314,8 +314,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.Display.DrawToSwapUs" units="microseconds"
     expires_after="2023-10-15">
-  <owner>backer@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     This is logged once per frame, if the output surface provides timing
     information. It measures the time from the display compositor starting a
@@ -370,8 +370,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
     expires_after="2023-10-08">
-  <owner>backer@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     This is logged once per frame. It is the number of renderer passes after
     flattening all possible render passes. If the value is more than one, then
@@ -773,8 +773,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw"
     units="boolean" expires_after="2023-06-11">
-  <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>Records if the TileDrawQuad is rendered with RawDraw.</summary>
 </histogram>
 

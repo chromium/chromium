@@ -7668,8 +7668,9 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Needed to measure Linux ecosystem. -->
 
-  <owner>rjkroege@chromium.org</owner>
+  <owner>fangzhoug@chromium.org</owner>
   <owner>adunaev@igalia.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The Linux Wayland base shell protocol used actually. Logged in each session
     when the browser creates the first shell surface.
@@ -7680,8 +7681,9 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Needed to measure Linux ecosystem. -->
 
-  <owner>rjkroege@chromium.org</owner>
+  <owner>fangzhoug@chromium.org</owner>
   <owner>adunaev@igalia.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The Linux Wayland shell protocol(s) available. Logged in each session when
     the compositor announces a Wayland protocol extension that provides the
@@ -7704,7 +7706,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Linux.X11.GbmSupportX11CreationTime" units="ms"
     expires_after="2020-11-30">
   <owner>thomasanderson@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The amount of time (ms) to construct the GbmSupportX11 singleton.
   </summary>

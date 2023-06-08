@@ -853,7 +853,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: For monitoring unexpected shifts in GPU process exit statuses. -->
 
-  <owner>rjkroege@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>msisov@igalia.com</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1357,7 +1357,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="GPU.SharedImage.ContentConsumed" enum="BooleanMatched"
     expires_after="2023-10-08">
   <owner>penghuang@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Whether or not the content of a SharedImage is consumed. False indicates the
     content of a SharedImage is never used due to destroying the SharedImage or
@@ -1571,9 +1571,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
     units="microseconds" expires_after="2023-10-08">
-  <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Duration of vkCreateGraphicsPipelines call. Recorded every time Skia creates
     graphics pipeline. Only reported for platforms supporting high resolution
@@ -1746,7 +1746,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
     expires_after="2023-10-01">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     An enum status result for attempted delegated compositing (success or
@@ -1822,7 +1821,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
     expires_after="2024-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Time spent computing the number of active File Descriptors. This is logged
@@ -1837,7 +1835,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
     expires_after="2024-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     {FdStat} File Descriptors for the GPU process. This is logged once every 5
