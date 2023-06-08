@@ -14,6 +14,8 @@ import {PropStatus} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {clearSearch, updateSearch} from '../../state/actions/search.js';
+import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../../state/for_tests.js';
+import {convertVolumeInfoAndMetadataToVolume} from '../../state/reducers/volumes.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -163,19 +165,35 @@ export function testHiddenForFiles() {
 }
 
 /**
- * Tests that no files message will be hidden if the volume is ODFS
- * but the scan finished with no error.
+ * Tests that the empty folder element is hidden if the volume is ODFS
+ * and the scan finished with no error. Add ODFS to the store so that the
+ * |isInteractive| state of the volume can be read.
  * @suppress {accessControls} access private method in test.
  */
 export function testHiddenForODFS() {
+  // Add ODFS volume to the store.
+  setUpFileManagerOnWindow();
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs',
+      constants.ODFS_EXTENSION_ID);
+  volumeManager.volumeInfoList.add(odfsVolumeInfo);
+  const volume = convertVolumeInfoAndMetadataToVolume(
+      odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
+  initialState.volumes[volume.volumeId] = volume;
+
+  setupStore(initialState);
+
   // Set ODFS as the volume.
   directoryModel.getCurrentVolumeInfo = function() {
-    return /** @type {!VolumeInfo} */ ({
-      providerId: constants.ODFS_EXTENSION_ID,
-    });
+    return /** @type {!VolumeInfo} */ (odfsVolumeInfo);
   };
 
+  // Complete the scan with no error.
   emptyFolderController.onScanFinished_();
+
+  // Expect that the empty-folder element is hidden.
   assertTrue(element.hidden);
   assertEquals('', emptyFolderController.label_.innerText);
 }
@@ -194,15 +212,29 @@ export function testShownForTrash() {
 
 /**
  * Tests that the reauthentication required image shows up when the volume is
- * ODFS and the scan failed from a NO_MODIFICATION_ALLOWED_ERR.
+ * ODFS and the scan failed from a NO_MODIFICATION_ALLOWED_ERR (access denied).
+ * Add ODFS to the store so that the |isInteractive| state of the volume can be
+ * set and read.
  * @suppress {accessControls} access private method in test.
  */
 export function testShownForODFS() {
+  // Add ODFS volume to the store.
+  setUpFileManagerOnWindow();
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs',
+      constants.ODFS_EXTENSION_ID);
+  volumeManager.volumeInfoList.add(odfsVolumeInfo);
+  const volume = convertVolumeInfoAndMetadataToVolume(
+      odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
+  initialState.volumes[volume.volumeId] = volume;
+
+  setupStore(initialState);
+
   // Set ODFS as the volume.
   directoryModel.getCurrentVolumeInfo = function() {
-    return /** @type {!VolumeInfo} */ ({
-      providerId: constants.ODFS_EXTENSION_ID,
-    });
+    return /** @type {!VolumeInfo} */ (odfsVolumeInfo);
   };
 
   // Pass a NO_MODIFICATION_ALLOWED_ERR error (implies reauthentication
@@ -211,6 +243,8 @@ export function testShownForODFS() {
   event.error = {name: util.FileError.NO_MODIFICATION_ALLOWED_ERR};
   emptyFolderController.onScanFailed_(event);
 
+  // Expect that the empty-folder element is shown and the sign in link is
+  // present.
   assertFalse(element.hidden);
   const signInLink = emptyFolderController.label_.querySelector('.sign-in');
   assertNotEquals(signInLink, null);

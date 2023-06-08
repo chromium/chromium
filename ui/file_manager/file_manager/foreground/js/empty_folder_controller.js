@@ -9,6 +9,7 @@ import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../../externs/ts/state.js';
+import {updateIsInteractiveVolume} from '../../state/actions/volumes.js';
 import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -122,17 +123,23 @@ export class EmptyFolderController {
    * @private
    */
   onScanFailed_(event) {
-    this.isScanning_ = false;
-    let odfsAndReauthenticationRequired = false;
     // Check if ODFS is the volume and reauthentication is required.
     // NO_MODIFICATION_ALLOWED_ERR is equivalent to the ACCESS_DENIED error
     // thrown by ODFS.
     const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
     if (util.isOneDrive(currentVolumeInfo) &&
         event.error.name == util.FileError.NO_MODIFICATION_ALLOWED_ERR) {
-      odfsAndReauthenticationRequired = true;
+      if (util.isInteractiveVolume(currentVolumeInfo)) {
+        // Set |isInteractive| to false for ODFS when reauthentication is
+        // required.
+        getStore().dispatch(updateIsInteractiveVolume({
+          volumeId: currentVolumeInfo.volumeId,
+          isInteractive: false,
+        }));
+      }
     }
-    this.updateUI_(odfsAndReauthenticationRequired);
+    this.isScanning_ = false;
+    this.updateUI_();
   }
 
   /**
@@ -140,6 +147,16 @@ export class EmptyFolderController {
    * @private
    */
   onScanFinished_() {
+    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    if (util.isOneDrive(currentVolumeInfo)) {
+      if (!util.isInteractiveVolume(currentVolumeInfo)) {
+        // Set |isInteractive| to true for ODFS when in an authenticated state.
+        getStore().dispatch(updateIsInteractiveVolume({
+          volumeId: currentVolumeInfo.volumeId,
+          isInteractive: true,
+        }));
+      }
+    }
     this.isScanning_ = false;
     this.updateUI_();
   }
@@ -212,20 +229,23 @@ export class EmptyFolderController {
   }
 
   /**
-   * Updates visibility of empty folder UI. `odfsAndReauthenticationRequired` is
-   * true when the volume is ODFS and reauthentication is required.
-   * @param {boolean} odfsAndReauthenticationRequired
+   * Updates visibility of empty folder UI.
    * @private
    */
-  updateUI_(odfsAndReauthenticationRequired = false) {
+  updateUI_() {
     const currentRootType = this.directoryModel_.getCurrentRootType();
+    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
 
     let svgRef = null;
     if (util.isRecentRootType(currentRootType)) {
       svgRef = RECENTS_EMPTY_FOLDER;
     } else if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;
-    } else if (odfsAndReauthenticationRequired) {
+    } else if (
+        util.isOneDrive(currentVolumeInfo) &&
+        !util.isInteractiveVolume(currentVolumeInfo)) {
+      // Show ODFS reauthentication required empty state if is it
+      // non-interactive.
       svgRef = ODFS_REAUTHENTICATION_REQUIRED;
     } else {
       if (util.isSearchV2Enabled()) {
