@@ -34,6 +34,7 @@ UIMediaSink CreateNonfreezableSink() {
   sink.cast_modes = {TAB_MIRROR};
   sink.route = MediaRoute("route_id", MediaSource("https://example.com"),
                           sink.id, "", true);
+  sink.friendly_name = u"Example tv 1";
   return sink;
 }
 
@@ -46,6 +47,7 @@ UIMediaSink CreateFreezableSink() {
   sink.route = MediaRoute("route_id", MediaSource("https://example.com"),
                           sink.id, "", true);
   sink.freeze_info.can_freeze = true;
+  sink.friendly_name = u"Example tv 2";
   return sink;
 }
 
@@ -53,11 +55,67 @@ UIMediaSink CreateFreezableFrozenSink() {
   UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.id = "sink_connected";
   sink.state = UIMediaSinkState::CONNECTED;
+  sink.status_text = u"status text 3";
   sink.cast_modes = {TAB_MIRROR};
   sink.route = MediaRoute("route_id", MediaSource("https://example.com"),
                           sink.id, "", true);
   sink.freeze_info.can_freeze = true;
   sink.freeze_info.is_frozen = true;
+  sink.friendly_name = u"Example tv 3";
+  return sink;
+}
+
+UIMediaSink CreateFreezableSinkWithTabSource() {
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
+  sink.id = "sink_connected";
+  sink.state = UIMediaSinkState::CONNECTED;
+  sink.status_text = u"status text 4";
+  sink.cast_modes = {TAB_MIRROR};
+  sink.route =
+      MediaRoute("route_id", MediaSource::ForAnyTab(), sink.id, "", true);
+  sink.freeze_info.can_freeze = true;
+  sink.friendly_name = u"Example tv 4";
+  return sink;
+}
+
+UIMediaSink CreateFrozenSinkWithTabSource() {
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
+  sink.id = "sink_connected";
+  sink.state = UIMediaSinkState::CONNECTED;
+  sink.status_text = u"status text 5";
+  sink.cast_modes = {TAB_MIRROR};
+  sink.route =
+      MediaRoute("route_id", MediaSource::ForAnyTab(), sink.id, "", true);
+  sink.freeze_info.can_freeze = true;
+  sink.freeze_info.is_frozen = true;
+  sink.friendly_name = u"Example tv 5";
+  return sink;
+}
+
+UIMediaSink CreateFreezableSinkWithDesktopSource() {
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
+  sink.id = "sink_connected";
+  sink.state = UIMediaSinkState::CONNECTED;
+  sink.status_text = u"status text 6";
+  sink.cast_modes = {DESKTOP_MIRROR};
+  sink.route = MediaRoute("route_id", MediaSource::ForDesktop("desktop1", true),
+                          sink.id, "", true);
+  sink.freeze_info.can_freeze = true;
+  sink.friendly_name = u"Example tv 6";
+  return sink;
+}
+
+UIMediaSink CreateFrozenSinkWithDesktopSource() {
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
+  sink.id = "sink_connected";
+  sink.state = UIMediaSinkState::CONNECTED;
+  sink.status_text = u"status text 7";
+  sink.cast_modes = {DESKTOP_MIRROR};
+  sink.route = MediaRoute("route_id", MediaSource::ForDesktop("desktop2", true),
+                          sink.id, "", true);
+  sink.freeze_info.can_freeze = true;
+  sink.freeze_info.is_frozen = true;
+  sink.friendly_name = u"Example tv 7";
   return sink;
 }
 
@@ -186,6 +244,81 @@ TEST_F(CastDialogSinkViewTest, StopButton) {
   EXPECT_NE(nullptr, sink_view_2.stop_button_for_test());
   EXPECT_NE(nullptr, sink_view_2.title_for_test());
   EXPECT_NE(nullptr, sink_view_2.subtitle_for_test());
+}
+
+// Tests that the AccessibleName for the freeze and stop buttons are set
+// correctly based on source and device name.
+TEST_F(CastDialogSinkViewTest, ButtonsAccessibleName) {
+  // Enable the proper features / prefs.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
+
+  // Create a range of sinks with different sources so we may test for all
+  // accessible strings.
+  UIMediaSink sink_1 = CreateFreezableSink();
+  UIMediaSink sink_2 = CreateFreezableFrozenSink();
+  UIMediaSink sink_3 = CreateFreezableSinkWithTabSource();
+  UIMediaSink sink_4 = CreateFrozenSinkWithTabSource();
+  UIMediaSink sink_5 = CreateFreezableSinkWithDesktopSource();
+  UIMediaSink sink_6 = CreateFrozenSinkWithDesktopSource();
+
+  // Create sink views for each sink.
+  CastDialogSinkView sink_view_1(
+      &profile_, sink_1, views::Button::PressedCallback(),
+      views::Button::PressedCallback(), views::Button::PressedCallback());
+  CastDialogSinkView sink_view_2(
+      &profile_, sink_2, views::Button::PressedCallback(),
+      views::Button::PressedCallback(), views::Button::PressedCallback());
+  CastDialogSinkView sink_view_3(
+      &profile_, sink_3, views::Button::PressedCallback(),
+      views::Button::PressedCallback(), views::Button::PressedCallback());
+  CastDialogSinkView sink_view_4(
+      &profile_, sink_4, views::Button::PressedCallback(),
+      views::Button::PressedCallback(), views::Button::PressedCallback());
+  CastDialogSinkView sink_view_5(
+      &profile_, sink_5, views::Button::PressedCallback(),
+      views::Button::PressedCallback(), views::Button::PressedCallback());
+  CastDialogSinkView sink_view_6(
+      &profile_, sink_6, views::Button::PressedCallback(),
+      views::Button::PressedCallback(), views::Button::PressedCallback());
+
+  EXPECT_EQ(sink_view_1.freeze_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_GENERIC_ACCESSIBLE_NAME,
+                sink_1.friendly_name));
+  EXPECT_EQ(sink_view_1.stop_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_STOP_GENERIC_ACCESSIBLE_NAME,
+                sink_1.friendly_name));
+  EXPECT_EQ(sink_view_2.freeze_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_GENERIC_ACCESSIBLE_NAME,
+                sink_2.friendly_name));
+  EXPECT_EQ(sink_view_3.freeze_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_TAB_ACCESSIBLE_NAME,
+                sink_3.friendly_name));
+  EXPECT_EQ(sink_view_3.stop_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_STOP_TAB_ACCESSIBLE_NAME,
+                sink_3.friendly_name));
+  EXPECT_EQ(sink_view_4.freeze_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_TAB_ACCESSIBLE_NAME,
+                sink_4.friendly_name));
+  EXPECT_EQ(sink_view_5.freeze_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_SCREEN_ACCESSIBLE_NAME,
+                sink_5.friendly_name));
+  EXPECT_EQ(sink_view_5.stop_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_STOP_SCREEN_ACCESSIBLE_NAME,
+                sink_5.friendly_name));
+  EXPECT_EQ(sink_view_6.freeze_button_for_test()->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_SCREEN_ACCESSIBLE_NAME,
+                sink_6.friendly_name));
 }
 
 }  // namespace media_router

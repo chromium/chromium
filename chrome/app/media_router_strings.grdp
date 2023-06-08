@@ -132,11 +132,38 @@
   <message name="IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE" desc="Label for a button that, when pressed, pauses a Cast mirroring session">
     Pause
   </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_GENERIC_ACCESSIBLE_NAME" desc="Accessible text for a button that pauses a Cast mirroring session">
+    Pause casting to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_SCREEN_ACCESSIBLE_NAME" desc="Accessible text for a button that pauses a Cast screen mirroring session">
+    Pause casting screen to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_TAB_ACCESSIBLE_NAME" desc="Accessible text for a button that pauses a Cast mirroring session">
+    Pause casting tab to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
   <message name="IDS_MEDIA_ROUTER_SINK_VIEW_RESUME" desc="Label for a button that, when pressed, resumes a Cast mirroring session">
     Resume
   </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_GENERIC_ACCESSIBLE_NAME" desc="Accessible text for a button that resumes a Cast mirroring session to a cast device">
+    Resume casting to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_SCREEN_ACCESSIBLE_NAME" desc="Accessible text for a button that resumes a Cast screen mirroring session to a cast device">
+    Resume casting screen to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_TAB_ACCESSIBLE_NAME" desc="Accessible text for a button that resumes a Cast tab mirroring session to a cast device">
+    Resume casting tab to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
   <message name="IDS_MEDIA_ROUTER_SINK_VIEW_STOP" desc="Label for a button that, when pressed, stops casting to a Cast device. Should be consistent with IDS_MEDIA_ROUTER_STOP_CASTING.">
     Stop
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_STOP_GENERIC_ACCESSIBLE_NAME" desc="Accessible text for a button that stops a Casting session to a cast device">
+    Stop casting to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_STOP_SCREEN_ACCESSIBLE_NAME" desc="Accessible text for a button that stops a Cast screen mirroring session to a cast device">
+    Stop casting screen to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_STOP_TAB_ACCESSIBLE_NAME" desc="Accessible text for a button that stops a Cast tab mirroring session to a cast device">
+    Stop casting tab to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
   </message>
 
   <!-- Media Remoting Dialog -->
