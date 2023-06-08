@@ -81,7 +81,6 @@ external/wpt/old-tests [ Skip ]
 external/wpt/proximity [ Skip ]
 external/wpt/resources/test [ Skip ]
 external/wpt/svg/import [ Skip ]
-external/wpt/webgl [ Skip ]
 
 # Exceptions for individual files that fail due to bugs in the
 # upstream tests that we shouldn't bother importing until they are
