@@ -929,7 +929,7 @@ std::u16string GetValueForProfile(const AutofillProfile& profile,
     // If the `field_data` is a selection box and having the type
     // `PHONE_HOME_COUNTRY_CODE`, call
     // `GetPhoneCountryCodeSelectControlForInput`.
-    if (field_data->form_control_type == "select-one" &&
+    if (field_data->IsSelectOrSelectMenuElement() &&
         type.GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
       value = GetPhoneCountryCodeSelectControlForInput(value, field_data,
                                                        failure_to_fill);

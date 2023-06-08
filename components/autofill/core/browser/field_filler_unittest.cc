@@ -1725,12 +1725,14 @@ class AutofillFillAugmentedPhoneCountryCodeTest
       public testing::WithParamInterface<
           FillAugmentedPhoneCountryCodeTestCase> {};
 
-TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
-       FillAugmentedPhoneCountryCodeField) {
-  auto test_case = GetParam();
+void DoTestFillAugmentedPhoneCountryCodeField(
+    const FillAugmentedPhoneCountryCodeTestCase& test_case,
+    const char* field_type) {
   AutofillField field;
-  test::CreateTestSelectField(test_case.phone_country_code_selection_options,
-                              &field);
+  test::CreateTestSelectOrSelectMenuField(
+      /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
+      test_case.phone_country_code_selection_options,
+      test_case.phone_country_code_selection_options, field_type, &field);
   field.set_heuristic_type(GetActivePatternSource(), PHONE_HOME_COUNTRY_CODE);
 
   AutofillProfile address;
@@ -1741,6 +1743,16 @@ TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
                        /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(field.value, test_case.expected_value);
+}
+
+TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
+       FillAugmentedPhoneCountryCodeField) {
+  DoTestFillAugmentedPhoneCountryCodeField(GetParam(), "select-one");
+}
+
+TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
+       FillAugmentedPhoneCountryCodeSelectMenuField) {
+  DoTestFillAugmentedPhoneCountryCodeField(GetParam(), "selectmenu");
 }
 
 INSTANTIATE_TEST_SUITE_P(
