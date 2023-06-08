@@ -139,7 +139,7 @@ void OpenXrDevice::RequestSession(
     mojom::XRRuntime::RequestSessionCallback callback) {
   // TODO(https://crbug.com/1450707): Strengthen the guarantees from the browser
   // process that we will not get a session request while one is pending.
-  if (request_session_callback_) {
+  if (request_session_callback_ || HasExclusiveSession()) {
     LOG(ERROR) << __func__
                << " New session request while processing previous request.";
     std::move(callback).Run(nullptr);
