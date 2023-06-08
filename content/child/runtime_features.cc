@@ -381,7 +381,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
           {"WGIGamepadTriggerRumble",
            raw_ref(features::kEnableWindowsGamingInputDataFetcher)},
-          {"UserAgentFull", raw_ref(blink::features::kFullUserAgent)},
           {"MediaStreamTrackTransfer",
            raw_ref(features::kMediaStreamTrackTransfer)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {

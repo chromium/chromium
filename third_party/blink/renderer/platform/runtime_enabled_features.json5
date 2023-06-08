@@ -3165,12 +3165,6 @@
       base_feature: "none",
     },
     {
-      name: "SendFullUserAgentAfterReduction",
-      base_feature: "none",
-      origin_trial_feature_name: "SendFullUserAgentAfterReduction",
-      origin_trial_allows_third_party: true
-    },
-    {
       name: "SendMouseEventsDisabledFormControls",
       status: "experimental",
       public: true,
@@ -3631,14 +3625,6 @@
     {
       name: "UserAgentClientHint",
       status: "stable",
-    },
-    {
-      name: "UserAgentReduction",
-      origin_trial_feature_name: "UserAgentReduction",
-      origin_trial_allows_third_party: true,
-      // iOS not included as it should not send a reduced User-Agent string.
-      origin_trial_os: ["android", "chromeos", "fuchsia", "linux", "mac", "win"],
-      base_feature: "ReduceUserAgent",
     },
     {
       name: "V8IdleTasks",

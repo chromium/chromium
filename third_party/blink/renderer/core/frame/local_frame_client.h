@@ -257,8 +257,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual String UserAgentOverride() = 0;
   virtual String UserAgent() = 0;
-  virtual String FullUserAgent() = 0;
-  virtual String ReducedUserAgent() = 0;
   virtual absl::optional<blink::UserAgentMetadata> UserAgentMetadata() = 0;
 
   virtual String DoNotTrackValue() = 0;

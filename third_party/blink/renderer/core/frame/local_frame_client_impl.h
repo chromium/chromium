@@ -174,8 +174,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   String UserAgentOverride() override;
   WTF::String UserAgent() override;
-  WTF::String FullUserAgent() override;
-  WTF::String ReducedUserAgent() override;
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() override;
   WTF::String DoNotTrackValue() override;
   void TransitionToCommittedForNewPage() override;
@@ -307,8 +305,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   Member<WebLocalFrameImpl> web_frame_;
 
   String user_agent_;
-  String full_user_agent_;
-  String reduced_user_agent_;
 };
 
 template <>

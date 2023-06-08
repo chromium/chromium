@@ -722,18 +722,6 @@ String FrameFetchContext::GetUserAgent() const {
   return GetFrame()->Loader().UserAgent();
 }
 
-String FrameFetchContext::GetFullUserAgent() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return frozen_state_->user_agent;
-  return GetFrame()->Loader().FullUserAgent();
-}
-
-String FrameFetchContext::GetReducedUserAgent() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return frozen_state_->user_agent;
-  return GetFrame()->Loader().ReducedUserAgent();
-}
-
 absl::optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
     const {
   if (GetResourceFetcherProperties().IsDetached())

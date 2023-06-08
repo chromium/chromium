@@ -1395,14 +1395,6 @@ String FrameLoader::UserAgent() const {
   return ApplyUserAgentOverride(Client()->UserAgent());
 }
 
-String FrameLoader::FullUserAgent() const {
-  return ApplyUserAgentOverride(Client()->FullUserAgent());
-}
-
-String FrameLoader::ReducedUserAgent() const {
-  return ApplyUserAgentOverride(Client()->ReducedUserAgent());
-}
-
 absl::optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata()
     const {
   return Client()->UserAgentMetadata();

@@ -54,22 +54,9 @@ std::string GetProductAndVersion(
     UserAgentReductionEnterprisePolicyState user_agent_reduction =
         UserAgentReductionEnterprisePolicyState::kDefault);
 
-// Returns the full user agent string for Chrome.
-// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
-std::string GetFullUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor =
-        ForceMajorVersionToMinorPosition::kDefault);
-
-// Returns the reduced user agent string for Chrome.
-// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
-std::string GetReducedUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor =
-        ForceMajorVersionToMinorPosition::kDefault);
-
 // Returns the full or "reduced" user agent string, depending on the following:
 // 1) UserAgentReduction enterprise policy.
-// 2) blink::features::kReduceUserAgent: reduced-user-agent about flag.
-// 3) blink::features::kFullUserAgent: full-user-agent about flag.
+// 2) Reduce User-Agent reduction phase features.
 // TODO(crbug.com/1291612): modify to accept an optional PrefService*.
 std::string GetUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor =

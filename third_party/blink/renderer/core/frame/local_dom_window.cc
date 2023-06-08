@@ -415,14 +415,7 @@ String LocalDOMWindow::UserAgent() const {
   if (!GetFrame())
     return String();
 
-  if (RuntimeEnabledFeatures::SendFullUserAgentAfterReductionEnabled(this)) {
-    return GetFrame()->Loader().FullUserAgent();
-  }
-
-  if (RuntimeEnabledFeatures::UserAgentReductionEnabled(this))
-    return GetFrame()->Loader().ReducedUserAgent();
-  else
-    return GetFrame()->Loader().UserAgent();
+  return GetFrame()->Loader().UserAgent();
 }
 
 UserAgentMetadata LocalDOMWindow::GetUserAgentMetadata() const {

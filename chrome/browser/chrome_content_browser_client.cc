@@ -6796,27 +6796,8 @@ std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
   embedder_support::UserAgentReductionEnterprisePolicyState
       user_agent_reduction =
           embedder_support::GetUserAgentReductionFromPrefs(prefs);
-  switch (user_agent_reduction) {
-    case embedder_support::UserAgentReductionEnterprisePolicyState::
-        kForceDisabled:
-      return embedder_support::GetFullUserAgent(force_major_version_to_minor);
-    case embedder_support::UserAgentReductionEnterprisePolicyState::
-        kForceEnabled:
-      return embedder_support::GetReducedUserAgent(
-          force_major_version_to_minor);
-    case embedder_support::UserAgentReductionEnterprisePolicyState::kDefault:
-    default:
-      return embedder_support::GetUserAgent(force_major_version_to_minor,
-                                            user_agent_reduction);
-  }
-}
-
-std::string ChromeContentBrowserClient::GetFullUserAgent() {
-  return embedder_support::GetFullUserAgent();
-}
-
-std::string ChromeContentBrowserClient::GetReducedUserAgent() {
-  return embedder_support::GetReducedUserAgent();
+  return embedder_support::GetUserAgent(force_major_version_to_minor,
+                                        user_agent_reduction);
 }
 
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {

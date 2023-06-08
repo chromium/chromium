@@ -172,11 +172,6 @@ interface Renderer {
   // sandboxing. This must be called as early as possible, during the renderer
   // process initialization.
   //
-  // |full_user_agent| sets the full user-agent with high-entropy information.
-  //
-  // |reduced_user_agent| sets a user-agent with high-entropy information
-  // reduced to common values.
-  //
   // |metadata| sets the user agent metadata. This will replace `SetUserAgent()`
   // if we decide to ship https://github.com/WICG/ua-client-hints.
   //
@@ -189,8 +184,6 @@ interface Renderer {
   // blink::OriginTrialPolicy for the renderer. It can be null if the embedder
   // does not support origin trials.
   InitializeRenderer(string user_agent,
-                     string full_user_agent,
-                     string reduced_user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
                      network.mojom.AttributionSupport attribution_support,

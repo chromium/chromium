@@ -150,14 +150,6 @@ blink::WebString TestBlinkWebUnitTestSupport::UserAgent() {
   return blink::WebString::FromUTF8("test_runner/0.0.0.0");
 }
 
-blink::WebString TestBlinkWebUnitTestSupport::FullUserAgent() {
-  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
-}
-
-blink::WebString TestBlinkWebUnitTestSupport::ReducedUserAgent() {
-  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
-}
-
 blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     int resource_id) {
   // Returns placeholder strings to check if they are correctly localized.

@@ -188,13 +188,6 @@ BASE_FEATURE(kUserLevelMemoryPressureSignal,
              "UserLevelMemoryPressureSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the `sec-ch-ua-full` client hint to be sent along with the full user
-// agent string in the HTTP request headers, as well as surfacing the full user
-// agent string in the JS APIs (navigator.userAgent, etc).
-BASE_FEATURE(kFullUserAgent,
-             "FullUserAgent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the frequency capping for detecting overlay popups. Overlay-popups
 // are the interstitials that pop up and block the main content of the page.
 BASE_FEATURE(kFrequencyCappingForOverlayPopupDetection,

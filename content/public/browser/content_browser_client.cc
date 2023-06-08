@@ -1193,14 +1193,6 @@ std::string ContentBrowserClient::GetUserAgentBasedOnPolicy(
   return GetUserAgent();
 }
 
-std::string ContentBrowserClient::GetFullUserAgent() {
-  return GetUserAgent();
-}
-
-std::string ContentBrowserClient::GetReducedUserAgent() {
-  return GetUserAgent();
-}
-
 blink::UserAgentMetadata ContentBrowserClient::GetUserAgentMetadata() {
   return blink::UserAgentMetadata();
 }

@@ -351,8 +351,6 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
 
   String UserAgentOverride() override { return ""; }
   String UserAgent() override { return ""; }
-  String FullUserAgent() override { return ""; }
-  String ReducedUserAgent() override { return ""; }
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() override {
     return blink::UserAgentMetadata();
   }

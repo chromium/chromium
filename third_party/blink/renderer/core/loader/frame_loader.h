@@ -148,8 +148,6 @@ class CORE_EXPORT FrameLoader final {
   void DidExplicitOpen();
 
   String UserAgent() const;
-  String FullUserAgent() const;
-  String ReducedUserAgent() const;
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() const;
 
   void DispatchDidClearWindowObjectInMainWorld();
