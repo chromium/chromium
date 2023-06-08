@@ -28,6 +28,6 @@ struct HdrMetadataSmpteSt2086 {
 
 // Mojo equivalent of gfx::HDRMetadata.
 struct HDRMetadata {
-  HdrMetadataSmpteSt2086 smpte_st_2086;
-  HdrMetadataCta861_3 cta_861_3;
+  HdrMetadataSmpteSt2086? smpte_st_2086;
+  HdrMetadataCta861_3? cta_861_3;
 };

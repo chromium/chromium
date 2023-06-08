@@ -258,17 +258,18 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
     const auto hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
         config.hdr_metadata());
     UINT32 max_display_mastering_luminance =
-        hdr_metadata.smpte_st_2086.luminance_max;
+        hdr_metadata.smpte_st_2086->luminance_max;
     RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MAX_MASTERING_LUMINANCE,
                                            max_display_mastering_luminance));
 
     UINT32 min_display_mastering_luminance =
-        hdr_metadata.smpte_st_2086.luminance_min * kMasteringDispLuminanceScale;
+        hdr_metadata.smpte_st_2086->luminance_min *
+        kMasteringDispLuminanceScale;
     RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MIN_MASTERING_LUMINANCE,
                                            min_display_mastering_luminance));
 
     MT_CUSTOM_VIDEO_PRIMARIES primaries =
-        CustomVideoPrimaryToMF(hdr_metadata.smpte_st_2086);
+        CustomVideoPrimaryToMF(hdr_metadata.smpte_st_2086.value());
     RETURN_IF_FAILED(media_type->SetBlob(MF_MT_CUSTOM_VIDEO_PRIMARIES,
                                          reinterpret_cast<UINT8*>(&primaries),
                                          sizeof(MT_CUSTOM_VIDEO_PRIMARIES)));

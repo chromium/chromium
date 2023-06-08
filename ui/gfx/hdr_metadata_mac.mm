@@ -15,8 +15,9 @@ namespace gfx {
 
 base::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
     const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
-  if (!hdr_metadata || hdr_metadata->cta_861_3.max_content_light_level == 0.f ||
-      hdr_metadata->cta_861_3.max_frame_average_light_level == 0.f) {
+  if (!hdr_metadata || !hdr_metadata->cta_861_3 ||
+      hdr_metadata->cta_861_3->max_content_light_level == 0.f ||
+      hdr_metadata->cta_861_3->max_frame_average_light_level == 0.f) {
     return base::ScopedCFTypeRef<CFDataRef>();
   }
 
@@ -30,9 +31,9 @@ base::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
   // Values are stored in big-endian...
   ContentLightLevelInfoSEI sei;
   sei.max_content_light_level =
-      __builtin_bswap16(hdr_metadata->cta_861_3.max_content_light_level);
+      __builtin_bswap16(hdr_metadata->cta_861_3->max_content_light_level);
   sei.max_frame_average_light_level =
-      __builtin_bswap16(hdr_metadata->cta_861_3.max_frame_average_light_level);
+      __builtin_bswap16(hdr_metadata->cta_861_3->max_frame_average_light_level);
 
   return base::ScopedCFTypeRef<CFDataRef>(
       CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 4));
@@ -56,12 +57,12 @@ base::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
 
   constexpr float kColorCoordinateUpperBound = 50000.0f;
   constexpr float kUnitOfMasteringLuminance = 10000.0f;
-  md.luminance_max *= kUnitOfMasteringLuminance;
-  md.luminance_min *= kUnitOfMasteringLuminance;
+  md->luminance_max *= kUnitOfMasteringLuminance;
+  md->luminance_min *= kUnitOfMasteringLuminance;
 
   // Values are stored in big-endian...
   MasteringDisplayColorVolumeSEI sei;
-  const auto& primaries = md.primaries;
+  const auto& primaries = md->primaries;
   sei.primaries[0].x =
       __builtin_bswap16(primaries.fGX * kColorCoordinateUpperBound + 0.5f);
   sei.primaries[0].y =
@@ -78,8 +79,8 @@ base::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
       __builtin_bswap16(primaries.fWX * kColorCoordinateUpperBound + 0.5f);
   sei.white_point.y =
       __builtin_bswap16(primaries.fWY * kColorCoordinateUpperBound + 0.5f);
-  sei.luminance_max = __builtin_bswap32(md.luminance_max + 0.5f);
-  sei.luminance_min = __builtin_bswap32(md.luminance_min + 0.5f);
+  sei.luminance_max = __builtin_bswap32(md->luminance_max + 0.5f);
+  sei.luminance_min = __builtin_bswap32(md->luminance_min + 0.5f);
 
   return base::ScopedCFTypeRef<CFDataRef>(
       CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 24));

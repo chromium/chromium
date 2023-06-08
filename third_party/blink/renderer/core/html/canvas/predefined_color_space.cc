@@ -87,7 +87,7 @@ void ParseCanvasHighDynamicRangeOptions(
   }
   if (options->hasSmpteSt2086Metadata()) {
     hdr_metadata = gfx::HDRMetadata();
-    auto& smpte_st_2086 = hdr_metadata->smpte_st_2086;
+    auto& smpte_st_2086 = hdr_metadata->smpte_st_2086.emplace();
     const auto* v8_metadata = options->smpteSt2086Metadata();
     smpte_st_2086.primaries = {
         v8_metadata->redPrimaryX(),   v8_metadata->redPrimaryY(),

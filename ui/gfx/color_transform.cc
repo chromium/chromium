@@ -1005,9 +1005,10 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
       const auto hdr_metadata =
           gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
               options.src_hdr_metadata);
-      src_max_lum_nits = hdr_metadata.cta_861_3.max_content_light_level > 0
-                             ? hdr_metadata.cta_861_3.max_content_light_level
-                             : hdr_metadata.smpte_st_2086.luminance_max;
+      src_max_lum_nits = (hdr_metadata.cta_861_3 &&
+                          hdr_metadata.cta_861_3->max_content_light_level > 0)
+                             ? hdr_metadata.cta_861_3->max_content_light_level
+                             : hdr_metadata.smpte_st_2086->luminance_max;
     }
     if (IsHlgPqSdrRelative()) {
       return src_max_lum_nits / ColorSpace::kDefaultSDRWhiteLevel;

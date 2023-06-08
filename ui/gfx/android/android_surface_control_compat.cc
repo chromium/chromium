@@ -891,25 +891,30 @@ void SurfaceControl::Transaction::SetColorSpace(
 
   // Set the HDR metadata for not extended SRGB case.
   if (metadata && !extended_range) {
-    AHdrMetadata_cta861_3 cta861_3 = {
-        .maxContentLightLevel =
-            static_cast<float>(metadata->cta_861_3.max_content_light_level),
-        .maxFrameAverageLightLevel = static_cast<float>(
-            metadata->cta_861_3.max_frame_average_light_level)};
+    if (const auto& gfx_cta_861_3 = metadata->cta_861_3) {
+      AHdrMetadata_cta861_3 cta861_3 = {
+          .maxContentLightLevel =
+              static_cast<float>(gfx_cta_861_3->max_content_light_level),
+          .maxFrameAverageLightLevel =
+              static_cast<float>(gfx_cta_861_3->max_frame_average_light_level)};
+      SurfaceControlMethods::Get()
+          .ASurfaceTransaction_setHdrMetadata_cta861_3Fn(
+              transaction_, surface.surface(), &cta861_3);
+    }
 
-    const auto& primaries = metadata->smpte_st_2086.primaries;
-    AHdrMetadata_smpte2086 smpte2086 = {
-        .displayPrimaryRed = {.x = primaries.fRX, .y = primaries.fRY},
-        .displayPrimaryGreen = {.x = primaries.fGX, .y = primaries.fGY},
-        .displayPrimaryBlue = {.x = primaries.fBX, .y = primaries.fBY},
-        .whitePoint = {.x = primaries.fWX, .y = primaries.fWY},
-        .maxLuminance = metadata->smpte_st_2086.luminance_max,
-        .minLuminance = metadata->smpte_st_2086.luminance_min};
-
-    SurfaceControlMethods::Get().ASurfaceTransaction_setHdrMetadata_cta861_3Fn(
-        transaction_, surface.surface(), &cta861_3);
-    SurfaceControlMethods::Get().ASurfaceTransaction_setHdrMetadata_smpte2086Fn(
-        transaction_, surface.surface(), &smpte2086);
+    if (const auto& gfx_smpte_st_2086 = metadata->smpte_st_2086) {
+      const auto& primaries = gfx_smpte_st_2086->primaries;
+      AHdrMetadata_smpte2086 smpte2086 = {
+          .displayPrimaryRed = {.x = primaries.fRX, .y = primaries.fRY},
+          .displayPrimaryGreen = {.x = primaries.fGX, .y = primaries.fGY},
+          .displayPrimaryBlue = {.x = primaries.fBX, .y = primaries.fBY},
+          .whitePoint = {.x = primaries.fWX, .y = primaries.fWY},
+          .maxLuminance = gfx_smpte_st_2086->luminance_max,
+          .minLuminance = gfx_smpte_st_2086->luminance_min};
+      SurfaceControlMethods::Get()
+          .ASurfaceTransaction_setHdrMetadata_smpte2086Fn(
+              transaction_, surface.surface(), &smpte2086);
+    }
   } else {
     SurfaceControlMethods::Get().ASurfaceTransaction_setHdrMetadata_cta861_3Fn(
         transaction_, surface.surface(), nullptr);

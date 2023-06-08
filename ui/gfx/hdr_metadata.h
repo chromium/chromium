@@ -114,8 +114,8 @@ struct COLOR_SPACE_EXPORT ExtendedRangeBrightness {
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
 struct COLOR_SPACE_EXPORT HDRMetadata {
-  HdrMetadataSmpteSt2086 smpte_st_2086;
-  HdrMetadataCta861_3 cta_861_3;
+  absl::optional<HdrMetadataSmpteSt2086> smpte_st_2086;
+  absl::optional<HdrMetadataCta861_3> cta_861_3;
 
   // Brightness points for extended range color spaces.
   // NOTE: Is not serialized over IPC.
@@ -133,7 +133,8 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   HDRMetadata& operator=(const HDRMetadata& rhs) = default;
 
   bool IsValid() const {
-    return cta_861_3.IsValid() || smpte_st_2086.IsValid() ||
+    return (cta_861_3 && cta_861_3->IsValid()) ||
+           (smpte_st_2086 && smpte_st_2086->IsValid()) ||
            extended_range_brightness;
   }
 

@@ -205,10 +205,11 @@ TEST_F(WebMStreamParserTest, ColourElement) {
 
   absl::optional<gfx::HDRMetadata> hdr_metadata = video_config.hdr_metadata();
   EXPECT_TRUE(hdr_metadata.has_value());
-  EXPECT_EQ(hdr_metadata->cta_861_3.max_content_light_level, 11u);
-  EXPECT_EQ(hdr_metadata->cta_861_3.max_frame_average_light_level, 12u);
+  EXPECT_EQ(hdr_metadata->cta_861_3->max_content_light_level, 11u);
+  EXPECT_EQ(hdr_metadata->cta_861_3->max_frame_average_light_level, 12u);
 
-  const gfx::HdrMetadataSmpteSt2086& mmdata = hdr_metadata->smpte_st_2086;
+  const gfx::HdrMetadataSmpteSt2086& mmdata =
+      hdr_metadata->smpte_st_2086.value();
   EXPECT_FLOAT_EQ(mmdata.primaries.fRX, 0.1f);
   EXPECT_FLOAT_EQ(mmdata.primaries.fRY, 0.2f);
   EXPECT_FLOAT_EQ(mmdata.primaries.fGX, 0.1f);

@@ -581,56 +581,62 @@ bool StructTraits<media::stable::mojom::DecryptConfigDataView,
 uint32_t StructTraits<
     media::stable::mojom::HDRMetadataDataView,
     gfx::HDRMetadata>::max_content_light_level(const gfx::HDRMetadata& input) {
+  auto cta_861_3 = input.cta_861_3.value_or(gfx::HdrMetadataCta861_3());
   static_assert(
-      std::is_same<decltype(input.cta_861_3.max_content_light_level),
+      std::is_same<decltype(cta_861_3.max_content_light_level),
                    decltype(media::stable::mojom::HDRMetadata::
                                 max_content_light_level)>::value,
       "Unexpected type for gfx::HdrMetadataCta861_3::max_content_light_level. "
       "If you need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
 
-  return input.cta_861_3.max_content_light_level;
+  return cta_861_3.max_content_light_level;
 }
 
 // static
 uint32_t
 StructTraits<media::stable::mojom::HDRMetadataDataView, gfx::HDRMetadata>::
     max_frame_average_light_level(const gfx::HDRMetadata& input) {
+  auto cta_861_3 = input.cta_861_3.value_or(gfx::HdrMetadataCta861_3());
   static_assert(
-      std::is_same<decltype(input.cta_861_3.max_frame_average_light_level),
+      std::is_same<decltype(cta_861_3.max_frame_average_light_level),
                    decltype(media::stable::mojom::HDRMetadata::
                                 max_frame_average_light_level)>::value,
       "Unexpected type for "
       "gfx::HdrMetadataCta861_3::max_frame_average_light_level. If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
 
-  return input.cta_861_3.max_frame_average_light_level;
+  return cta_861_3.max_frame_average_light_level;
 }
 
 // static
-const gfx::HdrMetadataSmpteSt2086& StructTraits<
+gfx::HdrMetadataSmpteSt2086 StructTraits<
     media::stable::mojom::HDRMetadataDataView,
     gfx::HDRMetadata>::color_volume_metadata(const gfx::HDRMetadata& input) {
+  auto smpte_st_2086 =
+      input.smpte_st_2086.value_or(gfx::HdrMetadataSmpteSt2086());
   static_assert(
-      std::is_same<decltype(input.smpte_st_2086),
+      std::is_same<decltype(smpte_st_2086),
                    decltype(media::stable::mojom::HDRMetadata::
                                 color_volume_metadata)>::value,
       "Unexpected type for gfx::HDRMetadata::smpte_st_2086. If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
 
-  return input.smpte_st_2086;
+  return smpte_st_2086;
 }
 
 // static
 bool StructTraits<media::stable::mojom::HDRMetadataDataView, gfx::HDRMetadata>::
     Read(media::stable::mojom::HDRMetadataDataView data,
          gfx::HDRMetadata* output) {
-  output->cta_861_3.max_content_light_level = data.max_content_light_level();
-  output->cta_861_3.max_frame_average_light_level =
-      data.max_frame_average_light_level();
-  if (!data.ReadColorVolumeMetadata(&output->smpte_st_2086)) {
+  gfx::HdrMetadataCta861_3 cta_861_3(data.max_content_light_level(),
+                                     data.max_frame_average_light_level());
+  gfx::HdrMetadataSmpteSt2086 smpte_st_2086;
+  if (!data.ReadColorVolumeMetadata(&smpte_st_2086)) {
     return false;
   }
+  output->cta_861_3 = cta_861_3;
+  output->smpte_st_2086 = smpte_st_2086;
   return true;
 }
 

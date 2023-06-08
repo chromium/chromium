@@ -608,7 +608,7 @@ struct StructTraits<media::stable::mojom::HDRMetadataDataView,
 
   static uint32_t max_frame_average_light_level(const gfx::HDRMetadata& input);
 
-  static const gfx::HdrMetadataSmpteSt2086& color_volume_metadata(
+  static gfx::HdrMetadataSmpteSt2086 color_volume_metadata(
       const gfx::HDRMetadata& input);
 
   static bool Read(media::stable::mojom::HDRMetadataDataView data,

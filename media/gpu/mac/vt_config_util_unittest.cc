@@ -212,12 +212,11 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
   // Values from real YouTube HDR content.
   gfx::HDRMetadata hdr_meta;
   hdr_meta.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 600);
-  gfx::HdrMetadataSmpteSt2086 cv_metadata;
-  cv_metadata.luminance_min = 0;
-  cv_metadata.luminance_max = 1000;
-  cv_metadata.primaries = {0.6800f, 0.3200f, 0.2649f, 0.6900f,
-                           0.1500f, 0.0600f, 0.3127f, 0.3290f};
-  hdr_meta.smpte_st_2086 = cv_metadata;
+  hdr_meta.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
+      {0.6800f, 0.3200f, 0.2649f, 0.6900f, 0.1500f, 0.0600f, 0.3127f, 0.3290f},
+      /*luminance_max=*/1000,
+      /*luminance_min=*/0);
+  const auto& cv_metadata = hdr_meta.smpte_st_2086.value();
 
   base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
@@ -260,9 +259,9 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
     mp4::ContentLightLevelInformation clli_box;
     ASSERT_TRUE(clli_box.Parse(box_reader.get()));
     EXPECT_EQ(clli_box.max_content_light_level,
-              hdr_meta.cta_861_3.max_content_light_level);
+              hdr_meta.cta_861_3->max_content_light_level);
     EXPECT_EQ(clli_box.max_pic_average_light_level,
-              hdr_meta.cta_861_3.max_frame_average_light_level);
+              hdr_meta.cta_861_3->max_frame_average_light_level);
   }
 }
 
