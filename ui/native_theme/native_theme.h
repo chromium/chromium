@@ -504,7 +504,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
       absl::optional<ui::ColorProviderManager::SchemeVariant> scheme_variant) {
     scheme_variant_ = scheme_variant;
   }
-  absl::optional<ui::ColorProviderManager::SchemeVariant> scheme_variant() {
+  absl::optional<ui::ColorProviderManager::SchemeVariant> scheme_variant()
+      const {
     return scheme_variant_;
   }
 
