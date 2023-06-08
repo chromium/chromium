@@ -63,7 +63,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_state.h"
@@ -1590,11 +1590,11 @@ void ToggleMultitaskMenu() {
   DCHECK(window);
   if (auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
       tablet_mode_controller->InTabletMode()) {
-    auto* tablet_mode_event_handler =
+    auto* multitask_menu_controller =
         tablet_mode_controller->tablet_mode_window_manager()
-            ->tablet_mode_multitask_menu_event_handler();
+            ->tablet_mode_multitask_menu_controller();
     // Does nothing if the menu is already shown.
-    tablet_mode_event_handler->ShowMultitaskMenu(window);
+    multitask_menu_controller->ShowMultitaskMenu(window);
     return;
   }
   auto* frame_view = NonClientFrameViewAsh::Get(window);

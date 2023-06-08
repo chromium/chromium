@@ -23,7 +23,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_toggle_fullscreen_event_handler.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
@@ -186,8 +186,8 @@ void TabletModeWindowManager::Init() {
       Shell::Get()->session_controller()->GetActiveAccountId());
   event_handler_ = std::make_unique<TabletModeToggleFullscreenEventHandler>();
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    tablet_mode_multitask_menu_event_handler_ =
-        std::make_unique<TabletModeMultitaskMenuEventHandler>();
+    tablet_mode_multitask_menu_controller_ =
+        std::make_unique<TabletModeMultitaskMenuController>();
   }
 }
 

@@ -8,7 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -61,7 +61,7 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
   // or non-maximizable window, any existing cue should still be dismissed.
   DismissCue();
 
-  if (!TabletModeMultitaskMenuEventHandler::CanShowMenu(active_window)) {
+  if (!TabletModeMultitaskMenuController::CanShowMenu(active_window)) {
     return;
   }
 
@@ -170,9 +170,9 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
       Shell::Get()->tablet_mode_controller()->tablet_mode_window_manager();
   DCHECK(window_manager);
 
-  auto* event_handler =
-      window_manager->tablet_mode_multitask_menu_event_handler();
-  DCHECK(event_handler);
+  auto* multitask_menu_controller =
+      window_manager->tablet_mode_multitask_menu_controller();
+  DCHECK(multitask_menu_controller);
 
   // TODO(b/263519133): Stop the cue from reappearing after using non-app
   // windows like popups.
@@ -183,9 +183,10 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
   // show the cue on the new window.
   // TODO(b/279816982): Fix this so the cue does not appear when the menu is
   // dismissed by swiping up or not dragging far enough.
-  if (event_handler->multitask_menu() &&
-      event_handler->multitask_menu()->widget()->GetNativeWindow() ==
-          lost_active) {
+  if (multitask_menu_controller->multitask_menu() &&
+      multitask_menu_controller->multitask_menu()
+              ->widget()
+              ->GetNativeWindow() == lost_active) {
     return;
   }
 
@@ -195,8 +196,7 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
 void TabletModeMultitaskCue::OnPostWindowStateTypeChange(
     WindowState* window_state,
     chromeos::WindowStateType old_type) {
-  if (!TabletModeMultitaskMenuEventHandler::CanShowMenu(
-          window_state->window())) {
+  if (!TabletModeMultitaskMenuController::CanShowMenu(window_state->window())) {
     DismissCue();
   }
 }

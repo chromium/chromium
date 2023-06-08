@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 
 #include "ash/accelerators/debug_commands.h"
 #include "ash/shell.h"
@@ -28,7 +28,7 @@ constexpr gfx::SizeF kHitRegionSize(200.f, 100.f);
 // Returns true if `window` can show the menu and `screen_location` is in the
 // menu hit bounds.
 bool HitTestRect(aura::Window* window, const gfx::PointF& screen_location) {
-  if (!TabletModeMultitaskMenuEventHandler::CanShowMenu(window)) {
+  if (!TabletModeMultitaskMenuController::CanShowMenu(window)) {
     return false;
   }
   const gfx::RectF window_bounds(window->GetBoundsInScreen());
@@ -48,12 +48,12 @@ aura::Window* GetTargetWindow(aura::Window* target) {
 
 }  // namespace
 
-TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler()
+TabletModeMultitaskMenuController::TabletModeMultitaskMenuController()
     : multitask_cue_(std::make_unique<TabletModeMultitaskCue>()) {
   Shell::Get()->AddPreTargetHandler(this);
 }
 
-TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
+TabletModeMultitaskMenuController::~TabletModeMultitaskMenuController() {
   // The cue needs to be destroyed first so that it doesn't do any work when
   // window activation changes as a result of destroying `this`.
   multitask_cue_.reset();
@@ -62,25 +62,25 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
 }
 
 // static
-bool TabletModeMultitaskMenuEventHandler::CanShowMenu(aura::Window* window) {
+bool TabletModeMultitaskMenuController::CanShowMenu(aura::Window* window) {
   auto* window_state = WindowState::Get(window);
   return window_state && window_state->CanMaximize() &&
          window_state->CanResize() && !window_state->IsFloated() &&
          !window_state->IsPinned();
 }
 
-void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
+void TabletModeMultitaskMenuController::ShowMultitaskMenu(
     aura::Window* window) {
   MaybeCreateMultitaskMenu(window);
   multitask_menu_->Animate(/*show=*/true);
 }
 
-void TabletModeMultitaskMenuEventHandler::ResetMultitaskMenu() {
+void TabletModeMultitaskMenuController::ResetMultitaskMenu() {
   multitask_cue_->ResetPosition();
   multitask_menu_.reset();
 }
 
-void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
+void TabletModeMultitaskMenuController::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* target = static_cast<aura::Window*>(event->target());
   aura::Window* window = GetTargetWindow(target);
@@ -161,7 +161,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
   }
 }
 
-void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
+void TabletModeMultitaskMenuController::MaybeCreateMultitaskMenu(
     aura::Window* window) {
   if (!multitask_menu_) {
     multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(this, window);

@@ -86,7 +86,7 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
 
  private:
   friend class TabletModeMultitaskMenu;
-  FRIEND_TEST_ALL_PREFIXES(TabletModeMultitaskMenuEventHandlerTest,
+  FRIEND_TEST_ALL_PREFIXES(TabletModeMultitaskMenuTest,
                            CueCorrectWindowInSplitView);
 
   // Updates the bounds of the cue relative to the window if the window is

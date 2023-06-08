@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
-
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -16,6 +14,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
@@ -48,15 +47,14 @@ constexpr int kVerticalPosition = 8;
 
 }  // namespace
 
-class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
+class TabletModeMultitaskMenuTest : public AshTestBase {
  public:
-  TabletModeMultitaskMenuEventHandlerTest()
+  TabletModeMultitaskMenuTest()
       : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
-  TabletModeMultitaskMenuEventHandlerTest(
-      const TabletModeMultitaskMenuEventHandlerTest&) = delete;
-  TabletModeMultitaskMenuEventHandlerTest& operator=(
-      const TabletModeMultitaskMenuEventHandlerTest&) = delete;
-  ~TabletModeMultitaskMenuEventHandlerTest() override = default;
+  TabletModeMultitaskMenuTest(const TabletModeMultitaskMenuTest&) = delete;
+  TabletModeMultitaskMenuTest& operator=(const TabletModeMultitaskMenuTest&) =
+      delete;
+  ~TabletModeMultitaskMenuTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -120,16 +118,16 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
                                           .CenterPoint());
   }
 
-  TabletModeMultitaskMenuEventHandler* GetMultitaskMenuEventHandler() {
+  TabletModeMultitaskMenuController* GetMultitaskMenuController() {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
-        ->tablet_mode_multitask_menu_event_handler();
+        ->tablet_mode_multitask_menu_controller();
   }
 
   TabletModeMultitaskMenu* GetMultitaskMenu() {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
-        ->tablet_mode_multitask_menu_event_handler()
+        ->tablet_mode_multitask_menu_controller()
         ->multitask_menu();
   }
 
@@ -147,7 +145,7 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
 // Tests that a scroll down gesture from the top center activates the
 // multitask menu.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, BasicShowMenu) {
+TEST_F(TabletModeMultitaskMenuTest, BasicShowMenu) {
   auto window = CreateAppWindow();
 
   ShowMultitaskMenu(*window);
@@ -175,7 +173,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, BasicShowMenu) {
             window->GetBoundsInScreen().CenterPoint().x());
 }
 
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownTargetArea) {
+TEST_F(TabletModeMultitaskMenuTest, SwipeDownTargetArea) {
   auto window = CreateTestWindow(gfx::Rect(800, 600));
 
   // Scroll down from the top left. Verify no menu.
@@ -211,7 +209,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownTargetArea) {
 }
 
 // Tests that a slight touch moved in the menu will trigger a button press.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, PressMoveAndReleaseTouch) {
+TEST_F(TabletModeMultitaskMenuTest, PressMoveAndReleaseTouch) {
   auto window = CreateAppWindow(gfx::Rect(800, 600));
   ShowMultitaskMenu(*window);
 
@@ -226,7 +224,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PressMoveAndReleaseTouch) {
             WindowState::Get(window.get())->GetStateType());
 }
 
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInSplitView) {
+TEST_F(TabletModeMultitaskMenuTest, SwipeDownInSplitView) {
   auto window1 = CreateTestWindow(gfx::Rect(800, 600));
   PressHalfButton(window1.get(), /*left=*/true);
   auto window2 = CreateTestWindow(gfx::Rect(800, 600));
@@ -250,8 +248,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInSplitView) {
 
 // Tests no crash when swiping down another window during menu animation.
 // http://b/276792842.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest,
-       SwipeDownInSplitViewWhileAnimating) {
+TEST_F(TabletModeMultitaskMenuTest, SwipeDownInSplitViewWhileAnimating) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -283,7 +280,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
 }
 
 // Tests that the multitask menu cannot be shown while in pinned state.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInPinnedWindow) {
+TEST_F(TabletModeMultitaskMenuTest, SwipeDownInPinnedWindow) {
   // Create and pin a window.
   std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
   wm::ActivateWindow(pinned_window.get());
@@ -294,7 +291,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInPinnedWindow) {
 }
 
 // Tests that swipe down outside the menu doesn't crash. Test for b/266742428.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownMenuTwice) {
+TEST_F(TabletModeMultitaskMenuTest, SwipeDownMenuTwice) {
   auto window = CreateTestWindow(gfx::Rect(800, 600));
 
   // Scroll down to show the menu.
@@ -319,7 +316,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownMenuTwice) {
 }
 
 // Tests no crash on multiple finger scrolls.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, MultiFingerSroll) {
+TEST_F(TabletModeMultitaskMenuTest, MultiFingerSroll) {
   auto window = CreateTestWindow();
   const int center_x = window->bounds().CenterPoint().x();
 
@@ -336,7 +333,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, MultiFingerSroll) {
 }
 
 // Tests that a partial drag will show or hide the menu as expected.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialDrag) {
+TEST_F(TabletModeMultitaskMenuTest, PartialDrag) {
   auto window = CreateTestWindow();
   // Scroll down less than half of the menu height. Tests that the menu does not
   // open.
@@ -351,7 +348,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialDrag) {
 }
 
 // Tests that the menu is closed when the window is closed or destroyed.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, OnWindowDestroying) {
+TEST_F(TabletModeMultitaskMenuTest, OnWindowDestroying) {
   auto window = CreateTestWindow();
 
   ShowMultitaskMenu(*window);
@@ -363,7 +360,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, OnWindowDestroying) {
 }
 
 // Tests that tap outside the menu will close the menu.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
+TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnTap) {
   // Create a display and window that is bigger than the menu.
   UpdateDisplay("1600x1000");
   auto window = CreateAppWindow();
@@ -378,8 +375,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
 
 // Tests that pressing a button before the show animation ends closes the menu
 // (http://b/279355302).
-TEST_F(TabletModeMultitaskMenuEventHandlerTest,
-       CloseMultitaskMenuOnButtonPress) {
+TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnButtonPress) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -397,7 +393,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
   ASSERT_FALSE(GetMultitaskMenu());
 }
 
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseOnDoubleTapDivider) {
+TEST_F(TabletModeMultitaskMenuTest, CloseOnDoubleTapDivider) {
   auto window1 = CreateTestWindow(gfx::Rect(800, 600));
   auto window2 = CreateTestWindow(gfx::Rect(800, 600));
 
@@ -422,14 +418,14 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseOnDoubleTapDivider) {
   ASSERT_FALSE(GetMultitaskMenu());
 }
 
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
+TEST_F(TabletModeMultitaskMenuTest, HideMultitaskMenuInOverview) {
   auto window = CreateTestWindow();
 
   ShowMultitaskMenu(*window);
 
   auto* event_handler = TabletModeControllerTestApi()
                             .tablet_mode_window_manager()
-                            ->tablet_mode_multitask_menu_event_handler();
+                            ->tablet_mode_multitask_menu_controller();
   auto* multitask_menu = event_handler->multitask_menu();
   ASSERT_TRUE(multitask_menu);
   ASSERT_TRUE(multitask_menu->widget()->GetContentsView()->GetVisible());
@@ -441,7 +437,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
 }
 
 // Tests that the multitask menu gets updated after a button is pressed.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
+TEST_F(TabletModeMultitaskMenuTest, HalfButtonFunctionality) {
   // Create a test window wide enough to show the menu even after it is split in
   // half.
   UpdateDisplay("1600x1000");
@@ -480,7 +476,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
                 .x());
 }
 
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
+TEST_F(TabletModeMultitaskMenuTest, PartialButtonFunctionality) {
   auto window = CreateTestWindow();
 
   // Test that primary button snaps to 0.67f screen ratio.
@@ -511,7 +507,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
 
 // Tests that the menu bounds are adjusted if the window is narrower than the
 // menu for two partial split windows.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, AdjustedMenuBounds) {
+TEST_F(TabletModeMultitaskMenuTest, AdjustedMenuBounds) {
   auto window1 = CreateTestWindow();
   PressPartialPrimary(*window1);
   auto window2 = CreateTestWindow();
@@ -541,7 +537,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, AdjustedMenuBounds) {
 }
 
 // Tests that the split buttons are enabled/disabled based on min sizes.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, WindowMinimumSizes) {
+TEST_F(TabletModeMultitaskMenuTest, WindowMinimumSizes) {
   UpdateDisplay("800x600");
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
@@ -592,7 +588,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, WindowMinimumSizes) {
 
 // Tests that if a window cannot be snapped or floated, the buttons will not
 // be shown.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
+TEST_F(TabletModeMultitaskMenuTest, HiddenButtons) {
   UpdateDisplay("800x600");
 
   // A window with a minimum size of 600x600 will not be snappable or
@@ -619,10 +615,10 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
 
 // Tests that the cue is still showing when the menu is opened, and it has been
 // transformed to the correct position below the menu.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueTransformOnShowMenu) {
+TEST_F(TabletModeMultitaskMenuTest, CueTransformOnShowMenu) {
   auto window = CreateAppWindow();
 
-  auto* multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue();
+  auto* multitask_cue = GetMultitaskMenuController()->multitask_cue();
   ASSERT_TRUE(multitask_cue);
   EXPECT_TRUE(multitask_cue->cue_layer());
 
@@ -650,7 +646,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueTransformOnShowMenu) {
 
 // Tests that the cue appears on the correct window when the multitask menu is
 // activated on different windows in split view.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueCorrectWindowInSplitView) {
+TEST_F(TabletModeMultitaskMenuTest, CueCorrectWindowInSplitView) {
   auto window1 = CreateAppWindow();
   PressPartialPrimary(*window1);
   auto window2 = CreateAppWindow();
@@ -663,14 +659,14 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueCorrectWindowInSplitView) {
 
   // Show the menu and cue on the first window.
   ShowMultitaskMenu(*window1);
-  auto* multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue();
+  auto* multitask_cue = GetMultitaskMenuController()->multitask_cue();
   ASSERT_TRUE(multitask_cue);
   EXPECT_TRUE(multitask_cue->cue_layer());
   EXPECT_EQ(window1.get(), multitask_cue->window_);
 
   // Show the menu and cue on the second window.
   ShowMultitaskMenu(*window2);
-  multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue();
+  multitask_cue = GetMultitaskMenuController()->multitask_cue();
   ASSERT_TRUE(multitask_cue);
   EXPECT_TRUE(multitask_cue->cue_layer());
   EXPECT_EQ(window2.get(), multitask_cue->window_);
@@ -681,7 +677,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueCorrectWindowInSplitView) {
 // ----------------------
 // |   Top   |  Bottom  |
 // ----------------------
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowBottomMenuPortraitPrimary) {
+TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
@@ -721,8 +717,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowBottomMenuPortraitPrimary) {
 // |  Bottom  |   Top   |
 // ----------------------
 // TODO(b/270175923): Temporarily disabled for decreased target area.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest,
-       DISABLED_ShowBottomMenuPortraitSecondary) {
+TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
@@ -758,7 +753,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
 
 // Tests that when we exit tablet mode with the multitask menu open, there is no
 // crash. Regression test for b/273835755.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, NoCrashWhenExitingTabletMode) {
+TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
   // We need to use a non zero duration otherwise the fade out animation will
   // complete immediately and destroy the multitask menu before the tablet mode
   // window manager gets destroyed, which is not what happens on a real device.
@@ -770,7 +765,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, NoCrashWhenExitingTabletMode) {
   TabletModeControllerTestApi().LeaveTabletMode();
 }
 
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, HidesWhenMinimized) {
+TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
   auto window = CreateAppWindow();
   ShowMultitaskMenu(*window);
 

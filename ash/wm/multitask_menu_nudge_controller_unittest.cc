@@ -15,7 +15,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -44,7 +44,7 @@ chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
-        ->tablet_mode_multitask_menu_event_handler()
+        ->tablet_mode_multitask_menu_controller()
         ->multitask_cue()
         ->nudge_controller_for_testing();
   }

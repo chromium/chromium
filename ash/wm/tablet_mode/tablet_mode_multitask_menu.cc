@@ -14,7 +14,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/window_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
@@ -149,9 +149,9 @@ BEGIN_METADATA(TabletModeMultitaskMenuView, View)
 END_METADATA
 
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(
-    TabletModeMultitaskMenuEventHandler* event_handler,
+    TabletModeMultitaskMenuController* controller,
     aura::Window* window)
-    : event_handler_(event_handler) {
+    : controller_(controller) {
   CHECK(window);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
@@ -245,7 +245,7 @@ void TabletModeMultitaskMenu::Animate(bool show) {
                                0, -menu_view_->GetPreferredSize().height() -
                                       kVerticalPosition),
                     gfx::Tween::ACCEL_20_DECEL_100);
-  ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer();
+  ui::Layer* cue_layer = controller_->multitask_cue()->cue_layer();
   if (cue_layer) {
     animation_builder.GetCurrentSequence().SetTransform(
         cue_layer,
@@ -285,7 +285,7 @@ void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {
     initial_y_ = menu_view_->bounds().bottom();
     menu_view_->layer()->SetTransform(
         gfx::Transform::MakeTranslation(0, translation_y));
-    if (ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
+    if (ui::Layer* cue_layer = controller_->multitask_cue()->cue_layer()) {
       cue_layer->SetTransform(gfx::Transform::MakeTranslation(0, initial_y));
     }
   } else {
@@ -304,7 +304,7 @@ void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
   menu_view_->layer()->SetTransform(
       gfx::Transform::MakeTranslation(0, translation_y));
 
-  if (auto* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
+  if (auto* cue_layer = controller_->multitask_cue()->cue_layer()) {
     cue_layer->SetTransform(gfx::Transform::MakeTranslation(
         0, menu_view_->GetPreferredSize().height() + kVerticalPosition +
                translation_y));
@@ -324,7 +324,7 @@ void TabletModeMultitaskMenu::EndDrag() {
 }
 
 void TabletModeMultitaskMenu::Reset() {
-  event_handler_->ResetMultitaskMenu();
+  controller_->ResetMultitaskMenu();
 }
 
 void TabletModeMultitaskMenu::OnNativeFocusChanged(

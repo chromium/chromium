@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
-#define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
+#ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_CONTROLLER_H_
+#define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_CONTROLLER_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
@@ -15,16 +15,16 @@ namespace ash {
 class TabletModeMultitaskMenu;
 class TabletModeMultitaskCue;
 
-// TabletModeMultitaskMenuEventHandler handles gestures in tablet mode that may
+// TabletModeMultitaskMenuController handles gestures in tablet mode that may
 // show or hide the multitask menu.
-class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
+class TabletModeMultitaskMenuController : public ui::EventHandler {
  public:
-  TabletModeMultitaskMenuEventHandler();
-  TabletModeMultitaskMenuEventHandler(
-      const TabletModeMultitaskMenuEventHandler&) = delete;
-  TabletModeMultitaskMenuEventHandler& operator=(
-      const TabletModeMultitaskMenuEventHandler&) = delete;
-  ~TabletModeMultitaskMenuEventHandler() override;
+  TabletModeMultitaskMenuController();
+  TabletModeMultitaskMenuController(const TabletModeMultitaskMenuController&) =
+      delete;
+  TabletModeMultitaskMenuController& operator=(
+      const TabletModeMultitaskMenuController&) = delete;
+  ~TabletModeMultitaskMenuController() override;
 
   static bool CanShowMenu(aura::Window* window);
 
@@ -56,4 +56,4 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
 
 }  // namespace ash
 
-#endif  // ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
+#endif  // ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_CONTROLLER_H_
