@@ -228,14 +228,16 @@ bool IsABookmarkNodeSectionForIdentifier(
       bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService) &&
       [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()];
   if (showProfileSection) {
-    [self generateTableViewDataForModel:_profileBookmarkModel.get()
-                              inSection:
-                                  BookmarksHomeSectionIdentifierRootProfile];
+    [self
+        generateTableViewDataForModel:_profileBookmarkModel.get()
+                            inSection:BookmarksHomeSectionIdentifierRootProfile
+                  addManagedBookmarks:YES];
   }
   if (showAccountSection) {
-    [self generateTableViewDataForModel:_accountBookmarkModel.get()
-                              inSection:
-                                  BookmarksHomeSectionIdentifierRootAccount];
+    [self
+        generateTableViewDataForModel:_accountBookmarkModel.get()
+                            inSection:BookmarksHomeSectionIdentifierRootAccount
+                  addManagedBookmarks:NO];
   }
   if (showProfileSection && showAccountSection) {
     // Headers are only shown if both sections are visible.
@@ -246,7 +248,8 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 - (void)generateTableViewDataForModel:(bookmarks::BookmarkModel*)model
                             inSection:(BookmarksHomeSectionIdentifier)
-                                          sectionIdentifier {
+                                          sectionIdentifier
+                  addManagedBookmarks:(BOOL)addManagedBookmarks {
   BOOL shouldDisplayCloudSlashIcon =
       [self shouldDisplayCloudSlashIconWithBookmarkModel:model];
   // Add "Mobile Bookmarks" to the table.
@@ -279,6 +282,9 @@ bool IsABookmarkNodeSectionForIdentifier(
                   toSectionWithIdentifier:sectionIdentifier];
   }
 
+  if (!addManagedBookmarks) {
+    return;
+  }
   // Add "Managed Bookmarks" to the table if it exists.
   ChromeBrowserState* browserState = [self originalBrowserState];
   bookmarks::ManagedBookmarkService* managedBookmarkService =
