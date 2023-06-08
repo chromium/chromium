@@ -784,6 +784,14 @@ bool SharedImageFactory::AddSecondaryReference(const gpu::Mailbox& mailbox) {
   return true;
 }
 
+uint32_t SharedImageFactory::GetUsageForMailbox(const Mailbox& mailbox) {
+  auto iter = shared_images_.find(mailbox);
+  if (iter == shared_images_.end()) {
+    return 0;
+  }
+  return (*iter)->usage();
+}
+
 SharedImageRepresentationFactory::SharedImageRepresentationFactory(
     SharedImageManager* manager,
     MemoryTracker* tracker)

@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -52,7 +53,8 @@ SharedImageStub::~SharedImageStub() {
   channel_->scheduler()->DestroySequence(sequence_);
   sync_point_client_state_->Destroy();
   if (factory_ && factory_->HasImages()) {
-    bool have_context = MakeContextCurrent();
+    // Some of the backings might require a current GL context to be destroyed.
+    bool have_context = MakeContextCurrent(/*needs_gl=*/true);
     factory_->DestroyAllSharedImages(have_context);
   }
 }
@@ -157,7 +159,9 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
-  if (!MakeContextCurrent()) {
+
+  bool needs_gl = usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return false;
   }
@@ -193,7 +197,9 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
-  if (!MakeContextCurrent()) {
+
+  bool needs_gl = usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return false;
   }
@@ -242,9 +248,8 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  // Some shared image backing factories will use GL.
-  // TODO(crbug.com/1239365): Only request GL when needed.
-  if (!MakeContextCurrent(/*needs_gl=*/true)) {
+  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
   }
@@ -271,7 +276,8 @@ void SharedImageStub::OnCreateSharedImageWithData(
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
   }
@@ -384,7 +390,9 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  bool needs_gl =
+      factory_->GetUsageForMailbox(mailbox) & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
   }

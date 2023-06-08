@@ -117,6 +117,10 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool RegisterBacking(std::unique_ptr<SharedImageBacking> backing);
   bool AddSecondaryReference(const gpu::Mailbox& mailbox);
 
+  // Returns the usage for the shared image backing. If no backing is registered
+  // for `mailbox` this will return 0.
+  uint32_t GetUsageForMailbox(const Mailbox& mailbox);
+
   SharedContextState* GetSharedContextState() const {
     return shared_context_state_;
   }
