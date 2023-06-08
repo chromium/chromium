@@ -230,7 +230,6 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   void MenuWillClose() override;
 
  protected:
-  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
   Delegate* delegate() { return delegate_; }
 
   // One or more of the menu menu items associated with the model has changed.
@@ -276,8 +275,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   void OnMenuClosed();
 
   ItemVector items_;
-
-  raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   base::WeakPtrFactory<SimpleMenuModel> method_factory_{this};
 };
