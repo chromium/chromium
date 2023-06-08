@@ -12,6 +12,7 @@
 namespace blink {
 
 class LocalFrame;
+class Element;
 
 // The LCPCriticalPathPredictor optimizes page load experience by utilizing
 // data collected by previous page loads. It sources hint data to various parts
@@ -25,6 +26,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   LCPCriticalPathPredictor(const LCPCriticalPathPredictor&) = delete;
   LCPCriticalPathPredictor& operator=(const LCPCriticalPathPredictor&) = delete;
+
+  void OnLargestContentfulPaintUpdated(Element* lcp_element);
 
   void Trace(Visitor*) const;
 

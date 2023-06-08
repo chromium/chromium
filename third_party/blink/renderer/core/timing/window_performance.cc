@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -888,8 +889,14 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     image_element->SetIsLCPElement();
   }
 
-  if (element)
+  if (element) {
     element->GetDocument().OnLargestContentfulPaintUpdated();
+
+    if (LCPCriticalPathPredictor* lcpp =
+            element->GetDocument().GetFrame()->GetLCPP()) {
+      lcpp->OnLargestContentfulPaintUpdated(element);
+    }
+  }
 }
 
 void WindowPerformance::OnPaintFinished() {
