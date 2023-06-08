@@ -514,14 +514,9 @@ void SidePanelCoordinator::InitializeSidePanel() {
   container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   container->SetID(kSidePanelContentViewId);
 
-  auto header = CreateHeader();
-  if (features::IsChromeRefresh2023()) {
-    browser_view_->unified_side_panel()->AddHeaderView(std::move(header));
-  } else {
-    container->AddChildView(std::move(header));
-    container->AddChildView(std::make_unique<views::Separator>())
-        ->SetColorId(kColorSidePanelContentAreaSeparator);
-  }
+  container->AddChildView(CreateHeader());
+  container->AddChildView(std::make_unique<views::Separator>())
+      ->SetColorId(kColorSidePanelContentAreaSeparator);
 
   auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>(
       no_delays_for_testing_);
@@ -640,22 +635,16 @@ SidePanelRegistry* SidePanelCoordinator::GetActiveContextualRegistry() const {
 
 std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   auto header = std::make_unique<views::FlexLayoutView>();
+  // ChromeLayoutProvider for providing margins.
+  ChromeLayoutProvider* const chrome_layout_provider =
+      ChromeLayoutProvider::Get();
 
-  if (!features::IsChromeRefresh2023()) {
-    // ChromeLayoutProvider for providing margins.
-    ChromeLayoutProvider* const chrome_layout_provider =
-        ChromeLayoutProvider::Get();
-
-    // Set the interior margins of the header on the left and right sides.
-    const int horizontal_margin = chrome_layout_provider->GetDistanceMetric(
-        ChromeDistanceMetric::
-            DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL);
-    header->SetInteriorMargin(
-        gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin * 2));
-    header->SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorWindowBackground));
-  }
-
+  // Set the interior margins of the header on the left and right sides.
+  const int horizontal_margin = chrome_layout_provider->GetDistanceMetric(
+      ChromeDistanceMetric::
+          DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL);
+  header->SetInteriorMargin(
+      gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin * 2));
   // Set alignments for horizontal (main) and vertical (cross) axes.
   header->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   header->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -663,6 +652,8 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   // The minimum cross axis size should the expected height of the header.
   constexpr int kDefaultSidePanelHeaderHeight = 40;
   header->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
+  header->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorWindowBackground));
 
   header_combobox_ = header->AddChildView(CreateCombobox());
   header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -720,9 +711,6 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
           .WithAlignment(views::LayoutAlignment::kStart));
   combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
   combobox->SetBackgroundColorId(ui::kColorSidePanelComboboxBackground);
-  if (features::IsChromeRefresh2023()) {
-    combobox->SetForegroundColorId(ui::kColorSysOnSurface);
-  }
   combobox->SetEventHighlighting(true);
   combobox->SetSizeToLargestLabel(false);
   return combobox;

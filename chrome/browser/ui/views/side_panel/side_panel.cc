@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -33,9 +32,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
@@ -68,8 +65,6 @@ class SidePanelBorder : public views::Border {
 
   SidePanelBorder(const SidePanelBorder&) = delete;
   SidePanelBorder& operator=(const SidePanelBorder&) = delete;
-
-  void SetHeaderHeight(int height) { header_height_ = height; }
 
   // views::Border:
   void Paint(const views::View& view, gfx::Canvas* canvas) override {
@@ -110,22 +105,20 @@ class SidePanelBorder : public views::Border {
           /*translate_view_coordinates=*/true);
     }
 
-    if (!features::IsChromeRefresh2023()) {
-      // Paint the inner border around SidePanel content.
-      const float stroke_thickness = views::Separator::kThickness * dsf;
+    // Paint the inner border around SidePanel content.
+    const float stroke_thickness = views::Separator::kThickness * dsf;
 
-      cc::PaintFlags flags;
-      flags.setStrokeWidth(stroke_thickness);
-      flags.setColor(view.GetColorProvider()->GetColor(
-          kColorSidePanelContentAreaSeparator));
-      flags.setStyle(cc::PaintFlags::kStroke_Style);
-      flags.setAntiAlias(true);
+    cc::PaintFlags flags;
+    flags.setStrokeWidth(stroke_thickness);
+    flags.setColor(
+        view.GetColorProvider()->GetColor(kColorSidePanelContentAreaSeparator));
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setAntiAlias(true);
 
-      // Outset half of the stroke thickness so that it's painted fully on the
-      // outside of the clipping region.
-      clip_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
-      canvas->DrawRoundRect(clip_bounds, corner_radius, flags);
-    }
+    // Outset half of the stroke thickness so that it's painted fully on the
+    // outside of the clipping region.
+    clip_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
+    canvas->DrawRoundRect(clip_bounds, corner_radius, flags);
   }
 
   gfx::Insets GetInsets() const override {
@@ -133,43 +126,26 @@ class SidePanelBorder : public views::Border {
     // below to let us paint on top of the toolbar separator. This additional
     // inset is outside the SidePanel itself, but not outside the BorderView.
     return kBorderInsets +
-           gfx::Insets::TLBR(views::Separator::kThickness + header_height_, 0,
-                             0, 0);
+           gfx::Insets::TLBR(views::Separator::kThickness, 0, 0, 0);
   }
   gfx::Size GetMinimumSize() const override {
     return gfx::Size(GetInsets().width(), GetInsets().height());
   }
 
  private:
-  int header_height_ = 0;
   const raw_ptr<BrowserView> browser_view_;
 };
 
 class BorderView : public views::View {
  public:
   explicit BorderView(BrowserView* browser_view) {
-    if (features::IsChromeRefresh2023()) {
-      auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-      layout->SetOrientation(views::LayoutOrientation::kVertical);
-      layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-    } else {
-      // Don't allow the view to process events.
-      SetCanProcessEventsWithinSubtree(false);
-    }
     SetVisible(false);
-    auto border = std::make_unique<SidePanelBorder>(browser_view);
-    border_ = border.get();
-    SetBorder(std::move(border));
-  }
-
-  void HeaderViewChanged(views::View* header_view) {
-    border_->SetHeaderHeight(header_view ? header_view->height() : 0);
+    SetBorder(std::make_unique<SidePanelBorder>(browser_view));
+    // Don't allow the view to process events.
+    SetCanProcessEventsWithinSubtree(false);
   }
 
   void Layout() override {
-    if (features::IsChromeRefresh2023()) {
-      views::View::Layout();
-    }
     // Let BorderView grow slightly taller so that it overlaps the divider into
     // the toolbar or bookmarks bar above it.
     gfx::Rect bounds = parent()->GetLocalBounds();
@@ -178,19 +154,10 @@ class BorderView : public views::View {
     SetBoundsRect(bounds);
   }
 
-  gfx::Insets GetInsets() const override {
-    return gfx::Insets::TLBR(
-        kBorderThickness - views::Separator::kThickness - kOverlapFromToolbar,
-        kBorderThickness, kBorderThickness, kBorderThickness);
-  }
-
   void OnThemeChanged() override {
     SchedulePaint();
     View::OnThemeChanged();
   }
-
- private:
-  raw_ptr<SidePanelBorder> border_;
 };
 
 }  // namespace
@@ -251,15 +218,6 @@ gfx::Size SidePanel::GetMinimumSize() const {
   const int min_height = 0;
   return gfx::Size(min_side_panel_contents_width + kBorderInsets.width(),
                    min_height);
-}
-
-void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
-  // If a header view already exists make sure we remove it so that it is
-  // replaced.
-  if (header_view_) {
-    border_view_->RemoveChildView(header_view_);
-  }
-  header_view_ = border_view_->AddChildView(std::move(view));
 }
 
 gfx::Size SidePanel::GetContentSizeUpperBound() const {
@@ -352,20 +310,8 @@ void SidePanel::UpdateVisibility() {
     if (any_child_visible) {
       border_view_->SetPaintToLayer();
       border_view_->layer()->SetFillsBoundsOpaquely(false);
-      if (header_view_) {
-        static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
-        SetBorder(views::CreateEmptyBorder(
-            kBorderInsets +
-            gfx::Insets::TLBR(header_view_->height(), 0, 0, 0)));
-      }
     } else {
       border_view_->DestroyLayer();
-      if (header_view_) {
-        border_view_->RemoveChildView(header_view_);
-        static_cast<BorderView*>(border_view_)->HeaderViewChanged(nullptr);
-        SetBorder(views::CreateEmptyBorder(kBorderInsets));
-        header_view_ = nullptr;
-      }
     }
   }
   SetVisible(any_child_visible);

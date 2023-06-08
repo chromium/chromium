@@ -88,7 +88,6 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorSegmentedButtonRipple] = {kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorSegmentedButtonChecked] = {kColorSysTonalContainer};
   mixer[kColorSeparator] = {kColorSysDivider};
-  mixer[kColorSidePanelComboboxBackground] = {SK_ColorTRANSPARENT};
   mixer[kColorSliderThumb] = {kColorSysPrimary};
   mixer[kColorSliderThumbMinimal] = {kColorSysSecondary};
   mixer[kColorSliderTrack] = {kColorSysOnPrimary};
