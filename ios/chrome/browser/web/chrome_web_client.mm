@@ -25,6 +25,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/supervised_user/core/common/buildflags.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -94,6 +95,14 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#import "components/supervised_user/core/browser/supervised_user_interstitial.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_error.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #import <UIKit/UIKit.h>
 
@@ -175,6 +184,28 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
       ->AssociateBlockingPage(navigation_id, std::move(page));
   return base::SysUTF8ToNSString(error_page_content);
 }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+// Returns the Supervised User Error Page Interstitial HTML.
+NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
+                                         const GURL& url) {
+  // Fetch the supervised user error info from the WebState's container.
+  SupervisedUserErrorContainer* container =
+      SupervisedUserErrorContainer::FromWebState(web_state);
+  SupervisedUserErrorContainer::SupervisedUserErrorInfo& info =
+      container->GetSupervisedUserErrorInfo();
+
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  std::string error_page_content =
+      supervised_user::SupervisedUserInterstitial::GetHTMLContents(
+          SupervisedUserServiceFactory::GetForBrowserState(browser_state),
+          browser_state->GetPrefs(), info.filtering_behavior_reason(),
+          info.is_already_requested(), info.is_main_frame(),
+          GetApplicationContext()->GetApplicationLocale());
+  return base::SysUTF8ToNSString(error_page_content);
+}
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 // Returns a string describing the product name and version, of the
 // form "productname/version". Used as part of the user agent string.
@@ -375,6 +406,13 @@ void ChromeWebClient::PrepareErrorPage(
     DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
         .Run(GetLookalikeUrlErrorPageHtml(web_state, navigation_id));
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  } else if ([final_underlying_error.domain
+                 isEqualToString:kSupervisedUserInterstitialErrorDomain]) {
+    CHECK_EQ(kSupervisedUserInterstitialErrorCode, final_underlying_error.code);
+    std::move(error_html_callback)
+        .Run(GetSupervisedUserErrorPageHTML(web_state, url));
+#endif
   } else if ([final_underlying_error.domain
                  isEqualToString:kHttpsOnlyModeErrorDomain]) {
     // Only kHttpsOnlyModeErrorCode is supported.

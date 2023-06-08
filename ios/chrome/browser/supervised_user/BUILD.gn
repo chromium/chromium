@@ -7,6 +7,10 @@ source_set("supervised_user") {
   sources = [
     "kids_chrome_management_client_factory.h",
     "kids_chrome_management_client_factory.mm",
+    "supervised_user_error.h",
+    "supervised_user_error.mm",
+    "supervised_user_error_container.h",
+    "supervised_user_error_container.mm",
     "supervised_user_metrics_service_factory.h",
     "supervised_user_metrics_service_factory.mm",
     "supervised_user_service_factory.h",
@@ -63,6 +67,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//components/strings",
+    "//components/strings:components_strings_grit",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

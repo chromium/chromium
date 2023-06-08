@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/sharing/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -191,6 +192,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   if (base::FeatureList::IsEnabled(
           supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
     SupervisedUserURLFilterTabHelper::CreateForWebState(web_state);
+    SupervisedUserErrorContainer::CreateForWebState(web_state);
   }
 
   ImageFetchTabHelper::CreateForWebState(web_state);

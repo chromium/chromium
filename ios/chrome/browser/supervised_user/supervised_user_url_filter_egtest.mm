@@ -45,9 +45,9 @@
 // Tests that a page load is blocked when the URL is filtered.
 - (void)testBlockedSiteDisplaysErrorOnPageLoad {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/filtered")];
-  [ChromeEarlGrey waitForWebStateContainingText:
-                      l10n_util::GetStringUTF8(
-                          IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_BLOCK_INTERSTITIAL_TITLE)];
 }
 
 // Tests that unfiltered sites are loaded normally.
