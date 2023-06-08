@@ -900,7 +900,9 @@ class BookmarkManagerMediator
 
     /** Refresh the list of bookmarks within the currently visible folder. */
     private void refresh() {
-        notifyUi(mStateStack.peek());
+        if (!mStateStack.isEmpty()) {
+            notifyUi(mStateStack.peek());
+        }
     }
 
     private @ViewType int calculatePromoHeaderType() {

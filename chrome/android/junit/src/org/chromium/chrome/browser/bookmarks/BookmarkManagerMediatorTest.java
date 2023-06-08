@@ -503,6 +503,16 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    public void onBackPressed_AndThenModelEvent() {
+        initAndLoadBookmarkModel();
+        assertFalse(mMediator.onBackPressed());
+
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkModelChanged();
+        // This test is verifying the observer event doesn't crash.
+    }
+
+    @Test
     public void testMoveDownUp() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
