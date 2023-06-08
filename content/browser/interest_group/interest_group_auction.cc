@@ -1277,7 +1277,7 @@ class InterestGroupAuction::BuyerHelper
     // Remove Bid states that were filtered out due to having negative new
     // priorities, as ApplySizeLimitAndSort() assumes all bidders are still
     // potentially capable of generating bids. Do these all at once to avoid
-    // repeatedly searching for bid stats that had negative priority vector
+    // repeatedly searching for bid states that had negative priority vector
     // multiplication results, each time a priority vector is received.
     for (size_t i = 0; i < bid_states_.size();) {
       // Removing a bid is guaranteed to destroy the worklet handle, though not
