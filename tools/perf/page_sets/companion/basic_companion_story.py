@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 import json
 from page_sets.desktop_ui.multitab_story import MultiTabStory
-from page_sets.desktop_ui.ui_devtools_utils import ClickOn, PressKey
+from page_sets.desktop_ui.ui_devtools_utils import ClickOn, InputText, \
+    PressKey, SHIFT_DOWN
 from page_sets.companion.browser_element_identifiers import \
     kSidePanelButtonElementId, kSidePanelComboboxElementId
-from page_sets.companion.histograms import _CQ, _PROMO_EVENT, _STARTUP, \
-    _ZERO_STATE
+from page_sets.companion.histograms import _CQ, _PROMO_EVENT, _SEARCH_BOX, \
+    _STARTUP, _ZERO_STATE
 from page_sets.login_helpers import google_login
 
 _GOOGLE_URL = "https://www.google.com/"
@@ -55,9 +56,14 @@ class CompanionStory(MultiTabStory):
   def ConductHistogramCheck(self,
                             action_runner,
                             histogram_name,
+                            expected_empty=False,
                             expected_count=None):
     histogram = self.FetchHistogram(action_runner, histogram_name)
-    assert histogram, "%s histogram is non-existent" % histogram_name
+    if expected_empty:
+      assert not histogram, "expected non-existent %s histogram, got %s" % \
+          (histogram_name, histogram)
+    else:
+      assert histogram, "%s histogram is non-existent" % histogram_name
 
     if expected_count:
       assert histogram['count'] == expected_count, \
@@ -73,8 +79,8 @@ class CompanionStory(MultiTabStory):
     pass
 
 
-class CompanionStoryBasic(CompanionStory):
-  NAME = 'companion:basic_startup'
+class CompanionStoryBasicOpen(CompanionStory):
+  NAME = 'companion:basic_open_logged_in'
 
   def InteractWithPage(self, action_runner):
     self.SanityHistogramCheck(action_runner)
@@ -85,13 +91,60 @@ class CompanionStoryBasic(CompanionStory):
 
     # Open companion and ensure features loaded.
     self.OpenCompanion(action_runner)
+    action_runner.Wait(3)
+    self.ConductHistogramCheck(action_runner, _ZERO_STATE)
+    self.ConductHistogramCheck(action_runner, _CQ)
+
+
+class CompanionStoryBasicOpenLoggedOut(CompanionStory):
+  NAME = 'companion:basic_open_logged_out'
+
+  def InteractWithPage(self, action_runner):
+    self.SanityHistogramCheck(action_runner)
+    action_runner.tab.Navigate(_TEST_PAGE_URL)
+    action_runner.Wait(3)
+
+    # Open companion and ensure features loaded.
+    self.OpenCompanion(action_runner)
+    action_runner.Wait(3)
+    self.ConductHistogramCheck(action_runner, _ZERO_STATE)
+    self.ConductHistogramCheck(action_runner, _PROMO_EVENT)
+    self.ConductHistogramCheck(action_runner, _CQ, expected_empty=True)
+
+
+class CompanionStorySRP(CompanionStory):
+  NAME = 'companion:srp'
+
+  def ConductSideSearch(self, action_runner):
+    action_runner.Wait(2)
+    node_id = self._devtools.QueryNodes('<Window>')[0]
+    action_runner.Wait(2)
+    PressKey(self._devtools, node_id, 'Tab', SHIFT_DOWN)
+    PressKey(self._devtools, node_id, 'Tab', SHIFT_DOWN)
+    PressKey(self._devtools, node_id, 'Tab', SHIFT_DOWN)
+    InputText(self._devtools, node_id, 'test input')
+    action_runner.Wait(1)
+    PressKey(self._devtools, node_id, 'Tab', SHIFT_DOWN)
+    PressKey(self._devtools, node_id, ' ')
+    PressKey(self._devtools, node_id, ' ')
+    action_runner.PressKey(' ')
+    action_runner.PressKey(' ')
+
+  def InteractWithPage(self, action_runner):
+    self.SanityHistogramCheck(action_runner)
+    self.LogIn(action_runner)
+    action_runner.Wait(1)
+    action_runner.tab.Navigate(_TEST_PAGE_URL)
+    action_runner.Wait(3)
+
+    # Open companion and ensure features loaded.
+    self.OpenCompanion(action_runner)
+    action_runner.Wait(3)
     self.ConductHistogramCheck(action_runner, _ZERO_STATE)
     self.ConductHistogramCheck(action_runner, _PROMO_EVENT)
     self.ConductHistogramCheck(action_runner, _CQ)
 
-
-class CompanionStoryBasicWithSearch(CompanionStory):
-  NAME = 'companion:basic_search'
-
-  def InteractWithPage(self, action_runner):
-    self.SanityHistogramCheck(action_runner)
+    # Conduct Side Search
+    self.ConductHistogramCheck(action_runner, _SEARCH_BOX, expected_empty=True)
+    self.ConductSideSearch(action_runner)
+    self.ConductHistogramCheck(action_runner, _SEARCH_BOX)

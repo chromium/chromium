@@ -7,7 +7,11 @@ from page_sets.companion import basic_companion_story
 
 
 class CompanionStorySet(story.StorySet):
-  COMPANION_STORIES = [basic_companion_story.CompanionStoryBasic]
+  COMPANION_STORIES = [
+      basic_companion_story.CompanionStoryBasicOpen,
+      basic_companion_story.CompanionStoryBasicOpenLoggedOut,
+      basic_companion_story.CompanionStorySRP
+  ]
 
   def __init__(self):
     super(CompanionStorySet,
