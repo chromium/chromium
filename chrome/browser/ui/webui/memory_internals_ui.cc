@@ -29,7 +29,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/memory_internals_resources.h"
+#include "chrome/grit/memory_internals_resources_map.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -124,8 +125,9 @@ std::string GetChildDescription(const content::ChildProcessData& data) {
 void CreateAndAddMemoryInternalsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIMemoryInternalsHost);
-  source->SetDefaultResource(IDR_MEMORY_INTERNALS_HTML);
-  source->AddResourcePath("memory_internals.js", IDR_MEMORY_INTERNALS_JS);
+  source->AddResourcePaths(base::make_span(kMemoryInternalsResources,
+                                           kMemoryInternalsResourcesSize));
+  source->SetDefaultResource(IDR_MEMORY_INTERNALS_MEMORY_INTERNALS_HTML);
 }
 
 class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,

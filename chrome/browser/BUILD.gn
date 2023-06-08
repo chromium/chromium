@@ -7923,12 +7923,7 @@ grit("dev_ui_browser_resources") {
     "dev_ui_browser_resources.pak",
   ]
 
-  deps = [
-    "//chrome/browser/resources/components:build_ts",
-    "//chrome/browser/resources/engagement:build_ts",
-    "//chrome/browser/resources/memory_internals:build_ts",
-    "//chrome/browser/resources/predictors:build_ts",
-  ]
+  deps = []
 
   if (is_android || is_linux || is_chromeos || is_win) {
     deps += [ "//chrome/browser/resources/sandbox_internals:build_ts" ]

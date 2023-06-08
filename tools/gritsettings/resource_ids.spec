@@ -168,6 +168,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2560],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/predictors/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [2570],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/profile_internals/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2580],
@@ -235,6 +239,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2940],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/engagement/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [2950],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions/resources.grd": {
     "META": {"sizes": {"includes": [90],}},
     "includes": [2960],
@@ -262,6 +270,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/management/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3060],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/memory_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [3070],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/new_tab_page_instant/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
@@ -475,6 +487,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/app_home/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [4060],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/components/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [4070],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/gaia_auth_host/resources.grd": {
     "META": {"sizes": {"includes": [20],}},

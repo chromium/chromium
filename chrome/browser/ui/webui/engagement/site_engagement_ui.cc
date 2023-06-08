@@ -14,7 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/engagement_resources.h"
+#include "chrome/grit/engagement_resources_map.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/web_ui.h"
@@ -100,10 +101,9 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
-  source->AddResourcePath("site_engagement.js", IDR_SITE_ENGAGEMENT_JS);
-  source->AddResourcePath("site_engagement_details.mojom-webui.js",
-                          IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_WEBUI_JS);
-  source->SetDefaultResource(IDR_SITE_ENGAGEMENT_HTML);
+  source->AddResourcePaths(
+      base::make_span(kEngagementResources, kEngagementResourcesSize));
+  source->SetDefaultResource(IDR_ENGAGEMENT_SITE_ENGAGEMENT_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SiteEngagementUI)
