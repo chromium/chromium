@@ -98,6 +98,9 @@ class ExtensionFunctionDispatcher;
 
 // Abstract base class for extension functions the ExtensionFunctionDispatcher
 // knows how to dispatch to.
+// NOTE: If you see a crash in an ExtensionFunction implementation and want to
+// know which extension triggered the crash, look for crash keys
+// extension-function-caller-1, 2, and 3.
 class ExtensionFunction : public base::RefCountedThreadSafe<
                               ExtensionFunction,
                               content::BrowserThread::DeleteOnUIThread> {
@@ -613,11 +616,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // returning.  Usually we want to kill the message sending process.
   bool bad_message_ = false;
 
-#if DCHECK_IS_ON()
   // Set to true when RunWithValidation() is called, to look for callers using
-  // the method more than once on a single ExtensionFunction.
+  // the method more than once on a single ExtensionFunction. Note that some
+  // ExtensionFunction objects may be created but not run, for example due to
+  // quota limits.
   bool did_run_ = false;
-#endif
 
   // The sample value to record with the histogram API when the function
   // is invoked.
