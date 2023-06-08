@@ -26,7 +26,7 @@ import {
   toAspectRatioAriaLabel,
   toAspectRatioLabel,
   toPhotoResolutionOptionLabel,
-  toVideoResoloutionOptionLabel,
+  toVideoResolutionOptionLabel,
 } from './util.js';
 import {VideoResolutionSettings} from './video_resolution.js';
 
@@ -147,7 +147,7 @@ export class PrimarySettings extends BaseSettings {
       }
       const span =
           dom.getFrom(this.videoResolutionSettings, 'span', HTMLSpanElement);
-      span.textContent = toVideoResoloutionOptionLabel(option.resolutionLevel);
+      span.textContent = toVideoResolutionOptionLabel(option.resolutionLevel);
     });
   }
 

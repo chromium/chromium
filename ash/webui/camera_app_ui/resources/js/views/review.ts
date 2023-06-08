@@ -23,7 +23,7 @@ interface UIArgs {
 }
 
 /**
- * Available option show in this view.
+ * Available option shown in this view.
  */
 export class Option<T> {
   readonly exitValue?: T;

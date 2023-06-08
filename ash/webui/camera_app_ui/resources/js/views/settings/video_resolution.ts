@@ -84,7 +84,7 @@ export class VideoResolutionSettings extends BaseSettings {
     const span = dom.getFrom(optionElement, 'span', HTMLSpanElement);
 
     let text;
-    const label = util.toVideoResoloutionOptionLabel(option.resolutionLevel);
+    const label = util.toVideoResolutionOptionLabel(option.resolutionLevel);
     if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       const mpInfo = loadTimeData.getI18nMessage(
           I18nString.LABEL_RESOLUTION_MP,

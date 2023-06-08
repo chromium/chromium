@@ -125,7 +125,7 @@ export function toAspectRatioAriaLabel(aspectRatioSet: AspectRatioSet): string {
 /**
  * Gets the string with I18n from given video resolution level.
  */
-export function toVideoResoloutionOptionLabel(level: VideoResolutionLevel):
+export function toVideoResolutionOptionLabel(level: VideoResolutionLevel):
     string {
   let label;
   switch (level) {
