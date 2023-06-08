@@ -885,10 +885,10 @@ TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
   auto* origin_window = window_.get();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
+  MockPlatformWindowDelegate delegate;
   std::unique_ptr<WaylandWindow> popup_window;
 
   ScheduleTestTask(base::BindLambdaForTesting([&]() {
-    MockPlatformWindowDelegate delegate;
     popup_window =
         CreateTestWindow(PlatformWindowType::kPopup, gfx::Size(100, 40),
                          &delegate, origin_window->GetWidget());

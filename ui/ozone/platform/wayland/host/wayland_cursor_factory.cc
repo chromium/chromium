@@ -46,7 +46,9 @@ WaylandCursorFactory::WaylandCursorFactory(WaylandConnection* connection)
   ReloadThemeCursors();
 }
 
-WaylandCursorFactory::~WaylandCursorFactory() = default;
+WaylandCursorFactory::~WaylandCursorFactory() {
+  connection_->SetCursorBufferListener(nullptr);
+}
 
 void WaylandCursorFactory::ObserveThemeChanges() {
   auto* linux_ui = LinuxUi::instance();
