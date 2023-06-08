@@ -1322,6 +1322,86 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+// Regression test for https://crbug.com/1449796 - verifying that the IPC
+// verification doesn't incorrectly think that an IPC from a content script
+// running in an MHTML frame is malicious (in this scenario the `source_url`
+// field of the IPC may be a bit unusual and doesn't necessarily match the
+// process lock).
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MhtmlIframe) {
+  // Install a test extension.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "version": "1.0",
+        "manifest_version": 3,
+        "host_permissions": ["http://foo.com/*", "file://*"],
+        "content_scripts": [{
+          "all_frames": true,
+          "match_about_blank": true,
+          "matches": ["http://foo.com/*", "file://*"],
+          "js": ["content_script.js"]
+        }],
+        "background": {"service_worker": "background_script.js"}
+      } )";
+  const char kBackgroundScript[] = R"(
+      chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+          chrome.test.sendMessage("Got message from " + sender.url);
+        }
+      );
+  )";
+  const char kContentScript[] = R"(
+      message = "Hello from frame at url = " + window.location.href;
+      console.log(message);
+      chrome.runtime.sendMessage({greeting: message});
+  )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), kBackgroundScript);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to a MHTML *file* that pretends to host a nested *http* subframe
+  // (as well as a *cid* subframe).
+  const GURL kExpectedFrame1Url = GURL("http://foo.com/frame_0.html");
+  const GURL kExpectedFrame2Url = GURL("cid:frame1@foo.bar");
+  ExtensionTestMessageListener listener1(base::StringPrintf(
+      "Got message from %s", kExpectedFrame1Url.spec().c_str()));
+  ExtensionTestMessageListener listener2(base::StringPrintf(
+      "Got message from %s", kExpectedFrame2Url.spec().c_str()));
+  GURL page_url = ui_test_utils::GetTestUrl(
+      base::FilePath(FILE_PATH_LITERAL("extensions")),
+      base::FilePath(FILE_PATH_LITERAL("mhtml-with-subframes.mht")));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  // Verify that the subframes are at the expected URLs:
+  // * Not `file:` URLs - the URLs come from inside MHTML,
+  // * URLs will match the URLs patterns from the extension manifest above.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* subframe1 = content::ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(subframe1);
+  EXPECT_EQ(subframe1->GetLastCommittedURL(), kExpectedFrame1Url);
+  content::RenderFrameHost* subframe2 = content::ChildFrameAt(web_contents, 1);
+  ASSERT_TRUE(subframe2);
+  EXPECT_EQ(subframe2->GetLastCommittedURL(), kExpectedFrame2Url);
+
+  // Verify that the content scripts have been injected.  Content script
+  // injection is important even in somewhat exotic scenarios such as here
+  // (MHTML frames normally don't execute any scripts), because it is important
+  // that some extensions (such as accessbility aids) are able to inject content
+  // scripts into all frames.
+  //
+  // Note that `<all_urls>` doesn't cover `cid:` subframes, so we don't wait for
+  // `listener2`.
+  //
+  // Since `chrome.test.sendMessage` happens *after*
+  // `chrome.runtime.sendMessage` this is sufficient for verifying that the IPC
+  // handler didn't terminate the renderer process.
+  ASSERT_TRUE(listener1.WaitUntilSatisfied());
+}
+
 // A test suite designed for exercising the behavior of content script
 // injection into opaque URLs (like about:blank).
 class ContentScriptRelatedFrameTest : public ContentScriptApiTest {
