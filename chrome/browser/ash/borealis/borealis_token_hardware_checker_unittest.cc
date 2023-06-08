@@ -82,6 +82,18 @@ TEST(BorealisTokenHardwareCheckerTest, Nissa) {
   EXPECT_EQ(check_nissa(), AllowStatus::kAllowed);
 }
 
+TEST(BorealisTokenHardwareCheckerTest, Skyrim) {
+  auto check_skyrim = []() {
+    return check("skyrim", "", "AMD Ryzen 5 X303 with Radeon Graphics", 8, "");
+  };
+
+  EXPECT_EQ(check_skyrim(), AllowStatus::kUnsupportedModel);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(ash::features::kFeatureManagementBorealis,
+                                /*enabled=*/true);
+  EXPECT_EQ(check_skyrim(), AllowStatus::kAllowed);
+}
+
 // Procedure for adding and new token:
 //  - uncomment the below test
 //  - Fill it in with details of the board you're trying to bypass
