@@ -1070,8 +1070,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 }
 
 // Checks that deleting a password from password details can be cancelled.
-// TODO(crbug.com/1405037): The test is flaky.
-- (void)DISABLED_testCancelDeletionInDetailView {
+- (void)testCancelDeletionInDetailView {
   // Save form to be deleted later.
   SavePasswordForm();
 
@@ -1097,9 +1096,8 @@ void CopyPasswordDetailWithID(int detail_id) {
                                           : DeleteButton()]
       performAction:grey_tap()];
 
-  // Close the dialog by taping on Password Details screen.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+  // Close the dialog by tapping on Password Details screen cancel button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
 
   // Check that the current view is still the detail view.
