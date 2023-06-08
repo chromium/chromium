@@ -373,6 +373,9 @@ TEST_F(PseudoTcpAdapterTest, LimitedChannel) {
   tester->Start();
   base::RunLoop().Run();
   tester->CheckResults();
+
+  // Drop unowned reference before local goes out of scope.
+  client_socket_->set_rate_limiter(nullptr);
 }
 
 class DeleteOnConnected {
