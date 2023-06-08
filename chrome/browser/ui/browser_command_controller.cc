@@ -961,7 +961,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       CloseOtherTabs(browser_);
       break;
     case IDC_SHOW_MANAGEMENT_PAGE: {
-      ShowSingletonTab(browser_, GetManagedUiMenuLinkUrl(profile()));
+      ShowSingletonTab(browser_, GetManagedUiUrl(profile()));
       break;
     }
     case IDC_MUTE_TARGET_SITE:

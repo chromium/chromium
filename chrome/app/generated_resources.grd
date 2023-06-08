@@ -9875,6 +9875,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             Restart
           </message>
         </if>
+        <if expr="not chromeos_ash">
+          <message name="IDS_HELP_MANAGED_BY_YOUR_PARENT" desc="The text label shown in chrome://settings/help for users subject to parental controls.">
+            Your browser is managed by your parent
+          </message>
+        </if>
       </if> <!-- not is_android -->
 
       <if expr="chromeos_ash">

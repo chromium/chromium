@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,6 +27,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -132,6 +134,20 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 
 #if !BUILDFLAG(IS_ANDROID)
 
+GURL GetManagedUiUrl(Profile* profile) {
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    return GURL(kChromeUIManagementURL);
+  }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (ShouldDisplayManagedByParentUi(profile)) {
+    return GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get());
+  }
+#endif
+
+  return GURL();
+}
+
 const gfx::VectorIcon& GetManagedUiIcon(Profile* profile) {
   CHECK(ShouldDisplayManagedUi(profile));
 
@@ -167,21 +183,6 @@ std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
 
   CHECK(ShouldDisplayManagedByParentUi(profile));
   return l10n_util::GetStringUTF16(IDS_MANAGED_BY_PARENT);
-}
-
-GURL GetManagedUiMenuLinkUrl(Profile* profile) {
-  CHECK(ShouldDisplayManagedUi(profile));
-
-  if (enterprise_util::IsBrowserManaged(profile)) {
-    return GURL(kChromeUIManagementURL);
-  }
-
-  CHECK(ShouldDisplayManagedByParentUi(profile));
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get());
-#else
-  NOTREACHED_NORETURN();
-#endif
 }
 
 std::string GetManagedUiWebUIIcon(Profile* profile) {
@@ -231,6 +232,32 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
   // This method can be called even if we shouldn't display the managed UI.
   return std::u16string();
 }
+
+std::u16string GetDeviceManagedUiHelpLabel(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ManagementUI::GetManagementPageSubtitle(profile);
+#else
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+    if (!manager &&
+        base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
+      manager = GetDeviceManagerIdentity();
+    }
+    return manager && !manager->empty()
+               ? l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
+                                            base::UTF8ToUTF16(*manager))
+               : l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE);
+  }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (ShouldDisplayManagedByParentUi(profile)) {
+    return l10n_util::GetStringUTF16(IDS_HELP_MANAGED_BY_YOUR_PARENT);
+  }
+#endif
+
+  return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -251,8 +278,9 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 #endif
 
 absl::optional<std::string> GetDeviceManagerIdentity() {
-  if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged())
+  if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
     return absl::nullopt;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorAsh* connector =

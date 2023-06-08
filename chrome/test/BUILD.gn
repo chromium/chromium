@@ -1733,6 +1733,10 @@ if (!is_android) {
       "//v8",
     ]
 
+    if (is_chromeos) {
+      deps += [ "//ui/chromeos" ]
+    }
+
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",

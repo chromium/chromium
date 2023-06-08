@@ -81,6 +81,17 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         },
       },
 
+      /**
+       * The name of the icon to display in the management card.
+       * Should only be read if isManaged_ is true.
+       */
+      managedByIcon_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('managedByIcon');
+        },
+      },
+
       // <if expr="_google_chrome">
       /**
        * Whether to show the "Get the most out of Chrome" section.
@@ -330,7 +341,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
 
   private onManagementPageClick_() {
-    window.location.href = 'chrome://management';
+    window.location.href = loadTimeData.getString('managementPageUrl');
   }
 
   private onProductLogoClick_() {

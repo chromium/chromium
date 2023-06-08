@@ -36,6 +36,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
@@ -83,6 +84,7 @@
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -319,8 +321,16 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString("managementPage",
-                         ManagementUI::GetManagementPageSubtitle(profile));
+  html_source->AddString(
+      "managementPage",
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+      base::FeatureList::IsEnabled(supervised_user::kEnableManagedByParentUi)
+          ? chrome::GetDeviceManagedUiHelpLabel(profile)
+          : ManagementUI::GetManagementPageSubtitle(profile)
+#else
+      ManagementUI::GetManagementPageSubtitle(profile)
+#endif
+  );
   html_source->AddString(
       "aboutUpgradeUpToDate",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
