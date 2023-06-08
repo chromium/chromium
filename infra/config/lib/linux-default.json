@@ -84,6 +84,7 @@
     "Site Isolation Android": "Ubuntu-22.04",
     "ToTAndroid x64": "Ubuntu-22.04",
     "ToTFuchsia x64": "Ubuntu-22.04",
+    "ToTLinux (dbg)": "Ubuntu-22.04",
     "ToTLinuxASanLibfuzzer": "Ubuntu-22.04",
     "ToTLinuxTSan": "Ubuntu-22.04",
     "VR Linux": "Ubuntu-22.04",
