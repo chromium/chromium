@@ -52,17 +52,25 @@ public class BaselineProfileTest {
     @LargeTest
     public void testGenerateBaselineProfile() {
         Context context = ApplicationProvider.getApplicationContext();
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DATA_URL));
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        final Intent cct_intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DATA_URL));
+        cct_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         // Mark it as a CCT session.
-        intent.putExtra(CCT_SESSION_EXTRA, (Bundle) null);
-        intent.setComponent(new ComponentName(mPackageName, ACTIVITY_NAME));
-        mBaselineProfileRule.collectBaselineProfile(
+        cct_intent.putExtra(CCT_SESSION_EXTRA, (Bundle) null);
+        cct_intent.setComponent(new ComponentName(mPackageName, ACTIVITY_NAME));
+        mBaselineProfileRule.collect(
                 /* packageName= */ mPackageName,
-                /* iterations= */ 5,
+                /* maxIterations= */ 15,
+                /* stableIterations= */ 3,
+                /* outputFilePrefix= */ null,
+                /* includeInStartupProfile= */ true,
                 /* profileBlock= */
                 scope -> {
-                    scope.startActivityAndWait(intent);
+                    scope.startActivityAndWait(cct_intent);
+                    final Intent cta_intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DATA_URL));
+                    cta_intent.addFlags(
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    cta_intent.setComponent(new ComponentName(mPackageName, ACTIVITY_NAME));
+                    scope.startActivityAndWait(cta_intent);
                     return Unit.INSTANCE;
                 });
     }

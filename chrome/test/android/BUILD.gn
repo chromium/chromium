@@ -117,6 +117,7 @@ instrumentation_test_runner("chrome_public_apk_baseline_profile_generator") {
   extra_args = [
     "--use-apk-under-test-flags-file",
     "--disable-fre",
+    "--strict-mode=off",
   ]
 }
 
