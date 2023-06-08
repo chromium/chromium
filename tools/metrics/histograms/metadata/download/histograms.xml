@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DangerousFile"/>
   <variant name="DangerousHost"/>
   <variant name="DangerousURL"/>
+  <variant name="DeepScannedFailed"/>
   <variant name="DeepScannedOpenedDangerous"/>
   <variant name="DeepScannedSafe"/>
   <variant name="MaybeDangerousContent"/>

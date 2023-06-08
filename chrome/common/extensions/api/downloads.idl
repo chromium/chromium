@@ -137,6 +137,7 @@ namespace downloads {
     sensitiveContentWarning,
     sensitiveContentBlock,
     unsupportedFileType,
+    deepScannedFailed,
     deepScannedSafe,
     deepScannedOpenedDangerous,
     promptForScaning,

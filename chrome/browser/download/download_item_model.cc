@@ -392,6 +392,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return false;
@@ -1123,6 +1124,7 @@ bool DownloadItemModel::IsEphemeralWarning() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return true;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:

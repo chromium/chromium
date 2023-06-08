@@ -73,6 +73,9 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeDangerousAccountCompromise;
+    case DownloadDangerType::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
+      return crosapi::mojom::DownloadDangerType::
+          kDownloadDangerTypeDeepScannedFailed;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return crosapi::mojom::DownloadDangerType::kDownloadDangerTypeInvalid;

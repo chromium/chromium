@@ -76,6 +76,8 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
       return "SENSITIVE_CONTENT_WARNING";
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return "SENSITIVE_CONTENT_BLOCK";
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
+      return "DEEP_SCANNED_FAILED";
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
       return "DEEP_SCANNED_SAFE";
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:

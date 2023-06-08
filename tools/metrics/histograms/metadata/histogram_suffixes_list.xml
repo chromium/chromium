@@ -1774,6 +1774,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="DangerousFile" label="File marked DANGEROUS_FILE"/>
   <suffix name="DangerousHost" label="File marked DANGEROUS_HOST"/>
   <suffix name="DangerousURL" label="File marked DANGEROUS_URL"/>
+  <suffix name="DeepScannedFailed" label="File marked DEEP_SCANNED_FAILED"/>
   <suffix name="DeepScannedOpenedDangerous"
       label="File marked DEEP_SCANNED_OPENED_DANGEROUS"/>
   <suffix name="DeepScannedSafe" label="File marked DEEP_SCANNED_SAFE"/>

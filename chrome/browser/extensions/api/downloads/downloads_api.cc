@@ -207,6 +207,8 @@ extensions::api::downloads::DangerType ConvertDangerType(
       return extensions::api::downloads::DANGER_TYPE_UNSUPPORTEDFILETYPE;
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return extensions::api::downloads::DANGER_TYPE_ACCOUNTCOMPROMISE;
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
+      return extensions::api::downloads::DANGER_TYPE_DEEPSCANNEDFAILED;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return extensions::api::downloads::DANGER_TYPE_LAST;
