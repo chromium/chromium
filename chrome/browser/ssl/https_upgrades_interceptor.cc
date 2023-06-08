@@ -386,9 +386,10 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
 
   // Next check whether the HTTP or HTTPS versions of the URL has "Insecure
   // Content" allowed in content settings. We treat this as a sign to not do
-  // silent HTTPS Upgrades for the site overall. (HTTPS-First Mode ignores this
-  // setting.)
-  if (!IsInterstitialEnabled(*interstitial_state_) &&
+  // silent HTTPS Upgrades for the site overall and not show an HTTPS-First Mode
+  // interstitial for Engaged Sites. The main HTTPS-First Mode ignores this
+  // setting.
+  if (!interstitial_state_->enabled_by_pref &&
       DoesInsecureContentSettingDisableUpgrading(tentative_resource_request.url,
                                                  profile)) {
     RecordNavigationRequestSecurityLevel(
