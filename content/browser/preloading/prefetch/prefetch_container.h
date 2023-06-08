@@ -90,11 +90,19 @@ class CONTENT_EXPORT PrefetchContainer {
   // redirect hop of the given url.
   bool IsIsolatedNetworkContextRequiredForPreviousRedirectHop() const;
 
+  // Gets the site for the previous redirect hop to the given URL.
+  net::SchemefulSite GetSiteForPreviousRedirectHop(const GURL& url) const;
+
   // Whether or not the prefetch proxy would be required to fetch the given url
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
 
   const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
+
+  // Updates |referrer_| after a redirect.
+  void UpdateReferrer(
+      const GURL& new_referrer_url,
+      const network::mojom::ReferrerPolicy& new_referrer_policy);
 
   const net::SchemefulSite& GetReferringSite() const { return referring_site_; }
 
@@ -363,7 +371,7 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchType prefetch_type_;
 
   // The referrer to use for the request.
-  const blink::mojom::Referrer referrer_;
+  blink::mojom::Referrer referrer_;
 
   // The origin and site of the page that requested the prefetched.
   url::Origin referring_origin_;

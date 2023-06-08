@@ -907,9 +907,23 @@ bool PrefetchContainer::Reader::IsIsolatedNetworkContextRequiredToServe()
   return this_prefetch.is_isolated_network_context_required_;
 }
 
+net::SchemefulSite PrefetchContainer::GetSiteForPreviousRedirectHop(
+    const GURL& url) const {
+  const SinglePrefetch& previous_prefetch =
+      GetPreviousSinglePrefetchToPrefetch();
+  return net::SchemefulSite(previous_prefetch.url_);
+}
+
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
   return !referring_origin_.IsSameOriginWith(url) &&
          prefetch_type_.IsProxyRequiredWhenCrossOrigin();
+}
+
+void PrefetchContainer::UpdateReferrer(
+    const GURL& new_referrer_url,
+    const network::mojom::ReferrerPolicy& new_referrer_policy) {
+  referrer_.url = new_referrer_url;
+  referrer_.policy = new_referrer_policy;
 }
 
 std::ostream& operator<<(std::ostream& ostream,

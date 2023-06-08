@@ -56,6 +56,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -272,6 +273,26 @@ void BlockUntilHeadTimeoutHelper(
           ->ReleaseOnReceivedHeadCallback();
   if (on_received_head_callback) {
     std::move(on_received_head_callback).Run();
+  }
+}
+
+bool IsReferrerPolicySufficientlyStrict(
+    const network::mojom::ReferrerPolicy& referrer_policy) {
+  // https://github.com/WICG/nav-speculation/blob/main/prefetch.bs#L606
+  // "", "`strict-origin-when-cross-origin`", "`strict-origin`",
+  // "`same-origin`", "`no-referrer`".
+  switch (referrer_policy) {
+    case network::mojom::ReferrerPolicy::kDefault:
+    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
+    case network::mojom::ReferrerPolicy::kSameOrigin:
+    case network::mojom::ReferrerPolicy::kStrictOrigin:
+      return true;
+    case network::mojom::ReferrerPolicy::kAlways:
+    case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
+    case network::mojom::ReferrerPolicy::kNever:
+    case network::mojom::ReferrerPolicy::kOrigin:
+    case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
+      return false;
   }
 }
 
@@ -1089,10 +1110,28 @@ void PrefetchService::OnPrefetchRedirect(
 
   prefetch_container->AddRedirectHop(redirect_info.new_url);
 
+  // Update the prefetch's referrer in case a redirect requires a change in
+  // network context and a new request needs to be started.
+  prefetch_container->UpdateReferrer(
+      GURL(redirect_info.new_referrer),
+      blink::ReferrerUtils::NetToMojoReferrerPolicy(
+          redirect_info.new_referrer_policy));
+
+  // Check that the prefetch's referrer policy is sufficiently strict to allow
+  // for the redirect to be followed.
+  net::SchemefulSite previous_site =
+      prefetch_container->GetSiteForPreviousRedirectHop(redirect_info.new_url);
+  net::SchemefulSite redirect_site(redirect_info.new_url);
+  bool is_referrer_policy_sufficiently_strict =
+      IsReferrerPolicySufficientlyStrict(
+          prefetch_container->GetReferrer().policy);
+
   if (!base::FeatureList::IsEnabled(features::kPrefetchRedirects) ||
       redirect_info.new_method != "GET" || !response_head.headers ||
       response_head.headers->response_code() < 300 ||
-      response_head.headers->response_code() >= 400) {
+      response_head.headers->response_code() >= 400 ||
+      (previous_site != redirect_site &&
+       !is_referrer_policy_sufficiently_strict)) {
     active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
@@ -1109,6 +1148,10 @@ void PrefetchService::OnPrefetchRedirect(
     } else if (response_head.headers->response_code() < 300 ||
                response_head.headers->response_code() >= 400) {
       RecordRedirectResult(PrefetchRedirectResult::kFailedInvalidResponseCode);
+    } else if (previous_site != redirect_site &&
+               !is_referrer_policy_sufficiently_strict) {
+      RecordRedirectResult(
+          PrefetchRedirectResult::kFailedInsufficientReferrerPolicy);
     }
 
     return;
