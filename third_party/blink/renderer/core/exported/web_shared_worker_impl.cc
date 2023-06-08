@@ -34,11 +34,9 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-blink.h"
@@ -47,7 +45,6 @@
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -197,8 +194,6 @@ void WebSharedWorkerImpl::StartWorkerContext(
     WebSecurityOrigin constructor_origin,
     bool is_constructor_secure_context,
     const WebString& user_agent,
-    const WebString& full_user_agent,
-    const WebString& reduced_user_agent,
     const UserAgentMetadata& ua_metadata,
     const WebVector<WebContentSecurityPolicy>& content_security_policies,
     const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
@@ -242,29 +237,12 @@ void WebSharedWorkerImpl::StartWorkerContext(
       false /* strictly_block_blockable_mixed_content */,
       GenericFontFamilySettings());
 
-  bool reduced_ua_enabled = false;
-  bool full_ua_enabled = false;
-  if (worker_main_script_load_params &&
-      worker_main_script_load_params->response_head &&
-      worker_main_script_load_params->response_head->headers) {
-    reduced_ua_enabled = blink::TrialTokenValidator().RequestEnablesFeature(
-        blink::WebStringToGURL(script_request_url.GetString()),
-        worker_main_script_load_params->response_head->headers.get(),
-        "UserAgentReduction", base::Time::Now());
-    full_ua_enabled = blink::TrialTokenValidator().RequestEnablesFeature(
-        blink::WebStringToGURL(script_request_url.GetString()),
-        worker_main_script_load_params->response_head->headers.get(),
-        "SendFullUserAgentAfterReduction", base::Time::Now());
-  }
-
   // Some params (e.g. address space) passed to GlobalScopeCreationParams are
   // dummy values. They will be updated after worker script fetch on the worker
   // thread.
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-      script_request_url, script_type, name,
-      full_ua_enabled ? full_user_agent
-                      : (reduced_ua_enabled ? reduced_user_agent : user_agent),
-      ua_metadata, std::move(web_worker_fetch_context),
+      script_request_url, script_type, name, user_agent, ua_metadata,
+      std::move(web_worker_fetch_context),
       ConvertToMojoBlink(content_security_policies),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       outside_settings_object->GetReferrerPolicy(),
@@ -345,8 +323,6 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
     WebSecurityOrigin constructor_origin,
     bool is_constructor_secure_context,
     const WebString& user_agent,
-    const WebString& full_user_agent,
-    const WebString& reduced_user_agent,
     const UserAgentMetadata& ua_metadata,
     const WebVector<WebContentSecurityPolicy>& content_security_policies,
     const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
@@ -368,12 +344,12 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
   worker->StartWorkerContext(
       script_request_url, script_type, credentials_mode, name,
       constructor_origin, is_constructor_secure_context, user_agent,
-      full_user_agent, reduced_user_agent, ua_metadata,
-      content_security_policies, outside_fetch_client_settings_object,
-      devtools_worker_token, std::move(content_settings),
-      std::move(browser_interface_broker), pause_worker_context_on_start,
-      std::move(worker_main_script_load_params), std::move(policy_container),
-      std::move(web_worker_fetch_context), ukm_source_id);
+      ua_metadata, content_security_policies,
+      outside_fetch_client_settings_object, devtools_worker_token,
+      std::move(content_settings), std::move(browser_interface_broker),
+      pause_worker_context_on_start, std::move(worker_main_script_load_params),
+      std::move(policy_container), std::move(web_worker_fetch_context),
+      ukm_source_id);
   return worker;
 }
 

@@ -210,23 +210,6 @@ class ShellVariationsServiceClient
       PrefService* local_state) override {}
 };
 
-// Returns the full user agent string for the content shell.
-std::string GetShellFullUserAgent() {
-  std::string product = "Chrome/" CONTENT_SHELL_VERSION;
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kUseMobileUserAgent))
-    product += " Mobile";
-  return BuildUserAgentFromProduct(product);
-}
-
-// Returns the reduced user agent string for the content shell.
-std::string GetShellReducedUserAgent() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return content::GetReducedUserAgent(
-      command_line->HasSwitch(switches::kUseMobileUserAgent),
-      CONTENT_SHELL_MAJOR_VERSION);
-}
-
 void BindNetworkHintsHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<network_hints::mojom::NetworkHintsHandler> receiver) {
@@ -316,16 +299,6 @@ std::unique_ptr<PrefService> CreateLocalState() {
 }
 
 }  // namespace
-
-std::string GetShellUserAgent() {
-  if (base::FeatureList::IsEnabled(blink::features::kFullUserAgent))
-    return GetShellFullUserAgent();
-
-  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
-    return GetShellReducedUserAgent();
-
-  return GetShellFullUserAgent();
-}
 
 std::string GetShellLanguage() {
   return "en-us,en";
@@ -651,15 +624,10 @@ base::FilePath ShellContentBrowserClient::GetFirstPartySetsDirectory() {
 }
 
 std::string ShellContentBrowserClient::GetUserAgent() {
-  return GetShellUserAgent();
-}
-
-std::string ShellContentBrowserClient::GetFullUserAgent() {
-  return GetShellFullUserAgent();
-}
-
-std::string ShellContentBrowserClient::GetReducedUserAgent() {
-  return GetShellReducedUserAgent();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return content::GetReducedUserAgent(
+      command_line->HasSwitch(switches::kUseMobileUserAgent),
+      CONTENT_SHELL_MAJOR_VERSION);
 }
 
 blink::UserAgentMetadata ShellContentBrowserClient::GetUserAgentMetadata() {

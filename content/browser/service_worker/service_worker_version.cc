@@ -2184,16 +2184,8 @@ void ServiceWorkerVersion::StartWorkerInternal() {
       outside_fetch_client_settings_object_.Clone();
 
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  if (origin_trial_tokens_ &&
-      origin_trial_tokens_->contains("SendFullUserAgentAfterReduction")) {
-    params->user_agent = browser_client->GetFullUserAgent();
-  } else if (origin_trial_tokens_ &&
-             origin_trial_tokens_->contains("UserAgentReduction")) {
-    params->user_agent = browser_client->GetReducedUserAgent();
-  } else {
-    params->user_agent = browser_client->GetUserAgentBasedOnPolicy(
-        context_->wrapper()->browser_context());
-  }
+  params->user_agent = browser_client->GetUserAgentBasedOnPolicy(
+      context_->wrapper()->browser_context());
   params->ua_metadata = browser_client->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;
