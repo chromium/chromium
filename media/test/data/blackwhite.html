@@ -35,13 +35,11 @@
 
       function loadVideo(name) {
         var videoElem = document.querySelector('video');
-        videoElem.src = 'blackwhite_' + name;
-
         document.getElementById('video_header').textContent = name;
-        videoElem.addEventListener('ended', onVideoEnded);
+        videoElem.src = 'blackwhite_' + name;
       }
 
-      function onVideoEnded(e) {
+      function onVideoFrame(e) {
         document.title = verifyVideo() ? 'ENDED' : 'FAILED';
       }
 
@@ -86,10 +84,11 @@
 
         // Video event handlers.
         var videoElem = document.querySelector('video');
-        videoElem.addEventListener('error', onVideoError);
 
         // Check if a query parameter was provided for automated tests.
         if (window.location.search.length > 1) {
+          videoElem.addEventListener('error', onVideoError);
+          videoElem.requestVideoFrameCallback(onVideoFrame);
           loadVideo(window.location.search.substr(1));
         } else {
           // If we're not an automated test, compute some pretty diffs.
