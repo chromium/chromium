@@ -1,4 +1,8 @@
 <style include="cr-hidden-style cr-icons sp-shared-style">
+  :host-context([chrome-refresh-2023]) .sp-card {
+    padding-block-end: 0;
+  }
+
   sp-heading {
     margin: 8px 16px;
   }
@@ -13,6 +17,11 @@
     --cr-grid-width: 100%;
     display: block;
     padding: 16px 16px 32px;
+  }
+
+  :host-context([chrome-refresh-2023]) cr-grid {
+    --cr-grid-gap: 8px;
+    padding: var(--sp-card-inline-padding);
   }
 
   .tile {
@@ -57,9 +66,19 @@
     margin: 24px 16px 16px;
   }
 
+  :host-context([chrome-refresh-2023]) #refreshDailyToggleContainer {
+    margin: 0;
+    padding: var(--sp-card-padding);
+  }
+
   #refreshDailyToggleTitle {
     font-size: 13px;
     line-height: 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) #refreshDailyToggleTitle {
+    font-size: 12px;
+    line-height: 16px;
   }
 
   customize-chrome-check-mark-wrapper {
