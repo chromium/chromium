@@ -96,15 +96,10 @@ SVGAnimatedPropertyBase* SVGFitToViewBox::PropertyFromAttribute(
   }
 }
 
-void SVGFitToViewBox::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    for (auto* property : (SVGAnimatedPropertyBase*[]){
-             view_box_.Get(), preserve_aspect_ratio_.Get()}) {
-      if (property->NeedsSynchronizeAttribute()) {
-        property->SynchronizeAttribute();
-      }
-    }
-  }
+void SVGFitToViewBox::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{view_box_.Get(),
+                                   preserve_aspect_ratio_.Get()};
+  SVGElement::SynchronizeListOfSVGAttributes(attrs);
 }
 
 }  // namespace blink

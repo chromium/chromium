@@ -161,7 +161,8 @@ class CORE_EXPORT SVGElement : public Element {
   void SetCorrespondingElement(SVGElement*);
   SVGUseElement* GeneratingUseElement() const;
 
-  virtual void SynchronizeSVGAttribute(const QualifiedName&) const;
+  void SynchronizeSVGAttribute(const QualifiedName&) const;
+  virtual void SynchronizeAllSVGAttributes() const;
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet*) override;
 
@@ -232,9 +233,9 @@ class CORE_EXPORT SVGElement : public Element {
 
   bool HasSVGParent() const;
 
-  // Utility function for implementing SynchronizeSVGAttribute() in children
-  // (and mixins such as SVGTests).
-  static void SynchronizeAllSVGAttributes(
+  // Utility function for implementing SynchronizeAllSVGAttributes() in
+  // subclasses (and mixins such as SVGTests).
+  static void SynchronizeListOfSVGAttributes(
       const base::span<SVGAnimatedPropertyBase*> attributes);
 
  protected:

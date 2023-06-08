@@ -1017,16 +1017,19 @@ void SVGElement::EnsureAttributeAnimValUpdated() {
 void SVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
   DCHECK(HasElementData());
   DCHECK(GetElementData()->svg_attributes_are_dirty());
-  if (name == AnyQName()) {
-    if (class_name_->NeedsSynchronizeAttribute()) {
-      class_name_->SynchronizeAttribute();
-    }
-    GetElementData()->SetSvgAttributesAreDirty(false);
-  } else {
-    SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-    if (property && property->NeedsSynchronizeAttribute())
-      property->SynchronizeAttribute();
+  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
+  if (property && property->NeedsSynchronizeAttribute()) {
+    property->SynchronizeAttribute();
   }
+}
+
+void SVGElement::SynchronizeAllSVGAttributes() const {
+  DCHECK(HasElementData());
+  DCHECK(GetElementData()->svg_attributes_are_dirty());
+  if (class_name_->NeedsSynchronizeAttribute()) {
+    class_name_->SynchronizeAttribute();
+  }
+  GetElementData()->SetSvgAttributesAreDirty(false);
 }
 
 void SVGElement::CollectExtraStyleForPresentationAttribute(
@@ -1335,7 +1338,7 @@ void SVGElement::AccessKeyAction(SimulatedClickCreationScope creation_scope) {
   DispatchSimulatedClick(nullptr, creation_scope);
 }
 
-void SVGElement::SynchronizeAllSVGAttributes(
+void SVGElement::SynchronizeListOfSVGAttributes(
     const base::span<SVGAnimatedPropertyBase*> attributes) {
   for (SVGAnimatedPropertyBase* attr : attributes) {
     if (attr->NeedsSynchronizeAttribute()) {

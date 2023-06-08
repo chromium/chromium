@@ -58,7 +58,7 @@ class SVGFECompositeElement final
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedNumber> k1_;
   Member<SVGAnimatedNumber> k2_;

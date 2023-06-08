@@ -49,7 +49,7 @@ class SVGTextPositioningElement : public SVGTextContentElement {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedLengthList> x_;
   Member<SVGAnimatedLengthList> y_;

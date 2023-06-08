@@ -172,14 +172,10 @@ SVGAnimatedPropertyBase* SVGLinearGradientElement::PropertyFromAttribute(
   }
 }
 
-void SVGLinearGradientElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{x1_.Get(), y1_.Get(), x2_.Get(),
-                                     y2_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGradientElement::SynchronizeSVGAttribute(name);
+void SVGLinearGradientElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{x1_.Get(), y1_.Get(), x2_.Get(), y2_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGradientElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

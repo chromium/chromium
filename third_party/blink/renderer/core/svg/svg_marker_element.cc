@@ -191,16 +191,13 @@ SVGAnimatedPropertyBase* SVGMarkerElement::PropertyFromAttribute(
   }
 }
 
-void SVGMarkerElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{ref_x_.Get(),        ref_y_.Get(),
-                                     marker_width_.Get(), marker_height_.Get(),
-                                     orient_angle_.Get(), marker_units_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGFitToViewBox::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGMarkerElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{ref_x_.Get(),        ref_y_.Get(),
+                                   marker_width_.Get(), marker_height_.Get(),
+                                   orient_angle_.Get(), marker_units_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGFitToViewBox::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

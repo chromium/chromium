@@ -97,12 +97,10 @@ SVGAnimatedPropertyBase* SVGStopElement::PropertyFromAttribute(
   }
 }
 
-void SVGStopElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{offset_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGStopElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{offset_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

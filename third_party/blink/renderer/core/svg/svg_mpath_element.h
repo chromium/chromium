@@ -55,7 +55,7 @@ class SVGMPathElement final : public SVGElement, public SVGURIReference {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<IdTargetObserver> target_id_observer_;
 };

@@ -43,7 +43,7 @@ class SVGFETileElement final : public SVGFilterPrimitiveStandardAttributes {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedString> in1_;
 };

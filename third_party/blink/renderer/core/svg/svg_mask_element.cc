@@ -180,15 +180,13 @@ SVGAnimatedPropertyBase* SVGMaskElement::PropertyFromAttribute(
   }
 }
 
-void SVGMaskElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{
-        x_.Get(),      y_.Get(),          width_.Get(),
-        height_.Get(), mask_units_.Get(), mask_content_units_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGTests::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGMaskElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{
+      x_.Get(),      y_.Get(),          width_.Get(),
+      height_.Get(), mask_units_.Get(), mask_content_units_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGTests::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGMaskElement::CollectExtraStyleForPresentationAttribute(

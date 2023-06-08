@@ -53,7 +53,7 @@ class SVGFEColorMatrixElement final
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedNumberList> values_;
   Member<SVGAnimatedString> in1_;

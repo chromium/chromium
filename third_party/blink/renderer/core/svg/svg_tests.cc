@@ -65,16 +65,10 @@ SVGAnimatedPropertyBase* SVGTests::PropertyFromAttribute(
   }
 }
 
-void SVGTests::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{required_extensions_.Get(),
-                                     system_language_.Get()};
-    SVGElement::SynchronizeAllSVGAttributes(attrs);
-  }
-  // Specific (name != AnyQName()) syncs of required_extensions_ and
-  // system_language_ will be handled by the normal path in
-  // SVGElement::SynchronizeAttribute(), which will be dealt with
-  // by the caller.
+void SVGTests::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{required_extensions_.Get(),
+                                   system_language_.Get()};
+  SVGElement::SynchronizeListOfSVGAttributes(attrs);
 }
 
 static bool IsLangTagPrefix(const String& lang_tag, const String& language) {

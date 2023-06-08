@@ -63,7 +63,7 @@ class SVGFitToViewBox : public GarbageCollectedMixin {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const;
+  void SynchronizeAllSVGAttributes() const;
 
  private:
   Member<SVGAnimatedRect> view_box_;

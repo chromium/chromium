@@ -78,13 +78,10 @@ SVGAnimatedPropertyBase* SVGClipPathElement::PropertyFromAttribute(
   }
 }
 
-void SVGClipPathElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{clip_path_units_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGraphicsElement::SynchronizeSVGAttribute(name);
+void SVGClipPathElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{clip_path_units_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGraphicsElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

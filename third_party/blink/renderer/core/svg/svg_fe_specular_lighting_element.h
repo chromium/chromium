@@ -58,7 +58,7 @@ class SVGFESpecularLightingElement final
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedNumber> specular_constant_;
   Member<SVGAnimatedNumber> specular_exponent_;

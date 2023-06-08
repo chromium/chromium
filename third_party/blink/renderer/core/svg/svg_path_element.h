@@ -68,7 +68,7 @@ class SVGPathElement final : public SVGGeometryElement {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet* style) override;
 

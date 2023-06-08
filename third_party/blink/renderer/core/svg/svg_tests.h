@@ -50,7 +50,7 @@ class CORE_EXPORT SVGTests : public GarbageCollectedMixin {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const;
+  void SynchronizeAllSVGAttributes() const;
 
  private:
   Member<SVGStaticStringList> required_extensions_;

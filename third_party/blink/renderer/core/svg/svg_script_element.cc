@@ -209,10 +209,9 @@ SVGAnimatedPropertyBase* SVGScriptElement::PropertyFromAttribute(
   return SVGElement::PropertyFromAttribute(attribute_name);
 }
 
-void SVGScriptElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGScriptElement::SynchronizeAllSVGAttributes() const {
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGScriptElement::Trace(Visitor* visitor) const {

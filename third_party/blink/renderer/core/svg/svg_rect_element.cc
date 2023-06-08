@@ -189,13 +189,11 @@ SVGAnimatedPropertyBase* SVGRectElement::PropertyFromAttribute(
   }
 }
 
-void SVGRectElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{x_.Get(),      y_.Get(),  width_.Get(),
-                                     height_.Get(), rx_.Get(), ry_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGeometryElement::SynchronizeSVGAttribute(name);
+void SVGRectElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{x_.Get(),      y_.Get(),  width_.Get(),
+                                   height_.Get(), rx_.Get(), ry_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGeometryElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGRectElement::CollectExtraStyleForPresentationAttribute(

@@ -55,13 +55,10 @@ SVGAnimatedPropertyBase* SVGFEMergeNodeElement::PropertyFromAttribute(
   }
 }
 
-void SVGFEMergeNodeElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{in1_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGFEMergeNodeElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{in1_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

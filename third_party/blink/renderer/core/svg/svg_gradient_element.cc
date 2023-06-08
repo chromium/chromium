@@ -226,15 +226,12 @@ SVGAnimatedPropertyBase* SVGGradientElement::PropertyFromAttribute(
   }
 }
 
-void SVGGradientElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{
-        gradient_transform_.Get(), spread_method_.Get(), gradient_units_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGGradientElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{gradient_transform_.Get(),
+                                   spread_method_.Get(), gradient_units_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGGradientElement::CollectExtraStyleForPresentationAttribute(
