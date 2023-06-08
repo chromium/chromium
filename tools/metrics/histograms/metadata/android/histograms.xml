@@ -1930,6 +1930,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Messages.Stacking.Hidden" enum="MessageIdentifier"
+    expires_after="M122">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier of the back message which is hidden by the
+    foreground message. Emits when the stacking animation is about to start.
+  </summary>
+</histogram>
+
+<histogram name="Android.Messages.Stacking.Hiding" enum="MessageIdentifier"
+    expires_after="M122">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier of the front message which is hiding the
+    background message. Emits when the stacking animation is about to start.
+  </summary>
+</histogram>
+
 <histogram name="Android.Messages.Stacking.ThreeStacked"
     enum="StackingAnimationThreeStackedType" expires_after="M122">
   <owner>lazzzis@chromium.org</owner>

@@ -235,8 +235,11 @@ public class MessageAnimationCoordinatorUnitTest {
                         .expectIntRecord("Android.Messages.Stacking",
                                 MessagesMetrics.StackingAnimationType.SHOW_ALL)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
+                        .expectIntRecord("Android.Messages.Stacking.Hiding", 1)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtBack",
                                 MessageIdentifier.COUNT - 1)
+                        .expectIntRecord(
+                                "Android.Messages.Stacking.Hidden", MessageIdentifier.COUNT - 1)
                         .build();
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -276,6 +279,8 @@ public class MessageAnimationCoordinatorUnitTest {
                                 MessagesMetrics.StackingAnimationType.REMOVE_FRONT_AND_SHOW_BACK)
                         .expectIntRecord("Android.Messages.Stacking.RemoveFront", 1)
                         .expectIntRecord("Android.Messages.Stacking.PushToFront", 2)
+                        .expectNoRecords("Android.Messages.Stacking.Hidden")
+                        .expectNoRecords("Android.Messages.Stacking.Hiding")
                         .build();
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, null), false, () -> {});
@@ -318,6 +323,8 @@ public class MessageAnimationCoordinatorUnitTest {
                                        .expectIntRecord("Android.Messages.Stacking",
                                                MessagesMetrics.StackingAnimationType.SHOW_BACK_ONLY)
                                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 3)
+                                       .expectIntRecord("Android.Messages.Stacking.Hiding", 2)
+                                       .expectIntRecord("Android.Messages.Stacking.Hidden", 3)
                                        .build();
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m3), false, () -> {});
         verify(m3.handler).show(Position.FRONT, Position.BACK);
@@ -346,6 +353,8 @@ public class MessageAnimationCoordinatorUnitTest {
                         .expectIntRecord("Android.Messages.Stacking",
                                 MessagesMetrics.StackingAnimationType.REMOVE_BACK_ONLY)
                         .expectIntRecord("Android.Messages.Stacking.RemoveBack", 2)
+                        .expectNoRecords("Android.Messages.Stacking.Hidden")
+                        .expectNoRecords("Android.Messages.Stacking.Hiding")
                         .build();
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
         inOrder.verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
@@ -406,6 +415,8 @@ public class MessageAnimationCoordinatorUnitTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.Messages.Stacking.Hiding", 2)
+                        .expectIntRecord("Android.Messages.Stacking.Hidden", 1)
                         .expectIntRecord("Android.Messages.Stacking",
                                 MessagesMetrics.StackingAnimationType.INSERT_AT_FRONT)
                         .expectIntRecord("Android.Messages.Stacking.PushToBack", 1)
@@ -488,6 +499,8 @@ public class MessageAnimationCoordinatorUnitTest {
                                 MessagesMetrics.StackingAnimationType.SHOW_ALL)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
+                        .expectIntRecord("Android.Messages.Stacking.Hiding", 1)
+                        .expectIntRecord("Android.Messages.Stacking.Hidden", 2)
                         .build();
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -518,6 +531,8 @@ public class MessageAnimationCoordinatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Android.Messages.Stacking",
                                 MessagesMetrics.StackingAnimationType.SHOW_ALL)
+                        .expectIntRecord("Android.Messages.Stacking.Hiding", 1)
+                        .expectIntRecord("Android.Messages.Stacking.Hidden", 2)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
                         .build();

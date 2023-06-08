@@ -297,6 +297,11 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
             }
         }
 
+        if (candidates.get(0) != null && candidates.get(1) != null) {
+            MessagesMetrics.recordStackingHiding(candidates.get(0).handler.getMessageIdentifier());
+            MessagesMetrics.recordStackingHidden(candidates.get(1).handler.getMessageIdentifier());
+        }
+
         if (nextFront == null) {
             // All messages will be hidden: trigger #onFinishHiding.
             Runnable runnable = () -> {
