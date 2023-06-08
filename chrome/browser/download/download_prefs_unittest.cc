@@ -359,13 +359,7 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
   EXPECT_FALSE(prefs.IsAutoOpenByPolicy(kBlobDisallowedURL, kFilePath));
 }
 
-// TODO(crbug.com/1326319): Flaky on Win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Pdf DISABLED_Pdf
-#else
-#define MAYBE_Pdf Pdf
-#endif
-TEST(DownloadPrefsTest, MAYBE_Pdf) {
+TEST(DownloadPrefsTest, Pdf) {
   const base::FilePath kPdfFile(FILE_PATH_LITERAL("abcd.pdf"));
   const GURL kURL("http://basic.com");
 
