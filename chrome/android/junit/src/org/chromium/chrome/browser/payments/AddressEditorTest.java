@@ -22,8 +22,19 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
 
 import android.app.Activity;
 
@@ -53,17 +64,21 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.editors.EditorDialog;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /** Unit tests for {@link AddressEditor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -202,21 +217,23 @@ public class AddressEditorTest {
                         anyList(), anyList(), anyList());
     }
 
-    private static void validateTextField(EditorFieldModel field, String value,
+    private static void validateTextField(ListItem fieldItem, String value,
             @TextInputType int textInputType, String label, boolean isRequired, boolean isFullLine,
-            boolean hasLengthCounter) {
-        assertTrue(field.isTextField());
-        assertEquals(field.getValue(), value);
-        assertEquals(textInputType, field.getTextInputType());
-        assertEquals(label, field.getLabel());
-        assertEquals(isRequired, field.isRequired());
-        assertEquals(isFullLine, field.isFullLine());
-        assertEquals(hasLengthCounter, field.hasLengthCounter());
+            int lengthCounter) {
+        assertEquals(TEXT_INPUT, fieldItem.type);
+
+        PropertyModel field = fieldItem.model;
+        assertEquals(value, field.get(VALUE));
+        assertEquals(textInputType, field.get(TEXT_INPUT_TYPE));
+        assertEquals(label, field.get(LABEL));
+        assertEquals(isRequired, field.get(IS_REQUIRED));
+        assertEquals(isFullLine, field.get(IS_FULL_LINE));
+        assertEquals(lengthCounter, field.get(TEXT_LENGTH_COUNTER_LIMIT));
     }
 
     private void validateShownFields(PropertyModel editorModel, AutofillProfile profile) {
         assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - full name field.
         // editorFields[2] - admin area field.
@@ -233,15 +250,15 @@ public class AddressEditorTest {
         validateTextField(editorFields.get(1), profile.getFullName(),
                 TextInputType.PERSON_NAME_INPUT,
                 /*label=*/"full name label",
-                /*isRequired=*/true, /*isFullLine=*/true, /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
         validateTextField(editorFields.get(2), profile.getRegion(), TextInputType.REGION_INPUT,
                 /*label=*/"admin area label",
-                /*isRequired=*/true, /*isFullLine=*/true, /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
         // Locality field is forced to occupy full line.
         validateTextField(editorFields.get(3), profile.getLocality(),
                 TextInputType.PLAIN_TEXT_INPUT,
                 /*label=*/"locality label",
-                /*isRequired=*/true, /*isFullLine=*/true, /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
 
         // Note: dependent locality is a required field for address profiles stored in Google
         // account, but it's still marked as optional by the editor when the corresponding field in
@@ -249,31 +266,26 @@ public class AddressEditorTest {
         // profiles.
         validateTextField(editorFields.get(4), profile.getDependentLocality(),
                 TextInputType.PLAIN_TEXT_INPUT, /*label=*/"dependent locality label",
-                /*isRequired=*/true, /*isFullLine=*/true,
-                /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
 
         validateTextField(editorFields.get(5), profile.getCompanyName(),
                 TextInputType.PLAIN_TEXT_INPUT,
                 /*label=*/"organization label",
-                /*isRequired=*/false, /*isFullLine=*/true, /*hasLengthCounter=*/false);
+                /*isRequired=*/false, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
 
         validateTextField(editorFields.get(6), profile.getSortingCode(),
                 TextInputType.ALPHA_NUMERIC_INPUT, /*label=*/"sorting code label",
-                /*isRequired=*/false, /*isFullLine=*/false,
-                /*hasLengthCounter=*/false);
+                /*isRequired=*/false, /*isFullLine=*/false, LENGTH_COUNTER_LIMIT_NONE);
         validateTextField(editorFields.get(7), profile.getPostalCode(),
                 TextInputType.ALPHA_NUMERIC_INPUT, /*label=*/"postal code label",
-                /*isRequired=*/true, /*isFullLine=*/false,
-                /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/false, LENGTH_COUNTER_LIMIT_NONE);
         validateTextField(editorFields.get(8), profile.getStreetAddress(),
                 TextInputType.STREET_ADDRESS_INPUT, /*label=*/"street address label",
-                /*isRequired=*/true, /*isFullLine=*/true,
-                /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
         validateTextField(editorFields.get(9), profile.getPhoneNumber(),
                 TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
-                /*isRequired=*/true, /*isFullLine=*/true,
-                /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
     }
 
     @Test
@@ -309,28 +321,30 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
         assertNotNull(mPropertyModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
         // editorFields[1] - phone field.
         assertEquals(2, editorFields.size());
 
-        EditorFieldModel countryDropdown = editorFields.get(0);
-        assertTrue(countryDropdown.isDropdownField());
-        assertTrue(countryDropdown.isFullLine());
-        assertEquals(countryDropdown.getValue(), AutofillAddress.getCountryCode(sProfile));
-        assertEquals(countryDropdown.getLabel(),
+        ListItem countryDropdownItem = editorFields.get(0);
+        assertEquals(countryDropdownItem.type, DROPDOWN);
+
+        PropertyModel countryDropdown = countryDropdownItem.model;
+        assertTrue(countryDropdown.get(IS_FULL_LINE));
+        assertEquals(countryDropdown.get(VALUE), AutofillAddress.getCountryCode(sProfile));
+        assertEquals(countryDropdown.get(LABEL),
                 mActivity.getString(R.string.autofill_profile_editor_country));
-        assertEquals(mSupportedCountries.size(), countryDropdown.getDropdownKeyValues().size());
+        assertEquals(
+                mSupportedCountries.size(), countryDropdown.get(DROPDOWN_KEY_VALUE_LIST).size());
         assertThat(mSupportedCountries,
-                containsInAnyOrder(countryDropdown.getDropdownKeyValues().toArray()));
+                containsInAnyOrder(countryDropdown.get(DROPDOWN_KEY_VALUE_LIST).toArray()));
 
         validateTextField(editorFields.get(1), sProfile.getPhoneNumber(),
                 TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
-                /*isRequired=*/true, /*isFullLine=*/true,
-                /*hasLengthCounter=*/false);
+                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
     }
 
     @Test
@@ -353,7 +367,7 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
         assertNotNull(mPropertyModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
@@ -361,17 +375,18 @@ public class AddressEditorTest {
         // editorFields[2] - phone field.
         assertEquals(3, editorFields.size());
 
-        EditorFieldModel adminAreaDropdown = editorFields.get(1);
+        ListItem adminAreaDropdownItem = editorFields.get(1);
+        assertEquals(DROPDOWN, adminAreaDropdownItem.type);
 
+        PropertyModel adminAreaDropdown = adminAreaDropdownItem.model;
         List<DropdownKeyValue> adminAreas = List.of(new DropdownKeyValue("CA", "California"),
                 new DropdownKeyValue("NY", "New York"), new DropdownKeyValue("TX", "Texas"));
-        assertThat(
-                adminAreas, containsInAnyOrder(adminAreaDropdown.getDropdownKeyValues().toArray()));
+        assertThat(adminAreas,
+                containsInAnyOrder(adminAreaDropdown.get(DROPDOWN_KEY_VALUE_LIST).toArray()));
 
-        assertTrue(adminAreaDropdown.isDropdownField());
-        assertTrue(adminAreaDropdown.isFullLine());
-        assertEquals(adminAreaDropdown.getValue(), sProfile.getRegion());
-        assertEquals(adminAreaDropdown.getLabel(), "admin area label");
+        assertTrue(adminAreaDropdown.get(IS_FULL_LINE));
+        assertEquals(adminAreaDropdown.get(VALUE), sProfile.getRegion());
+        assertEquals(adminAreaDropdown.get(LABEL), "admin area label");
     }
 
     @Test
@@ -430,28 +445,34 @@ public class AddressEditorTest {
         mAddressEditor.edit(null, unused -> {});
 
         assertNotNull(mPropertyModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
 
         // editorFields[0] - country dropdown.
         // editorFields[1] - sorting code field.
         // editorFields[2] - phone number field.
         assertEquals(3, editorFields.size());
-        assertThat(editorFields.subList(1, 3)
-                           .stream()
-                           .map(EditorFieldModel::getTextInputType)
+        assertThat(StreamSupport
+                           .stream(Spliterators.spliteratorUnknownSize(
+                                           editorFields.iterator(), Spliterator.ORDERED),
+                                   false)
+                           .skip(1)
+                           .map(item -> { return item.model.get(TEXT_INPUT_TYPE); })
                            .collect(Collectors.toList()),
                 containsInAnyOrder(
                         TextInputType.ALPHA_NUMERIC_INPUT, TextInputType.PHONE_NUMBER_INPUT));
-        EditorFieldModel countryDropdown = editorFields.get(0);
+        PropertyModel countryDropdown = editorFields.get(0).model;
 
-        countryDropdown.setDropdownKey("DE", () -> {});
+        setDropdownKey(countryDropdown, "DE", () -> {});
         // editorFields[0] - country dropdown.
         // editorFields[1] - street address field.
         // editorFields[2] - phone number field.
         assertEquals(3, editorFields.size());
-        assertThat(editorFields.subList(1, 3)
-                           .stream()
-                           .map(EditorFieldModel::getTextInputType)
+        assertThat(StreamSupport
+                           .stream(Spliterators.spliteratorUnknownSize(
+                                           editorFields.iterator(), Spliterator.ORDERED),
+                                   false)
+                           .skip(1)
+                           .map(item -> { return item.model.get(TEXT_INPUT_TYPE); })
                            .collect(Collectors.toList()),
                 containsInAnyOrder(
                         TextInputType.STREET_ADDRESS_INPUT, TextInputType.PHONE_NUMBER_INPUT));
@@ -474,13 +495,13 @@ public class AddressEditorTest {
 
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
-        editorFields.get(1).setValue("New Name");
-        editorFields.get(2).setValue("New admin area");
-        editorFields.get(3).setValue("New locality");
+        editorFields.get(1).model.set(VALUE, "New Name");
+        editorFields.get(2).model.set(VALUE, "New admin area");
+        editorFields.get(3).model.set(VALUE, "New locality");
         editorModel.get(CANCEL_RUNNABLE).run();
 
         verify(mDoneCallback, times(0)).onResult(any());
@@ -504,13 +525,13 @@ public class AddressEditorTest {
 
         assertNotNull(mPropertyModelCapture.getValue());
         PropertyModel editorModel = mPropertyModelCapture.getValue();
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
-        editorFields.get(3).setValue("New locality");
-        editorFields.get(4).setValue("New dependent locality");
-        editorFields.get(5).setValue("New organization");
+        editorFields.get(3).model.set(VALUE, "New locality");
+        editorFields.get(4).model.set(VALUE, "New dependent locality");
+        editorFields.get(5).model.set(VALUE, "New organization");
         editorModel.get(DONE_RUNNABLE).run();
 
         verify(mDoneCallback, times(1)).onResult(mAddressCapture.capture());

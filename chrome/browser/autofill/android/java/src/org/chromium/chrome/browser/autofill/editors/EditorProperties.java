@@ -4,17 +4,34 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_HINT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.INVALID_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.REQUIRED_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Properties defined here reflect the visible state of the {@link EditorDialog}.
@@ -33,8 +50,7 @@ public class EditorProperties {
     public static final PropertyModel.ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
             new PropertyModel.ReadableBooleanPropertyKey("show_required_indicator");
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<List<EditorFieldModel>> EDITOR_FIELDS =
+    public static final PropertyModel.WritableObjectPropertyKey<ListModel<ListItem>> EDITOR_FIELDS =
             new PropertyModel.WritableObjectPropertyKey<>("editor_fields");
 
     public static final PropertyModel.ReadableObjectPropertyKey<Runnable> DONE_RUNNABLE =
@@ -131,5 +147,154 @@ public class EditorProperties {
         public String toString() {
             return super.second.toString();
         }
+    }
+
+    /**
+     * Field properties common to every field.
+     */
+    public static class FieldProperties {
+        public static final PropertyModel.WritableObjectPropertyKey<String> LABEL =
+                new PropertyModel.WritableObjectPropertyKey<>("label");
+        public static final PropertyModel
+                .ReadableObjectPropertyKey<EditorFieldValidator> VALIDATOR =
+                new PropertyModel.ReadableObjectPropertyKey<>("validator");
+        // TODO(crbug.com/1435314): make this field read-only.
+        public static final PropertyModel.WritableBooleanPropertyKey IS_REQUIRED =
+                new PropertyModel.WritableBooleanPropertyKey("is_required");
+        // TODO(crbug.com/1435314): make this field read-only.
+        public static final PropertyModel.WritableObjectPropertyKey<String> REQUIRED_ERROR_MESSAGE =
+                new PropertyModel.WritableObjectPropertyKey<>("required_error_message");
+        public static final PropertyModel.ReadableObjectPropertyKey<String> INVALID_ERROR_MESSAGE =
+                new PropertyModel.ReadableObjectPropertyKey<>("invalid_error_message");
+        public static final PropertyModel.WritableObjectPropertyKey<String> CUSTOM_ERROR_MESSAGE =
+                new PropertyModel.WritableObjectPropertyKey<>("custom_error_message");
+        public static final PropertyModel.WritableBooleanPropertyKey IS_FULL_LINE =
+                new PropertyModel.WritableBooleanPropertyKey("is_full_line");
+        public static final PropertyModel.WritableObjectPropertyKey<String> VALUE =
+                new PropertyModel.WritableObjectPropertyKey<>("value");
+
+        public static final PropertyKey[] FIELD_ALL_KEYS = {LABEL, VALIDATOR, IS_REQUIRED,
+                REQUIRED_ERROR_MESSAGE, INVALID_ERROR_MESSAGE, CUSTOM_ERROR_MESSAGE, IS_FULL_LINE,
+                VALUE};
+    }
+
+    /**
+     * Properties specific for the dropdown fields.
+     */
+    public static class DropdownFieldProperties {
+        public static final PropertyModel
+                .ReadableObjectPropertyKey<List<DropdownKeyValue>> DROPDOWN_KEY_VALUE_LIST =
+                new PropertyModel.ReadableObjectPropertyKey<>("key_value_list");
+        public static final PropertyModel
+                .WritableObjectPropertyKey<Callback<Pair<String, Runnable>>> DROPDOWN_CALLBACK =
+                new PropertyModel.WritableObjectPropertyKey<>("callback");
+        public static final PropertyModel.ReadableObjectPropertyKey<String> DROPDOWN_HINT =
+                new PropertyModel.ReadableObjectPropertyKey<>("hint");
+
+        public static final PropertyKey[] DROPDOWN_SPECIFIC_KEYS = {
+                DROPDOWN_KEY_VALUE_LIST, DROPDOWN_CALLBACK, DROPDOWN_HINT};
+
+        public static final PropertyKey[] DROPDOWN_ALL_KEYS =
+                Stream.concat(Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
+                              Arrays.stream(DROPDOWN_SPECIFIC_KEYS))
+                        .toArray(PropertyKey[] ::new);
+    }
+
+    /**
+     * Properties specific for the text fields.
+     */
+    public static class TextFieldProperties {
+        /* Indicates that the length counter is disabled. */
+        public static final int LENGTH_COUNTER_LIMIT_NONE = 0;
+
+        public static final PropertyModel.ReadableIntPropertyKey TEXT_INPUT_TYPE =
+                new PropertyModel.ReadableIntPropertyKey("text_input_type");
+        public static final PropertyModel.WritableObjectPropertyKey<List<String>> TEXT_SUGGESTIONS =
+                new PropertyModel.WritableObjectPropertyKey<>("suggestions");
+        public static final PropertyModel.ReadableObjectPropertyKey<TextWatcher> TEXT_FORMATTER =
+                new PropertyModel.ReadableObjectPropertyKey<>("formatter");
+        public static final PropertyModel.ReadableIntPropertyKey TEXT_LENGTH_COUNTER_LIMIT =
+                new PropertyModel.ReadableIntPropertyKey("length_counter_limit");
+
+        public static final PropertyKey[] TEXT_SPECIFIC_KEYS = {
+                TEXT_INPUT_TYPE,
+                TEXT_SUGGESTIONS,
+                TEXT_FORMATTER,
+                TEXT_LENGTH_COUNTER_LIMIT,
+        };
+
+        public static final PropertyKey[] TEXT_ALL_KEYS =
+                Stream.concat(Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
+                              Arrays.stream(TEXT_SPECIFIC_KEYS))
+                        .toArray(PropertyKey[] ::new);
+    }
+
+    public static boolean isDropdownField(ListItem fieldItem) {
+        return fieldItem.type == ItemType.DROPDOWN;
+    }
+
+    @Nullable
+    public static String getDropdownKeyByValue(PropertyModel dropdownField, String value) {
+        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
+                .stream()
+                .filter(keyValue -> { return keyValue.getValue().equals(value); })
+                .map(DropdownKeyValue::getKey)
+                .findAny()
+                .orElse(null);
+    }
+
+    @Nullable
+    public static String getDropdownValueByKey(PropertyModel dropdownField, String key) {
+        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
+                .stream()
+                .filter(keyValue -> { return keyValue.getKey().equals(key); })
+                .map(DropdownKeyValue::getValue)
+                .findAny()
+                .orElse(null);
+    }
+
+    public static void setDropdownKey(
+            PropertyModel dropdownField, @Nullable String key, Runnable callback) {
+        // The mValue can only be set to null if there is a hint.
+        if (key == null && dropdownField.get(DropdownFieldProperties.DROPDOWN_HINT) == null) {
+            return;
+        }
+        dropdownField.set(FieldProperties.VALUE, key);
+        Callback<Pair<String, Runnable>> fieldCallback =
+                dropdownField.get(DropdownFieldProperties.DROPDOWN_CALLBACK);
+        if (fieldCallback != null) {
+            fieldCallback.onResult(new Pair<>(key, callback));
+        }
+    }
+
+    public static boolean hasMaximumLength(PropertyModel textField) {
+        EditorFieldValidator validator = textField.get(FieldProperties.VALIDATOR);
+        return validator != null && validator.isLengthMaximum(textField.get(FieldProperties.VALUE));
+    }
+
+    @Nullable
+    public static String getValidationErrorMessage(PropertyModel textField) {
+        final String customErrorMessage = textField.get(FieldProperties.CUSTOM_ERROR_MESSAGE);
+        if (!TextUtils.isEmpty(customErrorMessage)) {
+            return customErrorMessage;
+        }
+
+        final String value = textField.get(FieldProperties.VALUE);
+        if (textField.get(FieldProperties.IS_REQUIRED)
+                && (TextUtils.isEmpty(value) || TextUtils.getTrimmedLength(value) == 0)) {
+            return textField.get(FieldProperties.REQUIRED_ERROR_MESSAGE);
+        }
+
+        @Nullable
+        final EditorFieldValidator validator = textField.get(FieldProperties.VALIDATOR);
+        if (validator != null && !validator.isValid(value)) {
+            return textField.get(FieldProperties.INVALID_ERROR_MESSAGE);
+        }
+
+        return null;
+    }
+
+    public static boolean isFieldValid(PropertyModel textField) {
+        return getValidationErrorMessage(textField) == null;
     }
 }

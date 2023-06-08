@@ -9,7 +9,25 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANC
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.INVALID_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.REQUIRED_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
 
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -24,15 +42,15 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.payments.mojom.PayerErrors;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -189,52 +207,86 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                         mRequestPayerPhone, mRequestPayerEmail)
                 : toEdit;
 
-        final EditorFieldModel nameField = mRequestPayerName
-                ? EditorFieldModel.createTextInput(TextInputType.PERSON_NAME_INPUT,
-                        mContext.getString(R.string.payments_name_field_in_contact_details),
-                        mPayerNames, /*formatter=*/null, /*validator=*/null,
-                        mContext.getString(
-                                R.string.pref_edit_dialog_field_required_validation_message),
-                        null, EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerName())
-                : null;
+        final String nameCustomErrorMessage = mPayerErrors != null ? mPayerErrors.name : null;
+        final Optional<PropertyModel> nameField = Optional.ofNullable(mRequestPayerName
+                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
+                                  .with(TEXT_INPUT_TYPE, PERSON_NAME_INPUT)
+                                  .with(LABEL,
+                                          mContext.getString(
+                                                  R.string.payments_name_field_in_contact_details))
+                                  .with(TEXT_SUGGESTIONS, new ArrayList<>(mPayerNames))
+                                  .with(IS_REQUIRED, true)
+                                  .with(REQUIRED_ERROR_MESSAGE,
+                                          mContext.getString(
+                                                  R.string.pref_edit_dialog_field_required_validation_message))
+                                  .with(CUSTOM_ERROR_MESSAGE, nameCustomErrorMessage)
+                                  .with(IS_FULL_LINE, true)
+                                  .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
+                                  .with(VALUE, contact.getPayerName())
+                                  .build()
+                        : null);
 
-        final EditorFieldModel phoneField = mRequestPayerPhone
-                ? EditorFieldModel.createTextInput(TextInputType.PHONE_NUMBER_INPUT,
-                        mContext.getString(R.string.autofill_profile_editor_phone_number),
-                        mPhoneNumbers, new PhoneNumberUtil.CountryAwareFormatTextWatcher(),
-                        getPhoneValidator(),
-                        mContext.getString(
-                                R.string.pref_edit_dialog_field_required_validation_message),
-                        mContext.getString(R.string.payments_phone_invalid_validation_message),
-                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerPhone())
-                : null;
+        final String phoneCustomErrorMessage = mPayerErrors != null ? mPayerErrors.phone : null;
+        final Optional<PropertyModel> phoneField = Optional.ofNullable(mRequestPayerPhone
+                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
+                                  .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
+                                  .with(LABEL,
+                                          mContext.getString(
+                                                  R.string.autofill_profile_editor_phone_number))
+                                  .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
+                                  .with(TEXT_FORMATTER,
+                                          new PhoneNumberUtil.CountryAwareFormatTextWatcher())
+                                  .with(VALIDATOR, getPhoneValidator())
+                                  .with(IS_REQUIRED, true)
+                                  .with(REQUIRED_ERROR_MESSAGE,
+                                          mContext.getString(
+                                                  R.string.pref_edit_dialog_field_required_validation_message))
+                                  .with(INVALID_ERROR_MESSAGE,
+                                          mContext.getString(
+                                                  R.string.payments_phone_invalid_validation_message))
+                                  .with(CUSTOM_ERROR_MESSAGE, phoneCustomErrorMessage)
+                                  .with(IS_FULL_LINE, true)
+                                  .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
+                                  .with(VALUE, contact.getPayerPhone())
+                                  .build()
+                        : null);
 
-        final EditorFieldModel emailField = mRequestPayerEmail
-                ? EditorFieldModel.createTextInput(TextInputType.EMAIL_ADDRESS_INPUT,
-                        mContext.getString(R.string.autofill_profile_editor_email_address),
-                        mEmailAddresses, null, getEmailValidator(),
-                        mContext.getString(
-                                R.string.pref_edit_dialog_field_required_validation_message),
-                        mContext.getString(R.string.payments_email_invalid_validation_message),
-                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerEmail())
-                : null;
+        final String emailCustomErrorMessage = mPayerErrors != null ? mPayerErrors.email : null;
+        final Optional<PropertyModel> emailField = Optional.ofNullable(mRequestPayerEmail
+                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
+                                  .with(TEXT_INPUT_TYPE, EMAIL_ADDRESS_INPUT)
+                                  .with(LABEL,
+                                          mContext.getString(
+                                                  R.string.autofill_profile_editor_email_address))
+                                  .with(TEXT_SUGGESTIONS, new ArrayList<>(mEmailAddresses))
+                                  .with(VALIDATOR, getEmailValidator())
+                                  .with(IS_REQUIRED, true)
+                                  .with(REQUIRED_ERROR_MESSAGE,
+                                          mContext.getString(
+                                                  R.string.pref_edit_dialog_field_required_validation_message))
+                                  .with(INVALID_ERROR_MESSAGE,
+                                          mContext.getString(
+                                                  R.string.payments_email_invalid_validation_message))
+                                  .with(CUSTOM_ERROR_MESSAGE, emailCustomErrorMessage)
+                                  .with(IS_FULL_LINE, true)
+                                  .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
+                                  .with(VALUE, contact.getPayerEmail())
+                                  .build()
+                        : null);
 
         final String editorTitle = toEdit == null
                 ? mContext.getString(R.string.payments_add_contact_details_label)
                 : toEdit.getEditTitle();
 
-        List<EditorFieldModel> editorFields = new ArrayList<>();
-        if (nameField != null) {
-            nameField.setCustomErrorMessage(mPayerErrors != null ? mPayerErrors.name : null);
-            editorFields.add(nameField);
+        ListModel<ListItem> editorFields = new ListModel<>();
+        if (nameField.isPresent()) {
+            editorFields.add(new ListItem(TEXT_INPUT, nameField.get()));
         }
-        if (phoneField != null) {
-            phoneField.setCustomErrorMessage(mPayerErrors != null ? mPayerErrors.phone : null);
-            editorFields.add(phoneField);
+        if (phoneField.isPresent()) {
+            editorFields.add(new ListItem(TEXT_INPUT, phoneField.get()));
         }
-        if (emailField != null) {
-            emailField.setCustomErrorMessage(mPayerErrors != null ? mPayerErrors.email : null);
-            editorFields.add(emailField);
+        if (emailField.isPresent()) {
+            editorFields.add(new ListItem(TEXT_INPUT, emailField.get()));
         }
 
         // If the user clicks [Cancel], send |toEdit| contact back to the caller, which was the
@@ -247,18 +299,18 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             String email = null;
             AutofillProfile profile = contact.getProfile();
 
-            if (nameField != null) {
-                name = nameField.getValue();
+            if (nameField.isPresent()) {
+                name = nameField.get().get(VALUE);
                 profile.setFullName(name);
             }
 
-            if (phoneField != null) {
-                phone = phoneField.getValue();
+            if (phoneField.isPresent()) {
+                phone = phoneField.get().get(VALUE);
                 profile.setPhoneNumber(phone);
             }
 
-            if (emailField != null) {
-                email = emailField.getValue();
+            if (emailField.isPresent()) {
+                email = emailField.get().get(VALUE);
                 profile.setEmailAddress(email);
             }
 

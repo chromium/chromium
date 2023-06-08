@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.payments;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +14,15 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
 
 import android.app.Activity;
 
@@ -37,12 +44,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.editors.EditorDialog;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.List;
 
 /** Unit tests for {@link ContactEditor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -89,14 +95,16 @@ public class ContactEditorTest {
     }
 
     private static void validateTextField(
-            EditorFieldModel field, String value, @TextInputType int textInputType, String label) {
-        assertTrue(field.isTextField());
-        assertEquals(field.getValue(), value);
-        assertEquals(textInputType, field.getTextInputType());
-        assertEquals(label, field.getLabel());
-        assertTrue(field.isRequired());
-        assertTrue(field.isFullLine());
-        assertFalse(field.hasLengthCounter());
+            ListItem fieldItem, String value, @TextInputType int textInputType, String label) {
+        assertEquals(TEXT_INPUT, fieldItem.type);
+
+        PropertyModel field = fieldItem.model;
+        assertEquals(value, field.get(VALUE));
+        assertEquals(textInputType, field.get(TEXT_INPUT_TYPE));
+        assertEquals(label, field.get(LABEL));
+        assertTrue(field.get(IS_REQUIRED));
+        assertTrue(field.get(IS_FULL_LINE));
+        assertEquals(LENGTH_COUNTER_LIMIT_NONE, field.get(TEXT_LENGTH_COUNTER_LIMIT));
     }
 
     @Test
@@ -126,7 +134,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(editorFields.get(0), null, TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
@@ -145,7 +153,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(editorFields.get(0), null, TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number));
@@ -164,7 +172,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(editorFields.get(0), null, TextInputType.EMAIL_ADDRESS_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_email_address));
@@ -183,7 +191,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
         validateTextField(editorFields.get(0), null, TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
@@ -208,7 +216,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(editorFields.get(0), "Payer name", TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
@@ -229,7 +237,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(editorFields.get(0), "Payer phone", TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number));
@@ -250,7 +258,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(editorFields.get(0), "Payer email", TextInputType.EMAIL_ADDRESS_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_email_address));
@@ -271,7 +279,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
         validateTextField(editorFields.get(0), "Payer name", TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
@@ -296,9 +304,9 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).setValue("Modified name");
+        editorFields.get(0).model.set(VALUE, "Modified name");
         editorModel.get(CANCEL_RUNNABLE).run();
 
         assertEquals("Payer name", contact.getPayerName());
@@ -322,9 +330,9 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).setValue("Modified phone");
+        editorFields.get(0).model.set(VALUE, "Modified phone");
         editorModel.get(CANCEL_RUNNABLE).run();
 
         assertNull(contact.getPayerName());
@@ -348,9 +356,9 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).setValue("Modified email");
+        editorFields.get(0).model.set(VALUE, "Modified email");
         editorModel.get(CANCEL_RUNNABLE).run();
 
         assertNull(contact.getPayerName());
@@ -374,9 +382,9 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).setValue("Modified name");
+        editorFields.get(0).model.set(VALUE, "Modified name");
         editorModel.get(DONE_RUNNABLE).run();
 
         assertEquals("Modified name", contact.getPayerName());
@@ -400,9 +408,9 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).setValue("Modified phone");
+        editorFields.get(0).model.set(VALUE, "Modified phone");
         editorModel.get(DONE_RUNNABLE).run();
 
         assertNull(contact.getPayerName());
@@ -426,9 +434,9 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).setValue("Modified email");
+        editorFields.get(0).model.set(VALUE, "Modified email");
         editorModel.get(DONE_RUNNABLE).run();
 
         assertNull(contact.getPayerName());
@@ -453,11 +461,11 @@ public class ContactEditorTest {
         PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
 
-        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
-        editorFields.get(0).setValue("Modified name");
-        editorFields.get(1).setValue("Modified phone");
-        editorFields.get(2).setValue("Modified email");
+        editorFields.get(0).model.set(VALUE, "Modified name");
+        editorFields.get(1).model.set(VALUE, "Modified phone");
+        editorFields.get(2).model.set(VALUE, "Modified email");
         editorModel.get(DONE_RUNNABLE).run();
 
         assertEquals("Modified name", contact.getPayerName());

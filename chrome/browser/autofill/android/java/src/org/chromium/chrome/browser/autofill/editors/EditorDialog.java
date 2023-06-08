@@ -12,6 +12,11 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isDropdownField;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -57,6 +62,8 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -400,35 +407,35 @@ public class EditorDialog
         mDropdownFields.clear();
 
         // Add Views for each of the {@link EditorFields}.
-        List<EditorFieldModel> fields = mEditorModel.get(EDITOR_FIELDS);
+        ListModel<ListItem> fields = mEditorModel.get(EDITOR_FIELDS);
         for (int i = 0; i < fields.size(); i++) {
-            EditorFieldModel fieldModel = fields.get(i);
-            EditorFieldModel nextFieldModel = null;
+            ListItem fieldItem = fields.get(i);
+            ListItem nextFieldItem = null;
 
             boolean isLastField = i == fields.size() - 1;
-            boolean useFullLine = fieldModel.isFullLine();
+            boolean useFullLine = fieldItem.model.get(IS_FULL_LINE);
             if (!isLastField && !useFullLine) {
                 // If the next field isn't full, stretch it out.
-                nextFieldModel = fields.get(i + 1);
-                if (nextFieldModel.isFullLine()) useFullLine = true;
+                nextFieldItem = fields.get(i + 1);
+                if (nextFieldItem.model.get(IS_FULL_LINE)) useFullLine = true;
             }
 
             // Always keep dropdowns and text fields on different lines because of height
             // differences.
             if (!isLastField && !useFullLine
-                    && fieldModel.isDropdownField() != nextFieldModel.isDropdownField()) {
+                    && isDropdownField(fieldItem) != isDropdownField(nextFieldItem)) {
                 useFullLine = true;
             }
 
             if (useFullLine || isLastField) {
-                addFieldViewToEditor(mDataView, fieldModel);
+                addFieldViewToEditor(mDataView, fieldItem);
             } else {
                 // Create a LinearLayout to put it and the next view side by side.
                 LinearLayout rowLayout = new LinearLayout(mActivity);
                 mDataView.addView(rowLayout);
 
-                View firstView = addFieldViewToEditor(rowLayout, fieldModel);
-                View lastView = addFieldViewToEditor(rowLayout, nextFieldModel);
+                View firstView = addFieldViewToEditor(rowLayout, fieldItem);
+                View lastView = addFieldViewToEditor(rowLayout, nextFieldItem);
 
                 LinearLayout.LayoutParams firstParams =
                         (LinearLayout.LayoutParams) firstView.getLayoutParams();
@@ -477,13 +484,12 @@ public class EditorDialog
         }
     }
 
-    private View addFieldViewToEditor(ViewGroup parent, final EditorFieldModel fieldModel) {
+    private View addFieldViewToEditor(ViewGroup parent, final ListItem fieldItem) {
         View childView = null;
 
-        if (fieldModel.isDropdownField()) {
-            Runnable prepareEditorRunnable = new Runnable() {
-                @Override
-                public void run() {
+        switch (fieldItem.type) {
+            case DROPDOWN: {
+                Runnable prepareEditorRunnable = () -> {
                     // The dialog has been dismissed.
                     if (mEditorModel == null) return;
 
@@ -491,26 +497,28 @@ public class EditorDialog
                     prepareEditor();
                     prepareFooter();
                     if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
-                }
-            };
-            EditorDropdownField dropdownView =
-                    new EditorDropdownField(mActivity, parent, fieldModel, prepareEditorRunnable,
-                            mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
-            mFieldViews.add(dropdownView);
-            mDropdownFields.add(dropdownView.getDropdown());
+                };
+                EditorDropdownField dropdownView = new EditorDropdownField(mActivity, parent,
+                        fieldItem.model, prepareEditorRunnable,
+                        mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
+                mFieldViews.add(dropdownView);
+                mDropdownFields.add(dropdownView.getDropdown());
 
-            childView = dropdownView.getLayout();
-        } else {
-            EditorTextField inputLayout =
-                    new EditorTextField(mActivity, fieldModel, mEditorActionListener,
-                            fieldModel.getFormatter(), /* focusAndShowKeyboard= */ false,
-                            mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
-            mFieldViews.add(inputLayout);
+                childView = dropdownView.getLayout();
+                break;
+            }
+            case TEXT_INPUT: {
+                EditorTextField inputLayout = new EditorTextField(mActivity, fieldItem.model,
+                        mEditorActionListener, fieldItem.model.get(TEXT_FORMATTER),
+                        /* focusAndShowKeyboard= */ false,
+                        mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
+                mFieldViews.add(inputLayout);
 
-            mEditableTextFields.add(inputLayout.getEditText());
-            childView = inputLayout;
+                mEditableTextFields.add(inputLayout.getEditText());
+                childView = inputLayout;
+                break;
+            }
         }
-
         parent.addView(childView);
         return childView;
     }

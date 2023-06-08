@@ -4,12 +4,23 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.REGION_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getValidationErrorMessage;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.hasMaximumLength;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isFieldValid;
 
 import android.content.Context;
 import android.text.Editable;
@@ -36,9 +47,10 @@ import androidx.core.view.ViewCompat;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-/** Handles validation and display of one field from the {@link EditorFieldModel}. */
+/** Handles validation and display of one field from the {@link EditorProperties.ItemType}. */
 // TODO(b/173103628): Re-enable this
 //@VisibleForTesting
 public class EditorTextField extends FrameLayout implements EditorFieldView {
@@ -52,7 +64,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     @Nullable
     private final TextWatcher mFormatter;
 
-    private EditorFieldModel mEditorFieldModel;
+    private PropertyModel mEditorFieldModel;
     private OnEditorActionListener mEditorActionListener;
     private TextInputLayout mInputLayout;
     private AutoCompleteTextView mInput;
@@ -60,11 +72,10 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     private ImageView mActionIcon;
     private boolean mHasFocusedAtLeastOnce;
 
-    public EditorTextField(Context context, final EditorFieldModel fieldModel,
+    public EditorTextField(Context context, final PropertyModel fieldModel,
             OnEditorActionListener actionListener, @Nullable TextWatcher formatter,
             boolean focusAndShowKeyboard, boolean hasRequiredIndicator) {
         super(context);
-        assert !fieldModel.isDropdownField();
         mEditorFieldModel = fieldModel;
         mEditorActionListener = actionListener;
 
@@ -72,14 +83,14 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
         mInputLayout = (TextInputLayout) findViewById(R.id.text_input_layout);
 
         // Build up the label.  Required fields are indicated by appending a '*'.
-        String label = fieldModel.getLabel();
-        if (fieldModel.isRequired() && hasRequiredIndicator) {
+        CharSequence label = fieldModel.get(LABEL);
+        if (fieldModel.get(IS_REQUIRED) && hasRequiredIndicator) {
             label = label + REQUIRED_FIELD_INDICATOR;
         }
         mInputLayout.setHint(label);
 
         mInput = (AutoCompleteTextView) mInputLayout.findViewById(R.id.text_view);
-        mInput.setText(fieldModel.getValue());
+        mInput.setText(fieldModel.get(VALUE));
         mInput.setContentDescription(label);
         mInput.setOnEditorActionListener(mEditorActionListener);
         // AutoCompleteTextView requires and explicit onKeyListener to show the OSK upon receiving
@@ -126,10 +137,10 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
                 } else if (mHasFocusedAtLeastOnce) {
                     // Validate the field when the user de-focuses it.
                     // Show no errors until the user has already tried to edit the field once.
-                    updateDisplayedError(!mEditorFieldModel.isValid());
+                    updateDisplayedError(!isFieldValid(mEditorFieldModel));
                 }
 
-                if (mEditorFieldModel.hasLengthCounter()) {
+                if (mEditorFieldModel.get(TEXT_LENGTH_COUNTER_LIMIT) != LENGTH_COUNTER_LIMIT_NONE) {
                     mInputLayout.setCounterEnabled(hasFocus);
                 }
             }
@@ -139,12 +150,12 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
         mInput.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                fieldModel.setValue(s.toString());
+                fieldModel.set(VALUE, s.toString());
                 updateDisplayedError(false);
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
                 }
-                if (!mEditorFieldModel.isLengthMaximum()) return;
+                if (!hasMaximumLength(mEditorFieldModel)) return;
                 updateDisplayedError(true);
                 if (isValid()) {
                     // Simulate editor action to select next selectable field.
@@ -156,23 +167,25 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (mInput.hasFocus()) {
-                    fieldModel.setCustomErrorMessage(null);
+                    fieldModel.set(CUSTOM_ERROR_MESSAGE, null);
                 }
             }
         });
 
         // Display any autofill suggestions.
-        if (fieldModel.getSuggestions() != null && !fieldModel.getSuggestions().isEmpty()) {
-            mInput.setAdapter(new ArrayAdapter<String>(getContext(),
-                    android.R.layout.simple_spinner_dropdown_item, fieldModel.getSuggestions()));
+        if (fieldModel.get(TEXT_SUGGESTIONS) != null
+                && !fieldModel.get(TEXT_SUGGESTIONS).isEmpty()) {
+            mInput.setAdapter(
+                    new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
+                            fieldModel.get(TEXT_SUGGESTIONS)));
             mInput.setThreshold(0);
         }
 
-        if (mEditorFieldModel.hasLengthCounter()) {
+        final int lengthCounter = mEditorFieldModel.get(TEXT_LENGTH_COUNTER_LIMIT);
+        if (lengthCounter != LENGTH_COUNTER_LIMIT_NONE) {
             // Limit input length for field and counter.
-            mInput.setFilters(new InputFilter[] {
-                    new InputFilter.LengthFilter(mEditorFieldModel.getLengthCounterLimit())});
-            mInputLayout.setCounterMaxLength(mEditorFieldModel.getLengthCounterLimit());
+            mInput.setFilters(new InputFilter[] {new InputFilter.LengthFilter(lengthCounter)});
+            mInputLayout.setCounterMaxLength(lengthCounter);
         }
 
         mFormatter = formatter;
@@ -181,7 +194,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             formatter.afterTextChanged(mInput.getText());
         }
 
-        switch (fieldModel.getTextInputType()) {
+        switch (fieldModel.get(TEXT_INPUT_TYPE)) {
             case PHONE_NUMBER_INPUT:
                 // Show the keyboard with numbers and phone-related symbols.
                 mInput.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -244,8 +257,8 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
         }
     }
 
-    /** @return The EditorFieldModel that the TextView represents. */
-    public EditorFieldModel getFieldModel() {
+    /** @return The PropertyModel that the TextView represents. */
+    public PropertyModel getFieldModel() {
         return mEditorFieldModel;
     }
 
@@ -256,17 +269,17 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
 
     @Override
     public boolean isValid() {
-        return mEditorFieldModel.isValid();
+        return isFieldValid(mEditorFieldModel);
     }
 
     @Override
     public boolean isRequired() {
-        return mEditorFieldModel.isRequired();
+        return mEditorFieldModel.get(IS_REQUIRED);
     }
 
     @Override
     public void updateDisplayedError(boolean showError) {
-        mInputLayout.setError(showError ? mEditorFieldModel.getErrorMessage() : null);
+        mInputLayout.setError(showError ? getValidationErrorMessage(mEditorFieldModel) : null);
     }
 
     @Override
@@ -279,7 +292,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
 
     @Override
     public void update() {
-        mInput.setText(mEditorFieldModel.getValue());
+        mInput.setText(mEditorFieldModel.get(VALUE));
     }
 
     public void removeTextChangedListeners() {

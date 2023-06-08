@@ -10,10 +10,34 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUST
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_CALLBACK;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.INVALID_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.REQUIRED_ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PLAIN_TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
 
 import android.content.Context;
 import android.os.Handler;
@@ -33,10 +57,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.editors.EditorDialog;
-import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,6 +69,8 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -63,7 +87,7 @@ import java.util.UUID;
  */
 public class AddressEditor {
     private final Handler mHandler = new Handler();
-    private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
+    private final Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private final Set<String> mPhoneNumbers = new HashSet<>();
     private final EditorDialog mEditorDialog;
     private final Delegate mDelegate;
@@ -80,11 +104,11 @@ public class AddressEditor {
     private final CountryAwarePhoneNumberValidator mPhoneValidator;
     private final AutofillProfileBridge mAutofillProfileBridge;
 
-    private final EditorFieldModel mCountryField;
-    private final EditorFieldModel mHonorificField;
-    private final EditorFieldModel mPhoneField;
-    private final EditorFieldModel mEmailField;
-    private final EditorFieldModel mNicknameField;
+    private final PropertyModel mCountryField;
+    private final PropertyModel mHonorificField;
+    private final PropertyModel mPhoneField;
+    private final PropertyModel mEmailField;
+    private final PropertyModel mNicknameField;
 
     @Nullable
     private String mCustomDoneButtonText;
@@ -106,31 +130,51 @@ public class AddressEditor {
      *
      * @return the list of address fields this address editor supports.
      */
-    private static Map<Integer, EditorFieldModel> getAddressFields() {
-        Map<Integer, EditorFieldModel> addressFields = new HashMap<>();
+    private static Map<Integer, PropertyModel> getAddressFields() {
+        Map<Integer, PropertyModel> addressFields = new HashMap<>();
 
         // Don't use REGION_INPUT to avoid capitalizing all characters.
-        addressFields.put(AddressField.ADMIN_AREA, EditorFieldModel.createTextInput());
+        addressFields.put(AddressField.ADMIN_AREA,
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .build());
 
         // City, dependent locality, and organization don't have any special formatting hints.
-        addressFields.put(AddressField.LOCALITY, EditorFieldModel.createTextInput());
-        addressFields.put(AddressField.DEPENDENT_LOCALITY, EditorFieldModel.createTextInput());
-        addressFields.put(AddressField.ORGANIZATION, EditorFieldModel.createTextInput());
+        addressFields.put(AddressField.LOCALITY,
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .build());
+        addressFields.put(AddressField.DEPENDENT_LOCALITY,
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .build());
+        addressFields.put(AddressField.ORGANIZATION,
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .build());
 
         // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
         // the keyboard, if possible.
         addressFields.put(AddressField.SORTING_CODE,
-                EditorFieldModel.createTextInput(TextInputType.ALPHA_NUMERIC_INPUT));
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
+                        .build());
         addressFields.put(AddressField.POSTAL_CODE,
-                EditorFieldModel.createTextInput(TextInputType.ALPHA_NUMERIC_INPUT));
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
+                        .build());
 
         // Street line field can contain \n to indicate line breaks.
         addressFields.put(AddressField.STREET_ADDRESS,
-                EditorFieldModel.createTextInput(TextInputType.STREET_ADDRESS_INPUT));
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, STREET_ADDRESS_INPUT)
+                        .build());
 
         // Android has special formatting rules for names.
         addressFields.put(AddressField.RECIPIENT,
-                EditorFieldModel.createTextInput(TextInputType.PERSON_NAME_INPUT));
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, PERSON_NAME_INPUT)
+                        .build());
 
         return addressFields;
     }
@@ -217,19 +261,27 @@ public class AddressEditor {
         mAutofillProfileBridge = new AutofillProfileBridge();
 
         // The country dropdown is always present on the editor.
-        mCountryField = EditorFieldModel.createDropdown(
-                mContext.getString(R.string.autofill_profile_editor_country),
-                getSupportedCountries(isAccountAddressProfile() && !mIsProfileNew),
-                /*hint=*/null);
+        mCountryField =
+                new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
+                        .with(LABEL, mContext.getString(R.string.autofill_profile_editor_country))
+                        .with(DROPDOWN_KEY_VALUE_LIST,
+                                getSupportedCountries(isAccountAddressProfile() && !mIsProfileNew))
+                        .with(IS_FULL_LINE, true)
+                        .build();
         // Country dropdown is cached, so the selected item needs to be updated for the new profile
         // that's being edited. This will not fire the dropdown callback.
 
         // Honorific prefix is present only for autofill settings.
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES)) {
-            mHonorificField = EditorFieldModel.createTextInput();
-            mHonorificField.setLabel(
-                    mContext.getString(R.string.autofill_profile_editor_honorific_prefix));
+            mHonorificField =
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                            .with(LABEL,
+                                    mContext.getString(
+                                            R.string.autofill_profile_editor_honorific_prefix))
+                            .with(IS_FULL_LINE, true)
+                            .build();
         } else {
             mHonorificField = null;
         }
@@ -239,25 +291,44 @@ public class AddressEditor {
         mAddressFields.putAll(getAddressFields());
 
         // Phone number is present for all countries.
-        mPhoneField = EditorFieldModel.createTextInput(TextInputType.PHONE_NUMBER_INPUT,
-                mContext.getString(R.string.autofill_profile_editor_phone_number), mPhoneNumbers,
-                mPhoneFormatter, mPhoneValidator, /* requiredErrorMessage */ null,
-                mContext.getString(R.string.payments_phone_invalid_validation_message),
-                EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
+        mPhoneField =
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
+                        .with(LABEL,
+                                mContext.getString(R.string.autofill_profile_editor_phone_number))
+                        .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
+                        .with(TEXT_FORMATTER, mPhoneFormatter)
+                        .with(VALIDATOR, mPhoneValidator)
+                        .with(IS_REQUIRED, false)
+                        .with(INVALID_ERROR_MESSAGE,
+                                mContext.getString(
+                                        R.string.payments_phone_invalid_validation_message))
+                        .with(IS_FULL_LINE, true)
+                        .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
+                        .build();
 
         // Phone number is present for all countries.
-        mEmailField = EditorFieldModel.createTextInput(TextInputType.EMAIL_ADDRESS_INPUT,
-                mContext.getString(R.string.autofill_profile_editor_email_address),
-                null /* suggestions */, null /* formatter */, null /* validator */,
-                null /* requiredErrorMessage */,
-                mContext.getString(R.string.payments_email_invalid_validation_message),
-                EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
+        mEmailField =
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(TEXT_INPUT_TYPE, EMAIL_ADDRESS_INPUT)
+                        .with(LABEL,
+                                mContext.getString(R.string.autofill_profile_editor_email_address))
+                        .with(IS_REQUIRED, false)
+                        .with(INVALID_ERROR_MESSAGE,
+                                mContext.getString(
+                                        R.string.payments_email_invalid_validation_message))
+                        .with(IS_FULL_LINE, true)
+                        .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
+                        .build();
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)) {
-            mNicknameField = EditorFieldModel.createTextInput();
             // TODO(crbug.com/1445020): Use localized string.
-            mNicknameField.setLabel("Label");
+            mNicknameField = new PropertyModel.Builder(TEXT_ALL_KEYS)
+                                     .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                                     .with(LABEL, "Label")
+                                     .with(IS_FULL_LINE, true)
+                                     .build();
         } else {
             mNicknameField = null;
         }
@@ -265,24 +336,24 @@ public class AddressEditor {
         // This should be called when all required fields are put in mAddressField.
         setAddressFieldValues();
 
-        assert mCountryField.getValue() != null;
-        mPhoneValidator.setCountryCode(mCountryField.getValue());
-        mPhoneFormatter.setCountryCode(mCountryField.getValue());
+        assert mCountryField.get(VALUE) != null;
+        mPhoneValidator.setCountryCode(mCountryField.get(VALUE));
+        mPhoneFormatter.setCountryCode(mCountryField.get(VALUE));
     }
 
     private void setAddressFieldValues() {
-        mCountryField.setValue(AutofillAddress.getCountryCode(mProfileToEdit));
+        mCountryField.set(VALUE, AutofillAddress.getCountryCode(mProfileToEdit));
         if (mHonorificField != null) {
-            mHonorificField.setValue(mProfileToEdit.getHonorificPrefix());
+            mHonorificField.set(VALUE, mProfileToEdit.getHonorificPrefix());
         }
         // Address fields are cached, so their values need to be updated for every new profile
         // that's being edited.
-        for (Map.Entry<Integer, EditorFieldModel> entry : mAddressFields.entrySet()) {
-            entry.getValue().setValue(
-                    AutofillAddress.getProfileField(mProfileToEdit, entry.getKey()));
+        for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
+            entry.getValue().set(
+                    VALUE, AutofillAddress.getProfileField(mProfileToEdit, entry.getKey()));
         }
-        mPhoneField.setValue(mProfileToEdit.getPhoneNumber());
-        mEmailField.setValue(mProfileToEdit.getEmailAddress());
+        mPhoneField.set(VALUE, mProfileToEdit.getPhoneNumber());
+        mEmailField.set(VALUE, mProfileToEdit.getEmailAddress());
     }
 
     /**
@@ -313,7 +384,7 @@ public class AddressEditor {
         PropertyModel addressEditorModel = buildEditorModel();
         // Changing the country will update which fields are in the model. The actual fields are not
         // discarded, so their contents are preserved.
-        mCountryField.setDropdownCallback(new Callback<Pair<String, Runnable>>() {
+        mCountryField.set(DROPDOWN_CALLBACK, new Callback<Pair<String, Runnable>>() {
             /**
              * If the selected country on the country dropdown list is changed,
              * the first element of eventData is the recently selected dropdown key,
@@ -322,7 +393,7 @@ public class AddressEditor {
              */
             @Override
             public void onResult(Pair<String, Runnable> eventData) {
-                List<EditorFieldModel> fields = addressEditorModel.get(EDITOR_FIELDS);
+                ListModel<ListItem> fields = addressEditorModel.get(EDITOR_FIELDS);
                 fields.clear();
                 fields.addAll(
                         buildEditorFieldList(eventData.first, Locale.getDefault().getLanguage()));
@@ -354,7 +425,7 @@ public class AddressEditor {
 
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
-        String country = mCountryField.getValue();
+        String country = mCountryField.get(VALUE);
         if (willBeSavedInAccount() && mIsProfileNew
                 && PersonalDataManager.getInstance().isCountryEligibleForAccountStorage(country)) {
             profile.setSource(Source.ACCOUNT);
@@ -362,10 +433,10 @@ public class AddressEditor {
         // Country code and phone number are always required and are always collected from the
         // editor model.
         profile.setCountryCode(country);
-        if (mPhoneField != null) profile.setPhoneNumber(mPhoneField.getValue());
-        if (mEmailField != null) profile.setEmailAddress(mEmailField.getValue());
+        if (mPhoneField != null) profile.setPhoneNumber(mPhoneField.get(VALUE));
+        if (mEmailField != null) profile.setEmailAddress(mEmailField.get(VALUE));
         if (mHonorificField != null) {
-            profile.setHonorificPrefix(mHonorificField.getValue());
+            profile.setHonorificPrefix(mHonorificField.get(VALUE));
         }
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
@@ -377,13 +448,13 @@ public class AddressEditor {
             AddressUiComponent component = mVisibleEditorFields.get(i);
             visibleFields.add(component.id);
             if (component.id != AddressField.COUNTRY) {
-                setProfileField(profile, component.id, mAddressFields.get(component.id).getValue());
+                setProfileField(profile, component.id, mAddressFields.get(component.id).get(VALUE));
             }
         }
 
         // Clear the fields that are hidden from the user interface, so
         // AutofillAddress.toPaymentAddress() will send them to the renderer as empty strings.
-        for (Map.Entry<Integer, EditorFieldModel> entry : mAddressFields.entrySet()) {
+        for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
             if (!visibleFields.contains(entry.getKey())) {
                 setProfileField(profile, entry.getKey(), "");
             }
@@ -551,29 +622,30 @@ public class AddressEditor {
      * @param countryCode The country for which fields are to be added.
      * @param languageCode The language in which localized strings (e.g. label) are presented.
      */
-    private List<EditorFieldModel> buildEditorFieldList(String countryCode, String languageCode) {
-        List<EditorFieldModel> editorFields = new ArrayList<>();
+    private ListModel<ListItem> buildEditorFieldList(String countryCode, String languageCode) {
+        ListModel<ListItem> editorFields = new ListModel<>();
         mVisibleEditorFields = mAutofillProfileBridge.getAddressUiComponents(
                 countryCode, languageCode, AddressValidationType.ACCOUNT);
 
         // In terms of order, country must be the first field.
-        editorFields.add(mCountryField);
+        editorFields.add(new ListItem(DROPDOWN, mCountryField));
 
         for (int i = 0; i < mVisibleEditorFields.size(); i++) {
             AddressUiComponent component = mVisibleEditorFields.get(i);
 
             // Honorific prefix should go before name.
             if (component.id == AddressField.RECIPIENT && mHonorificField != null) {
-                editorFields.add(mHonorificField);
+                editorFields.add(new ListItem(TEXT_INPUT, mHonorificField));
             }
 
-            EditorFieldModel field = mAddressFields.get(component.id);
+            PropertyModel field = mAddressFields.get(component.id);
 
             // Labels depend on country, e.g., state is called province in some countries. These are
             // already localized.
-            field.setLabel(component.label);
-            field.setIsFullLine(component.isFullLine || component.id == AddressField.LOCALITY
-                    || component.id == AddressField.DEPENDENT_LOCALITY);
+            field.set(LABEL, component.label);
+            field.set(IS_FULL_LINE,
+                    component.isFullLine || component.id == AddressField.LOCALITY
+                            || component.id == AddressField.DEPENDENT_LOCALITY);
 
             if (shouldDisplayRequiredErrorIfFieldEmpty(component)) {
                 String message =
@@ -582,15 +654,16 @@ public class AddressEditor {
                 // Note: the error message itself will be displayed only if the field is or
                 // becomes empty, this just marks "candidate" fields that should be taken
                 // into account for the error.
-                field.setRequiredErrorMessage(message);
+                field.set(IS_REQUIRED, true);
+                field.set(REQUIRED_ERROR_MESSAGE, message);
             }
 
-            editorFields.add(field);
+            editorFields.add(new ListItem(TEXT_INPUT, field));
         }
         // Phone number (and email/nickname if applicable) are the last fields of the address.
-        if (mPhoneField != null) editorFields.add(mPhoneField);
-        if (mEmailField != null) editorFields.add(mEmailField);
-        if (mNicknameField != null) editorFields.add(mNicknameField);
+        if (mPhoneField != null) editorFields.add(new ListItem(TEXT_INPUT, mPhoneField));
+        if (mEmailField != null) editorFields.add(new ListItem(TEXT_INPUT, mEmailField));
+        if (mNicknameField != null) editorFields.add(new ListItem(TEXT_INPUT, mNicknameField));
 
         return editorFields;
     }
