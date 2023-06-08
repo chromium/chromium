@@ -29,7 +29,6 @@ source_set("reading_list") {
     "//base",
     "//components/favicon/core",
     "//components/feature_engagement",
-    "//components/prefs",
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
     "//components/reading_list/ios",

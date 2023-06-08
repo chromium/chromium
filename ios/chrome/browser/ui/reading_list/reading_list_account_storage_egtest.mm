@@ -79,34 +79,6 @@ NSString* const kReadURL = @"http://readfoobar.com";
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 }
-
-// Tests that the signin promo is shown again when last signed-in user removes
-// data during sign-out.
-- (void)testPromoShownWhenSyncDataIsRemoved {
-  // Sign-in with sync with `fakeIdentity1`.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
-  // Sign-out and remove data.
-  [ChromeEarlGrey signOutAndClearIdentities];
-
-  [ReadingListEarlGreyUI openReadingList];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
-}
-
-// Tests that the signin promo is not shown when last signed-in user did not
-// remove data during sign-out.
-- (void)testPromoNotShownWhenSyncDataNotRemoved {
-  // Sign-in with sync with `fakeIdentity1`.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
-  // Sign-out without removing data.
-  [SigninEarlGrey signOut];
-
-  [ReadingListEarlGreyUI openReadingList];
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-}
-
 // Tests to sign-in in incognito mode with the promo.
 // See http://crbug.com/1432747.
 - (void)testSignInPromoInIncognito {

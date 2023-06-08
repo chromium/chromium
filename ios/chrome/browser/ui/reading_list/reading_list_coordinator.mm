@@ -12,10 +12,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/prefs/pref_service.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/features/reading_list_switches.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
@@ -621,15 +619,10 @@
     self.shouldShowSignInPromo = NO;
     return;
   }
-  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    self.shouldShowSignInPromo = NO;
-  } else {
-    const std::string lastSignedInGaiaId =
-        _prefService->GetString(prefs::kGoogleServicesLastGaiaId);
-    // If the last signed-in user did not remove data during sign-out, don't
-    // show the signin promo.
-    self.shouldShowSignInPromo = lastSignedInGaiaId.empty();
-  }
+
+  self.shouldShowSignInPromo =
+      !_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 // Updates the visibility of the sign-in promo.

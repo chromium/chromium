@@ -97,7 +97,8 @@ using chrome_test_util::SecondarySignInButton;
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   // Sign-in+sync with identity1.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:YES];
-  [ChromeEarlGrey signOutAndClearIdentities];
+  [SigninEarlGrey signOut];
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity1];
   // Sign-in with bookmark account storage with identity2.
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
@@ -111,22 +112,6 @@ using chrome_test_util::SecondarySignInButton;
   // Result: the sign-in is successful without any issue.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
                                         consent:signin::ConsentLevel::kSignin];
-}
-
-// Tests that the signin promo is not shown when last signed-in user did not
-// remove data during sign-out.
-- (void)testPromoViewNotShownWhenSyncDataNotRemoved {
-  // Sign-in with sync with `fakeIdentity1`.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
-  // Sign-out without removing data.
-  [SigninEarlGrey signOut];
-
-  [BookmarkEarlGrey setupStandardBookmarks];
-  [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
-
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
 // Tests to sign-in in incognito mode with the promo.
