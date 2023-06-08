@@ -75,7 +75,7 @@ def clang_mac_builder(*, name, cores = 24, **kwargs):
             # The Chromium build doesn't need system Xcode, but the ToT clang
             # bots also build clang and llvm and that build does need system
             # Xcode.
-            "xcode_build_version": "13a233",
+            "xcode_build_version": "14c18",
         },
         **kwargs
     )

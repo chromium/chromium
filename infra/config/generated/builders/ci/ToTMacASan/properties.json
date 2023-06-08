@@ -12,5 +12,5 @@
   "sheriff_rotations": [
     "chromium.clang"
   ],
-  "xcode_build_version": "13a233"
+  "xcode_build_version": "14c18"
 }
