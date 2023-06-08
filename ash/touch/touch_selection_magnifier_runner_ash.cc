@@ -5,11 +5,10 @@
 #include "ash/touch/touch_selection_magnifier_runner_ash.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/style/color_util.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_provider_source_observer.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -20,6 +19,7 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ash {
 
@@ -96,13 +96,12 @@ gfx::Point GetZoomLayerBackgroundOffset(const gfx::Rect& magnifier_layer_bounds,
                            focus_center.y());
 }
 
-// Gets the border color using `color_provider_source`. Defaults to black if
-// `color_provider_source` is nullptr.
-SkColor GetBorderColor(const ui::ColorProviderSource* color_provider_source) {
-  return color_provider_source
-             ? color_provider_source->GetColorProvider()->GetColor(
-                   cros_tokens::kCrosSysSeparator)
-             : SkColorSetARGB(51, 0, 0, 0);
+// Gets the color to use for the border based on the default native theme.
+SkColor GetBorderColor() {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  return ui::ColorProviderManager::Get()
+      .GetColorProviderFor(native_theme->GetColorProviderKey(nullptr))
+      ->GetColor(cros_tokens::kCrosSysSeparator);
 }
 
 // Returns the child container in `root` that should parent the magnifier layer.
@@ -116,13 +115,10 @@ aura::Window* GetMagnifierParentContainerForRoot(aura::Window* root) {
 class TouchSelectionMagnifierRunnerAsh::BorderRenderer
     : public ui::LayerDelegate {
  public:
-  explicit BorderRenderer(SkColor border_color) : border_color_(border_color) {}
-
+  BorderRenderer() = default;
   BorderRenderer(const BorderRenderer&) = delete;
   BorderRenderer& operator=(const BorderRenderer&) = delete;
   ~BorderRenderer() override = default;
-
-  void set_border_color(SkColor border_color) { border_color_ = border_color; }
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override {
@@ -153,16 +149,13 @@ class TouchSelectionMagnifierRunnerAsh::BorderRenderer
     border_flags.setAntiAlias(true);
     border_flags.setStyle(cc::PaintFlags::kStroke_Style);
     border_flags.setStrokeWidth(kMagnifierBorderThickness);
-    border_flags.setColor(border_color_);
+    border_flags.setColor(GetBorderColor());
     recorder.canvas()->DrawRoundRect(kZoomLayerBounds, kMagnifierRadius,
                                      border_flags);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
-
- private:
-  SkColor border_color_;
 };
 
 TouchSelectionMagnifierRunnerAsh::TouchSelectionMagnifierRunnerAsh() = default;
@@ -185,7 +178,6 @@ void TouchSelectionMagnifierRunnerAsh::ShowMagnifier(
 
   bool created_new_magnifier_layer = false;
   if (!magnifier_layer_) {
-    Observe(ColorUtil::GetColorProviderSourceForWindow(parent_container));
     // Create the magnifier layer, but don't add it to the parent container yet.
     // We will add it to the parent container after setting its bounds, so that
     // the magnifier doesn't appear initially in the wrong spot.
@@ -234,20 +226,10 @@ void TouchSelectionMagnifierRunnerAsh::CloseMagnifier() {
   zoom_layer_ = nullptr;
   border_layer_ = nullptr;
   border_renderer_ = nullptr;
-  Observe(nullptr);
 }
 
 bool TouchSelectionMagnifierRunnerAsh::IsRunning() const {
   return current_context_ != nullptr;
-}
-
-void TouchSelectionMagnifierRunnerAsh::OnColorProviderChanged() {
-  if (border_renderer_) {
-    DCHECK(border_layer_);
-    border_renderer_->set_border_color(
-        GetBorderColor(GetColorProviderSource()));
-    border_layer_->SchedulePaint(gfx::Rect(border_layer_->size()));
-  }
 }
 
 const aura::Window*
@@ -279,8 +261,7 @@ void TouchSelectionMagnifierRunnerAsh::CreateMagnifierLayer() {
   // the zoom layer.
   border_layer_ = std::make_unique<ui::Layer>();
   border_layer_->SetBounds(gfx::Rect(kBorderLayerSize));
-  border_renderer_ = std::make_unique<BorderRenderer>(
-      GetBorderColor(GetColorProviderSource()));
+  border_renderer_ = std::make_unique<BorderRenderer>();
   border_layer_->set_delegate(border_renderer_.get());
   border_layer_->SetFillsBoundsOpaquely(false);
   magnifier_layer_->Add(border_layer_.get());

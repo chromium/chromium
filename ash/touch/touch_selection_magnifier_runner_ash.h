@@ -7,8 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/color/color_provider_source_observer.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/touch_selection/touch_selection_magnifier_runner.h"
 
 namespace aura {
@@ -27,8 +25,7 @@ namespace ash {
 
 // Ash implementation for TouchSelectionMagnifierRunner.
 class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
-    : public ui::TouchSelectionMagnifierRunner,
-      public ui::ColorProviderSourceObserver {
+    : public ui::TouchSelectionMagnifierRunner {
  public:
   TouchSelectionMagnifierRunnerAsh();
 
@@ -44,9 +41,6 @@ class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
                      const gfx::SelectionBound& focus_bound) override;
   void CloseMagnifier() override;
   bool IsRunning() const override;
-
-  // ui::ColorProviderSourceObserver:
-  void OnColorProviderChanged() override;
 
   const aura::Window* GetCurrentContextForTesting() const;
   const ui::Layer* GetMagnifierLayerForTesting() const;
