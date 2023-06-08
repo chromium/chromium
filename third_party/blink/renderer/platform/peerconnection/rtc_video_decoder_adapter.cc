@@ -727,8 +727,8 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
   }
 
   if (ShouldReinitializeForSettingHDRColorSpace(input_image)) {
-    config_.set_color_space_info(
-        blink::WebRtcToMediaVideoColorSpace(*input_image.ColorSpace()));
+    config_.set_color_space_info(media::VideoColorSpace::FromGfxColorSpace(
+        blink::WebRtcToGfxColorSpace(*input_image.ColorSpace())));
     if (!ReinitializeSync(config_)) {
       RecordRTCVideoDecoderFallbackReason(
           config_.codec(),
@@ -850,10 +850,10 @@ bool RTCVideoDecoderAdapter::ShouldReinitializeForSettingHDRColorSpace(
 
   if (config_.profile() == media::VP9PROFILE_PROFILE2 &&
       input_image.ColorSpace()) {
-    const media::VideoColorSpace& new_color_space =
-        blink::WebRtcToMediaVideoColorSpace(*input_image.ColorSpace());
+    const gfx::ColorSpace& new_color_space =
+        blink::WebRtcToGfxColorSpace(*input_image.ColorSpace());
     if (!config_.color_space_info().IsSpecified() ||
-        new_color_space != config_.color_space_info()) {
+        new_color_space != config_.color_space_info().ToGfxColorSpace()) {
       return true;
     }
   }

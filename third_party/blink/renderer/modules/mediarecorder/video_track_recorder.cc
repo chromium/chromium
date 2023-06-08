@@ -1049,8 +1049,9 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
   }
 
   absl::optional<gfx::ColorSpace> color_space;
-  if (encoded_frame->ColorSpace())
-    color_space = encoded_frame->ColorSpace()->ToGfxColorSpace();
+  if (encoded_frame->ColorSpace()) {
+    color_space = encoded_frame->ColorSpace();
+  }
   auto span = encoded_frame->Data();
   const char* span_begin = reinterpret_cast<const char*>(span.data());
   std::string data(span_begin, span_begin + span.size());

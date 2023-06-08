@@ -44,7 +44,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
         is_key_frame_(frame.is_key_frame()),
         resolution_(frame.resolution().width, frame.resolution().height) {
     if (frame.color_space()) {
-      color_space_ = WebRtcToMediaVideoColorSpace(*frame.color_space());
+      color_space_ = WebRtcToGfxColorSpace(*frame.color_space());
     }
   }
 
@@ -56,7 +56,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
 
   bool IsKeyFrame() const override { return is_key_frame_; }
 
-  absl::optional<media::VideoColorSpace> ColorSpace() const override {
+  absl::optional<gfx::ColorSpace> ColorSpace() const override {
     return color_space_;
   }
 
@@ -66,7 +66,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
   rtc::scoped_refptr<const webrtc::EncodedImageBufferInterface> buffer_;
   media::VideoCodec codec_;
   bool is_key_frame_;
-  absl::optional<media::VideoColorSpace> color_space_;
+  absl::optional<gfx::ColorSpace> color_space_;
   gfx::Size resolution_;
 };
 
@@ -202,8 +202,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
         incoming_frame.color_space()->matrix() ==
             webrtc::ColorSpace::MatrixID::kUnspecified)) {
     video_frame->set_color_space(
-        WebRtcToMediaVideoColorSpace(*incoming_frame.color_space())
-            .GuessGfxColorSpace());
+        WebRtcToGfxColorSpace(*incoming_frame.color_space()));
   }
 
   // Run render smoothness algorithm only when we don't have to render

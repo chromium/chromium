@@ -29,8 +29,8 @@ WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec);
 media::VideoCodecProfile PLATFORM_EXPORT
 WebRtcVideoFormatToMediaVideoCodecProfile(const webrtc::SdpVideoFormat& format);
 
-media::VideoColorSpace PLATFORM_EXPORT
-WebRtcToMediaVideoColorSpace(const webrtc::ColorSpace& color_space);
+gfx::ColorSpace PLATFORM_EXPORT
+WebRtcToGfxColorSpace(const webrtc::ColorSpace& color_space);
 
 webrtc::ColorSpace PLATFORM_EXPORT
 GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space);

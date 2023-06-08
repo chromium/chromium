@@ -29,7 +29,7 @@ class EncodedVideoFrame : public WTF::ThreadSafeRefCounted<EncodedVideoFrame> {
   virtual bool IsKeyFrame() const = 0;
 
   // Returns color space stored in the encoded frame.
-  virtual absl::optional<media::VideoColorSpace> ColorSpace() const = 0;
+  virtual absl::optional<gfx::ColorSpace> ColorSpace() const = 0;
 
   // Returns resolution of encoded frame, or 0x0 if not set.
   virtual gfx::Size Resolution() const = 0;
