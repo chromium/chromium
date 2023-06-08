@@ -1295,7 +1295,6 @@ class MetaBuildWrapper:
     file_ignore_list = [
         re.compile(r'.*build/chromeos.*'),
         re.compile(r'.*build/cros_cache.*'),
-        re.compile(r'.*third_party/chromite.*'),
         # No test target should rely on files in [output_dir]/gen.
         re.compile(r'^gen/.*'),
     ]
