@@ -164,9 +164,6 @@ void InstallProgressSilentObserver::OnComplete(
   CHECK(events_sink_);
   VLOG(1) << __func__;
 
-  // TODO(crbug.com/1286580): Launch `post_install_launch_command_line` for
-  // each app if needed.
-
   events_sink_->DoExit();
 }
 
