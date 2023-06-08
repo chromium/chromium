@@ -5772,15 +5772,6 @@ void AXObject::ChildrenChangedWithCleanLayout() {
       }
     }
   }
-
-  // When pseudo element layout changes, we need to make sure we clear up all
-  // descendant objects, because we may not receive ChildrenChanged() calls for
-  // all of them, and we don't want to leave any parentless objects around. This
-  // will force re-creation of any AXObjects for this subtree.
-  if (GetNode() && GetNode()->IsPseudoElement()) {
-    AXObjectCache().RemoveSubtreeWithFlatTraversal(this,
-                                                   /* notify_parent */ false);
-  }
 }
 
 Node* AXObject::GetNode() const {
