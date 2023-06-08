@@ -7,6 +7,17 @@ import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactory.java" ]
+
+  deps = [
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tabmodel:java",
+  ]
+
+  public_deps = [ ":delegate_java" ]
+}
+
+android_library("delegate_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchController.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
