@@ -106,6 +106,7 @@
     "Win10 x64 Debug (NVIDIA)": "Ubuntu-22.04",
     "Win10 x64 Release (NVIDIA)": "Ubuntu-22.04",
     "android-angle-chromium-arm64-nexus5x": "Ubuntu-22.04",
+    "android-archive-rel": "Ubuntu-22.04",
     "android-arm64-archive-rel": "Ubuntu-22.04",
     "android-binary-size-generator": "Ubuntu-22.04",
     "android-build-perf-developer": "Ubuntu-22.04",
