@@ -40,6 +40,16 @@ extern const char kAutofillBrandingIOSDescription[];
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];
 
+// Title and description for the flag that disables autofill profile updates for
+// testing purposes.
+extern const char kAutofillDisableProfileUpdatesName[];
+extern const char kAutofillDisableProfileUpdatesDescription[];
+
+// Title and description for the flag that disables silent autofill profile
+// updates for testing purposes.
+extern const char kAutofillDisableSilentProfileUpdatesName[];
+extern const char kAutofillDisableSilentProfileUpdatesDescription[];
+
 // Title and description for the flag to enable custom card art images for
 // autofill Payments UI, instead of built-in network images.
 extern const char kAutofillEnableCardArtImageName[];
@@ -59,6 +69,21 @@ extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 // Downstream metrics are enabled.
 extern const char kAutofillEnableRemadeDownstreamMetricsName[];
 extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
+
+// Title and description for the flag that controls whether Autofill handles
+// administrative area level 2 fields.
+extern const char kAutofillEnableSupportForAdminLevel2Name[];
+extern const char kAutofillEnableSupportForAdminLevel2Description[];
+
+// Title and description for the flag that controls whether Autofill handles
+// between streets fields.
+extern const char kAutofillEnableSupportForBetweenStreetsName[];
+extern const char kAutofillEnableSupportForBetweenStreetsDescription[];
+
+// Title and description for the flag that controls whether Autofill handles
+// landmark fields.
+extern const char kAutofillEnableSupportForLandmarkName[];
+extern const char kAutofillEnableSupportForLandmarkDescription[];
 
 // Title and description for flag to enable showing card product name (instead
 // of issuer network) in Payments UI.

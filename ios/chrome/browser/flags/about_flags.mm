@@ -1539,6 +1539,35 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableVariationsGoogleGroupFilteringName,
      flag_descriptions::kEnableVariationsGoogleGroupFilteringDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVariationsGoogleGroupFiltering)},
+    {"autofill-disable-profile-updates",
+     flag_descriptions::kAutofillDisableProfileUpdatesName,
+     flag_descriptions::kAutofillDisableProfileUpdatesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::test::kAutofillDisableProfileUpdates)},
+    {"autofill-disable-silent-profile-updates",
+     flag_descriptions::kAutofillDisableSilentProfileUpdatesName,
+     flag_descriptions::kAutofillDisableSilentProfileUpdatesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::test::kAutofillDisableSilentProfileUpdates)},
+    {"autofill-enable-admin-level-2",
+     flag_descriptions::kAutofillEnableSupportForAdminLevel2Name,
+     flag_descriptions::kAutofillEnableSupportForAdminLevel2Description,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableSupportForAdminLevel2)},
+    {"autofill-enable-between-streets",
+     flag_descriptions::kAutofillEnableSupportForBetweenStreetsName,
+     flag_descriptions::kAutofillEnableSupportForBetweenStreetsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableSupportForBetweenStreets)},
+    {"autofill-enable-landmark",
+     flag_descriptions::kAutofillEnableSupportForLandmarkName,
+     flag_descriptions::kAutofillEnableSupportForLandmarkDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSupportForLandmark)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

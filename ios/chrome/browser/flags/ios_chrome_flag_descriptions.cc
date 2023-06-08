@@ -43,6 +43,18 @@ const char kAutofillCreditCardUploadDescription[] =
     "Offers uploading Autofilled credit cards to Google Payments after form "
     "submission.";
 
+const char kAutofillDisableProfileUpdatesName[] =
+    "Disables Autofill profile updates from form submissions";
+const char kAutofillDisableProfileUpdatesDescription[] =
+    "When enabled, Autofill will not apply updates to address profiles based "
+    "on data extracted from submitted forms. For testing purposes.";
+
+const char kAutofillDisableSilentProfileUpdatesName[] =
+    "Disables Autofill silent profile updates from form submissions";
+const char kAutofillDisableSilentProfileUpdatesDescription[] =
+    "When enabled, Autofill will not apply silent updates to address profiles. "
+    "For testing purposes.";
+
 const char kAutofillEnableCardArtImageName[] = "Enable showing card art images";
 const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "
@@ -65,6 +77,24 @@ const char kAutofillEnableRemadeDownstreamMetricsName[] =
 const char kAutofillEnableRemadeDownstreamMetricsDescription[] =
     "When enabled, some extra metrics logging for Autofill Downstream will "
     "start.";
+
+const char kAutofillEnableSupportForAdminLevel2Name[] =
+    "Enables parsing and filling of administrative area level 2 fields";
+const char kAutofillEnableSupportForAdminLevel2Description[] =
+    "When enabled, Autofill will parse, save and fill administrative area "
+    "level 2 fields in forms.";
+
+const char kAutofillEnableSupportForBetweenStreetsName[] =
+    "Enables parsing and filling of between street fields";
+const char kAutofillEnableSupportForBetweenStreetsDescription[] =
+    "When enabled, Autofill will parse, save and fill between street "
+    "fields in forms.";
+
+const char kAutofillEnableSupportForLandmarkName[] =
+    "Enables parsing and filling of Landmark fields";
+const char kAutofillEnableSupportForLandmarkDescription[] =
+    "When enabled, Autofill will parse, save and fill landmark fields in "
+    "forms.";
 
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";

@@ -434,19 +434,19 @@
     "expiry_milestone": 113
   },
   {
-      "name": "autofill-account-profiles-storage",
-      "owners": [ "vidhanj", "koerber" ],
-      "expiry_milestone": 120
+    "name": "autofill-account-profiles-storage",
+    "owners": [ "vidhanj", "koerber" ],
+    "expiry_milestone": 120
   },
   {
-      "name": "autofill-account-profiles-union-view",
-      "owners": [ "vidhanj", "koerber" ],
-      "expiry_milestone": 120
+    "name": "autofill-account-profiles-union-view",
+    "owners": [ "vidhanj", "koerber" ],
+    "expiry_milestone": 120
   },
   {
-      "name": "autofill-address-verification-in-save-prompt",
-      "owners": [ "mamir", "koerber" ],
-      "expiry_milestone": 120
+    "name": "autofill-address-verification-in-save-prompt",
+    "owners": [ "mamir", "koerber" ],
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-always-return-cloud-tokenized-card",
@@ -457,6 +457,26 @@
     "name": "autofill-auto-trigger-manual-fallback-for-cards",
     "owners": ["siashah", "siyua"],
     "expiry_milestone": 116
+  },
+  {
+    "name": "autofill-disable-profile-updates",
+    "owners": ["sebsg"],
+    "expiry_milestone": 125
+  },
+  {
+    "name": "autofill-disable-silent-profile-updates",
+    "owners": ["sebsg"],
+    "expiry_milestone": 125
+  },
+  {
+    "name": "autofill-enable-admin-level-2",
+    "owners": ["sebsg"],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "autofill-enable-between-streets",
+    "owners": ["sebsg"],
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enable-card-art-image",
@@ -482,6 +502,11 @@
     "name": "autofill-enable-iban-client-side-url-filtering",
     "owners": [ "vinnypersky@google.com"],
     "expiry_milestone": 123
+  },
+  {
+    "name": "autofill-enable-landmark",
+    "owners": [ "sebsg" ],
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enable-manual-fallback-for-virtual-cards",
