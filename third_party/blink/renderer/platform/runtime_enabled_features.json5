@@ -2846,7 +2846,7 @@
     },
     {
       name: "ReadableStreamTeeCloneForBranch2",
-      status: "experimental",
+      status: "stable",
     },
     // If enabled, the Accept-Language header will be reduced.
     {
