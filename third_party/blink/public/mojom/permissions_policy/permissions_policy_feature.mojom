@@ -141,20 +141,7 @@ enum PermissionsPolicyFeature {
 
   kClientHintUABitness = 87,
 
-  // Client hint for indicating that the User-Agent header contains the reduced
-  // user agent string.
-  //
-  // The `Sec-CH-UA-Reduced` header field is a temporary client hint, which
-  // will only be sent in the presence of a valid Origin Trial token.  It was
-  // introduced to enable safely experimenting with sending a reduced user
-  // agent string in the `User-Agent` header.
-  //
-  // See https://www.chromestatus.com/feature/5704553745874944 for the
-  // User-Agent reduction Chrome feature and the design doc
-  // https://docs.google.com/document/d/1feIxK9S7oNgT2oGGebbxE9X0O-4wTKcsP_gRaY99tq4
-  // for details on the use of Client Hints guarded by an Origin Trial to
-  // enable experimenting with the reduced user agent string.
-  kClientHintUAReduced = 88,
+  // kClientHintUAReduced = 88, Removed in M116.
 
   // Client Hint for viewport height.
   kClientHintViewportHeight = 89,
@@ -178,15 +165,7 @@ enum PermissionsPolicyFeature {
   // Client Hint for the full version for each brand.
   kClientHintUAFullVersionList = 93,
 
-  // Client hint for indicating that the User-Agent header contains the full
-  // user agent string.
-  //
-  // The `Sec-CH-UA-Full` header field is a temporary client hint, which
-  // will only be sent in the presence of a valid Origin Trial token.  It was
-  // introduced to enable sites to register for the deprecation UA reduction
-  // origin trial and continue to receive the full UA string for some period, once
-  // UA reduction rolls out.
-  kClientHintUAFull = 94,
+  // kClientHintUAFull = 94, Removed in M116.
 
   // Client Hint for Sec-CH-UA-WoW64.
   kClientHintUAWoW64 = 95,

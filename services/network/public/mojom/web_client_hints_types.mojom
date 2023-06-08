@@ -39,7 +39,7 @@ enum WebClientHintsType {
   kUABitness = 16,
   // A client hint which, if set, signifies to the origin that the User-Agent
   // header contains the reduced user agent string.
-  kUAReduced = 17,
+  // kUAReduced = 17, Removed in M116.
   kViewportHeight = 18,
   kDeviceMemory = 19, // The `sec-ch-` variant of kDeviceMemory_DEPRECATED
   kDpr = 20, // The `sec-ch-` variant of kDpr_DEPRECATED
@@ -49,7 +49,7 @@ enum WebClientHintsType {
   kUAFullVersionList = 23,
   // A client hint which, if set, signifies to the origin that the User-Agent
   // header contains the full user agent string.
-  kFullUserAgent = 24,
+  // kFullUserAgent = 24, Removed in M116.
   kUAWoW64 = 25,
   // kPartitionedCookies = 26, Removed in M103.
   // Indicates the client wants to minimize data transfer if set to 'on'.

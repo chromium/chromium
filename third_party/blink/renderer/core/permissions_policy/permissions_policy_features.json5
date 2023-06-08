@@ -154,11 +154,6 @@
       feature_default: "EnableForAll",
     },
     {
-      name: "ClientHintUAFull",
-      permissions_policy_name: "ch-ua-full",
-      depends_on: ["SendFullUserAgentAfterReduction"],
-    },
-    {
       name: "ClientHintUAFullVersion",
       permissions_policy_name: "ch-ua-full-version",
     },
@@ -173,11 +168,6 @@
     {
       name: "ClientHintUAWoW64",
       permissions_policy_name: "ch-ua-wow64",
-    },
-    {
-      name: "ClientHintUAReduced",
-      permissions_policy_name: "ch-ua-reduced",
-      depends_on: ["UserAgentReduction"],
     },
     {
       name: "ClientHintViewportHeight",

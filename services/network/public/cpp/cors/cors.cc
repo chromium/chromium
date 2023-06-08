@@ -330,11 +330,6 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
       "sec-ch-prefers-color-scheme",
       "sec-ch-ua-bitness",
-      // The `Sec-CH-UA-Reduced` header field is a temporary client hint, which
-      // will only be sent in the presence of a valid Origin Trial token.  It
-      // was introduced to enable safely experimenting with sending a reduced
-      // user agent string in the `User-Agent` header.
-      "sec-ch-ua-reduced",
       // The Sec-CH-Viewport-height header field gives a server information
       // about the user-agent's current viewport height.
       // https://wicg.github.io/responsive-image-client-hints/#sec-ch-viewport-height
@@ -352,12 +347,6 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // full version for each brand in its brands list.
       // https://wicg.github.io/ua-client-hints/#sec-ch-ua-full-version-list
       "sec-ch-ua-full-version-list",
-      // The `Sec-CH-UA-Full` header field is a temporary client hint, which
-      // will only be sent in the presence of a valid Origin Trial token.  It
-      // was introduced to enable sites to register for the deprecation UA
-      // reduction origin trial and continue to receive the full UA string for
-      // some period, once UA reduction rolls out.
-      "sec-ch-ua-full",
       "sec-ch-ua-wow64",
       "save-data",
       // The `Sec-CH-Prefers-Reduced-Motion` header field is modeled after the

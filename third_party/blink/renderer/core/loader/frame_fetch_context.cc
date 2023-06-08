@@ -336,21 +336,7 @@ void FrameFetchContext::PrepareRequest(
     request.SetTopFrameOrigin(GetTopFrameOrigin());
   }
 
-  const bool ua_reduced =
-      request.HttpHeaderField(AtomicString(
-          network::GetClientHintToNameMap()
-              .at(network::mojom::blink::WebClientHintsType::kUAReduced)
-              .c_str())) == "?1";
-  const bool ua_full =
-      request.HttpHeaderField(AtomicString(
-          network::GetClientHintToNameMap()
-              .at(network::mojom::blink::WebClientHintsType::kFullUserAgent)
-              .c_str())) == "?1";
-
-  String user_agent =
-      ua_full ? GetFullUserAgent()
-              : (ua_reduced ? GetReducedUserAgent() : GetUserAgent());
-  request.SetHTTPUserAgent(AtomicString(user_agent));
+  request.SetHTTPUserAgent(AtomicString(GetUserAgent()));
 
   if (GetResourceFetcherProperties().IsDetached())
     return;
@@ -796,25 +782,15 @@ FetchContext* FrameFetchContext::Detach() {
   if (GetResourceFetcherProperties().IsDetached())
     return this;
 
-  // If the Sec-CH-UA-Full client hint header is set on the request, then the
-  // full User-Agent string should be set on the User-Agent request header.
-  // If the Sec-CH-UA-Reduced client hint header is set on the request, then the
-  // reduced User-Agent string should also be set on the User-Agent request
-  // header.
+  // As we completed the reduction in the user-agent, the reduced User-Agent
+  // string returns from GetUserAgent() should also be set on the User-Agent
+  // request header.
   const ClientHintsPreferences& client_hints_prefs =
       GetClientHintsPreferences();
-  String user_agent = client_hints_prefs.ShouldSend(
-                          network::mojom::WebClientHintsType::kFullUserAgent)
-                          ? GetFullUserAgent()
-                          : client_hints_prefs.ShouldSend(
-                                network::mojom::WebClientHintsType::kUAReduced)
-                                ? GetReducedUserAgent()
-                                : GetUserAgent();
-
   frozen_state_ = MakeGarbageCollected<FrozenState>(
       Url(), GetContentSecurityPolicy(), GetSiteForCookies(),
       GetTopFrameOrigin(), client_hints_prefs, GetDevicePixelRatio(),
-      user_agent, GetUserAgentMetadata(), IsSVGImageChromeClient(),
+      GetUserAgent(), GetUserAgentMetadata(), IsSVGImageChromeClient(),
       IsPrerendering(), GetReducedAcceptLanguage());
   document_loader_ = nullptr;
   document_ = nullptr;

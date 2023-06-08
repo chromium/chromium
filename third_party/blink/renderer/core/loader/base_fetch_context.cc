@@ -378,23 +378,6 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       SetHttpHeader(WebClientHintsType::kUAWoW64,
                     SerializeBoolHeader(ua->wow64), request);
     }
-
-    if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
-                             WebClientHintsType::kUAReduced,
-                             hints_preferences)) {
-      // If the UA-Reduced client hint should be sent according to the hints
-      // preferences, it means the Origin Trial token for User-Agent Reduction
-      // has already been validated.
-      SetHttpHeader(WebClientHintsType::kUAReduced, SerializeBoolHeader(true),
-                    request);
-    }
-
-    if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
-                             WebClientHintsType::kFullUserAgent,
-                             hints_preferences)) {
-      SetHttpHeader(WebClientHintsType::kFullUserAgent,
-                    SerializeBoolHeader(true), request);
-    }
   }
 
   if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
@@ -646,12 +629,9 @@ bool BaseFetchContext::ShouldSendClientHint(
     bool is_1p_origin,
     network::mojom::blink::WebClientHintsType type,
     const ClientHintsPreferences& hints_preferences) const {
-  // For subresource requests, if the parent frame has Sec-CH-UA-Reduced,
-  // Sec-CH-UA-Full, or Sec-CH-Partitioned-Cookies, then send the hint in the
-  // fetch request, regardless of the permissions policy.
-  if (type != network::mojom::blink::WebClientHintsType::kUAReduced &&
-      type != network::mojom::blink::WebClientHintsType::kFullUserAgent &&
-      (!policy ||
+  // For subresource requests, sending the hint in the fetch request based on
+  // the permissions policy.
+  if ((!policy ||
        !policy->IsFeatureEnabledForOrigin(
            GetClientHintToPolicyFeatureMap().at(type), resource_origin))) {
     return false;

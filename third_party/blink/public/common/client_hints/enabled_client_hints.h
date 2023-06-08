@@ -8,13 +8,6 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 
-// Forward declarations.
-class GURL;
-
-namespace net {
-class HttpResponseHeaders;
-}  // namespace net
-
 namespace blink {
 
 // EnabledClientHints stores all the client hints along with whether the hint
@@ -40,24 +33,6 @@ class BLINK_COMMON_EXPORT EnabledClientHints {
   // If `type` is not a valid WebClientHintsType value, nothing is changed (no
   // client hints get enabled).
   void SetIsEnabled(network::mojom::WebClientHintsType type, bool should_send);
-
-  // Sets the client hint as enabled for sending in an HTTP request header.
-  //
-  // In addition to the client hint checks outlined in the SetIsEnabled()
-  // function above, this function also checks if the origin and/or the
-  // response headers indicate that the client hint should not be enabled (e.g.
-  // if the client hint should only be enabled in an Origin Trial).
-  //
-  // If `type` is not a valid WebClientHintsType value, nothing is changed (no
-  // client hints get enabled).
-  //
-  // If `third_party_url` is present, use it to validate the Origin Trial
-  // token.
-  void SetIsEnabled(const GURL& url,
-                    const absl::optional<GURL>& third_party_url,
-                    const net::HttpResponseHeaders* response_headers,
-                    network::mojom::WebClientHintsType type,
-                    bool should_send);
 
   // Returns a list of the enabled client hints.
   std::vector<network::mojom::WebClientHintsType> GetEnabledHints() const;

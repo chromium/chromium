@@ -3276,7 +3276,7 @@ enum WebFeature {
   kTapDelayEnabled = 3965,
   kV8URLPattern_CompareComponent_Method = 3966,
   kEarlyHintsPreload = 3967,
-  kClientHintsUAReduced = 3968,
+  kClientHintsUAReduced = 3968, //Removed in M116.
   kSpeculationRulesPrerender = 3969,
   kOBSOLETE_ExecCommandWithTrustedTypes = 3970,
   kCSSSelectorPseudoHasInSnapshotProfile = 3971,
@@ -3466,7 +3466,7 @@ enum WebFeature {
   kFrameNameContainsBrace = 4146,
   kFrameNameContainsNewline = 4147,
   kAbortSignalThrowIfAborted = 4148,
-  kClientHintsUAFull = 4149,
+  kClientHintsUAFull = 4149, // Removed in M116.
   kPrivateNetworkAccessWithinWorker = 4150,
   kClientHintsUAWoW64 = 4151,
   kFetchSetCookieInRequestGuardedHeaders = 4152,
