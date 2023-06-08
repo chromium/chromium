@@ -159,6 +159,7 @@
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/peripheral_battery_notifier.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/power/power_event_observer.h"
@@ -1036,6 +1037,9 @@ Shell::~Shell() {
 
   keyboard_controller_.reset();
 
+  // Depends on PowerStatus.
+  battery_saver_controller_.reset();
+
   PowerStatus::Shutdown();
   // Depends on SessionController.
   power_event_observer_.reset();
@@ -1118,6 +1122,11 @@ void Shell::Init(
   chromeos::InitializeDBusClient<UsbguardClient>(dbus_bus.get());
 
   local_state_ = local_state;
+
+  if (features::IsBatterySaverAvailable()) {
+    battery_saver_controller_ =
+        std::make_unique<BatterySaverController>(local_state_);
+  }
 
   // This creates the MessageCenter object which is used by some other objects
   // initialized here, so it needs to come early.

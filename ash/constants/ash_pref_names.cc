@@ -842,6 +842,9 @@ const char kPowerAdaptiveChargingEnabled[] = "power.adaptive_charging_enabled";
 const char kPowerAdaptiveChargingNudgeShown[] =
     "power.adaptive_charging_nudge_shown";
 
+// Boolean pref for if ChromeOS battery saver is active.
+const char kPowerBatterySaver[] = "power.cros_battery_saver_active";
+
 // Screen brightness percent values to be used when running on battery power.
 // Specified by the policy.
 const char kPowerBatteryScreenBrightnessPercent[] =

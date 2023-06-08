@@ -53,6 +53,7 @@
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/power/power_sounds_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -186,6 +187,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
     TopShortcutsView::RegisterLocalStatePrefs(registry);
   }
   KeyboardBacklightColorController::RegisterPrefs(registry);
+  BatterySaverController::RegisterLocalStatePrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);

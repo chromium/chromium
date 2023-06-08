@@ -114,6 +114,7 @@ class AutoclickController;
 class AutozoomControllerImpl;
 class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
+class BatterySaverController;
 class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
 class BluetoothStateCache;
@@ -432,6 +433,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   BacklightsForcedOffSetter* backlights_forced_off_setter() {
     return backlights_forced_off_setter_.get();
+  }
+  BatterySaverController* battery_saver_controller() {
+    return battery_saver_controller_.get();
   }
   BluetoothStateCache* bluetooth_state_cache() {
     return bluetooth_state_cache_.get();
@@ -909,6 +913,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   // The CompoundEventFilter owned by aura::Env object.
   std::unique_ptr<::wm::CompoundEventFilter> env_filter_;
 
+  std::unique_ptr<BatterySaverController> battery_saver_controller_;
   std::unique_ptr<EventRewriterControllerImpl> event_rewriter_controller_;
   std::unique_ptr<InputDeviceSettingsControllerImpl>
       input_device_settings_controller_;
