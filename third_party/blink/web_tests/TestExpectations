@@ -6700,3 +6700,4 @@ crbug.com/1452222 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/bre
 crbug.com/1452163 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Failure Pass Timeout ]
 crbug.com/1453235 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Pass Failure Timeout ]
 crbug.com/1072022 [ Mac12 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
+crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Pass Failure ]
