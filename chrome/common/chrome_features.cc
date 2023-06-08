@@ -781,12 +781,6 @@ constexpr base::FeatureParam<std::string> kKAnonymityServiceQueryServer{
 constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceQueryInterval{
     &kKAnonymityService, "KAnonymityServiceJoinInterval", base::Days(1)};
 
-// When enabled, LCP critical path predictor will optimize the subsequent visits
-// to websites using performance hints collected in the past page loads.
-BASE_FEATURE(kLCPCriticalPathPredictor,
-             "LCPCriticalPathPredictor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the k-Anonymity Service will send requests to the Join and
 // Query k-anonymity servers.
 BASE_FEATURE(kKAnonymityServiceOHTTPRequests,

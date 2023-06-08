@@ -757,12 +757,20 @@ ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
   return local_root.clip_path_paint_image_generator_.Get();
 }
 
-LCPCriticalPathPredictor& LocalFrame::GetLCPP() {
+LCPCriticalPathPredictor* LocalFrame::GetLCPP() {
+  if (!base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor)) {
+    return nullptr;
+  }
+
+  // For now, we only attach LCPP to the main frames.
+  if (!IsMainFrame()) {
+    return nullptr;
+  }
+
   if (!lcpp_) {
     lcpp_ = MakeGarbageCollected<LCPCriticalPathPredictor>(*this);
   }
-
-  return *lcpp_.Get();
+  return lcpp_.Get();
 }
 
 const SecurityContext* LocalFrame::GetSecurityContext() const {

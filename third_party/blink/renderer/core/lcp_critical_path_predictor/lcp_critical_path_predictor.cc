@@ -9,7 +9,8 @@
 
 namespace blink {
 
-LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame) {}
+LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
+    : frame_(&frame) {}
 
 LCPCriticalPathPredictor::~LCPCriticalPathPredictor() = default;
 

@@ -1167,6 +1167,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCSPWildcardsInPermissionsPolicies);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowDevToolsMainThreadDebuggerForMutipleMainFrames);
 
+// When enabled, LCP critical path predictor will optimize the subsequent visits
+// to websites using performance hints collected in the past page loads.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPCriticalPathPredictor);
+
 }  // namespace features
 }  // namespace blink
 
