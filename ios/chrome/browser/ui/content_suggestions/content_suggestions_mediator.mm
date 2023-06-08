@@ -676,8 +676,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.contentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
                           atIndex:mostVisitedIndex
-                         webState:self.browser->GetWebStateList()
-                                      ->GetActiveWebState()];
+                         webState:self.webState];
 }
 
 // Shows a snackbar with an action to undo the removal of the most visited item
