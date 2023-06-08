@@ -79892,6 +79892,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="52" label="Zero SkColorFilter bytes"/>
   <int value="53" label="Insufficient Pixel Data"/>
   <int value="54" label="SkGainmapInfo deserialize failure"/>
+  <int value="55" label="HdrMetadata deserialize failure"/>
+  <int value="56" label="SkColor4f has non-finite values"/>
 </enum>
 
 <enum name="PaletteModeCancelType">
