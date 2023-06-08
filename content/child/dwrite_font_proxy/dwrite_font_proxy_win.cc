@@ -213,11 +213,14 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
 absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     const std::u16string& family_name,
     HRESULT* hresult_out) {
+  recordreplay::Assert("[RUN-2116] DWriteFontCollectionProxy::FindFamilyIndex");
+
   DCHECK(!hresult_out || *hresult_out == S_OK);
   {
     base::AutoLock families_lock(families_lock_);
     auto iter = family_names_.find(family_name);
     if (iter != family_names_.end()) {
+      recordreplay::Assert("[RUN-2116] DWriteFontCollectionProxy::FindFamilyIndex #1");
       if (iter->second != kFamilyNotFound)
         return iter->second;
       return absl::nullopt;
@@ -226,6 +229,7 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     if (base::FeatureList::IsEnabled(kLimitFontFamilyNamesPerRenderer) &&
         family_names_.size() > kFamilyNamesLimit &&
         !IsLastResortFontName(family_name)) {
+      recordreplay::Assert("[RUN-2116] DWriteFontCollectionProxy::FindFamilyIndex #2");
       return absl::nullopt;
     }
   }
@@ -238,6 +242,7 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     LogFontProxyError(FIND_FAMILY_SEND_FAILED);
     if (hresult_out)
       *hresult_out = E_FAIL;
+    recordreplay::Assert("[RUN-2116] DWriteFontCollectionProxy::FindFamilyIndex #3");
     return absl::nullopt;
   }
 
@@ -246,18 +251,22 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     DCHECK(family_names_.find(family_name) == family_names_.end() ||
            family_names_[family_name] == family_index);
     family_names_[family_name] = family_index;
-    if (UNLIKELY(family_index == kFamilyNotFound))
+    if (UNLIKELY(family_index == kFamilyNotFound)) {
+      recordreplay::Assert("[RUN-2116] DWriteFontCollectionProxy::FindFamilyIndex #4");
       return absl::nullopt;
+    }
     DCHECK(IsValidFamilyIndex(family_index));
 
     if (DWriteFontFamilyProxy* family =
             GetOrCreateFamilyLockRequired(family_index)) {
       family->SetName(family_name);
+      recordreplay::Assert("[RUN-2116] DWriteFontCollectionProxy::FindFamilyIndex #5");
       return family_index;
     }
 
     if (hresult_out)
       *hresult_out = E_FAIL;
+    recordreplay::Assert("[RUN-2116] DWriteFontCollectionProxy::FindFamilyIndex #6");
     return absl::nullopt;
   }
 }
