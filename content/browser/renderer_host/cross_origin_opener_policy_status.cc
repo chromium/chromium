@@ -12,10 +12,56 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+
+namespace {
+
+void SanitizeCoopRestrictPropertiesHeadersIfDisabled(
+    network::CrossOriginOpenerPolicy& coop,
+    const GURL& url,
+    net::HttpResponseHeaders* headers) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kCoopRestrictProperties)) {
+    return;
+  }
+
+  bool is_coop_restrict_properties_origin_trial_enabled =
+      base::FeatureList::IsEnabled(
+          network::features::kCoopRestrictPropertiesOriginTrial);
+  if (is_coop_restrict_properties_origin_trial_enabled && headers &&
+      blink::TrialTokenValidator().RequestEnablesFeature(
+          url, headers, "CoopRestrictProperties", base::Time::Now())) {
+    return;
+  }
+
+  if (coop.value ==
+          network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
+      coop.value == network::mojom::CrossOriginOpenerPolicyValue::
+                        kRestrictPropertiesPlusCoep) {
+    coop.value = network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
+  }
+  if (coop.report_only_value ==
+          network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
+      coop.report_only_value == network::mojom::CrossOriginOpenerPolicyValue::
+                                    kRestrictPropertiesPlusCoep) {
+    coop.report_only_value =
+        network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
+  }
+  if (coop.soap_by_default_value ==
+          network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
+      coop.soap_by_default_value ==
+          network::mojom::CrossOriginOpenerPolicyValue::
+              kRestrictPropertiesPlusCoep) {
+    coop.soap_by_default_value =
+        network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
+  }
+}
+
+}  // namespace
 
 namespace content {
 
@@ -490,6 +536,8 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
       // frames, portals, etc.) should not be able to specify their own COOP
       // header value. Therefore we use IsOutermostMainFrame.
       frame_tree_node_->IsOutermostMainFrame()) {
+    SanitizeCoopRestrictPropertiesHeadersIfDisabled(
+        coop, response_url, response_head->headers.get());
     return;
   }
 

@@ -718,6 +718,11 @@
       public: true,
     },
     {
+      name: "CoopRestrictProperties",
+      origin_trial_feature_name: "CoopRestrictProperties",
+      base_feature: "none",
+    },
+    {
       name: "CorsRFC1918",
       base_feature: "none",
     },

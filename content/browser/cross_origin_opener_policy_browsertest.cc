@@ -4419,33 +4419,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1234, EvalJs(main_document, "g_sab_size"));
 }
 
-// Ensure the UnrestrictedSharedArrayBuffer reverse origin trial is correctly
-// implemented.
-class UnrestrictedSharedArrayBufferOriginTrialBrowserTest
-    : public ContentBrowserTest {
+class OriginTrialBrowserTest : public ContentBrowserTest {
  public:
-  UnrestrictedSharedArrayBufferOriginTrialBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {
-            // Enabled
-        },
-        {
-            // Disabled
-            features::kSharedArrayBuffer,
-        });
-  }
-
-  // Origin Trials key generated with:
-  //
-  // tools/origin_trials/generate_token.py --expire-days 5000 --version 3
-  // https://coop.security:9999 UnrestrictedSharedArrayBuffer
-  static std::string OriginTrialToken() {
-    return "A8TH8Ylk6lUuL84RdQ2+FTyupad3leg5sMk+MYEoVlwkURyBtVq1IFncJAc2k"
-           "Knhh5w3SvIR4XuEtyMzeI2u4wAAAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly9jb2"
-           "9wLnNlY3VyaXR5Ojk5OTkiLCAiZmVhdHVyZSI6ICJVbnJlc3RyaWN0ZWRTaGF"
-           "yZWRBcnJheUJ1ZmZlciIsICJleHBpcnkiOiAyMDQ1Njk0NDMyfQ==";
-  }
-
   // The OriginTrial token is bound to a given origin. Since the
   // EmbeddedTestServer's port changes after every test run, it can't be used.
   // As a result, response must be served using a URLLoaderInterceptor.
@@ -4489,8 +4464,38 @@ class UnrestrictedSharedArrayBufferOriginTrialBrowserTest
   }
 
   content::ContentMockCertVerifier mock_cert_verifier_;
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
+};
+
+// Ensure the UnrestrictedSharedArrayBuffer reverse origin trial is correctly
+// implemented.
+class UnrestrictedSharedArrayBufferOriginTrialBrowserTest
+    : public OriginTrialBrowserTest {
+ public:
+  UnrestrictedSharedArrayBufferOriginTrialBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {
+            // Enabled
+        },
+        {
+            // Disabled
+            features::kSharedArrayBuffer,
+        });
+  }
+
+  // Origin Trials key generated with:
+  //
+  // tools/origin_trials/generate_token.py --expire-days 5000 --version 3
+  // https://coop.security:9999 UnrestrictedSharedArrayBuffer
+  static std::string OriginTrialToken() {
+    return "A8TH8Ylk6lUuL84RdQ2+FTyupad3leg5sMk+MYEoVlwkURyBtVq1IFncJAc2k"
+           "Knhh5w3SvIR4XuEtyMzeI2u4wAAAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly9jb2"
+           "9wLnNlY3VyaXR5Ojk5OTkiLCAiZmVhdHVyZSI6ICJVbnJlc3RyaWN0ZWRTaGF"
+           "yZWRBcnJheUJ1ZmZlciIsICJleHBpcnkiOiAyMDQ1Njk0NDMyfQ==";
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
@@ -5161,6 +5166,223 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
   EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
             CoopRestrictPropertiesPlusCoep());
   EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsCrossOriginIsolated());
+}
+
+class CoopRestrictPropertiesOriginTrialBrowserTest
+    : public OriginTrialBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CoopRestrictPropertiesOriginTrialBrowserTest()
+      : is_origin_trial_enabled(GetParam()) {
+    if (is_origin_trial_enabled) {
+      feature_list_.InitWithFeatures(
+          {
+              network::features::kCoopRestrictPropertiesOriginTrial,
+          },  // Enabled
+          {}  // Disabled
+      );
+    } else {
+      feature_list_.InitWithFeatures(
+          {},  // Enabled
+          {
+              network::features::kCoopRestrictPropertiesOriginTrial,
+          }  // Disabled
+      );
+    }
+  }
+
+  // Origin Trials key generated with:
+  //
+  // tools/origin_trials/generate_token.py --expire-days 5000 --version 3
+  // https://coop.security:9999 CoopRestrictProperties
+  static std::string OriginTrialToken() {
+    return "A8Yj3ElroyqJKJPrXAbAcR7e4oZZo978guRoJqwghGM0nnOI8PM8Ay1y1TRlAajef7o"
+           "CHH+lahsRWglSKSy+"
+           "Wg8AAABjeyJvcmlnaW4iOiAiaHR0cHM6Ly9jb29wLnNlY3VyaXR5Ojk5OTkiLCAiZmV"
+           "hdHVyZSI6ICJDb29wUmVzdHJpY3RQcm9wZXJ0aWVzIiwgImV4cGlyeSI6IDIxMTY1MT"
+           "cwMTd9";
+  }
+  GURL OtherURL() { return GURL("https://a.test"); }
+  bool is_origin_trial_enabled;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CoopRestrictPropertiesOriginTrialBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesOriginTrialBrowserTest,
+                       CoopRestrictPropertiesValidToken) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy: restrict-properties\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+  EXPECT_EQ(
+      current_frame_host()->cross_origin_opener_policy().value,
+      is_origin_trial_enabled
+          ? network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties
+          : network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesOriginTrialBrowserTest,
+                       CoopRestrictPropertiesTokenOriginMismatched) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OtherURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy: restrict-properties\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OtherURL()));
+  EXPECT_EQ(current_frame_host()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesOriginTrialBrowserTest,
+                       CoopRestrictPropertiesPlusCoepValidToken) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy: restrict-properties\n"
+            "Cross-Origin-Embedder-Policy: require-corp\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+  EXPECT_EQ(current_frame_host()->cross_origin_opener_policy().value,
+            is_origin_trial_enabled
+                ? network::mojom::CrossOriginOpenerPolicyValue::
+                      kRestrictPropertiesPlusCoep
+                : network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesOriginTrialBrowserTest,
+                       CoopRestrictPropertiesPlusCoepTokenOriginMismatched) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OtherURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy: restrict-properties\n"
+            "Cross-Origin-Embedder-Policy: require-corp\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OtherURL()));
+  EXPECT_EQ(current_frame_host()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesOriginTrialBrowserTest,
+                       CoopReportOnlyRestrictPropertiesValidToken) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy-Report-Only: restrict-properties\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+  EXPECT_EQ(
+      current_frame_host()->cross_origin_opener_policy().report_only_value,
+      is_origin_trial_enabled
+          ? network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties
+          : network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesOriginTrialBrowserTest,
+                       CoopReportOnlyRestrictPropertiesTokenOriginMismatched) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OtherURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy-Report-Only: restrict-properties\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OtherURL()));
+  EXPECT_EQ(
+      current_frame_host()->cross_origin_opener_policy().report_only_value,
+      network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesOriginTrialBrowserTest,
+                       CoopReportOnlyRestrictPropertiesPlusCoepValidToken) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy-Report-Only: restrict-properties\n"
+            "Cross-Origin-Embedder-Policy: require-corp\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+  EXPECT_EQ(
+      current_frame_host()->cross_origin_opener_policy().report_only_value,
+      is_origin_trial_enabled
+          ? network::mojom::CrossOriginOpenerPolicyValue::
+                kRestrictPropertiesPlusCoep
+          : network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    CoopRestrictPropertiesOriginTrialBrowserTest,
+    CoopReportOnlyRestrictPropertiesPlusCoepTokenOriginMismatched) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OtherURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Cross-Origin-Opener-Policy-Report-Only: restrict-properties\n"
+            "Cross-Origin-Embedder-Policy: require-corp\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OtherURL()));
+  EXPECT_EQ(
+      current_frame_host()->cross_origin_opener_policy().report_only_value,
+      network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
 }
 
 // Verify that a simple navigation from a regular page to a COOP:
