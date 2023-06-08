@@ -4,6 +4,10 @@
 
 #include "platform_test.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Note that this uses the direct runtime interface to the autorelease pool.
 // https://clang.llvm.org/docs/AutomaticReferenceCounting.html#runtime-support
 // This is so this can work when compiled for ARC.

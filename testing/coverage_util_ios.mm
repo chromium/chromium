@@ -6,6 +6,10 @@
 
 #import "testing/gtest/ios_enable_coverage.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 #if !defined(NDEBUG) && BUILDFLAG(IOS_ENABLE_COVERAGE) && \
     TARGET_IPHONE_SIMULATOR
 extern "C" void __llvm_profile_set_filename(const char* name);

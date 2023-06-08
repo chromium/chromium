@@ -13,6 +13,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/googletest/src/googletest/include/gtest/internal/gtest-port.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace testing {
 namespace internal {
 // This function is tested within this file, but it's not part of the public
@@ -23,9 +27,9 @@ extern std::string StringDescription(id<NSObject> obj);
 
 TEST(GTestMac, NSStringComparators) {
   // This test wants to really guarantee that s1 and s2 aren't the same address,
-  // so it constructs an autoreleased string this way. In theory this could be
-  // done via [NSString stringWithString:] but that causes an error about using
-  // a redundant literal :)
+  // so it constructs a string this way. In theory this could be done via
+  // [NSString stringWithString:] but that causes an error about using a
+  // redundant literal :)
   NSString* s1 = [NSString stringWithFormat:@"%@", @"a"];
   NSString* s2 = @"a";
 

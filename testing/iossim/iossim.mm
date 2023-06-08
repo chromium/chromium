@@ -1,9 +1,15 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #import <Foundation/Foundation.h>
 #include <getopt.h>
+
 #include <string>
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -38,8 +44,7 @@ void LogError(NSString* format, ...) {
   va_list list;
   va_start(list, format);
 
-  NSString* message =
-      [[[NSString alloc] initWithFormat:format arguments:list] autorelease];
+  NSString* message = [[NSString alloc] initWithFormat:format arguments:list];
 
   fprintf(stderr, "iossim: ERROR: %s\n", [message UTF8String]);
   fflush(stderr);
@@ -49,47 +54,46 @@ void LogError(NSString* format, ...) {
 
 }
 
+// See https://stackoverflow.com/a/51895129 and
+// https://github.com/facebook/xctool/pull/159/files.
+@interface NSTask (PrivateAPI)
+- (void)setStartsNewProcessGroup:(BOOL)startsNewProcessGroup;
+@end
+
 // Wrap boiler plate calls to xcrun NSTasks.
-@interface XCRunTask : NSObject {
-  NSTask* _task;
-}
+@interface XCRunTask : NSObject
 - (instancetype)initWithArguments:(NSArray*)arguments;
 - (void)run;
 - (void)setStandardOutput:(id)output;
 - (void)setStandardError:(id)error;
-- (int)getTerminationStatus;
+- (int)terminationStatus;
 @end
 
-@implementation XCRunTask
+@implementation XCRunTask {
+  NSTask* __strong _task;
+}
 
 - (instancetype)initWithArguments:(NSArray*)arguments {
   self = [super init];
   if (self) {
     _task = [[NSTask alloc] init];
-    SEL selector = @selector(setStartsNewProcessGroup:);
-    if ([_task respondsToSelector:selector])
-      [_task performSelector:selector withObject:nil];
-    [_task setLaunchPath:@"/usr/bin/xcrun"];
-    [_task setArguments:arguments];
+    [_task setStartsNewProcessGroup:NO];
+    _task.launchPath = @"/usr/bin/xcrun";
+    _task.arguments = arguments;
   }
   return self;
 }
 
-- (void)dealloc {
-  [_task release];
-  [super dealloc];
-}
-
 - (void)setStandardOutput:(id)output {
-  [_task setStandardOutput:output];
+  _task.standardOutput = output;
 }
 
 - (void)setStandardError:(id)error {
-  [_task setStandardError:error];
+  _task.standardError = error;
 }
 
-- (int)getTerminationStatus {
-  return [_task terminationStatus];
+- (int)terminationStatus {
+  return _task.terminationStatus;
 }
 
 - (void)run {
@@ -110,8 +114,7 @@ void LogError(NSString* format, ...) {
 // Return array of available iOS runtime dictionaries.  Unavailable (old Xcode
 // versions) or other runtimes (tvOS, watchOS) are removed.
 NSArray* Runtimes(NSDictionary* simctl_list) {
-  NSMutableArray* runtimes =
-      [[simctl_list[@"runtimes"] mutableCopy] autorelease];
+  NSMutableArray* runtimes = [simctl_list[@"runtimes"] mutableCopy];
   for (NSDictionary* runtime in simctl_list[@"runtimes"]) {
     BOOL available =
         [runtime[@"availability"] isEqualToString:@"(available)"] ||
@@ -128,8 +131,7 @@ NSArray* Runtimes(NSDictionary* simctl_list) {
 
 // Return array of device dictionaries.
 NSArray* Devices(NSDictionary* simctl_list) {
-  NSMutableArray* devicetypes =
-      [[simctl_list[@"devicetypes"] mutableCopy] autorelease];
+  NSMutableArray* devicetypes = [simctl_list[@"devicetypes"] mutableCopy];
   for (NSDictionary* devicetype in simctl_list[@"devicetypes"]) {
     if (![devicetype[@"identifier"]
             hasPrefix:@"com.apple.CoreSimulator.SimDeviceType.iPad"] &&
@@ -143,10 +145,10 @@ NSArray* Devices(NSDictionary* simctl_list) {
 
 // Get list of devices, runtimes, etc from sim_ctl.
 NSDictionary* GetSimulatorList() {
-  XCRunTask* task = [[[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"list", @"-j" ]] autorelease];
+  XCRunTask* task =
+      [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"list", @"-j" ]];
   NSPipe* out = [NSPipe pipe];
-  [task setStandardOutput:out];
+  task.standardOutput = out;
 
   // In the rest of the this file we read from the pipe after -waitUntilExit
   // (We normally wrap -launch and -waitUntilExit in one -run method).  However,
@@ -154,7 +156,7 @@ NSDictionary* GetSimulatorList() {
   // output of simctl is so instant, reading it before exit seems to work, and
   // seems to avoid the hang.
   [task launch];
-  NSData* data = [[out fileHandleForReading] readDataToEndOfFile];
+  NSData* data = [out.fileHandleForReading readDataToEndOfFile];
   [task waitUntilExit];
 
   NSError* error = nil;
@@ -177,15 +179,15 @@ void PrintSupportedDevices(NSDictionary* simctl_list) {
 
 // Expand path to absolute path.
 NSString* ResolvePath(NSString* path) {
-  path = [path stringByExpandingTildeInPath];
-  path = [path stringByStandardizingPath];
-  const char* cpath = [path cStringUsingEncoding:NSUTF8StringEncoding];
-  char* resolved_name = NULL;
+  path = path.stringByExpandingTildeInPath;
+  path = path.stringByStandardizingPath;
+  const char* cpath = path.UTF8String;
+  char* resolved_name = nullptr;
   char* abs_path = realpath(cpath, resolved_name);
-  if (abs_path == NULL) {
+  if (abs_path == nullptr) {
     return nil;
   }
-  return [NSString stringWithCString:abs_path encoding:NSUTF8StringEncoding];
+  return @(abs_path);
 }
 
 // Search |simctl_list| for a udid matching |device_name| and |sdk_version|.
@@ -216,7 +218,7 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
     exit(kExitInvalidArguments);
   }
   NSArray* devices = [simctl_list[@"devices"] objectForKey:sdk];
-  if (devices == nil || [devices count] == 0) {
+  if (devices == nil || devices.count == 0) {
     // Specific for XCode 10.1 and lower,
     // where name from 'runtimes' uses as a key in 'devices'.
     devices = [simctl_list[@"devices"] objectForKey:name];
@@ -232,9 +234,8 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
 // Create and return a device udid of |device| and |sdk_version|.
 NSString* CreateDeviceBySDKAndName(NSString* device, NSString* sdk_version) {
   NSString* sdk = [@"iOS" stringByAppendingString:sdk_version];
-  XCRunTask* create = [[[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"create", device, device, sdk ]]
-      autorelease];
+  XCRunTask* create = [[XCRunTask alloc]
+      initWithArguments:@[ @"simctl", @"create", device, device, sdk ]];
   [create run];
 
   NSDictionary* simctl_list = GetSimulatorList();
@@ -257,29 +258,29 @@ bool FindDeviceByUDID(NSDictionary* simctl_list, NSString* udid) {
 // Prints the HOME environment variable for a device.  Used by the bots to
 // package up all the test data.
 void PrintDeviceHome(NSString* udid) {
-  XCRunTask* task = [[[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"getenv", udid, @"HOME" ]] autorelease];
+  XCRunTask* task = [[XCRunTask alloc]
+      initWithArguments:@[ @"simctl", @"getenv", udid, @"HOME" ]];
   [task run];
 }
 
 // Erase a device, used by the bots before a clean test run.
 void WipeDevice(NSString* udid) {
-  XCRunTask* shutdown = [[[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"shutdown", udid ]] autorelease];
-  [shutdown setStandardOutput:nil];
-  [shutdown setStandardError:nil];
+  XCRunTask* shutdown =
+      [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"shutdown", udid ]];
+  shutdown.standardOutput = nil;
+  shutdown.standardError = nil;
   [shutdown run];
 
-  XCRunTask* erase = [[[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"erase", udid ]] autorelease];
+  XCRunTask* erase =
+      [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"erase", udid ]];
   [erase run];
 }
 
 void KillSimulator() {
-  XCRunTask* task = [[[XCRunTask alloc]
-      initWithArguments:@[ @"killall", @"Simulator" ]] autorelease];
-  [task setStandardOutput:nil];
-  [task setStandardError:nil];
+  XCRunTask* task =
+      [[XCRunTask alloc] initWithArguments:@[ @"killall", @"Simulator" ]];
+  task.standardOutput = nil;
+  task.standardError = nil;
   [task run];
 }
 
@@ -290,61 +291,54 @@ int RunApplication(NSString* app_path,
                    NSMutableArray* cmd_args,
                    NSMutableArray* tests_filter) {
   NSString* tempFilePath = [NSTemporaryDirectory()
-      stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
-  [[NSFileManager defaultManager] createFileAtPath:tempFilePath
-                                          contents:nil
-                                        attributes:nil];
+      stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
+  [NSFileManager.defaultManager createFileAtPath:tempFilePath
+                                        contents:nil
+                                      attributes:nil];
 
   NSMutableDictionary* xctestrun = [NSMutableDictionary dictionary];
   NSMutableDictionary* testTargetName = [NSMutableDictionary dictionary];
 
   NSMutableDictionary* testingEnvironmentVariables =
       [NSMutableDictionary dictionary];
-  [testingEnvironmentVariables setValue:[app_path lastPathComponent]
-                                 forKey:@"IDEiPhoneInternalTestBundleName"];
+  testingEnvironmentVariables[@"IDEiPhoneInternalTestBundleName"] =
+      app_path.lastPathComponent;
 
-  [testingEnvironmentVariables
-      setValue:
-          @"__TESTROOT__/Debug-iphonesimulator:__PLATFORMS__/"
-          @"iPhoneSimulator.platform/Developer/Library/Frameworks"
-        forKey:@"DYLD_FRAMEWORK_PATH"];
-  [testingEnvironmentVariables
-      setValue:
-          @"__TESTROOT__/Debug-iphonesimulator:__PLATFORMS__/"
-          @"iPhoneSimulator.platform/Developer/Library"
-        forKey:@"DYLD_LIBRARY_PATH"];
+  testingEnvironmentVariables[@"DYLD_FRAMEWORK_PATH"] =
+      @"__TESTROOT__/Debug-iphonesimulator:__PLATFORMS__/"
+      @"iPhoneSimulator.platform/Developer/Library/Frameworks";
+  testingEnvironmentVariables[@"DYLD_LIBRARY_PATH"] =
+      @"__TESTROOT__/Debug-iphonesimulator:__PLATFORMS__/"
+      @"iPhoneSimulator.platform/Developer/Library";
 
   if (xctest_path) {
-    [testTargetName setValue:xctest_path forKey:@"TestBundlePath"];
-    NSString* inject = @"__PLATFORMS__/iPhoneSimulator.platform/Developer/"
-                       @"usr/lib/libXCTestBundleInject.dylib";
-    [testingEnvironmentVariables setValue:inject
-                                   forKey:@"DYLD_INSERT_LIBRARIES"];
-    [testingEnvironmentVariables
-        setValue:[NSString stringWithFormat:@"__TESTHOST__/%@",
-                                            [[app_path lastPathComponent]
-                                                stringByDeletingPathExtension]]
-          forKey:@"XCInjectBundleInto"];
+    testTargetName[@"TestBundlePath"] = xctest_path;
+    testingEnvironmentVariables[@"DYLD_INSERT_LIBRARIES"] =
+        @"__PLATFORMS__/iPhoneSimulator.platform/Developer/"
+        @"usr/lib/libXCTestBundleInject.dylib";
+    testingEnvironmentVariables[@"XCInjectBundleInto"] =
+        [NSString stringWithFormat:@"__TESTHOST__/%@",
+                                   app_path.lastPathComponent
+                                       .stringByDeletingPathExtension];
   } else {
-    [testTargetName setValue:app_path forKey:@"TestBundlePath"];
+    testTargetName[@"TestBundlePath"] = app_path;
   }
-  [testTargetName setValue:app_path forKey:@"TestHostPath"];
+  testTargetName[@"TestHostPath"] = app_path;
 
-  if ([app_env count]) {
-    [testTargetName setObject:app_env forKey:@"EnvironmentVariables"];
-  }
-
-  if ([cmd_args count] > 0) {
-    [testTargetName setObject:cmd_args forKey:@"CommandLineArguments"];
+  if (app_env.count) {
+    testTargetName[@"EnvironmentVariables"] = app_env;
   }
 
-  if ([tests_filter count] > 0) {
-    [testTargetName setObject:tests_filter forKey:@"OnlyTestIdentifiers"];
+  if (cmd_args.count > 0) {
+    testTargetName[@"CommandLineArguments"] = cmd_args;
   }
 
-  [testTargetName setObject:testingEnvironmentVariables
-                     forKey:@"TestingEnvironmentVariables"];
-  [xctestrun setObject:testTargetName forKey:@"TestTargetName"];
+  if (tests_filter.count > 0) {
+    testTargetName[@"OnlyTestIdentifiers"] = tests_filter;
+  }
+
+  testTargetName[@"TestingEnvironmentVariables"] = testingEnvironmentVariables;
+  xctestrun[@"TestTargetName"] = testTargetName;
 
   NSData* data = [NSPropertyListSerialization
       dataWithPropertyList:xctestrun
@@ -352,11 +346,12 @@ int RunApplication(NSString* app_path,
                    options:0
                      error:nil];
   [data writeToFile:tempFilePath atomically:YES];
-  XCRunTask* task = [[[XCRunTask alloc] initWithArguments:@[
+
+  XCRunTask* task = [[XCRunTask alloc] initWithArguments:@[
     @"xcodebuild", @"-xctestrun", tempFilePath, @"-destination",
     [@"platform=iOS Simulator,id=" stringByAppendingString:udid],
     @"test-without-building"
-  ]] autorelease];
+  ]];
 
   if (!xctest_path) {
     // The following stderr messages are meaningless on iossim when not running
@@ -367,31 +362,30 @@ int RunApplication(NSString* app_path,
     NSPipe* stderr_pipe = [NSPipe pipe];
     stderr_pipe.fileHandleForReading.readabilityHandler =
         ^(NSFileHandle* handle) {
-          NSString* log = [[[NSString alloc] initWithData:handle.availableData
-                                                 encoding:NSUTF8StringEncoding]
-              autorelease];
+          NSString* log = [[NSString alloc] initWithData:handle.availableData
+                                                encoding:NSUTF8StringEncoding];
           for (NSString* ignore_string in ignore_strings) {
             if ([log rangeOfString:ignore_string].location != NSNotFound) {
               return;
             }
           }
-          printf("%s", [log UTF8String]);
+          printf("%s", log.UTF8String);
         };
-    [task setStandardError:stderr_pipe];
+    task.standardError = stderr_pipe;
   }
   [task run];
-  return [task getTerminationStatus];
+  return [task terminationStatus];
 }
 
 int main(int argc, char* const argv[]) {
-  // When the last running simulator is from Xcode 7, an Xcode 8 run will yeild
+  // When the last running simulator is from Xcode 7, an Xcode 8 run will yield
   // a failure to "unload a stale CoreSimulatorService job" message.  Sending a
   // hidden simctl to do something simple (list devices) helpfully works around
   // this issue.
-  XCRunTask* workaround_task = [[[XCRunTask alloc]
-      initWithArguments:@[ @"simctl", @"list", @"-j" ]] autorelease];
-  [workaround_task setStandardOutput:nil];
-  [workaround_task setStandardError:nil];
+  XCRunTask* workaround_task =
+      [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"list", @"-j" ]];
+  workaround_task.standardOutput = nil;
+  workaround_task.standardError = nil;
   [workaround_task run];
 
   NSString* app_path = nil;
@@ -414,27 +408,27 @@ int main(int argc, char* const argv[]) {
   while ((c = getopt(argc, argv, "hs:d:u:t:e:c:pwl")) != -1) {
     switch (c) {
       case 's':
-        sdk_version = [NSString stringWithUTF8String:optarg];
+        sdk_version = @(optarg);
         break;
       case 'd':
-        device_name = [NSString stringWithUTF8String:optarg];
+        device_name = @(optarg);
         break;
       case 'u':
-        udid = [NSString stringWithUTF8String:optarg];
+        udid = @(optarg);
         break;
       case 'w':
         wants_wipe = true;
         break;
       case 'c': {
-        NSString* cmd_arg = [NSString stringWithUTF8String:optarg];
+        NSString* cmd_arg = @(optarg);
         [cmd_args addObject:cmd_arg];
       } break;
       case 't': {
-        NSString* test = [NSString stringWithUTF8String:optarg];
+        NSString* test = @(optarg);
         [tests_filter addObject:test];
       } break;
       case 'e': {
-        NSString* envLine = [NSString stringWithUTF8String:optarg];
+        NSString* envLine = @(optarg);
         NSRange range = [envLine rangeOfString:@"="];
         if (range.location == NSNotFound) {
           LogError(@"Invalid key=value argument for -e.");
@@ -496,7 +490,7 @@ int main(int argc, char* const argv[]) {
   // There should be at least one arg left, specifying the app path. Any
   // additional args are passed as arguments to the app.
   if (optind < argc) {
-    NSString* unresolved_app_path = [[NSFileManager defaultManager]
+    NSString* unresolved_app_path = [NSFileManager.defaultManager
         stringWithFileSystemRepresentation:argv[optind]
                                     length:strlen(argv[optind])];
     app_path = ResolvePath(unresolved_app_path);
@@ -506,7 +500,7 @@ int main(int argc, char* const argv[]) {
     }
 
     if (++optind < argc) {
-      NSString* unresolved_xctest_path = [[NSFileManager defaultManager]
+      NSString* unresolved_xctest_path = [NSFileManager.defaultManager
           stringWithFileSystemRepresentation:argv[optind]
                                       length:strlen(argv[optind])];
       xctest_path = ResolvePath(unresolved_xctest_path);

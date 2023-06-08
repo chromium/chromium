@@ -6,6 +6,7 @@ if (current_toolchain == host_toolchain) {
   executable("iossim") {
     sources = [ "iossim.mm" ]
     frameworks = [ "Foundation.framework" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 } else if (current_toolchain == default_toolchain) {
   copy("iossim") {

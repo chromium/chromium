@@ -63,6 +63,7 @@ static_library("gtest") {
     if (gtest_include_platform_test) {
       sources += [ "../platform_test_mac.mm" ]
     }
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_ios && gtest_include_ios_coverage) {
@@ -87,6 +88,7 @@ if (is_ios) {
       "../coverage_util_ios.mm",
     ]
     deps = [ ":ios_enable_coverage" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   buildflag_header("ios_enable_coverage") {

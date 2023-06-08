@@ -10,6 +10,10 @@
 #include "third_party/googletest/src/googletest/include/gtest/internal/gtest-port.h"
 #include "third_party/googletest/src/googletest/include/gtest/internal/gtest-string.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 #ifdef GTEST_OS_MAC
 
 #import <Foundation/Foundation.h>
