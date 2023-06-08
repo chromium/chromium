@@ -227,7 +227,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   [self addSubview:containerStack];
   AddSameConstraintsWithInsets(
       containerStack, self,
-      NSDirectionalEdgeInsetsMake(0, kMargin, 0, kMargin));
+      NSDirectionalEdgeInsetsMake(0, kMargin, kMargin, kMargin));
 
   _menuButton = [self createMenuButton];
   [self addSubview:_menuButton];

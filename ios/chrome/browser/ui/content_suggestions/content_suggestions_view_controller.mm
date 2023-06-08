@@ -68,8 +68,8 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 const float kMagicStackSpacing = 10.0f;
 
 // The max width of the SetUpList on phone and tablet.
-const CGFloat kSetUpListWidthPhone = 393;
-const CGFloat kSetUpListWidthTablet = 430;
+const CGFloat kSetUpListWidthRegular = 393;
+const CGFloat kSetUpListWidthWide = 418;
 
 // The duration of the animation that hides the Set Up List.
 const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
@@ -512,9 +512,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     self.setUpListView = setUpListView;
     [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
 
-    CGFloat width = kSetUpListWidthPhone;
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      width = kSetUpListWidthTablet;
+    // The width of the SetUpList should match the Discover Feed. This seems to
+    // closely match the feed's logic.
+    CGFloat width = kSetUpListWidthRegular;
+    CGSize viewSize = self.view.frame.size;
+    if (MIN(viewSize.width, viewSize.height) >= kSetUpListWidthWide) {
+      width = kSetUpListWidthWide;
     }
     // Since this view is put into a StackView, this width constraint acts as
     // a max width constraint - if the StackView is narrower, it will make the
