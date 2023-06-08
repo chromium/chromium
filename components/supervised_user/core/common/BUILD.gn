@@ -12,8 +12,6 @@ buildflag_header("buildflags") {
 
 static_library("common") {
   sources = [
-    "features.cc",
-    "features.h",
     "pref_names.cc",
     "pref_names.h",
     "supervised_user_constants.cc",
@@ -26,11 +24,25 @@ static_library("common") {
   deps = [
     ":buildflags",
     "//base",
-    "//build:branding_buildflags",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/url_matcher:url_matcher",
     "//extensions/buildflags",
     "//url",
+  ]
+
+  public_deps = [ ":features" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
   ]
 }
 

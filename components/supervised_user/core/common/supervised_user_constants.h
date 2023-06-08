@@ -46,6 +46,9 @@ GURL KidsManagementGetFamilyMembersURL();
 GURL KidsManagementPermissionRequestsURL();
 GURL KidsManagementClassifyURLRequestURL();
 
+// Histogram name to log FamilyLink user type segmentation.
+extern const char kFamilyLinkUserLogSegmentHistogramName[];
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

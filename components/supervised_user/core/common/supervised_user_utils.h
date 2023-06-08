@@ -6,6 +6,9 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_UTILS_H_
 
 #include <string>
+#include <vector>
+
+#include "components/signin/public/identity_manager/account_info.h"
 
 class GURL;
 class PrefService;
@@ -37,6 +40,30 @@ enum class FirstTimeInterstitialBannerState : int {
   kUnknown = 2,
 };
 
+// These enum values represent the user's supervision type and how the
+// supervision has been enabled.
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "FamilyLinkUserLogSegment" in src/tools/metrics/histograms/enums.xml.
+enum class LogSegment {
+  // User is not supervised by FamilyLink.
+  kUnsupervised = 0,
+  // User that is required to be supervised by FamilyLink due to child account
+  // policies (maps to Unicorn and Griffin accounts).
+  kSupervisionEnabledByPolicy = 1,
+  // User that has chosen to be supervised by FamilyLink (maps to Geller
+  // accounts).
+  kSupervisionEnabledByUser = 2,
+  // Profile contains users with multiple different supervision status
+  // used only when ExtendFamilyLinkUserLogSegmentToAllPlatforms flag is
+  // enabled
+  kMixedProfile = 3,
+  // Add future entries above this comment, in sync with
+  // "FamilyLinkUserLogSegment" in src/tools/metrics/histograms/enums.xml.
+  // Update kMaxValue to the last value.
+  kMaxValue = kMixedProfile
+};
+
 // Converts FilteringBehaviorReason enum to string format.
 std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason);
 
@@ -45,6 +72,14 @@ GURL NormalizeUrl(const GURL& url);
 
 // Check if web filtering prefs are set to default values.
 bool AreWebFilterPrefsDefault(const PrefService& pref_service);
+
+// Categorizes the account into a FamilyLink supervision type to segment the
+// Chrome user population.
+// `primary_accounts` should contain only primary accounts, possibly sourced
+// from multiple Chrome profiles. In the case of multiple accounts, the function
+// emits a single record to signal the multi-profile state.
+// Returns true if one or more histograms were emitted.
+bool EmitLogSegmentHistogram(const std::vector<AccountInfo>& primary_accounts);
 
 }  // namespace supervised_user
 

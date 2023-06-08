@@ -75,4 +75,7 @@ GURL KidsManagementClassifyURLRequestURL() {
   return KidsManagementBaseURL().Resolve(kClassifyURLRequestURL);
 }
 
+const char kFamilyLinkUserLogSegmentHistogramName[] =
+    "FamilyLinkUser.LogSegment";
+
 }  // namespace supervised_user
