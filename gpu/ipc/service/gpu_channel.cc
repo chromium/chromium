@@ -40,6 +40,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -659,11 +660,12 @@ CommandBufferStub* GpuChannel::LookupCommandBuffer(int32_t route_id) {
   return it->second.get();
 }
 
-bool GpuChannel::HasActiveWebGLContext() const {
+bool GpuChannel::HasActiveStatefulContext() const {
   for (auto& kv : stubs_) {
     ContextType context_type = kv.second->context_type();
     if (context_type == CONTEXT_TYPE_WEBGL1 ||
-        context_type == CONTEXT_TYPE_WEBGL2) {
+        context_type == CONTEXT_TYPE_WEBGL2 ||
+        context_type == CONTEXT_TYPE_WEBGPU) {
       return true;
     }
   }

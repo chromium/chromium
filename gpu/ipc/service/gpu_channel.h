@@ -125,7 +125,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   CommandBufferStub* LookupCommandBuffer(int32_t route_id);
 
-  bool HasActiveWebGLContext() const;
+  bool HasActiveStatefulContext() const;
   void MarkAllContextsLost();
 
   // Called to add a listener for a particular message routing ID.

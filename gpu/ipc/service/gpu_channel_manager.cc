@@ -759,10 +759,11 @@ void GpuChannelManager::OnBackgroundCleanup() {
   // goes to background on low-end devices.
   std::vector<int> channels_to_clear;
   for (auto& kv : gpu_channels_) {
-    // TODO(ssid): WebGL context loss event notification must be sent before
-    // clearing WebGL contexts crbug.com/725306.
-    if (kv.second->HasActiveWebGLContext())
+    // Stateful contexts (e.g. WebGL and WebGPU) support context lost
+    // notifications, but for now, skip those.
+    if (kv.second->HasActiveStatefulContext()) {
       continue;
+    }
     channels_to_clear.push_back(kv.first);
     kv.second->MarkAllContextsLost();
   }
