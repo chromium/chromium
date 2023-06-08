@@ -2897,6 +2897,22 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
         desc="Text of link within IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK_WRAPPER">
         Google Safe Browsing
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING"
+        desc="Subpage summary when download deep scanning is in progress">
+        This file might be a virus or malware
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_SECONDARY"
+        desc="Subpage secondary text when download deep scanning is in progress">
+        Scanning for malware...
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_DISCARD"
+        desc="Subpage button to discard a file when download deep scanning is in progress">
+        Delete file
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_CANCEL"
+        desc="Subpage button to cancel a download deep scan">
+        Cancel
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
                desc="Retry button when a download is failed">
         Try again

@@ -35,10 +35,16 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 constexpr int kCheckboxHeight = 32;
+constexpr int kProgressBarHeight = 3;
+// Num of columns in the table layout, the width of which progress bar will
+// span. The 5 columns are Download Icon, Padding, Status text,
+// Main Button, Subpage Icon.
+constexpr int kNumColumns = 5;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -156,15 +162,7 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
   // The label defaults to a single line, which would force the dialog wider;
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
-  const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();
-  const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  const int min_label_width =
-      bubble_width - side_margin - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
-      GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
-  styled_label_->SizeToFit(min_label_width);
+  styled_label_->SizeToFit(GetMinimumLabelWidth());
 
   checkbox_->SetVisible(ui_info.HasCheckbox());
   if (ui_info.HasCheckbox()) {
@@ -193,10 +191,28 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
             DownloadCommands::LEARN_MORE_SCANNING, /*is_main_view=*/false));
     deep_scanning_link_->AddStyleRange(link_range, link_style);
     deep_scanning_link_->SetVisible(true);
-    deep_scanning_link_->SizeToFit(min_label_width);
+    deep_scanning_link_->SizeToFit(GetMinimumLabelWidth());
   } else {
     deep_scanning_link_->SetVisible(false);
   }
+}
+
+void DownloadBubbleSecurityView::UpdateSecondaryIconAndText() {
+  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+
+  if (ui_info.warning_secondary_text.empty()) {
+    return;
+  }
+
+  secondary_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      *ui_info.warning_secondary_icon, ui::kColorSecondaryForeground,
+      GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+
+  secondary_styled_label_->SetText(ui_info.warning_secondary_text);
+  // The label defaults to a single line, which would force the dialog wider;
+  // instead give it a width that's the minimum we want it to have. Then the
+  // Layout will stretch it back out into any additional space available.
+  secondary_styled_label_->SizeToFit(GetMinimumLabelWidth());
 }
 
 void DownloadBubbleSecurityView::AddIconAndText() {
@@ -269,6 +285,87 @@ void DownloadBubbleSecurityView::AddIconAndText() {
       wrapper->AddChildView(std::make_unique<views::StyledLabel>());
   deep_scanning_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   deep_scanning_link_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+}
+
+void DownloadBubbleSecurityView::AddSecondaryIconAndText() {
+  const int side_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  auto* icon_text_row = AddChildView(std::make_unique<views::View>());
+  icon_text_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  icon_text_row->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(side_margin,
+                      // In CR2023 the horizontal margin is added to the
+                      // parent view.
+                      features::IsChromeRefresh2023() ? 0 : side_margin));
+
+  secondary_icon_ =
+      icon_text_row->AddChildView(std::make_unique<views::ImageView>());
+  secondary_icon_->SetProperty(views::kMarginsKey,
+                               GetLayoutInsets(DOWNLOAD_ICON));
+
+  auto* wrapper = icon_text_row->AddChildView(std::make_unique<views::View>());
+  wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  wrapper->SetProperty(views::kMarginsKey,
+                       gfx::Insets().set_left(icon_label_spacing));
+  wrapper->SetProperty(views::kCrossAxisAlignmentKey,
+                       views::LayoutAlignment::kStretch);
+  wrapper->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width=*/true));
+
+  secondary_styled_label_ =
+      wrapper->AddChildView(std::make_unique<views::StyledLabel>());
+  secondary_styled_label_->SetProperty(views::kCrossAxisAlignmentKey,
+                                       views::LayoutAlignment::kStretch);
+  secondary_styled_label_->SetTextContext(
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
+  secondary_styled_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  secondary_styled_label_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width=*/true));
+}
+
+void DownloadBubbleSecurityView::AddProgressBar() {
+  const int side_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  // TODO(crbug.com/1379447): Remove the progress bar holder view here.
+  // Currently the animation does not show up on deep scanning without
+  // the holder.
+  views::FlexLayoutView* progress_bar_holder =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  progress_bar_holder->SetProperty(views::kMarginsKey,
+                                   gfx::Insets(side_margin));
+  progress_bar_holder->SetCanProcessEventsWithinSubtree(false);
+  progress_bar_holder->SetProperty(views::kTableColAndRowSpanKey,
+                                   gfx::Size(kNumColumns, 1));
+  progress_bar_holder->SetProperty(views::kTableHorizAlignKey,
+                                   views::LayoutAlignment::kStretch);
+  progress_bar_ =
+      progress_bar_holder->AddChildView(std::make_unique<views::ProgressBar>(
+          /*preferred_height=*/kProgressBarHeight));
+  progress_bar_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_top(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  progress_bar_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width=*/false));
+  // Expect to start not visible, will be updated later.
+  progress_bar_->SetVisible(false);
 }
 
 void DownloadBubbleSecurityView::ProcessButtonClick(
@@ -344,6 +441,18 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   }
 }
 
+void DownloadBubbleSecurityView::UpdateProgressBar() {
+  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  // The progress bar is only supported for deep scanning currently, which
+  // requires a looping progress bar.
+  if (!ui_info.has_progress_bar || !ui_info.is_progress_bar_looping) {
+    return;
+  }
+
+  progress_bar_->SetVisible(true);
+  progress_bar_->SetValue(-1);
+}
+
 void DownloadBubbleSecurityView::RecordWarningActionTime(
     bool is_secondary_button) {
   DCHECK(warning_time_.has_value());
@@ -369,7 +478,9 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
   did_log_action_ = false;
   UpdateHeader();
   UpdateIconAndText();
+  UpdateSecondaryIconAndText();
   UpdateButtons();
+  UpdateProgressBar();
   base::UmaHistogramEnumeration(kSubpageActionHistogram,
                                 DownloadBubbleSubpageAction::kShown);
 }
@@ -405,6 +516,8 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
   }
   AddHeader();
   AddIconAndText();
+  AddSecondaryIconAndText();
+  AddProgressBar();
 }
 
 DownloadBubbleSecurityView::~DownloadBubbleSecurityView() {
@@ -416,6 +529,16 @@ DownloadBubbleSecurityView::~DownloadBubbleSecurityView() {
         DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
         DownloadItemWarningData::WarningAction::DISMISS);
   }
+}
+
+int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
+  const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();
+  const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  return bubble_width - side_margin - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+         GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
 }
 
 BEGIN_METADATA(DownloadBubbleSecurityView, views::View)

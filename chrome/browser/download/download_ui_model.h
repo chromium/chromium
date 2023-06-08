@@ -152,6 +152,12 @@ class DownloadUIModel {
     // Subpage summary of the download warning
     std::u16string warning_summary;
 
+    // Secondary label for the subpage summary
+    std::u16string warning_secondary_text;
+
+    // Icon for the secondary text in the subpage
+    raw_ptr<const gfx::VectorIcon> warning_secondary_icon = nullptr;
+
     // Label for the checkbox, empty if no checkbox is needed
     std::u16string checkbox_label;
 
@@ -168,6 +174,9 @@ class DownloadUIModel {
     ~BubbleUIInfo();
     BubbleUIInfo(const BubbleUIInfo&);
     BubbleUIInfo& AddSubpageSummary(const std::u16string& summary);
+    BubbleUIInfo& AddSubpageSecondaryIconAndText(
+        const gfx::VectorIcon& icon,
+        const std::u16string& secondary_text);
     BubbleUIInfo& AddProgressBar();
     BubbleUIInfo& AddIconAndColor(const gfx::VectorIcon& vector_icon,
                                   ui::ColorId color_id);

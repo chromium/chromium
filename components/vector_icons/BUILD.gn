@@ -65,6 +65,7 @@ aggregate_vector_icons("components_vector_icons") {
     "devices_chrome_refresh.icon",
     "devices_off.icon",
     "devices_off_chrome_refresh.icon",
+    "document_scanner.icon",
     "dogfood.icon",
     "edit.icon",
     "email.icon",
