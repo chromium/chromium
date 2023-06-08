@@ -189,7 +189,7 @@ struct PartitionOptions {
   AlignedAlloc aligned_alloc = AlignedAlloc::kDisallowed;
   ThreadCache thread_cache = ThreadCache::kDisabled;
   Quarantine quarantine = Quarantine::kDisallowed;
-  Cookie cookie = Cookie::kDisallowed;
+  Cookie cookie = Cookie::kAllowed;
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
   size_t ref_count_size;

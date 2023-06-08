@@ -68,6 +68,7 @@ std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
     .thread_cache = PartitionOptions::ThreadCache::kEnabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     .quarantine = PartitionOptions::Quarantine::kAllowed,
+    .cookie = PartitionOptions::Cookie::kDisallowed,
   });
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
 
