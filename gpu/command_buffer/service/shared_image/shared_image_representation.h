@@ -130,18 +130,19 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   template <typename RepresentationClass>
   class ScopedAccessBase {
    public:
-    ScopedAccessBase(RepresentationClass* representation)
+    ScopedAccessBase(RepresentationClass* representation,
+                     AccessMode access_mode)
         : representation_(representation) {
-      DCHECK(!representation_->has_scoped_access_);
-      representation_->has_scoped_access_ = true;
+      CHECK_EQ(representation_->access_mode_, AccessMode::kNone);
+      representation_->access_mode_ = access_mode;
     }
 
     ScopedAccessBase(const ScopedAccessBase&) = delete;
     ScopedAccessBase& operator=(const ScopedAccessBase&) = delete;
 
     ~ScopedAccessBase() {
-      DCHECK(representation_->has_scoped_access_);
-      representation_->has_scoped_access_ = false;
+      CHECK_NE(representation_->access_mode_, AccessMode::kNone);
+      representation_->access_mode_ = AccessMode::kNone;
     }
 
     RepresentationClass* representation() { return representation_; }
@@ -158,7 +159,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   raw_ptr<SharedImageBacking> backing_;
   const raw_ptr<MemoryTypeTracker> tracker_;
   bool has_context_ = true;
-  bool has_scoped_access_ = false;
+  AccessMode access_mode_ = AccessMode::kNone;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,8 +201,9 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
       : public ScopedAccessBase<GLTextureImageRepresentationBase> {
    public:
     ScopedAccess(base::PassKey<GLTextureImageRepresentationBase> pass_key,
-                 GLTextureImageRepresentationBase* representation)
-        : ScopedAccessBase(representation) {}
+                 GLTextureImageRepresentationBase* representation,
+                 AccessMode access_mode)
+        : ScopedAccessBase(representation, access_mode) {}
     ~ScopedAccess() {
       representation()->UpdateClearedStateOnEndAccess();
       representation()->EndAccess();
@@ -731,7 +733,8 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
    public:
     ScopedAccess(base::PassKey<DawnImageRepresentation> pass_key,
                  DawnImageRepresentation* representation,
-                 WGPUTexture texture);
+                 WGPUTexture texture,
+                 AccessMode access_mode);
     ~ScopedAccess();
 
     // Get the unowned texture handle. The caller should take a reference
