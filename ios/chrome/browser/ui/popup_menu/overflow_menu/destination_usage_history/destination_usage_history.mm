@@ -486,8 +486,21 @@ void InsertDestination(overflow_menu::Destination destination,
   ScopedDictPrefUpdate historyUpdate(
       _prefService, prefs::kOverflowMenuDestinationUsageHistory);
 
+  base::Value::List* possibleStoredRanking =
+      historyUpdate->FindList(kRankingKey);
+  bool hasStoredRanking = possibleStoredRanking != nullptr;
+  base::Value::List storedRanking;
+  if (hasStoredRanking) {
+    storedRanking = possibleStoredRanking->Clone();
+  }
+
   // Clear the existing usage history and ranking stored in Prefs.
   historyUpdate->clear();
+
+  // Keep stored ranking if it still exists.
+  if (hasStoredRanking) {
+    historyUpdate->Set(kRankingKey, storedRanking.Clone());
+  }
 
   // Flush the new usage history to Prefs.
   for (const auto& dayHistory : _usageHistory) {

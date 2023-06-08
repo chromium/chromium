@@ -225,6 +225,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
         prefs::kOverflowMenuNewDestinations, PrefRegistry::LOSSY_PREF);
     localStatePrefs_->registry()->RegisterDictionaryPref(
         prefs::kOverflowMenuDestinationUsageHistory, PrefRegistry::LOSSY_PREF);
+    localStatePrefs_->registry()->RegisterListPref(
+        prefs::kOverflowMenuDestinationsOrder);
   }
 
   void SetUpBookmarks() {

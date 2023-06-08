@@ -8,6 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
+#import "base/strings/string_number_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -26,6 +27,12 @@ namespace {
 // statically declared below. In practice, this value is dynamically calculated
 // based on device size.
 static constexpr int kVisibleDestinationsCount = 5;
+
+// A time delta from the Unix epoch to the beginning of the current day.
+base::TimeDelta TodaysDay() {
+  return base::Days(
+      (base::Time::Now() - base::Time::UnixEpoch()).InDaysFloored());
+}
 
 }  // namespace
 
@@ -58,6 +65,7 @@ class OverflowMenuOrdererTest : public PlatformTest {
         prefs::kOverflowMenuDestinationUsageHistory, PrefRegistry::LOSSY_PREF);
     prefs_->registry()->RegisterListPref(prefs::kOverflowMenuNewDestinations,
                                          PrefRegistry::LOSSY_PREF);
+    prefs_->registry()->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);
   }
 
   OverflowMenuDestination* CreateOverflowMenuDestination(
@@ -122,12 +130,47 @@ TEST_F(OverflowMenuOrdererTest, StoresInitialRanking) {
   [overflow_menu_orderer_
       sortedDestinationsFromCarouselDestinations:sample_destinations];
 
-  const base::Value::Dict& stored_usage_history =
+  const base::Value::List& stored_ranking =
+      prefs_->GetList(prefs::kOverflowMenuDestinationsOrder);
+
+  EXPECT_EQ(stored_ranking.size(), sample_destinations.count);
+}
+
+// Tests that the old pref format (kOverflowMenuDestinationUsageHistory as a
+// dict containing both usage history and ranking) is correctly migrated to the
+// new format (kOverflowMenuDestinationUsageHistory containing just usage
+// history and kOverflowMenuDestinationsOrder containing ranking).
+TEST_F(OverflowMenuOrdererTest, MigratesRanking) {
+  CreatePrefs();
+
+  base::Value::List old_ranking =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::Bookmarks))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::History));
+  base::Value::Dict old_usage_history =
+      base::Value::Dict()
+          .Set(base::NumberToString(TodaysDay().InDays()),
+               base::Value::Dict().Set(
+                   overflow_menu::StringNameForDestination(
+                       overflow_menu::Destination::Bookmarks),
+                   5))
+          .Set("ranking", old_ranking.Clone());
+
+  prefs_->SetDict(prefs::kOverflowMenuDestinationUsageHistory,
+                  std::move(old_usage_history));
+
+  overflow_menu_orderer_ = [[OverflowMenuOrderer alloc] initWithIsIncognito:NO];
+
+  // Set prefs here to force orderer to load and migrate.
+  overflow_menu_orderer_.localStatePrefs = prefs_.get();
+
+  const base::Value::List& new_ranking =
+      prefs_->GetList(prefs::kOverflowMenuDestinationsOrder);
+  const base::Value::Dict& new_usage_history =
       prefs_->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
 
-  // Has two entries for the ranking and usage history.
-  EXPECT_EQ(stored_usage_history.size(), (size_t)2);
-  EXPECT_NE(stored_usage_history.FindList("ranking"), nullptr);
-  EXPECT_EQ(stored_usage_history.FindList("ranking")->size(),
-            sample_destinations.count);
+  EXPECT_EQ(new_ranking, old_ranking);
+  EXPECT_EQ(1ul, new_usage_history.size());
 }

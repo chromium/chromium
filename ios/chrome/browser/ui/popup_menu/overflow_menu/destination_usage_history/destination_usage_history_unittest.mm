@@ -491,8 +491,8 @@ TEST_F(DestinationUsageHistoryTest, DeletesExpiredUsageData) {
   ScopedDictPrefUpdate update(prefs_.get(),
                               prefs::kOverflowMenuDestinationUsageHistory);
 
-  // Has one entry for today's seeded history.
-  EXPECT_EQ(update->size(), (size_t)1);
+  // Has one entry for ranking, and one entry for today's seeded history.
+  EXPECT_EQ(update->size(), (size_t)2);
   EXPECT_NE(update->Find(base::NumberToString(TodaysDay().InDays())), nullptr);
   EXPECT_EQ(update->Find(base::NumberToString(recently_expired_day.InDays())),
             nullptr);
