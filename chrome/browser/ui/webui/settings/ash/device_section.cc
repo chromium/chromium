@@ -1014,6 +1014,9 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioVolumeTitle", IDS_SETTINGS_AUDIO_VOLUME_TITLE},
       {"chargingSoundsLabel",
        IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_CHARGING_SOUNDS_LABEL},
+      {"deviceStartupSoundLabel",
+       IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_STARTUP_SOUND_LABEL},
+      {"deviceSoundsTitle", IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_TITLE},
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);

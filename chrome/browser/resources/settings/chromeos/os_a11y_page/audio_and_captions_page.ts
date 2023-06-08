@@ -108,7 +108,11 @@ export class SettingsAudioAndCaptionsPageElement extends
     this.addWebUiListener(
         'initial-data-ready',
         (startupSoundEnabled: boolean) =>
-            this.onAudioAndCaptionsPageReady_(startupSoundEnabled));
+            this.updateStartupSoundEnabled_(startupSoundEnabled));
+    this.addWebUiListener(
+        'startup-sound-setting-retrieved',
+        (startupSoundEnabled: boolean) =>
+            this.updateStartupSoundEnabled_(startupSoundEnabled));
     this.audioAndCaptionsBrowserProxy_.audioAndCaptionsPageReady();
   }
 
@@ -147,6 +151,7 @@ export class SettingsAudioAndCaptionsPageElement extends
       return;
     }
 
+    this.audioAndCaptionsBrowserProxy_.getStartupSoundEnabled();
     this.attemptDeepLink();
   }
 
@@ -158,7 +163,7 @@ export class SettingsAudioAndCaptionsPageElement extends
    * Handles updating the visibility of the shelf navigation buttons setting
    * and updating whether startupSoundEnabled is checked.
    */
-  private onAudioAndCaptionsPageReady_(startupSoundEnabled: boolean): void {
+  private updateStartupSoundEnabled_(startupSoundEnabled: boolean): void {
     this.$.startupSoundEnabled.checked = startupSoundEnabled;
   }
 }

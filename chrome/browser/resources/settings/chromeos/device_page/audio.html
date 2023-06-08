@@ -34,7 +34,8 @@
     padding-inline-start: var(--cr-section-indent-padding);
   }
 
-  .subsection > .settings-box {
+  .subsection > .settings-box,
+  .subsection > settings-toggle-button {
     padding-inline-end: 0;
     padding-inline-start: 0;
   }
@@ -213,9 +214,25 @@
       </div>
     </div>
   </div>
-  <settings-toggle-button hidden$="[[!systemSoundsEnabled_]]"
-      id="chargingSoundsToggle" pref="{{prefs.ash.charging_sounds.enabled}}"
-      label="$i18n{chargingSoundsLabel}"
-      deep-link-focus-id$="[[Setting.kChargingSounds]]">
-  </settings-toggle-button>
+
+  <div id="deviceSounds">
+    <h2>$i18n{deviceSoundsTitle}</h2>
+    <div id="deviceSoundsSection" class="subsection">
+      <settings-toggle-button hidden$="[[!systemSoundsEnabled_]]"
+        id="chargingSoundsToggle" pref="{{prefs.ash.charging_sounds.enabled}}"
+        label="$i18n{chargingSoundsLabel}"
+        deep-link-focus-id$="[[Setting.kChargingSounds]]">
+      </settings-toggle-button>
+      <div class="settings-box start-padding continuation">
+        <div id="deviceStartupSoundEnabledLabel"
+            class="start settings-box-text">
+          $i18n{deviceStartupSoundLabel}
+        </div>
+        <cr-toggle id="deviceStartupSoundToggle"
+            checked="[[startupSoundEnabled_]]"
+            on-change="toggleStartupSoundEnabled_">
+        </cr-toggle>
+      </div>
+    </div>
+  </div>
 </template>

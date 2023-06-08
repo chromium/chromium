@@ -2875,8 +2875,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the output mute button muted.">
     Volume is off. Turn on volume.
   </message>
-    <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_CHARGING_SOUNDS_LABEL" desc="Label for checkbox which enables charging sounds.">
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_CHARGING_SOUNDS_LABEL" desc="Label for checkbox which enables charging sounds.">
     Charging sounds
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_STARTUP_SOUND_LABEL" desc="Label for checkbox which enables the device startup sound.">
+    Device startup sound
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_TITLE" desc="In Device Settings, the title of the device sounds section of the audio settings subpage.">
+    Device sounds
   </message>
 
   <!-- Device pointer page (OS settings) -->

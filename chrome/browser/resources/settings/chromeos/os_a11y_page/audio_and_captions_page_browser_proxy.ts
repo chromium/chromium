@@ -13,6 +13,12 @@ export interface AudioAndCaptionsPageBrowserProxy {
    * is returned by the 'initial-data-ready' WebUI listener event.
    */
   audioAndCaptionsPageReady(): void;
+
+  /**
+   * Request whether startup sound is enabled. Result is returned by the
+   * 'startup-sound-setting-retrieved' WebUI listener event.
+   */
+  getStartupSoundEnabled(): void;
 }
 
 let instance: AudioAndCaptionsPageBrowserProxy|null = null;
@@ -33,5 +39,9 @@ export class AudioAndCaptionsPageBrowserProxyImpl implements
 
   audioAndCaptionsPageReady(): void {
     chrome.send('manageA11yPageReady');
+  }
+
+  getStartupSoundEnabled(): void {
+    chrome.send('getStartupSoundEnabled');
   }
 }
