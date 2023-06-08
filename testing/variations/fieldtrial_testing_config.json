@@ -8538,9 +8538,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230608",
+                    "params": {
+                        "MmapSafeBrowsingDatabaseAsync": "true"
+                    },
                     "enable_features": [
-                        "MmapSafeBrowsingDatabase"
+                        "MmapSafeBrowsingDatabase",
+                        "SafeBrowsingOnUIThread"
                     ]
                 }
             ]
