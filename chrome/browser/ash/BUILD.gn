@@ -5054,6 +5054,7 @@ source_set("unit_tests") {
     "bruschetta/bruschetta_mount_provider_unittest.cc",
     "bruschetta/bruschetta_service_unittest.cc",
     "bruschetta/bruschetta_terminal_provider_unittest.cc",
+    "bruschetta/bruschetta_util_unittest.cc",
     "camera/camera_general_survey_handler_unittest.cc",
     "camera_mic/vm_camera_mic_manager_unittest.cc",
     "camera_presence_notifier_unittest.cc",
