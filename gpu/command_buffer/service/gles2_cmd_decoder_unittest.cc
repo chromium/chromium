@@ -268,7 +268,7 @@ TEST_P(GLES2DecoderTest, IsTexture) {
   EXPECT_FALSE(DoIsTexture(client_texture_id_));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
   const GLuint service_id = 123;
   EXPECT_CALL(*gl_, GenTextures(1, _))
@@ -284,7 +284,7 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
                                           GL_RGBA, GL_UNSIGNED_BYTE);
   scoped_refptr<gl::GLImage> image(new GLImageStub);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   abstract_texture->SetUnboundImage(image.get());
 #else
   abstract_texture->SetBoundImage(image.get());
@@ -295,7 +295,7 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
   TextureRef* texture_ref = validating_texture->GetTextureRefForTesting();
   EXPECT_EQ(texture_ref->texture()->GetLevelImage(target, 0), image.get());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(texture_ref->texture()->HasUnboundLevelImage(target, 0));
 #endif
 
@@ -340,7 +340,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
 
   // NOTE: For this test, it doesn't actually matter whether the image is
   // client-managed or decoder-managed.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   abstract_texture->SetUnboundImage(image.get());
 #else
   abstract_texture->SetBoundImage(image.get());
@@ -352,7 +352,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_EQ(texture->GetLevelImage(target, 0), image.get());
 
   // Unbinding should make it not renderable.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   abstract_texture->SetUnboundImage(nullptr);
 #else
   abstract_texture->SetBoundImage(nullptr);

@@ -47,7 +47,7 @@ void PassthroughAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
   gl_api_->glTexParameteriFn(texture_passthrough_->target(), pname, param);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void PassthroughAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   if (!texture_passthrough_)
     return;
@@ -63,7 +63,7 @@ void PassthroughAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   }
   texture_passthrough_->SetLevelImage(target, level, image);
 }
-#else
+#elif !BUILDFLAG(IS_WIN)
 void PassthroughAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
   if (!texture_passthrough_) {
     return;

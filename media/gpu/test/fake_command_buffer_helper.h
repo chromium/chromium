@@ -65,9 +65,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                        GLenum type) override;
   void DestroyTexture(GLuint service_id) override;
   void SetCleared(GLuint service_id) override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   bool BindDecoderManagedImage(GLuint service_id, gl::GLImage* image) override;
-#else
+#elif !BUILDFLAG(IS_WIN)
   bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override;
 #endif
   gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override;
@@ -79,7 +79,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
  private:
   ~FakeCommandBufferHelper() override;
 
+#if !BUILDFLAG(IS_WIN)
   bool BindImageInternal(GLuint service_id, gl::GLImage* image);
+#endif
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

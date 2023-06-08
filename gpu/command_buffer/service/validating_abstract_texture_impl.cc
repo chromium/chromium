@@ -51,7 +51,7 @@ void ValidatingAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
                                      texture_ref_.get(), pname, param);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void ValidatingAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   if (!texture_ref_)
     return;
@@ -70,7 +70,7 @@ void ValidatingAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   GetTextureManager()->SetLevelCleared(texture_ref_.get(), target, level,
                                        image);
 }
-#else
+#elif !BUILDFLAG(IS_WIN)
 void ValidatingAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
   if (!texture_ref_) {
     return;
