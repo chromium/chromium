@@ -455,7 +455,8 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
         FROM_HERE,
         base::BindOnce(
             &PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest,
-            base::Unretained(this), web_contents));
+            base::Unretained(this),
+            base::UnsafeDanglingUntriaged(web_contents)));
   }
 
   std::move(callback).Run(stream_devices_set, final_result, std::move(ui));
