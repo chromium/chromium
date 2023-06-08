@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
@@ -134,6 +135,11 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
 
     SetViewLayoutSpecs(cancel_button_,
                        gfx::Insets::TLBR(0, 0, 0, kButtonSpacing));
+
+    cancel_button_->SetID(
+        ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON);
+    accept_button_->SetID(
+        ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_ACCEPT_BUTTON);
   }
 
   ButtonContainer(const ButtonContainer&) = delete;

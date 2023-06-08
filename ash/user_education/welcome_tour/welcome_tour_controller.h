@@ -22,7 +22,7 @@ class SessionController;
 class WelcomeTourControllerObserver;
 class WelcomeTourScrim;
 
-// Controller responsible for Welcome Tour feature tutorials. Note that the
+// Controller responsible for the Welcome Tour feature tutorial. Note that the
 // `WelcomeTourController` is owned by the `UserEducationController` and exists
 // if and only if the Welcome Tour feature is enabled.
 class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,

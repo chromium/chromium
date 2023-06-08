@@ -913,6 +913,8 @@ component("ash") {
     "user_education/welcome_tour/welcome_tour_controller.cc",
     "user_education/welcome_tour/welcome_tour_controller.h",
     "user_education/welcome_tour/welcome_tour_controller_observer.h",
+    "user_education/welcome_tour/welcome_tour_dialog.cc",
+    "user_education/welcome_tour/welcome_tour_dialog.h",
     "user_education/welcome_tour/welcome_tour_scrim.cc",
     "user_education/welcome_tour/welcome_tour_scrim.h",
     "wm/multi_display/persistent_window_controller.cc",
@@ -3506,6 +3508,7 @@ test("ash_unittests") {
     "user_education/user_education_util_unittest.cc",
     "user_education/views/help_bubble_view_ash_unittest.cc",
     "user_education/welcome_tour/welcome_tour_controller_unittest.cc",
+    "user_education/welcome_tour/welcome_tour_dialog_unittest.cc",
     "user_education/welcome_tour/welcome_tour_scrim_unittest.cc",
     "utility/cropping_util_unittest.cc",
     "utility/haptics_util_unittest.cc",
@@ -3871,6 +3874,7 @@ test("ash_pixeltests") {
     "system/update/eol_notice_quick_settings_view_pixeltest.cc",
     "test/pixel/demo_ash_pixel_diff_test.cc",
     "user_education/views/help_bubble_view_ash_pixeltest.cc",
+    "user_education/welcome_tour/welcome_tour_dialog_pixeltest.cc",
     "wm/wm_pixel_diff_test.cc",
   ]
 

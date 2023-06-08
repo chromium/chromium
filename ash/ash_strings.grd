@@ -6712,6 +6712,18 @@ To shut down the device, press and hold the power button on the device again.
       </message>
 
       <!-- Welcome Tour -->
+      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_ACCEPT_BUTTON_TEXT" desc="Text shown on the dialog's button that starts the System UI Welcome Tour tutorial when triggered." translateable="false">
+        [i18n] Quick tour
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_CANCEL_BUTTON_TEXT" desc="Text shown on the dialog's button that closes the dialog without starting the System UI Welcome Tour tutorial when triggered." translateable="false">
+        [i18n] No thanks
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour." translateable="false">
+        [i18n] Take a quick tour to get off to a smooth start. With 6 steps, it will just take a few minutes.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT" desc="Text shown as the Welcome Tour dialog title." translateable="false">
+        [i18n] Hi there. Chromebooks are a little different.
+      </message>
       <message name="IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Explore app as part of the System UI Welcome Tour." translateable="false">
         [i18n] Those were the basics! Continue in Explore to make the most of your Chromebook. You'll find the best apps for Chromebook, tips on getting started, special offers, and more.
       </message>

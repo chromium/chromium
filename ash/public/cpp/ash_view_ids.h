@@ -81,6 +81,11 @@ enum ViewID {
 
   // Sticky header rows in a scroll view.
   VIEW_ID_STICKY_HEADER,
+
+  // System dialog delegate view:
+  VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_ACCEPT_BUTTON,
+  VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON,
+
   // System tray up-arrow icon that shows an update is available.
   VIEW_ID_TRAY_UPDATE_ICON,
   // System tray menu item label for updates (e.g. "Restart to update").
