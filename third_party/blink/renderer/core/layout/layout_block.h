@@ -241,10 +241,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  public:
   void Paint(const PaintInfo&) const override;
-  virtual void PaintObject(const PaintInfo&,
-                           const PhysicalOffset& paint_offset) const;
-  virtual void PaintChildren(const PaintInfo&,
-                             const PhysicalOffset& paint_offset) const;
   MinMaxSizes PreferredLogicalWidths() const override;
 
   virtual bool HasLineIfEmpty() const;

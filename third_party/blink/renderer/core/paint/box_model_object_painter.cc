@@ -33,24 +33,6 @@ BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box)
     : BoxPainterBase(&box.GetDocument(), box.StyleRef(), GetNode(box)),
       box_model_(box) {}
 
-void BoxModelObjectPainter::PaintTextClipMask(
-    const PaintInfo& paint_info,
-    const gfx::Rect& mask_rect,
-    const PhysicalOffset& paint_offset,
-    bool object_has_multiple_boxes) {
-  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
-                            PaintPhase::kTextClip);
-  mask_paint_info.SetFragmentID(paint_info.FragmentID());
-  if (auto* layout_block = DynamicTo<LayoutBlock>(box_model_)) {
-    layout_block->PaintObject(mask_paint_info, paint_offset);
-  } else {
-    // We should go through the above path for LayoutInlines.
-    DCHECK(!box_model_.IsLayoutInline());
-    // Other types of objects don't have anything meaningful to paint for text
-    // clip mask.
-  }
-}
-
 PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
     const PaintInfo& paint_info,
     const BoxPainterBase::FillLayerInfo& info,

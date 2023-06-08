@@ -413,13 +413,6 @@ unsigned LayoutMultiColumnSet::ActualColumnCount() const {
   return FirstFragmentainerGroup().ActualColumnCount();
 }
 
-void LayoutMultiColumnSet::PaintObject(
-    const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 LayoutRect LayoutMultiColumnSet::FragmentsBoundingBox(
     const LayoutRect& bounding_box_in_flow_thread) const {
   NOT_DESTROYED();

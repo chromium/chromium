@@ -405,18 +405,6 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   NOTREACHED_NORETURN();
 }
 
-void LayoutBlock::PaintChildren(const PaintInfo& paint_info,
-                                const PhysicalOffset&) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
-void LayoutBlock::PaintObject(const PaintInfo& paint_info,
-                              const PhysicalOffset& paint_offset) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 TrackedLayoutBoxLinkedHashSet* LayoutBlock::PositionedObjectsInternal() const {
   NOT_DESTROYED();
   auto it = GetPositionedDescendantsMap().find(this);

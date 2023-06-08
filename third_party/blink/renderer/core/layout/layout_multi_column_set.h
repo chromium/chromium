@@ -255,9 +255,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
                             LogicalExtentComputedValues&) const override;
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  void PaintObject(const PaintInfo&,
-                   const PhysicalOffset& paint_offset) const override;
-
   void ComputeVisualOverflow() final;
 
   void AddVisualOverflowFromChildren();
