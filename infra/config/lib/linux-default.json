@@ -148,6 +148,7 @@
     "lacros-arm64-generic-rel": "Ubuntu-22.04",
     "lacros-arm64-generic-rel-skylab": "Ubuntu-22.04",
     "lacros-arm64-generic-rel-skylab-fyi": "Ubuntu-22.04",
+    "lacros64-archive-rel": "Ubuntu-22.04",
     "linux-angle-chromium-intel": "Ubuntu-22.04",
     "linux-angle-chromium-nvidia": "Ubuntu-22.04",
     "linux-annotator-rel": "Ubuntu-22.04",
