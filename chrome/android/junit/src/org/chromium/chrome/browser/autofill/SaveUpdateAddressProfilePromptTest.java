@@ -35,8 +35,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;

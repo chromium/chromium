@@ -3248,6 +3248,7 @@ static_library("browser") {
       "//chrome/browser/android/messages:jni_headers",
       "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/android/webapk:webapk_sources",
+      "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/banners/android:jni_headers",
       "//chrome/browser/bluetooth/android:jni_headers",
       "//chrome/browser/commerce/android:shopping_service_jni",

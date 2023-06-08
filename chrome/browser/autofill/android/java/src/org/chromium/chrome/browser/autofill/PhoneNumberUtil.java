@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill;
 import android.text.Editable;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -100,7 +101,8 @@ public class PhoneNumberUtil {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         String formatForDisplay(String phoneNumber, String countryCode);
         String formatForResponse(String phoneNumber);
         boolean isPossibleNumber(String phoneNumber, String countryCode);

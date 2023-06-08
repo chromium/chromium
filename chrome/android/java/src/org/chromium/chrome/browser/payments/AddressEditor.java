@@ -20,6 +20,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AddressValidationType;
+import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
+import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressField;
+import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysRequestDelegate;
@@ -28,10 +32,6 @@ import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
-import org.chromium.chrome.browser.autofill.settings.AddressValidationType;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.PropertyModel;
 

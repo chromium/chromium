@@ -9,7 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/AutofillProfileBridge_jni.h"
+#include "chrome/browser/autofill/android/jni_headers/AutofillProfileBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"

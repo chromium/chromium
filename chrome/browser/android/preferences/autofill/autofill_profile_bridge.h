@@ -8,7 +8,7 @@
 namespace autofill {
 
 // Specifies which rules are to be used for address validation.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill.settings
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill
 enum class AddressValidationType {
   // Validation rules used for the PaymentRequest API (e.g. for billing
   // addresses).
