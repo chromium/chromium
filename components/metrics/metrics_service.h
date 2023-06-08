@@ -567,8 +567,8 @@ class MetricsService {
       std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      std::string current_app_version,
-      std::string signing_key);
+      std::string&& current_app_version,
+      std::string&& signing_key);
 
   // Snapshots unlogged histogram samples using the passed
   // |log_histogram_writer| and then finalizes |log| by calling FinalizeLog().
@@ -580,15 +580,15 @@ class MetricsService {
       MetricsLogHistogramWriter* log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      std::string current_app_version,
-      std::string signing_key);
+      std::string&& current_app_version,
+      std::string&& signing_key);
 
   // Finalizes |log| (see MetricsLog::FinalizeLog()). The |signing_key| is used
   // to compute a signature for the log.
   static FinalizedLog FinalizeLog(std::unique_ptr<MetricsLog> log,
                                   bool truncate_events,
-                                  std::string current_app_version,
-                                  std::string signing_key);
+                                  const std::string& current_app_version,
+                                  const std::string& signing_key);
 
   // Sub-service for uploading logs.
   MetricsReportingService reporting_service_;
