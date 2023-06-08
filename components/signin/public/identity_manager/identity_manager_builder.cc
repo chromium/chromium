@@ -120,9 +120,6 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) ||  BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
           params->token_web_data,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          params->unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(IS_IOS)
           std::move(params->device_accounts_provider),

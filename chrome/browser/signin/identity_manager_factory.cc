@@ -34,10 +34,6 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
-#include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -73,9 +69,6 @@ IdentityManagerFactory::IdentityManagerFactory()
               .Build()) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DependsOn(WebDataServiceFactory::GetInstance());
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  DependsOn(UnexportableKeyServiceFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   DependsOn(ProfileAccountManagerFactory::GetInstance());
@@ -150,10 +143,6 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   params.token_web_data = WebDataServiceFactory::GetTokenWebDataForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  params.unexportable_key_service =
-      UnexportableKeyServiceFactory::GetForProfile(profile);
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

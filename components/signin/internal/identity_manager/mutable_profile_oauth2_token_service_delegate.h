@@ -26,9 +26,6 @@
 
 class SigninClient;
 class TokenWebData;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-class TokenBindingHelper;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class MutableProfileOAuth2TokenServiceDelegate
     : public ProfileOAuth2TokenServiceDelegate,
@@ -44,9 +41,6 @@ class MutableProfileOAuth2TokenServiceDelegate
       scoped_refptr<TokenWebData> token_web_data,
       signin::AccountConsistencyMethod account_consistency,
       bool revoke_all_tokens_on_load,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      std::unique_ptr<TokenBindingHelper> token_binding_helper,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       FixRequestErrorCallback fix_request_error_callback);
 
   MutableProfileOAuth2TokenServiceDelegate(
@@ -141,12 +135,6 @@ class MutableProfileOAuth2TokenServiceDelegate
                            InvalidateTokensForMultilogin);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            ExtractCredentials);
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
-                           UpdateBoundToken);
-  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
-                           RevokeBoundToken);
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // WebDataServiceConsumer implementation:
   void OnWebDataServiceRequestDone(
@@ -242,11 +230,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // completely removed, and the primary account will be kept in authentication
   // error state.
   bool revoke_all_tokens_on_load_;
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  // This is null if token binding is disabled.
-  const std::unique_ptr<TokenBindingHelper> token_binding_helper_;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // Callback function that attempts to correct request errors.  Best effort
   // only.  Returns true if the error was fixed and retry should be reattempted.
