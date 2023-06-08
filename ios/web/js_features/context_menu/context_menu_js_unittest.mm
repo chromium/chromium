@@ -69,9 +69,6 @@ const CGPoint kPointOutsideShadowDomLink = {50.0, 75.0};
 // A point in the web view's coordinate space outside of the document bounds.
 const CGPoint kPointOutsideDocument = {150.0, 150.0};
 
-// A point in the web view's coordinate space inside the surrounding text.
-const CGPoint kPointInsideSurroundingText = {90.0, 90.0};
-
 // A base64 encoded gif image of a single white pixel.
 const char kFallbackImageSource[] = "data:image/gif;base64,R0lGODlhAQABAIAAAP7/"
                                     "/wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
@@ -277,6 +274,19 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
     }
   }
 
+  void CheckElementResult(NSString* elementId,
+                          const base::Value::Dict& expected_result,
+                          const std::vector<const char*>& ignored_keys = {}) {
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      base::Value::Dict result =
+          FindElementAtPoint(FindPointFromElement(elementId));
+      for (const char* key : ignored_keys) {
+        result.Remove(key);
+      }
+      return result == expected_result;
+    }));
+  }
+
   // Returns web view's content size from the current web state.
   CGSize GetWebViewContentSize() { return web_view().scrollView.contentSize; }
 
@@ -299,6 +309,21 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
     return web::test::ExecuteJavaScript(web_view(), script);
   }
 
+  // Returns point for the given `elementId`.
+  CGPoint FindPointFromElement(NSString* elementId) {
+    NSString* script = [NSString
+        stringWithFormat:
+            @"(function (){\n"
+            @"var bounds = "
+            @"document.getElementById('%@').getBoundingClientRect();\n"
+            @"return {x: bounds.x, y: bounds.y};\n"
+            @"})();",
+            elementId];
+
+    NSDictionary* body = web::test::ExecuteJavaScript(web_view(), script);
+    return CGPointMake([body[@"x"] floatValue], [body[@"y"] floatValue]);
+  }
+
   // Handles script message responses sent from `web_view()`.
   CRWFakeScriptMessageHandler* script_message_handler_;
 };
@@ -310,7 +335,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FetchSurroundingText) {
       @"<html><head>"
        "<meta name=\"viewport\" content=\"user-scalable=no, width=100\">"
        "</head><body><div>This is the address's first line</div>"
-       "<p>Lorem ipsum<span>dolor sit amet. 49 WEST</span>27TH STREET "
+       "<p id=\"ips\">Lorem ipsum<span>dolor sit amet. 49 WEST</span>27TH "
+       "STREET "
        "reprehenderit sed cumque magni ut omnis sint est deserunt eveniet non "
        "omnis esse et debitis labore et Quis consequatur.</p>"
        "</body></html>";
@@ -324,13 +350,13 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FetchSurroundingText) {
                                  "This is the address's first line Lorem ipsum "
                                  "dolor sit amet. 49 WEST "
                                  "27TH STREET reprehenderit sed cumque magni "
-                                 "ut omnis sint est deserunt");
+                                 "ut omnis sint est des");
 
   std::vector<const char*> ignored_keys;
   ignored_keys.push_back(kContextMenuElementInnerText);
   ignored_keys.push_back(kContextMenuElementTextOffset);
   ignored_keys.push_back(kContextMenuElementSurroundingTextOffset);
-  CheckElementResult(kPointInsideSurroundingText, expected_value, ignored_keys);
+  CheckElementResult(@"ips", expected_value, ignored_keys);
 }
 
 #pragma mark - Surrounding text edge cases
@@ -450,10 +476,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   NSString* html = GetHtmlForPage(/*head=*/nil, html_for_div);
   ASSERT_TRUE(LoadHtml(html));
 
-  // Check that the paragraph was caught instead.
-  auto expected_value = base::Value::Dict()
-                            .Set(kContextMenuElementRequestId, kRequestId)
-                            .Set(kContextMenuElementTagName, "DIV");
+  // Check that nothing was caught instead (no TagName).
+  auto expected_value =
+      base::Value::Dict().Set(kContextMenuElementRequestId, kRequestId);
 
   std::vector<const char*> ignored_keys;
   ignored_keys.push_back(kContextMenuElementTextOffset);
@@ -756,10 +781,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPointOutsideElement) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgXlink(link));
   ASSERT_TRUE(LoadHtml(html));
 
-  // Check that the paragraph was caught instead.
-  auto expected_value = base::Value::Dict()
-                            .Set(kContextMenuElementRequestId, kRequestId)
-                            .Set(kContextMenuElementTagName, "P");
+  // Check that nothing was caught instead (no TagName).
+  auto expected_value =
+      base::Value::Dict().Set(kContextMenuElementRequestId, kRequestId);
 
   std::vector<const char*> ignored_keys;
   ignored_keys.push_back(kContextMenuElementTextOffset);
@@ -874,10 +898,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, PointOutsideShadowDomLink) {
       GetHtmlForPage(/*head=*/nil, GetHtmlForShadowDomLink(link, @"link")),
       GetTestURL()));
 
-  // Check that the paragraph was caught instead.
-  auto expected_value = base::Value::Dict()
-                            .Set(kContextMenuElementRequestId, kRequestId)
-                            .Set(kContextMenuElementTagName, "DIV");
+  // Check that nothing was caught instead (no TagName).
+  auto expected_value =
+      base::Value::Dict().Set(kContextMenuElementRequestId, kRequestId);
 
   std::vector<const char*> ignored_keys;
   ignored_keys.push_back(kContextMenuElementTextOffset);
@@ -936,12 +959,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutNone) {
 
   ASSERT_TRUE(LoadHtml(html));
 
-  // Check that the paragraph was caught instead.
-  auto expected_value = base::Value::Dict()
-                            .Set(kContextMenuElementRequestId, kRequestId)
-                            .Set(kContextMenuElementInnerText, "link")
-                            .Set(kContextMenuElementSurroundingText, "link")
-                            .Set(kContextMenuElementTagName, "P");
+  // Check that nothing was caught instead (no TagName).
+  auto expected_value =
+      base::Value::Dict().Set(kContextMenuElementRequestId, kRequestId);
 
   std::vector<const char*> ignored_keys;
   ignored_keys.push_back(kContextMenuElementTextOffset);
@@ -960,12 +980,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutFromAncester) {
 
   ASSERT_TRUE(LoadHtml(html));
 
-  // Check that the paragraph was caught instead.
-  auto expected_value = base::Value::Dict()
-                            .Set(kContextMenuElementRequestId, kRequestId)
-                            .Set(kContextMenuElementInnerText, "link")
-                            .Set(kContextMenuElementSurroundingText, "link")
-                            .Set(kContextMenuElementTagName, "P");
+  // Check that nothing was caught instead (no TagName).
+  auto expected_value =
+      base::Value::Dict().Set(kContextMenuElementRequestId, kRequestId);
 
   std::vector<const char*> ignored_keys;
   ignored_keys.push_back(kContextMenuElementTextOffset);
