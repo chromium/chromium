@@ -91,6 +91,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
+#include "chrome/browser/sync_file_system/sync_file_system_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -2273,13 +2274,17 @@ void FileManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 void FileManagerBrowserTestBase::SetUpOnMainThread() {
   const Options options = GetOptions();
 
-  // Must happen after the browser process is created because instantiating
-  // the factory will instantiate ExtensionSystemFactory which depends on
-  // ExtensionsBrowserClient setup in BrowserProcessImpl.
+  // Override factory to inject a test RemoteFileSyncService.
   sync_file_system::SyncFileSystemServiceFactory::GetInstance()
-      ->set_mock_remote_file_service(
-          std::make_unique<::testing::NiceMock<
-              sync_file_system::MockRemoteFileSyncService>>());
+      ->SetTestingFactory(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return sync_file_system::SyncFileSystemServiceFactory::
+                BuildWithRemoteFileSyncServiceForTest(
+                    context,
+                    std::make_unique<::testing::NiceMock<
+                        sync_file_system::MockRemoteFileSyncService>>());
+          }));
 
   extensions::MixinBasedExtensionApiTest::SetUpOnMainThread();
 

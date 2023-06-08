@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/local_change_processor.h"
@@ -55,13 +56,23 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
   }
 
   void SetUpOnMainThread() override {
+    extensions::ExtensionApiTest::SetUpOnMainThread();
+
+    // Override factory to inject a mock RemoteFileSyncService.
     // Must happen after the browser process is created because instantiating
     // the factory will instantiate ExtensionSystemFactory which depends on
     // ExtensionsBrowserClient setup in BrowserProcessImpl.
-    mock_remote_service_ = new ::testing::NiceMock<MockRemoteFileSyncService>;
-    SyncFileSystemServiceFactory::GetInstance()->set_mock_remote_file_service(
-        std::unique_ptr<RemoteFileSyncService>(mock_remote_service_));
-    extensions::ExtensionApiTest::SetUpOnMainThread();
+    SyncFileSystemServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(),
+        base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          auto remote_service = std::make_unique<
+              ::testing::NiceMock<MockRemoteFileSyncService>>();
+          mock_remote_service_ = remote_service.get();
+          return SyncFileSystemServiceFactory::
+              BuildWithRemoteFileSyncServiceForTest(context,
+                                                    std::move(remote_service));
+        }));
   }
 
   ::testing::NiceMock<MockRemoteFileSyncService>* mock_remote_service() {
