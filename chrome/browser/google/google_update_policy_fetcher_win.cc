@@ -28,8 +28,10 @@
 
 namespace {
 
+// TODO(crbug.com/1453285): Add unit tests for these GoogleUpdate policies.
 constexpr char kAutoUpdateCheckPeriodMinutes[] = "AutoUpdateCheckPeriodMinutes";
 constexpr char kDownloadPreference[] = "DownloadPreference";
+constexpr char kForceInstallApps[] = "ForceInstallApps";
 constexpr char kInstallPolicy[] = "InstallPolicy";
 constexpr char kProxyMode[] = "ProxyMode";
 constexpr char kProxyPacUrl[] = "ProxyPacUrl";
@@ -93,6 +95,13 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+    if (SUCCEEDED(policy_status->get_forceInstallApps(
+            install_static::IsSystemInstall(), &policy))) {
+      AddPolicy(kForceInstallApps, policy.Get(), *policies);
+    }
+  }
+  {
+    Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
     if (SUCCEEDED(policy_status->get_effectivePolicyForAppInstalls(app_id.Get(),
                                                                    &policy))) {
       AddPolicy(kInstallPolicy, policy.Get(), *policies);
@@ -143,23 +152,27 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_targetChannel(app_id.Get(), &policy)))
+    if (SUCCEEDED(policy_status->get_targetChannel(app_id.Get(), &policy))) {
       AddPolicy(kTargetChannel, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_proxyMode(&policy)))
+    if (SUCCEEDED(policy_status->get_proxyMode(&policy))) {
       AddPolicy(kProxyMode, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_proxyPacUrl(&policy)))
+    if (SUCCEEDED(policy_status->get_proxyPacUrl(&policy))) {
       AddPolicy(kProxyPacUrl, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_proxyServer(&policy)))
+    if (SUCCEEDED(policy_status->get_proxyServer(&policy))) {
       AddPolicy(kProxyServer, policy.Get(), *policies);
+    }
   }
 
   return policies;
@@ -205,6 +218,7 @@ policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
   return policy::PolicyConversions::PolicyToSchemaMap{{
       {kAutoUpdateCheckPeriodMinutes, policy::Schema()},
       {kDownloadPreference, policy::Schema()},
+      {kForceInstallApps, policy::Schema()},
       {kInstallPolicy, policy::Schema()},
       {kProxyMode, policy::Schema()},
       {kProxyPacUrl, policy::Schema()},
