@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 12, NextIndex: 46
+// NextMinVersion: 13, NextIndex: 47
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -745,6 +745,17 @@ interface CrosHealthdDiagnosticsService {
   //                routine.
   [MinVersion=11] RunPowerButtonRoutine@45(uint32 timeout_seconds)
       => (RunRoutineResponse response);
+
+  // Requests that the AudioDriver routine is created and started on the
+  // platform. This routine checks whether there is any errors about the audio
+  // driver.
+  // The availability of this routine can be determined by checking that
+  // kAudioDriver is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=12] RunAudioDriverRoutine@46() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
