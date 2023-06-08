@@ -243,6 +243,19 @@ ScriptValue CustomElementRegistry::get(const AtomicString& name) {
   return definition->GetConstructorForScript();
 }
 
+// https://html.spec.whatwg.org/C/#dom-customelementregistry-getname
+const AtomicString& CustomElementRegistry::getName(
+    V8CustomElementConstructor* constructor) {
+  if (!constructor) {
+    return g_null_atom;
+  }
+  CustomElementDefinition* definition = DefinitionForConstructor(constructor);
+  if (!definition) {
+    return g_null_atom;
+  }
+  return definition->Descriptor().GetName();
+}
+
 // https://html.spec.whatwg.org/C/#look-up-a-custom-element-definition
 // At this point, what the spec calls 'is' is 'name' from desc
 CustomElementDefinition* CustomElementRegistry::DefinitionFor(

@@ -1238,6 +1238,11 @@
       status: "stable",
     },
     {
+      // https://github.com/whatwg/html/pull/9195
+      name: "CustomElementsGetName",
+      status: "experimental",
+    },
+    {
       name: "Database",
       public: true,
       status: "stable",

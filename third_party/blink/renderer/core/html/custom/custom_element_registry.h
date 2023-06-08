@@ -48,6 +48,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                                   ExceptionState&);
 
   ScriptValue get(const AtomicString& name);
+  const AtomicString& getName(V8CustomElementConstructor* constructor);
   bool NameIsDefined(const AtomicString& name) const;
   CustomElementDefinition* DefinitionForName(const AtomicString& name) const;
   CustomElementDefinition* DefinitionForConstructor(
