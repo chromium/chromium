@@ -100,6 +100,8 @@ DeskBarViewBase* DeskBarController::GetDeskBarView(aura::Window* root) const {
 }
 
 void DeskBarController::OpenDeskBar(aura::Window* root) {
+  CHECK(root && root->IsRootWindow());
+
   DeskBarViewBase* bar_view = GetDeskBarView(root);
   if (!bar_view) {
     CreateDeskBar(root);
@@ -115,6 +117,8 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
 }
 
 void DeskBarController::CloseDeskBar(aura::Window* root) {
+  CHECK(root && root->IsRootWindow());
+
   DeskBarViewBase* bar_view = GetDeskBarView(root);
   CHECK(bar_view);
 
@@ -184,7 +188,8 @@ gfx::Rect DeskBarController::GetDeskBarWidgetBounds(aura::Window* root) const {
   gfx::Point bar_origin;
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:
-      bar_origin.set_x((work_area.width() - bar_size.width()) / 2);
+      bar_origin.set_x(shelf_bounds.x() +
+                       (work_area.width() - bar_size.width()) / 2);
       bar_origin.set_y(shelf_bounds.y() - kDeskBarShelfAndBarSpacing -
                        bar_size.height());
       break;

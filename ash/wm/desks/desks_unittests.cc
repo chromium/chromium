@@ -9126,18 +9126,14 @@ class DeskBarTest
     ClickOrPressOnPoint(view_center);
   }
 
-  void OpenDeskBar() {
+  void OpenDeskBar(aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
     switch (bar_type_) {
       case DeskBarViewBase::Type::kOverview:
         EnterOverview();
         break;
-      case DeskBarViewBase::Type::kDeskButton: {
-        auto* root = Shell::Get()->GetPrimaryRootWindow();
-        auto* desk_bar_controller =
-            DesksController::Get()->desk_bar_controller();
-        desk_bar_controller->OpenDeskBar(root);
+      case DeskBarViewBase::Type::kDeskButton:
+        DesksController::Get()->desk_bar_controller()->OpenDeskBar(root);
         break;
-      }
     }
   }
 
@@ -9152,21 +9148,25 @@ class DeskBarTest
     }
   }
 
-  void WaitForDeskBarAnimation() {
+  void WaitForDeskBarAnimation(
+      aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
     // TODO(yongshun): Find a better way to wait for animation.
     int wait_time = 1000;
     while (wait_time > 0 &&
-           (!GetDeskBarView() ||
-            GetDeskBarView()->is_bounds_animation_on_going())) {
+           (!GetDeskBarView(root, bar_type_) ||
+            GetDeskBarView(root, bar_type_)->is_bounds_animation_on_going())) {
       WaitForMilliseconds(100);
       wait_time -= 100;
     }
   }
 
-  DeskBarViewBase* GetDeskBarView() { return GetDeskBarView(bar_type_); }
+  DeskBarViewBase* GetDeskBarView(
+      aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
+    return GetDeskBarView(root, bar_type_);
+  }
 
-  DeskBarViewBase* GetDeskBarView(DeskBarViewBase::Type type) {
-    auto* root = Shell::Get()->GetPrimaryRootWindow();
+  DeskBarViewBase* GetDeskBarView(aura::Window* root,
+                                  DeskBarViewBase::Type type) {
     DeskBarViewBase* desk_bar_view = nullptr;
     switch (type) {
       case DeskBarViewBase::Type::kOverview:
@@ -9205,8 +9205,9 @@ class DeskBarTest
     auto* overview_session = overview_controller->overview_session();
     EXPECT_TRUE(overview_session &&
                 overview_session->IsShowingSavedDeskLibrary());
-    EXPECT_FALSE(GetDeskBarView(DeskBarViewBase::Type::kDeskButton));
-    EXPECT_TRUE(GetDeskBarView(DeskBarViewBase::Type::kOverview));
+    aura::Window* root = Shell::GetPrimaryRootWindow();
+    EXPECT_FALSE(GetDeskBarView(root, DeskBarViewBase::Type::kDeskButton));
+    EXPECT_TRUE(GetDeskBarView(root, DeskBarViewBase::Type::kOverview));
   }
 
   bool use_touch_gestures_;
@@ -9345,8 +9346,9 @@ TEST_P(DeskBarTest, Basic) {
     // appearance.
     OpenDeskBar();
     auto* desk_bar_view = GetDeskBarView();
+    ASSERT_TRUE(desk_bar_view && desk_bar_view->GetVisible());
     auto* desk_bar_widget = desk_bar_view->GetWidget();
-    EXPECT_TRUE(desk_bar_view && desk_bar_view->GetVisible());
+    ASSERT_TRUE(desk_bar_widget);
     if (bar_type_ == DeskBarViewBase::Type::kOverview) {
       EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
                   test.overview_bar_widget_bounds);
@@ -9383,6 +9385,36 @@ TEST_P(DeskBarTest, Basic) {
     }
     DeleteAllSavedDesks();
   }
+}
+
+// Tests that desk button desk bar shows with the correct bounds in secondary
+// display.
+TEST_P(DeskBarTest, BasicSecondaryDisplay) {
+  UpdateDisplay("800x600,800x600");
+
+  NewDesk();
+
+  aura::Window* root = Shell::Get()->GetAllRootWindows().back();
+  OpenDeskBar(root);
+
+  auto* desk_bar_view = GetDeskBarView(root);
+  ASSERT_TRUE(desk_bar_view && desk_bar_view->GetVisible());
+  auto* desk_bar_widget = desk_bar_view->GetWidget();
+  ASSERT_TRUE(desk_bar_widget);
+
+  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+    EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
+                gfx::Rect(800, 0, 800, 98));
+    EXPECT_THAT(desk_bar_view->bounds(), gfx::Rect(0, 0, 800, 98));
+    EXPECT_FALSE(desk_bar_view->IsZeroState());
+  } else {
+    EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
+                gfx::Rect(800, 446, 800, 98));
+    EXPECT_THAT(desk_bar_view->bounds(), gfx::Rect(0, 0, 800, 98));
+    EXPECT_FALSE(desk_bar_view->IsZeroState());
+  }
+
+  CloseDeskBar();
 }
 
 // Tests that desk button desk bar shows the scroll arrow buttons when overflow
