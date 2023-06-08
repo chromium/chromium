@@ -165,8 +165,8 @@ export function testMetadataCacheSetUpdateEvent() {
   assertEquals(1, event.entries.length);
   assertEquals(entryA, event.entries[0]);
   assertTrue(event.entriesMap.has(entryA.toURL()));
+  assertTrue(event.updatedNames[0].has('propertyA'));
   assertFalse(event.entriesMap.has(entryB.toURL()));
-  assertFalse(event.names.has('propertyA'));
 }
 
 export function testMetadataCacheSetClearAll() {

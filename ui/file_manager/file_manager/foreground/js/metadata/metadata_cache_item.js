@@ -61,10 +61,10 @@ export class MetadataCacheItem {
    * Feeds the result of startRequests.
    * @param {number} requestId Request ID passed when calling startRequests.
    * @param {!MetadataItem} typedObject Map of property name and value.
-   * @return {boolean} Whether at least one property is updated or not.
+   * @return {!Set<string>} An array of property names that have changed.
    */
   storeProperties(requestId, typedObject) {
-    let changed = false;
+    const changedNames = new Set();
     const object = /** @type {!Object} */ (typedObject);
     for (const name in object) {
       if (/.Error$/.test(name) && object[name]) {
@@ -83,13 +83,13 @@ export class MetadataCacheItem {
               MetadataCacheItemPropertyState.FULFILLED) {
         continue;
       }
-      changed = true;
+      changedNames.add(name);
       this.properties_[name].requestId = requestId;
       this.properties_[name].value = object[name];
       this.properties_[name].error = object[name + 'Error'];
       this.properties_[name].state = MetadataCacheItemPropertyState.FULFILLED;
     }
-    return changed;
+    return changedNames;
   }
 
   /**
