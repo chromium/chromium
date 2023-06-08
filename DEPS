@@ -529,11 +529,6 @@ allowed_hosts = [
 ]
 
 deps = {
-  # TODO(crbug.com/1447924): remove buildtools/clang_format path
-  'src/buildtools/clang_format/script':
-    Var('chromium_git') +
-    '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
-    Var('clang_format_revision'),
   'src/third_party/clang-format/script':
     Var('chromium_git') +
     '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
