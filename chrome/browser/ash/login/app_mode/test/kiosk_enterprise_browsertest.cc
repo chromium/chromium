@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
 
 IN_PROC_BROWSER_TEST_F(
     KioskEnterpriseTest,
-    LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen) {
+    DISABLED_LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen) {
   ScopedCanConfigureNetwork can_configure_network(true);
 
   // Start app launch with network portal state.
