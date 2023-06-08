@@ -2017,6 +2017,7 @@ crbug.com/1218715 external/wpt/content-security-policy/reporting-api/reporting-a
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Crash Failure Pass Timeout ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
+crbug.com/1072022 [ Mac13 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
 crbug.com/1072022 [ Mac10.13 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Mac10.14 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Mac10.15 Release ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
