@@ -1733,7 +1733,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Grant the optional permissions to the extension.
   {
-    PermissionsRequestFunction::SetAutoConfirmForTests(true);
+    auto dialog_action_reset =
+        PermissionsRequestFunction::SetDialogActionForTests(
+            PermissionsRequestFunction::DialogAction::kAutoConfirm);
     const char kPermissionGrantingScriptTemplate[] = R"(
         new Promise(resolve => {
           chrome.permissions.request(
@@ -1744,7 +1746,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     std::string script = content::JsReplace(kPermissionGrantingScriptTemplate,
                                             cross_site_origin.GetURL());
     ASSERT_EQ(true, content::EvalJs(test_frame, script));
-    PermissionsRequestFunction::SetAutoConfirmForTests(false);
   }
 
   // Performs a cross-origin fetch from the background page and verify that it

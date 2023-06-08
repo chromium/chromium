@@ -2714,7 +2714,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
   EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
       mojom::APIPermissionID::kStorage));
 
-  PermissionsRequestFunction::SetAutoConfirmForTests(true);
+  auto dialog_action_reset =
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kAutoConfirm);
 
   ResultCatcher catcher;
   // Click on browser action to start the test.

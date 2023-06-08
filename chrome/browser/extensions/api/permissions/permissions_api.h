@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_H_
 
+#include "base/auto_reset.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -50,6 +51,20 @@ class PermissionsRemoveFunction : public ExtensionFunction {
 // chrome.permissions.request
 class PermissionsRequestFunction : public ExtensionFunction {
  public:
+  // An action to take for a permissions prompt, if any. This allows tests to
+  // override prompt behavior.
+  enum class DialogAction {
+    // The dialog will show normally.
+    kDefault,
+    // The dialog will not show and the grant will be auto-accepted.
+    kAutoConfirm,
+    // The dialog will not show and the grant will be auto-rejected.
+    kAutoReject,
+    // The dialog will not show and the grant can be resolved via
+    // the `ResolvePendingDialogForTests()` method.
+    kProgrammatic,
+  };
+
   DECLARE_EXTENSION_FUNCTION("permissions.request", PERMISSIONS_REQUEST)
 
   PermissionsRequestFunction();
@@ -59,8 +74,9 @@ class PermissionsRequestFunction : public ExtensionFunction {
       delete;
 
   // FOR TESTS ONLY to bypass the confirmation UI.
-  static void SetAutoConfirmForTests(bool should_proceed);
-  static void ResetAutoConfirmForTests();
+  [[nodiscard]] static base::AutoReset<DialogAction> SetDialogActionForTests(
+      DialogAction dialog_action);
+  static void ResolvePendingDialogForTests(bool accept_dialog);
   static void SetIgnoreUserGestureForTests(bool ignore);
 
   // Returns the set of permissions that the user was prompted for, if any.
@@ -71,6 +87,7 @@ class PermissionsRequestFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+  bool ShouldKeepWorkerAliveIndefinitely() override;
 
  private:
   void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);

@@ -166,7 +166,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
     };
   )";
 
-  PermissionsRequestFunction::SetAutoConfirmForTests(true);
+  auto dialog_action_reset =
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kAutoConfirm);
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);

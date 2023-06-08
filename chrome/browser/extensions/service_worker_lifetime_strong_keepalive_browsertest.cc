@@ -9,6 +9,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -21,6 +22,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -31,6 +33,7 @@ namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kTestOpenerExtensionId[] = "adpghjkjicpfhcjicmiifjpbalaildpo";
 constexpr char kTestOpenerExtensionUrl[] =
     "chrome-extension://adpghjkjicpfhcjicmiifjpbalaildpo/";
@@ -46,6 +49,7 @@ constexpr char kTestReceiverExtensionRelativePath[] =
 constexpr char kPersistentPortConnectedMessage[] = "Persistent port connected";
 constexpr char kPersistentPortDisconnectedMessage[] =
     "Persistent port disconnected";
+#endif
 
 content::ServiceWorkerContext* GetServiceWorkerContext(
     content::BrowserContext* browser_context) {
@@ -149,6 +153,9 @@ class ServiceWorkerLifetimeStrongKeepaliveBrowsertest
   base::SimpleTestTickClock tick_clock_opener;
   base::SimpleTestTickClock tick_clock_receiver;
 };
+
+// The following tests are only relevant on ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Loads two extensions that open a persistent port connection between each
 // other and tests that their service worker will stop after kRequestTimeout (5
@@ -377,6 +384,82 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
                                            &tick_clock_opener);
   TriggerTimeoutAndCheckStopped(context, service_worker_opener_id);
   sw_observer_opener_extension.WaitForWorkerStop();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Tests that certain API functions can keep the service worker alive
+// indefinitely.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
+                       StrongKeepalivesForCertainExtensionFunctions) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test extension",
+           "manifest_version": 3,
+           "background": {"service_worker": "background.js"},
+           "version": "0.1",
+           "optional_permissions": ["tabs"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// blank");
+
+  // Load up the extension and wait for the worker to start.
+  service_worker_test_utils::TestRegistrationObserver registration_observer(
+      profile());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  // We explicitly wait for the worker to be activated. Otherwise, the
+  // activation event might still be running when we advance the timer, causing
+  // the worker to be killed for the activation event timing out.
+  registration_observer.WaitForWorkerActivated();
+  int64_t version_id = registration_observer.GetServiceWorkerVersionId();
+
+  // Inject a script that will trigger chrome.permissions.request() and then
+  // return. When permissions.request() resolves, it will send a message.
+  static constexpr char kTriggerPrompt[] =
+      R"(chrome.test.runWithUserGesture(() => {
+           chrome.permissions.request({permissions: ['tabs']}).then(() => {
+             chrome.test.sendMessage('resolved');
+           });
+           chrome.test.sendScriptResult('success');
+         });)";
+
+  // Programmatically control the permissions request result. This allows us
+  // to control when it is resolved.
+  auto dialog_action_reset =
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kProgrammatic);
+
+  base::Value result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), kTriggerPrompt,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_EQ("success", result);
+
+  content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
+
+  // Right now, the permissions request should be pending. Since
+  // `permissions.request()` is specified as a function that can keep the
+  // extension worker alive indefinitely, advancing the clock and triggering the
+  // timeout should not result in a worker kill.
+  content::AdvanceClockAfterRequestTimeout(context, version_id,
+                                           &tick_clock_opener);
+  TriggerTimeoutAndCheckActive(context, version_id);
+
+  {
+    ExtensionTestMessageListener listener("resolved");
+    // Resolve the pending dialog and wait for the resulting message.
+    PermissionsRequestFunction::ResolvePendingDialogForTests(false);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    // We also run a run loop here so that the keepalive from the
+    // test.sendMessage() call is resolved.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Advance the timer again. This should result in the worker being stopped,
+  // since the permissions.request() function call is now completed.
+  content::AdvanceClockAfterRequestTimeout(context, version_id,
+                                           &tick_clock_opener);
+  TriggerTimeoutAndCheckStopped(context, version_id);
 }
 
 }  // namespace extensions

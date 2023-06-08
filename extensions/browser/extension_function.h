@@ -397,6 +397,15 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // This can be null.
   content::WebContents* GetSenderWebContents();
 
+  // Returns whether this API call should allow the extension service worker (if
+  // any) to stay alive beyond the typical 5 minute-per-task limit (i.e.,
+  // indicates this API is expected to potentially take longer than 5 minutes
+  // to execute).
+  // The default implementation returns false. In general, this should only
+  // return true for APIs that trigger some sort of user prompt. If you are
+  // unsure, please consult the extensions team.
+  virtual bool ShouldKeepWorkerAliveIndefinitely();
+
   // Sets did_respond_ to true so that the function won't DCHECK if it never
   // sends a response. Typically, this shouldn't be used, even in testing. It's
   // only for when you want to test functionality that doesn't exercise the

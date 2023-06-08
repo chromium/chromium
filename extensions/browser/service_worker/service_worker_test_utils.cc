@@ -33,6 +33,10 @@ void TestRegistrationObserver::WaitForWorkerStart() {
   started_run_loop_.Run();
 }
 
+void TestRegistrationObserver::WaitForWorkerActivated() {
+  activated_run_loop_.Run();
+}
+
 int TestRegistrationObserver::GetCompletedCount(const GURL& scope) const {
   const auto it = registrations_completed_map_.find(scope);
   return it == registrations_completed_map_.end() ? 0 : it->second;
@@ -54,6 +58,11 @@ void TestRegistrationObserver::OnVersionStartedRunning(
     const content::ServiceWorkerRunningInfo& running_info) {
   running_version_id_ = version_id;
   started_run_loop_.Quit();
+}
+
+void TestRegistrationObserver::OnVersionActivated(int64_t version_id,
+                                                  const GURL& scope) {
+  activated_run_loop_.Quit();
 }
 
 void TestRegistrationObserver::OnDestruct(

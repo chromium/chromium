@@ -593,6 +593,10 @@ content::WebContents* ExtensionFunction::GetSenderWebContents() {
              : nullptr;
 }
 
+bool ExtensionFunction::ShouldKeepWorkerAliveIndefinitely() {
+  return false;
+}
+
 void ExtensionFunction::OnServiceWorkerAck() {
   // Derived classes must override this if they require and implement an
   // ACK from the Service Worker.

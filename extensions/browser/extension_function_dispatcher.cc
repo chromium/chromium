@@ -638,10 +638,13 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   // it's executing an API function.
   if (IsRequestFromServiceWorker(params)) {
     CHECK(function->worker_id());
+    const content::ServiceWorkerExternalRequestTimeoutType timeout_type =
+        function->ShouldKeepWorkerAliveIndefinitely()
+            ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
+            : content::ServiceWorkerExternalRequestTimeoutType::kDefault;
     std::string uuid = process_manager->IncrementServiceWorkerKeepaliveCount(
-        *function->worker_id(),
-        content::ServiceWorkerExternalRequestTimeoutType::kDefault,
-        Activity::API_FUNCTION, function->name());
+        *function->worker_id(), timeout_type, Activity::API_FUNCTION,
+        function->name());
     function->set_request_uuid(std::move(uuid));
   } else {
     process_manager->IncrementLazyKeepaliveCount(

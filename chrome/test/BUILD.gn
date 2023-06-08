@@ -3303,6 +3303,7 @@ if (!is_android) {
         "../browser/extensions/sandboxed_pages_apitest.cc",
         "../browser/extensions/script_executor_browsertest.cc",
         "../browser/extensions/service_worker_apitest.cc",
+        "../browser/extensions/service_worker_lifetime_strong_keepalive_browsertest.cc",
         "../browser/extensions/service_worker_registration_apitest.cc",
         "../browser/extensions/shared_module_apitest.cc",
         "../browser/extensions/shared_worker_apitest.cc",
@@ -3491,7 +3492,6 @@ if (!is_android) {
           "../browser/extensions/api/video_capture/video_capture_apitest_chromeos.cc",
           "../browser/extensions/api/virtual_keyboard_private/virtual_keyboard_private_apitest.cc",
           "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
-          "../browser/extensions/service_worker_lifetime_strong_keepalive_browsertest.cc",
         ]
 
         deps += [

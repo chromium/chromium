@@ -42,12 +42,9 @@ const char kNotInManifestPermissionsError[] =
 const char kUserGestureRequiredError[] =
     "This function must be called during a user gesture";
 
-enum AutoConfirmForTest {
-  DO_NOT_SKIP = 0,
-  PROCEED,
-  ABORT
-};
-AutoConfirmForTest auto_confirm_for_tests = DO_NOT_SKIP;
+PermissionsRequestFunction::DialogAction g_dialog_action =
+    PermissionsRequestFunction::DialogAction::kDefault;
+PermissionsRequestFunction* g_pending_request_function = nullptr;
 bool ignore_user_gesture_for_tests = false;
 
 }  // namespace
@@ -175,12 +172,27 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
 }
 
 // static
-void PermissionsRequestFunction::SetAutoConfirmForTests(bool should_proceed) {
-  auto_confirm_for_tests = should_proceed ? PROCEED : ABORT;
+base::AutoReset<PermissionsRequestFunction::DialogAction>
+PermissionsRequestFunction::SetDialogActionForTests(
+    DialogAction dialog_action) {
+  return base::AutoReset<PermissionsRequestFunction::DialogAction>(
+      &g_dialog_action, dialog_action);
 }
 
-void PermissionsRequestFunction::ResetAutoConfirmForTests() {
-  auto_confirm_for_tests = DO_NOT_SKIP;
+// static
+void PermissionsRequestFunction::ResolvePendingDialogForTests(
+    bool accept_dialog) {
+  CHECK(g_pending_request_function);
+  PermissionsRequestFunction* pending_function = g_pending_request_function;
+  // Clear out the pending function now. After Release() below, it's unsafe to
+  // use.
+  g_pending_request_function = nullptr;
+
+  ExtensionInstallPrompt::DoneCallbackPayload result(
+      accept_dialog ? ExtensionInstallPrompt::Result::ACCEPTED
+                    : ExtensionInstallPrompt::Result::USER_CANCELED);
+  pending_function->OnInstallPromptDone(result);
+  pending_function->Release();  // Balanced in Run().
 }
 
 // static
@@ -191,7 +203,10 @@ void PermissionsRequestFunction::SetIgnoreUserGestureForTests(
 
 PermissionsRequestFunction::PermissionsRequestFunction() {}
 
-PermissionsRequestFunction::~PermissionsRequestFunction() {}
+PermissionsRequestFunction::~PermissionsRequestFunction() {
+  CHECK_NE(g_pending_request_function, this)
+      << "Pending request function was never resolved!";
+}
 
 ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   if (!user_gesture() && !ignore_user_gesture_for_tests &&
@@ -201,8 +216,9 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 
   gfx::NativeWindow native_window =
       ChromeExtensionFunctionDetails(this).GetNativeWindowForUI();
-  if (!native_window && auto_confirm_for_tests == DO_NOT_SKIP)
+  if (!native_window && g_dialog_action == DialogAction::kDefault) {
     return RespondNow(Error("Could not find an active window."));
+  }
 
   absl::optional<api::permissions::Request::Params> params =
       api::permissions::Request::Params::Create(args());
@@ -324,14 +340,20 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 
   // Otherwise, we have to prompt the user (though we might "autoconfirm" for a
   // test.
-  if (auto_confirm_for_tests != DO_NOT_SKIP) {
+  if (g_dialog_action != DialogAction::kDefault) {
     prompted_permissions_for_testing_ = total_new_permissions->Clone();
-    if (auto_confirm_for_tests == PROCEED) {
+    if (g_dialog_action == DialogAction::kAutoConfirm) {
       OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
           ExtensionInstallPrompt::Result::ACCEPTED));
-    } else if (auto_confirm_for_tests == ABORT) {
+    } else if (g_dialog_action == DialogAction::kAutoReject) {
       OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
           ExtensionInstallPrompt::Result::USER_CANCELED));
+    } else {
+      CHECK_EQ(g_dialog_action, DialogAction::kProgrammatic);
+      // A test will let us know when to resolve the prompt. Add a reference to
+      // wait.
+      AddRef();  // Balanced in ResolvePendingDialogForTests().
+      g_pending_request_function = this;
     }
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
@@ -348,6 +370,13 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 
   // ExtensionInstallPrompt::ShowDialog() can call the response synchronously.
   return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+bool PermissionsRequestFunction::ShouldKeepWorkerAliveIndefinitely() {
+  // `permissions.request()` may trigger a user prompt. In this case, we allow
+  // the extension service worker to be kept alive past the typical 5 minute
+  // limit per-task, since it may be blocked on user action.
+  return true;
 }
 
 void PermissionsRequestFunction::OnInstallPromptDone(

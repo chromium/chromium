@@ -24,6 +24,8 @@ namespace extensions {
 namespace service_worker_test_utils {
 
 // An observer for service worker registration events.
+// Note: This class only works well when there is a *single* service worker
+// being registered. We could extend this to track multiple workers.
 class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
  public:
   using RegistrationsMap = std::map<GURL, int>;
@@ -41,6 +43,10 @@ class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
   // Wait for OnVersionStartedRunning event is triggered, so that the observer
   // captures the running service worker version id.
   void WaitForWorkerStart();
+
+  // Waits for the OnVersionActivated() notification from the
+  // ServiceWorkerContext.
+  void WaitForWorkerActivated();
 
   // Returns the number of completed registrations for |scope|.
   int GetCompletedCount(const GURL& scope) const;
@@ -60,11 +66,13 @@ class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
   void OnVersionStartedRunning(
       int64_t version_id,
       const content::ServiceWorkerRunningInfo& running_info) override;
+  void OnVersionActivated(int64_t version_id, const GURL& scope) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   RegistrationsMap registrations_completed_map_;
   base::RunLoop stored_run_loop_;
   base::RunLoop started_run_loop_;
+  base::RunLoop activated_run_loop_;
   absl::optional<int64_t> running_version_id_;
   raw_ptr<content::ServiceWorkerContext> context_ = nullptr;
 };

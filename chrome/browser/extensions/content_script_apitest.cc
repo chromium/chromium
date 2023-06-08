@@ -218,7 +218,9 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   // The optional "*://*/*" permission is requested after verifying that
   // content script insertion solely depends on content_scripts[*].matches.
   // The permission is needed for chrome.tabs.executeScript tests.
-  PermissionsRequestFunction::SetAutoConfirmForTests(true);
+  auto dialog_action_reset =
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kAutoConfirm);
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
 
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -662,8 +664,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptExtensionAPIs) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptPermissionsApi) {
+  base::AutoReset<PermissionsRequestFunction::DialogAction> dialog_action =
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kAutoConfirm);
   extensions::PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
-  extensions::PermissionsRequestFunction::SetAutoConfirmForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/permissions")) << message_;
 }
