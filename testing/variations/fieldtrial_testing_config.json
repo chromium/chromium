@@ -8583,6 +8583,21 @@
             ]
         }
     ],
+    "MsaaSettingsMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "DetectHiDpiForMsaa",
+                    "enable_features": [
+                        "DetectHiDpiForMsaa"
+                    ]
+                }
+            ]
+        }
+    ],
     "NaCLGPURefactorings": [
         {
             "platforms": [
@@ -13714,7 +13729,6 @@
                 "fuchsia",
                 "ios",
                 "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [
