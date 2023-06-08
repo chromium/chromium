@@ -340,9 +340,8 @@ class RlweOprf {
   void OnRequestDone(CompletionCallback completion_callback,
                      DMServerJobResult result) {
     // Handle errors
-    base::UmaHistogramEnumeration(
-        kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode, result.dm_status,
-        static_cast<policy::DeviceManagementStatus>(DM_STATUS_SERVICE_MAX + 1));
+    base::UmaHistogramSparse(
+        kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode, result.dm_status);
     base::UmaHistogramSparse(
         kUMAStateDeterminationPsmRlweOprfRequestNetworkErrorCode,
         -result.net_error);
@@ -440,9 +439,9 @@ class RlweQuery {
       CompletionCallback completion_callback,
       DMServerJobResult result) {
     // Handle errors
-    base::UmaHistogramEnumeration(
-        kUMAStateDeterminationPsmRlweQueryRequestDmStatusCode, result.dm_status,
-        static_cast<policy::DeviceManagementStatus>(DM_STATUS_SERVICE_MAX + 1));
+    base::UmaHistogramSparse(
+        kUMAStateDeterminationPsmRlweQueryRequestDmStatusCode,
+        result.dm_status);
     base::UmaHistogramSparse(
         kUMAStateDeterminationPsmRlweQueryRequestNetworkErrorCode,
         -result.net_error);
@@ -555,9 +554,8 @@ class EnrollmentState {
   void OnRequestDone(CompletionCallback completion_callback,
                      DMServerJobResult result) {
     // Handle errors
-    base::UmaHistogramEnumeration(
-        kUMAStateDeterminationStateRequestDmStatusCode, result.dm_status,
-        static_cast<policy::DeviceManagementStatus>(DM_STATUS_SERVICE_MAX + 1));
+    base::UmaHistogramSparse(kUMAStateDeterminationStateRequestDmStatusCode,
+                             result.dm_status);
     base::UmaHistogramSparse(kUMAStateDeterminationStateRequestNetworkErrorCode,
                              -result.net_error);
     switch (result.dm_status) {

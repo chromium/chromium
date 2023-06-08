@@ -31465,7 +31465,18 @@ Called by update_document_policy_enum.py.-->
   <int value="12" label="SERVICE_MISSING_LICENSES"/>
   <int value="13" label="SERVICE_DEPROVISIONED"/>
   <int value="14" label="SERVICE_DOMAIN_MISMATCH"/>
+  <int value="15" label="CANNOT_SIGN_REQUEST"/>
+  <int value="16" label="REQUEST_TOO_LARGE"/>
+  <int value="17" label="SERVICE_TOO_MANY_REQUESTS"/>
+  <int value="18" label="SERVICE_DEVICE_NEEDS_RESET"/>
   <int value="902" label="SERVICE_POLICY_NOT_FOUND"/>
+  <int value="904" label="SERVICE_ARC_DISABLED"/>
+  <int value="905" label="SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE"/>
+  <int value="906"
+      label="SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL"/>
+  <int value="907" label="SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED"/>
+  <int value="908" label="SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE"/>
+  <int value="909" label="SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK"/>
 </enum>
 
 <enum name="EnterpriseDlpPolicyCrOSAdaptorError">
