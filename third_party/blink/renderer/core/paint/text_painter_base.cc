@@ -114,7 +114,7 @@ sk_sp<SkDrawLooper> TextPainterBase::CreateDrawLooper(
     for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
       const ShadowData& shadow = shadow_list->Shadows()[i];
       draw_looper_builder.AddShadow(
-          shadow.Location().OffsetFromOrigin(), shadow.Blur(),
+          shadow.Offset(), shadow.Blur(),
           shadow.GetColor().Resolve(current_color, color_scheme),
           DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
     }

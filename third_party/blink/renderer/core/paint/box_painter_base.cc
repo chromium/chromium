@@ -160,7 +160,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     if (shadow.Style() != ShadowStyle::kNormal)
       continue;
 
-    gfx::Vector2dF shadow_offset = shadow.Location().OffsetFromOrigin();
+    gfx::Vector2dF shadow_offset = shadow.Offset();
     float shadow_blur = shadow.Blur();
     float shadow_spread = shadow.Spread();
 
@@ -279,7 +279,7 @@ inline gfx::RectF AreaCastingShadowInHole(const gfx::RectF& hole_rect,
     bounds.Outset(-shadow.Spread());
 
   gfx::RectF offset_bounds = bounds;
-  offset_bounds.Offset(-shadow.Location().OffsetFromOrigin());
+  offset_bounds.Offset(-shadow.Offset());
   return gfx::UnionRects(bounds, offset_bounds);
 }
 
@@ -353,8 +353,7 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     }
 
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow.Location().OffsetFromOrigin(),
-                                  shadow.Blur(), shadow_color,
+    draw_looper_builder.AddShadow(shadow.Offset(), shadow.Blur(), shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());

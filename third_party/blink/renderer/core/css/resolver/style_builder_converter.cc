@@ -1985,8 +1985,8 @@ ShadowData StyleBuilderConverter::ConvertShadow(
     StyleResolverState* state,
     const CSSValue& value) {
   const auto& shadow = To<CSSShadowValue>(value);
-  float x = shadow.x->ComputeLength<float>(conversion_data);
-  float y = shadow.y->ComputeLength<float>(conversion_data);
+  const gfx::Vector2dF offset(shadow.x->ComputeLength<float>(conversion_data),
+                              shadow.y->ComputeLength<float>(conversion_data));
   float blur =
       shadow.blur ? shadow.blur->ComputeLength<float>(conversion_data) : 0;
   float spread =
@@ -2026,8 +2026,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
       }
     }
   }
-
-  return ShadowData(gfx::PointF(x, y), blur, spread, shadow_style, color);
+  return ShadowData(offset, blur, spread, shadow_style, color);
 }
 
 scoped_refptr<ShadowList> StyleBuilderConverter::ConvertShadowList(

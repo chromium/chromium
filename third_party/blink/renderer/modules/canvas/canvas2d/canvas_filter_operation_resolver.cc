@@ -325,8 +325,8 @@ DropShadowFilterOperation* ResolveDropShadow(
   }
 
   return MakeGarbageCollected<DropShadowFilterOperation>(
-      ShadowData(gfx::PointF(dx, dy), blur, /*spread=*/0, ShadowStyle::kNormal,
-                 std::move(flood_color), opacity));
+      ShadowData(gfx::Vector2dF(dx, dy), blur, /*spread=*/0,
+                 ShadowStyle::kNormal, std::move(flood_color), opacity));
 }
 
 // https://drafts.fxtf.org/filter-effects/#feTurbulenceElement

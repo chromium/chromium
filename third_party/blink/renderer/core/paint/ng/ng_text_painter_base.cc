@@ -83,7 +83,7 @@ void NGTextPainterBase::PaintUnderOrOverLineDecorationShadows(
       continue;
     }
 
-    const gfx::Vector2dF& offset = shadow.Location().OffsetFromOrigin();
+    const gfx::Vector2dF& offset = shadow.Offset();
 
     float blur = shadow.Blur();
     DCHECK_GE(blur, 0);
