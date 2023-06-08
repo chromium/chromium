@@ -2052,7 +2052,7 @@ GLES2DecoderPassthroughImpl::GetTranslator(GLenum type) {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void GLES2DecoderPassthroughImpl::BindOnePendingImage(
     GLenum target,
     TexturePassthrough* texture) {

@@ -1893,7 +1893,7 @@ void Texture::SetBoundLevelImage(GLenum target,
   SetLevelImageInternal(target, level, image, ImageState::BOUND);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void Texture::SetUnboundLevelImage(GLenum target,
                                    GLint level,
                                    gl::GLImage* image) {
@@ -1914,7 +1914,7 @@ void Texture::BindToServiceId(GLuint service_id) {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 void Texture::MarkLevelImageBound(GLenum target, GLint level) {
   DCHECK_GE(level, 0);
   size_t face_index = GLES2Util::GLTargetToFaceIndex(target);
@@ -1953,7 +1953,7 @@ gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
   return info->image.get();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool Texture::HasUnboundLevelImage(GLint target, GLint level) const {
   const LevelInfo* info = GetLevelInfo(target, level);
   if (!info) {
@@ -2608,7 +2608,7 @@ void TextureManager::SetBoundLevelImage(TextureRef* ref,
   ref->texture()->SetBoundLevelImage(target, level, image);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void TextureManager::SetUnboundLevelImage(TextureRef* ref,
                                           GLenum target,
                                           GLint level,

@@ -70,11 +70,6 @@ GLTexturePassthroughDXGISwapChainBufferRepresentation::
 
 bool GLTexturePassthroughDXGISwapChainBufferRepresentation::BeginAccess(
     GLenum mode) {
-  // Assume that BindTexImage has already been called for us.
-  auto texture =
-      GLTexturePassthroughImageRepresentation::GetTexturePassthrough();
-  DCHECK(!texture->is_bind_pending());
-
   return true;
 }
 

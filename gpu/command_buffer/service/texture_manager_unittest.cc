@@ -1703,7 +1703,7 @@ TEST_F(TextureTest, GetLevelImage) {
   EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(TextureTest, MarkLevelImageBound) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 1,

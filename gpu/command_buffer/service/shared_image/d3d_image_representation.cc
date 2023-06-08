@@ -42,13 +42,6 @@ void* GLTexturePassthroughD3DImageRepresentation::GetEGLImage() {
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-    // Clear any textures that are marked as needing binding (note that there is
-    // no actual "binding" action that is necessary to take here, as none of the
-    // GLImages that can be attached to a texture when it is marked as binding
-    // actually need to be bound lazily to the texture).
-    GetTexturePassthrough(plane)->clear_bind_pending();
-  }
   bool write_access = mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   return d3d_image_backing->BeginAccessD3D11(write_access);
 }

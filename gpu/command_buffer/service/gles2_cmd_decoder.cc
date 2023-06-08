@@ -2217,7 +2217,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
       const char* function_name, GLuint max_vertex_accessed, bool* simulated);
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   // If the texture has an image but that image is not bound to the texture,
   // this will attempt to bind it. texture_unit is the texture unit it should
   // be bound to, or 0 if it doesn't matter - setting it to 0 will cause the
@@ -8453,7 +8453,7 @@ void GLES2DecoderImpl::DoFramebufferTexture2DCommon(
     return;
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (texture_ref)
     DoBindTexImageIfNeeded(texture_ref->texture(), textarget, 0);
 #endif
@@ -10380,7 +10380,7 @@ void GLES2DecoderImpl::PerformanceWarning(
                      std::string("PERFORMANCE WARNING: ") + msg);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
                                               GLenum textarget,
                                               GLuint texture_unit) {
@@ -10517,7 +10517,7 @@ bool GLES2DecoderImpl::PrepareTexturesForRender(bool* textures_set,
           }
         }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
         if (textarget != GL_TEXTURE_CUBE_MAP) {
           Texture* texture = texture_ref->texture();
           if (DoBindTexImageIfNeeded(texture, textarget,
@@ -17649,7 +17649,7 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
                                        dest_level, true);
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   DoBindTexImageIfNeeded(source_texture, source_target, 0);
 #endif
 
@@ -17815,7 +17815,7 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
                                        dest_level, true);
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   DoBindTexImageIfNeeded(source_texture, source_target, 0);
 #endif
 

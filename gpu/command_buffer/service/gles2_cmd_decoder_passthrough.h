@@ -521,10 +521,10 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   error::Error CheckSwapBuffersResult(gfx::SwapResult result,
                                       const char* function_name);
 
-  // Textures can be marked as needing binding only on Windows/Mac, so all
+  // Textures can be marked as needing binding only on Apple, so all
   // functionality related to binding textures is relevant only on those
   // platforms.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Issue BindTexImage calls for |passthrough_texture|, if
   // they're pending.
   void BindOnePendingImage(GLenum target, TexturePassthrough* texture);
@@ -724,7 +724,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     GLuint unit;
     base::WeakPtr<TexturePassthrough> texture;
   };
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   std::vector<TexturePendingBinding> textures_pending_binding_;
 #endif
 
