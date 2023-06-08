@@ -120,6 +120,8 @@ std::string DeskTemplate::ToDebugString() const {
   result += "Time created: " + base::TimeFormatHTTP(created_time_) + "\n";
   result += "Time updated: " + base::TimeFormatHTTP(updated_time_) + "\n";
   result += "launch id: " + base::NumberToString(launch_id_) + "\n";
+  result += "auto launch: ";
+  result += should_launch_on_startup_ ? "yes\n" : "no\n";
 
   // Converting to value and printing the debug string may be more
   // intensive but gives more complete information which increases

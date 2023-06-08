@@ -175,6 +175,10 @@ void SavedDeskControllerTestApi::SetAdminTemplate(
   saved_desk_controller_->SetAdminTemplateForTesting(std::move(admin_template));
 }
 
+void SavedDeskControllerTestApi::ResetAutoLaunch() {
+  saved_desk_controller_->ResetAutoLaunchForTesting();
+}
+
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     const OverviewGrid* overview_grid) {
   SavedDeskLibraryView* saved_desk_library_view =

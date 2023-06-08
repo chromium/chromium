@@ -169,6 +169,8 @@ class SavedDeskControllerTestApi {
 
   void SetAdminTemplate(std::unique_ptr<DeskTemplate> admin_template);
 
+  void ResetAutoLaunch();
+
  private:
   raw_ptr<SavedDeskController, ExperimentalAsh> saved_desk_controller_;
 };

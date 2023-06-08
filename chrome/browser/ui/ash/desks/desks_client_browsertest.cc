@@ -3314,6 +3314,8 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
     };
 
     std::vector<WindowDefinition> windows;
+
+    bool should_launch_on_startup = false;
   };
 
   // Converts a `gfx::Rect` to a list, as expected by `RestoreData`.
@@ -3352,9 +3354,14 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
     base::Value::Dict root;
     root.Set(app_constants::kChromeAppId, std::move(windows));
 
+    // Policy for the admin template. The contents doesn't matter for the test
+    // as long as the root is a dict.
+    base::Value policy(base::Value::Dict{});
+
     auto admin_template = std::make_unique<ash::DeskTemplate>(
         base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kPolicy,
-        "Admin template", base::Time::Now(), ash::DeskTemplateType::kTemplate);
+        "Admin template", base::Time::Now(), ash::DeskTemplateType::kTemplate,
+        definition.should_launch_on_startup, std::move(policy));
 
     admin_template->set_desk_restore_data(
         std::make_unique<app_restore::RestoreData>(
@@ -3556,4 +3563,48 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateHistograms) {
   histogram_tester.ExpectBucketCount(ash::kAdminTemplateTabCountHistogramName,
                                      3, 1);
   histogram_tester.ExpectTotalCount(ash::kLaunchAdminTemplateHistogramName, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateAutoLaunch) {
+  auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
+  ash::SavedDeskControllerTestApi(saved_desk_controller).ResetAutoLaunch();
+
+  // Add an auto-launch entry to the model.
+  auto admin_template = CreateAdminTemplate(
+      {.windows = {{.urls = {kExampleUrl1},
+                    .bounds = gfx::Rect(100, 50, 400, 300)}},
+       .should_launch_on_startup = true});
+  ASSERT_NE(admin_template, nullptr);
+  AddAdminTemplateToModel(std::move(admin_template));
+
+  base::RunLoop run_loop;
+  saved_desk_controller->InitiateAdminTemplateAutoLaunch(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that a new browser has been launched.
+  Browser* new_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  ASSERT_TRUE(new_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateNoAutoLaunch) {
+  auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
+  ash::SavedDeskControllerTestApi(saved_desk_controller).ResetAutoLaunch();
+
+  // Add an entry to the model that is not marked for auto-launch.
+  auto admin_template = CreateAdminTemplate(
+      {.windows = {{.urls = {kExampleUrl1},
+                    .bounds = gfx::Rect(100, 50, 400, 300)}},
+       .should_launch_on_startup = false});
+  ASSERT_NE(admin_template, nullptr);
+  AddAdminTemplateToModel(std::move(admin_template));
+
+  base::RunLoop run_loop;
+  saved_desk_controller->InitiateAdminTemplateAutoLaunch(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that a new browser has *not* been launched.
+  Browser* new_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  ASSERT_FALSE(new_browser);
 }

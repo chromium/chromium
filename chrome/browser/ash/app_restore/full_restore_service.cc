@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -68,6 +69,14 @@ int GetRestoreNotificationTitleId(Profile* profile) {
 bool IsPrimaryUser(Profile* profile) {
   return ProfileHelper::Get()->GetUserByProfile(profile) ==
          user_manager::UserManager::Get()->GetPrimaryUser();
+}
+
+// Will (maybe) initiate an auto launch of an admin template.
+void MaybeInitiateAdminTemplateAutoLaunch() {
+  // The controller is available if the admin template feature is enabled.
+  if (auto* saved_desk_controller = ash::SavedDeskController::Get()) {
+    saved_desk_controller->InitiateAdminTemplateAutoLaunch(base::DoNothing());
+  }
 }
 
 }  // namespace
@@ -215,6 +224,7 @@ void FullRestoreService::Init(bool& show_notification) {
     new_user_pref_handler_ =
         std::make_unique<NewUserRestorePrefHandler>(profile_);
     ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
+    MaybeInitiateAdminTemplateAutoLaunch();
     return;
   }
 
@@ -227,9 +237,11 @@ void FullRestoreService::Init(bool& show_notification) {
       break;
     case RestoreOption::kAskEveryTime:
       MaybeShowRestoreNotification(kRestoreNotificationId, show_notification);
+      MaybeInitiateAdminTemplateAutoLaunch();
       break;
     case RestoreOption::kDoNotRestore:
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
+      MaybeInitiateAdminTemplateAutoLaunch();
       return;
   }
 }
