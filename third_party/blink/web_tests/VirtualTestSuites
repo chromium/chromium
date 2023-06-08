@@ -1502,17 +1502,21 @@
       "wpt_internal/fenced_frame",
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/html/anonymous-iframe",
-      "external/wpt/fenced-frame"
+      "external/wpt/fenced-frame",
+      "external/wpt/fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
+      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js"
     ],
     "exclusive_tests": [
       "http/tests/fenced_frame",
       "wpt_internal/fenced_frame",
       "external/wpt/fenced-frame",
-      "http/tests/inspector-protocol/fenced-frame"
+      "http/tests/inspector-protocol/fenced-frame",
+      "external/wpt/fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
+      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies,Fledge,InterestGroupStorage,AdInterestGroupAPI,AllowURNsInIframes,BiddingAndScoringDebugReportingAPI,ComputePressure",
              "--enable-blink-features=FencedFramesAPIChanges,FencedFramesDefaultMode"],
-    "expires": "Jul 1, 2023"
+    "expires": "Dec 31, 2023"
   },
   {
     "prefix": "cors-non-wildcard-request-headers",
