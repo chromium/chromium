@@ -13,6 +13,7 @@
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
+#include "ash/user_education/views/help_bubble_view_ash.h"
 #include "base/callback_list.h"
 #include "base/test/mock_callback.h"
 #include "base/test/repeating_test_future.h"
@@ -21,10 +22,12 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -35,11 +38,16 @@ namespace {
 
 // Aliases.
 using ::testing::A;
+using ::testing::AllOf;
 using ::testing::ByMove;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
+using ::testing::Matches;
 using ::testing::Mock;
 using ::testing::Optional;
+using ::testing::Pair;
 using ::testing::Return;
 using ::testing::WithArgs;
 using ::user_education::HelpBubble;
@@ -47,6 +55,22 @@ using ::user_education::HelpBubbleParams;
 
 // Element identifiers.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementId);
+
+// Helpers ---------------------------------------------------------------------
+
+gfx::Rect GetBoundsInScreen(const views::Widget* widget) {
+  return widget->GetWindowBoundsInScreen();
+}
+
+HelpBubbleViewAsh* GetHelpBubbleView(HelpBubble* help_bubble) {
+  return help_bubble->IsA<HelpBubbleViewsAsh>()
+             ? help_bubble->AsA<HelpBubbleViewsAsh>()->bubble_view()
+             : nullptr;
+}
+
+const aura::Window* GetRootWindow(const views::Widget* widget) {
+  return widget->GetNativeWindow()->GetRootWindow();
+}
 
 // Actions ---------------------------------------------------------------------
 
@@ -61,6 +85,20 @@ auto InvokeAndCopyResultAddressTo(ClassPtr class_ptr,
     *output_ptr = result.get();
     return result;
   };
+}
+
+// Matchers --------------------------------------------------------------------
+
+MATCHER_P(AnchorBoundsInScreen, matcher, "") {
+  return Matches(matcher)(arg.anchor_bounds_in_screen);
+}
+
+MATCHER_P(AnchorRootWindow, matcher, "") {
+  return Matches(matcher)(arg.anchor_root_window);
+}
+
+MATCHER_P(Key, matcher, "") {
+  return Matches(matcher)(arg.key);
 }
 
 }  // namespace
@@ -284,6 +322,62 @@ TEST_F(UserEducationHelpBubbleControllerTest, CreateHelpBubble) {
   //  return a help bubble ID for any other context.
   EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, element_context));
   EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
+}
+
+// Verifies that the `UserEducationHelpBubbleController` tracks/exposes metadata
+// for currently showing help bubbles as intended.
+TEST_F(UserEducationHelpBubbleControllerTest, Metadata) {
+  // When the `user_education_delegate()` is asked to create a help bubble, do
+  // so and cache a pointer to the result.
+  HelpBubble* help_bubble = nullptr;
+  ON_CALL(*user_education_delegate(), CreateHelpBubble)
+      .WillByDefault(WithArgs<2>(InvokeAndCopyResultAddressTo(
+          this, &UserEducationHelpBubbleControllerTest::CreateHelpBubble,
+          &help_bubble)));
+
+  // Verify that cached help bubble metadata is empty.
+  EXPECT_THAT(controller()->help_bubble_metadata_by_key(), IsEmpty());
+
+  // Create a `help_bubble`.
+  EXPECT_TRUE(controller()->CreateHelpBubble(HelpBubbleId::kTest,
+                                             HelpBubbleParams(), kElementId,
+                                             help_bubble_anchor_context()));
+
+  // Verify that a `help_bubble_view` was created.
+  ASSERT_TRUE(help_bubble);
+  HelpBubbleViewAsh* help_bubble_view = GetHelpBubbleView(help_bubble);
+  ASSERT_TRUE(help_bubble_view);
+
+  // Verify that cached help bubble metadata is populated as expected.
+  EXPECT_THAT(controller()->help_bubble_metadata_by_key(),
+              ElementsAre(Pair(Eq(help_bubble_view),
+                               AllOf(Key(Eq(help_bubble_view)),
+                                     AnchorRootWindow(Eq(GetRootWindow(
+                                         help_bubble_anchor_widget()))),
+                                     AnchorBoundsInScreen(Eq(GetBoundsInScreen(
+                                         help_bubble_anchor_widget())))))));
+
+  // Change `help_bubble` anchor bounds.
+  help_bubble_anchor_widget()->CenterWindow(gfx::Size(100, 100));
+
+  // Verify that cached help bubble metadata is updated as expected.
+  EXPECT_THAT(controller()->help_bubble_metadata_by_key(),
+              ElementsAre(Pair(Eq(help_bubble_view),
+                               AllOf(Key(Eq(help_bubble_view)),
+                                     AnchorRootWindow(Eq(GetRootWindow(
+                                         help_bubble_anchor_widget()))),
+                                     AnchorBoundsInScreen(Eq(GetBoundsInScreen(
+                                         help_bubble_anchor_widget())))))));
+
+  // Destroy `help_bubble`.
+  views::test::WidgetDestroyedWaiter waiter(help_bubble_view->GetWidget());
+  help_bubble->Close();
+  waiter.Wait();
+  help_bubble = nullptr;
+  help_bubble_view = nullptr;
+
+  // Verify that cached help bubble metadata is empty.
+  EXPECT_THAT(controller()->help_bubble_metadata_by_key(), IsEmpty());
 }
 
 // Verifies that `UserEducationHelpBubbleController` subscriptions are WAI.

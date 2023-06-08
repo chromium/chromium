@@ -658,14 +658,16 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
 
   // NOTE: `controller` may be `nullptr` in testing.
   if (auto* controller = UserEducationHelpBubbleController::Get()) {
-    controller->NotifyHelpBubbleShown(base::PassKey<HelpBubbleViewAsh>());
+    controller->NotifyHelpBubbleShown(base::PassKey<HelpBubbleViewAsh>(),
+                                      /*help_bubble_view=*/this);
   }
 }
 
 HelpBubbleViewAsh::~HelpBubbleViewAsh() {
   // NOTE: `controller` may be `nullptr` in testing.
   if (auto* controller = UserEducationHelpBubbleController::Get()) {
-    controller->NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>());
+    controller->NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>(),
+                                       /*help_bubble_view=*/this);
   }
 }
 
@@ -699,7 +701,7 @@ void HelpBubbleViewAsh::OnAnchorBoundsChanged() {
   // NOTE: `controller` may be `nullptr` in testing.
   if (auto* controller = UserEducationHelpBubbleController::Get()) {
     controller->NotifyHelpBubbleAnchorBoundsChanged(
-        base::PassKey<HelpBubbleViewAsh>());
+        base::PassKey<HelpBubbleViewAsh>(), /*help_bubble_view=*/this);
   }
 }
 

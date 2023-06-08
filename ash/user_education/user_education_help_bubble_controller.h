@@ -5,9 +5,11 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_HELP_BUBBLE_CONTROLLER_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_HELP_BUBBLE_CONTROLLER_H_
 
+#include <map>
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/user_education/user_education_types.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -82,14 +84,26 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   [[nodiscard]] base::CallbackListSubscription AddHelpBubbleShownCallback(
       base::RepeatingClosure callback);
 
-  // Invoked by `HelpBubbleViewAsh` when a help bubble's anchor bounds change.
-  void NotifyHelpBubbleAnchorBoundsChanged(base::PassKey<HelpBubbleViewAsh>);
+  // Invoked when the specified `help_bubble_view`'s anchor bounds change.
+  void NotifyHelpBubbleAnchorBoundsChanged(
+      base::PassKey<HelpBubbleViewAsh>,
+      const HelpBubbleViewAsh* help_bubble_view);
 
-  // Invoked by `HelpBubbleViewAsh` when a help bubble is closed.
-  void NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>);
+  // Invoked when the specified `help_bubble_view` is closed.
+  void NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>,
+                              const HelpBubbleViewAsh* help_bubble_view);
 
-  // Invoked by `HelpBubbleViewAsh` when a help bubble is shown.
-  void NotifyHelpBubbleShown(base::PassKey<HelpBubbleViewAsh>);
+  // Invoked when the specified `help_bubble_view`  is shown.
+  void NotifyHelpBubbleShown(base::PassKey<HelpBubbleViewAsh>,
+                             const HelpBubbleViewAsh* help_bubble_view);
+
+  // Returns metadata for all currently showing help bubbles. Note that help
+  // bubbles are closed asynchronously so it is possible for multiple help
+  // bubbles to exist concurrently.
+  const std::map<HelpBubbleKey, HelpBubbleMetadata>&
+  help_bubble_metadata_by_key() const {
+    return help_bubble_metadata_by_key_;
+  }
 
  private:
   // The delegate owned by the `UserEducationController` which facilitates
@@ -100,6 +114,11 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   // notified when it closes. Once closed, help bubble related memory is freed.
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
   base::CallbackListSubscription help_bubble_close_subscription_;
+
+  // Metadata for all currently showing help bubbles. Note that help bubbles
+  // are closed asynchronously so it is possible for multiple help bubbles to
+  // exist concurrently.
+  std::map<HelpBubbleKey, HelpBubbleMetadata> help_bubble_metadata_by_key_;
 
   // Lists of subscribers to notify for the following events:
   // (a) Help bubble anchor bounds changed
