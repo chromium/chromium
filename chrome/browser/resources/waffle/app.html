@@ -3,24 +3,24 @@
     color: var(--cr-primary-text-color);
   }
 
-  #left-illustration,
-  #right-illustration {
+  .left-illustration,
+  .right-illustration {
     position: absolute;
     top:0;
     width: 20vw;
   }
 
-  #left-illustration {
+  .left-illustration {
     content: url(images/left_illustration.svg);
     left: 0;
   }
 
-  #right-illustration {
+  .right-illustration {
     content: url(images/right_illustration.svg);
     right: 0;
   }
 
-  #button-container {
+  .button-container {
     bottom: 0;
     display: flex;
     position: absolute;
@@ -31,29 +31,66 @@
     margin: 25px;
   }
 
-  #first-button {
+  .first-button {
     margin-inline-end: auto;
   }
 
-  #second-button {
+  .second-button {
     margin-inline-start: auto;
   }
 
+  .content-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    max-width: 400px;
+    text-align: center;
+  }
+
+  .title {
+    font-weight: 400;
+  }
+
+  .subtitle {
+    color: var(--cr-seconday-text-color);
+    font-size: 0.88rem;
+    line-height: 22px;
+  }
+
+  .image-placeholder {
+    background-color: blue;
+    height: 70px;
+    width: 250px;
+  }
+
+  .waffle-placeholder {
+    background-color: red;
+    height: 500px;
+    width: 400px;
+  }
+
   @media (prefers-color-scheme: dark) {
-    #left-illustration {
+    .left-illustration {
       content: url(images/left_illustration_dark.svg);
     }
 
-    #right-illustration {
+    .right-illustration {
       content: url(images/right_illustration_dark.svg);
     }
   }
 </style>
 
-<img id="left-illustration" alt="">
-<img id="right-illustration" alt="">
-<div id="button-container">
-  <cr-button id="first-button">$i18n{firstButton}</cr-button>
-  <cr-button id="second-button" class="action-button" disabled>
+<img class="left-illustration" alt="">
+<img class="right-illustration" alt="">
+<div class="content-container">
+  <h1 class="title">$i18n{title}</h1>
+  <div class="image-placeholder"></div>
+  <p class="subtitle">$i18n{subtitle}</p>
+  <div class="waffle-placeholder"></div>
+</div>
+<div class="button-container">
+  <cr-button class="first-button">$i18n{firstButton}</cr-button>
+  <cr-button class="second-button action-button" disabled>
       $i18n{secondButton}</cr-button>
 </div>

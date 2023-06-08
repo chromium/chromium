@@ -15145,7 +15145,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <if expr="not chromeos_lacros and not is_android and _google_chrome">
       <message name="IDS_WAFFLE_PAGE_TITLE" desc="The title for the Waffle page."
         translateable="false">
-        Want a Waffle?
+        Lorem ipsum dolor sit amet
+      </message>
+      <message name="IDS_WAFFLE_PAGE_SUBTITLE" desc="The subtitle for the Waffle page."
+        translateable="false">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
       </message>
       <message name="IDS_WAFFLE_FIRST_BUTTON_TITLE" desc="The title of the first button of the Waffle page."
         translateable="false">

@@ -26,6 +26,7 @@ WaffleUI::WaffleUI(content::WebUI* web_ui)
       chrome::kChromeUIWaffleHost);
 
   source->AddLocalizedString("title", IDS_WAFFLE_PAGE_TITLE);
+  source->AddLocalizedString("subtitle", IDS_WAFFLE_PAGE_SUBTITLE);
   source->AddLocalizedString("firstButton", IDS_WAFFLE_FIRST_BUTTON_TITLE);
   source->AddLocalizedString("secondButton", IDS_WAFFLE_SECOND_BUTTON_TITLE);
 
