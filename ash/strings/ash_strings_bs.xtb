@@ -303,7 +303,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2339073806695260576">Dodirnite dugme sa olovkom na polici da napišete bilješku, napravite snimak ekrana, koristite laserski pokazivač ili lupu.</translation>
 <translation id="2341729377289034582">Zaključan vertikalni prikaz</translation>
 <translation id="2345226652884463045">Pritisnite Enter ili pretraživanje + tipku za razmak da odaberete tekst za uređivanje.</translation>
-<translation id="2349785431103945039">Prikažite detalje pristupne tačke. Povežite se s mobilnom mrežom da koristite pristupnu tačku.</translation>
+<translation id="2349785431103945039">Pogledajte detalje pristupne tačke. Povežite se s mobilnom mrežom da koristite pristupnu tačku.</translation>
 <translation id="2350794187831162545">Govor na jeziku <ph name="LANGUAGE" /> sada se obrađuje lokalno i radi offline. Jezik diktiranja možete promijeniti u meniju Postavke &gt; Pristupačnost.</translation>
 <translation id="2352467521400612932">Postavke stilosa</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
@@ -444,7 +444,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009958530611748826">Odaberite folder za pohranjivanje</translation>
 <translation id="301282384882049174">Dijeli vaš administrator</translation>
-<translation id="301584155502740476">Prikažite detalje pristupne tačke. Pristupna tačka je isključena.</translation>
+<translation id="301584155502740476">Pogledajte detalje pristupne tačke. Pristupna tačka je isključena.</translation>
 <translation id="3018135054368884502">Premotavanje medija naprijed</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3033912566804961911">Kombinirajte sa: <ph name="DESK_NAME" /></translation>
@@ -592,7 +592,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3621202678540785336">Ulaz</translation>
 <translation id="3621712662352432595">Postavke zvuka</translation>
 <translation id="3626281679859535460">Osvjetljenje</translation>
-<translation id="3629640897379005903">Prikažite detalje pristupne tačke. Pristupna tačka se onemogućava.</translation>
+<translation id="3629640897379005903">Pogledajte detalje pristupne tačke. Pristupna tačka se onemogućava.</translation>
 <translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Omogućite obavještenja iz sljedećih izvora</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da uparite uređaj</translation>
@@ -875,7 +875,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4864369630010738180">Prijavljivanje…</translation>
 <translation id="4864648187878336334">15. radna površina</translation>
 <translation id="4868492592575313542">aktivirano</translation>
-<translation id="4871905435473761992">Prikažite detalje pristupne tačke. Vaša mobilna mreža ne podržava pristupnu tačku.</translation>
+<translation id="4871905435473761992">Pogledajte detalje pristupne tačke. Vaša mobilna mreža ne podržava pristupnu tačku.</translation>
 <translation id="4872237917498892622">Alt + tipka za pretraživanje + Shift</translation>
 <translation id="4872852897273142380">Fokusiranje ili isticanje trake oznaka (ako je prikazana)</translation>
 <translation id="4881695831933465202">Otvori</translation>
@@ -948,7 +948,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5168181903108465623">Dostupni su "cast" uređaji</translation>
 <translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="5176318573511391780">Snimanje dijela ekrana</translation>
-<translation id="5187627942836026988">Prikažite detalje pristupne tačke. Administrator je blokirao pristupnu tačku.</translation>
+<translation id="5187627942836026988">Pogledajte detalje pristupne tačke. Administrator je blokirao pristupnu tačku.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> događaj(a)</translation>
 <translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> je kombinirana s aplikacijom <ph name="IN_PLACE_APP" /> za kreiranje novog foldera.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1301,7 +1301,7 @@ Nova instalacija</translation>
 <translation id="6752912906630585008">Radna površina <ph name="REMOVED_DESK" /> je uklonjena i spojena s radnom površinom <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">kartice</translation>
 <translation id="6757237461819837179">Medijski fajlovi se ne reproduciraju</translation>
-<translation id="6759628406555734414">Prikažite detalje pristupne tačke. Pristupna tačka se omogućava.</translation>
+<translation id="6759628406555734414">Pogledajte detalje pristupne tačke. Pristupna tačka se omogućava.</translation>
 <translation id="6768043681523654438">pohrana</translation>
 <translation id="6777216307882431711">Napajanje povezanih uređaja s priključkom USB-C</translation>
 <translation id="6781002679438061620">9. radna površina</translation>
@@ -1325,7 +1325,7 @@ Nova instalacija</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala je jedna cifra}one{Preostala je # cifra}few{Preostale su # cifre}other{Preostalo je # cifara}}</translation>
 <translation id="6867938213751067702">Pauzirano je preuzimanje fajla <ph name="FILENAME" /></translation>
-<translation id="6874854809828346832">Prikažite detalje pristupne tačke. Pristupna tačka je uključena.</translation>
+<translation id="6874854809828346832">Pogledajte detalje pristupne tačke. Pristupna tačka je uključena.</translation>
 <translation id="6878400149835617132">Prečica je isključena</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="6884665277231944629">Vratite se na današnji datum</translation>

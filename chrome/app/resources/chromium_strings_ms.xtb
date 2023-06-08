@@ -13,8 +13,10 @@
 <translation id="1202417120496358351">{COUNT,plural, =1{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Penjimat Memori Menjadikan Chromium Lebih Pantas</translation>
+<translation id="1262876892872089030">Semasa tab ini tidak aktif, memori dikosongkan untuk mengekalkan kepantasan Chromium. Anda boleh memilih untuk sentiasa mengecualikan laman ini daripada menjadi tidak aktif.</translation>
 <translation id="1315551408014407711">Sediakan profil Chromium baharu anda</translation>
 <translation id="1414495520565016063">Anda log masuk ke Chromium!</translation>
+<translation id="1478370723027452770">Dapatkan bantuan tentang Chrome for Testing</translation>
 <translation id="1524282610922162960">Kongsi tab Chromium</translation>
 <translation id="1553461853655228091">Chromium memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>
 <translation id="1555506416658437797">edit kaedah pembayaran.</translation>
@@ -72,6 +74,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2711502716910134313">Tab Chromium</translation>
 <translation id="2718390899429598676">Untuk keselamatan tambahan, Chromium akan menyulitkan data anda.</translation>
 <translation id="2770231113462710648">Tukar penyemak imbas lalai kepada:</translation>
+<translation id="2785438272836277133">Sambungan ini mengandungi perisian hasad dan tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2799223571221894425">Lancarkan semula</translation>
 <translation id="2837693172913560447">Tindakan ini akan membuat profil Chromium baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Alih keluar daripada Chromium...</translation>
@@ -131,9 +134,11 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="388648406173476553">Sesuaikan dan kawal Chromium. Perhatian anda diperlukan - klik untuk mendapatkan butiran.</translation>
 <translation id="3889543394854987837">Klik nama anda untuk membuka Chromium dan mula menyemak imbas.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chromium ini. Untuk menjadikan penyemakan imbas anda terpisah, Chromium boleh membuat profil anda sendiri untuk anda.</translation>
+<translation id="3909353120217047026">Sambungan ini melanggar dasar Gedung Web Chrome dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="391789666908693569">Akaun anda diurus oleh <ph name="MANAGER_NAME" />. Pentadbir anda boleh melihat dan mengedit profil penyemak imbas Chromium ini dan datanya seperti penanda halaman, sejarah dan kata laluan.</translation>
 <translation id="3945058413678539331">Chromium cuba menyalin kata laluan. Taip kata laluan Windows anda untuk membenarkan penyalinan.</translation>
 <translation id="3962623956404948996">Chromium mengesyorkan pengimbasan fail ini kerana fail ini mungkin berbahaya</translation>
+<translation id="3975724895399328945">Perihal &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Perihal Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Bantu jadikan Chromium lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
@@ -155,6 +160,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4415566066719264597">Benarkan Chromium Dijalankan dalam Latar Belakang</translation>
 <translation id="4423735387467980091">Sesuaikan dan kawal Chromium</translation>
 <translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
+<translation id="4447409407328223819">Perihal Chrome for Testing</translation>
 <translation id="452711251841752011">Selamat datang ke Chromium; tetingkap penyemak imbas baharu dibuka</translation>
 <translation id="4544142686420020088">Chromium tidak dikemas kini, kesilapan telah berlaku. <ph name="BEGIN_LINK" />Selesaikan masalah kemas kini dan kegagalan kemas kini Chromium.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Teruskan dalam profil Chromium baharu?</translation>
@@ -352,6 +358,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8357820681460164151">Untuk mengakses bahan penyemak imbas Chromium anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan</translation>
 <translation id="8360718212975266891">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
+<translation id="8401454788024434101">Sambungan ini telah dinyahterbitkan boleh pembangun dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Lancarkan semula Chromium dalam masa sehari}other{Lancarkan semula Chromium dalam masa # hari}}</translation>
 <translation id="8453117565092476964">Arkib pemasang rosak atau tidak sah. Sila muat turun Chromium sekali lagi.</translation>
 <translation id="8458614432758743027">Chromium memerlukan Windows 10 atau versi lebih baharu.</translation>
@@ -364,6 +371,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>
 <translation id="8621669128220841554">Pemasangan gagal disebabkan ralat yang tidak dinyatakan. Sila muat turun semula Chromium.</translation>
+<translation id="8648201657708811153">Google Chrome for Testing tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="867492205098279939">{NUM_DEVICES,plural, =0{Satu sambungan Chromium telah mengakses peranti HID}=1{Satu sambungan Chromium sedang mengakses 1 peranti HID}other{Satu sambungan Chromium sedang mengakses # peranti HID}}</translation>
 <translation id="8697124171261953979">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chromium atau membuat carian dari Kotak Omni.</translation>
 <translation id="8704119203788522458">Ini Chromium anda</translation>

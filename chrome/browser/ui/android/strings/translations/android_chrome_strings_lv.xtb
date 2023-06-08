@@ -59,6 +59,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1269129608791067105">Šeit varat skatīt savu vēsturi</translation>
 <translation id="1273937721055267968">Bloķēt vietni <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Pieskarties, lai izvērstu</translation>
+<translation id="1289059016768036948">Iespējams, jums būs jāpierakstās Google kontā</translation>
 <translation id="1291207594882862231">Dzēst vēsturi, sīkfailus, vietnes datus, kešatmiņu…</translation>
 <translation id="129553762522093515">Nesen aizvērtas</translation>
 <translation id="1298077576058087471">Ietaupiet līdz pat 60% datu un lasiet šodienas ziņas</translation>
@@ -126,6 +127,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="1641113438599504367">Droša pārlūkošana</translation>
 <translation id="164269334534774161">Jūs skatāt šīs lapas bezsaistes kopiju, kas tika izveidota šādā datumā: <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Vēsture</translation>
+<translation id="1657932388559784161">Lapas ieskatu ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="1668122540633280551">Izvēlieties, kā videoklipu priekšskatījumi automātiski tiks atskaņoti Chrome sākumlapā.</translation>
 <translation id="1670399744444387456">Pamata</translation>
 <translation id="1671236975893690980">Lejupielāde tiek gaidīta...</translation>
@@ -295,6 +297,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="2647434099613338025">Pievienot valodu</translation>
 <translation id="2649068648233607930">Jūsu pārlūku pārvalda <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">Paskaidrojums par konfidencialitātes ceļvedi ir aizvērts</translation>
+<translation id="2650408372219180431">Eksportēt un dzēst šajā ierīcē saglabātās paroles</translation>
 <translation id="2650751991977523696">Vai lejupielādēt failu vēlreiz?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audio fails}zero{# audio faili}one{# audio fails}other{# audio faili}}</translation>
 <translation id="265156376773362237">Standarta iepriekšēja ielāde</translation>
@@ -505,6 +508,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3773856050682458546">Gan pamatdati, gan informācija par jūsu apmeklētajām vietnēm un izmantotajām lietotnēm</translation>
 <translation id="3775705724665058594">Sūtīšana uz jūsu ierīcēm</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 cilne}zero{# ciļņu}one{# cilne}other{# cilnes}}</translation>
+<translation id="3795154175078851242">Kopēt attēlu un saiti</translation>
 <translation id="3803784507854318295">Pārvaldīt automātisko atskaņošanu</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
@@ -807,6 +811,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5401851137404501592">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos jūsu vārdu, e-pasta adresi un profila attēlu ar šo vietni.</translation>
 <translation id="5409881200985013443">Vai iesniegt kodu “<ph name="ONE_TIME_CODE" />” ierīcē “<ph name="CLIENT_NAME" />”?</translation>
 <translation id="5414836363063783498">Notiek verifikācija...</translation>
+<translation id="542190472198460451">Visas paroles tiks lejupielādētas jūsu ierīcē un noņemtas no pārlūka Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Šeit tiks parādītas jūsu visvairāk apmeklētās lapas.</translation>
 <translation id="5424588387303617268">Pieejami <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Rediģēt paroli</translation>
@@ -960,6 +965,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
 
 Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, piemēram, lai uzlabotu drošību, nodrošinātu saturu, reklāmas un ieteikumus un ģenerētu pārskatu statistiku.</translation>
+<translation id="6233974827872475843">Ieslēgt sinhronizāciju, lai šajā ierīcē saglabātu paroles savā Google kontā</translation>
 <translation id="6255794742848779505">Tiek mainīts paroļu saglabāšanas veids šajā ierīcē</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
 <translation id="6277522088822131679">Drukājot lapu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
@@ -1368,6 +1374,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8221401890884589479">Varat bloķēt vietnes, ko nevēlaties saglabāt. Turklāt pārlūkā Chrome no saraksta tiek automātiski dzēstas vietnes, kas tajā ir glabātas ilgāk nekā 30 dienas. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8223642481677794647">Plūsmas kartītes izvēlne</translation>
 <translation id="8236097722223016103">Pievienot grāmatzīmēm</translation>
+<translation id="8237871086242677046">Lapas ieskatu ekrāna apakšdaļas lapa</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8255617931166444521">Vietnes var izmantot jūsu sīkfailus tikai jūsu pārlūkošanas darbību skatīšanai savā vietnē.</translation>
 <translation id="8259179246279078674">Tā kā iepriekš ielādētās lapas ir šifrētas, Google neiegūs nekādu informāciju par iepriekš ielādēto lapu saturu. Google serveri iegūs informāciju par to, kuras vietnes ir privāti iepriekš ielādētas. Šī informācija tiek izmantota tikai lapu iepriekšējai ielādei, un tā nav saistīta ar citu informāciju no Google konta.</translation>
@@ -1466,6 +1473,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8746155870861185046">Kopīgot atzīmēto tekstu</translation>
 <translation id="874726034427945498">Sinhronizējiet cilnes un vēsturi, lai adreses joslā iegūtu labākus ieteikumus</translation>
 <translation id="8748850008226585750">Saturs paslēpts</translation>
+<translation id="8754448020583829686">Kopēt bez saites</translation>
 <translation id="8756969031206844760">Vai atjaunināt paroli?</translation>
 <translation id="8765470054473112089">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chrome nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="8766529642647037772">Vai izveidot līdzīgu izceltu saiti?</translation>
@@ -1477,6 +1485,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8803526663383843427">Ja ieslēgta</translation>
 <translation id="8805097383171548551">Lai varētu skenēt kvadrātkodu, izmantojiet ierīci ar kameru.</translation>
 <translation id="8812260976093120287">Dažās vietnēs var norēķināties, ierīcē izmantojot iepriekš norādītās atbalstītās maksājumu lietotnes.</translation>
+<translation id="8816556050903368450">Ar saiti: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Priekšskatāmās cilnes saturu nevar skatīt.</translation>
 <translation id="8820817407110198400">Grāmatzīmes</translation>
 <translation id="8835786707922974220">Parūpējieties, lai vienmēr varētu piekļūt saglabātajām parolēm</translation>
@@ -1564,6 +1573,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="938850635132480979">Kļūda: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ievadiet ieejas frāzi</translation>
 <translation id="950679278154734362">Lai automašīnā sinhronizētu savu informāciju un gādātu par datu drošību, ir jāiestata profila bloķēšana. Ikreiz, kad iekāpsiet automašīnā, jūs izmantosiet kodu vai paroli.</translation>
+<translation id="952301137339791907">Lapas ieskatu ekrāna apakšdaļas lapa ir atvērta</translation>
 <translation id="95817756606698420">Pārlūkā Chrome var izmantot meklētājprogrammu <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />, lai veiktu meklēšanu Ķīnā. Varat to mainīt sadaļā <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Instalēt šo lietotni</translation>
 <translation id="96681097142096641">Vai skatīt vienkāršotu lapu</translation>

@@ -193,6 +193,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Add Account</translation>
 <translation id="2268044343513325586">Refine</translation>
+<translation id="2269277877025820298">See More</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2286505070150039482">Highlighted text</translation>
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>

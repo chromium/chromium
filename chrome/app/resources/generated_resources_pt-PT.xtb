@@ -535,6 +535,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1461288887896722288">Acabou de iniciar sessão numa conta gerida. A criação de um novo perfil gerido permite-lhe aceder a alguns recursos associados a essa conta.</translation>
 <translation id="146219525117638703">Estado ONC</translation>
 <translation id="146220085323579959">Internet desligada. Verifique a ligação à internet e tente novamente.</translation>
+<translation id="1462480037563370607">Adicionar sites manualmente</translation>
 <translation id="1462850958694534228">Analise a atualização do ícone</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> foi bloqueado pela Proteção avançada.</translation>
 <translation id="1464044141348608623">Não permitir que os sites saibam quando está a utilizar ativamente o dispositivo</translation>
@@ -1671,6 +1672,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2390347491606624519">Não é possível estabelecer ligação ao proxy, inicie sessão novamente</translation>
 <translation id="2390782873446084770">Sync Wi-Fi</translation>
 <translation id="2391419135980381625">Tipo de letra padrão</translation>
+<translation id="2391805183137601570">Abrir Steam</translation>
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="2393136602862631930">Configure o <ph name="APP_NAME" /> no Chromebook</translation>
 <translation id="2393313392064891208">Conteúdo dos Termos do Google ChromeOS Flex</translation>
@@ -1739,6 +1741,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2445484935443597917">Criar um novo perfil</translation>
 <translation id="2445726032315793326">Lupa parcial</translation>
 <translation id="244641233057214044">Relacionado com a sua pesquisa</translation>
+<translation id="2447587550790814052">Já pode usar o Steam para o Chromebook (beta)</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448810255793562605">Análise automática do acesso por comutador</translation>
 <translation id="2450021089947420533">Percursos</translation>
@@ -1760,6 +1763,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2458591546854598341">O token de gestão do dispositivo é inválido.</translation>
 <translation id="2459703812219683497">Código de ativação detetado</translation>
 <translation id="2460356425461033301">Faça uma cópia de segurança dos itens do navegador e use-os em qualquer dispositivo</translation>
+<translation id="2462332841984057083">O Steam já está a ser configurado. Aguarde pela conclusão da configuração.</translation>
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> adicionada</translation>
 <translation id="2467755475704469005">Nenhum dispositivo detetado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1802,6 +1806,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="249113932447298600">Lamentamos, mas de momento o aparelho <ph name="DEVICE_LABEL" /> não é suportado.</translation>
 <translation id="2492461744635776704">A preparar pedido de assinatura de certificado…</translation>
 <translation id="249330843868392562">Abrir definições da conversão de texto em voz</translation>
+<translation id="2494555621641843783">Não é possível instalar o Steam</translation>
 <translation id="2495524171012645395">Receitas visualizadas recentemente</translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="2497229222757901769">Velocidade do rato</translation>
@@ -1935,7 +1940,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2613210758071148851">Não permitir quaisquer extensões em <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /></translation>
-<translation id="2616008379779647117">Idioma das legendas</translation>
 <translation id="2616366145935564096">Ler e alterar os seus dados em <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configure a funcionalidade Partilhar na proximidade</translation>
 <translation id="261953424982546039">Chrome &amp;Labs…</translation>
@@ -2077,6 +2081,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="27349076983469322">Fundo claro</translation>
 <translation id="2735712963799620190">Programação</translation>
 <translation id="2737363922397526254">Reduzir...</translation>
+<translation id="2737538893171115082">O Steam para o Chromebook (beta) foi bloqueado pelo seu administrador. O seu administrador tem de ativar estas políticas:</translation>
 <translation id="2737719817922589807">Marcadores e listas</translation>
 <translation id="2737916598897808047">A app <ph name="APP_NAME" /> pretende partilhar o conteúdo do seu ecrã com <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Não permitir que os sites utilizem tipos de letra instalados no seu dispositivo</translation>
@@ -2152,6 +2157,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2792465461386711506">Ative a Sincronização do Chrome para ver separadores recentes do Chrome no telemóvel.</translation>
 <translation id="2792697226874849938">Imagem de restrição</translation>
 <translation id="2794522004398861033">Estabeleça ligação ao Wi-Fi ou à Ethernet para configurar o eSIM</translation>
+<translation id="2794977172822818797">Adicionar sites atuais</translation>
 <translation id="2795716239552913152">Normalmente, os sites utilizam a sua localização para funcionalidades ou informações relevantes, como notícias locais ou lojas próximas.</translation>
 <translation id="2796740370559399562">Continuar a permitir cookies</translation>
 <translation id="2798347533012571708">Manter atualizações</translation>
@@ -2248,6 +2254,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2875698561019555027">(Páginas de erro do Chrome)</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
 <translation id="2876369937070532032">Quando a sua segurança está em risco, envia para a Google URLs de algumas páginas que visita.</translation>
+<translation id="2876484123356705658">Escolher o intervalo de tempo</translation>
 <translation id="2876556152483133018">Site Search</translation>
 <translation id="2877467134191447552">Pode acrescentar as suas contas adicionais para aceder aos Websites e apps.</translation>
 <translation id="2878782256107578644">Verificação em curso. Pretende abrir agora?</translation>
@@ -2687,6 +2694,7 @@ Pretende pará-lo?</translation>
 <translation id="3283148363895519428">Siga as instruções no telemóvel para continuar a configuração. Confirme que o telemóvel está próximo e o Bluetooth está ativado.</translation>
 <translation id="3284050785966252943">Pré-visualização de metadados de preenchimento automático</translation>
 <translation id="3285322247471302225">Novo &amp;Separador</translation>
+<translation id="3285465040399788513">O dispositivo não tem armazenamento suficiente para concluir a configuração. Liberte espaço e tente novamente.</translation>
 <translation id="3285500645985761267">Permitir que os sites relacionados vejam a sua atividade no grupo</translation>
 <translation id="328571385944182268">Pretende guardar as suas palavras-passe?</translation>
 <translation id="3288047731229977326">As extensões que funcionam no modo de programador podem danificar o seu computador. Se não é programador, deverá desativar as extensões que sejam executadas neste modo para se manter protegido.</translation>
@@ -2780,6 +2788,7 @@ Pretende pará-lo?</translation>
 <translation id="3371351218553893534">A linha é demasiado longa: <ph name="ERROR_LINE" /></translation>
 <translation id="337286756654493126">Ler pastas que são abertas na aplicação</translation>
 <translation id="3373059063088819384">Abrir em modo de leitura</translation>
+<translation id="3373196968211632036">O Steam para o Chromebook (beta) não está disponível para Contas Google de crianças</translation>
 <translation id="3373701465337594448">Quando a opção está ativada, é apresentada aqui uma lista de sites que visita e que adivinham os seus interesses</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" movido para "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">Esta extensão pode ter sido danificada.</translation>
@@ -2934,6 +2943,7 @@ Pretende pará-lo?</translation>
 <translation id="3496213124478423963">Reduzir</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (não selecionado)</translation>
 <translation id="3496689104192986836">Nível da bateria: <ph name="PERCENTAGE" />%</translation>
+<translation id="3496797737329654668">Vamos jogar</translation>
 <translation id="3496995426334945408">Normalmente, os sites usam JavaScript para apresentar funcionalidades interativas, como videojogos ou formulários Web</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (produto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Partilhar doodle</translation>
@@ -3068,6 +3078,7 @@ Pretende pará-lo?</translation>
 <translation id="3624567683873126087">Desbloquear o dispositivo e iniciar sessão na Conta Google</translation>
 <translation id="3624583033347146597">Escolha as preferências de cookies de terceiros</translation>
 <translation id="3625481642044239431">Foi selecionado um ficheiro inválido. Tente novamente.</translation>
+<translation id="3626032419324745085">Os sites que adicionar permanecem sempre ativos e a respetiva memória não é libertada. <ph name="BEGIN_LINK" />Saiba mais sobre a exclusão de sites<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">Para carregar este Chromebook, utilize uma bateria Dell compatível.</translation>
 <translation id="3627320433825461852">Falta menos de 1 minuto</translation>
 <translation id="3627588569887975815">Abrir link numa janela sem re&amp;gisto</translation>
@@ -3341,6 +3352,7 @@ Pretende pará-lo?</translation>
 <translation id="383891835335927981">O zoom dos sites não foi aumentado nem diminuído</translation>
 <translation id="3839509547554145593">Ativar aceleração da deslocação do rato</translation>
 <translation id="3839516600093027468">Impedir sempre <ph name="HOST" /> de ver a área de transferência</translation>
+<translation id="3841282988425489367">Não é possível configurar o Steam para o Chromebook (beta)</translation>
 <translation id="3841319830220785495">Voz natural predefinida</translation>
 <translation id="3841964634449506551">A palavra-passe é inválida.</translation>
 <translation id="3842552989725514455">Tipo de letra Serif</translation>
@@ -3388,6 +3400,7 @@ Pretende pará-lo?</translation>
 <translation id="3884152383786131369">O conteúdo Web disponível em vários idiomas irá utilizar o primeiro idioma suportado desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">O seu administrador gere as atualizações</translation>
 <translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
+<translation id="3888501106166145415">Redes Wi-Fi associadas</translation>
 <translation id="3888550877729210209">Tirar notas com a aplicação <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Estas informações ajudam-nos a compreender melhor o seu problema com o Assistente. Ficam armazenadas durante, no máximo, 90 dias e o acesso está restrito às equipas de engenharia e feedback dedicadas.</translation>
 <translation id="3890064827463908288">Ative a Sincronização do Chrome para utilizar o Sync Wi-Fi</translation>
@@ -3774,6 +3787,7 @@ Se optar por não partilhar os sinais, este perfil é fechado.</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensão não é permitida}other{Estas extensões não são permitidas}}</translation>
 <translation id="4231095370974836764">Instale apps e jogos do Google Play no dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Fechar controlos de jogos</translation>
+<translation id="4231231258999726714">A configurar o Steam para o Chromebook</translation>
 <translation id="4231542173270219144">Quando as avaliações estão ativadas, a redução de spam e fraudes depende de símbolos de estado privado para ajudar os sites a combater fraudes e distinguir bots de pessoas.</translation>
 <translation id="4232375817808480934">Configure o Kerberos</translation>
 <translation id="4233739489690259993">O seu Chromebook já não está a receber atualizações de segurança e software. Atualize o seu dispositivo para obter novas funcionalidades e as funcionalidades de segurança mais recentes. Aplicam-se os termos da oferta.</translation>
@@ -4054,6 +4068,7 @@ Se optar por não partilhar os sinais, este perfil é fechado.</translation>
 <translation id="4472298120638043495">Pode usar o idioma preferido da sua Conta Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="4472575034687746823">Começar</translation>
+<translation id="4473996011558324141">tempo estimado</translation>
 <translation id="4474155171896946103">Adicionar todos os separadores aos marcadores...</translation>
 <translation id="4475552974751346499">Pesquisar transferências</translation>
 <translation id="4475830133618397783">Escolha as palavras-passe a mover. Pode aceder às mesmas sempre que tiver sessão iniciada.</translation>
@@ -4244,6 +4259,7 @@ Se optar por não partilhar os sinais, este perfil é fechado.</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Texto}other{# textos}}</translation>
 <translation id="4638930039313743000">Ativar a depuração do adb</translation>
 <translation id="4641539339823703554">Não foi possível ao Chrome definir a hora do sistema. Verifique as horas abaixo e corrija se necessário.</translation>
+<translation id="4642587497923912728">O Steam para o Chromebook (beta) só está disponível para a conta que iniciou sessão primeiro neste Chromebook.</translation>
 <translation id="4643612240819915418">Abrir víde&amp;o num novo separador</translation>
 <translation id="4643833688073835173">O Chromebook utiliza um sensor incorporado para detetar pessoas à frente do dispositivo. Todos os dados são processados imediatamente no seu dispositivo e, em seguida, eliminados. Os dados de sensores nunca são enviados para a Google.</translation>
 <translation id="4644205769234414680">Permitir na Navegação anónima</translation>
@@ -5029,6 +5045,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5353252989841766347">Exportar palavras-passe do Chrome</translation>
 <translation id="5355099869024327351">Permita que o Assistente lhe mostre notificações.</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
+<translation id="5355498626146154079">Tem de ativar a sinalização "Borealis Enabled"</translation>
 <translation id="5355501370336370394">Inscrever dispositivo empresarial</translation>
 <translation id="5355926466126177564">A extensão "<ph name="EXTENSION_NAME" />" alterou a página apresentada quando pesquisa a partir da caixa geral.</translation>
 <translation id="5356155057455921522">Esta atualização do seu administrador fará com que as apps da sua entidade abram mais rapidamente. Esta ação pode demorar alguns minutos.</translation>
@@ -5056,6 +5073,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5376931455988532197">Ficheiro demasiado grande</translation>
 <translation id="5379140238605961210">Continuar a bloquear o acesso ao microfone</translation>
 <translation id="5380424552031517043">Autorização <ph name="PERMISSION" /> removida.</translation>
+<translation id="5380526436444479273">Aguarde alguns minutos e tente novamente</translation>
 <translation id="5382591305415226340">Gerir links suportados</translation>
 <translation id="5383377866517186886">A câmara está desligada nas Preferências do Sistema no Mac</translation>
 <translation id="5383740867328871413">Grupo sem nome – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
@@ -5091,6 +5109,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5414198321558177633">A atualizar a lista de perfis. Esta ação pode demorar alguns minutos.</translation>
 <translation id="5414566801737831689">Ler os ícones dos Sites que visita</translation>
 <translation id="5414836363063783498">A validar…</translation>
+<translation id="5415328625985164836">Este é um programa beta. Agora, pode usar o Steam para jogar alguns jogos no Chromebook.</translation>
 <translation id="5417312524372586921">Temas do navegador</translation>
 <translation id="5417353542809767994">Use rapidamente uma palavra-passe forte</translation>
 <translation id="541737483547792035">Ampliar ecrã</translation>
@@ -5154,6 +5173,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5467207440419968613">Bloqueou <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">À procura de partilhas de ficheiros…</translation>
 <translation id="5468330507528805311">Estado da ligação (à Internet) via telemóvel:</translation>
+<translation id="5469540749878136997">Libertar memória com base na utilização</translation>
 <translation id="5469852975082458401">Pode navegar pelas páginas com um cursor de texto. Prima F7 para desativar esta opção.</translation>
 <translation id="5470735824776589490">É necessário reiniciar antes de ser possível repor o dispositivo com o Powerwash. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Olá! Sou a sua voz para a conversão de texto em voz.</translation>
@@ -5441,6 +5461,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5724642200346111167">Os dados de sites são limpos do dispositivo quando fecha todas as janelas</translation>
 <translation id="5727728807527375859">As extensões, as aplicações e os temas podem danificar o computador. Tem a certeza de que pretende continuar?</translation>
 <translation id="5728450728039149624">Opções de bloqueio de ecrã do Smart Lock</translation>
+<translation id="572914206753951782">Certifique-se de que o Chromebook tem a versão mais recente. Em seguida, reinicie o Chromebook e tente novamente.</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Co&amp;lar e ir</translation>
 <translation id="5733109311583381874">Adicione as suas palavras aos dicionários do utilizador para personalizar os candidatos de conversão.</translation>
@@ -5536,6 +5557,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5811614940486072060">Este ficheiro não é habitualmente transferido e pode ser perigoso</translation>
 <translation id="5812674658566766066">Expandir tudo</translation>
 <translation id="5815645614496570556">Endereço X.400</translation>
+<translation id="5816166985204777171">Esta app do sistema está pré-instalada no seu dispositivo</translation>
 <translation id="5816434091619127343">As alterações solicitadas à impressora deixariam-na inutilizável.</translation>
 <translation id="581659025233126501">Ativar sincronização</translation>
 <translation id="5817069030404929329">Pretende mover as palavras-passe deste dispositivo para a sua Conta Google?</translation>
@@ -6330,6 +6352,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6508261954199872201">Aplicação: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licença de multimédia</translation>
 <translation id="6511279028091289182">Determina como estabelecer uma ligação segura a websites. Usa um fornecedor de serviços gerido em <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
+<translation id="6511607461419653612">Reinicie o Chromebook e tente novamente</translation>
 <translation id="6511827214781912955">Considere eliminar o ficheiro <ph name="FILENAME" /> para que os outros utilizadores deste dispositivo não possam ver as suas palavras-passe</translation>
 <translation id="6512808201725371249">Já foi guardada uma palavra-passe para esta conta no seu Gestor de Palavras-passe da Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">O Google Chrome irá utilizar dados móveis se não estiver ligado a outra rede.</translation>
@@ -6822,6 +6845,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6931690462168617033">Força do clique</translation>
 <translation id="6935286146439255109">Não existe um tabuleiro de papel</translation>
 <translation id="6938386202199793006">Tem 1 impressora guardada.</translation>
+<translation id="6938387822292071111">Mostrar imagens nos cartões de sobreposição de pré-visualização para separadores</translation>
 <translation id="6938606182859551396">Para receber notificações do seu telemóvel no seu <ph name="DEVICE_TYPE" />, siga as instruções no telemóvel para conceder acesso às notificações aos Serviços do Google Play.</translation>
 <translation id="694168622559714949">O administrador definiu um idioma predefinido que não pode ser modificado.</translation>
 <translation id="6941937518557314510">Inicie sessão no <ph name="TOKEN_NAME" /> para autenticar em <ph name="HOST_NAME" /> com o seu certificado.</translation>
@@ -6855,9 +6879,11 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6964390816189577014">Herói</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965607054907047032">Libertar memória com base na inatividade dos separadores</translation>
 <translation id="6965648386495488594">Porta</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6966370001499648704">Controle os telemóveis utilizados como chaves de segurança</translation>
+<translation id="6967112302799758487">Todos os jogos e apps instalados através do Steam para o Chromebook (beta) vão ser removidos deste dispositivo. Os dados associados a estes jogos e apps também vão ser removidos. Certifique-se de que faz uma cópia de segurança das apps e dos jogos guardados antes da desinstalação.</translation>
 <translation id="6967430741871315905">Não é possível verificar se o dispositivo é permitido</translation>
 <translation id="696780070563539690">Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="6968288415730398122">Introduza a sua palavra-passe para configurar o bloqueio de ecrã</translation>
@@ -7001,6 +7027,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7078120482318506217">Todas as redes</translation>
 <translation id="708060913198414444">C&amp;opiar endereço do áudio</translation>
 <translation id="7082568314107259011">A rede <ph name="NETWORK_NAME" /> é gerida pelo seu administrador</translation>
+<translation id="7083774521940805477">O Steam para o Chromebook (beta) não está disponível no seu Chromebook.</translation>
 <translation id="7085389578340536476">Permitir que o Chrome grave áudio?</translation>
 <translation id="708550780726587276">(não configurada)</translation>
 <translation id="7086672505018440886">Inclua ficheiros de registo do Chrome no arquivo.</translation>
@@ -7059,6 +7086,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7141105143012495934">O início de sessão falhou porque não foi possível obter os detalhes da sua conta. Contacte o gestor ou tente novamente.</translation>
 <translation id="7141844554192012199">Verificação</translation>
 <translation id="7143207342074048698">A ligar</translation>
+<translation id="7143409552554575716">Sinalizações do ChromeOS</translation>
 <translation id="7144856456372460176">&amp;Instalar <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7148426638542880639">Os sites podem não funcionar como esperado. Escolha esta opção se não quiser deixar informações no seu dispositivo sobre os sites que visita.</translation>
@@ -7737,6 +7765,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7728668285692163452">A alteração do canal será aplicada mais tarde</translation>
 <translation id="7730449930968088409">Capturar o conteúdo do ecrã</translation>
 <translation id="7730683939467795481">Esta página foi alterada pela extensão "<ph name="EXTENSION_NAME" />".</translation>
+<translation id="7732702411411810416">Certifique-se de que tem ligação à Internet e tente novamente</translation>
 <translation id="773511996612364297">Acentos</translation>
 <translation id="7737115349420013392">A sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737203573077018777">Instrução <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> recebida</translation>
@@ -8237,6 +8266,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8154790740888707867">Sem ficheiro</translation>
 <translation id="8154912474061769055">As funcionalidades em muitos sites podem não funcionar</translation>
 <translation id="815491593104042026">Ups! A autenticação falhou, porque foi configurada para utilizar um URL não seguro (<ph name="BLOCKED_URL" />). Contacte o gestor.</translation>
+<translation id="8155003161114963960">Traduzir…</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Não foram encontradas palavras-passe comprometidas.}=1{{COUNT} palavra-passe comprometida.}other{{COUNT} palavras-passe comprometidas.}}</translation>
 <translation id="8157248655669507702">Ative os dados móveis para instalar um perfil do eSIM</translation>
 <translation id="8157704005178149728">A configurar a supervisão</translation>
@@ -8422,6 +8452,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8314381333424235892">Extensão em falta ou desinstalada.</translation>
 <translation id="831440797644402910">Não é possível abrir esta pasta</translation>
 <translation id="8314835274931377415">Pretende iniciar a configuração do acesso por comutador?</translation>
+<translation id="8315018673856831477">Opções da funcionalidade Poupança de memória</translation>
 <translation id="8317671367883557781">Adicionar ligação de rede</translation>
 <translation id="8317965619823678157">copiar palavras-passe</translation>
 <translation id="8318266828739827371">Use uma vista de ecrã dividido para ver a área ampliada do ecrã. Use Pesquisa + Ctrl + D para ativar e desativar a lupa ancorada.</translation>
@@ -9284,6 +9315,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cerca de 1 notificação por dia}other{Cerca de {NUM_NOTIFICATION} notificações por dia}}</translation>
 <translation id="9058760336383947367">Ver PPD da impressora</translation>
 <translation id="9061383912634843744">Inicie sessão automaticamente nos sites e apps com as credenciais guardadas. Se esta funcionalidade estiver desativada, é-lhe pedida sempre uma confirmação antes de iniciar sessão num site ou numa app.</translation>
+<translation id="9061694916020926968">Tem de ter sessão iniciada numa Conta Google para usar o Steam para o Chromebook (beta). Inicie sessão e tente novamente.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> até <ph name="ERROR_LINE_END" />.</translation>
 <translation id="9064275926664971810">Ativar a funcionalidade de Preenchimento Automático para preencher formulários Web com um único clique</translation>

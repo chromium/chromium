@@ -193,6 +193,7 @@
 <translation id="225943865679747347">エラー コード: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">アカウントを追加</translation>
 <translation id="2268044343513325586">絞り込み</translation>
+<translation id="2269277877025820298">もっと見る</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
 <translation id="2286505070150039482">選択したテキスト</translation>
 <translation id="2287614783861766820">{count,plural, =1{この住所はこのデバイスから削除されます。}other{これらの住所はこのデバイスから削除されます。}}</translation>
@@ -1072,6 +1073,7 @@
 <translation id="7887198238286927132">プライバシー保護のため、Chrome ではこの欄の自動入力は行われません。</translation>
 <translation id="7911190106180361398">お客様の組織では、[すべてを同期する] の設定は許可されていません。</translation>
 <translation id="7920949005883349320">プライバシーとセキュリティ</translation>
+<translation id="792357691529995513">問題は検出されませんでした</translation>
 <translation id="7930998711684428189">データ侵害によりパスワードが漏洩した場合に警告します。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">パスワードをエクスポート...</translation>

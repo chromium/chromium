@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Taustiņš “<ph name="KEY_NAME" />” nav nospiests</translation>
 <translation id="1435763214710588005">Katru mēnesi noteiktā dienā automātiski tiek atiestatīta datu lietojuma vērtība</translation>
 <translation id="1442433966118452622">Attēla avots</translation>
+<translation id="1449035143498573192">Atvērt Google meklēšanā</translation>
 <translation id="1451536289672181509">Ierīce ir tastatūra.</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Ievades metodes</translation>
 <translation id="7955587717700691983">Bluetooth tastatūra</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
+<translation id="7971535376154084247">Vispārīgas vadīklas</translation>
 <translation id="7977800524392185497">Lai izveidotu savienojumu ar <ph name="NETWORK_NAME" /> tīklu, pārejiet uz iestatījumiem.</translation>
 <translation id="7978412674231730200">Privātā atslēga</translation>
 <translation id="7994702968232966508">EAP metode</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Mājas pakalpojumu sniedzēja nosaukums</translation>
 <translation id="8475690821716466388">Wi-Fi tīkls aizsargā nedrošs protokols WEP PSK</translation>
 <translation id="8476242415522716722">apakšējais tastatūras apgaismojums</translation>
+<translation id="8476942730579767658">Logi un darbvietas</translation>
 <translation id="8477551185774834963">DNS latentums nedaudz pārsniedz pieļaujamo slieksni</translation>
 <translation id="8483248364096924578">IP adrese</translation>
 <translation id="8491311378305535241">Nevar izveidot savienojumu ar HTTP vietnēm no Android lietotnēm, ja ir iespējots ugunsmūris</translation>

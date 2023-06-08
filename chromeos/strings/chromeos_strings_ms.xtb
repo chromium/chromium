@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Kemaskinian perisian tegar untuk tetingkap peranti luaran dibuka. <ph name="NUM_UPDATES" /> kemaskinian tersedia.</translation>
 <translation id="1145516343487477149">Cari artikel bantuan dan jawapan kepada soalan lazim Chromebook</translation>
+<translation id="1164939766849482256">Penyelamat skrin subuh sehingga gelap</translation>
 <translation id="1167755866710282443">Buka menu untuk menyesuaikan kunci. Seret menu untuk bergerak.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Biasa (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">Navigasi penyemak imbas</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
+<translation id="2880569433548999039">Penyelamat skrin aliran awan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
 <translation id="2940811910881150316">Tidak dapat menguji peranti. Buka semula penutup untuk menguji.</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
 <translation id="3160172848211257835">Hantar <ph name="BEGIN_LINK1" />maklumat sistem &amp; apl<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Letakkan dokumen anda di atas pengimbas</translation>
+<translation id="3174321110679064523">Hiasan latar subuh sehingga gelap</translation>
 <translation id="3188257591659621405">Fail saya</translation>
 <translation id="319101249942218879">Imej avatar ditukar</translation>
 <translation id="3192947282887913208">Fail Audio</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
+<translation id="3373141842870501561">Hiasan latar aliran Bumi</translation>
 <translation id="3404249063913988450">Dayakan penyelamat skrin</translation>
 <translation id="3413935475507503304">Untuk meneruskan kemaskinian, klik Seterusnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">atas</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
 <translation id="3663574643422533538">Pilih kerja seni eksklusif <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">Hiasan latar aliran awan</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">kawalan rgb</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
+<translation id="382043424867370667">Hiasan latar matahari terbenam</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">Kata laluan lama</translation>
 <translation id="4453205916657964690">Topeng subnet</translation>
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
+<translation id="4469288414739283461">Penyelamat skrin aliran Bumi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
 <translation id="4500966230243561393">Warna antara muka</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">Jalankan Semula Rutin</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">warna cahaya belakang</translation>
+<translation id="5292579816060236070">Hiasan latar matahari terbenam</translation>
 <translation id="5294769550414936029">versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Alihkan tetingkap ke meja</translation>
+<translation id="5303837385540978511">Hiasan latar eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiti</translation>
 <translation id="5317780077021120954">Simpan</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Imbas semula halaman?}=1{Imbas semula halaman {PAGE_NUMBER}?}other{Imbas semula halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">Penyelamat skrin eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Dihentikan - Kertas tersangkut</translation>
 <translation id="6494974875566443634">Penyesuaian</translation>
 <translation id="6500818810472529210">Lihat hasil dalam Google Search</translation>

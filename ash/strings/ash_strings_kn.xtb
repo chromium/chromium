@@ -141,6 +141,7 @@
 <translation id="1550406609415860283">ಸಾಧನಗಳು ಲಭ್ಯವಿವೆ</translation>
 <translation id="1550523713251050646">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳಿಗೆ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
+<translation id="1576511610858879060">ನಿಮ್ಮ Chromebook ಅಥವಾ ಬ್ಲೂಟೂತ್ ಸಾಧನವು ಬ್ಲೂಟೂತ್‌ನ ಹಳೆಯ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದೆ. ಉತ್ತಮ ಆಡಿಯೊ ಗುಣಮಟ್ಟಕ್ಕಾಗಿ ಮತ್ತೊಂದು ಇನ್‌ಪುಟ್ ಮೂಲವನ್ನು ಬಳಸಿ.</translation>
 <translation id="1576623706766186887">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಆನ್ ಆಗಿರುವಾಗ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="1586324912145647027">1 ರಿಂದ 8 ನೇ ಡೆಸ್ಕ್‌ವರೆಗೆ ಹೋಗಿ</translation>
 <translation id="1589090746204042747">ಈ ಸೆಶನ್‌ನಲ್ಲಿ ನೀವು ನಡೆಸುವ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸುವುದು</translation>
@@ -356,6 +357,7 @@
 <translation id="256712445991462162">ಡಾಕ್ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2575685495496069081">ಬಹು ಸೈನ್-ಇನ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="2579264398927991698">ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="2582112259361606227">ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> ಜೊತೆಗೆ ಸಂಯೋಜಿಸಲು Ctrl + W ಒತ್ತಿರಿ. ಡೆಸ್ಕ್ ಮತ್ತು ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಲು Ctrl + Shift + W ಒತ್ತಿರಿ.</translation>
 <translation id="2595239820337756193">5 ಕಿ.ಮೀ. ಅನ್ನು ಮೈಲಿಗಳಲ್ಲಿ</translation>
@@ -687,6 +689,7 @@
 <translation id="4028481283645788203">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
+<translation id="404437169852192935">ಅಪ್‌ಡೇಟ್‌ಗಳು ಕೊನೆಗೊಂಡಿವೆ</translation>
 <translation id="4049230407053723315">ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‍ಗಳು</translation>
 <translation id="4057003836560082631">ಬ್ರೌಸರ್ ಟ್ಯಾಬ್ <ph name="TOTAL_COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ ಆ್ಯಪ್‍‍ಗೆ ಆಫ್ ಇದೆ}one{# ಆ್ಯಪ್‍‍ಗೆ ಆಫ್ ಇದೆ}other{# ಆ್ಯಪ್‍‍ಗೆ ಆಫ್ ಇದೆ}}</translation>
@@ -1017,11 +1020,13 @@
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> ಅಥವಾ<ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿವೆ</translation>
 <translation id="5503884284981862082">Google Assistant ತೆರೆಯಿರಿ/ಮುಚ್ಚಿ</translation>
+<translation id="550391772491508736">ಬಿತ್ತರಿಸುವಿಕೆಯನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="5506975627792768506">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಅನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5512042095225963688">ಹಿಂದಿನ ಪದವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಎಲ್ಲಾ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿದ್ದಾರೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
+<translation id="5529587891732734495">ಬಿತ್ತರಿಸುವಿಕೆಯನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="5532994612895037630">ಪೂರ್ಣ-ಪರದೆಯನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಎಲ್ಲಿಯಾದರೂ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5536723544185013515">ಇತ್ತೀಚಿನ ಆ್ಯಪ್‌ಗಳು, ಎಲ್ಲಾ ಇತ್ತೀಚಿನ ಆ್ಯಪ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಲೆಫ್ಟ್ ಅಥವಾ ರೈಟ್ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="553675580533261935">ಸೆಷನ್ ನಿರ್ಗಮಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -1388,6 +1393,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಹಳೆಯ ರೆಸಲ್ಯೂಷನ್‌ಗೆ ಹಿಂತಿರುಗಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
+<translation id="7185362672357349361">ಮ್ಯೂಟ್ ನಡ್ಜ್ ಆನ್ ಮಾಡಬೇಕೇ? ಮ್ಯೂಟ್ ಮಾಡಿದ್ದಾಗ ನೀವು ಮಾತನಾಡಿದರೆ ನಿಮಗೆ ನೋಟಿಫಿಕೇಶನ್ ಸಿಗುತ್ತದೆ. ಆಡಿಯೋ ಎಂದಿಗೂ ನಿಮ್ಮ ಸಾಧನವನ್ನು ತೊರೆಯುವುದಿಲ್ಲ.</translation>
 <translation id="7187711731540696127">ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, ಯಾವುದೇ ಸಾಧನಗಳು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="7188494361780961876">ಮೆನುವನ್ನು ಪರದೆಯ ಮೇಲ್ಭಾಗದ ಎಡತುದಿಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7189412385142492784">ಶುಕ್ರ ಗ್ರಹ ಎಷ್ಟು ದೂರದಲ್ಲಿದೆ</translation>
@@ -1502,7 +1508,7 @@
 <translation id="7714767791242455379">ಹೊಸ ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> ವರೆಗೆ ಆನ್ ಆಗಿರುತ್ತದೆ</translation>
 <translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ಅಧಿಸೂಚನೆ}one{# ಅಧಿಸೂಚನೆಗಳು}other{# ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ನೋಟಿಫಿಕೇಶನ್}one{# ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}other{# ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}}</translation>
 <translation id="7723703419796509666">ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಕನ್ಸೋಲ್ ಅನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7727952505535211425">ಹೊಸ ಟ್ಯಾಬ್‌ ಒಂದರಲ್ಲಿನ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>

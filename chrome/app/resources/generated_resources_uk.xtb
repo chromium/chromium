@@ -1458,7 +1458,7 @@
 <translation id="2214018885812055163">Спільні папки</translation>
 <translation id="2214884991347062907">Неправильний пароль, повторіть спробу</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Не показано 1 рядок&gt;}one{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядок&gt;}few{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядки&gt;}many{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядків&gt;}other{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядка&gt;}}</translation>
-<translation id="2218019600945559112">Миша та сенсорна панель</translation>
+<translation id="2218019600945559112">Миша й сенсорна панель</translation>
 <translation id="2218515861914035131">Вставити як звичайний текст</translation>
 <translation id="221872881068107022">Зворотне прокручування</translation>
 <translation id="2219007152108311874">Запитувати під час кожного відвідування</translation>
@@ -1953,7 +1953,6 @@
 <translation id="2612676031748830579">Номер картки</translation>
 <translation id="2613210758071148851">Заборонити запуск розширень на сайті <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306">Сайт <ph name="ORIGIN" /> зможе змінювати файл <ph name="FILENAME" /></translation>
-<translation id="2616008379779647117">Мова субтитрів</translation>
 <translation id="2616366145935564096">Читати та змінювати свої дані на веб-сайті <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Налаштуйте функцію "Передавання поблизу"</translation>
 <translation id="261953424982546039">Chrome і експериментальні функції…</translation>

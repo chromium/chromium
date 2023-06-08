@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰ আপডে’ট কৰা ৱিণ্ড’খন খোলা আছে। <ph name="NUM_UPDATES" /> টা আপডে’ট উপলব্ধ।</translation>
 <translation id="1145516343487477149">Chromebook সম্পৰ্কীয় সহায়ক প্ৰবন্ধ আৰু সাধাৰণ প্ৰশ্নসমূহৰ উত্তৰ বিচাৰক</translation>
+<translation id="1164939766849482256">কাহিলি পুৱাৰ পৰা আন্ধাৰ হোৱালৈকে দেখুওৱা স্ক্ৰীন ছেভাৰ</translation>
 <translation id="1167755866710282443">কীসমূহ কাষ্টমাইজ কৰিবলৈ মেনু খোলক। মেনু স্থানান্তৰ কৰিবলৈ টানি আনি এৰক।</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
 <translation id="1175951029573070619">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">ব্ৰাউজাৰ নেভিগেশ্বন</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
+<translation id="2880569433548999039">ডাৱৰৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
 <translation id="2940811910881150316">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক।</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">কেপ্টিভ প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />ছিষ্টেম আৰু এপৰ তথ্য<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />মেট্ৰিক্স<ph name="END_LINK2" /> পঠিয়াওক</translation>
 <translation id="3170673040743561620">আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
+<translation id="3174321110679064523">কাহিলি পুৱাৰ পৰা আন্ধাৰ হোৱালৈকে দেখুওৱা ৱালপেপাৰ</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="319101249942218879">অৱতাৰৰ প্ৰতিচ্ছবি সলনি হৈছে</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">ৱিণ্ড’</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369013195428705271">আপুনি সকলো প্ৰিণ্টৰ ইতিহাস নিশ্চিতভাৱে মচিব বিচাৰেনে? আপোনাৰ চলি থকা প্ৰিণ্টৰ কামসমূহ মচা নহয়।</translation>
+<translation id="3373141842870501561">পৃথিৱীৰ প্ৰবাহৰ ৱালপেপাৰ</translation>
 <translation id="3404249063913988450">স্ক্ৰীন ছেভাৰ সক্ষম কৰক</translation>
 <translation id="3413935475507503304">আপডে’টটো কাৰ্যকৰী কৰিবলৈ, পৰৱৰ্তীত টিপক।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">ওপৰলৈ</translation>
 <translation id="3651050199673793219">তাপমানৰ এটা একক বাছনি কৰক</translation>
 <translation id="3663574643422533538"><ph name="PRODUCT_NAME" />ৰ বিশেষ শিল্পকৰ্ম বাছনি কৰক</translation>
+<translation id="3668449597372804501">ডাৱৰৰ প্ৰবাহৰ ৱালপেপাৰ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
 <translation id="370665806235115550">ল'ড হৈ আছে...</translation>
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">rgb নিয়ন্ত্ৰণসমূহ</translation>
 <translation id="38114475217616659">সকলো ইতিহাস মচক</translation>
 <translation id="3820172043799983114">অমান্য পিন।</translation>
+<translation id="382043424867370667">সূৰ্যাস্তৰ ৱালপেপাৰ</translation>
 <translation id="3824259034819781947">ফাইল সংলগ্ন কৰক</translation>
 <translation id="3838338534323494292">নতুন পাছৱৰ্ড</translation>
 <translation id="3845880861638660475">ডায়লগটো বন্ধ কৰিবলৈ <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> টিপক।</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">পুৰণি পাছৱৰ্ড</translation>
 <translation id="4453205916657964690">ছাবনেট মাস্ক</translation>
 <translation id="4454245904991689773">স্কেন কৰি ইয়াত ছেভ কৰক</translation>
+<translation id="4469288414739283461">পৃথিৱীৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
 <translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">ৰুটিন পুনৰ চলাওক</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰৰ ৰং</translation>
+<translation id="5292579816060236070">সূৰ্যোদয়ৰ ৱালপেপাৰ</translation>
 <translation id="5294769550414936029">সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ৱিণ্ড’ ডেস্কলৈ নিয়ক</translation>
+<translation id="5303837385540978511"><ph name="PRODUCT_NAME" />ৰ বিশেষ ৱালপেপাৰ</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">পৰিচয়</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}=1{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}one{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}other{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
+<translation id="6488559935020624631"><ph name="PRODUCT_NAME" />ৰ বিশেষ স্ক্ৰীন ছেভাৰ</translation>
 <translation id="649050271426829538">বন্ধ হৈছে - কাগজ ঠাহ খাই গৈছে</translation>
 <translation id="6494974875566443634">কাষ্টমাইজেশ্বন</translation>
 <translation id="6500818810472529210">Google Searchত ফলাফল চাওক</translation>

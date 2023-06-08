@@ -1948,7 +1948,6 @@
 <translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> တွင် မည်သည့်နောက်ဆက်တွဲကိုမျှ ခွင့်မပြုရန်</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> သည် <ph name="FILENAME" /> ကို ပြင်ဆင်နိုင်ပါမည်</translation>
-<translation id="2616008379779647117">စာတန်းထိုး ဘာသာစကား</translation>
 <translation id="2616366145935564096">သင်၏ ဒေတာကို<ph name="WEBSITE_1" />မှာ ဖတ်ပါ၊ ပြောင်းလဲပါ</translation>
 <translation id="2618797463720777311">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကို စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -6948,7 +6947,7 @@
 <translation id="7022562585984256452">သင့်ပင်မ စာမျက်နှာ အားသတ်မှတ်ပြီးဖြစ်သည်။</translation>
 <translation id="7025082428878635038">လက်ဟန်များဖြင့် လမ်းညွှန်ရန် နည်းလမ်းအသစ်ကို မိတ်ဆက်ခြင်း</translation>
 <translation id="7025190659207909717">မိုဘိုင်း အချက်လက် ဝန်ဆောင်မှု စီမံခန့်ခွဲခြင်း</translation>
-<translation id="7025895441903756761">လုံခြုံရေးနှင့် ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
+<translation id="7025895441903756761">လုံခြုံရေးနှင့် ကိုယ်ရေးဒေတာ</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{အားလုံးကို &amp;ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}=1{&amp;ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}other{({COUNT}) ခုလုံးကို &amp;ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}}</translation>
 <translation id="7029307918966275733">Crostini ထည့်သွင်းမထားပါ။ ခရက်ဒစ်များကြည့်ရန် Crostini ထည့်သွင်းပါ။</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>

@@ -243,6 +243,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1998100899771863792">Pašreizējā darbvieta</translation>
 <translation id="2001444736072756133">Meklējiet <ph name="CATEGORY" />, failus, lietotnes un citu saturu.</translation>
 <translation id="2016340657076538683">Ierakstiet ziņojumu</translation>
+<translation id="2017998995161831444">Atvērt sadaļu “Palīdzība” lietotnē Izpēte</translation>
 <translation id="2018630726571919839">Pastāstīt joku</translation>
 <translation id="2021864487439853900">Noklikšķiniet, lai atbloķētu</translation>
 <translation id="2023558322300866873">Varat jebkurā brīdī apturēt pakešu tveršanu</translation>
@@ -629,6 +630,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3765841986579723851">Rediģēts šodien</translation>
 <translation id="3773700760453577392">Administrators ir aizliedzis lietotājam <ph name="USER_EMAIL" /> vairākkārtēju pierakstīšanos. Lai turpinātu, visiem lietotājiem ir jāizrakstās.</translation>
 <translation id="3779139509281456663">Tiek veidots savienojums ar ierīci <ph name="NAME" /></translation>
+<translation id="3781910048497807059">Izcelt iepriekšējo rūti</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
 <translation id="3796198851576711985">akumulatora stāvoklis</translation>
@@ -767,6 +769,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
 <translation id="4424159417645388645">5. darbvieta</translation>
+<translation id="4427695046139341014">Spēļu informācijas panelis</translation>
 <translation id="4430019312045809116">Skaļums</translation>
 <translation id="4435022394553622295">Skatiet tālruņa paziņojumus un lietotnes savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4441283832827406317">Lietotnes ir kārtotas pēc nosaukuma</translation>
@@ -799,6 +802,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4541706525461326392">Notiek profila noņemšana. Tas var ilgt dažas minūtes.</translation>
 <translation id="4544483149666270818">Atlasiet logu, kura saturs jāieraksta</translation>
 <translation id="454541942614298893">mana ierīce</translation>
+<translation id="4545950850562423083">Saglabāt pašreizējo lapu kā grāmatzīmi</translation>
 <translation id="4548482551627849548">Pārvietot aktīvo logu uz darbvietu kreisajā pusē</translation>
 <translation id="4560576029703263363">Ieslēgts</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -855,6 +859,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4789348252524569426">Nevar instalēt runas failus. Jums ir jāatjaunina ierīce. Restartējiet ierīci un mēģiniet vēlreiz.</translation>
 <translation id="478959186716341421">Notiek apraide</translation>
 <translation id="4798622944000246716">Jūsu mobilais tīkls neatbalsta tīklāju</translation>
+<translation id="4798888871844665150">Kopētais vienums jau atrodas starpliktuvē. Lai to skatītu, izmantojiet taustiņu kombināciju <ph name="SHORTCUT_KEY_NAME" />+V.</translation>
 <translation id="479989351350248267">meklēt</translation>
 <translation id="4804818685124855865">Atvienot</translation>
 <translation id="4813311884204119883">Vilkt saiti uz tukšu apgabalu ciļņu joslā</translation>
@@ -955,6 +960,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5229343007215035173">Ieslēgt/izslēgt konfidencialitātes ekrānu</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="523505283826916779">Pieejamības iestatījumi</translation>
+<translation id="5238719049014159442">Atvērt/aizvērt palaidēju</translation>
 <translation id="5245201184978705914">Nevar ģenerēt transkripciju.</translation>
 <translation id="5253783950165989294">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nav saglabātu darbvietu</translation>
@@ -1264,6 +1270,7 @@ Jauna instalācija</translation>
 <translation id="6614169507485700968">Konfidencialitātes ekrāns ir ieslēgts</translation>
 <translation id="6625718907317144388">Lietotņu <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> un citu lietotņu paziņojumi ir paslēpti, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="6627638273713273709">Meklēšana+Shift+K</translation>
+<translation id="662830937908749204">Izcelt nākamo rūti</translation>
 <translation id="6637729079642709226">Laika maiņa</translation>
 <translation id="6641720045729354415">Pārslēgt funkciju Subtitri reāllaikā. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Atsaukt kārtošanu pēc nosaukuma</translation>
@@ -1421,6 +1428,7 @@ Jauna instalācija</translation>
 <translation id="7401222354741467707">Izveidot pilnu ekrānuzņēmumu vai ekrāna ierakstu</translation>
 <translation id="7405710164030118432">Lai atbloķētu šo ierīci, ievadiet Family Link vecāku piekļuves kodu.</translation>
 <translation id="7406608787870898861">Mobilā tīkla iestatīšanas pabeigšana</translation>
+<translation id="7406854842098869085">Nospiediet un turiet taustiņu <ph name="MODIFIER_1" /> un pieskarieties taustiņam <ph name="KEY" />, kamēr ieraugāt atveramo logu; pēc tam atlaidiet taustiņus.</translation>
 <translation id="740790383907119240">Lietotņu saīsnes</translation>
 <translation id="7413851974711031813">Lai aizvērtu, nospiediet taustiņu Escape</translation>
 <translation id="7416471219712049036">Saglabāt pašreizējo lapu</translation>
@@ -1500,6 +1508,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7727952505535211425">Atvērt adreses joslā norādīto vietni jaunā cilnē</translation>
 <translation id="77365090426890123">atmiņas lietojums</translation>
 <translation id="7742327441377685481">Paziņojumu nav</translation>
+<translation id="7748275671948949022">Plauktā izcelt palaidēja pogu</translation>
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
 <translation id="776344839111254542">Noklikšķiniet, lai skatītu atjauninājuma datus.</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
@@ -1517,6 +1526,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7842569679327885685">Brīdinājums: šī ir eksperimentāla funkcija!</translation>
 <translation id="7846634333498149051">Tastatūra</translation>
 <translation id="7848989271541991537">Pārvietota uz <ph name="PAGE_NUMBER" />. lapu, <ph name="ROW_NUMBER" />. rindu, <ph name="COLUMN_NUMBER" />. sleju.</translation>
+<translation id="7851039877802112575">Izcelt uznirstošos logus un dialoglodziņus</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Lai atvērtu pārskatu, ar trim pirkstiem velciet augšup</translation>
 <translation id="7862292329216937261">Lai izmantotu ierīci viesa režīmā, izrakstieties un pēc tam ekrāna apakšdaļā atlasiet Pārlūkot kā viesim.</translation>
@@ -1654,6 +1664,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> <ph name="DELIMITER" /> no <ph name="KEY_ONE" /> līdz <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Tīkla iestatījumi</translation>
 <translation id="8433977262951327081">Tika mainīti īsinājumtaustiņi, ar kuriem plauktā var parādīt ievades opciju izvēlnes burbuli. Lūdzu, turpmāk izmantojiet <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">Atvērt atsauksmju rīku</translation>
 <translation id="8443879455002739353">“Kopēt”</translation>
 <translation id="8444246603146515890">Darbvirsma <ph name="DESK_TITILE" /> ir aktivizēta</translation>
 <translation id="8446884382197647889">Uzziniet vairāk</translation>
@@ -1705,6 +1716,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8676770494376880701">Pievienots lādētājs ar mazu strāvas padevi</translation>
 <translation id="8683506306463609433">Veiktspējas izsekošana ir aktīva</translation>
 <translation id="8703634754197148428">Sākt ierakstīšanu. Kad ierakstīšana ir sākta, izmantojiet taustiņu kombināciju Alt+Shift+L, lai pārietu uz plauktu un atrastu pogu Apturēt ierakstīšanu.</translation>
+<translation id="8704155109538237473">Izcelt logu “Attēls attēlā”</translation>
 <translation id="870917907284186124">Ieslēgt/izslēgt diktēšanu (rakstīšanu ar balsi)</translation>
 <translation id="8717459106217102612">Atlasīt iepriekšējo vārdu vai burtu</translation>
 <translation id="8721053961083920564">Skaļuma regulēšana. <ph name="STATE_TEXT" /></translation>

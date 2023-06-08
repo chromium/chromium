@@ -1950,7 +1950,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2612676031748830579">Số thẻ</translation>
 <translation id="2613210758071148851">Không chấp nhận tiện ích nào trên <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> sẽ chỉnh sửa được <ph name="FILENAME" /></translation>
-<translation id="2616008379779647117">Ngôn ngữ phụ đề</translation>
 <translation id="2616366145935564096">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Thiết lập tính năng Chia sẻ lân cận</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4334,7 +4333,7 @@ Nếu bạn chọn không chia sẻ tín hiệu, thì hồ sơ này sẽ bị đ
 <translation id="469838979880025581">Các trang web có thể yêu cầu sử dụng micrô của bạn</translation>
 <translation id="4699172675775169585">Tệp và hình ảnh được lưu trong bộ nhớ đệm</translation>
 <translation id="4699357559218762027">(tự động chạy)</translation>
-<translation id="4701025263201366865">Hoạt động đăng nhập của cha mẹ</translation>
+<translation id="4701025263201366865">Đăng nhập bằng tài khoản của cha mẹ</translation>
 <translation id="4701335814944566468">Vừa xem hôm qua</translation>
 <translation id="470644585772471629">Đảo màu</translation>
 <translation id="4707337002099455863">Luôn cho phép trên mọi trang web</translation>

@@ -276,6 +276,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2567545343356994513">Zararli sayt, yuklanma va kengaytmalarga qarshi tez va mustahkam himoya</translation>
 <translation id="2569733278091928697">Media boshqaruvi tugmalari, inkognito seanslari, yuklanmalar va boshqalarni oson boshqara olasiz</translation>
 <translation id="2571711316400087311">Boshqa tildagi sahifalarni Google Tarjimonga yuborish taklif qilinsin</translation>
+<translation id="2571834852878229351">Oʻzim kiritaman</translation>
 <translation id="2573452357057307036">Chrome brauzerini asosiy qilib sozlash haqida</translation>
 <translation id="257470231920177468">Yoqilsa, qiziqishlarni aniqlovchi saytlar soʻyxati shu yerda chiqadi.</translation>
 <translation id="2580436639406015883">Spam va firibgarlikka qarshi kurashda saytlar botlarni odamlardan ajratish maqsadida ishonch tokenlaridan foydalanadi.
@@ -567,6 +568,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="4108314971463891922">Kuzatish</translation>
 <translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="4116038641877404294">Saytlarni oflayn ko‘rish uchun yuklab oling</translation>
+<translation id="4121654769234887259">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida <ph name="USERNAME" /> hisobiga saqlanadi.</translation>
 <translation id="4124152339699379357">Bildirishnomalarga ruxsat zanjiri toʻliq hajmda ochildi</translation>
 <translation id="4135200667068010335">Yopiq varaq uzatiladigan qurilmalar roʻyxati.</translation>
 <translation id="4137746084635924146">Qurilmadagi joriy til</translation>
@@ -779,6 +781,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5171045022955879922">Qidiring yoki URL manzili kiriting</translation>
 <translation id="5174700554036517242">Varaq dastlabki balandlikka qaytdi</translation>
 <translation id="5184329579814168207">Chrome brauzerida ochish</translation>
+<translation id="5186634140793586141">Qiziq boʻlgan mavzu va qidiruvlarni boshqarish</translation>
 <translation id="5191251636205085390">Tashqi cookie fayllar oʻrniga ishlatiladigan yangi texnologiyalarni oʻrganing va boshqaring</translation>
 <translation id="5193988420012215838">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="5204967432542742771">Parolni kiriting</translation>
@@ -1362,6 +1365,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8127542551745560481">Bosh sahifani oʻzgartirish</translation>
 <translation id="8130309322784422030">Kirishga oid saqlangan axborotingiz eskirgan</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
+<translation id="8137562778192957619">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida saqlanadi.</translation>
 <translation id="8156139159503939589">Qaysi tillardagi yozuvlarni tushunasiz?</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ta fayl qoldi</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>

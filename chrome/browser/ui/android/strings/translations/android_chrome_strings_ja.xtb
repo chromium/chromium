@@ -59,6 +59,7 @@
 <translation id="1269129608791067105">履歴はここに表示されます</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> をブロック</translation>
 <translation id="1283039547216852943">タップして展開</translation>
+<translation id="1289059016768036948">Google アカウントへのログインを求められます</translation>
 <translation id="1291207594882862231">履歴、Cookie、サイトデータ、キャッシュを削除…</translation>
 <translation id="129553762522093515">最近閉じたタブ</translation>
 <translation id="1298077576058087471">最大 60% のデータを節約、今日のニュースもチェック</translation>
@@ -126,6 +127,7 @@
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="164269334534774161">このページの <ph name="CREATION_TIME" /> のオフライン コピーを表示しています</translation>
 <translation id="1644574205037202324">履歴</translation>
+<translation id="1657932388559784161">ページ分析情報のボトムシートは閉じています</translation>
 <translation id="1668122540633280551">動画プレビューを Chrome ホームページで自動的に再生する方法を選択します。</translation>
 <translation id="1670399744444387456">基本設定</translation>
 <translation id="1671236975893690980">ダウンロードを待機しています...</translation>
@@ -295,6 +297,7 @@
 <translation id="2647434099613338025">言語の追加</translation>
 <translation id="2649068648233607930">お使いのブラウザは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="2650348088770008516">プライバシー ガイドの説明が閉じられています</translation>
+<translation id="2650408372219180431">このデバイスに保存されているパスワードをエクスポート、削除する</translation>
 <translation id="2650751991977523696">ファイルをもう一度ダウンロードしますか？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 件の音声ファイル}other{# 件の音声ファイル}}</translation>
 <translation id="265156376773362237">標準プリロード</translation>
@@ -505,6 +508,7 @@
 <translation id="3773856050682458546">基本データに加えて、アクセスしたウェブサイト、使用したアプリに関する情報</translation>
 <translation id="3775705724665058594">お使いのデバイスに送信</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
+<translation id="3795154175078851242">リンク付きで画像をコピー</translation>
 <translation id="3803784507854318295">自動再生を管理します</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -807,6 +811,7 @@
 <translation id="5401851137404501592">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> に <ph name="ONE_TIME_CODE" /> を送信しますか？</translation>
 <translation id="5414836363063783498">確認しています…</translation>
+<translation id="542190472198460451">パスワードがすべてデバイスにダウンロードされ、Chrome <ph name="CHROME_CHANNEL" /> から削除されます</translation>
 <translation id="5423934151118863508">最もアクセスの多かったページがここに表示されます</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB 使用可能</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
@@ -960,6 +965,7 @@
 <translation id="6232535412751077445">「Do Not Track」を有効にすると、リクエストが閲覧トラフィックに含まれるようになります。ウェブサイトがリクエストに応答するかどうか、またリクエストがどのように解釈されるかによって、この影響は異なります。
 
 たとえば一部のウェブサイトでは、このリクエストに対して、ユーザーが過去にアクセスしたウェブサイトとは関係のない広告が表示されます。トラッキングを拒否しても、実際のところ多くのウェブサイトではユーザーの閲覧データが収集され利用されています。その用途としては、セキュリティの強化や、コンテンツ、サービス、広告、おすすめの表示、レポート統計情報の作成などが挙げられます。</translation>
+<translation id="6233974827872475843">同期をオンにして、このデバイスのパスワードを Google アカウントに保存します</translation>
 <translation id="6255794742848779505">このデバイスのパスワードの保存方法が変更されます</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
@@ -1368,6 +1374,7 @@
 <translation id="8221401890884589479">広告の提案を希望しないサイトをブロックすることもできます。また、30 日以上経過したサイトはリストから自動削除されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">フィードカード メニュー</translation>
 <translation id="8236097722223016103">ブックマークに追加</translation>
+<translation id="8237871086242677046">ページ分析情報のボトムシート</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
 <translation id="8255617931166444521">サイトは、Cookie を使用して、そのサイトでのあなたの閲覧アクティビティのみを確認できます</translation>
 <translation id="8259179246279078674">プリロードされたページは暗号化されているため、Google はプリロードされたページのコンテンツを一切把握できません。Google サーバーは、どのサイトが非公開でプリロードされたかを把握します。この情報はページをプリロードするためにのみ使用され、Google アカウントから他の情報にリンクされることはありません。</translation>
@@ -1466,6 +1473,7 @@
 <translation id="8746155870861185046">選択箇所を共有</translation>
 <translation id="874726034427945498">アドレスバーに最適な検索候補が表示されるようにするには、タブと履歴を同期します</translation>
 <translation id="8748850008226585750">メッセージは非表示です</translation>
+<translation id="8754448020583829686">リンクなしでコピー</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>
 <translation id="8765470054473112089">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="8766529642647037772">このようなハイライト表示されたリンクを作成しますか？</translation>
@@ -1477,6 +1485,7 @@
 <translation id="8803526663383843427">オンにした場合</translation>
 <translation id="8805097383171548551">QR コードをスキャンするには、カメラ付きのデバイスを使用してください。</translation>
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
+<translation id="8816556050903368450">リンク: <ph name="ORIGIN" /> を含む</translation>
 <translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8835786707922974220">保存したパスワードに常にアクセスできるようにしてください</translation>
@@ -1564,6 +1573,7 @@
 <translation id="938850635132480979">エラー: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="950679278154734362">車内で情報を同期してデータを安全に保つには、プロフィールのロックを作成する必要があります。作成すると、車に乗るたびにコードまたはパスワードの入力が求められるようになります。</translation>
+<translation id="952301137339791907">ページ分析情報のボトムシートは開いています</translation>
 <translation id="95817756606698420">中国のユーザーは Chrome での検索に <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> を使用できます。この設定は [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で変更可能です。</translation>
 <translation id="962979164594783469">このアプリをインストール</translation>
 <translation id="96681097142096641">簡易版ページを表示しますか？</translation>

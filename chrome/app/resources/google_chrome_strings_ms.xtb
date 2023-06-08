@@ -81,7 +81,9 @@
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2399868464369312507">Google Chrome sedang cuba mengedit kaedah pembayaran.</translation>
 <translation id="2401189691232800402">Sistem Chrome OS</translation>
+<translation id="2424440923901031101">Sambungan ini melanggar dasar Gedung Web Chrome dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chrome supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2467438592969358367">Google Chrome mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
+<translation id="2472092250898121027">Sambungan ini mengandungi perisian hasad dan tidak selamat. Alih keluar sambungan ini daripada Chrome supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2485422356828889247">Nyahpasang</translation>
 <translation id="2534507159460261402">Google Pay (disalin ke Chrome)</translation>
 <translation id="2556847002339236023">Organisasi anda menutup Chrome apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data semakan imbas telah dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.</translation>
@@ -281,6 +283,7 @@
 <translation id="6291549208091401781">Google Chrome telah dipasang untuk semua pengguna pada komputer anda.</translation>
 <translation id="6326175484149238433">Alih keluar dari Chrome</translation>
 <translation id="6327105987658262776">Kemas kini tidak tersedia.</translation>
+<translation id="6360449101159168105">Semasa tab ini tidak aktif, memori dikosongkan untuk mengekalkan kepantasan Chrome. Anda boleh memilih untuk sentiasa mengecualikan laman ini daripada menjadi tidak aktif.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Pentadbir anda akan memadamkan data semakan imbas secara automatik apabila ciri ini tidak digunakan selama 1 minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda yang sedia ada akan kekal terbuka.}other{Pentadbir anda akan memadamkan data semakan imbas secara automatik apabila ciri ini tidak digunakan selama # minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda yang sedia ada akan kekal terbuka.}}</translation>
 <translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
@@ -364,6 +367,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8005666035647241369">Kepada Pengurus Kata Laluan Google pada peranti ini</translation>
 <translation id="8008534537613507642">Pasang Semula Chrome</translation>
 <translation id="8013993649590906847">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
+<translation id="8019103195866286235">Sambungan ini telah dinyahterbitkan boleh pembangun dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chrome supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="80471789339884597">Terima kasih kerana memasang. Anda perlu memulakan semula semua penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Mengenai &amp;Google Chrome</translation>

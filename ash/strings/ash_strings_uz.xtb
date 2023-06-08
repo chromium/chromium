@@ -141,6 +141,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1550406609415860283">Qurilmalar mavjud</translation>
 <translation id="1550523713251050646">Qo‘shimcha parametrlarni ko‘rish</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
+<translation id="1576511610858879060">Chromebook yoki Bluetooth qurilmada yoqilgan Bluetooth versiyasi eskirgan. Audio sifatini yaxshilash uchun boshqa signal manbasidan foydalaning.</translation>
 <translation id="1576623706766186887">Lupa yoniq boʻlsa, kichiklashtirish</translation>
 <translation id="1586324912145647027">1 — 8 ish stollarini ochish</translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
@@ -356,6 +357,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="256712445991462162">mahkamlangan lupa</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> qurilmasi ulanmadi</translation>
 <translation id="2575685495496069081">Bir nechta hisobdan kirish funksiyasi yoqilmagan</translation>
+<translation id="2579264398927991698">Mikrodastur yangilanishlari</translation>
 <translation id="2582112259361606227">Yangilash uchun qayta ishga tushiring</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> bilan birlashtirish uchun Ctrl+W tugmalarini bosing. Ish stoli va oynalarni yopish uchun Ctrl+Shift+W tugmalarini bosing.</translation>
 <translation id="2595239820337756193">5 mil kilometrda</translation>
@@ -687,6 +689,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4028481283645788203">Xavfsizlikni oshirish uchun parol kiriting</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekraningiz namoyish qilinmoqda</translation>
+<translation id="404437169852192935">Yangilanishlar tugadi.</translation>
 <translation id="4049230407053723315">Tezkor sozlamalar</translation>
 <translation id="4057003836560082631">Brauzerdagi <ph name="INDEX" />-varaq, jami <ph name="TOTAL_COUNT" /> ta. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Oʻchiq, 1 ta ilova}other{Oʻchiq, # ta ilova}}</translation>
@@ -1017,11 +1020,13 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> yoki <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Mikrodastur yangilanshi mavjud</translation>
 <translation id="5503884284981862082">Google Assistentni ochish yoki yopish</translation>
+<translation id="550391772491508736">Translatsiyaga qaytish</translation>
 <translation id="5506975627792768506">Lupani yoqish yoki oʻchirish</translation>
 <translation id="5512042095225963688">Avvalgi soʻzni oʻchirish</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator barcha eSIM profillarni olib tashladi. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ulanmoqda.</translation>
+<translation id="5529587891732734495">Translatsiyani pauza qilish</translation>
 <translation id="5532994612895037630">Butun ekranni yozib olish uchun istalgan joyga bosing</translation>
 <translation id="5536723544185013515">Oxirgi ilovalarni koʻrish uchun chapga yoki oʻngga strelka tugmalarini bosing</translation>
 <translation id="553675580533261935">Seans yakunlanmoqda</translation>
@@ -1388,6 +1393,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Avvalgi ekran hajmiga qaytishga <ph name="TIMEOUT_SECONDS" /> qoldi.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
+<translation id="7185362672357349361">Ovozsiz qilish yoqilsinmi? Ovozsiz rejimda gapirsangiz ham bildirishnoma olasiz. Audio faqat qurilmada saqlanadi.</translation>
 <translation id="7187711731540696127"><ph name="DEVICE_NAME" /> hotspoti yoniq, hech qanday qurilma ulanmagan</translation>
 <translation id="7188494361780961876">Menyu ekranning yuqori chap burchagiga surildi.</translation>
 <translation id="7189412385142492784">Venera qanchalik uzoq</translation>
