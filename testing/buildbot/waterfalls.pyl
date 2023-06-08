@@ -1807,7 +1807,7 @@
       },
       'ToTLinuxASan': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'all',
