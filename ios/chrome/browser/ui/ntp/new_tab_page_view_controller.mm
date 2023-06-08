@@ -537,6 +537,18 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
 }
 
+- (void)updateHeightAboveFeed {
+  if (self.viewDidFinishLoading) {
+    CGFloat oldHeightAboveFeed = self.collectionView.contentInset.top;
+    CGFloat oldOffset = self.collectionView.contentOffset.y;
+    [self updateFeedInsetsForContentAbove];
+    CGFloat change = self.collectionView.contentInset.top - oldHeightAboveFeed;
+    // Offset the change by subtracting it from the content offset, in order to
+    // visually keep the same scroll position.
+    [self setContentOffset:oldOffset - change];
+  }
+}
+
 - (void)resetViewHierarchy {
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.contentSuggestionsViewController];

@@ -1013,7 +1013,7 @@
 #pragma mark - FeedDelegate
 
 - (void)contentSuggestionsWasUpdated {
-  [self.NTPViewController updateHeightAboveFeedAndScrollToTopIfNeeded];
+  [self.NTPViewController updateHeightAboveFeed];
 }
 
 #pragma mark - FeedManagementNavigationDelegate

@@ -100,11 +100,17 @@
 // Lays out content above feed and adjusts content suggestions.
 - (void)updateNTPLayout;
 
-// Signal to the ViewController that the height about the feed needs to be
+// Signal to the ViewController that the height above the feed needs to be
 // recalculated and thus also likely needs to be scrolled up to accommodate for
 // the new height. Nothing may happen if the ViewController determines that the
 // current scroll state should not change.
 - (void)updateHeightAboveFeedAndScrollToTopIfNeeded;
+
+// Signals to the ViewController that the height above the feed needs to be
+// recalculated. Usually called in response to an event that happens after
+// all the content has been loaded (example: a UI element expanding). Keeps
+// the scroll position from the top the same.
+- (void)updateHeightAboveFeed;
 
 // Returns whether the NTP is scrolled to the top or not.
 - (BOOL)isNTPScrolledToTop;
