@@ -5,26 +5,53 @@
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
 
+namespace {
+ArcAppListPrefs::AppInfo MakePlayStoreInfo(bool ready) {
+  return ArcAppListPrefs::AppInfo(
+      kPlayStoreAppId, kPlayStorePackage, kPlayStoreActivity,
+      std::string() /* intent_uri */, std::string() /* icon_resource_id */,
+      "" /* version_name */, base::Time() /* last_launch_time */,
+      base::Time() /* install_time */, true /* sticky */,
+      true /* notifications_enabled */,
+      arc::mojom::ArcResizeLockState::UNDEFINED,
+      true /* resize_lock_needs_confirmation */,
+      ArcAppListPrefs::WindowLayout(), ready /* ready */, false /* suspended */,
+      true /* show_in_launcher*/, false /* shortcut */, true /* launchable */,
+      false /* need_fixup */, absl::nullopt /* app_size */,
+      absl::nullopt /* data_size */,
+      mojom::AppCategory::kUndefined /* app_category */);
+}
+}  // namespace
+
 class ArcSystemStateObservationTest : public testing::Test {
  public:
-  ArcSystemStateObservationTest() {
-    arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    // Order matters: TestingProfile must be after ArcServiceManager.
-    testing_profile_ = std::make_unique<TestingProfile>();
+  ArcSystemStateObservationTest() = default;
+  ArcSystemStateObservationTest(const ArcSystemStateObservationTest&) = delete;
+  ArcSystemStateObservationTest& operator=(
+      const ArcSystemStateObservationTest&) = delete;
 
-    observation_ =
-        std::make_unique<ArcSystemStateObservation>(testing_profile_.get());
+  ~ArcSystemStateObservationTest() override = default;
+
+  void SetUp() override {
+    arc_test().SetUp(&profile_);
+
+    observation_ = std::make_unique<ArcSystemStateObservation>(&profile_);
 
     active_window_observer_ =
         observation_->GetObserverByName(kArcActiveWindowThrottleObserverName);
@@ -34,25 +61,19 @@ class ArcSystemStateObservationTest : public testing::Test {
         observation_->GetObserverByName(kArcWindowObserverName);
   }
 
-  ArcSystemStateObservationTest(const ArcSystemStateObservationTest&) = delete;
-  ArcSystemStateObservationTest& operator=(
-      const ArcSystemStateObservationTest&) = delete;
-
-  ~ArcSystemStateObservationTest() override {
-    observation_.reset();
-    testing_profile_.reset();
-    arc_service_manager_.reset();
-  }
+  void TearDown() override { observation_.reset(); }
 
   ArcSystemStateObservation* observation() { return observation_.get(); }
+  ArcAppTest& arc_test() { return arc_test_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestingProfile> testing_profile_;
+
+  TestingProfile profile_;
+  ArcAppTest arc_test_;
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
-  std::unique_ptr<ArcServiceManager> arc_service_manager_;
 
   raw_ptr<ash::ThrottleObserver, ExperimentalAsh> active_window_observer_;
   raw_ptr<ash::ThrottleObserver, ExperimentalAsh> background_service_observer_;
@@ -63,7 +84,7 @@ TEST_F(ArcSystemStateObservationTest, TestConstructDestruct) {}
 
 TEST_F(ArcSystemStateObservationTest, TestCallback) {
   int reset_count = 0;
-  observation()->OnConnectionReady();
+  observation()->OnAppStatesChanged(kPlayStoreAppId, MakePlayStoreInfo(true));
   observation()->SetDurationResetCallback(
       base::BindLambdaForTesting([&]() { reset_count++; }));
   observation()->ThrottleInstance(false);
@@ -77,7 +98,7 @@ TEST_F(ArcSystemStateObservationTest, NotPeaceIfArcNotConnected) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(absl::nullopt, observation()->GetPeaceDuration());
 
-  observation()->OnConnectionReady();
+  observation()->OnAppStatesChanged(kPlayStoreAppId, MakePlayStoreInfo(true));
   observation()->ThrottleInstance(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(absl::nullopt, observation()->GetPeaceDuration());
