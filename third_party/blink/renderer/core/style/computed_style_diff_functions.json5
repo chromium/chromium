@@ -150,6 +150,10 @@
             field_dependencies: ["overflow-y"]
           },
           {
+            method: "ScrollbarWidth()",
+            field_dependencies: ["scrollbar-width"]
+          },
+          {
             method: "Clear()",
             field_dependencies: ["clear"]
           },

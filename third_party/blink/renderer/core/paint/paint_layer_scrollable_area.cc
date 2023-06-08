@@ -1711,10 +1711,6 @@ void PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
   if (has_scrollbar == HasHorizontalScrollbar())
     return;
 
-  // when scrollbar-width is "none", the scrollbar will not be displayed
-  if (GetLayoutBox()->StyleRef().ScrollbarWidth() == EScrollbarWidth::kNone)
-    return;
-
   SetScrollbarNeedsPaintInvalidation(kHorizontalScrollbar);
 
   scrollbar_manager_.SetHasHorizontalScrollbar(has_scrollbar);
@@ -1747,10 +1743,6 @@ void PaintLayerScrollableArea::SetHasVerticalScrollbar(bool has_scrollbar) {
   }
 
   if (has_scrollbar == HasVerticalScrollbar())
-    return;
-
-  // when scrollbar-width is "none", the scrollbar will not be displayed
-  if (GetLayoutBox()->StyleRef().ScrollbarWidth() == EScrollbarWidth::kNone)
     return;
 
   SetScrollbarNeedsPaintInvalidation(kVerticalScrollbar);

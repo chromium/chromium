@@ -1659,6 +1659,8 @@ crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failur
 
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Failure ]
+crbug.com/891944 external/wpt/css/css-scrollbars/scrollbar-width-paint-004.html [ Failure ]
+crbug.com/891944 external/wpt/css/css-scrollbars/scrollbar-width-paint-005.html [ Failure ]
 
 # Failures from CSS3 Text (text-justify and text-indent: hanging/each-line) not being implemented.
 crbug.com/248894 external/wpt/css/css-pseudo/first-letter-allowed-properties.html [ Failure ]
