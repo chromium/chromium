@@ -32,6 +32,7 @@ static_library("backend") {
     "//chromeos/ash/components/local_search_service:local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp:cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
+    "//chromeos/crosapi/cpp:cpp",
     "//chromeos/strings",
     "//components/prefs:prefs",
     "//ui/base/ime/ash",
