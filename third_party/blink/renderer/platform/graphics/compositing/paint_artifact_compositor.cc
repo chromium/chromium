@@ -408,7 +408,9 @@ void PaintArtifactCompositor::LayerizeGroup(
     // C. The next chunk belongs to some subgroup of the current group.
     const auto& chunk_effect = chunk_cursor->properties.Effect().Unalias();
     if (&chunk_effect == &current_group) {
+#if !BUILDFLAG(IS_WIN) // RUN-2115
       recordreplay::Assert("[RUN-1470-1471] PaintArtifactCompositor::LayerizeGroup %d", chunk_cursor->id);
+#endif
       pending_layers_.emplace_back(chunks, chunk_cursor);
       ++chunk_cursor;
       // force_draws_content doesn't apply to pending layers that require own
