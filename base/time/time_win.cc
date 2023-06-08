@@ -166,7 +166,7 @@ void UpdateTimerIntervalLocked() {
 
 // Returns the current value of the performance counter.
 int64_t QPCNowRaw() {
-  if (!recordreplay::AreEventsDisallowed()) {
+  if (!recordreplay::AreEventsDisallowed() && !recordreplay::AreEventsPassedThrough()) {
     recordreplay::Assert("[RUN-1916] QPCNowRaw");
   }
 
