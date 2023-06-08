@@ -172,8 +172,12 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
   // this callback with stale processes.
   // https://crbug.com/1335821.
   if (!content::RenderProcessHost::FromID(process_id)) {
-    // Leave a debug trace without crashing while the bug is addressed.
-    base::debug::DumpWithoutCrashing();
+    // This is definitely hit, and often enough that we can't NOTREACHED(),
+    // CHECK(), or DumpWithoutCrashing(). Instead, log an error and gracefully
+    // return.
+    // TODO(https://crbug.com/1447448): Investigate and fix.
+    LOG(ERROR) << "Received bad DidStartWorkerForScope() message. "
+                  "No corresponding RenderProcessHost.";
     return;
   }
 
