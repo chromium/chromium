@@ -59,7 +59,7 @@ class FakeObserver : public EcheConnectionStatusHandler::Observer {
     ++num_request_background_connection_attempt_calls_;
   }
 
-  void OnRequestCloseConnnection() override {
+  void OnRequestCloseConnection() override {
     ++num_request_close_connection_calls_;
   }
 

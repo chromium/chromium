@@ -469,6 +469,13 @@ void EcheTray::OnConnectionStatusChanged(
         eche_connection_status_handler_->SetConnectionStatusForUi(
             eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
       }
+      // If the status is changed kConnectionStatusDisconnected before the
+      // timeout, manually cancel the timeout task. Also notify that the
+      // connection has been closed so that each component can clean up.
+      if (initializer_timeout_) {
+        initializer_timeout_.reset();
+        eche_connection_status_handler_->NotifyConnectionClosed();
+      }
       initializer_webview_.reset();
       break;
   }
@@ -504,8 +511,6 @@ void EcheTray::OnBackgroundConnectionTimeout() {
   // timeouts, this happens automatically for other failures.
   eche_connection_status_handler_->SetConnectionStatusForUi(
       eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
-  eche_connection_status_handler_->OnConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
   StartGracefulCloseInitializer();
 }
 

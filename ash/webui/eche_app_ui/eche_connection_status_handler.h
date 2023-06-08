@@ -33,7 +33,9 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
 
     virtual void OnRequestBackgroundConnectionAttempt();
 
-    virtual void OnRequestCloseConnnection();
+    virtual void OnRequestCloseConnection();
+
+    virtual void OnConnectionClosed();
   };
 
   EcheConnectionStatusHandler();
@@ -63,6 +65,8 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
 
   // Proxy to request that the webui shut down the connection.
   void NotifyRequestCloseConnection();
+
+  void NotifyConnectionClosed();
 
   void Bind(mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver);
 

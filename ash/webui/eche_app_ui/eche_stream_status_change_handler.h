@@ -51,7 +51,7 @@ class EcheStreamStatusChangeHandler
       mojo::PendingRemote<mojom::StreamActionObserver> observer) override;
 
   // EcheConnectionStatusHandler::Observer:
-  void OnRequestCloseConnnection() override;
+  void OnRequestCloseConnection() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
