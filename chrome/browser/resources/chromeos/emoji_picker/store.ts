@@ -46,7 +46,7 @@ export class RecentlyUsedStore {
    * returns True if any preferences are updated and false
    *    otherwise.
    */
-  savePreferredVariant(baseEmoji: string, variant: string) {
+  savePreferredVariant(variant: string, baseEmoji?: string) {
     if (!baseEmoji) {
       return false;
     }

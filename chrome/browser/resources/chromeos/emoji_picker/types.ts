@@ -19,7 +19,7 @@ export interface CategoryData {
 export interface Emoji {
   string?: string;
   visualContent?: VisualContent;
-  name: string;
+  name?: string;
   keywords?: string[];
 }
 

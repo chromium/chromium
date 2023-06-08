@@ -9,6 +9,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './emoji_category_button.html.js';
 import {CATEGORY_BUTTON_CLICK, CategoryButtonClickEvent, createCustomEvent} from './events.js';
+import {CategoryEnum} from './types.js';
 
 export class EmojiCategoryButton extends PolymerElement {
   static get is() {
@@ -21,14 +22,14 @@ export class EmojiCategoryButton extends PolymerElement {
 
   static get properties() {
     return {
-      name: {type: String, readonly: true},
+      name: {type: CategoryEnum, readonly: true},
       icon: {type: String, readonly: true},
       active: {type: Boolean, value: false},
       searchActive: {type: Boolean, value: false},
       gifSupport: {type: Boolean, value: false},
     };
   }
-  name: string;
+  name: CategoryEnum;
   icon: string;
   active: boolean;
   private gifSupport: boolean;

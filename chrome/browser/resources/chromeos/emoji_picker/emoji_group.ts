@@ -173,12 +173,14 @@ export class EmojiGroupComponent extends PolymerElement {
         category: this.category,
       }));
     } else {
-      // Visual-based emoji clicked
-      this.dispatchEvent(createCustomEvent(EMOJI_IMG_BUTTON_CLICK, {
-        name: emoji.base.name,
-        visualContent: emoji.base.visualContent,
-        category: this.category,
-      }));
+      if (emoji.base.visualContent) {
+        // Visual-based emoji clicked
+        this.dispatchEvent(createCustomEvent(EMOJI_IMG_BUTTON_CLICK, {
+          name: emoji.base.name,
+          visualContent: emoji.base.visualContent,
+          category: this.category,
+        }));
+      }
     }
   }
 
@@ -218,8 +220,9 @@ export class EmojiGroupComponent extends PolymerElement {
     // Polymer.
     beforeNextRender(this, () => {
       const variants = this.shownEmojiVariantIndex ?
-          this.shadowRoot!.getElementById(`emoji-variant-${dataIndex}`) :
-          null;
+          this.shadowRoot!.getElementById(`emoji-variant-${dataIndex}`) ??
+              undefined :
+          undefined;
 
       this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
         owner: this,
@@ -266,7 +269,7 @@ export class EmojiGroupComponent extends PolymerElement {
       if (emoji.alternates && emoji.alternates.length > 0) {
         return emojiLabel + ' with variants.';
       } else {
-        return emojiLabel;
+        return emojiLabel ?? '';
       }
     }
     return '';

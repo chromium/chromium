@@ -567,10 +567,10 @@ export class EmojiPicker extends PolymerElement {
   }
 
   private async insertText(category: CategoryEnum, item: {
-    emoji: string,
     isVariant: boolean,
-    baseEmoji: string,
-    allVariants?: Emoji[], name: string, text: string,
+    baseEmoji?: string,
+    allVariants?: Emoji[],
+    name?: string, text: string,
   }) {
     const {text, isVariant, baseEmoji, allVariants, name} = item;
     this.$.message.textContent = text + ' inserted.';
@@ -593,8 +593,7 @@ export class EmojiPicker extends PolymerElement {
   }
 
   private insertVisualContent(category: CategoryEnum, item: {
-    name: string,
-    visualContent: VisualContent,
+    name?: string, visualContent: VisualContent,
   }) {
     this.apiProxy.insertGif(item.visualContent.url.full);
     this.insertHistoryVisualContentItem(category, item);
@@ -1063,9 +1062,8 @@ export class EmojiPicker extends PolymerElement {
    */
   private insertHistoryTextItem(category: CategoryEnum, item: {
     selectedEmoji: string,
-    baseEmoji: string,
-    alternates: Emoji[],
-    name: string,
+    baseEmoji?: string, alternates: Emoji[],
+    name?: string,
   }) {
     if (this.incognito) {
       return;
@@ -1079,7 +1077,7 @@ export class EmojiPicker extends PolymerElement {
 
     const preferenceUpdated =
         this.categoriesHistory[category]?.savePreferredVariant(
-            baseEmoji, selectedEmoji);
+            selectedEmoji, baseEmoji);
 
     this.categoryHistoryUpdated(category, true, preferenceUpdated);
   }
@@ -1090,7 +1088,7 @@ export class EmojiPicker extends PolymerElement {
    */
   private insertHistoryVisualContentItem(category: CategoryEnum, item: {
     visualContent: VisualContent,
-    name: string,
+    name?: string,
   }) {
     if (this.incognito) {
       return;
@@ -1470,6 +1468,10 @@ export class EmojiPicker extends PolymerElement {
 declare global {
   interface HTMLElementTagNameMap {
     [EmojiPicker.is]: EmojiPicker;
+  }
+  interface HTMLElementEventMap {
+    [events.EMOJI_PICKER_READY]: CustomEvent;
+    [events.CATEGORY_DATA_LOADED]: events.CategoryDataLoadEvent;
   }
 }
 

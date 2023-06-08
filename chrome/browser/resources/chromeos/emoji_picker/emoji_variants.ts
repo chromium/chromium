@@ -128,8 +128,7 @@ export class EmojiVariants extends PolymerElement {
     ev.preventDefault();
     ev.stopPropagation();
     this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
-      button: null,
-      variants: null,
+      baseEmoji: this.baseEmoji,
     }));
   }
 }

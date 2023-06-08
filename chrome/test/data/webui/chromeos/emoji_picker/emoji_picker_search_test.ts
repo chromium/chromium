@@ -73,7 +73,7 @@ suite('emoji-search', () => {
             (resolve) => emojiPicker.addEventListener(
                 EMOJI_TEXT_BUTTON_CLICK, (event) => {
                   assertEquals('🧟', event.detail.text);
-                  assertEquals('zombie', event.detail.name.trim());
+                  assertEquals('zombie', event.detail.name?.trim());
                   resolve();
                 }));
         emojiSearch.onSearchKeyDown(enterEvent);
