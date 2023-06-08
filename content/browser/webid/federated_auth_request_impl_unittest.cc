@@ -3995,21 +3995,6 @@ TEST_F(FederatedAuthRequestImplTest, RpContextIsSetToNonDefaultValue) {
             blink::mojom::RpContext::kContinue);
 }
 
-// Test that when FedCmRpContext flag is at its default setting and rp_context
-// is specified, the FedCM request ignores the specified rp_context and defaults
-// to sign in.
-TEST_F(FederatedAuthRequestImplTest, RpContextIsDefaultToSignIn) {
-  RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.rp_context = blink::mojom::RpContext::kContinue;
-  MockConfiguration configuration = kConfigurationValid;
-  configuration.accounts_dialog_action =
-      AccountsDialogAction::kSelectFirstAccount;
-  RunAuthTest(request_parameters, kExpectationSuccess, configuration);
-
-  EXPECT_EQ(dialog_controller_state_.rp_context,
-            blink::mojom::RpContext::kSignIn);
-}
-
 TEST_F(FederatedAuthRequestImplTest, WellKnownInvalidContentType) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull]

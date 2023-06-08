@@ -110,3 +110,10 @@ export function select_manifest(test, test_options) {
   const manifest_url = test_options.identity.providers[0].configURL;
   return select_manifest_impl(manifest_url);
 }
+
+export function request_options_with_login_hint(manifest_filename, login_hint) {
+  let options = request_options_with_mediation_required(manifest_filename);
+  options.identity.providers[0].loginHint = login_hint;
+
+  return options;
+}
