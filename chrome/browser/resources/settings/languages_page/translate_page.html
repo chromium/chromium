@@ -41,7 +41,8 @@
           <cr-icon-button class="icon-delete-gray"
               aria-label="[[i18n('removeAutomaticLanguageAriaLabel',
                             item.displayName)]]"
-              on-click="onRemoveAlwaysTranslateLanguageClick_">
+              on-click="onRemoveAlwaysTranslateLanguageClick_"
+              title="$i18n{delete}">
           </cr-icon-button>
         </div>
       </template>
@@ -69,7 +70,8 @@
               disabled="[[hasLength_(languages.neverTranslate, 1)]]"
               aria-label="[[i18n('removeNeverLanguageAriaLabel',
                             item.displayName)]]"
-              on-click="onRemoveNeverTranslateLanguageClick_">
+              on-click="onRemoveNeverTranslateLanguageClick_"
+              title="$i18n{delete}">
           </cr-icon-button>
         </div>
       </template>
