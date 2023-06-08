@@ -5,13 +5,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *  notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
  * 3. Neither the name of Opera Software ASA nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
+ *  contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,127 +28,124 @@
  */
 
 // https://html.spec.whatwg.org/C/#globaleventhandlers
+interface mixin GlobalEventHandlers {
+  attribute EventHandler onabort;
+  attribute EventHandler onbeforeinput;
+  [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
+  [RuntimeEnabled=HTMLPopoverAttribute] attribute EventHandler onbeforetoggle;
+  attribute EventHandler onblur;
+  attribute EventHandler oncancel;
+  attribute EventHandler oncanplay;
+  attribute EventHandler oncanplaythrough;
+  attribute EventHandler onchange;
+  attribute EventHandler onclick;
+  attribute EventHandler onclose;
+  [RuntimeEnabled=ContentVisibilityAutoStateChangeEvent] attribute EventHandler oncontentvisibilityautostatechange;
+  attribute EventHandler oncontextlost;
+  attribute EventHandler oncontextmenu;
+  attribute EventHandler oncontextrestored;
+  attribute EventHandler oncuechange;
+  attribute EventHandler ondblclick;
+  attribute EventHandler ondrag;
+  attribute EventHandler ondragend;
+  attribute EventHandler ondragenter;
+  //attribute EventHandler ondragexit;
+  attribute EventHandler ondragleave;
+  attribute EventHandler ondragover;
+  attribute EventHandler ondragstart;
+  attribute EventHandler ondrop;
+  attribute EventHandler ondurationchange;
+  attribute EventHandler onemptied;
+  attribute EventHandler onended;
+  attribute OnErrorEventHandler onerror;
+  attribute EventHandler onfocus;
+  attribute EventHandler onformdata;
+  attribute EventHandler oninput;
+  attribute EventHandler oninvalid;
+  attribute EventHandler onkeydown;
+  attribute EventHandler onkeypress;
+  attribute EventHandler onkeyup;
+  attribute EventHandler onload;
+  attribute EventHandler onloadeddata;
+  attribute EventHandler onloadedmetadata;
+  attribute EventHandler onloadstart;
+  attribute EventHandler onmousedown;
+  [LegacyLenientThis] attribute EventHandler onmouseenter;
+  [LegacyLenientThis] attribute EventHandler onmouseleave;
+  attribute EventHandler onmousemove;
+  attribute EventHandler onmouseout;
+  attribute EventHandler onmouseover;
+  attribute EventHandler onmouseup;
+  attribute EventHandler onmousewheel;
+  [RuntimeEnabled=OverscrollCustomization] attribute EventHandler onoverscroll;
+  attribute EventHandler onpause;
+  attribute EventHandler onplay;
+  attribute EventHandler onplaying;
+  attribute EventHandler onprogress;
+  attribute EventHandler onratechange;
+  attribute EventHandler onreset;
+  attribute EventHandler onresize;
+  attribute EventHandler onscroll;
+  [RuntimeEnabled=ScrollEndEvents] attribute EventHandler onscrollend;
+  attribute EventHandler onsecuritypolicyviolation;
+  attribute EventHandler onseeked;
+  attribute EventHandler onseeking;
+  attribute EventHandler onselect;
+  attribute EventHandler onslotchange;
+  //attribute EventHandler onsort;
+  attribute EventHandler onstalled;
+  attribute EventHandler onsubmit;
+  attribute EventHandler onsuspend;
+  attribute EventHandler ontimeupdate;
+  attribute EventHandler ontoggle;
+  attribute EventHandler onvolumechange;
+  attribute EventHandler onwaiting;
+  attribute EventHandler onwebkitanimationend;
+  attribute EventHandler onwebkitanimationiteration;
+  attribute EventHandler onwebkitanimationstart;
+  attribute EventHandler onwebkittransitionend;
+  attribute EventHandler onwheel;
 
-[
-    LegacyTreatAsPartialInterface
-] interface mixin GlobalEventHandlers {
-    attribute EventHandler onabort;
-    attribute EventHandler onbeforeinput;
-    [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
-    [RuntimeEnabled=HTMLPopoverAttribute] attribute EventHandler onbeforetoggle;
-    attribute EventHandler onblur;
-    attribute EventHandler oncancel;
-    attribute EventHandler oncanplay;
-    attribute EventHandler oncanplaythrough;
-    attribute EventHandler onchange;
-    attribute EventHandler onclick;
-    attribute EventHandler onclose;
-    [RuntimeEnabled=ContentVisibilityAutoStateChangeEvent] attribute EventHandler oncontentvisibilityautostatechange;
-    attribute EventHandler oncontextlost;
-    attribute EventHandler oncontextmenu;
-    attribute EventHandler oncontextrestored;
-    attribute EventHandler oncuechange;
-    attribute EventHandler ondblclick;
-    attribute EventHandler ondrag;
-    attribute EventHandler ondragend;
-    attribute EventHandler ondragenter;
-    //attribute EventHandler ondragexit;
-    attribute EventHandler ondragleave;
-    attribute EventHandler ondragover;
-    attribute EventHandler ondragstart;
-    attribute EventHandler ondrop;
-    attribute EventHandler ondurationchange;
-    attribute EventHandler onemptied;
-    attribute EventHandler onended;
-    attribute OnErrorEventHandler onerror;
-    attribute EventHandler onfocus;
-    attribute EventHandler onformdata;
-    attribute EventHandler oninput;
-    attribute EventHandler oninvalid;
-    attribute EventHandler onkeydown;
-    attribute EventHandler onkeypress;
-    attribute EventHandler onkeyup;
-    attribute EventHandler onload;
-    attribute EventHandler onloadeddata;
-    attribute EventHandler onloadedmetadata;
-    attribute EventHandler onloadstart;
-    attribute EventHandler onmousedown;
-    [LegacyLenientThis] attribute EventHandler onmouseenter;
-    [LegacyLenientThis] attribute EventHandler onmouseleave;
-    attribute EventHandler onmousemove;
-    attribute EventHandler onmouseout;
-    attribute EventHandler onmouseover;
-    attribute EventHandler onmouseup;
-    attribute EventHandler onmousewheel;
-    [RuntimeEnabled=OverscrollCustomization] attribute EventHandler onoverscroll;
-    attribute EventHandler onpause;
-    attribute EventHandler onplay;
-    attribute EventHandler onplaying;
-    attribute EventHandler onprogress;
-    attribute EventHandler onratechange;
-    attribute EventHandler onreset;
-    attribute EventHandler onresize;
-    attribute EventHandler onscroll;
-    [RuntimeEnabled=ScrollEndEvents] attribute EventHandler onscrollend;
-    attribute EventHandler onsecuritypolicyviolation;
-    attribute EventHandler onseeked;
-    attribute EventHandler onseeking;
-    attribute EventHandler onselect;
-    attribute EventHandler onslotchange;
-    //attribute EventHandler onsort;
-    attribute EventHandler onstalled;
-    attribute EventHandler onsubmit;
-    attribute EventHandler onsuspend;
-    attribute EventHandler ontimeupdate;
-    attribute EventHandler ontoggle;
-    attribute EventHandler onvolumechange;
-    attribute EventHandler onwaiting;
-    attribute EventHandler onwebkitanimationend;
-    attribute EventHandler onwebkitanimationiteration;
-    attribute EventHandler onwebkitanimationstart;
-    attribute EventHandler onwebkittransitionend;
-    attribute EventHandler onwheel;
+  // auxclick
+  // https://wicg.github.io/auxclick/
+  attribute EventHandler onauxclick;
 
-    // auxclick
-    // https://wicg.github.io/auxclick/
-    attribute EventHandler onauxclick;
+  // Pointer Events
+  // https://w3c.github.io/pointerevents/#extensions-to-the-globaleventhandlers-interface
+  attribute EventHandler ongotpointercapture;
+  attribute EventHandler onlostpointercapture;
+  attribute EventHandler onpointerdown;
+  attribute EventHandler onpointermove;
+  attribute EventHandler onpointerrawupdate;
+  attribute EventHandler onpointerup;
+  attribute EventHandler onpointercancel;
+  attribute EventHandler onpointerover;
+  attribute EventHandler onpointerout;
+  attribute EventHandler onpointerenter;
+  attribute EventHandler onpointerleave;
 
-    // Pointer Events
-    // https://w3c.github.io/pointerevents/#extensions-to-the-globaleventhandlers-interface
-    attribute EventHandler ongotpointercapture;
-    attribute EventHandler onlostpointercapture;
-    attribute EventHandler onpointerdown;
-    attribute EventHandler onpointermove;
-    attribute EventHandler onpointerrawupdate;
-    attribute EventHandler onpointerup;
-    attribute EventHandler onpointercancel;
-    attribute EventHandler onpointerover;
-    attribute EventHandler onpointerout;
-    attribute EventHandler onpointerenter;
-    attribute EventHandler onpointerleave;
+  // Touch Events
+  // https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-interface
+  [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchcancel;
+  [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchend;
+  [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchmove;
+  [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchstart;
 
-    // Touch Events
-    // https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-interface
-    [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchcancel;
-    [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchend;
-    [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchmove;
-    [RuntimeEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchstart;
+  // Selection API
+  // https://w3c.github.io/selection-api/#extensions-to-globaleventhandlers
+  attribute EventHandler onselectstart;
+  attribute EventHandler onselectionchange;
 
-    // Selection API
-    // https://w3c.github.io/selection-api/#extensions-to-globaleventhandlers
-    attribute EventHandler onselectstart;
-    attribute EventHandler onselectionchange;
+  // CSS Animations
+  // https://drafts.csswg.org/css-animations/#interface-globaleventhandlers-idl
+  attribute EventHandler onanimationend;
+  attribute EventHandler onanimationiteration;
+  attribute EventHandler onanimationstart;
 
-    // CSS Animations
-    // https://drafts.csswg.org/css-animations/#interface-globaleventhandlers-idl
-    attribute EventHandler onanimationend;
-    attribute EventHandler onanimationiteration;
-    attribute EventHandler onanimationstart;
-
-    // CSS Transitions
-    // https://drafts.csswg.org/css-transitions/#interface-globaleventhandlers-idl
-    attribute EventHandler ontransitionrun;
-    attribute EventHandler ontransitionstart;
-    attribute EventHandler ontransitionend;
-    attribute EventHandler ontransitioncancel;
+  // CSS Transitions
+  // https://drafts.csswg.org/css-transitions/#interface-globaleventhandlers-idl
+  attribute EventHandler ontransitionrun;
+  attribute EventHandler ontransitionstart;
+  attribute EventHandler ontransitionend;
+  attribute EventHandler ontransitioncancel;
 };

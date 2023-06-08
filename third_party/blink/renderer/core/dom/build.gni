@@ -164,7 +164,6 @@ blink_core_sources_dom = [
   "focusgroup_flags.h",
   "frame_request_callback_collection.cc",
   "frame_request_callback_collection.h",
-  "global_event_handlers.h",
   "has_invalidation_flags.h",
   "icon_url.cc",
   "icon_url.h",
