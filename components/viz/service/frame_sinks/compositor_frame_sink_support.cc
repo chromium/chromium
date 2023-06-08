@@ -617,6 +617,24 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   else
     preferred_frame_interval_ = BeginFrameArgs::MinInterval();
 
+  if (features::ShouldOnBeginFrameThrottleVideo() &&
+      frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo) {
+    // Skip throttling for very small changes in frame interval.
+    // A value of 2 ms proved to be enough to not have throttle firing during
+    // a constant video playback but can be changed to a higher value if
+    // over firing occurs in some edge case while always aiming to keep it
+    // lower than a full frame interval.
+    if ((last_known_frame_interval_ - preferred_frame_interval_).magnitude() >
+        base::Milliseconds(2)) {
+      TRACE_EVENT_INSTANT2("viz", "Set sink framerate",
+                           TRACE_EVENT_SCOPE_THREAD, "interval",
+                           preferred_frame_interval_, "sourceid",
+                           frame.metadata.begin_frame_ack.frame_id.source_id);
+      last_known_frame_interval_ = preferred_frame_interval_;
+      ThrottleBeginFrame(preferred_frame_interval_);
+    }
+  }
+
   Surface* prev_surface =
       surface_manager_->GetSurfaceForId(last_created_surface_id_);
   Surface* current_surface = nullptr;
@@ -804,7 +822,7 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
   // that the frames are presented too late when in fact, this is intentional.
   if (begin_frame_interval_.is_positive() &&
       details.presentation_feedback.interval.is_positive() &&
-      features::ShouldOverrideThrottledFrameRateParams()) {
+      ShouldAdjustBeginFrameArgs()) {
     details.presentation_feedback.interval = begin_frame_interval_;
   }
   pending_received_frame_times_.erase(received_frame_timestamp);
@@ -866,8 +884,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
   CheckPendingSurfaces();
 
   BeginFrameArgs adjusted_args = args;
-  if (begin_frame_interval_.is_positive() &&
-      features::ShouldOverrideThrottledFrameRateParams()) {
+  if (begin_frame_interval_.is_positive() && ShouldAdjustBeginFrameArgs()) {
     adjusted_args.interval = begin_frame_interval_;
     // Deadline is not necessarily frame_time + interval. For example, it may
     // incorporate an estimate for the frame's draw/swap time, so it's
@@ -1225,6 +1242,11 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
 
 bool CompositorFrameSinkSupport::ShouldMergeBeginFrameWithAcks() const {
   return features::IsOnBeginFrameAcksEnabled() && wants_begin_frame_acks_;
+}
+
+bool CompositorFrameSinkSupport::ShouldAdjustBeginFrameArgs() const {
+  return features::ShouldOverrideThrottledFrameRateParams() ||
+         features::ShouldOnBeginFrameThrottleVideo();
 }
 
 bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(

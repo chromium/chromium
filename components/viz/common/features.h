@@ -66,6 +66,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBufferQueueImageSetPurgeable);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictSubtree);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAcks);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAllowLateAcks);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameThrottleVideo);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedBitmapToSharedImage);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollBoost);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
@@ -105,6 +106,7 @@ VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForClients();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 VIZ_COMMON_EXPORT bool ShouldVideoDetectorIgnoreNonVideoFrames();
 VIZ_COMMON_EXPORT bool ShouldOverrideThrottledFrameRateParams();
+VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 VIZ_COMMON_EXPORT bool ShouldRendererAllocateImages();
 VIZ_COMMON_EXPORT bool IsOnBeginFrameAcksEnabled();
 

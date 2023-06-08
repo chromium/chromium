@@ -441,6 +441,9 @@ public final class ProductionSupportedFlagList {
                     "If enabled, allows navigations to be queued when there is "
                             + "an existing pending commit navigation in progress."),
             Flag.baseFeature("NetworkServiceCookiesHighPriorityTaskRunner"),
+            Flag.baseFeature(VizFeatures.ON_BEGIN_FRAME_THROTTLE_VIDEO,
+                    "Enables throttling OnBeginFrame for video frame sinks"
+                            + "with a preferred framerate defined."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

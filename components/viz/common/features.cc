@@ -250,6 +250,13 @@ BASE_FEATURE(kOnBeginFrameAllowLateAcks,
              "OnBeginFrameAllowLateAcks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// if enabled, Any CompositorFrameSink of type video that defines a preferred
+// framerate that is below the display framerate will throttle OnBeginFrame
+// callbacks to match the preferred framerate.
+BASE_FEATURE(kOnBeginFrameThrottleVideo,
+             "OnBeginFrameThrottleVideo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSharedBitmapToSharedImage,
              "SharedBitmapToSharedImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -401,6 +408,10 @@ bool ShouldVideoDetectorIgnoreNonVideoFrames() {
 
 bool ShouldOverrideThrottledFrameRateParams() {
   return base::FeatureList::IsEnabled(kOverrideThrottledFrameRateParams);
+}
+
+bool ShouldOnBeginFrameThrottleVideo() {
+  return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
 }
 
 bool ShouldRendererAllocateImages() {
