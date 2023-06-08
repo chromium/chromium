@@ -104234,6 +104234,13 @@ would be helpful to identify which type is being sent.
   <int value="536903681" label="TPM_CCE_PolicyFidoSigned"/>
 </enum>
 
+<enum name="TPMExpandedApRoVerificationStatus">
+  <int value="-4096" label="Success"/>
+  <int value="20135176" label="SignedWithTestRootKey"/>
+  <int value="268435456" label="SettingNotProvisioned"/>
+  <int value="285212672" label="NonZeroGbbFlags"/>
+</enum>
+
 <enum name="TPMFirmwareUpdateResult">
   <int value="0" label="Success"/>
   <int value="1" label="Success after retry"/>
