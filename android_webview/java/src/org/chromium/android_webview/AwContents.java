@@ -1845,6 +1845,9 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void setOnscreenContentProvider(OnscreenContentProvider onscreenContentProvider) {
+        if (mOnscreenContentProvider != null) {
+            mOnscreenContentProvider.destroy();
+        }
         mOnscreenContentProvider = onscreenContentProvider;
     }
 
