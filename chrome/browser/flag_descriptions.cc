@@ -1425,7 +1425,7 @@ const char kExperimentalWebAssemblyJSPIDescription[] =
     "API.";
 
 const char kEnablePolicyTestPageName[] =
-    "Enables access to the policy test page.";
+    "Enable access to the policy test page";
 const char kEnablePolicyTestPageDescription[] =
     "When enabled, allows the policy test page to be accessed at "
     "chrome://policy/test.";

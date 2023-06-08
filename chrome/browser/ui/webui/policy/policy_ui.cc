@@ -15,10 +15,14 @@
 #include "chrome/grit/chromium_strings.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/policy_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -160,6 +164,16 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  if (policy::utils::IsPolicyTestingEnabled(profile->GetPrefs())) {
+    // Localized strings for chrome://policy/test.
+    static constexpr webui::LocalizedString kPolicyTestStrings[] = {
+        {"testTitle", IDS_POLICY_TEST_TITLE},
+    };
+    source->AddLocalizedStrings(kPolicyTestStrings);
+    source->AddResourcePath("test/", IDR_POLICY_TEST_POLICY_TEST_HTML);
+    source->AddResourcePath("test", IDR_POLICY_TEST_POLICY_TEST_HTML);
+  }
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kPolicyResources, kPolicyResourcesSize),

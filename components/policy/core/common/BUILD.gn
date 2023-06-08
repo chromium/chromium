@@ -186,6 +186,8 @@ source_set("internal") {
     "policy_service_impl.h",
     "policy_statistics_collector.cc",
     "policy_statistics_collector.h",
+    "policy_utils.cc",
+    "policy_utils.h",
     "proxy_policy_provider.cc",
     "proxy_policy_provider.h",
     "remote_commands/remote_command_job.cc",

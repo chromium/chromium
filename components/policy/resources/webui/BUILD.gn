@@ -10,6 +10,7 @@ build_webui("build") {
   static_files = [
     "policy.html",
     "policy.css",
+    "test/policy_test.html",
   ]
 
   if (is_android || is_ios) {
