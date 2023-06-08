@@ -1836,6 +1836,7 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   info.smooth_thread = smooth_thread;
   info.scroll_thread = scrolling_thread;
   info.has_missing_content = has_missing_content_;
+  info.sequence_number = args_.frame_id.sequence_number;
 
   if (frame_skip_reason_.has_value() &&
       frame_skip_reason() == FrameSkippedReason::kNoDamage) {
@@ -1858,15 +1859,7 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
     info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
   }
 
-  if (!stage_history_.empty()) {
-    const auto& stage = stage_history_.back();
-    if (stage.stage_type == StageType::kTotalLatency) {
-      DCHECK_EQ(frame_termination_time_ - args_.frame_time,
-                stage.end_time - stage.start_time);
-      info.total_latency = frame_termination_time_ - args_.frame_time;
-    }
-  }
-
+  info.termination_time = frame_termination_time_;
   return info;
 }
 

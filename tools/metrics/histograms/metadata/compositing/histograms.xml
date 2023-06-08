@@ -1229,6 +1229,55 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Graphics.Smoothness.Jank3.AllSequences" units="%"
+    expires_after="2024-06-05">
+  <owner>jonross@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of janks for a sequence by aggregating all its animations
+    and interactions, where a sequence is a series of frames produced which
+    contain at least one of the animations/interactions. Such animations and
+    interactions encompass: Compositor-thread animations; Main-thread
+    animations; JS animations; scrolling; and pinch-gestures.
+
+    Jank is measured by tracking the number of abrupt increases in frame
+    presentation interval, divided by the total number of frames expected to be
+    produced and displayed. The lower this number is, the less the smoothness
+    varies over time.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Jank3.{Thread}{Sequence}" units="%"
+    expires_after="2024-06-05">
+  <owner>jonross@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of janks for a sequence by aggregating all {Sequence},
+    where a sequence is a series of frames produced which contain at least one
+    of the aforementioned effects.
+
+    Jank is measured by tracking the number of abrupt increases in frame
+    presentation interval, divided by the total number of frames expected to be
+    produced and displayed. The lower this number is, the less the smoothness
+    varies over time.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+  <token key="Thread">
+    <variant name="CompositorThread."/>
+    <variant name="MainThread."/>
+  </token>
+  <token key="Sequence" variants="SmoothnessSequence"/>
+</histogram>
+
 <histogram name="Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow"
     units="%" expires_after="2023-11-12">
   <owner>jonross@chromium.org</owner>

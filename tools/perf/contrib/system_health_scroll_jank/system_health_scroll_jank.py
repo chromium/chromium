@@ -26,6 +26,8 @@ _BENCHMARK_UMA = [
     'Graphics.Smoothness.Checkerboarding3.WheelScroll',
     'Graphics.Smoothness.Jank.Compositor.TouchScroll',
     'Graphics.Smoothness.Jank.Main.TouchScroll',
+    'Graphics.Smoothness.Jank3.Compositor.TouchScroll',
+    'Graphics.Smoothness.Jank3.Main.TouchScroll',
     'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations',
     'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions',
     'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
