@@ -16,6 +16,10 @@ import {isTree, isTreeItem} from './xf_tree_util.js';
  */
 export const TREE_ITEM_INDENT = 20;
 
+/**
+ * TODO(b/285977941): Remove the closure annotation here.
+ * @constructor
+ */
 @customElement('xf-tree-item')
 export class XfTreeItem extends XfBase {
   /**
@@ -535,7 +539,6 @@ function getCSS() {
     :host {
       --xf-tree-item-indent: ${TREE_ITEM_INDENT};
       display: block;
-      margin-top: 8px;
     }
 
     ul {
@@ -547,6 +550,7 @@ function getCSS() {
 
     li {
       display: block;
+      padding: 4px;
     }
 
     li:focus-visible {
