@@ -537,18 +537,18 @@ void TabUsageRecorderBrowserAgent::WebStateListChanged(
       replace_change.inserted_web_state()->AddObserver(this);
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      web::WebState* inserted_web_state = insert_change.inserted_web_state();
+      if (selection.activating) {
+        web_state_created_selected_ = inserted_web_state;
+      }
+
+      inserted_web_state->AddObserver(this);
+      break;
+    }
   }
-}
-
-void TabUsageRecorderBrowserAgent::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  if (activating)
-    web_state_created_selected_ = web_state;
-
-  web_state->AddObserver(this);
 }
 
 void TabUsageRecorderBrowserAgent::WebStateDetachedAt(

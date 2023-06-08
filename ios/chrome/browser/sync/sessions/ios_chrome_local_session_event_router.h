@@ -58,10 +58,6 @@ class IOSChromeLocalSessionEventRouter
     void WebStateListChanged(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateSelection& selection) override;
-    void WebStateInsertedAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index,
-                            bool activating) override;
     void WebStateDetachedAt(WebStateList* web_state_list,
                             web::WebState* web_state,
                             int index) override;

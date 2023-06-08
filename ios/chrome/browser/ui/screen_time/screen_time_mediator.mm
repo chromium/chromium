@@ -81,6 +81,9 @@
     case WebStateListChange::Type::kReplace:
       [self updateConsumer];
       break;
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a new WebState is inserted.
+      break;
   }
 }
 

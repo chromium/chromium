@@ -21,6 +21,8 @@ class WebStateListChange {
     // Used when a WebState at the specified index is replaced with a new
     // WebState.
     kReplace,
+    // Used when a new WebState is inserted into WebStateList.
+    kInsert,
   };
 
   // Non-copyable, non-moveable.
@@ -72,9 +74,36 @@ class WebStateListChangeReplace final : public WebStateListChange {
   raw_ptr<web::WebState> inserted_web_state_;
 };
 
+// Represent a change that correspond to inserting one WebState to WebStateList.
+class WebStateListChangeInsert final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kInsert;
+
+  explicit WebStateListChangeInsert(raw_ptr<web::WebState> inserted_web_state);
+  ~WebStateListChangeInsert() final = default;
+
+  Type type() const final;
+
+  // The WebState that is inserted into the WebStateList. It is inserted to the
+  // position of `index` in WebStateSelection.
+  raw_ptr<web::WebState> inserted_web_state() const {
+    CHECK(inserted_web_state_);
+    return inserted_web_state_;
+  }
+
+ private:
+  raw_ptr<web::WebState> inserted_web_state_;
+};
+
 struct WebStateSelection {
   // The index to be changed.
   const int index;
+  // True when the WebState at `index` is being activated.
+  // TODO(crbug.com/1442546): Rename this flag to `activated` once
+  // WebStateActivatedAt() is merged into WebStateListChange() because
+  // WebStateListChange() will be able to handle an operation with the
+  // activation at the same time.
+  const bool activating;
 };
 
 // Constants used when notifying about changes to active WebState.
@@ -109,14 +138,6 @@ class WebStateListObserver : public base::CheckedObserver {
   virtual void WebStateListChanged(WebStateList* web_state_list,
                                    const WebStateListChange& change,
                                    const WebStateSelection& selection);
-
-  // Invoked after a new WebState has been added to the WebStateList at the
-  // specified index. `activating` will be true if the WebState will become
-  // the new active WebState after the insertion.
-  virtual void WebStateInsertedAt(WebStateList* web_state_list,
-                                  web::WebState* web_state,
-                                  int index,
-                                  bool activating);
 
   // Invoked after the WebState at the specified index is moved to another
   // index.

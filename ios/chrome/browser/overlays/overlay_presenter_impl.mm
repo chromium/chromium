@@ -532,14 +532,13 @@ void OverlayPresenterImpl::WebStateListChanged(
       WebStateAddedToBrowser(replace_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      WebStateAddedToBrowser(insert_change.inserted_web_state());
+      break;
+    }
   }
-}
-
-void OverlayPresenterImpl::WebStateInsertedAt(WebStateList* web_state_list,
-                                              web::WebState* web_state,
-                                              int index,
-                                              bool activating) {
-  WebStateAddedToBrowser(web_state);
 }
 
 void OverlayPresenterImpl::WillDetachWebStateAt(WebStateList* web_state_list,

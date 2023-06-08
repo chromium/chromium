@@ -77,17 +77,14 @@ void FullscreenWebStateListObserver::WebStateListChanged(
       }
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      DCHECK_EQ(web_state_list_, web_state_list);
+      if (selection.activating) {
+        controller_->ExitFullscreen();
+      }
+      break;
+    }
   }
-}
-
-void FullscreenWebStateListObserver::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  DCHECK_EQ(web_state_list_, web_state_list);
-  if (activating)
-    controller_->ExitFullscreen();
 }
 
 void FullscreenWebStateListObserver::WebStateActivatedAt(

@@ -309,6 +309,9 @@ using ReauthenticationEvent::kSuccess;
       }
       break;
     }
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a new WebState is inserted.
+      break;
   }
 }
 

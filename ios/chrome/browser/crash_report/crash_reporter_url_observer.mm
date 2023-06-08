@@ -257,6 +257,17 @@ void CrashReporterURLObserver::WebStateListChanged(
       }
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      web::WebState* inserted_web_state = insert_change.inserted_web_state();
+      web_state_to_group_[inserted_web_state] =
+          GroupForWebStateList(web_state_list);
+      if (selection.activating) {
+        RecordURLForWebState(inserted_web_state);
+      }
+      break;
+    }
   }
 }
 
@@ -266,16 +277,6 @@ void CrashReporterURLObserver::WebStateDetachedAt(WebStateList* web_state_list,
   web_state_to_group_.erase(web_state);
   if (web_state == current_web_states_[GroupForWebStateList(web_state_list)]) {
     RemoveGroup(GroupForWebStateList(web_state_list));
-  }
-}
-
-void CrashReporterURLObserver::WebStateInsertedAt(WebStateList* web_state_list,
-                                                  web::WebState* web_state,
-                                                  int index,
-                                                  bool activating) {
-  web_state_to_group_[web_state] = GroupForWebStateList(web_state_list);
-  if (activating) {
-    RecordURLForWebState(web_state);
   }
 }
 

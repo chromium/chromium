@@ -354,6 +354,18 @@ void SessionRestorationBrowserAgent::WebStateListChanged(
       SaveSession(/*immediately=*/false);
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      if (selection.activating ||
+          insert_change.inserted_web_state()->IsLoading()) {
+        return;
+      }
+
+      // Persist the session state if the new web state is not loading.
+      SaveSession(/*immediately=*/false);
+      break;
+    }
   }
 }
 
@@ -378,18 +390,6 @@ void SessionRestorationBrowserAgent::WebStateDetachedAt(
   // Persist the session state after CloseAllWebStates. SaveSession will discard
   // calls when the web_state_list is not empty and the active WebState is null,
   // which is the order CloseAllWebStates uses.
-  SaveSession(/*immediately=*/false);
-}
-
-void SessionRestorationBrowserAgent::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  if (activating || web_state->IsLoading())
-    return;
-
-  // Persist the session state if the new web state is not loading.
   SaveSession(/*immediately=*/false);
 }
 

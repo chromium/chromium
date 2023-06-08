@@ -192,6 +192,9 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
       }
       break;
     }
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a new WebState is inserted.
+      break;
   }
 }
 

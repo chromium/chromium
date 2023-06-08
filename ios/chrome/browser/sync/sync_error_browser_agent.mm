@@ -75,14 +75,13 @@ void SyncErrorBrowserAgent::WebStateListChanged(
       CreateReSignInInfoBarDelegate(replace_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      CreateReSignInInfoBarDelegate(insert_change.inserted_web_state());
+      break;
+    }
   }
-}
-
-void SyncErrorBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
-                                               web::WebState* web_state,
-                                               int index,
-                                               bool activating) {
-  CreateReSignInInfoBarDelegate(web_state);
 }
 
 void SyncErrorBrowserAgent::WebStateDetachedAt(WebStateList* web_state_list,

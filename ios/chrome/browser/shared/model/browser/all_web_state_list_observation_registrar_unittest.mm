@@ -21,11 +21,17 @@
 
 class TestRegisteredWebStateListObserver : public WebStateListObserver {
  public:
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override {
-    insertion_count_++;
+  void WebStateListChanged(WebStateList* web_state_list,
+                           const WebStateListChange& change,
+                           const WebStateSelection& selection) override {
+    switch (change.type()) {
+      case WebStateListChange::Type::kReplace:
+        // Do nothing when a WebState is replaced.
+        break;
+      case WebStateListChange::Type::kInsert:
+        insertion_count_++;
+        break;
+    }
   }
   int insertion_count_;
 };

@@ -357,8 +357,11 @@ int WebStateList::InsertWebStateImpl(int index,
     wrapper->SetShouldResetOpenerOnActiveWebStateChange(true);
   }
 
+  const WebStateListChangeInsert insert_change(web_state_ptr);
+  const WebStateSelection selection = {.index = index,
+                                       .activating = activating};
   for (auto& observer : observers_) {
-    observer.WebStateInsertedAt(this, web_state_ptr, index, activating);
+    observer.WebStateListChanged(this, insert_change, selection);
   }
 
   if (opener.opener) {
@@ -422,7 +425,8 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
 
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
                                                  web_state_ptr);
-  const WebStateSelection selection = {.index = index};
+  const WebStateSelection selection = {.index = index,
+                                       .activating = (index == active_index_)};
   for (auto& observer : observers_) {
     observer.WebStateListChanged(this, replace_change, selection);
   }

@@ -43,14 +43,13 @@ void UpgradeCenterBrowserAgent::WebStateListChanged(
       WebStateAttached(replace_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      WebStateAttached(insert_change.inserted_web_state());
+      break;
+    }
   }
-}
-
-void UpgradeCenterBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
-                                                   web::WebState* web_state,
-                                                   int index,
-                                                   bool activating) {
-  WebStateAttached(web_state);
 }
 
 void UpgradeCenterBrowserAgent::WillDetachWebStateAt(

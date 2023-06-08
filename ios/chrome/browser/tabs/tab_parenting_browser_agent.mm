@@ -42,12 +42,12 @@ void TabParentingBrowserAgent::WebStateListChanged(
           replace_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      TabParentingGlobalObserver::GetInstance()->OnTabParented(
+          insert_change.inserted_web_state());
+      break;
+    }
   }
-}
-
-void TabParentingBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
-                                                  web::WebState* web_state,
-                                                  int index,
-                                                  bool activating) {
-  TabParentingGlobalObserver::GetInstance()->OnTabParented(web_state);
 }

@@ -269,6 +269,10 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   switch (change.type()) {
     case WebStateListChange::Type::kReplace:
       NOTREACHED_NORETURN();
+    case WebStateListChange::Type::kInsert:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // -webStateList:didInsertWebState:atIndex:activating: to here.
+      break;
   }
 }
 

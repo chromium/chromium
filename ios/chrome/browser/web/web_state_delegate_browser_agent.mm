@@ -97,15 +97,13 @@ void WebStateDelegateBrowserAgent::WebStateListChanged(
       SetWebStateDelegate(replace_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      SetWebStateDelegate(insert_change.inserted_web_state());
+      break;
+    }
   }
-}
-
-void WebStateDelegateBrowserAgent::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  SetWebStateDelegate(web_state);
 }
 
 void WebStateDelegateBrowserAgent::WebStateDetachedAt(

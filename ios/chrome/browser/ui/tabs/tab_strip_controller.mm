@@ -1178,6 +1178,10 @@ const CGFloat kSymbolSize = 18;
       [self updateTabView:view withWebState:insertedWebState];
       break;
     }
+    case WebStateListChange::Type::kInsert:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // -webStateList:didInsertWebState:atIndex:activating: to here.
+      break;
   }
 }
 

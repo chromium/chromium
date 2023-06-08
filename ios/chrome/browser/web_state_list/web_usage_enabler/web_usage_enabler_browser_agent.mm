@@ -88,16 +88,15 @@ void WebUsageEnablerBrowserAgent::WebStateListChanged(
                                      /*triggers_initial_load=*/true);
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      UpdateWebUsageForAddedWebState(
+          insert_change.inserted_web_state(),
+          /*triggers_initial_load=*/selection.activating);
+      break;
+    }
   }
-}
-
-void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  UpdateWebUsageForAddedWebState(web_state,
-                                 /*triggers_initial_load=*/activating);
 }
 
 void WebUsageEnablerBrowserAgent::WebStateDetachedAt(

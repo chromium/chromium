@@ -80,19 +80,18 @@ void BreadcrumbManagerBrowserAgent::WebStateListChanged(
                      selection.index);
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      if (batch_operation_) {
+        ++batch_operation_->insertion_count;
+        return;
+      }
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      LogTabInsertedAt(GetTabId(insert_change.inserted_web_state()),
+                       selection.index, selection.activating);
+      break;
+    }
   }
-}
-
-void BreadcrumbManagerBrowserAgent::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  if (batch_operation_) {
-    ++batch_operation_->insertion_count;
-    return;
-  }
-  LogTabInsertedAt(GetTabId(web_state), index, activating);
 }
 
 void BreadcrumbManagerBrowserAgent::WebStateMoved(WebStateList* web_state_list,
@@ -120,8 +119,9 @@ void BreadcrumbManagerBrowserAgent::WebStateActivatedAt(
     web::WebState* new_web_state,
     int active_index,
     ActiveWebStateChangeReason reason) {
-  if (reason != ActiveWebStateChangeReason::Activated)
+  if (reason != ActiveWebStateChangeReason::Activated) {
     return;
+  }
   absl::optional<int> old_tab_id =
       old_web_state ? absl::optional<int>(GetTabId(old_web_state))
                     : absl::nullopt;

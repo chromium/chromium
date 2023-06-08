@@ -51,15 +51,10 @@ void IncognitoWebStateObserver::Observer::WebStateListChanged(
       // visible UI change. There is nothing to do since the number of Tabs
       // haven't changed.
       break;
+    case WebStateListChange::Type::kInsert:
+      incognito_tracker_->OnIncognitoWebStateAdded();
+      break;
   }
-}
-
-void IncognitoWebStateObserver::Observer::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  incognito_tracker_->OnIncognitoWebStateAdded();
 }
 
 void IncognitoWebStateObserver::Observer::WebStateDetachedAt(

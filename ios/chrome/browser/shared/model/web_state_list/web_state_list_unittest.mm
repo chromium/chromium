@@ -50,13 +50,13 @@ class WebStateListTestObserver : public WebStateListObserver {
     web_state_list_destroyed_called_ = false;
   }
 
-  // Returns whether WebStateInsertedAt was invoked.
+  // Returns whether the insertion operation was invoked.
   bool web_state_inserted_called() const { return web_state_inserted_called_; }
 
   // Returns whether WebStateMoved was invoked.
   bool web_state_moved_called() const { return web_state_moved_called_; }
 
-  // Returns whether WebStateReplacedAt was invoked.
+  // Returns whether the replacement operation was invoked.
   bool web_state_replaced_called() const { return web_state_replaced_called_; }
 
   // Returns whether WebStateDetachedAt was invoked.
@@ -83,17 +83,14 @@ class WebStateListTestObserver : public WebStateListObserver {
                            const WebStateSelection& selection) override {
     switch (change.type()) {
       case WebStateListChange::Type::kReplace:
+        EXPECT_TRUE(web_state_list->IsMutating());
         web_state_replaced_called_ = true;
         break;
+      case WebStateListChange::Type::kInsert:
+        EXPECT_TRUE(web_state_list->IsMutating());
+        web_state_inserted_called_ = true;
+        break;
     }
-  }
-
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override {
-    EXPECT_TRUE(web_state_list->IsMutating());
-    web_state_inserted_called_ = true;
   }
 
   void WebStateMoved(WebStateList* web_state_list,

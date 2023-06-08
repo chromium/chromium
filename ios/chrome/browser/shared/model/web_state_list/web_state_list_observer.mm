@@ -22,6 +22,14 @@ WebStateListChange::Type WebStateListChangeReplace::type() const {
   return kType;
 }
 
+WebStateListChangeInsert::WebStateListChangeInsert(
+    raw_ptr<web::WebState> inserted_web_state)
+    : inserted_web_state_(inserted_web_state) {}
+
+WebStateListChange::Type WebStateListChangeInsert::type() const {
+  return kType;
+}
+
 WebStateListObserver::WebStateListObserver() = default;
 
 WebStateListObserver::~WebStateListObserver() {
@@ -34,11 +42,6 @@ void WebStateListObserver::WebStateListChanged(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {}
-
-void WebStateListObserver::WebStateInsertedAt(WebStateList* web_state_list,
-                                              web::WebState* web_state,
-                                              int index,
-                                              bool activating) {}
 
 void WebStateListObserver::WebStateMoved(WebStateList* web_state_list,
                                          web::WebState* web_state,

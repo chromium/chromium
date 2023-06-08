@@ -60,15 +60,40 @@ void WebStateListMetricsBrowserAgent::SessionRestorationFinished(
   metric_collection_paused_ = false;
 }
 
-void WebStateListMetricsBrowserAgent::WebStateInsertedAt(
+#pragma mark - WebStateListObserver
+
+void WebStateListMetricsBrowserAgent::WebStateListChanged(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace:
+      // Do nothing when a WebState is replaced.
+      break;
+    case WebStateListChange::Type::kInsert:
+      if (metric_collection_paused_) {
+        return;
+      }
+      base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
+      break;
+  }
+}
+
+void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
+    WebStateList* web_state_list,
+    web::WebState* old_web_state,
+    web::WebState* new_web_state,
+    int active_index,
+    ActiveWebStateChangeReason reason) {
   if (metric_collection_paused_) {
     return;
   }
-  base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
+  session_metrics_->OnWebStateActivated();
+  if (reason == ActiveWebStateChangeReason::Replaced) {
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
 }
 
 void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
@@ -90,22 +115,7 @@ void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
   }
 }
 
-void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  if (metric_collection_paused_) {
-    return;
-  }
-  session_metrics_->OnWebStateActivated();
-  if (reason == ActiveWebStateChangeReason::Replaced) {
-    return;
-  }
-
-  base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
-}
+#pragma mark - WebStateObserver
 
 void WebStateListMetricsBrowserAgent::DidFinishNavigation(
     web::WebState* web_state,
@@ -147,6 +157,8 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
       break;
   }
 }
+
+#pragma mark - BrowserObserver
 
 void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);

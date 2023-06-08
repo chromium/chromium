@@ -90,13 +90,17 @@
                     selection:(const WebStateSelection&)selection {
   DCHECK_EQ(_webStateList, webStateList);
   switch (change.type()) {
-    case WebStateListChange::Type::kReplace:
+    case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replaceChange =
           change.As<WebStateListChangeReplace>();
       if (selection.index == webStateList->active_index()) {
         [self setActiveWebState:replaceChange.inserted_web_state()];
         [_commandHandler closeTextZoom];
       }
+      break;
+    }
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a new WebState is inserted.
       break;
   }
 }
