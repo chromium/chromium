@@ -33,16 +33,17 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   using PassKey = base::PassKey<HTMLFencedFrameElement>;
 
  public:
-  // For a while there will be two underlying implementations of Fenced Frames:
+  //  Previously, there were two underlying implementations of Fenced Frames:
   //   1.) The early Origin Trial implementation based on the ShadowDOM
   //       encapsulating a neutered <iframe> element
   //   2.) The MPArch implementation, which hosts a truly top-level FrameTree in
   //       the browser process, and relies on the MPArch long-tail feature work
-  // For as long as both of these implementations need to exist, we abstract a
-  // common API from them which is neatly captured by `FencedFrameDelegate`. The
-  // actual implementation of this interface will be one of the options listed
-  // above. See documentation above `FencedFrameMPArchDelegate` and
-  // `FencedFrameShadowDOMDelegate`.
+  // A common API for both implementations was neatly captured by the below
+  // `FencedFrameDelegate`. However, the ShadowDOM implementation is now
+  // obsolete and the MPArch implementation is being deployed. Eventually, the
+  // MPArch-specific details will be merged back into this file. In the
+  // meantime, please see documentation above `FencedFrameMPArchDelegate` for
+  // implementation details.
   class CORE_EXPORT FencedFrameDelegate
       : public GarbageCollected<FencedFrameDelegate> {
    public:
@@ -220,6 +221,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   Member<HTMLIFrameElementSandbox> sandbox_;
 
   friend class FencedFrameMPArchDelegate;
+  // TODO(crbug.com/1262022): Remove this now that ShadowDOM is obsolete.
   friend class FencedFrameShadowDOMDelegate;
   friend class ResizeObserverDelegate;
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,

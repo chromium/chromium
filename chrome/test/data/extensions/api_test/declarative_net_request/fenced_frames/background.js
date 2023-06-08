@@ -124,8 +124,7 @@ var tests = [
   },
 
   // Makes sure rule 4 for subframes applies and not rule 2 for main frames
-  // or rule 3 for thirdParty domains. Note for shadowDOM the initiator is
-  // not opaque so the initiator is available and a rule 3 applies.
+  // or rule 3 for thirdParty domains.
   function testAllowRule() {
     resetMatchedRules();
 

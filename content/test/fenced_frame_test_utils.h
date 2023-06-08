@@ -18,10 +18,8 @@ class RenderFrameHost;
 class MappingResultObserver;
 
 // `node` is expected to be the child FrameTreeNode created in response to a
-// <fencedframe> element being created. This method:
-//    - Returns `node` if we're in the ShadowDOM version
-//    - Returns the FrameTreeNode of the fenced frame's inner FrameTree, if
-//    we're in the MPArch version of fenced frames
+// <fencedframe> element being created. This method returns the FrameTreeNode of
+// the fenced frame's inner FrameTree.
 FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node);
 
 void SimulateSharedStorageURNMappingComplete(

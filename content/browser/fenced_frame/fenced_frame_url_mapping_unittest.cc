@@ -35,6 +35,8 @@ namespace {
 // `expected_mapped_ad_descriptors` contains the URLs the first URNs are
 // expected to map to, and will be padded with "about:blank" URLs until it's
 // blink::kMaxAdAuctionAdComponents in length.
+// TODO(crbug.com/1262022): the ShadowDOM implementation is deprecated, and
+// these tests should be cleaned up to only reflect MPArch behavior.
 void ValidatePendingAdComponentsMap(
     FencedFrameURLMapping* fenced_frame_url_mapping,
     bool add_to_new_map,
