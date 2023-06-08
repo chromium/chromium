@@ -38,6 +38,7 @@ a {
   color: var(--interactive-color);
 }
 .page-title {
+  float: left;
   font-size: 164%;
   font-weight: bold;
 }
@@ -81,6 +82,9 @@ a {
 }
 .licence pre {
   white-space: pre-wrap;
+}
+#print-link {
+  float: right;
 }
 .dialog #print-link,
 .dialog .homepage {
