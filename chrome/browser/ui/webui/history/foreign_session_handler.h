@@ -68,9 +68,9 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
                                     SessionID tab_id,
                                     const WindowOpenDisposition& disposition);
 
-  static void OpenForeignSessionWindows(content::WebUI* web_ui,
-                                        const std::string& session_string_value,
-                                        size_t window_num);
+  static void OpenForeignSessionWindows(
+      content::WebUI* web_ui,
+      const std::string& session_string_value);
 
   // Returns a pointer to the current session model associator or nullptr.
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
@@ -79,6 +79,11 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   void SetWebUIForTesting(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ForeignSessionHandlerTest,
+                           HandleOpenForeignSessionAllTabs);
+  FRIEND_TEST_ALL_PREFIXES(ForeignSessionHandlerTest,
+                           HandleOpenForeignSessionTab);
+
   void OnForeignSessionUpdated();
 
   base::Value::List GetForeignSessions();
@@ -86,10 +91,12 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   // Returns a string used to show the user when a session was last modified.
   std::u16string FormatSessionTime(const base::Time& time);
 
-  // Determines which session is to be opened, and then calls
-  // OpenForeignSession, to begin the process of opening a new browser window.
-  // This is a javascript callback handler.
-  void HandleOpenForeignSession(const base::Value::List& args);
+  // Opens all the tabs of a foreign session, potentially spanning multiple
+  // windows. This as a javascript callback handler.
+  void HandleOpenForeignSessionAllTabs(const base::Value::List& args);
+
+  // Opens a single foreign session tab. This is a javascript callback handler.
+  void HandleOpenForeignSessionTab(const base::Value::List& args);
 
   // Determines whether foreign sessions should be obtained from the sync model.
   // This is a javascript callback handler, and it is also called when the sync

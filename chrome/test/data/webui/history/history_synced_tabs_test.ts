@@ -264,7 +264,6 @@ suite('<history-synced-device-manager>', function() {
         })
         .then(args => {
           assertEquals('Chromebook', args.sessionTag, 'sessionTag is correct');
-          assertEquals(123, args.windowId, 'windowId is correct');
           assertEquals(456, args.tabId, 'tabId is correct');
           assertFalse(args.e.altKey, 'altKey is defined');
           assertFalse(args.e.ctrlKey, 'ctrlKey is defined');
