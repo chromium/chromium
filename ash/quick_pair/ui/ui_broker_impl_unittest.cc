@@ -122,6 +122,7 @@ class UIBrokerImplTest : public AshTestBase, public UIBroker::Observer {
     ui_broker_.reset();
     ClearLogin();
     AshTestBase::TearDown();
+    FastPairPresenterImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
   void OnDiscoveryAction(scoped_refptr<Device> device,
