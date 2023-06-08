@@ -454,7 +454,7 @@ class UpdateServiceProxyImpl
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // TODO(crbug.com/1094024): implement this feature in the COM server and
+    // TODO(crbug.com/1453109): implement this feature in the COM server and
     // then replace this stub code with the actual call.
     std::move(callback).Run(std::vector<UpdateService::AppState>());
   }
