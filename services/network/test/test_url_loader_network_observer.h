@@ -26,6 +26,8 @@ class TestURLLoaderNetworkObserver
     ignore_certificate_errors_ = ignore_certificate_errors;
   }
 
+  void FlushReceivers();
+
   // mojom::URLLoaderNetworkServiceObserver overrides:
   void OnSSLCertificateError(const GURL& url,
                              int net_error,

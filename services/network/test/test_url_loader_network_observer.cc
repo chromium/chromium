@@ -18,6 +18,10 @@ TestURLLoaderNetworkObserver::Bind() {
   return remote;
 }
 
+void TestURLLoaderNetworkObserver::FlushReceivers() {
+  receivers_.FlushForTesting();
+}
+
 void TestURLLoaderNetworkObserver::OnSSLCertificateError(
     const GURL& url,
     int net_error,
