@@ -20,13 +20,16 @@ HashRealTimeMechanism::HashRealTimeMechanism(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection)
+    MechanismExperimentHashDatabaseCache experiment_cache_selection,
+    bool is_source_lookup_mechanism_experiment)
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
                                   experiment_cache_selection),
       ui_task_runner_(ui_task_runner),
-      lookup_service_on_ui_(lookup_service_on_ui) {}
+      lookup_service_on_ui_(lookup_service_on_ui),
+      is_source_lookup_mechanism_experiment_(
+          is_source_lookup_mechanism_experiment) {}
 
 HashRealTimeMechanism::~HashRealTimeMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -62,7 +65,9 @@ void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
     ui_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&HashRealTimeMechanism::StartLookupOnUIThread,
-                       weak_factory_.GetWeakPtr(), url_, lookup_service_on_ui_,
+                       weak_factory_.GetWeakPtr(), url_,
+                       is_source_lookup_mechanism_experiment_,
+                       lookup_service_on_ui_,
                        base::SequencedTaskRunner::GetCurrentDefault()));
   }
 }
@@ -71,6 +76,7 @@ void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
 void HashRealTimeMechanism::StartLookupOnUIThread(
     base::WeakPtr<HashRealTimeMechanism> weak_ptr_on_io,
     const GURL& url,
+    bool is_source_lookup_mechanism_experiment,
     base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   auto is_lookup_service_found = !!lookup_service_on_ui;
@@ -87,7 +93,8 @@ void HashRealTimeMechanism::StartLookupOnUIThread(
   HPRTLookupResponseCallback response_callback =
       base::BindOnce(&HashRealTimeMechanism::OnLookupResponse, weak_ptr_on_io);
 
-  lookup_service_on_ui->StartLookup(url, std::move(response_callback),
+  lookup_service_on_ui->StartLookup(url, is_source_lookup_mechanism_experiment,
+                                    std::move(response_callback),
                                     std::move(io_task_runner));
 }
 

@@ -4,7 +4,12 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -39,6 +44,61 @@ TEST(HashRealTimeUtilsTest, TestIsThreatTypeRelevant) {
       V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION));
   EXPECT_FALSE(hash_realtime_utils::IsThreatTypeRelevant(
       V5::ThreatType::BETTER_ADS_VIOLATION));
+}
+
+TEST(HashRealTimeUtilsTest,
+     TestIsHashRealTimeLookupEligibleInSession_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
+  EXPECT_TRUE(hash_realtime_utils::IsHashRealTimeLookupEligibleInSession());
+}
+TEST(HashRealTimeUtilsTest,
+     TestIsHashRealTimeLookupEligibleInSession_FeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kHashPrefixRealTimeLookups);
+  EXPECT_FALSE(hash_realtime_utils::IsHashRealTimeLookupEligibleInSession());
+}
+TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
+  struct TestCase {
+    SafeBrowsingState safe_browsing_state =
+        SafeBrowsingState::STANDARD_PROTECTION;
+    bool is_off_the_record = false;
+    bool is_feature_on = true;
+    hash_realtime_utils::HashRealTimeSelection expected_selection;
+  } test_cases[] = {
+#if BUILDFLAG(IS_ANDROID)
+    // Lookups disabled for Android.
+    {.expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+#else
+    // HashRealTimeService lookups selected.
+    {.expected_selection =
+         hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService},
+    // Lookups disabled for ESB.
+    {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+    // Lookups disabled due to being off the record.
+    {.is_off_the_record = true,
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+    // Lookups disabled because the feature is disabled.
+    {.is_feature_on = false,
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+#endif
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    TestingPrefServiceSimple prefs;
+    if (test_case.is_feature_on) {
+      scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(kHashPrefixRealTimeLookups);
+    }
+    RegisterProfilePrefs(prefs.registry());
+    SetSafeBrowsingState(&prefs, test_case.safe_browsing_state);
+    EXPECT_EQ(hash_realtime_utils::DetermineHashRealTimeSelection(
+                  test_case.is_off_the_record, &prefs),
+              test_case.expected_selection);
+  }
 }
 
 }  // namespace safe_browsing

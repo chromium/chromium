@@ -53,7 +53,8 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
   auto hash_real_time_mechanism = std::make_unique<HashRealTimeMechanism>(
       url, threat_types, database_manager, ui_task_runner_,
       hash_real_time_service_on_ui,
-      MechanismExperimentHashDatabaseCache::kHashRealTimeOnly);
+      MechanismExperimentHashDatabaseCache::kHashRealTimeOnly,
+      /*is_source_lookup_mechanism_experiment=*/true);
 
   return RunChecksInternal(
       safe_browsing_url_checker_index, url, std::move(url_real_time_mechanism),

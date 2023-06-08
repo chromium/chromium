@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
@@ -70,10 +71,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |url_real_time_lookup_enabled|
   // indicates whether or not the profile has enabled real time URL lookups, as
-  // computed by the RealTimePolicyEngine. |hash_real_time_lookup_enabled|
-  // indicates whether the profile is eligible for hash-prefix real-time
-  // lookups. These two must be computed in advance, since this class only
-  // exists on the IO thread.
+  // computed by the RealTimePolicyEngine. |hash_realtime_selection| indicates
+  // which type of hash-prefix real-time lookup the profile is eligible for, if
+  // any. These two must be computed in advance, since this class only exists
+  // on the IO thread.
   // |can_urt_check_subresource_url| indicates whether or not the profile has
   // enabled real time URL lookups for subresource URLs. If this value is true,
   // then |url_real_time_lookup_enabled| must also be true.
@@ -107,7 +108,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
       bool is_mechanism_experiment_allowed,
-      bool hash_real_time_lookup_enabled);
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   // Constructor that takes only a RequestDestination, a UrlCheckerDelegate, and
   // real-time lookup-related arguments, omitting other arguments that never
@@ -355,8 +356,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // MechanismExperimentHashDatabaseCache for more details.
   bool is_mechanism_experiment_allowed_ = false;
 
-  // Whether the hash-prefix real-time lookup is enabled for this request.
-  bool hash_real_time_lookup_enabled_ = false;
+  // What kind of hash-prefix real-time lookup is enabled for this request, if
+  // any.
+  hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
+      hash_realtime_utils::HashRealTimeSelection::kNone;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

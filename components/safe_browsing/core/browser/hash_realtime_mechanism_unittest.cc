@@ -62,6 +62,7 @@ class MockHashRealTimeService : public HashRealTimeService {
 
   void StartLookup(
       const GURL& gurl,
+      bool is_source_lookup_mechanism_experiment,
       HPRTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
@@ -220,7 +221,8 @@ class HashRealTimeMechanismTest : public PlatformTest {
         url, SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING}),
         database_manager_, base::SequencedTaskRunner::GetCurrentDefault(),
         hash_rt_service_->GetWeakPtr(),
-        MechanismExperimentHashDatabaseCache::kNoExperiment);
+        MechanismExperimentHashDatabaseCache::kNoExperiment,
+        /*is_source_lookup_mechanism_experiment=*/false);
   }
 
  protected:

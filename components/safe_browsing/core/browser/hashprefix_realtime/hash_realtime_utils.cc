@@ -5,6 +5,10 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 
 #include "base/check.h"
+#include "build/branding_buildflags.h"
+#include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing::hash_realtime_utils {
 bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {
@@ -24,6 +28,25 @@ bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {
 std::string GetHashPrefix(const std::string& full_hash) {
   DCHECK(full_hash.length() == kFullHashLength);
   return full_hash.substr(0, kHashPrefixLength);
+}
+bool IsHashRealTimeLookupEligibleInSession() {
+  // TODO(crbug.com/1441654) [Also TODO(thefrog)]: Add GOOGLE_CHROME_BRANDING
+  // check.
+  return base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
+}
+HashRealTimeSelection DetermineHashRealTimeSelection(bool is_off_the_record,
+                                                     PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  return HashRealTimeSelection::kNone;
+#else
+  bool can_do_lookup =
+      hash_realtime_utils::IsHashRealTimeLookupEligibleInSession() &&
+      !is_off_the_record &&
+      safe_browsing::GetSafeBrowsingState(*prefs) ==
+          SafeBrowsingState::STANDARD_PROTECTION;
+  return can_do_lookup ? HashRealTimeSelection::kHashRealTimeService
+                       : HashRealTimeSelection::kNone;
+#endif
 }
 
 }  // namespace safe_browsing::hash_realtime_utils

@@ -104,6 +104,8 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
 bool IsEnabled(const PrefService& pref_service) {
   safe_browsing::SafeBrowsingState state =
       safe_browsing::GetSafeBrowsingState(pref_service);
+  // TODO(crbug.com/1441654) [Also TODO(thefrog)]: This may need to change (e.g.
+  // call into HashRealTimeUtils).
   return (state == safe_browsing::SafeBrowsingState::STANDARD_PROTECTION &&
           !base::FeatureList::IsEnabled(
               safe_browsing::kSafeBrowsingLookupMechanismExperiment)) ||

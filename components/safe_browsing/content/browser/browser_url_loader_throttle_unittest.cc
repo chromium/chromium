@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -128,7 +129,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
       bool is_mechanism_experiment_allowed,
-      bool hash_real_time_lookup_enabled)
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
       : SafeBrowsingUrlCheckerImpl(headers,
                                    load_flags,
                                    request_destination,
@@ -150,7 +151,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    hash_realtime_service_on_ui,
                                    mechanism_experimenter,
                                    is_mechanism_experiment_allowed,
-                                   hash_real_time_lookup_enabled) {}
+                                   hash_realtime_selection) {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
   // It will crash if |AddCallbackInfo| was not called.
@@ -227,7 +228,9 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter.Get(),
         /*frame_tree_node_id=*/0, /*url_lookup_service=*/nullptr,
-        /*hash_realtime_service=*/nullptr, /*ping_manager=*/nullptr);
+        /*hash_realtime_service=*/nullptr, /*ping_manager=*/nullptr,
+        /*hash_realtime_selection=*/
+        hash_realtime_utils::HashRealTimeSelection::kNone);
 
     url_checker_delegate_ = base::MakeRefCounted<MockUrlCheckerDelegate>();
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
@@ -251,7 +254,8 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
             /*hash_realtime_service_on_ui=*/nullptr,
             /*mechanism_experimenter=*/nullptr,
             /*is_mechanism_experiment_allowed=*/false,
-            /*hash_real_time_lookup_enabled=*/false);
+            /*hash_realtime_selection=*/
+            hash_realtime_utils::HashRealTimeSelection::kNone);
     url_checker_ = url_checker.get();
 
     throttle_->GetSBCheckerForTesting()->SetUrlCheckerForTesting(

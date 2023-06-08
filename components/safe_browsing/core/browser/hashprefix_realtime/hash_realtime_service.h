@@ -80,8 +80,14 @@ class HashRealTimeService : public KeyedService {
 
   // Start the lookup for |url|, and call |response_callback| on
   // |callback_task_runner| when response is received.
+  // |is_source_lookup_mechanism_experiment| specifies whether the source was
+  // the SafeBrowsingLookupMechanismExperiment (versus it being a navigation).
+  // TODO(crbug.com/1410253): [Also TODO(thefrog)] Delete usages of
+  // |is_source_lookup_mechanism_experiment| in file when deprecating the
+  // experiment.
   virtual void StartLookup(
       const GURL& url,
+      bool is_source_lookup_mechanism_experiment,
       HPRTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
@@ -175,6 +181,7 @@ class HashRealTimeService : public KeyedService {
   void OnGetOhttpKey(
       std::unique_ptr<V5::SearchHashesRequest> request,
       const GURL& url,
+      bool is_source_lookup_mechanism_experiment,
       const std::vector<std::string>& hash_prefixes_in_request,
       std::vector<V5::FullHash> result_full_hashes,
       base::TimeTicks request_start_time,

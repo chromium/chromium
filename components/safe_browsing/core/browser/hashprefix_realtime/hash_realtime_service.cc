@@ -268,6 +268,7 @@ void HashRealTimeService::LogSearchCacheWithNoQueryParamsMetric(
 
 void HashRealTimeService::StartLookup(
     const GURL& url,
+    bool is_source_lookup_mechanism_experiment,
     HPRTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -323,16 +324,18 @@ void HashRealTimeService::StartLookup(
                               hash_prefixes_to_request.size());
 
   // Send request.
-  if (base::FeatureList::IsEnabled(kHashRealTimeOverOhttp)) {
+  if (!is_source_lookup_mechanism_experiment ||
+      base::FeatureList::IsEnabled(kHashRealTimeOverOhttp)) {
     // OHTTP
     ohttp_key_service_->GetOhttpKey(base::BindOnce(
         &HashRealTimeService::OnGetOhttpKey, weak_factory_.GetWeakPtr(),
-        std::move(request), url, std::move(hash_prefixes_to_request),
-        std::move(cached_full_hashes), base::TimeTicks::Now(),
-        std::move(callback_task_runner), std::move(response_callback),
-        locally_cached_results_threat_type));
+        std::move(request), url, is_source_lookup_mechanism_experiment,
+        std::move(hash_prefixes_to_request), std::move(cached_full_hashes),
+        base::TimeTicks::Now(), std::move(callback_task_runner),
+        std::move(response_callback), locally_cached_results_threat_type));
   } else {
     // Direct fetch
+    DCHECK(is_source_lookup_mechanism_experiment);
     std::unique_ptr<network::SimpleURLLoader> url_loader =
         network::SimpleURLLoader::Create(
             GetDirectFetchResourceRequest(std::move(request)),
@@ -355,6 +358,7 @@ void HashRealTimeService::StartLookup(
 void HashRealTimeService::OnGetOhttpKey(
     std::unique_ptr<V5::SearchHashesRequest> request,
     const GURL& url,
+    bool is_source_lookup_mechanism_experiment,
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
     base::TimeTicks request_start_time,
@@ -376,7 +380,10 @@ void HashRealTimeService::OnGetOhttpKey(
   // Construct OHTTP request.
   network::mojom::ObliviousHttpRequestPtr ohttp_request =
       network::mojom::ObliviousHttpRequest::New();
-  ohttp_request->relay_url = GURL(kHashRealTimeOverOhttpRelayUrl.Get());
+  ohttp_request->relay_url =
+      is_source_lookup_mechanism_experiment
+          ? GURL(kHashRealTimeOverOhttpRelayUrl.Get())
+          : GURL(kHashPrefixRealTimeLookupsRelayUrl.Get());
   ohttp_request->traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       GetTrafficAnnotationTagForOhttp());
   ohttp_request->key_config = key.value();

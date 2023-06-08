@@ -255,6 +255,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -5416,6 +5417,10 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
             ? safe_browsing::ChromePingManagerFactory::GetForBrowserContext(
                   profile)
             : nullptr;
+    safe_browsing::hash_realtime_utils::HashRealTimeSelection
+        hash_realtime_selection =
+            safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
+                profile->IsOffTheRecord(), profile->GetPrefs());
 
     result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindOnce(
@@ -5428,7 +5433,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
         wc_getter, frame_tree_node_id,
         url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
         hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr,
-        ping_manager ? ping_manager->GetWeakPtr() : nullptr));
+        ping_manager ? ping_manager->GetWeakPtr() : nullptr,
+        hash_realtime_selection));
   }
 #endif
 

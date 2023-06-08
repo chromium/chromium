@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -76,7 +77,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
         base::WeakPtr<HashRealTimeService> hash_realtime_service,
         base::WeakPtr<PingManager> ping_manager,
         bool is_mechanism_experiment_allowed,
-        bool hash_real_time_lookup_enabled);
+        hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
     ~CheckerOnSB();
 
@@ -139,7 +140,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
     base::WeakPtr<HashRealTimeService> hash_realtime_service_;
     base::WeakPtr<PingManager> ping_manager_;
     bool is_mechanism_experiment_allowed_ = false;
-    bool hash_real_time_lookup_enabled_ = false;
+    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
+        hash_realtime_utils::HashRealTimeSelection::kNone;
     base::TimeTicks creation_time_;
   };
 
@@ -150,7 +152,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager);
+      base::WeakPtr<PingManager> ping_manager,
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -184,7 +187,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager);
+      base::WeakPtr<PingManager> ping_manager,
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of CheckerOnSB::OnCheckUrlResult() for what slow check
@@ -205,10 +209,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Destroys |sb_checker_| on the IO thread, or UI thread if
   // kSafeBrowsingOnUIThread is enabled.
   void DeleteCheckerOnSB();
-
-  // Whether the hash-prefix real-time lookup is enabled. For now, this is
-  // always disabled.
-  bool IsHashRealTimeLookupEnabled();
 
   size_t pending_checks_ = 0;
   // How many slow checks that haven't received results.

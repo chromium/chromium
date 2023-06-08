@@ -15,6 +15,7 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/hash_database_mechanism.h"
 #include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
@@ -32,6 +33,7 @@ using security_interstitials::UnsafeResource;
 
 namespace safe_browsing {
 using CompleteCheckResult = SafeBrowsingLookupMechanism::CompleteCheckResult;
+using hash_realtime_utils::HashRealTimeSelection;
 
 namespace {
 void RecordCheckUrlTimeout(bool timed_out) {
@@ -137,7 +139,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
         mechanism_experimenter,
     bool is_mechanism_experiment_allowed,
-    bool hash_real_time_lookup_enabled)
+    HashRealTimeSelection hash_realtime_selection)
     : headers_(headers),
       load_flags_(load_flags),
       request_destination_(request_destination),
@@ -160,7 +162,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
       mechanism_experimenter_(mechanism_experimenter),
       is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
-      hash_real_time_lookup_enabled_(hash_real_time_lookup_enabled) {
+      hash_realtime_selection_(hash_realtime_selection) {
   DCHECK(!web_contents_getter_.is_null());
   DCHECK(!can_urt_check_subresource_url_ || url_real_time_lookup_enabled_);
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
@@ -575,12 +577,14 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
     return SafeBrowsingLookupMechanism::StartCheckResult(
         /*is_safe_synchronously=*/true,
         /*did_check_url_real_time_allowlist=*/false);
-  } else if (hash_real_time_lookup_enabled_ &&
+  } else if (hash_realtime_selection_ ==
+                 HashRealTimeSelection::kHashRealTimeService &&
              HashRealTimeService::CanCheckUrl(url, request_destination_)) {
     lookup_mechanism = std::make_unique<HashRealTimeMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         ui_task_runner_, hash_realtime_service_on_ui_,
-        MechanismExperimentHashDatabaseCache::kNoExperiment);
+        MechanismExperimentHashDatabaseCache::kNoExperiment,
+        /*is_source_lookup_mechanism_experiment=*/false);
   } else {
     lookup_mechanism = std::make_unique<HashDatabaseMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,

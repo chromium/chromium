@@ -41,6 +41,8 @@ constexpr char kUrlWithMatchingHashPrefix1[] = "https://example.a23549";
 constexpr char kUrlWithMatchingHashPrefix2[] = "https://example.a3945";
 
 constexpr char kTestRelayUrl[] = "https://ohttp.endpoint.test";
+constexpr char kTestRelayUrlWithinExperiment[] =
+    "https://ohttp.endpoint.testWithinExperiment";
 constexpr char kOhttpKey[] = "TestOhttpKey";
 
 // A class for testing requests sent via OHTTP. Call |AddResponse| and
@@ -157,9 +159,20 @@ class TestOhttpKeyService : public OhttpKeyService {
 class HashRealTimeServiceTest : public PlatformTest {
  public:
   HashRealTimeServiceTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kHashRealTimeOverOhttp,
-        {{"SafeBrowsingHashRealTimeOverOhttpRelayUrl", kTestRelayUrl}});
+    // Since this test is only triggered outside the context of the
+    // SafeBrowsingLookupMechanismExperiment, kHashRealTimeOverOhttp's feature
+    // param should not be used. To validate that that's correct,
+    // kHashRealTimeOverOhttp is marked as enabled here and the relay URL
+    // feature parameter is set to a different value than the
+    // kHashPrefixRealTimeLookups relay URL feature parameter.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{kHashPrefixRealTimeLookups,
+          {{"SafeBrowsingHashPrefixRealTimeLookupsRelayUrl", kTestRelayUrl}}},
+         {kHashRealTimeOverOhttp,
+          {{"SafeBrowsingHashRealTimeOverOhttpRelayUrl",
+            kTestRelayUrlWithinExperiment}}}},
+        /*disabled_features=*/{});
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {
@@ -404,7 +417,10 @@ class HashRealTimeServiceTest : public PlatformTest {
     network_context_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::mojom::ObliviousHttpRequestPtr& ohttp_request) {
           EXPECT_EQ(ohttp_request->method, net::HttpRequestHeaders::kGetMethod);
-          EXPECT_EQ(ohttp_request->relay_url, GURL(kTestRelayUrl));
+          EXPECT_EQ(ohttp_request->relay_url,
+                    GURL(is_source_lookup_mechanism_experiment_
+                             ? kTestRelayUrlWithinExperiment
+                             : kTestRelayUrl));
           EXPECT_EQ(ohttp_request->resource_url, GURL(expected_url));
           EXPECT_EQ(ohttp_request->key_config, kOhttpKey);
           EXPECT_EQ(ohttp_request->timeout_duration, base::Seconds(3));
@@ -423,7 +439,8 @@ class HashRealTimeServiceTest : public PlatformTest {
                     /*locally_cached_results_threat_type=*/
                     expected_locally_cached_results_threat_type))
         .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
   }
   // Starts a lookup on |url| that is expected to succeed, simulating the server
@@ -502,7 +519,8 @@ class HashRealTimeServiceTest : public PlatformTest {
                     /*sb_threat_type=*/testing::Eq(absl::nullopt),
                     /*locally_cached_results_threat_type=*/testing::_))
         .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     task_environment_.RunUntilIdle();
 
@@ -537,7 +555,8 @@ class HashRealTimeServiceTest : public PlatformTest {
             /*sb_threat_type=*/testing::Optional(expected_threat_type),
             /*locally_cached_results_threat_type=*/expected_threat_type))
         .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     task_environment_.RunUntilIdle();
 
@@ -564,7 +583,8 @@ class HashRealTimeServiceTest : public PlatformTest {
                     /*locally_cached_results_threat_type=*/
                     SBThreatType::SB_THREAT_TYPE_SAFE))
         .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     task_environment_.RunUntilIdle();
 
@@ -590,7 +610,8 @@ class HashRealTimeServiceTest : public PlatformTest {
     // Start lookup.
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
     EXPECT_CALL(response_callback, Run(testing::_, testing::_, testing::_));
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     task_environment_.RunUntilIdle();
   }
@@ -609,7 +630,8 @@ class HashRealTimeServiceTest : public PlatformTest {
     // Start lookup.
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
     EXPECT_CALL(response_callback, Run(testing::_, testing::_, testing::_));
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     task_environment_.RunUntilIdle();
   }
@@ -640,6 +662,7 @@ class HashRealTimeServiceTest : public PlatformTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_ =
       std::make_unique<base::HistogramTester>();
   bool include_cache_manager_ = true;
+  bool is_source_lookup_mechanism_experiment_ = false;
 };
 
 class HashRealTimeServiceNoCacheManagerTest : public HashRealTimeServiceTest {
@@ -1120,7 +1143,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
                   /*sb_threat_type=*/testing::Eq(absl::nullopt),
                   /*locally_cached_results_threat_type=*/testing::_))
       .Times(1);
-  service_->StartLookup(url, response_callback.Get(),
+  service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                        response_callback.Get(),
                         base::SequencedTaskRunner::GetCurrentDefault());
   task_environment_.RunUntilIdle();
 
@@ -1301,7 +1325,8 @@ TEST_F(HashRealTimeServiceTest, TestShutdown) {
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
     EXPECT_CALL(response_callback, Run(testing::_, testing::_, testing::_))
         .Times(0);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     histogram_tester_->ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.Request.CountOfPrefixes",
@@ -1316,7 +1341,8 @@ TEST_F(HashRealTimeServiceTest, TestShutdown) {
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
     EXPECT_CALL(response_callback, Run(testing::_, testing::_, testing::_))
         .Times(0);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     histogram_tester_->ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.Request.CountOfPrefixes",
@@ -1417,11 +1443,14 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
                   /*sb_threat_type=*/testing::Eq(absl::nullopt),
                   /*locally_cached_results_threat_type=*/testing::_))
       .Times(3);
-  service_->StartLookup(url, response_callback.Get(),
+  service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                        response_callback.Get(),
                         base::SequencedTaskRunner::GetCurrentDefault());
-  service_->StartLookup(url, response_callback.Get(),
+  service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                        response_callback.Get(),
                         base::SequencedTaskRunner::GetCurrentDefault());
-  service_->StartLookup(url, response_callback.Get(),
+  service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                        response_callback.Get(),
                         base::SequencedTaskRunner::GetCurrentDefault());
   task_environment_.RunUntilIdle();
 
@@ -1583,10 +1612,38 @@ TEST_F(HashRealTimeServiceTest, TestCanCheckUrl) {
   EXPECT_FALSE(can_check_url("https://e./path"));
 }
 
+class HashRealTimeServiceWithinExperimentTest : public HashRealTimeServiceTest {
+ public:
+  HashRealTimeServiceWithinExperimentTest() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kHashRealTimeOverOhttp, {{"SafeBrowsingHashRealTimeOverOhttpRelayUrl",
+                                  kTestRelayUrlWithinExperiment}});
+    is_source_lookup_mechanism_experiment_ = true;
+  }
+};
+
+TEST_F(HashRealTimeServiceWithinExperimentTest, TestLookup_SuccessOverOhttp) {
+  GURL url = GURL("https://example.test");
+  std::vector<V5::FullHash> response_full_hashes;
+  response_full_hashes.push_back(CreateFullHashProto(
+      {V5::ThreatType::SOCIAL_ENGINEERING}, UrlToSingleFullHash(url)));
+  RunRequestSuccessTest(
+      /*url=*/url, /*cached_hash_prefixes=*/{}, /*response_full_hashes=*/
+      response_full_hashes,
+      /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_locally_cached_results_threat_type=*/
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_prefix_count=*/1,
+      /*expected_threat_info_size=*/1,
+      /*expected_found_unmatched_full_hashes=*/false);
+}
+
 class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
  public:
   HashRealTimeServiceDirectFetchTest() {
     feature_list_.InitAndDisableFeature(kHashRealTimeOverOhttp);
+    is_source_lookup_mechanism_experiment_ = true;
   }
 
  protected:
@@ -1641,7 +1698,8 @@ class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
                     /*sb_threat_type=*/testing::Eq(absl::nullopt),
                     /*locally_cached_results_threat_type=*/testing::_))
         .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                          response_callback.Get(),
                           base::SequencedTaskRunner::GetCurrentDefault());
     task_environment_.RunUntilIdle();
 
@@ -1683,7 +1741,8 @@ TEST_F(HashRealTimeServiceDirectFetchTest, TestLookup_Success) {
                   /*locally_cached_results_threat_type=*/testing::_))
       .Times(1);
 
-  service_->StartLookup(url, response_callback.Get(),
+  service_->StartLookup(url, is_source_lookup_mechanism_experiment_,
+                        response_callback.Get(),
                         base::SequencedTaskRunner::GetCurrentDefault());
   task_environment_.RunUntilIdle();
 }
