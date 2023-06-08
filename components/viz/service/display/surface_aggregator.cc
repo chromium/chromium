@@ -1502,6 +1502,11 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
   const gfx::Transform surface_transform =
       IsRootSurface(surface) ? root_surface_transform_ : gfx::Transform();
 
+  auto& root_resolved_pass = resolved_frame.GetRootRenderPassData();
+  gfx::Rect root_output_rect =
+      cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
+          surface_transform, root_resolved_pass.render_pass().output_rect);
+
   if (frame.metadata.delegated_ink_metadata) {
     DCHECK(surface->GetActiveFrameMetadata().delegated_ink_metadata ==
            frame.metadata.delegated_ink_metadata);
@@ -1534,8 +1539,7 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
     if (apply_surface_transform_to_root_pass) {
       // If we don't need an additional render pass to apply the surface
       // transform, adjust the root pass's rects to account for it.
-      output_rect = cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
-          surface_transform, output_rect);
+      output_rect = root_output_rect;
     } else {
       // For the non-root render passes, the transform to root target needs to
       // be adjusted to include the root surface transform. This is also true if
@@ -1554,6 +1558,7 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
 
     UpdateParentClipDataMergeState(resolved_pass, copy_pass.get(),
                                    /*is_merged_pass=*/false);
+
     if (needs_surface_damage_rect_list_ && resolved_pass.is_root()) {
       AddSurfaceDamageToDamageList(
           /*default_damage_rect=*/gfx::Rect(),
@@ -1566,8 +1571,8 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
                     frame.device_scale_factor(),
                     apply_surface_transform_to_root_pass ? surface_transform
                                                          : gfx::Transform(),
-                    {}, /*dest_root_target_clip_rect=*/output_rect, surface,
-                    MaskFilterInfoExt());
+                    {}, /*dest_root_target_clip_rect*/ root_output_rect,
+                    surface, MaskFilterInfoExt());
 
     SetRenderPassDamageRect(copy_pass.get(), resolved_pass);
 

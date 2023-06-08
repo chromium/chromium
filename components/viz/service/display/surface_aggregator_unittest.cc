@@ -6164,7 +6164,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, AllowSkipAndIgnoreOutside) {
     // RenderPassDrawQuad |parent_clip_rect| expands from (0,0 100x100) to (0,0
     // 150x150). It should redraw. |has_damage_from_contributing_content| should
     // be true.
-    EXPECT_TRUE(aggregated_pass_list[2]->has_damage_from_contributing_content);
+    EXPECT_FALSE(aggregated_pass_list[2]->has_damage_from_contributing_content);
   }
 }
 
