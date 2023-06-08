@@ -33,3 +33,4 @@ static library using GYP.
 7) Change buffer.c to not redefine _GNU_SOURCE.
 8) Change _event_strlcpy in strlcpy.c to not use K&R syntax.
 9) Change a bitfield in evhttp.h from int to unsigned int.
+10) Ported commit 96f64a022014a208105ead6c8a7066018449d86d to fix name_parse().
