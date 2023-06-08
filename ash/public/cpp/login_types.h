@@ -88,6 +88,9 @@ enum class OobeDialogState {
 
   // Showing Gaia Info screen.
   GAIA_INFO = 21,
+
+  // CHOOBE and Optional Screens.
+  CHOOBE = 22,
 };
 
 // Modes of the managed device, which is used to update the visibility of

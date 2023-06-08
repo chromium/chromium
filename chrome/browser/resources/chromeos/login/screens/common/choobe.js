@@ -87,7 +87,7 @@ class ChoobeScreen extends ChoobeScreenElementBase {
   }
 
   getOobeUIInitialState() {
-    return OOBE_UI_STATE.ONBOARDING;
+    return OOBE_UI_STATE.CHOOBE;
   }
 
   onNextClicked_() {

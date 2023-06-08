@@ -131,7 +131,7 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
   }
 
   getOobeUIInitialState() {
-    return OOBE_UI_STATE.ONBOARDING;
+    return OOBE_UI_STATE.CHOOBE;
   }
 
   onCheckChanged_(newValue, oldValue) {

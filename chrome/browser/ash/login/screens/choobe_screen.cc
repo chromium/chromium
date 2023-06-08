@@ -5,10 +5,12 @@
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace {
@@ -55,6 +57,18 @@ bool ChoobeScreen::MaybeSkip(WizardContext& context) {
   }
 
   if (ChoobeFlowController::ShouldStartChoobe()) {
+    // because choobe and optional screen support D/L mode if we show choobe
+    // for the first time we need to have light theme
+    // until user reach theme selection screen and apply any mode.
+    // if theme is managed or recommended then we should just apply the policy
+    // and no action are needed
+    const PrefService::Preference* pref =
+        ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
+            prefs::kDarkModeScheduleType);
+    if (!pref->IsManaged() && !pref->IsRecommended()) {
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+          prefs::kDarkModeEnabled, false);
+    }
     return false;
   }
 

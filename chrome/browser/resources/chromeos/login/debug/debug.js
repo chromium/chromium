@@ -1688,6 +1688,30 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'display-size',
+      kind: ScreenKind.NORMAL,
+      handledSteps: 'overview',
+      states: [
+        {
+          id: 'overview',
+          data: {
+            availableSizes: [
+              0.8999999761581421,
+              1,
+              1.0499999523162842,
+              1.100000023841858,
+              1.149999976158142,
+              1.2000000476837158,
+              1.25,
+              1.2999999523162842,
+              1.5,
+            ],
+            currentSize: 1,
+          },
+        },
+      ],
+    },
+    {
       id: 'cryptohome-recovery',
       kind: ScreenKind.NORMAL,
     },
