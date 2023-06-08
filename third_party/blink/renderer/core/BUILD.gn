@@ -1381,6 +1381,9 @@ source_set("unit_tests") {
                          "",
                          "intersection_observer")
   sources += rebase_path(blink_core_tests_layout, "", "layout")
+  sources += rebase_path(blink_core_tests_lcp_critical_path_predictor,
+                         "",
+                         "lcp_critical_path_predictor")
   sources += rebase_path(blink_core_tests_loader, "", "loader")
   sources += rebase_path(blink_core_tests_mathml, "", "mathml")
   sources += rebase_path(blink_core_tests_messaging, "", "messaging")
