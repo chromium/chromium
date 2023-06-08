@@ -35,6 +35,7 @@ class UrlHandlerTest : public ash::SystemWebAppBrowserTestBase {
   }
 
   void SetUpOnMainThread() override {
+    ash::SystemWebAppBrowserTestBase::SetUpOnMainThread();
     if (browser() == nullptr) {
       // Create a new Ash browser window so test code using browser() can work.
       // TODO(crbug.com/1450158): Remove uses of browser() from
@@ -42,24 +43,40 @@ class UrlHandlerTest : public ash::SystemWebAppBrowserTestBase {
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       SelectFirstBrowser();
     }
+    WaitForTestSystemAppInstall();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(neis): Test more cases.
-
 IN_PROC_BROWSER_TEST_F(UrlHandlerTest, Basic) {
   ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
-  WaitForTestSystemAppInstall();
+  // Failure: terminal.
+  EXPECT_FALSE(ash::TryOpenUrl(GURL("chrome-untrusted://terminal/"),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Failure: media-app popup.
+  EXPECT_FALSE(ash::TryOpenUrl(GURL("chrome-untrusted://media-app/"),
+                               WindowOpenDisposition::NEW_POPUP));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Failure: non-allowlisted non-SWA chrome page.
   EXPECT_FALSE(ash::TryOpenUrl(GURL(chrome::kChromeUISettingsURL),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB));
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Success: external page.
+  EXPECT_TRUE(ash::TryOpenUrl(GURL("https://google.com"),
+                              WindowOpenDisposition::NEW_WINDOW));
+  base::RunLoop().RunUntilIdle();
+  // Routed to Lacros, hence no new Ash window.
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Success: allow-listed non-SWA chrome page.
@@ -75,6 +92,21 @@ IN_PROC_BROWSER_TEST_F(UrlHandlerTest, Basic) {
             GetSystemWebAppBrowserCount(ash::SystemWebAppType::OS_URL_HANDLER));
 }
 
+IN_PROC_BROWSER_TEST_F(UrlHandlerTest, SystemWebApp) {
+  ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Success: OS Settings SWA.
+  const GURL url(chrome::kChromeUIOSSettingsURL);
+  content::TestNavigationObserver observer(url);
+  observer.StartWatchingNewWebContents();
+  EXPECT_EQ(0u, GetSystemWebAppBrowserCount(ash::SystemWebAppType::SETTINGS));
+  EXPECT_TRUE(ash::TryOpenUrl(url, WindowOpenDisposition::NEW_FOREGROUND_TAB));
+  observer.Wait();
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, GetSystemWebAppBrowserCount(ash::SystemWebAppType::SETTINGS));
+}
+
 class UrlHandlerTestWithoutLacros : public UrlHandlerTest {
  public:
   UrlHandlerTestWithoutLacros() : UrlHandlerTest(/*enable_lacros=*/false) {}
@@ -83,8 +115,6 @@ class UrlHandlerTestWithoutLacros : public UrlHandlerTest {
 IN_PROC_BROWSER_TEST_F(UrlHandlerTestWithoutLacros, Basic) {
   ASSERT_TRUE(crosapi::browser_util::IsAshWebBrowserEnabled());
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-
-  WaitForTestSystemAppInstall();
 
   // Failure: Lacros is disabled.
   EXPECT_FALSE(ash::TryOpenUrl(GURL(chrome::kChromeUISettingsURL),
