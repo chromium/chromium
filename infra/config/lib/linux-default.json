@@ -144,6 +144,7 @@
     "linux-angle-chromium-intel": "Ubuntu-22.04",
     "linux-angle-chromium-nvidia": "Ubuntu-22.04",
     "linux-annotator-rel": "Ubuntu-22.04",
+    "linux-archive-rel": "Ubuntu-22.04",
     "linux-ash-chromium-generator-rel": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-blink-animation-use-time-delta": "Ubuntu-22.04",
