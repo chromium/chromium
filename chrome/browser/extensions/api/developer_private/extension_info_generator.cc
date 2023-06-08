@@ -535,10 +535,12 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
   // Safety Hub Strings
-  absl::optional<CWSInfoService::CWSInfo> cws_info =
-      cws_info_service_->GetCWSInfo(extension);
-  if (cws_info.has_value()) {
-    info->safety_check_text = CreateSafetyCheckDisplayString(*cws_info);
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    absl::optional<CWSInfoService::CWSInfo> cws_info =
+        cws_info_service_->GetCWSInfo(extension);
+    if (cws_info.has_value()) {
+      info->safety_check_text = CreateSafetyCheckDisplayString(*cws_info);
+    }
   }
 
   // ControlledInfo.

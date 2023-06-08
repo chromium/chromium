@@ -45,8 +45,17 @@ void SafetyCheckExtensionsHandler::SetCWSInfoServiceForTest(
 
 int SafetyCheckExtensionsHandler::GetNumberOfExtensionsThatNeedReview() {
   int num_extensions_that_need_review = 0;
+  if (!base::FeatureList::IsEnabled(extensions::kCWSInfoService)) {
+    return num_extensions_that_need_review;
+  }
+
+  if (cws_info_service_ == nullptr) {
+    cws_info_service_ = extensions::CWSInfoService::Get(profile_);
+  }
+
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefsFactory::GetForBrowserContext(profile_);
+
   for (const auto& extension_id : extension_prefs->GetExtensions()) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
@@ -65,10 +74,6 @@ int SafetyCheckExtensionsHandler::GetNumberOfExtensionsThatNeedReview() {
     if (warning_acked) {
       continue;
     }
-    if (cws_info_service_ == nullptr) {
-      cws_info_service_ = extensions::CWSInfoService::Get(profile_);
-    }
-    CHECK(cws_info_service_);
     absl::optional<extensions::CWSInfoService::CWSInfo> extension_info =
         cws_info_service_->GetCWSInfo(*extension);
     if (extension_info.has_value() && extension_info->is_present) {
