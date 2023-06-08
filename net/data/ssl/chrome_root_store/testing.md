@@ -22,3 +22,15 @@ macOS, but trusted by the Chrome Root Store)
      - **Expected outcome with Chrome Root Store enabled:** Page loads
      - **Expected outcome with Chrome Root Store disabled:** Page does not load
      (NET::ERR_CERT_AUTHORITY_INVALID)
+
+## On Android (M114.0.5733.0 or higher)
+
+1. Enable the Chrome Root Store and Certificate Verifier by going to
+   chrome://flags, searching for the flag "Chrome Root Store", and set it to
+   enabled. This will then require Chrome to restart.
+
+2. Navigate to https://valid-ctrca.certificates.certum.pl/ (not trusted by
+Android 13, but trusted by the Chrome Root Store)
+     - **Expected outcome with Chrome Root Store enabled:** Page loads
+     - **Expected outcome with Chrome Root Store disabled:** Page does not load
+     (NET::ERR_CERT_AUTHORITY_INVALID)
