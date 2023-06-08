@@ -9,6 +9,7 @@
 #include <linux/input.h>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -144,6 +145,22 @@ void EventReaderLibevdevCros::ApplyDeviceSettings(
             touchpad_settings.haptic_click_sensitivity));
   }
   haptic_feedback_enabled_ = touchpad_settings.haptic_feedback_enabled;
+}
+
+void EventReaderLibevdevCros::ReceivedKeyboardInput(uint64_t key) {
+  if (!IsSuspectedImposter() || !IsValidKeyboardKeyPress(key)) {
+    return;
+  }
+
+  SetSuspectedImposter(false);
+  received_valid_input_callback_.Run(this);
+}
+
+void EventReaderLibevdevCros::SetReceivedValidInputCallback(
+    ReceivedValidInputCallback callback) {
+  delegate_->SetReceivedValidKeyboardInputCallback(base::BindRepeating(
+      &EventReaderLibevdevCros::ReceivedKeyboardInput, base::Unretained(this)));
+  received_valid_input_callback_ = std::move(callback);
 }
 
 bool EventReaderLibevdevCros::HasCapsLockLed() const {

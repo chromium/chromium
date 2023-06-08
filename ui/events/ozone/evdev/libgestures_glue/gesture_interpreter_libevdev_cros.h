@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
@@ -61,6 +62,8 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   void OnLibEvdevCrosStopped(Evdev* evdev, EventStateRec* state) override;
   void SetupHapticButtonGeneration(
       const base::RepeatingCallback<void(bool)>& callback) override;
+  void SetReceivedValidKeyboardInputCallback(
+      base::RepeatingCallback<void(uint64_t)> callback) override;
 
   // Handler for gesture events generated from libgestures.
   void OnGestureReady(const Gesture* gesture);
@@ -138,6 +141,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
 
   // Callback for physical button clicks.
   base::RepeatingCallback<void(bool)> click_callback_;
+
+  // Callback for when a keyboard key press is registered.
+  base::RepeatingCallback<void(uint64_t)> received_keyboard_input_;
 };
 
 }  // namespace ui

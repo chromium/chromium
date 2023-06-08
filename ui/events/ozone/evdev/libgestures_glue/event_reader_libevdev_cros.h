@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
@@ -50,6 +51,11 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
     // library determines that a physical click has occurred.
     virtual void SetupHapticButtonGeneration(
         const base::RepeatingCallback<void(bool)>& callback) = 0;
+
+    // For keyboard/pointer combo devices. Sets a callback that will be called
+    // whenever the device registers valid keyboard input.
+    virtual void SetReceivedValidKeyboardInputCallback(
+        base::RepeatingCallback<void(uint64_t)> callback) = 0;
   };
 
   EventReaderLibevdevCros(base::ScopedFD fd,
@@ -62,6 +68,10 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   EventReaderLibevdevCros& operator=(const EventReaderLibevdevCros&) = delete;
 
   ~EventReaderLibevdevCros() override;
+
+  // Used as a callback for `Delegate` to call when the device registers valid
+  // keyboard input.
+  void ReceivedKeyboardInput(uint64_t key);
 
   // EventConverterEvdev:
   void OnFileCanReadWithoutBlocking(int fd) override;
@@ -79,6 +89,8 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength) override;
   void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings) override;
+  void SetReceivedValidInputCallback(
+      ReceivedValidInputCallback callback) override;
 
   std::ostream& DescribeForLog(std::ostream& os) const override;
 
@@ -122,6 +134,9 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
 
   // Haptic effect handling for touchpads
   std::unique_ptr<HapticTouchpadHandler> haptic_touchpad_handler_;
+
+  // Callback to update keyboard devices when valid input is received.
+  ReceivedValidInputCallback received_valid_input_callback_;
 };
 
 }  // namespace ui

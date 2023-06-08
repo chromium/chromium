@@ -50,6 +50,14 @@ EventConverterEvdev::EventConverterEvdev(int fd,
 
 EventConverterEvdev::~EventConverterEvdev() = default;
 
+// static
+bool EventConverterEvdev::IsValidKeyboardKeyPress(uint64_t key) {
+  return (key >= KEY_1 && key <= KEY_EQUAL) ||
+         (key >= KEY_Q && key <= KEY_RIGHTBRACE) ||
+         (key >= KEY_A && key <= KEY_APOSTROPHE) ||
+         (key >= KEY_BACKSLASH && key <= KEY_SLASH);
+}
+
 void EventConverterEvdev::ApplyDeviceSettings(
     const InputDeviceSettingsEvdev& settings) {}
 
