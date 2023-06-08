@@ -22,8 +22,6 @@ template("fuzzable_proto_library") {
       current_toolchain != "//build/toolchain/cros:target") {
     proto_library("proto_library_" + target_name) {
       forward_variables_from(invoker, "*")
-      assert(current_toolchain == host_toolchain ||
-             (is_ios && target_environment == "catalyst"))
 
       # Override LITE_RUNTIME settings in the protobuf files.
       cc_generator_options = "speed"
