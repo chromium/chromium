@@ -49,7 +49,7 @@ namespace {
 
 constexpr const char kCategory[] = "media";
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || defined(ARCH_CPU_ARM_FAMILY)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr uint32_t kDefaultOpusComplexity = 5;
 #else
 constexpr uint32_t kDefaultOpusComplexity = 9;
