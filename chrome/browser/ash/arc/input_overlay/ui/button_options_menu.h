@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/views/view.h"
@@ -72,6 +73,8 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
 
   // View position calculation. Make it virtual for unit test.
   virtual void CalculatePosition();
+  // Calculates triangle wedge offset.
+  int CalculateActionOffset(int height);
 
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;

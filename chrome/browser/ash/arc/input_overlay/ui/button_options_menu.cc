@@ -17,6 +17,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "components/vector_icons/vector_icons.h"
@@ -45,8 +46,18 @@ constexpr int kTriangleHeight = 14;
 constexpr int kCornerRadius = 16;
 constexpr int kBorderThickness = 2;
 
+// Spacing.
+constexpr int kMenuActionGap = 8;
+
 // Draws the dialog shape path with round corner. It starts after the corner
 // radius on line #0 and draws clockwise.
+//
+// draw_triangle_on_left draws the triangle wedge on the left side of the box
+// instead of the right if set to true.
+//
+// action_offset draws the triangle wedge higher or lower if the position of
+// the action is too close to the top or bottom of the window. An offset of
+// zero draws the triangle wedge at the vertical center of the box.
 //  _0>__________
 // |             |
 // |             |
@@ -56,30 +67,59 @@ constexpr int kBorderThickness = 2;
 // |             |
 // |_____________|
 //
-SkPath BackgroundPath(int height) {
+SkPath BackgroundPath(int height,
+                      bool draw_triangle_on_left,
+                      int action_offset) {
   SkPath path;
-  auto short_length = kMenuWidth - kTriangleHeight - 2 * kCornerRadius;
-  auto short_height = height - 2 * kCornerRadius;
-  path.moveTo(kCornerRadius, 0);
+  int short_length = kMenuWidth - kTriangleHeight - 2 * kCornerRadius;
+  int short_height = height - 2 * kCornerRadius;
+  // If the offset is greater than the limit or less than the negative
+  // limit, set it respectively.
+  const int limit = short_height / 2 - kTriangleLength / 2;
+  if (action_offset > limit) {
+    action_offset = limit;
+  } else if (action_offset < -limit) {
+    action_offset = -limit;
+  }
+  if (draw_triangle_on_left) {
+    path.moveTo(kCornerRadius + kTriangleHeight, 0);
+  } else {
+    path.moveTo(kCornerRadius, 0);
+  }
   // Top left after corner radius to top right corner radius.
   path.rLineTo(short_length, 0);
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
               SkPathDirection::kCW, +kCornerRadius, +kCornerRadius);
-  // Top right after corner radius to midway point.
-  path.rLineTo(0, short_height / 2 - kTriangleLength / 2);
-  // Triangle shape.
-  path.rLineTo(kTriangleHeight, kTriangleLength / 2);
-  path.rLineTo(-kTriangleHeight, kTriangleLength / 2);
-  // After midway point to bottom right corner radius.
-  path.rLineTo(0, short_height / 2 - kTriangleLength / 2);
+  if (draw_triangle_on_left) {
+    // Top right after corner radius to bottom right corner radius.
+    path.rLineTo(0, short_height);
+  } else {
+    // Top right after corner radius to midway point.
+    path.rLineTo(0, limit + action_offset);
+    // Triangle shape.
+    path.rLineTo(kTriangleHeight, kTriangleLength / 2);
+    path.rLineTo(-kTriangleHeight, kTriangleLength / 2);
+    // After midway point to bottom right corner radius.
+    path.rLineTo(0, limit - action_offset);
+  }
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
               SkPathDirection::kCW, -kCornerRadius, +kCornerRadius);
   // Bottom right after corner radius to bottom left corner radius.
   path.rLineTo(-short_length, 0);
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
               SkPathDirection::kCW, -kCornerRadius, -kCornerRadius);
-  // Bottom left after corner radius to top left corner radius.
-  path.rLineTo(0, -short_height);
+  if (draw_triangle_on_left) {
+    // bottom left after corner radius to midway point.
+    path.rLineTo(0, -limit + action_offset);
+    // Triangle shape.
+    path.rLineTo(-kTriangleHeight, -kTriangleLength / 2);
+    path.rLineTo(kTriangleHeight, -kTriangleLength / 2);
+    // After midway point to bottom right corner radius.
+    path.rLineTo(0, -limit - action_offset);
+  } else {
+    // Bottom left after corner radius to top left corner radius.
+    path.rLineTo(0, -short_height);
+  }
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
               SkPathDirection::kCW, +kCornerRadius, -kCornerRadius);
   // Path finish.
@@ -114,7 +154,9 @@ void ButtonOptionsMenu::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(16, 16, 16, 16 + kTriangleHeight)));
+      action_->IsOnLeftSide()
+          ? gfx::Insets::TLBR(16, 16 + kTriangleHeight, 16, 16)
+          : gfx::Insets::TLBR(16, 16, 16, 16 + kTriangleHeight)));
 
   AddHeader();
   AddEditTitle();
@@ -296,21 +338,26 @@ void ButtonOptionsMenu::AddActionNameLabel() {
 }
 
 void ButtonOptionsMenu::CalculatePosition() {
-  auto position = action_->GetUICenterPosition();
-  auto x = position.x();
-  auto y = position.y();
+  auto* action_view = action_->action_view();
+  int x = action_view->x();
+  int y = action_->GetUICenterPosition().y();
   auto parent_size = controller_->GetOverlayWidgetContentsView()->size();
 
-  // Set the menu at the middle if there is not enough margin on the right
-  // or left side.
-  if (x + width() > parent_size.width() || x < 0) {
-    x = std::max(0, parent_size.width() - width());
+  if (action_->IsOnLeftSide()) {
+    x += action_view->width() + kMenuActionGap;
+  } else {
+    x -= width() + kMenuActionGap;
   }
 
-  // Set the menu at the bottom if there is not enough margin on the bottom
-  // side.
-  if (y + height() > parent_size.height()) {
+  y -= height() / 2;
+  // The range of values for the y-position of the menu are [0, parent_height -
+  // height]. If the calculated y-position is beyond this range, adjust it based
+  // on whether the y-position is over or under the range by setting it to the
+  // maximum or minimum value respectively.
+  if (y > parent_size.height() - height()) {
     y = std::max(0, parent_size.height() - height());
+  } else if (y < 0) {
+    y = 0;
   }
 
   SetPosition(gfx::Point(x, y));
@@ -346,13 +393,17 @@ void ButtonOptionsMenu::OnPaintBackground(gfx::Canvas* canvas) {
   ui::ColorProvider* color_provider = GetColorProvider();
   flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysBaseElevated));
   int height = GetHeightForWidth(kMenuWidth);
-  canvas->DrawPath(BackgroundPath(height), flags);
+  bool draw_triangle_on_left = action_->IsOnLeftSide();
+  int action_offset = CalculateActionOffset(height);
+  canvas->DrawPath(BackgroundPath(height, draw_triangle_on_left, action_offset),
+                   flags);
   // Draw the border.
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   // TODO(b/270969760): Change to "sys.BorderHighlight1" when added.
   flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysSystemBorder1));
   flags.setStrokeWidth(kBorderThickness);
-  canvas->DrawPath(BackgroundPath(height), flags);
+  canvas->DrawPath(BackgroundPath(height, draw_triangle_on_left, action_offset),
+                   flags);
 }
 
 gfx::Size ButtonOptionsMenu::CalculatePreferredSize() const {
@@ -373,6 +424,23 @@ void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
   if (action_ == &action) {
     labels_view_->OnActionUpdated();
   }
+}
+
+int ButtonOptionsMenu::CalculateActionOffset(int height) {
+  int action_center_y = action_->GetUICenterPosition().y();
+  // If the position of the action is too close to the top, return the
+  // negative difference between the action position and half the height.
+  if (action_center_y < height / 2) {
+    return action_center_y - height / 2;
+  }
+  // If the position of the action is too close to the bottom, return
+  // the positive difference between the action position and half the
+  // height.
+  if (action_center_y > parent()->height() - height / 2) {
+    return action_center_y - (parent()->height() - height / 2);
+  }
+  // Otherwise, return an offset of zero.
+  return 0;
 }
 
 }  // namespace arc::input_overlay

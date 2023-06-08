@@ -457,6 +457,12 @@ bool Action::IsDefaultAction() const {
   return id_ <= kMaxDefaultActionID;
 }
 
+bool Action::IsOnLeftSide() {
+  auto* parent = action_view_->parent();
+  DCHECK(parent);
+  return action_view_->GetTouchCenterInWindow().x() < parent->width() / 2;
+}
+
 bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
                                      std::list<ui::TouchEvent>& touch_events) {
   if (touch_id_) {

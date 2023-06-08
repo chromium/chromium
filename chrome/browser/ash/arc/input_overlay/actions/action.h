@@ -154,6 +154,8 @@ class Action {
   bool deleted() const { return deleted_; }
   void set_deleted(bool deleted) { deleted_ = deleted; }
 
+  bool IsOnLeftSide();
+
  protected:
   // |touch_injector| must be non-NULL and own this Action.
   explicit Action(TouchInjector* touch_injector);
