@@ -340,7 +340,14 @@ void It2MeHost::OnClientConnected(const std::string& signaling_id) {
 void It2MeHost::OnClientDisconnected(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
-  DisconnectOnNetworkThread();
+  // Handling HostStatusObserver events should not cause the destruction of the
+  // ChromotingHost instance, however that is exactly what happens inside of
+  // DisconnectOnNetworkThread() so we post a task to disconnect asynchronously
+  // which will allow any other HostStatusObservers to handle the event as well
+  // before everything is torn down.
+  host_context_->network_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&It2MeHost::DisconnectOnNetworkThread, this,
+                                protocol::ErrorCode::OK));
 }
 
 ValidationCallback It2MeHost::GetValidationCallbackForTesting() {
