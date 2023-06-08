@@ -354,9 +354,9 @@ void CloudBinaryUploadService::OnFCMConnected(Request* request) {
         request->request_token(),
         base::BindRepeating(&CloudBinaryUploadService::OnGetResponse,
                             weakptr_factory_.GetWeakPtr(), request));
-    binary_fcm_service_->GetInstanceID(
-        base::BindOnce(&CloudBinaryUploadService::OnGetInstanceID,
-                       weakptr_factory_.GetWeakPtr(), request));
+    binary_fcm_service_->GetInstanceID(base::BindOnce(
+        &CloudBinaryUploadService::OnGetInstanceID,
+        weakptr_factory_.GetWeakPtr(), base::UnsafeDanglingUntriaged(request)));
   }
 
   // `request` might have been destroyed by:
