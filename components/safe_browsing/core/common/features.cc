@@ -163,6 +163,10 @@ BASE_FEATURE(kFileTypePoliciesTag,
              "FileTypePoliciesTag",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFriendlierSafeBrowsingSettings,
+             "FriendlierSafeBrowsingSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHashPrefixRealTimeLookups,
              "SafeBrowsingHashPrefixRealTimeLookups",
              base::FEATURE_DISABLED_BY_DEFAULT);

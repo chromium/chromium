@@ -162,6 +162,11 @@ BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 // `kFileTypePoliciesTag`.
 const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
 
+// Enables the new text, layout, and icons on both the privacy guide and on the
+// security settings page. Also, this will only affect the safe browsing level
+// settings.
+BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettings);
+
 // Sends hash-prefix real-time lookup requests on navigations for Standard Safe
 // Browsing users instead of hash-prefix database lookups.
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookups);
