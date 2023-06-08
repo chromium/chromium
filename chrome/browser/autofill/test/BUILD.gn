@@ -33,10 +33,33 @@ android_library("test_support_java") {
 
   sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
 
+  deps = [
+    ":jni_headers",
+    "//base:jni_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   public_deps = [
     "//base:base_java_test_support",
     "//chrome/browser/autofill/android:java",
     "//components/autofill/android:main_autofill_java",
     "//content/public/test/android:content_java_test_support",
   ]
+}
+
+generate_jni("jni_headers") {
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
+}
+
+if (is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [ "android/autofill_test_helper.cc" ]
+    deps = [
+      ":jni_headers",
+      "//base",
+      "//chrome/browser/ui",
+    ]
+  }
 }

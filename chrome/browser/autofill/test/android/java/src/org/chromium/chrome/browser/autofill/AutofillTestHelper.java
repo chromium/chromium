@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.autofill;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.Calendar;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Helper class for testing AutofillProfiles.
  */
+@JNINamespace("autofill")
 public class AutofillTestHelper {
     private final CallbackHelper mOnPersonalDataChangedHelper = new CallbackHelper();
 
@@ -349,5 +353,16 @@ public class AutofillTestHelper {
         } catch (TimeoutException e) {
             throw new AssertionError(e);
         }
+    }
+
+    // Disables minimum time that popup needs to be shown prior to click being processed.
+    // Only has an effect if autofill popup is being shown.
+    public static void disableThresholdForCurrentlyShownAutofillPopup(WebContents webContents) {
+        AutofillTestHelperJni.get().disableThresholdForCurrentlyShownAutofillPopup(webContents);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void disableThresholdForCurrentlyShownAutofillPopup(WebContents webContents);
     }
 }

@@ -27,12 +27,12 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,7 +49,7 @@ import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
-import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.DropdownPopupWindowInterface;
@@ -65,6 +65,7 @@ import java.util.concurrent.TimeoutException;
  * Integration tests for the AutofillPopup.
  */
 @RunWith(ParameterizedRunner.class)
+@Batch(Batch.PER_CLASS)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({ChromeFeatureList.PORTALS, ChromeFeatureList.PORTALS_CROSS_ORIGIN})
 @DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
@@ -162,7 +163,9 @@ public class AutofillPopupTest {
         if (enabledFeature == EnabledFeature.PORTALS) {
             mActivityTestRule.startMainActivityWithURL(mServer.getURL(PORTAL_WRAPPER + formUrl));
             SwapWebContentsObserver observer = new SwapWebContentsObserver();
-            mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+            });
             DOMUtils.clickNode(mActivityTestRule.getActivity().getCurrentWebContents(), "ACTIVATE");
             CriteriaHelper.pollUiThread(
                     () -> { return observer.mCallbackHelper.getCallCount() == 1; });
@@ -232,7 +235,12 @@ public class AutofillPopupTest {
 
         waitForAutofillPopupShow(popup);
 
-        TouchCommon.singleClickView(popup.getListView(), 10, 10);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AutofillTestHelper.disableThresholdForCurrentlyShownAutofillPopup(webContents);
+
+            popup.getListView().performItemClick(
+                    null, 0, popup.getListView().getAdapter().getItemId(0));
+        });
 
         waitForInputFieldFill();
     }
@@ -259,7 +267,6 @@ public class AutofillPopupTest {
     @Test
     @MediumTest
     @Feature({"autofill"})
-    @DisabledTest(message = "Flaky. crbug.com/936183")
     public void testClickAutofillPopupSuggestion() throws TimeoutException {
         loadAndFillForm(BASIC_PAGE_DATA, "J");
         final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
@@ -307,7 +314,6 @@ public class AutofillPopupTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @Feature({"autofill"})
-    @DisabledTest(message = "https://crbug.com/1108241")
     public void testLoggingInitiatedElementFilled(@EnabledFeature int enabledFeature)
             throws TimeoutException {
         loadAndFillForm(INITIATING_ELEMENT_FILLED, "o", enabledFeature);
@@ -328,7 +334,6 @@ public class AutofillPopupTest {
     @Test
     @MediumTest
     @Feature({"autofill"})
-    @DisabledTest(message = "Flaky. crbug.com/1030559")
     public void testLoggingAnotherElementFilled() throws TimeoutException {
         loadAndFillForm(ANOTHER_ELEMENT_FILLED, "J");
         final String profileFullName = FIRST_NAME + " " + LAST_NAME;
@@ -347,7 +352,6 @@ public class AutofillPopupTest {
     @Test
     @MediumTest
     @Feature({"autofill"})
-    @DisabledTest(message = "crbug.com/1075791")
     public void testNotLoggingInvalidOption() throws TimeoutException {
         loadAndFillForm(INVALID_OPTION, "o");
         final String profileFullName = FIRST_NAME + " " + LAST_NAME;
