@@ -7,11 +7,13 @@
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -115,6 +117,15 @@ bool IsEnabled(const PrefService& pref_service) {
          (state == safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION &&
           base::FeatureList::IsEnabled(
               safe_browsing::kSafeBrowsingLookupMechanismExperiment));
+}
+
+GURL GetKeyFetchingUrl() {
+  GURL url(kKeyFetchServerUrl);
+  std::string api_key = google_apis::GetAPIKey();
+  if (!api_key.empty()) {
+    url = url.Resolve("?key=" + base::EscapeQueryParamValue(api_key, true));
+  }
+  return url;
 }
 
 }  // namespace
@@ -256,7 +267,7 @@ void OhttpKeyService::StartFetch(Callback callback) {
     return;
   }
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kKeyFetchServerUrl);
+  resource_request->url = GetKeyFetchingUrl();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kOhttpKeyTrafficAnnotation);
