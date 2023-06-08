@@ -4028,6 +4028,7 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_MINUS" desc="Label for accelerator action - Zoom out on page.">
         Zoom out on page
       </message>
+      <!-- TODO(b/286268215): Translate this string -->
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_LOCATION" translateable="false" desc="Label for accelerator action - Focus address bar.">
         Focus address bar
       </message>
@@ -4094,6 +4095,7 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" desc="Label for accelerator description - Cycle backwards in the most recently used window list.">
         Cycle backwards in the most recently used window list
       </message>
+      <!-- TODO(b/286268215): Translate this string -->
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" translateable="false" desc="Label for accelerator description - Right-click a link.">
         Right-click a link
       </message>
@@ -4184,9 +4186,11 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_DOCUMENT" desc="Label for accelerator description - Go to end of document.">
         Go to end of document
       </message>
+      <!-- TODO(b/286268215): Translate this string -->
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_BEGINNING_OF_LINE" translateable="false" desc="Label for accelerator description - Move cursor to beginning of line.">
         Move cursor to beginning of line
       </message>
+      <!-- TODO(b/286268215): Translate this string -->
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_LINE" translateable="false" desc="Label for accelerator description - Move cursor to end of line.">
         Move cursor to end of line
       </message>
