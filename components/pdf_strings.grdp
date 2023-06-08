@@ -354,6 +354,9 @@
     <message name="IDS_PDF_OCR_COMPLETED" is_accessibility_with_no_ui="true" translateable="false" desc="Notification to inform the user that OCR is completed.">
       Image converted to text
     </message>
+    <message name="IDS_PDF_OCR_NO_RESULT" is_accessibility_with_no_ui="true" translateable="false" desc="Notification to inform the user that no text was converted by OCR from images.">
+      No text converted from images
+    </message>
     <message name="IDS_PDF_OCR_RESULT_BEGIN" is_accessibility_with_no_ui="true" translateable="false" desc="Notification to inform the user of the beginning of OCR results.">
       Start of extracted text
     </message>

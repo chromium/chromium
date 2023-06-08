@@ -1643,7 +1643,10 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
 
   did_get_a_text_run_ |= !text_runs.empty();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled() && !did_get_a_text_run_) {
+  // TODO(crbug.com/1443346): Use a more explicit flag indicating whether any
+  // image was sent to the OCR model in `AddRemainingAnnotations()`.
+  bool has_image = !page_objects.images.empty();
+  if (features::IsPdfOcrEnabled() && !did_get_a_text_run_ && has_image) {
     if (ocr_service_) {
       // Notify users via the status node that PDF OCR is about to run since
       // the AXMode was set for PDF OCR.
@@ -1702,9 +1705,22 @@ void PdfAccessibilityTree::UnserializeNodes() {
   tree_data_.tree_id = render_accessibility->GetTreeIDForPluginHost();
   tree_data_.focus_id = doc_node_->id;
   update.root_id = doc_node_->id;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Remove the status node if it doesn't have any message. The status message
+  // will be empty if PDF already has accessible text and thus doesn't need OCR.
+  if (features::IsPdfOcrEnabled()) {
+    if (ocr_status_node_->GetStringAttribute(ax::mojom::StringAttribute::kName)
+            .empty()) {
+      size_t num_erased =
+          base::Erase(doc_node_->child_ids, ocr_status_node_->id);
+      CHECK_EQ(num_erased, 1u);
+      ocr_status_node_.reset();
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   update.nodes.push_back(*doc_node_);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled()) {
+  if (features::IsPdfOcrEnabled() && ocr_status_node_) {
     update.nodes.push_back(*ocr_status_node_);
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -1733,7 +1749,15 @@ void PdfAccessibilityTree::UnserializeNodes() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfAccessibilityTree::SetOcrCompleteStatus() {
   VLOG(2) << "Performing OCR on PDF is complete.";
-  SetStatusMessage(IDS_PDF_OCR_COMPLETED);
+
+  content::RenderAccessibility* render_accessibility =
+      GetRenderAccessibilityIfEnabled();
+  if (!render_accessibility) {
+    return;
+  }
+
+  SetStatusMessage(was_text_converted_from_image_ ? IDS_PDF_OCR_COMPLETED
+                                                  : IDS_PDF_OCR_NO_RESULT);
 
   if (!nodes_.empty()) {
     // `nodes_` is not empty yet as `UnserializeNodes()` hasn't been called. In
@@ -1749,6 +1773,7 @@ void PdfAccessibilityTree::SetOcrCompleteStatus() {
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
   }
+  render_accessibility->SetPluginTreeSource(this);
 }
 
 void PdfAccessibilityTree::SetStatusMessage(int message_id) {
@@ -1996,8 +2021,10 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     return;
   }
 
-  // TODO(crbug.com/1393069): Investigate more to understand cases in which
-  // OCR gave no results and update the status node with a relevant message.
+  // Update the flag if OCR extracted text from any images. This flag will be
+  // used to update the status node to notify users of it.
+  was_text_converted_from_image_ |= !tree_update.nodes.empty();
+
   if (ocr_service_->IsQueueEmpty()) {
     SetOcrCompleteStatus();
   }
