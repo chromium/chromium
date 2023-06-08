@@ -9,7 +9,7 @@ create {
       }
     }
     patch_dir: "patches"
-    patch_version: "chromium.4"
+    patch_version: "chromium.4.1"
   }
   build {
     install: "install.py"
