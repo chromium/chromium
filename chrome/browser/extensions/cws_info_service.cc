@@ -40,9 +40,16 @@ namespace {
 
 constexpr int kMaxExtensionIdsPerRequest = 3;
 constexpr int kMaxRetriesPerRequest = 2;
+
 constexpr int kStartupCheckDelaySeconds = 30;
+// Default check and fetch intervals.
 constexpr int kCheckIntervalSeconds = 3 * 60 * 60;
 constexpr int kFetchIntervalSeconds = 24 * 60 * 60;
+// Fast mode check and fetch intervals. These intervals are used to
+// facilitate end-end testing.
+constexpr int kFastCheckIntervalSeconds = 1 * 60;
+constexpr int kFastFetchIntervalSeconds = 5 * 60;
+
 constexpr char kRequestUrl[] =
     "https://chromewebstore.googleapis.com/v2/items/-/storeMetadata:batchGet";
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -148,6 +155,12 @@ namespace extensions {
 BASE_FEATURE(kCWSInfoService,
              "CWSInfoService",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Increase the frequency of periodic retrieval of extensions metadata from
+// CWS. This feature is used only for testing purposes.
+BASE_FEATURE(kCWSInfoFastCheck,
+             "CWSInfoFastCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -285,8 +298,11 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
     base::TimeDelta elapsed_time =
         base::Time::Now() - pref_service_->GetTime(prefs::kCWSInfoTimestamp);
     // Enough time has elapsed since the last fetch.
+    int fetch_interval_seconds = base::FeatureList::IsEnabled(kCWSInfoFastCheck)
+                                     ? kFastFetchIntervalSeconds
+                                     : kFetchIntervalSeconds;
     bool data_refresh_needed =
-        elapsed_time >= base::Seconds(kFetchIntervalSeconds);
+        elapsed_time >= base::Seconds(fetch_interval_seconds);
 
     bool new_info_requested = false;
     std::unique_ptr<FetchContext> fetch_context =
@@ -305,7 +321,10 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
   }
 
   // No info request necessary at this time. Schedule the next check.
-  ScheduleCheck(kCheckIntervalSeconds);
+  int check_interval_seconds = base::FeatureList::IsEnabled(kCWSInfoFastCheck)
+                                   ? kFastCheckIntervalSeconds
+                                   : kCheckIntervalSeconds;
+  ScheduleCheck(check_interval_seconds);
 }
 
 bool CWSInfoService::CanFetchInfo() const {
@@ -451,7 +470,10 @@ void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
   // schedule the next check.
   RecordFetchSuccess(!error);
   active_fetch_.reset();
-  ScheduleCheck(kCheckIntervalSeconds);
+  int check_interval_seconds = base::FeatureList::IsEnabled(kCWSInfoFastCheck)
+                                   ? kFastCheckIntervalSeconds
+                                   : kCheckIntervalSeconds;
+  ScheduleCheck(check_interval_seconds);
 }
 
 bool CWSInfoService::MaybeSaveResponseToPrefs(
