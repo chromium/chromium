@@ -19,7 +19,6 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -56,20 +55,14 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
   // |extension_id|: the Extension initiating the request.
   // |is_anonymous| is true if GetCapturedTabs() should not list the captured
   // tab, and no status change events should be dispatched for it.
-  // |caller_render_process_id|: the process ID associated with the
-  // tab/extension that starts the capture.
-  // |restrict_to_render_frame_id|: If populated, restricts the validity of the
-  // capture request to a render frame with the specified ID. This may be empty
-  // in the case of a Manifest V3 extension service worker calling
-  // getMediaStreamId(), where it is designed to be consumed by another context
-  // on the same origin (e.g., an offscreen document).
+  // |caller_contents|: the WebContents associated with the tab/extension that
+  // starts the capture.
   std::string AddRequest(content::WebContents* target_contents,
                          const std::string& extension_id,
                          bool is_anonymous,
                          const GURL& origin,
                          content::DesktopMediaID source,
-                         int caller_render_process_id,
-                         absl::optional<int> restrict_to_render_frame_id);
+                         content::WebContents* caller_contents);
 
   // Called by MediaStreamDevicesController to verify the request before
   // creating the stream.  |render_process_id| and |render_frame_id| are used to
