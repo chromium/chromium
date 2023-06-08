@@ -246,7 +246,7 @@ bool CanGetContextForCFAllocator() {
 #if BUILDFLAG(IS_IOS)
   return !partition_alloc::internal::base::ios::IsRunningOnOrLater(17, 0, 0);
 #else
-  return !partition_alloc::internal::base::mac::IsOSLaterThan13_DontCallThis();
+  return !partition_alloc::internal::base::mac::IsOSLaterThan14_DontCallThis();
 #endif
 }
 

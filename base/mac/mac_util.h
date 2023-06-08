@@ -135,19 +135,20 @@ DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(13, OLD_TEST_DEPLOYMENT_TARGET)
 DEFINE_OLD_IS_OS_FUNCS(14, OLD_TEST_DEPLOYMENT_TARGET)
 DEFINE_OLD_IS_OS_FUNCS(15, OLD_TEST_DEPLOYMENT_TARGET)
 DEFINE_IS_OS_FUNCS(11, TEST_DEPLOYMENT_TARGET)
+DEFINE_IS_OS_FUNCS(12, TEST_DEPLOYMENT_TARGET)
 
 // Versions of macOS supported at runtime and whose SDK is supported for
 // building.
-#ifdef MAC_OS_VERSION_12_0
-DEFINE_IS_OS_FUNCS(12, TEST_DEPLOYMENT_TARGET)
-#else
-DEFINE_IS_OS_FUNCS(12, IGNORE_DEPLOYMENT_TARGET)
-#endif
-
 #ifdef MAC_OS_VERSION_13_0
 DEFINE_IS_OS_FUNCS(13, TEST_DEPLOYMENT_TARGET)
 #else
 DEFINE_IS_OS_FUNCS(13, IGNORE_DEPLOYMENT_TARGET)
+#endif
+
+#ifdef MAC_OS_VERSION_14_0
+DEFINE_IS_OS_FUNCS(14, TEST_DEPLOYMENT_TARGET)
+#else
+DEFINE_IS_OS_FUNCS(14, IGNORE_DEPLOYMENT_TARGET)
 #endif
 
 #undef DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED
@@ -161,8 +162,8 @@ DEFINE_IS_OS_FUNCS(13, IGNORE_DEPLOYMENT_TARGET)
 // This should be infrequently used. It only makes sense to use this to avoid
 // codepaths that are very likely to break on future (unreleased, untested,
 // unborn) OS releases, or to log when the OS is newer than any known version.
-inline bool IsOSLaterThan13_DontCallThis() {
-  return !IsAtMostOS13();
+inline bool IsOSLaterThan14_DontCallThis() {
+  return !IsAtMostOS14();
 }
 
 enum class CPUType {

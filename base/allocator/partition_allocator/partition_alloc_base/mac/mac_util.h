@@ -86,19 +86,20 @@ PA_DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(13, PA_OLD_TEST_DEPLOYMENT_TARGET)
 PA_DEFINE_OLD_IS_OS_FUNCS(14, PA_OLD_TEST_DEPLOYMENT_TARGET)
 PA_DEFINE_OLD_IS_OS_FUNCS(15, PA_OLD_TEST_DEPLOYMENT_TARGET)
 PA_DEFINE_IS_OS_FUNCS(11, PA_TEST_DEPLOYMENT_TARGET)
+PA_DEFINE_IS_OS_FUNCS(12, PA_TEST_DEPLOYMENT_TARGET)
 
 // Versions of macOS supported at runtime and whose SDK is supported for
 // building.
-#ifdef MAC_OS_VERSION_12_0
-PA_DEFINE_IS_OS_FUNCS(12, PA_TEST_DEPLOYMENT_TARGET)
-#else
-PA_DEFINE_IS_OS_FUNCS(12, PA_IGNORE_DEPLOYMENT_TARGET)
-#endif
-
 #ifdef MAC_OS_VERSION_13_0
 PA_DEFINE_IS_OS_FUNCS(13, PA_TEST_DEPLOYMENT_TARGET)
 #else
 PA_DEFINE_IS_OS_FUNCS(13, PA_IGNORE_DEPLOYMENT_TARGET)
+#endif
+
+#ifdef MAC_OS_VERSION_14_0
+PA_DEFINE_IS_OS_FUNCS(14, PA_TEST_DEPLOYMENT_TARGET)
+#else
+PA_DEFINE_IS_OS_FUNCS(14, PA_IGNORE_DEPLOYMENT_TARGET)
 #endif
 
 #undef PA_DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED
@@ -112,8 +113,8 @@ PA_DEFINE_IS_OS_FUNCS(13, PA_IGNORE_DEPLOYMENT_TARGET)
 // This should be infrequently used. It only makes sense to use this to avoid
 // codepaths that are very likely to break on future (unreleased, untested,
 // unborn) OS releases, or to log when the OS is newer than any known version.
-inline bool IsOSLaterThan13_DontCallThis() {
-  return !IsAtMostOS13();
+inline bool IsOSLaterThan14_DontCallThis() {
+  return !IsAtMostOS14();
 }
 
 }  // namespace partition_alloc::internal::base::mac
