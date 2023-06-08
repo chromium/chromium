@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
+#include "chrome/browser/extensions/webstore_installer_callback_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/storage_partition.h"
@@ -217,8 +218,15 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
   }
 
   auto installer = base::MakeRefCounted<WebstoreInstaller>(
-      profile_, this, GetWebContents(), id_, std::move(approval),
-      install_source_);
+      profile_,
+      std::make_unique<WebstoreInstallerCallbackDelegate>(
+          base::BindOnce(
+              &WebstoreStandaloneInstaller::OnExtensionInstallSuccess,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &WebstoreStandaloneInstaller::OnExtensionInstallFailure,
+              weak_ptr_factory_.GetWeakPtr())),
+      GetWebContents(), id_, std::move(approval), install_source_);
   installer->Start();
 }
 

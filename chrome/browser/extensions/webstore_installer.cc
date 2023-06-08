@@ -263,14 +263,14 @@ const WebstoreInstaller::Approval* WebstoreInstaller::GetAssociatedApproval(
 }
 
 WebstoreInstaller::WebstoreInstaller(Profile* profile,
-                                     Delegate* delegate,
+                                     std::unique_ptr<Delegate> delegate,
                                      content::WebContents* web_contents,
                                      const std::string& id,
                                      std::unique_ptr<Approval> approval,
                                      InstallSource source)
     : web_contents_(web_contents->GetWeakPtr()),
       profile_(profile),
-      delegate_(delegate),
+      delegate_(std::move(delegate)),
       id_(id),
       install_source_(source),
       approval_(approval.release()) {
@@ -460,8 +460,9 @@ void WebstoreInstaller::OnDownloadStarted(
   }
 
   if (!download_started_) {
-    if (delegate_)
+    if (delegate_) {
       delegate_->OnExtensionDownloadStarted(id_, download_item_);
+    }
     download_started_ = true;
   }
 }
@@ -496,8 +497,9 @@ void WebstoreInstaller::OnDownloadUpdated(DownloadItem* download) {
 
       if (pending_modules_.size() == 1) {
         // The download is the last module - the extension main module.
-        if (delegate_)
+        if (delegate_) {
           delegate_->OnExtensionDownloadProgress(id_, download);
+        }
         extensions::InstallTracker* tracker =
             extensions::InstallTrackerFactory::GetForBrowserContext(profile_);
         tracker->OnDownloadProgress(id_, 100);
@@ -717,8 +719,8 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
 void WebstoreInstaller::ReportFailure(const std::string& error,
                                       FailureReason reason) {
   if (delegate_) {
-    delegate_.ExtractAsDangling()->OnExtensionInstallFailure(id_, error,
-                                                             reason);
+    delegate_->OnExtensionInstallFailure(id_, error, reason);
+    delegate_.reset();
   }
 
   extensions::InstallTracker* tracker =
@@ -730,7 +732,8 @@ void WebstoreInstaller::ReportFailure(const std::string& error,
 
 void WebstoreInstaller::ReportSuccess() {
   if (delegate_) {
-    delegate_.ExtractAsDangling()->OnExtensionInstallSuccess(id_);
+    delegate_->OnExtensionInstallSuccess(id_);
+    delegate_.reset();
   }
 
   Release();  // Balanced in Start().

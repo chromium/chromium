@@ -83,6 +83,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
 
   class Delegate {
    public:
+    virtual ~Delegate() = default;
     virtual void OnExtensionDownloadStarted(const std::string& id,
                                             download::DownloadItem* item);
     virtual void OnExtensionDownloadProgress(const std::string& id,
@@ -91,9 +92,6 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
     virtual void OnExtensionInstallFailure(const std::string& id,
                                            const std::string& error,
                                            FailureReason reason) = 0;
-
-   protected:
-    virtual ~Delegate() {}
   };
 
   // Contains information about what parts of the extension install process can
@@ -187,7 +185,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   // This also associates the |approval| with this install. Note: the delegate
   // should stay alive until being called back.
   WebstoreInstaller(Profile* profile,
-                    Delegate* delegate,
+                    std::unique_ptr<Delegate> delegate,
                     content::WebContents* web_contents,
                     const std::string& id,
                     std::unique_ptr<Approval> approval,
@@ -265,7 +263,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
       extension_registry_observation_{this};
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
-  raw_ptr<Delegate> delegate_;
+  std::unique_ptr<Delegate> delegate_;
   std::string id_;
   InstallSource install_source_;
   // The DownloadItem is owned by the DownloadManager and is valid from when

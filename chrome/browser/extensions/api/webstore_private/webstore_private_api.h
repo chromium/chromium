@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/extensions/active_install_data.h"
@@ -170,9 +171,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
   bool friction_dialog_shown_ = false;
 };
 
-class WebstorePrivateCompleteInstallFunction
-    : public ExtensionFunction,
-      public WebstoreInstaller::Delegate {
+class WebstorePrivateCompleteInstallFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.completeInstall",
                              WEBSTOREPRIVATE_COMPLETEINSTALL)
@@ -185,17 +184,18 @@ class WebstorePrivateCompleteInstallFunction
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
 
-  // WebstoreInstaller::Delegate:
-  void OnExtensionInstallSuccess(const std::string& id) override;
-  void OnExtensionInstallFailure(
-      const std::string& id,
-      const std::string& error,
-      WebstoreInstaller::FailureReason reason) override;
+  // WebstoreInstaller::Delegate callbacks
+  void OnExtensionInstallSuccess(const std::string& id);
+  void OnExtensionInstallFailure(const std::string& id,
+                                 const std::string& error,
+                                 WebstoreInstaller::FailureReason reason);
 
   void OnInstallSuccess(const std::string& id);
 
   std::unique_ptr<WebstoreInstaller::Approval> approval_;
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
+  base::WeakPtrFactory<WebstorePrivateCompleteInstallFunction>
+      weak_ptr_factory_{this};
 };
 
 class WebstorePrivateEnableAppLauncherFunction : public ExtensionFunction {

@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
+#include "chrome/browser/extensions/webstore_installer_callback_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -1012,7 +1013,15 @@ WebstorePrivateCompleteInstallFunction::Run() {
   // The extension will install through the normal extension install flow, but
   // the allowlist entry will bypass the normal permissions install dialog.
   scoped_refptr<WebstoreInstaller> installer = new WebstoreInstaller(
-      profile, this, web_contents, params->expected_id, std::move(approval_),
+      profile,
+      std::make_unique<WebstoreInstallerCallbackDelegate>(
+          base::BindOnce(&WebstorePrivateCompleteInstallFunction::
+                             OnExtensionInstallSuccess,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&WebstorePrivateCompleteInstallFunction::
+                             OnExtensionInstallFailure,
+                         weak_ptr_factory_.GetWeakPtr())),
+      web_contents, params->expected_id, std::move(approval_),
       WebstoreInstaller::INSTALL_SOURCE_OTHER);
   installer->Start();
 
