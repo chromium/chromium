@@ -1452,18 +1452,18 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_IDLE_TIMEOUT_CLOSE_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chromium is going to close automatically.">
           {COUNT, plural,
-          =1 {Your administrator automatically closes Chromium when it isn't used for 1 minute.}
-          other {Your administrator automatically closes Chromium when it isn't used for # minutes.}}
+          =1 {Your organization automatically closes Chromium when it isn't used for 1 minute.}
+          other {Your organization automatically closes Chromium when it isn't used for # minutes.}}
         </message>
         <message name="IDS_IDLE_TIMEOUT_CLEAR_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chromium is going to clear data automatically.">
           {COUNT, plural,
-          =1 {Your administrator automatically deletes browsing data when it isn't used for 1 minute. This could include history, autofill, and downloads. Your existing tabs will remain open.}
-          other {Your administrator automatically deletes browsing data when it isn't used for # minutes. This could include history, autofill, and downloads. Your existing tabs will remain open.}}
+          =1 {Your organization automatically deletes browsing data when Chromium isn't used for 1 minute. This could include history, autofill, and downloads. Your existing tabs will remain open.}
+          other {Your organization automatically deletes browsing data when Chromium isn't used for # minutes. This could include history, autofill, and downloads. Your existing tabs will remain open.}}
         </message>
         <message name="IDS_IDLE_TIMEOUT_CLOSE_AND_CLEAR_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chromium is going to close and clear data automatically.">
           {COUNT, plural,
-          =1 {Your administrator automatically closes Chromium when it isn't used for 1 minute. Browsing data is deleted. This could include history, autofill, and downloads.}
-          other {Your administrator automatically closes Chromium when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill, and downloads.}}
+          =1 {Your organization automatically closes Chromium when it isn't used for 1 minute. Browsing data is deleted. This could include history, autofill, and downloads.}
+          other {Your organization automatically closes Chromium when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill, and downloads.}}
         </message>
         <message name="IDS_IDLE_DISMISS_BUTTON" desc="Button label in the Idle Timeout dialog, this button dismisses the dialog and prevents browsers from closing automatically.">
           Continue using Chromium
