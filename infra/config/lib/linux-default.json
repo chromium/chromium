@@ -83,6 +83,7 @@
     "Network Service Linux": "Ubuntu-22.04",
     "Site Isolation Android": "Ubuntu-22.04",
     "ToTAndroid x64": "Ubuntu-22.04",
+    "ToTFuchsia x64": "Ubuntu-22.04",
     "ToTLinuxASanLibfuzzer": "Ubuntu-22.04",
     "VR Linux": "Ubuntu-22.04",
     "Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)": "Ubuntu-22.04",
