@@ -2559,12 +2559,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpent" units="ms"
-    expires_after="2023-05-14">
-  <owner>mrefaat@chromium.org</owner>
-  <owner>marq@chromium.org</owner>
+    expires_after="2024-05-14">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <summary>
     The time the Tab switcher is displayed to the user. This histogram will
-    always be recorded once the user exit the tab switcher.
+    always be recorded once the user exit the tab switcher. Note: this metric
+    got expired for a while between 2023-05-14 and 2023-06-07.
   </summary>
 </histogram>
 
