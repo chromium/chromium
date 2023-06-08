@@ -9104,6 +9104,8 @@ const Node* Document::GetFindInPageActiveMatchNode() const {
 
 void Document::ActivateForPrerendering(
     const mojom::blink::PrerenderPageActivationParams& params) {
+  TRACE_EVENT0("navigation", "Document::ActivateForPrerendering");
+
   // TODO(bokan): Portals will change this assumption since they mean an active
   // document can be "adopted" into a portal.
   DCHECK(is_prerendering_);
@@ -9140,6 +9142,10 @@ void Document::AddPostPrerenderingActivationStep(base::OnceClosure callback) {
 }
 
 void Document::RunPostPrerenderingActivationSteps() {
+  TRACE_EVENT1("navigation", "Document::RunPostPrerenderingActivationSteps",
+               "deferred_callback",
+               post_prerendering_activation_callbacks_.size());
+
   DCHECK(!is_prerendering_);
   for (auto& callback : post_prerendering_activation_callbacks_)
     std::move(callback).Run();
