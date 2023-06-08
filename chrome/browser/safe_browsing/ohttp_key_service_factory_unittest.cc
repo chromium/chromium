@@ -48,6 +48,12 @@ class OhttpKeyServiceFactoryTest : public testing::Test {
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(OhttpKeyServiceFactoryTest, DisabledForRegularProfiles) {
+  TestingProfile* profile = profile_manager_->CreateTestingProfile("profile");
+  EXPECT_EQ(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
+}
+#else
 TEST_F(OhttpKeyServiceFactoryTest, EnabledForRegularProfiles) {
   TestingProfile* profile = profile_manager_->CreateTestingProfile("profile");
   EXPECT_NE(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
@@ -94,5 +100,6 @@ TEST_F(OhttpKeyServiceFactoryTest, DisabledForGuestMode) {
           /*create_if_needed=*/true);
   EXPECT_EQ(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
 }
+#endif
 
 }  // namespace safe_browsing

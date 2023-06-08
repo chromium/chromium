@@ -51,7 +51,9 @@ scoped_refptr<net::HttpResponseHeaders> CreateKeyRotatedHeaders() {
 class OhttpKeyServiceTest : public ::testing::Test {
  public:
   OhttpKeyServiceTest() {
-    feature_list_.InitAndDisableFeature(kSafeBrowsingLookupMechanismExperiment);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kHashPrefixRealTimeLookups},
+        /*disabled_features=*/{kHashRealTimeOverOhttp});
   }
 
   void SetUp() override {
@@ -463,17 +465,20 @@ TEST_F(OhttpKeyServiceTest, Shutdown) {
   task_environment_.RunUntilIdle();
 }
 
-class OhttpKeyServiceLookupMechnismEnabledTest : public OhttpKeyServiceTest {
+class OhttpKeyServiceLookupMechanismExperimentTest
+    : public OhttpKeyServiceTest {
  public:
-  OhttpKeyServiceLookupMechnismEnabledTest() {
-    feature_list_.InitAndEnableFeature(kSafeBrowsingLookupMechanismExperiment);
+  OhttpKeyServiceLookupMechanismExperimentTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kHashRealTimeOverOhttp},
+        /*disabled_features=*/{kHashPrefixRealTimeLookups});
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(OhttpKeyServiceLookupMechnismEnabledTest, AsyncFetch_PrefChanges) {
+TEST_F(OhttpKeyServiceLookupMechanismExperimentTest, AsyncFetch_PrefChanges) {
   SetupSuccessResponse();
 
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);

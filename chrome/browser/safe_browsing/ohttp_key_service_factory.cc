@@ -40,6 +40,13 @@ OhttpKeyServiceFactory::OhttpKeyServiceFactory()
 
 KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  // TODO(crbug.com/1441654) [Also TODO(thefrog)]: For now we simply return
+  // nullptr for Android. If it becomes settled that Android should not use this
+  // service, this will be refactored to avoid including this and associated
+  // files in the binary in the first place.
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
   if (!g_browser_process->safe_browsing_service()) {
     return nullptr;
   }
@@ -55,6 +62,7 @@ KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
   return new OhttpKeyService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       profile->GetPrefs());
+#endif
 }
 
 bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserContext() const {
