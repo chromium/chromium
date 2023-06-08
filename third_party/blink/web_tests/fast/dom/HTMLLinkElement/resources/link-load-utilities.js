@@ -21,7 +21,7 @@ function flushBuffer() {
     log(line);
   }
   bufferedOutput = [];
-  if (bufferredFinished) {
+  if (bufferedFinished) {
     testFinished();
     bufferedFinished = false;
   }
