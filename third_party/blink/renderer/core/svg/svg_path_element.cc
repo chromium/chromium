@@ -175,7 +175,8 @@ void SVGPathElement::SynchronizeAllSVGAttributes() const {
 
 void SVGPathElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  if (path_->HasPresentationAttributeMapping() && path_->IsAnimating()) {
+  DCHECK(path_->HasPresentationAttributeMapping());
+  if (path_->IsAnimating()) {
     CollectStyleForPresentationAttribute(svg_names::kDAttr, g_empty_atom,
                                          style);
   }

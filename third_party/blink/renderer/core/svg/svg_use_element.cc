@@ -666,8 +666,8 @@ void SVGUseElement::SynchronizeAllSVGAttributes() const {
 void SVGUseElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   for (auto* property : (SVGAnimatedPropertyBase*[]){x_.Get(), y_.Get()}) {
-    if (property->HasPresentationAttributeMapping() &&
-        property->IsAnimating()) {
+    DCHECK(property->HasPresentationAttributeMapping());
+    if (property->IsAnimating()) {
       CollectStyleForPresentationAttribute(property->AttributeName(),
                                            g_empty_atom, style);
     }

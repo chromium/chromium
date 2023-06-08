@@ -217,8 +217,8 @@ void SVGGraphicsElement::SynchronizeAllSVGAttributes() const {
 
 void SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  if (transform_->HasPresentationAttributeMapping() &&
-      transform_->IsAnimating()) {
+  DCHECK(transform_->HasPresentationAttributeMapping());
+  if (transform_->IsAnimating()) {
     CollectStyleForPresentationAttribute(svg_names::kTransformAttr,
                                          g_empty_atom, style);
   }

@@ -236,8 +236,8 @@ void SVGGradientElement::SynchronizeAllSVGAttributes() const {
 
 void SVGGradientElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  if (gradient_transform_->HasPresentationAttributeMapping() &&
-      gradient_transform_->IsAnimating()) {
+  DCHECK(gradient_transform_->HasPresentationAttributeMapping());
+  if (gradient_transform_->IsAnimating()) {
     CollectStyleForPresentationAttribute(svg_names::kGradientTransformAttr,
                                          g_empty_atom, style);
   }

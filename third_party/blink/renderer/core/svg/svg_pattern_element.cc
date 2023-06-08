@@ -350,8 +350,8 @@ void SVGPatternElement::SynchronizeAllSVGAttributes() const {
 
 void SVGPatternElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  if (pattern_transform_->HasPresentationAttributeMapping() &&
-      pattern_transform_->IsAnimating()) {
+  DCHECK(pattern_transform_->HasPresentationAttributeMapping());
+  if (pattern_transform_->IsAnimating()) {
     CollectStyleForPresentationAttribute(pattern_transform_->AttributeName(),
                                          g_empty_atom, style);
   }
