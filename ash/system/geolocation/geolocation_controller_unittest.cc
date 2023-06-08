@@ -319,6 +319,43 @@ TEST_F(GeolocationControllerTest, GetSunRiseSet) {
   EXPECT_TRUE(timer_ptr()->IsRunning());
 }
 
+// Tests that when there is a geoposition with 24 hours of daylight or darkness,
+// sunrise and sunset times honor the API.
+TEST_F(GeolocationControllerTest, GetSunRiseSetWithAllDaylightOrDarkness) {
+  static constexpr base::StringPiece kNow = "07 Jun 2023 20:30:00.000";
+  test_clock()->SetNow(ToUTCTime(kNow));
+
+  // 24 hours of daylight (Kiruna, Sweden)
+  Geoposition position;
+  position.latitude = 67.855800;
+  position.longitude = 20.225282;
+  position.status = Geoposition::STATUS_OK;
+  position.accuracy = 10;
+  position.timestamp = ToUTCTime(kNow);
+
+  // Test that after sending the new position, sunrise and sunset time are
+  // updated correctly.
+  SetServerPosition(position);
+  FireTimerToFetchGeoposition();
+  EXPECT_EQ(controller()->GetSunsetTime(),
+            GeolocationController::kNoSunRiseSet);
+  EXPECT_EQ(controller()->GetSunriseTime(),
+            GeolocationController::kNoSunRiseSet);
+
+  // 24 hours of darkness (Belgrano II Base, Antarctica)
+  position.latitude = -77.87361f;
+  position.longitude = -34.62745;
+
+  // Test that after sending the new position, sunrise and sunset time are
+  // updated correctly.
+  SetServerPosition(position);
+  FireTimerToFetchGeoposition();
+  EXPECT_EQ(controller()->GetSunsetTime(),
+            GeolocationController::kNoSunRiseSet);
+  EXPECT_EQ(controller()->GetSunriseTime(),
+            GeolocationController::kNoSunRiseSet);
+}
+
 // Tests that if device sleeps more than a day, the geoposition is fetched
 // instantly.
 TEST_F(GeolocationControllerTest, RequestGeopositionAfterSuspend) {

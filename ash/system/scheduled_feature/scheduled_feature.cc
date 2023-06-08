@@ -319,12 +319,20 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
       SetCurrentCheckpoint(
           GetCheckpointForEnabledState(GetEnabled(), ScheduleType::kNone));
       return;
-    case ScheduleType::kSunsetToSunrise:
-      RefreshScheduleTimer(geolocation_controller_->GetSunsetTime(),
-                           geolocation_controller_->GetSunriseTime(),
-                           did_schedule_change,
+    case ScheduleType::kSunsetToSunrise: {
+      base::Time sunrise_time = geolocation_controller_->GetSunriseTime();
+      base::Time sunset_time = geolocation_controller_->GetSunsetTime();
+      if (sunrise_time == GeolocationController::kNoSunRiseSet ||
+          sunset_time == GeolocationController::kNoSunRiseSet) {
+        // Simply disable the feature in this corner case. Since sunset and
+        // sunrise are exactly the same, there is no time for it to be enabled.
+        sunrise_time = clock_->Now();
+        sunset_time = sunrise_time;
+      }
+      RefreshScheduleTimer(sunset_time, sunrise_time, did_schedule_change,
                            keep_manual_toggles_during_schedules);
       return;
+    }
     case ScheduleType::kCustom:
       RefreshScheduleTimer(
           GetCustomStartTime().ToTimeToday(), GetCustomEndTime().ToTimeToday(),
