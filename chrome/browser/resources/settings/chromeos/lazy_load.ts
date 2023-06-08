@@ -37,6 +37,7 @@ import './os_a11y_page/text_to_speech_subpage.js';
 import './os_a11y_page/tts_voice_subpage.js';
 import './os_about_page/detailed_build_info_subpage.js';
 import './os_apps_page/app_management_page/app_detail_view.js';
+import './os_apps_page/app_management_page/dom_switch.js';
 import './os_apps_page/app_management_page/main_view.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
@@ -161,6 +162,7 @@ export {AppManagementAppItemElement} from './os_apps_page/app_management_page/ap
 export {AppManagementArcDetailViewElement} from './os_apps_page/app_management_page/arc_detail_view.js';
 export {AppManagementBorealisDetailViewElement} from './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 export {AppManagementChromeAppDetailViewElement} from './os_apps_page/app_management_page/chrome_app_detail_view.js';
+export {AppManagementDomSwitchElement} from './os_apps_page/app_management_page/dom_switch.js';
 export {AppManagementMainViewElement} from './os_apps_page/app_management_page/main_view.js';
 export {AppManagementPinToShelfItemElement} from './os_apps_page/app_management_page/pin_to_shelf_item.js';
 export {AppManagementPluginVmDetailViewElement} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';

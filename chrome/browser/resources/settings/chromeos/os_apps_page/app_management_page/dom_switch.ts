@@ -37,7 +37,7 @@ import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resourc
 
 import {getTemplate} from './dom_switch.html.js';
 
-class AppManagementDomSwitchElement extends PolymerElement {
+export class AppManagementDomSwitchElement extends PolymerElement {
   static get is() {
     return 'app-management-dom-switch';
   }
