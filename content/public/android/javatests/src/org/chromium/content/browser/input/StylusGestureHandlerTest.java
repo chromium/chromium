@@ -350,11 +350,11 @@ public class StylusGestureHandlerTest {
         histogram.assertExpected();
     }
 
-    @Test
-    @LargeTest
-    public void testDeleteGestureEndToEnd()
-            throws TimeoutException, ClassNotFoundException, IllegalAccessException,
-                   InstantiationException, InvocationTargetException {
+    /**
+     * Sets up an end to end test.
+     * @return the bounds of the input_text element.
+     */
+    private RectF setUpEndToEndTest() throws TimeoutException {
         EditorInfo editorInfo = new EditorInfo();
         ImeAdapterImpl imeAdapter = spy(mRule.getImeAdapter());
         doReturn(mRule.getConnection())
@@ -382,8 +382,17 @@ public class StylusGestureHandlerTest {
         RectF gestureRect =
                 toScreenRectF(left, top, right, bottom, (WebContentsImpl) mRule.getWebContents());
         gestureRect.inset(1, 1); // Inset to avoid including the border.
+        return gestureRect;
+    }
 
-        // The following reflection creates a new DeleteGesture over the left half of the input_text
+    @Test
+    @LargeTest
+    public void testDeleteGestureEndToEnd()
+            throws TimeoutException, ClassNotFoundException, IllegalAccessException,
+                   InstantiationException, InvocationTargetException {
+        RectF gestureRect = setUpEndToEndTest();
+
+        // The following reflection creates a new DeleteGesture over the area of the input_text
         // element. It has word granularity and the fallback text defined in FALLBACK_TEXT.
         Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "DeleteGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
@@ -408,6 +417,43 @@ public class StylusGestureHandlerTest {
         assertEquals("\"\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         mRule.getWebContents(), "document.getElementById(\"input_text\").value"));
+    }
+
+    @Test
+    @LargeTest
+    public void testSelectGestureEndToEnd()
+            throws TimeoutException, ClassNotFoundException, IllegalAccessException,
+                   InstantiationException, InvocationTargetException {
+        RectF gestureRect = setUpEndToEndTest();
+        // The following reflection creates a new SelectGesture over the area of the input_text
+        // element. It has word granularity and the fallback text defined in FALLBACK_TEXT.
+        Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "SelectGesture"));
+        Map<String, Method> builderMethods = getMethodsForClass(builderClass);
+        Object builder = builderClass.newInstance();
+        builderMethods.get("setGranularity").invoke(builder, StylusGestureHandler.GRANULARITY_WORD);
+        builderMethods.get("setSelectionArea").invoke(builder, gestureRect);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
+        Object gesture = builderMethods.get("build").invoke(builder);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
+
+        // Get the text inside input_text and assert that it is the same.
+        assertEquals("\"hello world\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        mRule.getWebContents(), "document.getElementById(\"input_text\").value;"));
+        // Get the currently selected text and assert that it is the contents of input_text.
+        assertEquals("\"hello world\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        mRule.getWebContents(), "window.getSelection().toString();"));
     }
 
     private static Map<String, Method> getMethodsForClass(Class<?> className) {
