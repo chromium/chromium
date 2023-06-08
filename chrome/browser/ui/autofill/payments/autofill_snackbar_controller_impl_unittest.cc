@@ -20,13 +20,6 @@ using testing::NiceMock;
 
 namespace autofill {
 
-class MockAutofillSnackbarView : public AutofillSnackbarView {
- public:
-  MockAutofillSnackbarView() = default;
-  void Show() override {}
-  void Dismiss() override {}
-};
-
 class AutofillSnackbarControllerImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -34,7 +27,6 @@ class AutofillSnackbarControllerImplTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    controller()->SetViewForTesting(new MockAutofillSnackbarView());
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
@@ -65,8 +57,6 @@ TEST_F(AutofillSnackbarControllerImplTest, MetricsTest) {
       "Autofill.Snackbar.VirtualCard.ActionClicked", 1, 0);
   controller()->OnDismissed();
 
-  // Reset the mock view.
-  controller()->SetViewForTesting(new MockAutofillSnackbarView());
   controller()->Show();
   controller()->OnActionClicked();
   // Verify that the count for both Shown and ActionClicked is incremented.
@@ -76,4 +66,22 @@ TEST_F(AutofillSnackbarControllerImplTest, MetricsTest) {
       "Autofill.Snackbar.VirtualCard.ActionClicked", 1, 1);
 }
 
+TEST_F(AutofillSnackbarControllerImplTest,
+       AttemptToShowDialogWhileAlreadyShowing) {
+  base::HistogramTester histogram_tester;
+  controller()->Show();
+  // Verify that the count for Shown is incremented and ActionClicked hasn't
+  // changed.
+  histogram_tester.ExpectUniqueSample("Autofill.Snackbar.VirtualCard.Shown", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.VirtualCard.ActionClicked", 1, 0);
+
+  // Attempt to show another dialog without dismissing the previous one.
+  controller()->Show();
+
+  // Verify that the count for Shown is not incremented.
+  histogram_tester.ExpectUniqueSample("Autofill.Snackbar.VirtualCard.Shown", 1,
+                                      1);
+}
 }  // namespace autofill
