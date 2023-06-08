@@ -27,9 +27,14 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/devtools/protocol/network_handler.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -39,6 +44,7 @@
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
+#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -144,11 +150,13 @@ FencedFrameReporter::PendingEvent::PendingEvent(
     const std::string& type,
     const std::string& data,
     const url::Origin& request_initiator,
-    absl::optional<AttributionReportingData> attribution_reporting_data)
+    absl::optional<AttributionReportingData> attribution_reporting_data,
+    int initiator_frame_tree_node_id)
     : type(type),
       data(data),
       request_initiator(request_initiator),
-      attribution_reporting_data(std::move(attribution_reporting_data)) {}
+      attribution_reporting_data(std::move(attribution_reporting_data)),
+      initiator_frame_tree_node_id(initiator_frame_tree_node_id) {}
 
 FencedFrameReporter::PendingEvent::PendingEvent(const PendingEvent&) = default;
 
@@ -258,7 +266,8 @@ void FencedFrameReporter::OnUrlMappingReady(
     SendReportInternal(it->second, pending_event.type, pending_event.data,
                        reporting_destination, pending_event.request_initiator,
                        pending_event.attribution_reporting_data,
-                       ignored_error_message);
+                       ignored_error_message,
+                       pending_event.initiator_frame_tree_node_id);
   }
 }
 
@@ -270,6 +279,7 @@ bool FencedFrameReporter::SendReport(
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
     std::string& error_message,
+    int initiator_frame_tree_node_id,
     absl::optional<int64_t> navigation_id) {
   DCHECK(request_initiator_frame);
 
@@ -322,13 +332,14 @@ bool FencedFrameReporter::SendReport(
   if (it->second.reporting_url_map == absl::nullopt) {
     it->second.pending_events.emplace_back(
         event_type, event_data, request_initiator,
-        std::move(attribution_reporting_data));
+        std::move(attribution_reporting_data), initiator_frame_tree_node_id);
     return true;
   }
 
   return SendReportInternal(it->second, event_type, event_data,
                             reporting_destination, request_initiator,
-                            attribution_reporting_data, error_message);
+                            attribution_reporting_data, error_message,
+                            initiator_frame_tree_node_id);
 }
 
 bool FencedFrameReporter::SendReportInternal(
@@ -338,7 +349,8 @@ bool FencedFrameReporter::SendReportInternal(
     blink::FencedFrame::ReportingDestination reporting_destination,
     const url::Origin& request_initiator,
     const absl::optional<AttributionReportingData>& attribution_reporting_data,
-    std::string& error_message) {
+    std::string& error_message,
+    int initiator_frame_tree_node_id) {
   // The URL map should not be pending at this point.
   DCHECK(reporting_destination_info.reporting_url_map);
 
@@ -394,6 +406,20 @@ bool FencedFrameReporter::SendReportInternal(
         attribution_reporting_data->attribution_reporting_runtime_features;
   }
 
+  // Set up DevTools integration for the request.
+  const std::string devtools_request_id =
+      base::UnguessableToken::Create().ToString();
+  request->devtools_request_id = devtools_request_id;
+  FrameTreeNode* initiator_frame_tree_node =
+      FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id);
+  if (initiator_frame_tree_node) {
+    request->trusted_params->devtools_observer =
+        NetworkServiceDevToolsObserver::MakeSelfOwned(
+            initiator_frame_tree_node);
+  }
+  devtools_instrumentation::OnFencedFrameReportRequestSent(
+      initiator_frame_tree_node_id, devtools_request_id, *request);
+
   // Create and configure `SimpleURLLoader` instance.
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(request),
@@ -441,6 +467,8 @@ bool FencedFrameReporter::SendReportInternal(
                network::AttributionReportingRuntimeFeatures
                    attribution_reporting_runtime_features,
                std::unique_ptr<network::SimpleURLLoader> loader,
+               int initiator_frame_tree_node_id,
+               std::string devtools_request_id,
                scoped_refptr<net::HttpResponseHeaders> headers) {
               if (attribution_data_host_manager) {
                 attribution_data_host_manager
@@ -450,16 +478,33 @@ bool FencedFrameReporter::SendReportInternal(
                         headers.get(),
                         /*is_final_response=*/true);
               }
+
+              // Set up DevTools integration for the response.
+              devtools_instrumentation::OnFencedFrameReportResponseReceived(
+                  initiator_frame_tree_node_id, devtools_request_id,
+                  loader->GetFinalURL(), headers);
             },
             attribution_data_host_manager->AsWeakPtr(),
             attribution_reporting_data->beacon_id,
             attribution_reporting_data->attribution_reporting_runtime_features,
-            std::move(simple_url_loader)));
+            std::move(simple_url_loader), initiator_frame_tree_node_id,
+            devtools_request_id));
   } else {
     // Send out the reporting beacon.
     simple_url_loader_ptr->DownloadHeadersOnly(
         url_loader_factory_.get(),
-        base::DoNothingWithBoundArgs(std::move(simple_url_loader)));
+        base::BindOnce(
+            [](std::unique_ptr<network::SimpleURLLoader> loader,
+               int initiator_frame_tree_node_id,
+               std::string devtools_request_id,
+               scoped_refptr<net::HttpResponseHeaders> headers) {
+              // Set up DevTools integration for the response.
+              devtools_instrumentation::OnFencedFrameReportResponseReceived(
+                  initiator_frame_tree_node_id, devtools_request_id,
+                  loader->GetFinalURL(), headers);
+            },
+            std::move(simple_url_loader), initiator_frame_tree_node_id,
+            devtools_request_id));
   }
 
   return true;

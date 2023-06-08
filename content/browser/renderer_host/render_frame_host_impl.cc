@@ -8267,7 +8267,8 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
        destinations) {
     SendFencedFrameReportingBeaconInternal(
         event_data, event_type, destination,
-        /*from_renderer=*/true, attribution_reporting_runtime_features);
+        /*from_renderer=*/true, attribution_reporting_runtime_features,
+        GetFrameTreeNodeId());
   }
 }
 
@@ -8331,7 +8332,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     initiator_rfh->SendFencedFrameReportingBeaconInternal(
         info->data, blink::kFencedFrameTopNavigationBeaconType, destination,
         /*from_renderer=*/false, info->attribution_reporting_runtime_features,
-        navigation_request.GetNavigationId());
+        GetFrameTreeNodeId(), navigation_request.GetNavigationId());
   }
 }
 
@@ -8342,6 +8343,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     bool from_renderer,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
+    int initiator_frame_tree_node_id,
     absl::optional<int64_t> navigation_id) {
   if (!IsActive()) {
     // reportEvent is not allowed when this RenderFrameHost or one of its
@@ -8401,7 +8403,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
           event_type, event_data, destination,
           /*request_initiator_frame=*/this,
           attribution_reporting_runtime_features, error_message,
-          navigation_id)) {
+          initiator_frame_tree_node_id, navigation_id)) {
     AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
                         error_message);
   }
