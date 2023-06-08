@@ -3201,6 +3201,9 @@ String GetTrustTokenOperationStatus(
     case network::mojom::TrustTokenOperationStatus::kInvalidArgument:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
           InvalidArgument;
+    case network::mojom::TrustTokenOperationStatus::kMissingIssuerKeys:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          MissingIssuerKeys;
     case network::mojom::TrustTokenOperationStatus::kFailedPrecondition:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
           FailedPrecondition;

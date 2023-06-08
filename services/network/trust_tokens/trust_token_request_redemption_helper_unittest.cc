@@ -149,7 +149,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfKeyCommitmentFails) {
   mojom::TrustTokenOperationStatus result =
       ExecuteBeginOperationAndWaitForResult(&helper, request.get());
 
-  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kFailedPrecondition);
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kMissingIssuerKeys);
 }
 
 // Check that redemption fails with kResourceExhausted if there are no trust

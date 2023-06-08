@@ -6493,6 +6493,7 @@ domain Network
       enum status
         Ok
         InvalidArgument
+        MissingIssuerKeys
         FailedPrecondition
         ResourceExhausted
         AlreadyExists

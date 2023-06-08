@@ -139,6 +139,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   //   or if the (issuer, top-level) pair has no tokens to redeem
   // * kAlreadyExists if the (issuer, top-level) pair already has a current
   //   RR and this helper was not parameterized with |kRefresh|.
+  // * kMissingIssuerKeys if there are no valid keys for the issuer.
   // * kFailedPrecondition if preconditions fail, including receiving a
   //   malformed or otherwise invalid key commitment record from the issuer,
   //   or if |kRefresh| was provided and the request was not initiated

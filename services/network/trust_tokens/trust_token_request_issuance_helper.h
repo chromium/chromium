@@ -151,8 +151,9 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // * kResourceExhausted if there is no space to store more tokens
   //   corresponding to this issuer, or if the top-level origin provided to this
   //   object's constructor has already reached its number-of-issuers limit
+  // * kMissingIssuerKeys if there are no valid keys for the issuer
   // * kFailedPrecondition if preconditions fail, including receiving a
-  //   malformed or otherwise invalid key commitmetment record from the issuer
+  //   malformed or otherwise invalid key commitment record from the issuer
   //
   // The |top_level_origin_|, and its destination |url|'s origin, must be both
   // (1) HTTP or HTTPS and (2) "potentially trustworthy" in the sense of

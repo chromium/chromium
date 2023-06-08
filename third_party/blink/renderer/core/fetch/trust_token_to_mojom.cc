@@ -147,6 +147,11 @@ DOMException* TrustTokenErrorToDOMException(
           "the request to its initial destination",
           DOMException::GetErrorName(
               DOMExceptionCode::kNoModificationAllowedError));
+    case network::mojom::blink::TrustTokenOperationStatus::kMissingIssuerKeys:
+      return DOMException::Create(
+          "No keys currently available for PST issuer. Issuer may need to "
+          "register their key commitments.",
+          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
     case network::mojom::blink::TrustTokenOperationStatus::kFailedPrecondition:
       return DOMException::Create(
           "Precondition failed during Trust Tokens operation",

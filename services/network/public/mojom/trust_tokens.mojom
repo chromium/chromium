@@ -45,8 +45,11 @@ enum TrustTokenOperationStatus {
   // A client-provided argument was malformed or otherwise invalid.
   kInvalidArgument,
 
-  // A precondition failed (for instance, no verification key was available for
-  // an issuer when executing an operation required such a key to be present).
+  // There are no key commitments registered for the issuer.
+  kMissingIssuerKeys,
+
+  // A precondition failed (for instance, there was an error parsing the
+  // verification keys for an issuer).
   kFailedPrecondition,
 
   // No inputs for the given operation available, or a quota on the operation's
