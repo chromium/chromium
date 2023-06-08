@@ -25,6 +25,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -168,6 +170,13 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
       g_suppress_nudge_for_testing || nudge_widget_) {
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kAshNoNudges)) {
+    return;
+  }
+#endif
 
   // If the window is not visible, do not show the nudge.
   if (!window->IsVisible()) {
