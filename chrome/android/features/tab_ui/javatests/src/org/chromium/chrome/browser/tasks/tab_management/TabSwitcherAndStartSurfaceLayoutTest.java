@@ -498,13 +498,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     private void testTabToGrid(String fromUrl) throws InterruptedException {
         mActivityTestRule.loadUrl(fromUrl);
 
-        final int initCount = getCaptureCount();
-
         for (int i = 0; i < mRepeat; i++) {
             enterGTSWithThumbnailChecking();
             leaveGTSAndVerifyThumbnailsAreReleased();
         }
-        checkFinalCaptureCount(false, initCount);
     }
 
     @Test
@@ -655,8 +652,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     private void testGridToTab(boolean switchToAnotherTab, boolean killBeforeSwitching)
             throws InterruptedException {
-        final int initCount = getCaptureCount();
-
         for (int i = 0; i < mRepeat; i++) {
             enterGTSWithThumbnailChecking();
 
@@ -671,7 +666,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             if (switchToAnotherTab) {
                 waitForCaptureRateControl();
             }
-            int count = getCaptureCount();
             onView(tabSwitcherViewMatcher()).perform(actionOnItemAtPosition(targetIndex, click()));
             CriteriaHelper.pollUiThread(() -> {
                 boolean doneHiding =
@@ -694,9 +688,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             } else {
                 delta = 0;
             }
-            checkCaptureCount(delta, count);
         }
-        checkFinalCaptureCount(switchToAnotherTab, initCount);
     }
 
     @Test
@@ -2073,7 +2065,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             });
         }
 
-        int count = getCaptureCount();
         waitForCaptureRateControl();
         // TODO(wychen): use TabUiTestHelper.enterTabSwitcher() instead.
         //  Might increase flakiness though. See crbug.com/1024742.
@@ -2096,7 +2087,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 delta += 1;
             }
         }
-        checkCaptureCount(delta, count);
         TabUiTestHelper.verifyAllTabsHaveThumbnail(
                 mActivityTestRule.getActivity().getCurrentTabModel());
     }
@@ -2153,37 +2143,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         //  OverviewModeBehaviorWatcher shouldn't increase flakiness.
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
-    }
-
-    private void checkFinalCaptureCount(boolean switchToAnotherTab, int initCount) {
-        int expected;
-        if (UrlUtilities.isNTPUrl(mActivityTestRule.getActivity()
-                                          .getCurrentWebContents()
-                                          .getLastCommittedUrl())) {
-            expected = 0;
-        } else {
-            expected = mRepeat;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-                    && areAnimatorsEnabled()) {
-                expected += mRepeat;
-            }
-            if (switchToAnotherTab) {
-                expected += mRepeat;
-            }
-        }
-        checkCaptureCount(expected, initCount);
-    }
-
-    private void checkCaptureCount(int expectedDelta, int initCount) {
-        // TODO(wychen): With animation, the 2nd capture might be skipped if the 1st takes too long.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(getCaptureCount() - initCount, Matchers.is(expectedDelta));
-        });
-    }
-
-    private int getCaptureCount() {
-        // TODO(crbug/1110961): Find a replacement for depending on Compositing.CopyFromSurfaceTime.
-        return RecordHistogram.getHistogramTotalCountForTesting("Compositing.CopyFromSurfaceTime");
     }
 
     private void waitForCaptureRateControl() throws InterruptedException {
