@@ -1108,7 +1108,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
           DownloadPathReservationTracker::UNIQUIFY,
           base::BindOnce(
               &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
-              weak_ptr_factory_.GetWeakPtr(), native_window,
+              weak_ptr_factory_.GetWeakPtr(),
+              base::UnsafeDanglingUntriaged(native_window),
               std::move(callback)));
       return;
     }
