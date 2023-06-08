@@ -75,7 +75,7 @@
       :host-context([chrome-refresh-2023]):host {
         /* Default button colors. */
         --border-color: var(--color-button-border,
-            var(--cr-fallback-color-primary-container));
+            var(--cr-fallback-color-tonal-outline));
         --text-color: var(--color-button-foreground,
             var(--cr-fallback-color-primary));
         --hover-bg-color: transparent;
@@ -86,6 +86,7 @@
         --ripple-opacity: 1;
 
         /* Disabled default button colors. */
+        --disabled-bg: transparent;
         --disabled-border-color: var(--color-button-border-disabled,
             rgba(var(--cr-fallback-color-on-surface-rgb), .12));
         --disabled-text-color: var(--color-button-foreground-disabled,
@@ -308,7 +309,7 @@
       :host-context([chrome-refresh-2023]):host(.floating-button) {
         border: none;
         color: var(--color-button-foreground-tonal,
-            var(--cr-fallback-color-on-secondary-container));
+            var(--cr-fallback-color-on-tonal-container));
       }
 
       :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]),
