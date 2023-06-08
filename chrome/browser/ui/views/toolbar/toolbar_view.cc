@@ -910,6 +910,18 @@ void ToolbarView::LayoutCommon() {
           views::kMarginsKey,
           gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
     }
+
+    // The margins of the `avatar_` uses the same constants as the
+    // `app_menu_button_`.
+    if (avatar_->IsLabelPresentAndVisible()) {
+      avatar_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
+    } else {
+      avatar_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
+    }
   }
 
   layout_manager_->SetInteriorMargin(interior_margin);

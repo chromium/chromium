@@ -66,6 +66,9 @@ class AvatarToolbarButton : public ToolbarButton {
 
   bool ShouldDirectlyUseHighlightAsBackground() const override;
 
+  // Returns true if a text is set and is visible.
+  bool IsLabelPresentAndVisible() const;
+
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
@@ -83,6 +86,9 @@ class AvatarToolbarButton : public ToolbarButton {
                                const gfx::Image& profile_identity_image) const;
 
   void SetInsets();
+
+  // Updates the layout insets depending on whether it is a chip or a button.
+  void UpdateLayoutInsets();
 
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 

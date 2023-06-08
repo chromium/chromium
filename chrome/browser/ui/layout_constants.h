@@ -173,6 +173,9 @@ enum LayoutInset {
   // The padding around the browser app menu chip.
   BROWSER_APP_MENU_CHIP_PADDING,
 
+  // The padding around the profile menu chip.
+  AVATAR_CHIP_PADDING,
+
   // The padding between the edges of the toolbar and its content.
   TOOLBAR_INTERIOR_MARGIN,
 

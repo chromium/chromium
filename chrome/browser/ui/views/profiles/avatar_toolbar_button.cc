@@ -56,6 +56,7 @@ namespace {
 // Note that the non-touchable icon size is larger than the default to make the
 // avatar icon easier to read.
 constexpr int kIconSizeForNonTouchUi = 22;
+constexpr int kChromeRefreshImageLabelPadding = 6;
 
 }  // namespace
 
@@ -88,6 +89,10 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
   // For consistency with identity representation, we need to have the avatar on
   // the left and the (potential) user name on the right.
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  if (features::IsChromeRefresh2023()) {
+    SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
+  }
 }
 
 AvatarToolbarButton::~AvatarToolbarButton() = default;
@@ -133,6 +138,11 @@ void AvatarToolbarButton::UpdateText() {
   std::u16string text;
 
   const auto* const color_provider = GetColorProvider();
+
+  if (features::IsChromeRefresh2023()) {
+    UpdateLayoutInsets();
+  }
+
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
       const int incognito_window_count = delegate_->GetWindowCount();
@@ -325,6 +335,13 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
   NOTREACHED_NORETURN();
 }
 
+bool AvatarToolbarButton::IsLabelPresentAndVisible() const {
+  if (!label()) {
+    return false;
+  }
+  return label()->GetVisible() && !label()->GetText().empty();
+}
+
 void AvatarToolbarButton::SetInsets() {
   // In non-touch mode we use a larger-than-normal icon size for avatars so we
   // need to compensate it by smaller insets.
@@ -334,6 +351,18 @@ void AvatarToolbarButton::SetInsets() {
                                 : (kDefaultIconSize - kIconSizeForNonTouchUi) /
                                       2);
   SetLayoutInsetDelta(layout_insets);
+}
+
+void AvatarToolbarButton::UpdateLayoutInsets() {
+  if (!features::IsChromeRefresh2023()) {
+    return;
+  }
+
+  if (IsLabelPresentAndVisible()) {
+    SetLayoutInsets(::GetLayoutInsets(AVATAR_CHIP_PADDING));
+  } else {
+    SetLayoutInsets(::GetLayoutInsets(TOOLBAR_BUTTON));
+  }
 }
 
 int AvatarToolbarButton::GetIconSize() const {
