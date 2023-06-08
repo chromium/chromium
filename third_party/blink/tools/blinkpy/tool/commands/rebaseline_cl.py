@@ -298,7 +298,15 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A TestBaselineSet object.
         """
         test_baseline_set = TestBaselineSet(self._tool.builders)
-        tests = self._tool.port_factory.get().tests(test_patterns)
+        port, tests = self._tool.port_factory.get(), set()
+        for test_pattern in sorted(test_patterns):
+            resolved_tests = port.tests([test_pattern])
+            if not resolved_tests:
+                _log.warning(
+                    '%r does not represent any tests and may be misspelled.',
+                    test_pattern)
+            tests.update(resolved_tests)
+
         for test, (build, builder_results) in itertools.product(
                 tests, builds_to_results.items()):
             for step_results in builder_results:

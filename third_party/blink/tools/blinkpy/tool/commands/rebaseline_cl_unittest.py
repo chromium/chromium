@@ -293,7 +293,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             # one/slow-fail.html
             #
 
-            one/does-not-exist.html
+            one/not-a-test.html
             one/text-fail.html
                 two/   '''))
         exit_code = self.command.execute(
@@ -303,6 +303,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: All builds finished.\n',
             'INFO: Reading list of tests to rebaseline from %s\n' %
             test_name_file,
+            "WARNING: 'one/not-a-test.html' does not represent any tests "
+            'and may be misspelled.\n',
             'INFO: Rebaselining one/flaky-fail.html\n',
             'INFO: Rebaselining one/missing.html\n',
             'INFO: Rebaselining one/text-fail.html\n',
