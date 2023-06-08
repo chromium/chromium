@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
 #import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
@@ -24,8 +24,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using translate_infobar_overlays::TranslateBannerRequestConfig;
 
 namespace {
 DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FakeConfig);
@@ -136,7 +134,7 @@ TEST_F(TranslateInfobarOverlayTranslateOverlayTabHelperTest,
   size_t second_banner_index = 0;
   EXPECT_TRUE(GetIndexOfMatchingRequest(
       queue, &second_banner_index,
-      ConfigAndInfoBarMatcher<TranslateBannerRequestConfig>(infobar_)));
+      ConfigAndInfoBarMatcher<DefaultInfobarOverlayRequestConfig>(infobar_)));
   EXPECT_EQ(1U, second_banner_index);
 }
 
@@ -153,5 +151,6 @@ TEST_F(TranslateInfobarOverlayTranslateOverlayTabHelperTest,
       translate::TranslateErrors::NONE);
 
   EXPECT_EQ(2U, queue->size());
-  EXPECT_TRUE(queue->GetRequest(1)->GetConfig<TranslateBannerRequestConfig>());
+  EXPECT_TRUE(
+      queue->GetRequest(1)->GetConfig<DefaultInfobarOverlayRequestConfig>());
 }

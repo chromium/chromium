@@ -63,6 +63,10 @@ std::u16string FakeTranslateInfoBarDelegate::target_language_name() const {
   return target_language_;
 }
 
+bool FakeTranslateInfoBarDelegate::IsTranslatableLanguageByPrefs() const {
+  return translatable_language_;
+}
+
 FakeTranslateInfoBarDelegateFactory::FakeTranslateInfoBarDelegateFactory() {
   pref_service_ =
       std::make_unique<sync_preferences::TestingPrefServiceSyncable>();

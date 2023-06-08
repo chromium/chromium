@@ -20,9 +20,7 @@
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/safe_browsing/tailored_security/test/mock_tailored_security_service_infobar_delegate.h"
@@ -42,8 +40,6 @@ using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 using infobars::InfoBar;
 using infobars::InfoBarDelegate;
 using safe_browsing::TailoredSecurityServiceMessageState;
-using translate_infobar_overlays::TranslateBannerRequestConfig;
-using translate_infobar_overlays::TranslateModalRequestConfig;
 
 using DefaultInfobarOverlayRequestFactoryTest = PlatformTest;
 
@@ -143,12 +139,12 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, Translate) {
   std::unique_ptr<OverlayRequest> banner_request =
       DefaultInfobarOverlayRequestFactory(&infobar,
                                           InfobarOverlayType::kBanner);
-  EXPECT_TRUE(banner_request->GetConfig<TranslateBannerRequestConfig>());
+  EXPECT_TRUE(banner_request->GetConfig<DefaultInfobarOverlayRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
       DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
-  EXPECT_TRUE(modal_request->GetConfig<TranslateModalRequestConfig>());
+  EXPECT_TRUE(modal_request->GetConfig<DefaultInfobarOverlayRequestConfig>());
 }
 
 // Tests that the factory creates a save address profile request.

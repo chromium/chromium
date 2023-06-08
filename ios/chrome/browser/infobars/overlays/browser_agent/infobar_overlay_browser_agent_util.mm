@@ -10,8 +10,6 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/confirm/confirm_infobar_banner_interaction_handler.h"
-#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_banner_interaction_handler.h"
-#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_modal_interaction_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,16 +40,14 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
       InfobarType::kInfobarTypeSyncError);
 
+  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType::kInfobarTypeTranslate);
+
   browser_agent->AddInfobarInteractionHandler(
       std::make_unique<InfobarInteractionHandler>(
           InfobarType::kInfobarTypeConfirm,
           std::make_unique<ConfirmInfobarBannerInteractionHandler>(),
           /*modal_handler=*/nullptr));
-  browser_agent->AddInfobarInteractionHandler(
-      std::make_unique<InfobarInteractionHandler>(
-          InfobarType::kInfobarTypeTranslate,
-          std::make_unique<TranslateInfobarBannerInteractionHandler>(),
-          std::make_unique<TranslateInfobarModalInteractionHandler>()));
   browser_agent->AddInfobarInteractionHandler(std::make_unique<
                                               InfobarInteractionHandler>(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,

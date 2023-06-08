@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/overlays/translate_infobar_placeholder_overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
 
@@ -19,7 +19,6 @@
 #endif
 
 using translate_infobar_overlays::PlaceholderRequestCancelHandler;
-using translate_infobar_overlays::TranslateBannerRequestConfig;
 
 namespace {
 // Creates a matcher callback for ConfigType and config's InfoBar.
@@ -67,7 +66,7 @@ void TranslateOverlayTabHelper::TranslateDidStart(infobars::InfoBar* infobar) {
   size_t insert_index = 0;
   bool translate_banner_found = GetIndexOfMatchingRequest(
       banner_queue_, &insert_index,
-      ConfigAndInfoBarMatcher<TranslateBannerRequestConfig>(infobar));
+      ConfigAndInfoBarMatcher<DefaultInfobarOverlayRequestConfig>(infobar));
 
   if (!translate_banner_found) {
     return;

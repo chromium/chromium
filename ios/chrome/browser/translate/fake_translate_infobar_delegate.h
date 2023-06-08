@@ -48,10 +48,13 @@ class FakeTranslateInfoBarDelegate
 
   std::u16string target_language_name() const override;
 
+  bool IsTranslatableLanguageByPrefs() const override;
+
  private:
   base::ObserverList<Observer> observers_;
   std::u16string source_language_;
   std::u16string target_language_;
+  bool translatable_language_ = true;
 };
 
 // Factory class to create instances of FakeTranslateInfoBarDelegate.

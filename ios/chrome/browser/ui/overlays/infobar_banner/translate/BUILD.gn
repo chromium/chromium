@@ -28,8 +28,11 @@ source_set("mediators") {
 
   deps = [
     "//base",
+    "//components/translate/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/overlays:util",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -54,8 +57,10 @@ source_set("unit_tests") {
     "//components/translate/core/browser:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/shared/ui/symbols",

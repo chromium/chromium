@@ -220,6 +220,9 @@
     case InfobarType::kInfobarTypeSyncError:
       mediatorClass = [SyncErrorInfobarBannerOverlayMediator class];
       break;
+    case InfobarType::kInfobarTypeTranslate:
+      mediatorClass = [TranslateInfobarBannerOverlayMediator class];
+      break;
     default:
       NOTREACHED_NORETURN() << "Received unsupported infobarType.";
   }

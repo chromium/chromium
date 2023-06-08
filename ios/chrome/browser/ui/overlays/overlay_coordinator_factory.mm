@@ -91,10 +91,6 @@
               ->IsRequestSupported(request)) {
         return [SaveAddressProfileInfobarModalOverlayCoordinator class];
       }
-      if ([TranslateInfobarModalOverlayCoordinator requestSupport]
-              ->IsRequestSupported(request)) {
-        return [TranslateInfobarModalOverlayCoordinator class];
-      }
       break;
   }
   NOTREACHED_NORETURN() << "Received unsupported request type.";
@@ -123,6 +119,8 @@
           return [PermissionsInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypeSaveCard:
           return [SaveCardInfobarModalOverlayCoordinator class];
+        case InfobarType::kInfobarTypeTranslate:
+          return [TranslateInfobarModalOverlayCoordinator class];
         default:
           break;
       }

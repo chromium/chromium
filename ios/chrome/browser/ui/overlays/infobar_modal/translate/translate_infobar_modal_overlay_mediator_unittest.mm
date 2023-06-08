@@ -8,13 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/translate/core/browser/translate_step.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_translate_modal_consumer.h"
@@ -28,12 +23,7 @@
 #error "This file requires ARC support."
 #endif
 
-using translate_infobar_modal_responses::RevertTranslation;
-using translate_infobar_modal_responses::ToggleAlwaysTranslate;
-using translate_infobar_modal_responses::ToggleNeverPromptSite;
-using translate_infobar_modal_responses::ToggleNeverTranslateSourceLanguage;
-using translate_infobar_modal_responses::UpdateLanguageInfo;
-using translate_infobar_overlays::TranslateModalRequestConfig;
+using base::SysUTF16ToNSString;
 
 // Base test fixture for TranslateInfobarModalOverlayMediator. The state of the
 // mediator's consumer is expected to vary based on the current TranslateStep.
@@ -43,24 +33,17 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   TranslateInfobarModalOverlayMediatorTest(
       translate::TranslateStep step,
       translate::TranslateErrors error_type)
-      : infobar_(
-            InfobarType::kInfobarTypeTranslate,
-            delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr",
-                                                                 "en",
-                                                                 step,
-                                                                 error_type)),
-        callback_installer_(
-            &callback_receiver_,
-            {InfobarModalMainActionResponse::ResponseSupport(),
-             RevertTranslation::ResponseSupport(),
-             ToggleNeverTranslateSourceLanguage::ResponseSupport(),
-             ToggleNeverPromptSite::ResponseSupport(),
-             ToggleAlwaysTranslate::ResponseSupport()}),
-        delegate_(
+      : delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
-    request_ = OverlayRequest::CreateWithConfig<TranslateModalRequestConfig>(
-        &infobar_);
-    callback_installer_.InstallCallbacks(request_.get());
+    std::unique_ptr<FakeTranslateInfoBarDelegate> delegate =
+        delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr", "en", step,
+                                                             error_type);
+    translate_delegate_ = delegate.get();
+    infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
+                                            std::move(delegate));
+    request_ =
+        OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+            infobar_.get(), InfobarOverlayType::kBanner);
     mediator_ = [[TranslateInfobarModalOverlayMediator alloc]
         initWithRequest:request_.get()];
     mediator_.delegate = delegate_;
@@ -74,19 +57,17 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
             translate::TranslateErrors::NONE) {}
 
   ~TranslateInfobarModalOverlayMediatorTest() override {
-    EXPECT_CALL(callback_receiver_, CompletionCallback(request_.get()));
     EXPECT_OCMOCK_VERIFY(delegate_);
   }
 
   FakeTranslateInfoBarDelegate& delegate() {
-    return *static_cast<FakeTranslateInfoBarDelegate*>(infobar_.delegate());
+    return *static_cast<FakeTranslateInfoBarDelegate*>(infobar_->delegate());
   }
 
  protected:
+  FakeTranslateInfoBarDelegate* translate_delegate_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
-  InfoBarIOS infobar_;
-  MockOverlayRequestCallbackReceiver callback_receiver_;
-  FakeOverlayRequestCallbackInstaller callback_installer_;
+  std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
   id<OverlayRequestMediatorDelegate> delegate_ = nil;
   TranslateInfobarModalOverlayMediator* mediator_ = nil;
@@ -116,9 +97,7 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, SetUpConsumer) {
 // Tests that TranslateInfobarModalOverlayMediator calls RevertTranslation when
 // its showSourceLanguage API is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, ShowSourceLanguage) {
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(), RevertTranslation::ResponseSupport()));
+  OCMExpect(translate_delegate_->RevertWithoutClosingInfobar());
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ showSourceLanguage];
 }
@@ -140,21 +119,18 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
   const int portuguese_index = 67;
   const int spanish_index = 81;
 
+  const std::u16string kSourceLanguage = u"Portuguese";
+  const std::u16string kTargetLanguage = u"Spanish";
+
   [mediator_ didSelectSourceLanguageIndex:portuguese_index
-                                 withName:@"Portuguese"];
-  [mediator_ didSelectTargetLanguageIndex:spanish_index withName:@"Spanish"];
-  request_->GetCallbackManager()->AddDispatchCallback(OverlayDispatchCallback(
-      base::BindRepeating(^(OverlayResponse* response) {
-        UpdateLanguageInfo* info = response->GetInfo<UpdateLanguageInfo>();
-        ASSERT_TRUE(info);
-        EXPECT_EQ(portuguese_index, info->source_language_index());
-        EXPECT_EQ(spanish_index, info->target_language_index());
-      }),
-      UpdateLanguageInfo::ResponseSupport()));
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(),
-                       InfobarModalMainActionResponse::ResponseSupport()));
+                                 withName:SysUTF16ToNSString(kSourceLanguage)];
+  [mediator_ didSelectTargetLanguageIndex:spanish_index
+                                 withName:SysUTF16ToNSString(kTargetLanguage)];
+
+  EXPECT_EQ(kSourceLanguage, translate_delegate_->source_language_name());
+  EXPECT_EQ(kTargetLanguage, translate_delegate_->target_language_name());
+  OCMExpect(translate_delegate_->Translate());
+
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ translateWithNewLanguages];
 }
@@ -164,13 +140,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
 // is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest,
        AlwaysTranslateSourceLanguage) {
-  EXPECT_CALL(callback_receiver_,
-              DispatchCallback(request_.get(),
-                               ToggleAlwaysTranslate::ResponseSupport()));
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(),
-                       InfobarModalMainActionResponse::ResponseSupport()));
+  OCMExpect(translate_delegate_->ToggleAlwaysTranslate());
+  OCMExpect(translate_delegate_->Translate());
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ alwaysTranslateSourceLanguage];
 }
@@ -179,10 +150,7 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest,
 // ToggleNeverTranslateSourceLanguage when its neverTranslateSourceLanguage API
 // is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSourceLanguage) {
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(),
-                       ToggleNeverTranslateSourceLanguage::ResponseSupport()));
+  OCMExpect(translate_delegate_->ToggleTranslatableLanguageByPrefs());
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ neverTranslateSourceLanguage];
 }
@@ -190,9 +158,7 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSourceLanguage) {
 // Tests that TranslateInfobarModalOverlayMediator calls ToggleNeverPromptSite
 // when its neverTranslateSite API is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSite) {
-  EXPECT_CALL(callback_receiver_,
-              DispatchCallback(request_.get(),
-                               ToggleNeverPromptSite::ResponseSupport()));
+  OCMExpect(translate_delegate_->ToggleNeverPromptSite());
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ neverTranslateSite];
 }

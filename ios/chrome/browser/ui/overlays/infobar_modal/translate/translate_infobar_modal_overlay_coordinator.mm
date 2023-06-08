@@ -10,7 +10,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_language_selection_delegate.h"
@@ -26,30 +26,29 @@
 #error "This file requires ARC support."
 #endif
 
-using translate_infobar_overlays::TranslateModalRequestConfig;
-
 @interface TranslateInfobarModalOverlayCoordinator () <
     TranslateInfobarModalOverlayMediatorDelegate>
 // Redefine ModalConfiguration properties as readwrite.
 @property(nonatomic, readwrite) OverlayRequestMediator* modalMediator;
 @property(nonatomic, readwrite) UIViewController* modalViewController;
 // The request's config.
-@property(nonatomic, readonly) TranslateModalRequestConfig* config;
+@property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
 @end
 
 @implementation TranslateInfobarModalOverlayCoordinator
 
 #pragma mark - Accessors
 
-- (TranslateModalRequestConfig*)config {
-  return self.request ? self.request->GetConfig<TranslateModalRequestConfig>()
-                      : nullptr;
+- (DefaultInfobarOverlayRequestConfig*)config {
+  return self.request
+             ? self.request->GetConfig<DefaultInfobarOverlayRequestConfig>()
+             : nullptr;
 }
 
 #pragma mark - Public
 
 + (const OverlayRequestSupport*)requestSupport {
-  return TranslateModalRequestConfig::RequestSupport();
+  return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
 #pragma mark - TranslateInfobarModalOverlayMediatorDelegate

@@ -11,9 +11,7 @@
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,23 +28,9 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
     case InfobarType::kInfobarTypePermissions:
     case InfobarType::kInfobarTypeSaveCard:
     case InfobarType::kInfobarTypeSyncError:
+    case InfobarType::kInfobarTypeTranslate:
       return OverlayRequest::CreateWithConfig<
           DefaultInfobarOverlayRequestConfig>(infobar_ios, overlay_type);
-    case InfobarType::kInfobarTypeTranslate:
-      switch (overlay_type) {
-        case InfobarOverlayType::kBanner:
-          return OverlayRequest::CreateWithConfig<
-              translate_infobar_overlays::TranslateBannerRequestConfig>(
-              infobar_ios);
-
-        case InfobarOverlayType::kModal:
-          return OverlayRequest::CreateWithConfig<
-              translate_infobar_overlays::TranslateModalRequestConfig>(
-              infobar_ios);
-
-        default:
-          return nullptr;
-      }
 
     case InfobarType::kInfobarTypeConfirm:
       switch (overlay_type) {
