@@ -14372,14 +14372,11 @@
     "VariationsGoogleGroupFiltering": [
         {
             "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230511",
+                    "name": "Enabled_20230525",
                     "enable_features": [
                         "VariationsGoogleGroupFiltering"
                     ]

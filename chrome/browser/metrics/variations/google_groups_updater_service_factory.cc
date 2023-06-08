@@ -56,6 +56,12 @@ bool GoogleGroupsUpdaterServiceFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
+bool GoogleGroupsUpdaterServiceFactory::ServiceIsNULLWhileTesting() const {
+  // Many unit test don't initialize g_browser_process->local_state(), so
+  // disable this service in unit tests.
+  return true;
+}
+
 void GoogleGroupsUpdaterServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   GoogleGroupsUpdaterService::RegisterProfilePrefs(registry);
