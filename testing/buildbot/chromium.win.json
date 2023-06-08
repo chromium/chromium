@@ -1966,6 +1966,7 @@
           "Release_x64"
         ],
         "check_flakiness_for_new_tests": false,
+        "ci_only": true,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -2000,6 +2001,7 @@
           "Release_x64"
         ],
         "check_flakiness_for_new_tests": false,
+        "ci_only": true,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
