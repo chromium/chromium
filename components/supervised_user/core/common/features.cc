@@ -31,7 +31,7 @@ BASE_FEATURE(kWebFilterInterstitialRefresh,
 // The feature includes one experiment parameter: "preferred_button", which
 // determines which button is displayed as the preferred option in the
 // interstitial UI (i.e. dark blue button).
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_ENABLED_BY_DEFAULT);

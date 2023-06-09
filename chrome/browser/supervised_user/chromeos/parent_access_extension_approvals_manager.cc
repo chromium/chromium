@@ -11,8 +11,10 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/chromeos/chromeos_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
@@ -21,30 +23,11 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
-crosapi::mojom::ParentAccess* GetParentAccessApi() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::ParentAccess>()
-      .get();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->parent_access_ash();
-#else
-  NOTREACHED_NORETURN();
-#endif
-}
-
 extensions::TestExtensionApprovalsManagerObserver* test_observer = nullptr;
 }  // namespace
 
@@ -106,11 +89,11 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
     extension_permissions.push_back(std::move(permission));
   }
 
-  crosapi::mojom::ParentAccess* parent_access = GetParentAccessApi();
-
-  CHECK(parent_access);
   done_callback_ = std::move(callback);
 
+  crosapi::mojom::ParentAccess* parent_access =
+      supervised_user::GetParentAccessApi();
+  CHECK(parent_access);
   parent_access->GetExtensionParentApproval(
       base::UTF8ToUTF16(extension.name()),
       base::UTF8ToUTF16(supervised_user::GetAccountGivenName(*profile)), icon,

@@ -7542,6 +7542,8 @@ static_library("browser") {
     }
     if (is_chromeos) {
       sources += [
+        "supervised_user/chromeos/chromeos_utils.cc",
+        "supervised_user/chromeos/chromeos_utils.h",
         "supervised_user/chromeos/supervised_user_favicon_request_handler.cc",
         "supervised_user/chromeos/supervised_user_favicon_request_handler.h",
         "supervised_user/chromeos/supervised_user_web_content_handler_impl.cc",
