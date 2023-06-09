@@ -606,6 +606,7 @@
   },
   "linux-wayland-rel": {
     "gn_args": {
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -617,6 +618,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_bundled_weston": true,
+      "use_clang_coverage": true,
       "use_dummy_lastchange": true,
       "use_remoteexec": true
     }

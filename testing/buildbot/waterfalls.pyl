@@ -4855,6 +4855,7 @@
       'Linux Tests (Wayland)': {
         'mixins': [
           'linux-jammy',
+          'isolate_profile_data',
          ],
         'args': [
           '--no-xvfb',

@@ -85,6 +85,13 @@
       }
     }
   },
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [

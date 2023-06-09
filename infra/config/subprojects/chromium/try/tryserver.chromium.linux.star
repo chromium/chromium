@@ -309,11 +309,13 @@ try_.orchestrator_builder(
         ),
     ),
     compilator = "linux-wayland-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(

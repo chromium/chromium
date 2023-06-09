@@ -2895,7 +2895,7 @@
 
     'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'linux_wayland', 'ozone_headless',
+      'linux_wayland', 'ozone_headless', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'headless_shell_release_bot_reclient': [
