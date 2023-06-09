@@ -143,6 +143,8 @@ void SelectFileDialogImpl::SelectFileImpl(
 }
 
 SelectFileDialogImpl::~SelectFileDialogImpl() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_SelectFileDialog_nativeDestroyed(env, java_object_);
 }
 
 SelectFileDialogImpl::SelectFileDialogImpl(
