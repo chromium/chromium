@@ -2176,10 +2176,25 @@ PdfAccessibilityTree::GetPdfAnnotationInfoFromAXNode(int32_t ax_node_id) const {
 
 void PdfAccessibilityTree::MaybeHandleAccessibilityChange(
     bool always_load_or_reload_accessibility) {
-  if (GetRenderAccessibility()) {
+  content::RenderAccessibility* render_accessibility = GetRenderAccessibility();
+  if (render_accessibility) {
     if (always_load_or_reload_accessibility) {
       action_handler_->LoadOrReloadAccessibility();
     } else {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      // Create `ocr_service_` here when AXMode is set for PDF OCR but
+      // `ocr_service_` has not been created. `ocr_service_` is supposed to be
+      // created upon receiving AXMode with `ui::AXMode::kPDFOcr` above in
+      // `AccessibilityModeChanged()`. However, it's possible that
+      // `PdfAccessibilityTree` starts observing `content::RenderFrame` after
+      // the browser process sent AXMode with `ui::AXMode::kPDFOcr` (i.e. after
+      // `RenderAccessibilityManager` called `NotifyAccessibilityModeChange()`)
+      // when its web contents were being created.
+      if (render_accessibility->GetAXMode().has_mode(ui::AXMode::kPDFOcr) &&
+          !ocr_service_) {
+        CreateOcrService();
+      }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       action_handler_->EnableAccessibility();
     }
   }
