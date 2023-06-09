@@ -31,15 +31,12 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
                  icon),
       callback_(callback),
       button_type_(button_type) {
-  views::FocusRing* focus_ring =
-      StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
-  focus_ring->SetHasFocusPredicate(
+  views::FocusRing::Get(this)->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {
         const auto* v = views::AsViewClass<SavedDeskSaveDeskButton>(view);
         CHECK(v);
         return v->IsViewHighlighted();
       }));
-  focus_ring->SetColorId(ui::kColorAshFocusRing);
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kSaveDeskCornerRadius,
