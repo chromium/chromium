@@ -152,7 +152,7 @@ def make_clean_directory(directory_name):
 
     if os.path.exists(directory_name):
         shutil.rmtree(directory_name)
-    os.mkdir(directory_name)
+    os.makedirs(directory_name)
 
 
 def _get_daemon_status():
