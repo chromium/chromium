@@ -23,6 +23,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -51,7 +52,7 @@ public class PrivacyGuideFragment extends Fragment {
         int MAX_VALUE = DONE;
     }
 
-    private BottomSheetController mBottomSheetController;
+    private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private CustomTabIntentHelper mCustomTabHelper;
     private SettingsLauncher mSettingsLauncher;
     private PrivacyGuidePagerAdapter mPagerAdapter;
@@ -183,7 +184,8 @@ public class PrivacyGuideFragment extends Fragment {
     @Override
     public void onAttachFragment(@NonNull Fragment childFragment) {
         if (childFragment instanceof SafeBrowsingFragment) {
-            ((SafeBrowsingFragment) childFragment).setBottomSheetController(mBottomSheetController);
+            ((SafeBrowsingFragment) childFragment)
+                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         }
         if (childFragment instanceof DoneFragment) {
             DoneFragment doneFragment = (DoneFragment) childFragment;
@@ -215,8 +217,9 @@ public class PrivacyGuideFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public void setBottomSheetController(BottomSheetController bottomSheetController) {
-        mBottomSheetController = bottomSheetController;
+    public void setBottomSheetControllerSupplier(
+            OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
     }
 
     public void setCustomTabIntentHelper(CustomTabIntentHelper tabHelper) {
