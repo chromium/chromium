@@ -1,0 +1,87 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_SESSION_H_
+#define MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_SESSION_H_
+
+#include <CoreMedia/CoreMedia.h>
+#include <VideoToolbox/VideoToolbox.h>
+
+#include "base/functional/callback.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "media/gpu/media_gpu_export.h"
+
+namespace media {
+
+// This interface wraps VideoToolbox platform APIs so that they can be swapped
+// out for testing.
+class MEDIA_GPU_EXPORT VideoToolboxDecompressionSession {
+ protected:
+  VideoToolboxDecompressionSession() = default;
+
+ public:
+  virtual ~VideoToolboxDecompressionSession() = default;
+
+  virtual bool Create(CMFormatDescriptionRef format,
+                      CFMutableDictionaryRef decoder_config) = 0;
+  virtual void Invalidate() = 0;
+  virtual bool IsValid() = 0;
+  virtual bool CanAcceptFormat(CMFormatDescriptionRef format) = 0;
+  virtual bool DecodeFrame(CMSampleBufferRef sample, void* context) = 0;
+};
+
+// Standard implementation of VideoToolboxDecompressionSession. It's not quite
+// trivial, since it does handle hopping outputs (which arrive on any thread) to
+// |task_runner|.
+class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
+    : public VideoToolboxDecompressionSession {
+ public:
+  using OutputCB =
+      base::RepeatingCallback<void(void*,
+                                   OSStatus,
+                                   VTDecodeInfoFlags,
+                                   base::ScopedCFTypeRef<CVImageBufferRef>)>;
+
+  VideoToolboxDecompressionSessionImpl(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      OutputCB output_cb);
+  ~VideoToolboxDecompressionSessionImpl() override;
+
+  // VideoToolboxDecompressionSession implementation.
+  bool Create(CMFormatDescriptionRef format,
+              CFMutableDictionaryRef decoder_config) override;
+  void Invalidate() override;
+  bool IsValid() override;
+  bool CanAcceptFormat(CMFormatDescriptionRef format) override;
+  bool DecodeFrame(CMSampleBufferRef sample, void* context) override;
+
+  // Called by OnOutputThunk().
+  void OnOutputOnAnyThread(void* context,
+                           OSStatus status,
+                           VTDecodeInfoFlags flags,
+                           base::ScopedCFTypeRef<CVImageBufferRef> image);
+
+ private:
+  void OnOutput(void* context,
+                OSStatus status,
+                VTDecodeInfoFlags flags,
+                base::ScopedCFTypeRef<CVImageBufferRef> image);
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  OutputCB output_cb_;
+
+  base::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
+
+  // Used in OnOutputOnAnyThread() to hop to |task_runner_|.
+  base::WeakPtr<VideoToolboxDecompressionSessionImpl> weak_this_;
+  base::WeakPtrFactory<VideoToolboxDecompressionSessionImpl> weak_this_factory_{
+      this};
+};
+
+}  // namespace media
+
+#endif  // MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_SESSION_H_

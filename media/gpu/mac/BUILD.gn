@@ -19,6 +19,8 @@ source_set("mac") {
   sources = [
     "video_toolbox_decompression_interface.cc",
     "video_toolbox_decompression_interface.h",
+    "video_toolbox_decompression_session.cc",
+    "video_toolbox_decompression_session.h",
     "video_toolbox_frame_converter.cc",
     "video_toolbox_frame_converter.h",
     "video_toolbox_h264_accelerator.cc",
@@ -64,8 +66,10 @@ source_set("unit_tests") {
     "CoreMedia.framework",
   ]
   deps = [
+    "//base/test:test_support",
     "//media:test_support",
     "//media/gpu:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
@@ -74,6 +78,7 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "video_toolbox_decompression_interface_unittest.cc",
     "vp9_super_frame_bitstream_filter_unittest.cc",
     "vt_config_util_unittest.cc",
   ]

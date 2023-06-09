@@ -4,38 +4,16 @@
 
 #include "media/gpu/mac/video_toolbox_decompression_interface.h"
 
+#include <memory>
 #include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
-#include "base/threading/platform_thread.h"
+#include "media/gpu/mac/video_toolbox_decompression_session.h"
 
 namespace media {
-
-namespace {
-
-// VTDecompressionOutputCallback implementation. May be called on any thread.
-void OnOutputThunk(void* decompression_output_refcon,
-                   void* source_frame_refcon,
-                   OSStatus status,
-                   VTDecodeInfoFlags info_flags,
-                   CVImageBufferRef image_buffer,
-                   CMTime presentation_time_stamp,
-                   CMTime presentation_duration) {
-  DVLOG(4) << __func__;
-
-  VideoToolboxDecompressionInterface* self =
-      reinterpret_cast<VideoToolboxDecompressionInterface*>(
-          decompression_output_refcon);
-
-  self->OnOutputOnAnyThread(source_frame_refcon, status, info_flags,
-                            base::ScopedCFTypeRef<CVImageBufferRef>(
-                                image_buffer, base::scoped_policy::RETAIN));
-}
-
-}  // namespace
 
 VideoToolboxDecompressionInterface::VideoToolboxDecompressionInterface(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -47,12 +25,16 @@ VideoToolboxDecompressionInterface::VideoToolboxDecompressionInterface(
   DVLOG(1) << __func__;
   DCHECK(error_cb_);
   weak_this_ = weak_this_factory_.GetWeakPtr();
+  decompression_session_ =
+      std::make_unique<VideoToolboxDecompressionSessionImpl>(
+          task_runner_,
+          base::BindRepeating(&VideoToolboxDecompressionInterface::OnOutput,
+                              weak_this_));
 }
 
 VideoToolboxDecompressionInterface::~VideoToolboxDecompressionInterface() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DestroySession();
 }
 
 void VideoToolboxDecompressionInterface::Decode(
@@ -130,9 +112,8 @@ bool VideoToolboxDecompressionInterface::ProcessDecodes() {
     CMFormatDescriptionRef format = CMSampleBufferGetFormatDescription(sample);
 
     // Handle format changes.
-    if (active_session_ && format != active_format_) {
-      if (VTDecompressionSessionCanAcceptFormatDescription(active_session_,
-                                                           format)) {
+    if (decompression_session_->IsValid() && format != active_format_) {
+      if (decompression_session_->CanAcceptFormat(format)) {
         active_format_.reset(format, base::scoped_policy::RETAIN);
       } else {
         // Destroy the active session so that it can be replaced.
@@ -146,23 +127,14 @@ bool VideoToolboxDecompressionInterface::ProcessDecodes() {
     }
 
     // Create a new session if necessary.
-    if (!active_session_) {
+    if (!decompression_session_->IsValid()) {
       if (!CreateSession(format)) {
         return false;
       }
     }
 
     // Submit the sample for decoding.
-    VTDecodeFrameFlags decode_flags =
-        kVTDecodeFrame_EnableAsynchronousDecompression;
-    OSStatus status =
-        VTDecompressionSessionDecodeFrame(active_session_,
-                                          sample,        // sample_buffer
-                                          decode_flags,  // decode_flags
-                                          context,       // source_frame_refcon
-                                          nullptr);      // info_flags_out
-    if (status != noErr) {
-      OSSTATUS_DLOG(ERROR, status) << "VTDecompressionSessionDecodeFrame()";
+    if (!decompression_session_->DecodeFrame(sample, context)) {
       return false;
     }
 
@@ -177,7 +149,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
     CMFormatDescriptionRef format) {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!active_session_);
+  DCHECK(!decompression_session_->IsValid());
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
       CFDictionaryCreateMutable(kCFAllocatorDefault,
@@ -200,17 +172,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
       kCFBooleanTrue);
 #endif
 
-  VTDecompressionOutputCallbackRecord callback = {OnOutputThunk, this};
-
-  OSStatus status = VTDecompressionSessionCreate(
-      kCFAllocatorDefault,
-      format,          // video_format_description
-      decoder_config,  // video_decoder_specification
-      nullptr,         // destination_image_buffer_attributes
-      &callback,       // output_callback
-      active_session_.InitializeInto());
-  if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status) << "VTDecompressionSessionCreate()";
+  if (!decompression_session_->Create(format, decoder_config)) {
     return false;
   }
 
@@ -222,44 +184,22 @@ void VideoToolboxDecompressionInterface::DestroySession() {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (!active_session_) {
+  if (!decompression_session_->IsValid()) {
     return;
   }
 
-  // Untested assumption: after VTDecompressionSessionInvalidate() returns,
-  // OnOutputThunk() will not be called again.
-  VTDecompressionSessionInvalidate(active_session_);
-
-  // Drop in-flight OnOutput() tasks. Reassignment of |weak_this_| is safe
-  // because OnOutputOnAnyThread() will not be called again until we create a
-  // new session.
-  weak_this_factory_.InvalidateWeakPtrs();
-  weak_this_ = weak_this_factory_.GetWeakPtr();
-
-  active_session_.reset();
+  decompression_session_->Invalidate();
   active_format_.reset();
   active_decodes_ = 0;
   draining_ = false;
 }
 
-void VideoToolboxDecompressionInterface::OnOutputOnAnyThread(
-    void* context,
-    OSStatus status,
-    VTDecodeInfoFlags info_flags,
-    base::ScopedCFTypeRef<CVImageBufferRef> image) {
-  DVLOG(4) << __func__ << " tid=" << base::PlatformThread::CurrentId();
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoToolboxDecompressionInterface::OnOutput, weak_this_,
-                     context, status, info_flags, std::move(image)));
-}
-
 void VideoToolboxDecompressionInterface::OnOutput(
     void* context,
     OSStatus status,
-    VTDecodeInfoFlags info_flags,
+    VTDecodeInfoFlags flags,
     base::ScopedCFTypeRef<CVImageBufferRef> image) {
-  DVLOG(4) << __func__ << " tid=" << base::PlatformThread::CurrentId();
+  DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (!error_cb_) {
@@ -275,8 +215,8 @@ void VideoToolboxDecompressionInterface::OnOutput(
   if (!image || CFGetTypeID(image) != CVPixelBufferGetTypeID()) {
     DLOG(ERROR) << "Decoded image is not a CVPixelBuffer";
     // TODO(crbug.com/1331597): Potentially allow intentional dropped frames.
-    // (signaled in |info_flags|). It might make sense to dump without crashing
-    // to help track down why this happens.
+    // (signaled in |flags|). It might make sense to dump without crashing to
+    // help track down why this happens.
     NotifyError();
     return;
   }
@@ -295,6 +235,11 @@ void VideoToolboxDecompressionInterface::OnOutput(
 
   // OnOutput() was posted, so this is never re-entrant.
   output_cb_.Run(std::move(image), context);
+}
+
+void VideoToolboxDecompressionInterface::SetDecompressionSessionForTesting(
+    std::unique_ptr<VideoToolboxDecompressionSession> decompression_session) {
+  decompression_session_ = std::move(decompression_session);
 }
 
 }  // namespace media

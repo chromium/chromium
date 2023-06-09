@@ -269,6 +269,7 @@ void VideoToolboxVideoDecoder::ProcessOutputs() {
       break;
     }
 
+    DVLOG(4) << __func__ << ": Output " << output_frames_[context]->timestamp();
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(output_cb_, std::move(output_frames_[context])));

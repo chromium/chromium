@@ -8,6 +8,7 @@
 #include <CoreMedia/CoreMedia.h>
 #include <VideoToolbox/VideoToolbox.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/queue.h"
@@ -16,12 +17,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/gpu/mac/video_toolbox_decompression_session.h"
+#include "media/gpu/media_gpu_export.h"
 
 namespace media {
 
-// Manages reconfiguration of decompression sessions and hides the threading.
-// Callbacks are never called re-entrantly or after destruction.
-class VideoToolboxDecompressionInterface {
+// Wraps VideoToolboxDecompressionSession to handle reconfiguration. Callbacks
+// are never called re-entrantly or after destruction.
+class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
  public:
   using OutputCB =
       base::RepeatingCallback<void(base::ScopedCFTypeRef<CVImageBufferRef>,
@@ -44,11 +47,15 @@ class VideoToolboxDecompressionInterface {
   // The number of decodes that have not been output yet.
   size_t PendingDecodes();
 
-  // Called by OnOutputThunk().
-  void OnOutputOnAnyThread(void* context,
-                           OSStatus status,
-                           VTDecodeInfoFlags info_flags,
-                           base::ScopedCFTypeRef<CVImageBufferRef> image);
+  // Public for testing.
+  void SetDecompressionSessionForTesting(
+      std::unique_ptr<VideoToolboxDecompressionSession> decompression_session);
+
+  // Public for testing.
+  void OnOutput(void* context,
+                OSStatus status,
+                VTDecodeInfoFlags flags,
+                base::ScopedCFTypeRef<CVImageBufferRef> image);
 
  private:
   // Shut down and call |error_cb_|.
@@ -67,24 +74,15 @@ class VideoToolboxDecompressionInterface {
   // Shut down the active session, synchronously.
   void DestroySession();
 
-  // Called by OnOutputOnAnyThread().
-  void OnOutput(void* context,
-                OSStatus status,
-                VTDecodeInfoFlags info_flags,
-                base::ScopedCFTypeRef<CVImageBufferRef> image);
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   OutputCB output_cb_;
-
-  // |!error_cb_| indicates that there has been an error.
-  ErrorCB error_cb_;
+  ErrorCB error_cb_;  // |!error_cb_| indicates an error state.
 
   // Decodes that have not been sent to VideoToolbox.
   base::queue<std::pair<base::ScopedCFTypeRef<CMSampleBufferRef>, void*>>
       pending_decodes_;
 
-  base::ScopedCFTypeRef<VTDecompressionSessionRef> active_session_;
+  std::unique_ptr<VideoToolboxDecompressionSession> decompression_session_;
   base::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
 
   // TODO(crbug.com/1331597): Check if it is efficient to query
@@ -95,7 +93,6 @@ class VideoToolboxDecompressionInterface {
   // format changes.
   bool draining_ = false;
 
-  // Used in OnOutputOnAnyThread() to hop to |task_runner_|.
   base::WeakPtr<VideoToolboxDecompressionInterface> weak_this_;
   base::WeakPtrFactory<VideoToolboxDecompressionInterface> weak_this_factory_{
       this};
