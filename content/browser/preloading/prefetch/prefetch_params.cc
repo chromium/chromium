@@ -224,7 +224,7 @@ bool PrefetchShouldBlockUntilHead(
     case blink::mojom::SpeculationEagerness::kEager:
       return base::GetFieldTrialParamByFeatureAsBool(
           features::kPrefetchUseContentRefactor,
-          "block_until_head_eager_prefetch", true);
+          "block_until_head_eager_prefetch", false);
     case blink::mojom::SpeculationEagerness::kModerate:
       return base::GetFieldTrialParamByFeatureAsBool(
           features::kPrefetchUseContentRefactor,

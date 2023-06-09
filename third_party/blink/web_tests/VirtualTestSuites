@@ -800,7 +800,7 @@
     "platforms": ["Linux"],
     "bases": ["http/tests/inspector-protocol/issues/payment-request-csp-violation-issue.js"],
     "args": ["--enable-blink-features=IgnoreCSPInWebPaymentAPI"],
-    "expires": "May 30, 2023"
+    "expires": "Jul 1, 2023"
   },
   {
     "prefix": "payment-request-mandatory-total",
@@ -1685,7 +1685,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,NoVarySearchPrefetch,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
-      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
+      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor:block_until_head_eager_prefetch/true",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Jul 1, 2023"
@@ -1699,7 +1699,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=NoVarySearchPrefetch",
-      "--enable-features=PrefetchUseContentRefactor"
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
     ],
     "expires": "Jul 1, 2023"
   },
@@ -1881,7 +1881,7 @@
       "fast/forms/week/week-appearance-pseudo-elements.html"
     ],
     "args": ["--disable-blink-features=DateInputInlineBlock"],
-    "expires": "Jun 1, 2023"
+    "expires": "Jul 1, 2023"
   },
   {
     "prefix": "allow-rtc-encoded-video-frame-set-metadata-all-fields",
