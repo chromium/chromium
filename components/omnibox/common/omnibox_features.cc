@@ -490,9 +490,11 @@ const base::FeatureParam<std::string> kOmniboxLightBackgroundColorHovered(
 
 // If enabled, Omnibox "steady state" height is increased from 28 dp to 34 dp to
 // match CR23 guidelines.
+// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
+//   launching the rest of CR23 in m117.
 BASE_FEATURE(kOmniboxSteadyStateHeight,
              "OmniboxSteadyStateHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox "steady state" text style is updated to match CR23
 // guidelines.

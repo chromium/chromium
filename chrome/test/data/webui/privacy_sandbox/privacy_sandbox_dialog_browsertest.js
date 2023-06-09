@@ -82,11 +82,23 @@ TEST_F('PrivacySandboxDialogBigWindowTest', 'Notice', function() {
   runMochaSuite('PrivacySandboxDialogNotice');
 });
 
-TEST_F('PrivacySandboxDialogBigWindowTest', 'Combined', function() {
+// TODO(https://crbug.com/1446188): Re-enable the test.
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
+GEN('# define MAYBE_Combined DISABLED_Combined');
+GEN('#else');
+GEN('# define MAYBE_Combined Combined');
+GEN('#endif');
+TEST_F('PrivacySandboxDialogBigWindowTest', 'MAYBE_Combined', function() {
   runMochaSuite('PrivacySandboxDialogCombined');
 });
 
-TEST_F('PrivacySandboxDialogBigWindowTest', 'NoticeEEA', function() {
+// TODO(https://crbug.com/1446188): Re-enable the test.
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
+GEN('# define MAYBE_NoticeEEA DISABLED_NoticeEEA');
+GEN('#else');
+GEN('# define MAYBE_NoticeEEA NoticeEEA');
+GEN('#endif');
+TEST_F('PrivacySandboxDialogBigWindowTest', 'MAYBE_NoticeEEA', function() {
   runMochaSuite('PrivacySandboxDialogNoticeEEA');
 });
 

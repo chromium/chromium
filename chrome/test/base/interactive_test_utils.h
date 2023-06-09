@@ -15,6 +15,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace display {
 class Screen;
@@ -133,6 +134,14 @@ void HideNativeWindow(gfx::NativeWindow window);
 #if defined(TOOLKIT_VIEWS)
 void MoveMouseToCenterAndPress(
     views::View* view,
+    ui_controls::MouseButton button,
+    int button_state,
+    base::OnceClosure task,
+    int accelerator_state = ui_controls::kNoAccelerator);
+
+void MoveMouseToCenterWithOffsetAndPress(
+    views::View* view,
+    const gfx::Vector2d& offset,
     ui_controls::MouseButton button,
     int button_state,
     base::OnceClosure task,
