@@ -205,6 +205,8 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
                 __uuidof(ICompleteStatusUser),
                 __uuidof(IUpdaterObserverUser),
                 __uuidof(IUpdaterCallbackUser),
+                __uuidof(IUpdaterAppStateUser),
+                __uuidof(IUpdaterAppStatesCallbackUser),
 
                 // legacy interfaces.
                 __uuidof(IAppVersionWebUser),
@@ -225,6 +227,8 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
                 __uuidof(ICompleteStatusSystem),
                 __uuidof(IUpdaterObserverSystem),
                 __uuidof(IUpdaterCallbackSystem),
+                __uuidof(IUpdaterAppStateSystem),
+                __uuidof(IUpdaterAppStatesCallbackSystem),
 
                 // legacy interfaces.
                 __uuidof(IAppVersionWebSystem),
@@ -426,6 +430,10 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
           {__uuidof(IUpdateStateSystem), kUpdaterIndex},
           {__uuidof(IUpdaterCallbackUser), kUpdaterIndex},
           {__uuidof(IUpdaterCallbackSystem), kUpdaterIndex},
+          {__uuidof(IUpdaterAppStateUser), kUpdaterIndex},
+          {__uuidof(IUpdaterAppStateSystem), kUpdaterIndex},
+          {__uuidof(IUpdaterAppStatesCallbackUser), kUpdaterIndex},
+          {__uuidof(IUpdaterAppStatesCallbackSystem), kUpdaterIndex},
 
           // Updater internal typelib.
           {__uuidof(IUpdaterInternalUser), kUpdaterInternalIndex},

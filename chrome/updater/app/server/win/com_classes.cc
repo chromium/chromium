@@ -24,6 +24,9 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_variant.h"
+#include "base/win/variant_vector.h"
+#include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
@@ -36,6 +39,79 @@ namespace {
 
 // Maximum string length for COM strings.
 constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
+
+// Implements `IUpdaterAppState`. Initialized with an `UpdateService::AppState`.
+class UpdaterAppStateImpl : public IDispatchImpl<IUpdaterAppState> {
+ public:
+  UpdaterAppStateImpl()
+      : IDispatchImpl<IUpdaterAppState>(IID_MAPS_USERSYSTEM(IUpdaterAppState)) {
+  }
+  UpdaterAppStateImpl(const UpdaterAppStateImpl&) = delete;
+  UpdaterAppStateImpl& operator=(const UpdaterAppStateImpl&) = delete;
+
+  HRESULT RuntimeClassInitialize(const UpdateService::AppState& app_state) {
+    app_id_ = base::ASCIIToWide(app_state.app_id);
+    version_ = base::ASCIIToWide(app_state.version.GetString());
+    ap_ = base::ASCIIToWide(app_state.ap);
+    brand_code_ = base::ASCIIToWide(app_state.brand_code);
+    brand_path_ = app_state.brand_path.value();
+    ecp_ = app_state.ecp.value();
+
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_appId(BSTR* app_id) override {
+    CHECK(app_id);
+
+    *app_id = base::win::ScopedBstr(app_id_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_version(BSTR* version) override {
+    CHECK(version);
+
+    *version = base::win::ScopedBstr(version_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_ap(BSTR* ap) override {
+    CHECK(ap);
+
+    *ap = base::win::ScopedBstr(ap_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_brandCode(BSTR* brand_code) override {
+    CHECK(brand_code);
+
+    *brand_code = base::win::ScopedBstr(brand_code_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_brandPath(BSTR* brand_path) override {
+    CHECK(brand_path);
+
+    *brand_path = base::win::ScopedBstr(brand_path_).Release();
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_ecp(BSTR* ecp) override {
+    CHECK(ecp);
+
+    *ecp = base::win::ScopedBstr(ecp_).Release();
+    return S_OK;
+  }
+
+ private:
+  ~UpdaterAppStateImpl() override = default;
+
+  std::wstring app_id_;
+  std::wstring version_;
+  std::wstring ap_;
+  std::wstring brand_code_;
+  std::wstring brand_path_;
+  std::wstring ecp_;
+};
 
 }  // namespace
 
@@ -696,6 +772,51 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
           base::FilePath(installer_path), install_args_str, install_data_str,
           install_settings_str, IUpdaterObserverPtr(observer)));
 
+  return S_OK;
+}
+
+HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
+  if (!callback) {
+    return E_INVALIDARG;
+  }
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+  com_server->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<UpdateService> update_service,
+             base::OnceCallback<void(
+                 const std::vector<UpdateService::AppState>&)>
+                 result_callback) {
+            update_service->GetAppStates(std::move(result_callback));
+          },
+          com_server->update_service(),
+          base::BindPostTask(
+              base::ThreadPool::CreateSequencedTaskRunner(
+                  {base::MayBlock(),
+                   base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+              base::BindOnce(
+                  [](Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback> callback,
+                     const std::vector<UpdateService::AppState>& app_states) {
+                    // Converts `app_states` into a `SAFEARRAY` of `IDispatch`
+                    // and calls `IUpdaterAppStatesCallback::Run` with the
+                    // resulting `VARIANT`.
+                    base::win::VariantVector updater_app_states;
+
+                    for (const auto& app_state : app_states) {
+                      Microsoft::WRL::ComPtr<IDispatch> dispatch;
+                      CHECK(SUCCEEDED(
+                          MakeAndInitializeComObject<UpdaterAppStateImpl>(
+                              dispatch, app_state)));
+
+                      // Transfer `dispatch` ownership to the `SAFEARRAY`.
+                      updater_app_states.Insert<VT_DISPATCH>(dispatch.Detach());
+                    }
+
+                    callback->Run(
+                        updater_app_states.ReleaseAsSafearrayVariant());
+                  },
+                  Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback>(
+                      callback)))));
   return S_OK;
 }
 

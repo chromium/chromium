@@ -116,6 +116,7 @@ class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
                               const wchar_t* install_data,
                               const wchar_t* install_settings,
                               IUpdaterObserver* observer) override;
+  IFACEMETHODIMP GetAppStates(IUpdaterAppStatesCallback* callback) override;
 
  private:
   ~UpdaterImpl() override = default;
