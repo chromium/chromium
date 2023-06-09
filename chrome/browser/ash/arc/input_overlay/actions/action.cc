@@ -291,7 +291,7 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
   }
   pending_input_ = std::move(input_element);
 
-  if (!action_view_) {
+  if (beta_ || !action_view_) {
     return;
   }
   action_view_->SetViewContent(BindingOption::kPending);
@@ -523,7 +523,7 @@ bool Action::VerifyOnKeyRelease(ui::DomCode code) {
 }
 
 void Action::PostUnbindInputProcess() {
-  if (!action_view_) {
+  if (beta_ || !action_view_) {
     return;
   }
   action_view_->SetViewContent(BindingOption::kPending);

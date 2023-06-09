@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -30,6 +31,10 @@ ActionView::ActionView(Action* action,
       display_overlay_controller_(display_overlay_controller),
       beta_(display_overlay_controller->touch_injector()->beta()) {}
 ActionView::~ActionView() = default;
+
+void ActionView::OnActionUpdated() {
+  SetViewContent(BindingOption::kCurrent);
+}
 
 void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
   DCHECK(mode != DisplayMode::kEducation && mode != DisplayMode::kMenu &&

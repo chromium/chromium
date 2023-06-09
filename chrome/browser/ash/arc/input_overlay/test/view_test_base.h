@@ -42,6 +42,7 @@ class ViewTestBase : public views::ViewsTestBase {
   std::unique_ptr<TouchInjector> touch_injector_;
   std::unique_ptr<DisplayOverlayController> display_overlay_controller_;
   std::unique_ptr<InputMappingView> input_mapping_view_;
+  std::unique_ptr<views::Widget> widget_;
 
   raw_ptr<ActionView> move_action_view_;
   raw_ptr<ActionView> tap_action_view_;
@@ -49,7 +50,6 @@ class ViewTestBase : public views::ViewsTestBase {
   raw_ptr<Action> tap_action_;
   gfx::Point root_location_;
   gfx::Point local_location_;
-  std::unique_ptr<views::Widget> widget_;
 
  private:
   void Init();

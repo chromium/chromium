@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
@@ -41,14 +42,21 @@ class EditLabelTest : public ViewTestBase {
  public:
   EditLabelTest() = default;
 
-  EditLabel* GetEditLabel(ActionViewListItem* list_item, size_t index) {
+  EditLabel* GetEditLabel(const ActionViewListItem* list_item,
+                          size_t index) const {
     auto& labels = list_item->labels_view_->labels_;
     DCHECK_LT(index, labels.size());
     return labels[index];
   }
 
-  EditLabel* GetEditLabel(ButtonOptionsMenu* menu_, size_t index) {
+  EditLabel* GetEditLabel(const ButtonOptionsMenu* menu_, size_t index) const {
     auto& labels = menu_->labels_view_->labels_;
+    DCHECK_LT(index, labels.size());
+    return labels[index];
+  }
+
+  ActionLabel* GetLabel(const ActionView* action_view, size_t index) const {
+    auto& labels = action_view->labels();
     DCHECK_LT(index, labels.size());
     return labels[index];
   }
@@ -72,6 +80,8 @@ class EditLabelTest : public ViewTestBase {
                   GetEditLabel(tap_action_list_item_, /*index=*/0)->GetText());
         EXPECT_EQ(expected_text[0],
                   GetEditLabel(tap_action_menu_.get(), /*index=*/0)->GetText());
+        EXPECT_EQ(expected_text[0],
+                  GetLabel(tap_action_view_, /*index=*/0)->GetText());
         break;
       case ActionType::MOVE:
         for (size_t i = 0; i < kActionMoveKeysSize; i++) {
@@ -82,6 +92,8 @@ class EditLabelTest : public ViewTestBase {
           EXPECT_EQ(
               expected_text[i],
               GetEditLabel(move_action_menu_.get(), /*index=*/i)->GetText());
+          EXPECT_EQ(expected_text[i],
+                    GetLabel(move_action_view_, /*index=*/i)->GetText());
         }
         break;
       default:

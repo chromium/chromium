@@ -291,6 +291,16 @@ ActionLabel::~ActionLabel() = default;
 void ActionLabel::SetTextActionLabel(const std::u16string& text) {
   label()->SetText(text);
   SetAccessibleName(CalculateAccessibleName());
+
+  if (!IsBeta()) {
+    return;
+  }
+
+  if (text == kUnknownBind) {
+    SetToEditUnbindInput();
+  } else {
+    SetToEditDefault();
+  }
 }
 
 void ActionLabel::SetImageActionLabel(MouseAction mouse_action) {
@@ -311,10 +321,15 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       break;
     case DisplayMode::kEdit:
       SetToEditMode();
-      SetFocusBehavior(FocusBehavior::ALWAYS);
-      static_cast<ActionView*>(parent())->ShowInfoMsg(
-          l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2),
-          this);
+      if (IsBeta()) {
+        SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+      } else {
+        SetFocusBehavior(FocusBehavior::ALWAYS);
+        static_cast<ActionView*>(parent())->ShowInfoMsg(
+            l10n_util::GetStringUTF8(
+                IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2),
+            this);
+      }
       break;
     case DisplayMode::kEditedSuccess:
       SetToEditFocus();

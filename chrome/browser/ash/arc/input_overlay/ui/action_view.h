@@ -43,6 +43,9 @@ class ActionView : public views::View {
   // Each type of the actions shows different edit menu.
   virtual void AddTouchPoint() = 0;
 
+  // Called when associated action is updated.
+  void OnActionUpdated();
+
   // TODO(cuicuiruan): Remove virtual for post MVP once edit menu is ready for
   // |ActionMove|.
   // If |editing_label| == nullptr, set display mode for all the |ActionLabel|
