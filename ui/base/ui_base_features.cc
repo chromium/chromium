@@ -431,8 +431,7 @@ BASE_FEATURE(kEnableVariableRefreshRate,
              "EnableVariableRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVariableRefreshRateEnabled() {
-  return base::FeatureList::GetStateIfOverridden(kEnableVariableRefreshRate)
-      .value_or(base::FeatureList::IsEnabled(kEnableVariableRefreshRate));
+  return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
 }
 
 // Fixes b/267944900.

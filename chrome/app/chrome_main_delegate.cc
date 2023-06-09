@@ -778,6 +778,13 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // Redirect logs from system directory to cryptohome.
   if (chromeos::IsLaunchedWithPostLoginParams())
     RedirectLacrosLogging();
+
+  // Must be added before feature list is created otherwise the added flag won't
+  // be picked up.
+  if (chromeos::BrowserParamsProxy::Get()->IsVariableRefreshRateEnabled()) {
+    base::ScopedAddFeatureFlags(base::CommandLine::ForCurrentProcess())
+        .EnableIfNotSet(features::kEnableVariableRefreshRate);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // The DBus initialization above is needed for FeatureList creation here;
@@ -842,12 +849,6 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     if (init_params->EnableCpuMappableNativeGpuMemoryBuffers()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           switches::kEnableNativeGpuMemoryBuffers);
-    }
-
-    if (init_params->IsVariableRefreshRateEnabled()) {
-      base::ScopedAddFeatureFlags add_feature_flags(
-          base::CommandLine::ForCurrentProcess());
-      add_feature_flags.EnableIfNotSet(::features::kEnableVariableRefreshRate);
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
