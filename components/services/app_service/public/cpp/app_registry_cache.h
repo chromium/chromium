@@ -30,7 +30,7 @@ namespace apps {
 // AppServiceProxy sees a stream of `apps::AppPtr` "deltas", or changes in app
 // state, received from publishers. This cache stores the "sum" of those
 // previous deltas. When a new delta is received, observers are presented with
-// an `apps:::AppUpdate` containing the previous state and the new delta, and
+// an `apps:::AppUpdate` containing information about what has changed, and
 // then the new delta is "added" to the stored state.
 //
 // This class is not thread-safe.
@@ -45,9 +45,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     Observer& operator=(const Observer&) = delete;
 
     // Called whenever AppRegistryCache receives an update for any app. `update`
-    // contains the previous "state" before this change, along with the "delta"
-    // being changed. This allows observers to identify the specific changes
-    // being made (as per the docs on `apps::AppUpdate`). The `update` argument
+    // exposes the latest field values and whether they have changed in this
+    // update (as per the docs on `apps::AppUpdate`). The `update` argument
     // shouldn't be accessed after OnAppUpdate returns.
     virtual void OnAppUpdate(const AppUpdate& update) {}
 
