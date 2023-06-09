@@ -1,0 +1,38 @@
+diff --git a/org.jacoco.core/src/org/jacoco/core/internal/instr/ProbeArrayStrategyFactory.java b/org.jacoco.core/src/org/jacoco/core/internal/instr/ProbeArrayStrategyFactory.java
+index 58d74220..7605927d 100644
+--- a/org.jacoco.core/src/org/jacoco/core/internal/instr/ProbeArrayStrategyFactory.java
++++ b/org.jacoco.core/src/org/jacoco/core/internal/instr/ProbeArrayStrategyFactory.java
+@@ -51,10 +51,12 @@ public final class ProbeArrayStrategyFactory {
+ 			if (counter.getCount() == 0) {
+ 				return new NoneProbeArrayStrategy();
+ 			}
+-			if (version >= Opcodes.V11 && counter.hasMethods()) {
+-				return new CondyProbeArrayStrategy(className, true, classId,
+-						accessorGenerator);
+-			}
++			// TODO(crbug/1452152): CondyProbeArrayStrategy doesn't work well
++			// with Nougat
++			// if (version >= Opcodes.V11 && counter.hasMethods()) {
++			// return new CondyProbeArrayStrategy(className, true, classId,
++			// accessorGenerator);
++			// }
+ 			if (version >= Opcodes.V1_8 && counter.hasMethods()) {
+ 				return new InterfaceFieldProbeArrayStrategy(className, classId,
+ 						counter.getCount(), accessorGenerator);
+@@ -63,10 +65,12 @@ public final class ProbeArrayStrategyFactory {
+ 						counter.getCount(), accessorGenerator);
+ 			}
+ 		} else {
+-			if (version >= Opcodes.V11) {
+-				return new CondyProbeArrayStrategy(className, false, classId,
+-						accessorGenerator);
+-			}
++			// TODO(crbug/1452152): CondyProbeArrayStrategy doesn't work well
++			// with Nougat
++			// if (version >= Opcodes.V11) {
++			// return new CondyProbeArrayStrategy(className, false, classId,
++			// accessorGenerator);
++			// }
+ 			return new ClassFieldProbeArrayStrategy(className, classId,
+ 					InstrSupport.needsFrames(version), accessorGenerator);
+ 		}

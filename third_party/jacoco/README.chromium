@@ -17,3 +17,5 @@ https://crbug.com/1334374)
 (See local patch in `3pp/patches/0001-hardcode-properties.patch`.)
 ** Do not use InjectedClassRuntime.
 (See local patch in `3pp/patches/0002-dont-use-injected-class-runtime.patch`.)
+** Do not use CondyProbeArrayStrategy.
+(See local patch in `3pp/patches/0003-dont-use-condy-probe-array-strategy.patch`.)
