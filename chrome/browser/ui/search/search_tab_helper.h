@@ -122,6 +122,8 @@ class SearchTabHelper : public content::WebContentsObserver,
       uint8_t line,
       bool accepted);
 
+  void CloseNTPCustomizeChromeFeaturePromo();
+
   SearchIPCRouter ipc_router_;
 
   raw_ptr<InstantService> instant_service_;
