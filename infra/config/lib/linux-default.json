@@ -17,6 +17,7 @@
     "Android arm64 Builder (dbg)": "Ubuntu-22.04",
     "Android arm64 Builder All Targets (dbg)": "Ubuntu-22.04",
     "Android x64 Builder (dbg)": "Ubuntu-22.04",
+    "CFI Linux CF": "Ubuntu-22.04",
     "CFI Linux ToT": "Ubuntu-22.04",
     "Cast Android (dbg)": "Ubuntu-22.04",
     "Cast Linux": "Ubuntu-22.04",
