@@ -105,6 +105,11 @@ D3D11Status VideoProcessorProxy::Init(uint32_t width, uint32_t height) {
                        device);
   }
 
+  // Turn off auto stream processing (the default) that will hurt power
+  // consumption.
+  video_context_->VideoProcessorSetStreamAutoProcessingMode(
+      video_processor_.Get(), 0, FALSE);
+
   return D3D11Status::Codes::kOk;
 }
 
