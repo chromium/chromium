@@ -34,6 +34,24 @@ IpczTransaction PendingTransactionSet::Add(Parcel parcel) {
   return transaction;
 }
 
+absl::optional<Parcel> PendingTransactionSet::FinalizeForGet(
+    IpczTransaction transaction) {
+  if (inline_parcel_ && AsTransaction(*inline_parcel_) == transaction) {
+    Parcel parcel = std::move(*inline_parcel_);
+    inline_parcel_.reset();
+    return parcel;
+  }
+
+  auto it = other_parcels_.find(transaction);
+  if (it != other_parcels_.end()) {
+    Parcel parcel = std::move(*it->second);
+    other_parcels_.erase(it);
+    return parcel;
+  }
+
+  return absl::nullopt;
+}
+
 absl::optional<Parcel> PendingTransactionSet::FinalizeForPut(
     IpczTransaction transaction,
     size_t num_data_bytes) {

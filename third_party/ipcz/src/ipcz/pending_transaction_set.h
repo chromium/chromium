@@ -19,8 +19,7 @@ namespace ipcz {
 // facilities for iteration, only for insertion and removal.
 //
 // Care is taken to ensure that any Parcel owned by this set has a stable
-// address throughout its lifetime, exposed to as an opaque IpczTransaction
-// value.
+// address throughout its lifetime, exposed as an opaque IpczTransaction value.
 class PendingTransactionSet {
  public:
   PendingTransactionSet();
@@ -28,9 +27,15 @@ class PendingTransactionSet {
   PendingTransactionSet& operator=(const PendingTransactionSet&) = delete;
   ~PendingTransactionSet();
 
+  bool empty() const { return !inline_parcel_ && other_parcels_.empty(); }
+
   // Adds `parcel` to this set, returning an opaque IpczTransaction value to
   // reference it.
   IpczTransaction Add(Parcel parcel);
+
+  // Finalizes the transaction identified by `transaction`, returning its
+  // underlying Parcel. Only succeeds if `transaction` is a valid transaction.
+  absl::optional<Parcel> FinalizeForGet(IpczTransaction transaction);
 
   // Finalizes the transaction identified by `transaction`, returning its
   // underlying Parcel so that data can be committed to it and it can be put

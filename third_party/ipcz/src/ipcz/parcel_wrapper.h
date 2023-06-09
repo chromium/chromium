@@ -40,12 +40,15 @@ class ParcelWrapper : public APIObjectImpl<ParcelWrapper, APIObject::kParcel> {
                  IpczHandle* handles,
                  size_t* num_handles,
                  IpczHandle* parcel);
-  IpczResult BeginGet(const void** data,
-                      size_t* num_bytes,
-                      size_t* num_handles);
-  IpczResult CommitGet(size_t num_data_bytes_consumed,
-                       absl::Span<IpczHandle> handles);
-  IpczResult AbortGet();
+  IpczResult BeginGet(IpczBeginGetFlags flags,
+                      const void** data,
+                      size_t* num_data_bytes,
+                      IpczHandle* handles,
+                      size_t* num_handles,
+                      IpczTransaction* transaction);
+  IpczResult EndGet(IpczTransaction transaction,
+                    IpczEndGetFlags flags,
+                    IpczHandle* parcel);
 
  private:
   ~ParcelWrapper() override;

@@ -66,12 +66,15 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
                  IpczHandle* handles,
                  size_t* num_handles,
                  IpczHandle* parcel);
-  IpczResult BeginGet(const void** data,
+  IpczResult BeginGet(IpczBeginGetFlags flags,
+                      const void** data,
                       size_t* num_data_bytes,
-                      size_t* num_handles);
-  IpczResult CommitGet(size_t num_data_bytes_consumed,
-                       absl::Span<IpczHandle> handles);
-  IpczResult AbortGet();
+                      IpczHandle* handles,
+                      size_t* num_handles,
+                      IpczTransaction* transaction);
+  IpczResult EndGet(IpczTransaction transaction,
+                    IpczEndGetFlags flags,
+                    IpczHandle* parcel);
 
  private:
   ~Portal() override;
@@ -81,7 +84,6 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
 
   absl::Mutex mutex_;
   PendingTransactionSet pending_puts_ ABSL_GUARDED_BY(mutex_);
-  bool in_two_phase_get_ ABSL_GUARDED_BY(mutex_) = false;
 };
 
 }  // namespace ipcz

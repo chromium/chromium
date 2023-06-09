@@ -194,50 +194,20 @@ IpczResult Portal::Get(IpczGetFlags flags,
                                        num_handles, parcel);
 }
 
-IpczResult Portal::BeginGet(const void** data,
+IpczResult Portal::BeginGet(IpczBeginGetFlags flags,
+                            const void** data,
                             size_t* num_data_bytes,
-                            size_t* num_handles) {
-  absl::MutexLock lock(&mutex_);
-  if (in_two_phase_get_) {
-    return IPCZ_RESULT_ALREADY_EXISTS;
-  }
-
-  if (router_->IsRouteDead()) {
-    return IPCZ_RESULT_NOT_FOUND;
-  }
-
-  const IpczResult result =
-      router_->BeginGetNextIncomingParcel(data, num_data_bytes, num_handles);
-  if (result == IPCZ_RESULT_OK) {
-    in_two_phase_get_ = true;
-  }
-  return result;
+                            IpczHandle* handles,
+                            size_t* num_handles,
+                            IpczTransaction* transaction) {
+  return router_->BeginGetNextInboundParcel(flags, data, num_data_bytes,
+                                            handles, num_handles, transaction);
 }
 
-IpczResult Portal::CommitGet(size_t num_data_bytes_consumed,
-                             absl::Span<IpczHandle> handles) {
-  TrapEventDispatcher dispatcher;
-  absl::MutexLock lock(&mutex_);
-  if (!in_two_phase_get_) {
-    return IPCZ_RESULT_FAILED_PRECONDITION;
-  }
-
-  IpczResult result = router_->CommitGetNextIncomingParcel(
-      num_data_bytes_consumed, handles, dispatcher);
-  if (result == IPCZ_RESULT_OK) {
-    in_two_phase_get_ = false;
-  }
-  return result;
-}
-
-IpczResult Portal::AbortGet() {
-  absl::MutexLock lock(&mutex_);
-  if (!in_two_phase_get_) {
-    return IPCZ_RESULT_FAILED_PRECONDITION;
-  }
-
-  in_two_phase_get_ = false;
-  return IPCZ_RESULT_OK;
+IpczResult Portal::EndGet(IpczTransaction transaction,
+                          IpczEndGetFlags flags,
+                          IpczHandle* parcel) {
+  return router_->EndGetNextInboundParcel(transaction, flags, parcel);
 }
 
 }  // namespace ipcz

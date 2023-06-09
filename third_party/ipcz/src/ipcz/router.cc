@@ -380,6 +380,10 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
       return IPCZ_RESULT_INVALID_ARGUMENT;
     }
 
+    if (!pending_gets_.empty() && is_pending_get_exclusive_) {
+      return IPCZ_RESULT_ALREADY_EXISTS;
+    }
+
     const size_t data_size =
         allow_partial ? std::min(p.data_size(), data_capacity) : p.data_size();
     const size_t handles_size =
@@ -424,68 +428,97 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult Router::BeginGetNextIncomingParcel(const void** data,
-                                              size_t* num_data_bytes,
-                                              size_t* num_handles) {
+IpczResult Router::BeginGetNextInboundParcel(IpczBeginGetFlags flags,
+                                             const void** data,
+                                             size_t* num_bytes,
+                                             IpczHandle* handles,
+                                             size_t* num_handles,
+                                             IpczTransaction* transaction) {
+  const OperationContext context{OperationContext::kAPICall};
+  TrapEventDispatcher dispatcher;
   absl::MutexLock lock(&mutex_);
-  if (inward_edge_) {
+  if (!transaction || inward_edge_) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
+  if (num_handles && *num_handles && !handles) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  const bool overlapped = flags & IPCZ_BEGIN_GET_OVERLAPPED;
+  const bool allow_partial = flags & IPCZ_BEGIN_GET_PARTIAL;
+  if (!overlapped && !pending_gets_.empty()) {
+    return IPCZ_RESULT_ALREADY_EXISTS;
+  }
+  if (overlapped && is_pending_get_exclusive_) {
+    return IPCZ_RESULT_ALREADY_EXISTS;
+  }
   if (!inbound_parcels_.HasNextElement()) {
     return IPCZ_RESULT_UNAVAILABLE;
   }
 
   Parcel& p = inbound_parcels_.NextElement();
-  if (data) {
-    *data = p.data_view().data();
-  }
-  if (num_data_bytes) {
-    *num_data_bytes = p.data_size();
-  }
-  if (num_handles) {
-    *num_handles = p.num_objects();
-  }
-  if ((p.data_size() && (!data || !num_data_bytes)) ||
-      (p.num_objects() && !num_handles)) {
+  const size_t num_objects = p.num_objects();
+  const size_t handle_capacity = num_handles ? *num_handles : 0;
+
+  const size_t num_handles_to_consume = std::min(handle_capacity, num_objects);
+  if (num_handles_to_consume < num_objects && !allow_partial) {
+    if (num_handles) {
+      *num_handles = num_objects;
+    }
     return IPCZ_RESULT_RESOURCE_EXHAUSTED;
   }
 
+  if (num_handles) {
+    *num_handles = num_handles_to_consume;
+  }
+  p.Consume(0, absl::MakeSpan(handles, num_handles_to_consume));
+
+  if (data) {
+    *data = p.data_view().data();
+  }
+  if (num_bytes) {
+    *num_bytes = p.data_view().size();
+  }
+
+  *transaction = pending_gets_.Add(std::move(p));
+  if (overlapped) {
+    DiscardNextInboundParcel(context, dispatcher);
+  } else {
+    is_pending_get_exclusive_ = true;
+  }
   return IPCZ_RESULT_OK;
 }
 
-IpczResult Router::CommitGetNextIncomingParcel(
-    size_t num_data_bytes_consumed,
-    absl::Span<IpczHandle> handles,
-    TrapEventDispatcher& dispatcher) {
+IpczResult Router::EndGetNextInboundParcel(IpczTransaction transaction,
+                                           IpczEndGetFlags flags,
+                                           IpczHandle* parcel_handle) {
   const OperationContext context{OperationContext::kAPICall};
-  {
-    absl::MutexLock lock(&mutex_);
-    if (inward_edge_) {
-      return IPCZ_RESULT_INVALID_ARGUMENT;
-    }
-    if (!inbound_parcels_.HasNextElement()) {
-      return IPCZ_RESULT_INVALID_ARGUMENT;
-    }
-
-    Parcel& p = inbound_parcels_.NextElement();
-    if (num_data_bytes_consumed > p.data_size() ||
-        handles.size() > p.num_objects()) {
-      return IPCZ_RESULT_OUT_OF_RANGE;
-    }
-
-    const bool ok = inbound_parcels_.Consume(num_data_bytes_consumed, handles);
-    ABSL_ASSERT(ok);
-
-    status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
-    status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
-    if (inbound_parcels_.IsSequenceFullyConsumed()) {
-      status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
-    }
-    traps_.UpdatePortalStatus(context, status_,
-                              TrapSet::UpdateReason::kLocalParcelConsumed,
-                              dispatcher);
+  TrapEventDispatcher dispatcher;
+  absl::MutexLock lock(&mutex_);
+  absl::optional<Parcel> parcel = pending_gets_.FinalizeForGet(transaction);
+  if (!parcel) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
   }
+
+  const bool aborted = flags & IPCZ_END_GET_ABORT;
+  if (is_pending_get_exclusive_) {
+    ABSL_HARDENING_ASSERT(inbound_parcels_.HasNextElement());
+    ABSL_HARDENING_ASSERT(inbound_parcels_.current_sequence_number() ==
+                          parcel->sequence_number());
+    if (aborted) {
+      inbound_parcels_.NextElement() = std::move(*parcel);
+    } else {
+      DiscardNextInboundParcel(context, dispatcher);
+    }
+    is_pending_get_exclusive_ = false;
+  }
+
+  if (!aborted && parcel_handle) {
+    *parcel_handle = APIObject::ReleaseAsHandle(
+        MakeRefCounted<ParcelWrapper>(std::move(*parcel)));
+  }
+
   return IPCZ_RESULT_OK;
 }
 
@@ -1987,6 +2020,20 @@ bool Router::BypassPeerWithNewLocalLink(const OperationContext& context,
   Flush(context);
   new_local_peer->Flush(context);
   return true;
+}
+
+void Router::DiscardNextInboundParcel(const OperationContext& context,
+                                      TrapEventDispatcher& dispatcher) {
+  Parcel discarded;
+  inbound_parcels_.Pop(discarded);
+  status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
+  status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
+  if (inbound_parcels_.IsSequenceFullyConsumed()) {
+    status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
+  }
+  traps_.UpdatePortalStatus(context, status_,
+                            TrapSet::UpdateReason::kLocalParcelConsumed,
+                            dispatcher);
 }
 
 }  // namespace ipcz

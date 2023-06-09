@@ -378,55 +378,53 @@ TEST_F(APITest, BeginEndGetFailure) {
   const IpczHandle node = CreateNode(kDefaultDriver);
   auto [a, b] = OpenPortals(node);
 
+  // Invalid portal.
+  IpczTransaction transaction;
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().BeginGet(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr,
+                            nullptr, nullptr, nullptr, nullptr, &transaction));
+
+  // Null transaction.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr,
+                            nullptr, nullptr, nullptr));
+
+  // Non-zero handle count with null handle buffer.
+  size_t num_handles = 1;
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr,
+                            nullptr, &num_handles, &transaction));
+
   // No parcel yet.
-  EXPECT_EQ(
-      IPCZ_RESULT_UNAVAILABLE,
-      ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_UNAVAILABLE,
+            ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr,
+                            nullptr, nullptr, &transaction));
 
   constexpr std::string_view kMessage = "ipcz";
   EXPECT_EQ(IPCZ_RESULT_OK, Put(b, kMessage));
 
-  // Invalid portal.
-  const void* data;
+  // Successful BeginGet() to exercise EndGet() below.
   size_t num_bytes;
-  size_t num_handles;
-  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().BeginGet(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, &data,
-                            &num_bytes, &num_handles));
-
-  // No storage for data.
-  EXPECT_EQ(
-      IPCZ_RESULT_RESOURCE_EXHAUSTED,
-      ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr, nullptr));
-  EXPECT_EQ(
-      IPCZ_RESULT_RESOURCE_EXHAUSTED,
-      ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, &data, nullptr, nullptr));
-  EXPECT_EQ(
-      IPCZ_RESULT_RESOURCE_EXHAUSTED,
-      ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes, nullptr));
-
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, &data,
-                                            &num_bytes, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().BeginGet(a, IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes,
+                            nullptr, nullptr, &transaction));
 
   // Invalid handle.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().EndGet(IPCZ_INVALID_HANDLE, 0, 0, IPCZ_NO_FLAGS, nullptr,
-                          nullptr));
+            ipcz().EndGet(IPCZ_INVALID_HANDLE, transaction, IPCZ_NO_FLAGS,
+                          nullptr, nullptr));
 
-  // Non-zero handle count with null handle buffer.
+  // Invalid transaction.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().EndGet(a, 0, 1, IPCZ_NO_FLAGS, nullptr, nullptr));
+            ipcz().EndGet(a, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
 
-  // Data size out of range.
-  EXPECT_EQ(
-      IPCZ_RESULT_OUT_OF_RANGE,
-      ipcz().EndGet(a, num_bytes + 1, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
-
-  // Two-phase Get not in progress.
+  // Terminate the get.
   EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndGet(a, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_FAILED_PRECONDITION,
-            ipcz().EndGet(a, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+            ipcz().EndGet(a, transaction, IPCZ_NO_FLAGS, nullptr, nullptr));
+
+  // No transaction in progress. `transaction` no longer valid.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().EndGet(a, transaction, IPCZ_NO_FLAGS, nullptr, nullptr));
 
   CloseAll({a, b, node});
 }
@@ -438,34 +436,40 @@ TEST_F(APITest, TwoPhasePutGet) {
   constexpr std::string_view kMessage = "ipcz!";
   size_t num_bytes = kMessage.size();
   void* out_data;
-  IpczTransaction transaction;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data, &num_bytes,
-                            &transaction));
+  IpczTransaction put;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr,
+                                            &out_data, &num_bytes, &put));
   EXPECT_EQ(kMessage.size(), num_bytes);
   memcpy(out_data, kMessage.data(), kMessage.size());
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, transaction, num_bytes, nullptr, 0,
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, put, num_bytes, nullptr, 0,
                                           IPCZ_NO_FLAGS, nullptr));
 
-  const void* in_data;
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &in_data,
-                                            &num_bytes, nullptr));
+  IpczTransaction get;
+  const void* in_data = nullptr;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &in_data, &num_bytes,
+                            nullptr, nullptr, &get));
+  ASSERT_TRUE(in_data);
+  EXPECT_EQ(kMessage,
+            std::string_view(static_cast<const char*>(in_data), num_bytes));
+
+  // Aborting the get leaves its parcel queued for another get.
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().EndGet(b, get, IPCZ_END_GET_ABORT, nullptr, nullptr));
+
+  // Beginning a new get exposes the same data.
+  get = 0;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &in_data, &num_bytes,
+                            nullptr, nullptr, &get));
   EXPECT_EQ(kMessage[0], *reinterpret_cast<const char*>(in_data));
-
   EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndGet(b, 1, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+            ipcz().EndGet(b, get, IPCZ_NO_FLAGS, nullptr, nullptr));
 
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &in_data,
-                                            &num_bytes, nullptr));
-  EXPECT_EQ(
-      kMessage.substr(1),
-      std::string_view(reinterpret_cast<const char*>(in_data), num_bytes));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
-
-  EXPECT_EQ(
-      IPCZ_RESULT_UNAVAILABLE,
-      ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr, nullptr));
+  // The parcel has been consumed. Nothing else to get from `b` yet.
+  EXPECT_EQ(IPCZ_RESULT_UNAVAILABLE,
+            ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr,
+                            nullptr, nullptr, &get));
 
   CloseAll({a, b, node});
 }

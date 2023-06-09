@@ -103,9 +103,17 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
 
   const void* data;
   size_t num_bytes;
-  size_t num_handles;
-  IpczResult result = GetIpczAPI().BeginGet(
-      parcel_.get(), IPCZ_NO_FLAGS, nullptr, &data, &num_bytes, &num_handles);
+  size_t num_handles = 0;
+  IpczTransaction transaction;
+  IpczResult result =
+      GetIpczAPI().BeginGet(parcel_.get(), IPCZ_NO_FLAGS, nullptr, &data,
+                            &num_bytes, nullptr, &num_handles, &transaction);
+  if (result == IPCZ_RESULT_RESOURCE_EXHAUSTED) {
+    handles_.resize(num_handles);
+    result = GetIpczAPI().BeginGet(parcel_.get(), IPCZ_NO_FLAGS, nullptr, &data,
+                                   &num_bytes, handles_.data(), &num_handles,
+                                   &transaction);
+  }
 
   // We always pass a parcel object in, so Begin/EndGet() must always succeed.
   DCHECK_EQ(result, IPCZ_RESULT_OK);
@@ -119,9 +127,8 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
   data_ = {data_storage_.get(), num_bytes};
   data_storage_size_ = num_bytes;
 
-  handles_.resize(num_handles);
-  result = GetIpczAPI().EndGet(parcel_.get(), num_bytes, num_handles,
-                               IPCZ_NO_FLAGS, nullptr, handles_.data());
+  result = GetIpczAPI().EndGet(parcel_.get(), transaction, IPCZ_NO_FLAGS,
+                               nullptr, nullptr);
   DCHECK_EQ(result, IPCZ_RESULT_OK);
   if (!FixUpDataPipeHandles(handles_)) {
     // The handle list was malformed. Although this is a validation error, it

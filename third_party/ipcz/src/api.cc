@@ -218,42 +218,37 @@ IpczResult BeginGet(IpczHandle source,
                     const void* options,
                     const void** data,
                     size_t* num_bytes,
-                    size_t* num_handles) {
+                    IpczHandle* handles,
+                    size_t* num_handles,
+                    IpczTransaction* transaction) {
+  if (!transaction) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
   if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
-    return portal->BeginGet(data, num_bytes, num_handles);
+    return portal->BeginGet(flags, data, num_bytes, handles, num_handles,
+                            transaction);
   }
 
   if (ipcz::ParcelWrapper* parcel = ipcz::ParcelWrapper::FromHandle(source)) {
-    return parcel->BeginGet(data, num_bytes, num_handles);
+    return parcel->BeginGet(flags, data, num_bytes, handles, num_handles,
+                            transaction);
   }
 
   return IPCZ_RESULT_INVALID_ARGUMENT;
 }
 
 IpczResult EndGet(IpczHandle source,
-                  size_t num_bytes_consumed,
-                  size_t num_handles,
+                  IpczTransaction transaction,
                   IpczEndGetFlags flags,
                   const void* options,
-                  IpczHandle* handles) {
-  if (num_handles > 0 && !handles) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
+                  IpczHandle* parcel) {
   if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
-    if (flags & IPCZ_END_GET_ABORT) {
-      return portal->AbortGet();
-    }
-    return portal->CommitGet(num_bytes_consumed,
-                             absl::MakeSpan(handles, num_handles));
+    return portal->EndGet(transaction, flags, parcel);
   }
 
-  if (ipcz::ParcelWrapper* parcel = ipcz::ParcelWrapper::FromHandle(source)) {
-    if (flags & IPCZ_END_GET_ABORT) {
-      return parcel->AbortGet();
-    }
-    return parcel->CommitGet(num_bytes_consumed,
-                             absl::MakeSpan(handles, num_handles));
+  if (ipcz::ParcelWrapper* wrapper = ipcz::ParcelWrapper::FromHandle(source)) {
+    return wrapper->EndGet(transaction, flags, parcel);
   }
 
   return IPCZ_RESULT_INVALID_ARGUMENT;
