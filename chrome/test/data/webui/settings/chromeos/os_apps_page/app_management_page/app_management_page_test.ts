@@ -2,49 +2,60 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://os-settings/lazy_load.js';
 
+import {SettingsAppManagementPageElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf} from './test_util.js';
 
-suite('AppManagementPageTests', () => {
-  let appManagementPage;
-  let fakeHandler;
-  let store;
+import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import {isHiddenByDomIf, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
-  /** @return {Element} */
-  function getAppList() {
-    return appManagementPage.shadowRoot
-        .querySelector('app-management-main-view')
-        .$.appList;
+suite('<settings-app-management-page>', () => {
+  let appManagementPage: SettingsAppManagementPageElement;
+  let fakeHandler: FakePageHandler;
+
+  function getAppList(): HTMLElement {
+    const page =
+        appManagementPage.shadowRoot!.querySelector('app-management-main-view');
+    assertTrue(!!page);
+    const element = page.shadowRoot!.querySelector<HTMLElement>('#appList');
+    assertTrue(!!element);
+    return element;
   }
 
-  /** @return {number} */
-  function getAppListChildren() {
+  function getAppListChildren(): number {
     return getAppList().childElementCount -
         1;  // Ignore the dom-repeat element.
   }
 
-  /** @return {Element} */
-  function getNoAppsFoundLabel() {
-    return appManagementPage.shadowRoot
-        .querySelector('app-management-main-view')
-        .shadowRoot.querySelector('#noAppsLabel');
+  function getNoAppsFoundLabel(): HTMLElement {
+    const page =
+        appManagementPage.shadowRoot!.querySelector('app-management-main-view');
+    assertTrue(!!page);
+    const noAppsLabel =
+        page.shadowRoot!.querySelector<HTMLElement>('#noAppsLabel');
+    assertTrue(!!noAppsLabel);
+    return noAppsLabel;
   }
 
   setup(async () => {
     fakeHandler = setupFakeHandler();
-    store = replaceStore();
+    replaceStore();
     appManagementPage = document.createElement('settings-app-management-page');
     assertTrue(!!appManagementPage);
     replaceBody(appManagementPage);
+    await flushTasks();
+  });
+
+  teardown(() => {
+    appManagementPage.remove();
   });
 
   test('loads', async () => {
     // Check that the browser responds to the getApps() message.
-    const {apps: initialApps} =
-        await AppManagementBrowserProxy.getInstance().handler.getApps();
+    await AppManagementBrowserProxy.getInstance().handler.getApps();
   });
 
   test('App list renders on page change', async () => {
@@ -69,9 +80,9 @@ suite('AppManagementPageTests', () => {
   });
 
   test('App list filters when searching', async () => {
-    await fakeHandler.addApp(null, {title: 'slides'});
-    await fakeHandler.addApp(null, {title: 'calculator'});
-    const sheets = await fakeHandler.addApp(null, {title: 'sheets'});
+    await fakeHandler.addApp('', {title: 'slides'});
+    await fakeHandler.addApp('', {title: 'calculator'});
+    const sheets = await fakeHandler.addApp('', {title: 'sheets'});
     assertEquals(3, getAppListChildren());
 
     appManagementPage.searchTerm = 's';

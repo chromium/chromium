@@ -37,6 +37,7 @@ import './os_a11y_page/text_to_speech_subpage.js';
 import './os_a11y_page/tts_voice_subpage.js';
 import './os_about_page/detailed_build_info_subpage.js';
 import './os_apps_page/app_management_page/app_detail_view.js';
+import './os_apps_page/app_management_page/app_management_page.js';
 import './os_apps_page/app_management_page/dom_switch.js';
 import './os_apps_page/app_management_page/main_view.js';
 import './os_search_page/google_assistant_subpage.js';
@@ -160,6 +161,7 @@ export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.j
 export {AppManagementAppDetailViewElement} from './os_apps_page/app_management_page/app_detail_view.js';
 export {AppManagementAppDetailsItem} from './os_apps_page/app_management_page/app_details_item.js';
 export {AppManagementAppItemElement} from './os_apps_page/app_management_page/app_item.js';
+export {SettingsAppManagementPageElement} from './os_apps_page/app_management_page/app_management_page.js';
 export {AppManagementArcDetailViewElement} from './os_apps_page/app_management_page/arc_detail_view.js';
 export {AppManagementBorealisDetailViewElement} from './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 export {AppManagementChromeAppDetailViewElement} from './os_apps_page/app_management_page/chrome_app_detail_view.js';
