@@ -10,7 +10,6 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
@@ -48,7 +47,7 @@
 
 using content::NavigationHandle;
 
-namespace enterprise_connectors {
+namespace enterprise_connectors::test {
 
 namespace {
 
@@ -73,12 +72,31 @@ constexpr int kSuccessCode = 200;
 constexpr int kHardFailureCode = 400;
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DeviceTrustConnectorState CreateManagedDeviceState() {
+  DeviceTrustConnectorState state;
+
+  state.cloud_machine_management_level.is_managed = true;
+
+  // In case user management is added.
+  state.affiliated = true;
+
+  return state;
+}
+#else
+DeviceTrustConnectorState CreateUnmanagedState() {
+  return DeviceTrustConnectorState();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class DeviceTrustAshBrowserTest : public test::DeviceTrustBrowserTestBase {
  protected:
-  DeviceTrustAshBrowserTest() {
+  explicit DeviceTrustAshBrowserTest(
+      absl::optional<DeviceTrustConnectorState> state = absl::nullopt)
+      : DeviceTrustBrowserTestBase(std::move(state)) {
     auto mock_challenge_key =
         std::make_unique<ash::attestation::MockTpmChallengeKey>();
     mock_challenge_key->EnableFake();
@@ -90,49 +108,28 @@ class DeviceTrustAshBrowserTest : public test::DeviceTrustBrowserTestBase {
     ash::attestation::TpmChallengeKeyFactory::Create();
     test::DeviceTrustBrowserTestBase::TearDownOnMainThread();
   }
-
-  void ManagementAddedAfterFirstCreationTry(bool is_enabled) {
-    content::MockNavigationHandle mock_nav_handle(web_contents());
-
-    // Make the current context unmanaged.
-    management_service()->SetManagementAuthoritiesForTesting(
-        static_cast<int>(policy::EnterpriseManagementAuthority::NONE));
-
-    // Try to create the device trust navigation throttle.
-    EXPECT_TRUE(enterprise_connectors::DeviceTrustNavigationThrottle::
-                    MaybeCreateThrottleFor(&mock_nav_handle) == nullptr);
-
-    // Make the current context managed again.
-    management_service()->SetManagementAuthoritiesForTesting(
-        static_cast<int>(policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
-
-    // Try to create the device trust navigation throttle.
-    EXPECT_EQ(enterprise_connectors::DeviceTrustNavigationThrottle::
-                      MaybeCreateThrottleFor(&mock_nav_handle) != nullptr,
-              is_enabled);
-  }
-
-  policy::ManagementService* management_service() {
-    return policy::ManagementServiceFactory::GetForProfile(
-        browser()->profile());
-  }
 };
 
 using DeviceTrustBrowserTest = DeviceTrustAshBrowserTest;
 #else
 class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
  protected:
-  explicit DeviceTrustDesktopBrowserTest(bool create_preexisting_key = true)
-      : create_preexisting_key_(create_preexisting_key) {}
+  explicit DeviceTrustDesktopBrowserTest(
+      absl::optional<DeviceTrustConnectorState> state)
+      : DeviceTrustDesktopBrowserTest(true, std::move(state)) {}
+
+  explicit DeviceTrustDesktopBrowserTest(
+      bool create_preexisting_key = true,
+      absl::optional<DeviceTrustConnectorState> state = absl::nullopt)
+      : DeviceTrustBrowserTestBase(std::move(state)),
+        create_preexisting_key_(create_preexisting_key) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     test::DeviceTrustBrowserTestBase::SetUpInProcessBrowserTestFixture();
 #if BUILDFLAG(IS_WIN)
     device_trust_test_environment_win_.emplace();
-    device_trust_test_environment_win_->SetExpectedDMToken(
-        test::kBrowserDmToken);
-    device_trust_test_environment_win_->SetExpectedClientID(
-        test::kBrowserClientId);
+    device_trust_test_environment_win_->SetExpectedDMToken(kBrowserDmToken);
+    device_trust_test_environment_win_->SetExpectedClientID(kBrowserClientId);
 
     if (create_preexisting_key_) {
       device_trust_test_environment_win_->SetUpExistingKey();
@@ -151,7 +148,7 @@ class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
   absl::optional<DeviceTrustTestEnvironmentWin>
       device_trust_test_environment_win_;
 #else  // BUILDFLAG(IS_WIN)
-  absl::optional<test::ScopedKeyPersistenceDelegateFactory>
+  absl::optional<ScopedKeyPersistenceDelegateFactory>
       scoped_persistence_delegate_factory_;
   absl::optional<ScopedKeyRotationCommandFactory>
       scoped_rotation_command_factory_;
@@ -222,20 +219,59 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
                    MaybeCreateThrottleFor(&mock_nav_handle));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+class DeviceTrustDelayedManagementBrowserTest
+    : public DeviceTrustBrowserTest,
+      public ::testing::WithParamInterface<DeviceTrustConnectorState> {
+ protected:
+  DeviceTrustDelayedManagementBrowserTest()
+      : DeviceTrustBrowserTest(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(kUserDTCInlineFlowEnabled, true);
+  }
+};
+
 // Tests that the device trust navigation throttle does not get created when
-// there is no management and later gets created when management is added to the
-// same context.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+// there is no user management and later gets created when user management is
+// added to the same context, unless the feature flag is disabled.
+IN_PROC_BROWSER_TEST_P(DeviceTrustDelayedManagementBrowserTest,
                        ManagementAddedAfterFirstCreationTry) {
-  ManagementAddedAfterFirstCreationTry(/*is_enabled=*/true);
+  content::MockNavigationHandle mock_nav_handle(web_contents());
+
+  TriggerUrlNavigation();
+  VerifyNoInlineFlowOccurred();
+
+  // Profile user becomes managed.
+  device_trust_mixin_->ManageCloudUser();
+
+  ResetState();
+  TriggerUrlNavigation();
+  VerifyNoInlineFlowOccurred();
+
+  // DTC policy is enabled for that user.
+  device_trust_mixin_->EnableUserInlinePolicy();
+
+  DTAttestationResult success_result = DTAttestationResult::kSuccess;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On desktop platforms, consent is required when the device is not managed.
+  device_trust_mixin_->SetConsentGiven(true);
+
+  // Also, attestation is not yet supported.
+  success_result = DTAttestationResult::kSuccessNoSignature;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  ResetState();
+  TriggerUrlNavigation();
+  VerifyAttestationFlowSuccessful(success_result);
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledBrowserTest,
-                       ManagementAddedAfterFirstCreationTry) {
-  ManagementAddedAfterFirstCreationTry(/*is_enabled=*/false);
-}
+INSTANTIATE_TEST_SUITE_P(,
+                         DeviceTrustDelayedManagementBrowserTest,
+                         testing::Values(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                             CreateManagedDeviceState()
+#else
+                             CreateUnmanagedState()
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+                                 ));
 
 // Tests that signal values respect the expected format and is filled-out as
 // expect per platform.
@@ -393,4 +429,4 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledCreateKeyBrowserTest,
 
 #endif
 
-}  // namespace enterprise_connectors
+}  // namespace enterprise_connectors::test

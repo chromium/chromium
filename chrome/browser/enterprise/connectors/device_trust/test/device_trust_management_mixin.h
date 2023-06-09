@@ -39,6 +39,9 @@ class DeviceTrustManagementMixin : public InProcessBrowserTestMixin {
 
   ~DeviceTrustManagementMixin() override;
 
+  // Will start managing the current user, but won't enable DTC.
+  void ManageCloudUser();
+
   // Will enable the cloud-machine inline flow policy by setting the policy
   // value to [kAllowedHost].
   // On ChromeOS, this effectively only enables the login-screen policy.
@@ -60,14 +63,15 @@ class DeviceTrustManagementMixin : public InProcessBrowserTestMixin {
   // Will disable all inline flow policies, effectively turning the feature off.
   void DisableAllInlinePolicies();
 
+  // Update the user consent based on `consent_given`.
+  void SetConsentGiven(bool consent_given);
+
  protected:
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
   void SetMachineInlinePolicy(base::Value policy_value);
   void SetUserInlinePolicy(base::Value policy_value);
-
-  void SetConsentGiven(bool consent_given);
 
  private:
   const raw_ptr<InProcessBrowserTest> test_base_;

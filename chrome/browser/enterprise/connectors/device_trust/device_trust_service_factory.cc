@@ -84,18 +84,16 @@ DeviceTrustServiceFactory* DeviceTrustServiceFactory::GetInstance() {
 
 // static
 DeviceTrustService* DeviceTrustServiceFactory::GetForProfile(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // This blocks the factory from associating nullptr with the current context
-  // before enrollment. Management checks will be removed completely when the
-  // BYOD case is implemented.
+  // before enrollment.
   // Checking for a testing profile is needed to block unit tests without a
   // proper setup from checking the management service as this can lead to
-  // crashes
-  if (profile->AsTestingProfile() || !IsProfileManaged(profile))
+  // crashes.
+  if (profile->AsTestingProfile() || !IsProfileManaged(profile)) {
     // Return nullptr since the current management configuration isn't
     // supported.
     return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
   return static_cast<DeviceTrustService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -126,10 +124,11 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
-  if (!IsProfileManaged(profile))
+  if (!IsProfileManaged(profile)) {
     // Return nullptr since the current management configuration isn't
     // supported.
     return nullptr;
+  }
 
   auto* dt_connector_service =
       DeviceTrustConnectorServiceFactory::GetForProfile(profile);

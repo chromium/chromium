@@ -29,6 +29,16 @@ ManagementContextMixinBrowser::ManagementContextMixinBrowser(
 
 ManagementContextMixinBrowser::~ManagementContextMixinBrowser() = default;
 
+void ManagementContextMixinBrowser::ManageCloudUser() {
+  ManagementContextMixin::ManageCloudUser();
+  safe_browsing::SetProfileDMToken(browser()->profile(), kProfileDmToken);
+
+  auto* profile_policy_manager =
+      browser()->profile()->GetUserCloudPolicyManager();
+  profile_policy_manager->core()->store()->set_policy_data_for_testing(
+      GetBaseUserPolicyData());
+}
+
 void ManagementContextMixinBrowser::SetUpOnMainThread() {
   ManagementContextMixin::SetUpOnMainThread();
 
@@ -46,12 +56,7 @@ void ManagementContextMixinBrowser::SetUpOnMainThread() {
   }
 
   if (management_context_.is_cloud_user_managed) {
-    safe_browsing::SetProfileDMToken(browser()->profile(), kProfileDmToken);
-
-    auto* profile_policy_manager =
-        browser()->profile()->GetUserCloudPolicyManager();
-    profile_policy_manager->core()->store()->set_policy_data_for_testing(
-        GetBaseUserPolicyData());
+    ManageCloudUser();
   }
 }
 
@@ -64,6 +69,7 @@ void ManagementContextMixinBrowser::SetUpDefaultCommandLine(
 #endif
 
 void ManagementContextMixinBrowser::ManageCloudMachine() {
+  ManagementContextMixin::ManageCloudMachine();
   browser_dm_token_storage_ =
       std::make_unique<policy::FakeBrowserDMTokenStorage>();
   browser_dm_token_storage_->SetEnrollmentToken(kEnrollmentToken);
@@ -71,12 +77,6 @@ void ManagementContextMixinBrowser::ManageCloudMachine() {
   browser_dm_token_storage_->EnableStorage(true);
   browser_dm_token_storage_->SetDMToken(kBrowserDmToken);
   policy::BrowserDMTokenStorage::SetForTesting(browser_dm_token_storage_.get());
-
-  if (!management_context_.is_cloud_user_managed) {
-    // Also need to set the user policy provider when dealing with a managed
-    // browser without a managed user.
-    ManageCloudUser();
-  }
 }
 
 void ManagementContextMixinBrowser::SetCloudMachinePolicies(

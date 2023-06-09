@@ -71,6 +71,12 @@ DeviceTrustManagementMixin::DeviceTrustManagementMixin(
 
 DeviceTrustManagementMixin::~DeviceTrustManagementMixin() = default;
 
+void DeviceTrustManagementMixin::ManageCloudUser() {
+  CHECK(!device_trust_state_.cloud_user_management_level.is_managed);
+  device_trust_state_.cloud_user_management_level.is_managed = true;
+  management_context_mixin_->ManageCloudUser();
+}
+
 void DeviceTrustManagementMixin::EnableMachineInlinePolicy() {
   SetMachineInlinePolicy(GetAllowedHostValue());
 }
@@ -95,6 +101,12 @@ void DeviceTrustManagementMixin::DisableAllInlinePolicies() {
   if (device_trust_state_.cloud_machine_management_level.is_managed) {
     DisableMachineInlinePolicy();
   }
+}
+
+void DeviceTrustManagementMixin::SetConsentGiven(bool consent_given) {
+  device_trust_state_.consent_given = consent_given;
+  test_base_->browser()->profile()->GetPrefs()->SetBoolean(
+      device_signals::prefs::kDeviceSignalsConsentReceived, consent_given);
 }
 
 void DeviceTrustManagementMixin::SetUpOnMainThread() {
@@ -152,11 +164,6 @@ void DeviceTrustManagementMixin::SetUserInlinePolicy(base::Value policy_value) {
   policy_values.insert({policy::key::kContextAwareAccessSignalsAllowlist,
                         std::move(policy_value)});
   management_context_mixin_->SetCloudUserPolicies(std::move(policy_values));
-}
-
-void DeviceTrustManagementMixin::SetConsentGiven(bool consent_given) {
-  test_base_->browser()->profile()->GetPrefs()->SetBoolean(
-      device_signals::prefs::kDeviceSignalsConsentReceived, consent_given);
 }
 
 }  // namespace enterprise_connectors::test

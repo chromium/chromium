@@ -36,19 +36,25 @@ ManagementContextMixinAsh::RequestDevicePolicyUpdate() {
   return device_state_mixin_.RequestDevicePolicyUpdate();
 }
 
+void ManagementContextMixinAsh::ManageCloudUser() {
+  ManagementContextMixin::ManageCloudUser();
+  auto* profile_policy_manager =
+      browser()->profile()->GetUserCloudPolicyManagerAsh();
+  profile_policy_manager->core()->client()->SetupRegistration(
+      kProfileDmToken, kProfileClientId, {});
+  profile_policy_manager->core()->store()->set_policy_data_for_testing(
+      GetBaseUserPolicyData());
+}
+
 void ManagementContextMixinAsh::SetUpOnMainThread() {
   ManagementContextMixin::SetUpOnMainThread();
   if (management_context_.is_cloud_user_managed) {
-    auto* profile_policy_manager =
-        browser()->profile()->GetUserCloudPolicyManagerAsh();
-    profile_policy_manager->core()->client()->SetupRegistration(
-        kProfileDmToken, kProfileClientId, {});
-    profile_policy_manager->core()->store()->set_policy_data_for_testing(
-        GetBaseUserPolicyData());
+    ManageCloudUser();
   }
 }
 
 void ManagementContextMixinAsh::ManageCloudMachine() {
+  ManagementContextMixin::ManageCloudMachine();
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidToken(kDeviceDmToken));
 

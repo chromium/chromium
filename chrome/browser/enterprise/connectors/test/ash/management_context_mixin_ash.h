@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_
 
-#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
-
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
@@ -29,6 +28,7 @@ class ManagementContextMixinAsh : public ManagementContextMixin {
   // ManagementContextMixin:
   std::unique_ptr<ash::ScopedDevicePolicyUpdate> RequestDevicePolicyUpdate()
       override;
+  void ManageCloudUser() override;
 
  protected:
   // InProcessBrowserTestMixin:

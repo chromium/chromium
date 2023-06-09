@@ -61,6 +61,9 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
       InProcessBrowserTest* test_base,
       ManagementContext management_context);
 
+  // Start managing the current cloud user.
+  virtual void ManageCloudUser();
+
   // Will set the given `policy_entries` for the managed Cloud user. This
   // function will overwrite conflicting entries, but will not remove old policy
   // values whose keys don't conflict.
@@ -89,9 +92,7 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   // InProcessBrowserTestMixin:
   void SetUpInProcessBrowserTestFixture() override;
 
-  void ManageCloudUser();
-
-  virtual void ManageCloudMachine() = 0;
+  virtual void ManageCloudMachine();
 
   // Returns a PolicyData object with some base value which can be used by
   // platform-specific mixin definitions to manage the current user.

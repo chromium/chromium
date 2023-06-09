@@ -29,6 +29,9 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
 
   ~ManagementContextMixinBrowser() override;
 
+  // ManagementContextMixin:
+  void ManageCloudUser() override;
+
  protected:
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;

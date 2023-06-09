@@ -57,17 +57,16 @@ void ManagementContextMixin::SetUpInProcessBrowserTestFixture() {
     ManageCloudMachine();
   }
 
-  if (management_context_.is_cloud_user_managed) {
-    ManageCloudUser();
-  }
-}
-
-void ManagementContextMixin::ManageCloudUser() {
   user_policy_provider_.SetDefaultReturns(
       /*is_initialization_complete_return=*/true,
       /*is_first_policy_load_complete_return=*/true);
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &user_policy_provider_);
+}
+
+void ManagementContextMixin::ManageCloudUser() {
+  // User is now managed. Derived classes are expected to have more logic.
+  management_context_.is_cloud_user_managed = true;
 }
 
 void ManagementContextMixin::SetCloudUserPolicies(
@@ -82,6 +81,11 @@ void ManagementContextMixin::SetCloudUserPolicies(
   }
 
   MergeNewChromePolicies(policy_map);
+}
+
+void ManagementContextMixin::ManageCloudMachine() {
+  // Machine is now managed. Derived classes are expected to have more logic.
+  management_context_.is_cloud_machine_managed = true;
 }
 
 std::unique_ptr<enterprise_management::PolicyData>
