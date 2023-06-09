@@ -135,8 +135,9 @@ void PlatformSensor::UpdateSharedBufferAndNotifyClients(
 }
 
 bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
-  if (!reading_buffer_)
+  if (!reading_buffer_ || !is_active_) {
     return false;
+  }
 
   // Bail out early if the new reading does not differ significantly from
   // our current one, when the sensor is not reporting data continuously.
@@ -164,10 +165,9 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
   // Save rounded value for next comparison.
   last_rounded_reading_ = rounded_reading;
 
-  if (is_active_) {
-    WriteToSharedBuffer(rounded_reading);
-  }
-  return is_active_;
+  WriteToSharedBuffer(rounded_reading);
+
+  return true;
 }
 
 void PlatformSensor::ResetSharedBuffer() {

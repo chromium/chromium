@@ -249,6 +249,36 @@ TEST_F(PlatformSensorAndProviderTest, ResetLastReadingsOnStop) {
   AddNewReadingAndExpectReadingChangedEvent(client.get(), reading);
 }
 
+TEST_F(PlatformSensorAndProviderTest, DoNotStoreReadingsWhenInactive) {
+  scoped_refptr<FakePlatformSensor> fake_sensor =
+      CreateSensorSync(SensorType::AMBIENT_LIGHT);
+  ASSERT_EQ(fake_sensor->GetReportingMode(), mojom::ReportingMode::ON_CHANGE);
+
+  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
+  EXPECT_TRUE(fake_sensor->StartListening(client.get(),
+                                          PlatformSensorConfiguration(10)));
+  EXPECT_TRUE(fake_sensor->IsActiveForTesting());
+
+  ON_CALL(*client, IsSuspended()).WillByDefault(Return(true));
+  fake_sensor->UpdateSensor();
+  EXPECT_FALSE(fake_sensor->IsActiveForTesting());
+
+  SensorReading reading;
+  reading.raw.timestamp = 1.0;
+  reading.als.value = 1.0;
+
+  AddNewReadingAndExpectNoReadingChangedEvent(client.get(), reading);
+
+  ON_CALL(*client, IsSuspended()).WillByDefault(Return(false));
+  fake_sensor->UpdateSensor();
+  EXPECT_TRUE(fake_sensor->IsActiveForTesting());
+
+  // Set the exact same readings. They should be stored because
+  // |last_raw_reading_| and |last_rounded_reading_| should not have been
+  // updated while the sensor was not active.
+  AddNewReadingAndExpectReadingChangedEvent(client.get(), reading);
+}
+
 // No rounding of values. Any change in values reported in significance test.
 TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckPressure) {
   const double kTestValue = 10.0;  // Made up test value.
