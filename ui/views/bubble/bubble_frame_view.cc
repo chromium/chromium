@@ -751,6 +751,11 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
     bool adjust_to_fit_available_bounds) {
   gfx::Size size(GetFrameSizeForClientSize(client_size));
 
+  // Save these values; if the arrow changes as a result of mirroring (or
+  // un-mirroring) the border will need to be repainted.
+  const auto old_arrow = bubble_border_->arrow();
+  const auto old_offset = bubble_border_->arrow_offset();
+
   if (adjust_to_fit_available_bounds &&
       BubbleBorder::has_arrow(delegate_arrow)) {
     // Get the desired bubble bounds without adjustment.
@@ -788,6 +793,13 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
       MirrorArrowIfOutOfBounds(false, anchor_rect, size,
                                GetAvailableScreenBounds(anchor_rect));
     }
+  }
+
+  // Check to see if any of the positioning values have changed.
+  if (bubble_border_->arrow() != old_arrow ||
+      bubble_border_->arrow_offset() != old_offset) {
+    InvalidateLayout();
+    SchedulePaint();
   }
 
   return bubble_border_->GetBounds(anchor_rect, size);
@@ -883,9 +895,6 @@ void BubbleFrameView::MirrorArrowIfOutOfBounds(
     if (GetOverflowLength(available_bounds, mirror_bounds, vertical) >=
         GetOverflowLength(available_bounds, window_bounds, vertical)) {
       bubble_border_->set_arrow(arrow);
-    } else {
-      InvalidateLayout();
-      SchedulePaint();
     }
   }
 }
@@ -938,8 +947,6 @@ void BubbleFrameView::OffsetArrowIfOutOfBounds(
   // to the left, and that means negative offset.
   bubble_border_->set_arrow_offset(bubble_border_->arrow_offset() -
                                    offscreen_adjust);
-  if (offscreen_adjust)
-    SchedulePaint();
 }
 
 int BubbleFrameView::GetFrameWidthForClientWidth(int client_width) const {
