@@ -937,7 +937,9 @@ SkColor LocationBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
   // will inherit the selected "surrounding foreground color".
   const auto color_id = ShouldShowKeywordBubble()
                             ? kColorOmniboxKeywordSeparator
-                            : kColorOmniboxText;
+                            : (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+                                   ? kColorPageActionIcon
+                                   : kColorOmniboxText);
   return GetColorProvider()->GetColor(color_id);
 }
 
