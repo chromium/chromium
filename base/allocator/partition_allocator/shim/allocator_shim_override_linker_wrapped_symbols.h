@@ -123,13 +123,21 @@ SHIM_ALWAYS_EXPORT char* __wrap_getcwd(char* buffer, size_t size) {
 SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
                                         const char* fmt,
                                         va_list va_args) {
+  // There are cases where we need to use the list of arguments twice, namely
+  // when the original buffer is too small. It is not allowed to walk the list
+  // twice, so make a copy for the second invocation of vsnprintf().
+  va_list va_args_copy;
+  va_copy(va_args_copy, va_args);
+
   constexpr int kInitialSize = 128;
   *strp = static_cast<char*>(
       malloc(kInitialSize));  // Our malloc() doesn't return nullptr.
 
   int actual_size = vsnprintf(*strp, kInitialSize, fmt, va_args);
-  if (actual_size < 0)
+  if (actual_size < 0) {
+    va_end(va_args_copy);
     return actual_size;
+  }
   *strp =
       static_cast<char*>(realloc(*strp, static_cast<size_t>(actual_size + 1)));
 
@@ -139,9 +147,14 @@ SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
   //
   // This is very lightly used in Chromium in practice, see crbug.com/116558 for
   // details.
-  if (actual_size >= kInitialSize)
-    return vsnprintf(*strp, static_cast<size_t>(actual_size + 1), fmt, va_args);
+  if (actual_size >= kInitialSize) {
+    int ret = vsnprintf(*strp, static_cast<size_t>(actual_size + 1), fmt,
+                        va_args_copy);
+    va_end(va_args_copy);
+    return ret;
+  }
 
+  va_end(va_args_copy);
   return actual_size;
 }
 
