@@ -116,6 +116,15 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
   return true;
 }
 
+bool DOMArrayBuffer::ShareNonSharedForInternalUse(ArrayBufferContents& result) {
+  if (!Content()->BackingStore()) {
+    result.Detach();
+    return false;
+  }
+  Content()->ShareNonSharedForInternalUse(result);
+  return true;
+}
+
 v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> detach_key,
