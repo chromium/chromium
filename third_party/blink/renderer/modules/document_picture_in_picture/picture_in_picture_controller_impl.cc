@@ -37,9 +37,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_options.h"
-#include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
-#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture_event.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -410,28 +407,6 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   Document* pip_document = local_dom_window->document();
   DCHECK(pip_document);
   pip_document->SetBaseURLOverride(opener.document()->BaseURL());
-
-  // Copy style sheets, if requested.
-  if (options->copyStyleSheets()) {
-    StyleSheetList& list = opener.document()->StyleSheets();
-    for (unsigned i = 0; i < list.length(); i++) {
-      StyleSheet* sheet = list.item(i);
-      if (!sheet->IsCSSStyleSheet() || sheet->disabled()) {
-        continue;
-      }
-      CSSStyleSheet* css = To<CSSStyleSheet>(sheet);
-      StyleSheetContents* contents =
-          MakeGarbageCollected<StyleSheetContents>(*css->Contents());
-
-      // Inject the style sheet. It will not stay in sync with the opener.
-      //
-      // `key` is arbitrary; it just has to avoid conflicting with any other
-      // injected style sheets. Typically, only extensions do that, so it's
-      // fairly rare.
-      pip_document->GetStyleEngine().InjectSheet(
-          /*key=*/AtomicString::Number(i), contents);
-    }
-  }
 
   SetMayThrottleIfUndrawnFrames(false);
 
