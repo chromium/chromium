@@ -4,6 +4,8 @@
 
 #include "net/cert/pki/parse_name.h"
 
+#include <cassert>
+
 #include "net/cert/pki/string_util.h"
 #include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
