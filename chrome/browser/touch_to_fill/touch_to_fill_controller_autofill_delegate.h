@@ -20,9 +20,10 @@
 
 namespace password_manager {
 class PasskeyCredential;
+class PasswordCredentialFiller;
 class PasswordManagerClient;
-class PasswordManagerDriver;
 class UiCredential;
+class WebAuthnCredentialsDelegate;
 }  // namespace password_manager
 
 class ChromePasswordManagerClient;
@@ -71,15 +72,17 @@ class TouchToFillControllerAutofillDelegate
       base::PassKey<class TouchToFillControllerAutofillTest>,
       password_manager::PasswordManagerClient* password_client,
       scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
-      base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness,
+      base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
+          webauthn_delegate,
+      std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
       ShowHybridOption should_show_hybrid_option);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
       scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
-      base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness,
+      base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
+          webauthn_delegate,
+      std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
       ShowHybridOption should_show_hybrid_option);
   TouchToFillControllerAutofillDelegate(
       const TouchToFillControllerAutofillDelegate&) = delete;
@@ -115,7 +118,7 @@ class TouchToFillControllerAutofillDelegate
   void FillCredential(const password_manager::UiCredential& credential);
 
   // Called upon completion or dismissal to perform cleanup.
-  void CleanUpDriverAndReportOutcome(TouchToFillOutcome outcome,
+  void CleanUpFillerAndReportOutcome(TouchToFillOutcome outcome,
                                      bool show_virtual_keyboard);
 
   // Callback to the controller to be invoked when a finalizing action has
@@ -129,17 +132,15 @@ class TouchToFillControllerAutofillDelegate
   // Authenticator used to trigger a biometric auth before filling.
   scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
 
-  // Driver passed to the latest invocation of Show(). Gets cleared when
-  // OnCredentialSelected() or OnDismissed() gets called.
-  base::WeakPtr<password_manager::PasswordManagerDriver> driver_;
+  // Weak pointer to WebAuthnCredentialsDelegate to select passkeys or start
+  // hybrid sign in.
+  base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
+      webauthn_delegate_;
 
-  // Readiness state supplied by the client, used to
-  // compute ready_for_submission_ when the sheet is shown.
-  autofill::mojom::SubmissionReadinessState submission_readiness_;
-
-  // Whether the controller should trigger submission when a credential is
-  // filled in.
-  bool trigger_submission_ = false;
+  // PasswordCredentialFiller is used to interact with the PasswordManagerDriver
+  // to fill the username and password. PasswordCredentialFiller also submits
+  // the form if required.
+  std::unique_ptr<password_manager::PasswordCredentialFiller> filler_;
 
   // Whether the controller should show an option for passkey hybrid sign-in.
   ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);

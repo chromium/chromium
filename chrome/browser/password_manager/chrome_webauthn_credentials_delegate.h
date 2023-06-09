@@ -76,9 +76,6 @@ class ChromeWebAuthnCredentialsDelegate
   AndroidHybridAvailable android_hybrid_available_ =
       AndroidHybridAvailable(false);
 #endif
-
-  base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
-      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_

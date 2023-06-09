@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
@@ -16,7 +15,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -28,28 +27,7 @@ namespace {
 
 using ToShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
-using autofill::mojom::SubmissionReadinessState;
-using password_manager::PasswordManagerDriver;
 using password_manager::UiCredential;
-
-// Infers whether a form should be submitted based on the feature's state and
-// the form's structure (submission_readiness).
-bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness) {
-  switch (submission_readiness) {
-    case SubmissionReadinessState::kNoInformation:
-    case SubmissionReadinessState::kError:
-    case SubmissionReadinessState::kNoUsernameField:
-    case SubmissionReadinessState::kNoPasswordField:
-    case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
-    case SubmissionReadinessState::kFieldAfterPasswordField:
-      return false;
-
-    case SubmissionReadinessState::kEmptyFields:
-    case SubmissionReadinessState::kMoreThanTwoFields:
-    case SubmissionReadinessState::kTwoFields:
-      return true;
-  }
-}
 
 // Returns whether there is at least one credential with a non-empty username.
 bool ContainsNonEmptyUsername(
@@ -65,25 +43,27 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     base::PassKey<TouchToFillControllerAutofillTest>,
     password_manager::PasswordManagerClient* password_client,
     scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
-    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-    autofill::mojom::SubmissionReadinessState submission_readiness,
+    base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
+        webauthn_delegate,
+    std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
     ShowHybridOption should_show_hybrid_option)
     : password_client_(password_client),
       authenticator_(std::move(authenticator)),
-      driver_(std::move(driver)),
-      submission_readiness_(submission_readiness),
+      webauthn_delegate_(webauthn_delegate),
+      filler_(std::move(filler)),
       should_show_hybrid_option_(should_show_hybrid_option) {}
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     ChromePasswordManagerClient* password_client,
     scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
-    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-    autofill::mojom::SubmissionReadinessState submission_readiness,
+    base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
+        webauthn_delegate,
+    std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
     ShowHybridOption should_show_hybrid_option)
     : password_client_(password_client),
       authenticator_(std::move(authenticator)),
-      driver_(driver),
-      submission_readiness_(submission_readiness),
+      webauthn_delegate_(webauthn_delegate),
+      filler_(std::move(filler)),
       should_show_hybrid_option_(should_show_hybrid_option),
       source_id_(password_client->web_contents()
                      ->GetPrimaryMainFrame()
@@ -100,15 +80,17 @@ TouchToFillControllerAutofillDelegate::
 void TouchToFillControllerAutofillDelegate::OnShow(
     base::span<const password_manager::UiCredential> credentials,
     base::span<password_manager::PasskeyCredential> passkey_credentials) {
-  DCHECK(driver_);
+  CHECK(filler_->IsReadyToFill());
 
-  trigger_submission_ = ::ShouldTriggerSubmission(submission_readiness_) &&
-                        ContainsNonEmptyUsername(credentials);
+  filler_->UpdateTriggerSubmission(ShouldTriggerSubmission() &&
+                                   ContainsNonEmptyUsername(credentials));
 
   base::UmaHistogramEnumeration(
-      "PasswordManager.TouchToFill.SubmissionReadiness", submission_readiness_);
+      "PasswordManager.TouchToFill.SubmissionReadiness",
+      filler_->GetSubmissionReadinessState());
   ukm::builders::TouchToFill_SubmissionReadiness(source_id_)
-      .SetSubmissionReadiness(static_cast<int64_t>(submission_readiness_))
+      .SetSubmissionReadiness(
+          static_cast<int64_t>(filler_->GetSubmissionReadinessState()))
       .Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramCounts100("PasswordManager.TouchToFill.NumCredentialsShown",
@@ -118,7 +100,7 @@ void TouchToFillControllerAutofillDelegate::OnShow(
 void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
     const UiCredential& credential,
     base::OnceClosure action_complete) {
-  if (!driver_) {
+  if (!filler_->IsReadyToFill()) {
     return;
   }
 
@@ -144,13 +126,14 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
 void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
     const password_manager::PasskeyCredential& credential,
     base::OnceClosure action_complete) {
-  if (!driver_)
+  if (!webauthn_delegate_) {
     return;
+  }
 
-  password_client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get())
-      ->SelectPasskey(base::Base64Encode(credential.credential_id()));
+  webauthn_delegate_->SelectPasskey(
+      base::Base64Encode(credential.credential_id()));
 
-  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kPasskeyCredentialSelected,
+  CleanUpFillerAndReportOutcome(TouchToFillOutcome::kPasskeyCredentialSelected,
                                 /*show_virtual_keyboard=*/false);
   std::move(action_complete).Run();
 }
@@ -158,10 +141,11 @@ void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
 void TouchToFillControllerAutofillDelegate::OnManagePasswordsSelected(
     bool passkeys_shown,
     base::OnceClosure action_complete) {
-  if (!driver_)
+  if (!filler_->IsReadyToFill()) {
     return;
+  }
 
-  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kManagePasswordsSelected,
+  CleanUpFillerAndReportOutcome(TouchToFillOutcome::kManagePasswordsSelected,
                                 /*show_virtual_keyboard=*/false);
 
   if (passkeys_shown) {
@@ -183,14 +167,13 @@ void TouchToFillControllerAutofillDelegate::OnManagePasswordsSelected(
 
 void TouchToFillControllerAutofillDelegate::OnHybridSignInSelected(
     base::OnceClosure action_complete) {
-  if (!driver_) {
+  if (!webauthn_delegate_) {
     return;
   }
 
-  password_client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get())
-      ->ShowAndroidHybridSignIn();
+  webauthn_delegate_->ShowAndroidHybridSignIn();
 
-  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kHybridSignInSelected,
+  CleanUpFillerAndReportOutcome(TouchToFillOutcome::kHybridSignInSelected,
                                 /*show_virtual_keyboard=*/false);
 
   std::move(action_complete).Run();
@@ -198,10 +181,11 @@ void TouchToFillControllerAutofillDelegate::OnHybridSignInSelected(
 
 void TouchToFillControllerAutofillDelegate::OnDismiss(
     base::OnceClosure action_complete) {
-  if (!driver_)
+  if (!filler_->IsReadyToFill()) {
     return;
+  }
 
-  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kSheetDismissed,
+  CleanUpFillerAndReportOutcome(TouchToFillOutcome::kSheetDismissed,
                                 /*show_virtual_keyboard=*/true);
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kDismissed))
@@ -210,11 +194,12 @@ void TouchToFillControllerAutofillDelegate::OnDismiss(
 }
 
 const GURL& TouchToFillControllerAutofillDelegate::GetFrameUrl() {
-  return driver_->GetLastCommittedURL();
+  CHECK(filler_->IsReadyToFill());
+  return filler_->GetFrameUrl();
 }
 
 bool TouchToFillControllerAutofillDelegate::ShouldTriggerSubmission() {
-  return trigger_submission_;
+  return filler_->ShouldTriggerSubmission();
 }
 
 bool TouchToFillControllerAutofillDelegate::ShouldShowHybridOption() {
@@ -232,12 +217,13 @@ gfx::NativeView TouchToFillControllerAutofillDelegate::GetNativeView() {
 void TouchToFillControllerAutofillDelegate::OnReauthCompleted(
     UiCredential credential,
     bool auth_successful) {
-  DCHECK(action_complete_);
-  if (!driver_)
+  CHECK(action_complete_);
+  if (!filler_->IsReadyToFill()) {
     return;
+  }
 
   if (!auth_successful) {
-    CleanUpDriverAndReportOutcome(TouchToFillOutcome::kReauthenticationFailed,
+    CleanUpFillerAndReportOutcome(TouchToFillOutcome::kReauthenticationFailed,
                                   /*show_virtual_keyboard=*/true);
     std::move(action_complete_).Run();
     return;
@@ -248,35 +234,25 @@ void TouchToFillControllerAutofillDelegate::OnReauthCompleted(
 
 void TouchToFillControllerAutofillDelegate::FillCredential(
     const UiCredential& credential) {
-  DCHECK(action_complete_);
-  DCHECK(driver_);
+  CHECK(action_complete_);
+  CHECK(filler_->IsReadyToFill());
 
-  driver_->KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false));
+  filler_->FillUsernameAndPassword(credential.username(),
+                                   credential.password());
 
-  driver_->FillSuggestion(credential.username(), credential.password());
-
-  trigger_submission_ &= !credential.username().empty();
-  if (trigger_submission_) {
-    // TODO(crbug.com/1283004): As auto-submission has been launched, measuring
-    // the time between filling by TTF and submisionn is not crucial. Remove
-    // this call, the method itself and the metrics if we are not going to use
-    // all that for new launches, e.g. crbug.com/1393043.
+  if (ShouldTriggerSubmission()) {
     password_client_->StartSubmissionTrackingAfterTouchToFill(
         credential.username());
-    driver_->TriggerFormSubmission();
   }
-  driver_ = nullptr;
 
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
                                 TouchToFillOutcome::kCredentialFilled);
   std::move(action_complete_).Run();
 }
 
-void TouchToFillControllerAutofillDelegate::CleanUpDriverAndReportOutcome(
+void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
     TouchToFillOutcome outcome,
     bool show_virtual_keyboard) {
-  std::exchange(driver_, nullptr)
-      ->KeyboardReplacingSurfaceClosed(
-          ToShowVirtualKeyboard(show_virtual_keyboard));
+  filler_->CleanUp(ToShowVirtualKeyboard(show_virtual_keyboard));
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
 }

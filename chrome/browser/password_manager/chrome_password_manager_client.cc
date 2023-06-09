@@ -142,6 +142,7 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_autofill_delegate.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/password_credential_filler_impl.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "ui/base/ui_base_features.h"
 #else
@@ -422,17 +423,21 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     passkeys = *webauthn_delegate->GetPasskeys();
     should_show_hybrid_option = webauthn_delegate->IsAndroidHybridAvailable();
   }
+  auto filler =
+      std::make_unique<password_manager::PasswordCredentialFillerImpl>(
+          driver->AsWeakPtr(), submission_readiness);
+  auto ttf_controller_autofill_delegate =
+      std::make_unique<TouchToFillControllerAutofillDelegate>(
+          this, GetDeviceAuthenticator(), webauthn_delegate->AsWeakPtr(),
+          std::move(filler),
+          TouchToFillControllerAutofillDelegate::ShowHybridOption(
+              should_show_hybrid_option));
   GetOrCreateTouchToFillController()->Show(
       credential_cache_
           .GetCredentialStore(url::Origin::Create(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
-      passkeys,
-      std::make_unique<TouchToFillControllerAutofillDelegate>(
-          this, GetDeviceAuthenticator(), driver->AsWeakPtr(),
-          submission_readiness,
-          TouchToFillControllerAutofillDelegate::ShowHybridOption(
-              should_show_hybrid_option)));
+      passkeys, std::move(ttf_controller_autofill_delegate));
 }
 #endif
 
