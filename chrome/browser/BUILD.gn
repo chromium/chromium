@@ -7506,8 +7506,6 @@ static_library("browser") {
       "supervised_user/child_accounts/child_account_service.h",
       "supervised_user/child_accounts/child_account_service_factory.cc",
       "supervised_user/child_accounts/child_account_service_factory.h",
-      "supervised_user/child_accounts/family_preferences_service_factory.cc",
-      "supervised_user/child_accounts/family_preferences_service_factory.h",
       "supervised_user/child_accounts/list_family_members_service_factory.cc",
       "supervised_user/child_accounts/list_family_members_service_factory.h",
       "supervised_user/child_accounts/permission_request_creator_apiary.cc",
@@ -7557,9 +7555,9 @@ static_library("browser") {
     deps += [
       "//chrome/common:supervised_user_commands_mojom",
       "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/browser:family_preferences_service",
       "//components/supervised_user/core/browser:fetcher",
       "//components/supervised_user/core/browser:list_family_members_service",
+      "//components/supervised_user/core/browser:supervised_user_preferences",
       "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
     ]

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 
+#include <functional>
 #include <memory>
 #include <utility>
 
@@ -26,11 +27,11 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/browser/family_preferences_service.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
@@ -48,28 +49,21 @@
 
 namespace {
 using ::base::BindRepeating;
-using ::base::Unretained;
-using ::supervised_user::FamilyPreferencesService;
 using ::supervised_user::ListFamilyMembersService;
 }  // namespace
 
 ChildAccountService::ChildAccountService(
     Profile* profile,
-    FamilyPreferencesService* family_preferences_service,
     ListFamilyMembersService* list_family_members_service)
     : profile_(profile),
-      family_preferences_service_(family_preferences_service),
       list_family_members_service_(list_family_members_service),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {
-  // Connects FamilyPreferencesService to ListFamilyMembersService.
   set_family_members_subscription_ =
       list_family_members_service_->SubscribeToSuccessfulFetches(BindRepeating(
-          &FamilyPreferencesService::SetFamily,
-          Unretained(
-              family_preferences_service)));  // `this` is dependant of
-                                              // `family_preferences_service`
-                                              // (see
-                                              // ChildAccountServiceFactory).
+          &supervised_user::RegisterFamilyPrefs,
+          std::ref(*profile->GetPrefs())));  // list_family_members_service_ is
+                                             // an instance of a keyed service
+                                             // and PrefService outlives it.
 }
 
 ChildAccountService::~ChildAccountService() = default;
@@ -92,7 +86,7 @@ void ChildAccountService::Init() {
 }
 
 bool ChildAccountService::IsChildAccountStatusKnown() {
-  return family_preferences_service_->IsChildAccountStatusKnown();
+  return supervised_user::IsChildAccountStatusKnown(*profile_->GetPrefs());
 }
 
 void ChildAccountService::Shutdown() {
@@ -105,7 +99,7 @@ void ChildAccountService::Shutdown() {
 
 void ChildAccountService::AddChildStatusReceivedCallback(
     base::OnceClosure callback) {
-  if (family_preferences_service_->IsChildAccountStatusKnown()) {
+  if (supervised_user::IsChildAccountStatusKnown(*profile_->GetPrefs())) {
     std::move(callback).Run();
   } else {
     status_received_callback_list_.push_back(std::move(callback));
@@ -156,9 +150,9 @@ void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
     bool supervision_status) {
   if (profile_->IsChild() != supervision_status) {
     if (supervision_status) {
-      family_preferences_service_->EnableParentalControls();
+      supervised_user::EnableParentalControls(*profile_->GetPrefs());
     } else {
-      family_preferences_service_->DisableParentalControls();
+      supervised_user::DisableParentalControls(*profile_->GetPrefs());
     }
   }
 

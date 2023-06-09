@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -52,10 +53,9 @@ bool IdentityManagerAlreadyHasPrimaryAccount(
 
 void SetIsSupervisedProfile(Profile* profile, bool is_supervised_profile) {
   if (is_supervised_profile) {
-    profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                   supervised_user::kChildAccountSUID);
+    EnableParentalControls(*profile->GetPrefs());
   } else {
-    profile->GetPrefs()->ClearPref(prefs::kSupervisedUserId);
+    DisableParentalControls(*profile->GetPrefs());
   }
 }
 

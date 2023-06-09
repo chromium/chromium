@@ -6,10 +6,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("family_preferences_service") {
+static_library("supervised_user_preferences") {
   sources = [
-    "family_preferences_service.cc",
-    "family_preferences_service.h",
+    "supervised_user_preferences.cc",
+    "supervised_user_preferences.h",
   ]
 
   deps = [
@@ -145,7 +145,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "api_access_token_fetcher_unittest.cc",
-    "family_preferences_service_unittest.cc",
     "kids_management_url_checker_client_unittest.cc",
     "list_family_members_service_unittest.cc",
     "parental_control_metrics_unittest.cc",
@@ -154,6 +153,7 @@ source_set("unit_tests") {
     "supervised_user_error_page_unittest.cc",
     "supervised_user_metrics_service_unittest.cc",
     "supervised_user_pref_store_unittest.cc",
+    "supervised_user_preferences_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_sync_model_type_controller_unittest.cc",
     "supervised_user_url_filter_unittest.cc",
@@ -161,9 +161,9 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
-    ":family_preferences_service",
     ":fetcher",
     ":list_family_members_service",
+    ":supervised_user_preferences",
     ":test_support",
     "//base",
     "//base/test:test_support",

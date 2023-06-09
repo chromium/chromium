@@ -371,9 +371,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ExtensionSystemShared",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "ExtensionWebUIOverrideRegistrar",
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    "FamilyPreferencesService",
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "FaviconService",
     "FeedbackPrivateAPI",
     "FileSystemAccessPermissionContext",

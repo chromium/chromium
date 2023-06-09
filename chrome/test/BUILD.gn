@@ -9610,6 +9610,12 @@ if (!is_android) {
       "//mojo/public/cpp/bindings",
       "//mojo/public/cpp/system",
     ]
+    if (enable_supervised_users) {
+      public_deps += [
+        "//components/supervised_user/core/browser:supervised_user_preferences",
+      ]
+    }
+
     deps = [
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",

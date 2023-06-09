@@ -17,7 +17,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/family_preferences_service.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
@@ -90,7 +89,6 @@ class ChildAccountService
   // this service.
   ChildAccountService(
       Profile* profile,
-      supervised_user::FamilyPreferencesService* family_preferences_service,
       supervised_user::ListFamilyMembersService* list_family_members_service);
 
   // SupervisedUserService::Delegate implementation.
@@ -121,10 +119,6 @@ class ChildAccountService
   raw_ptr<Profile> profile_;
 
   bool active_{false};
-
-  // Reads or writes preferences related to user supervision.
-  raw_ptr<supervised_user::FamilyPreferencesService>
-      family_preferences_service_;
 
   // Enables or disables scheduled fetch of family members list.
   raw_ptr<supervised_user::ListFamilyMembersService>

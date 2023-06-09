@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
-#include "chrome/browser/supervised_user/child_accounts/family_preferences_service_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -38,7 +37,6 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());
-  DependsOn(supervised_user::FamilyPreferencesServiceFactory::GetInstance());
   DependsOn(supervised_user::ListFamilyMembersServiceFactory::GetInstance());
 }
 
@@ -49,6 +47,5 @@ KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
   Profile* profile = static_cast<Profile*>(context);
   return new ChildAccountService(
       profile,
-      supervised_user::FamilyPreferencesServiceFactory::GetForProfile(profile),
       supervised_user::ListFamilyMembersServiceFactory::GetForProfile(profile));
 }
