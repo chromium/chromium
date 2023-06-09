@@ -36,6 +36,12 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
@@ -156,15 +162,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
                   WaitForShow(kSavedTabGroupButtonElementId, true));
 }
 
-// TODO(crbug.com/1440199): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_UnsaveGroupFromTabGroupHeader \
-  DISABLED_UnsaveGroupFromTabGroupHeader
-#else
-#define MAYBE_UnsaveGroupFromTabGroupHeader UnsaveGroupFromTabGroupHeader
-#endif
 IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
-                       MAYBE_UnsaveGroupFromTabGroupHeader) {
+                       UnsaveGroupFromTabGroupHeader) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
 
@@ -181,7 +180,47 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       WaitForHide(kSavedTabGroupButtonElementId),
       // Click the first tab to close the context menu. Mac builders fail if the
       // context menu stays open.
-      HoverTabAt(0), ClickMouse(ui_controls::LEFT));
+      FlushEvents(), HoverTabGroupHeader(group_id),
+      ClickMouse(ui_controls::LEFT));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+                       UnsaveGroupFromButtonMenu) {
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(),
+      // Show the bookmarks bar where the buttons will be displayed.
+      ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Click the tab group header to close the menu.
+      FlushEvents(), HoverTabGroupHeader(group_id),
+      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      // Press the enter/return key on the button to open the context menu.
+      WithElement(kSavedTabGroupButtonElementId,
+                  [](ui::TrackedElement* el) {
+                    const ui::KeyEvent event(
+                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
+                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
+                        base::TimeTicks(), /*is_char=*/false);
+
+                    AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
+                  }),
+      // Flush events and select the delete group menu item.
+      EnsurePresent(SavedTabGroupButton::kDeleteGroupMenuItem), FlushEvents(),
+      SelectMenuItem(SavedTabGroupButton::kDeleteGroupMenuItem),
+      // Ensure the button is no longer present.
+      FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
