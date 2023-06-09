@@ -6701,3 +6701,8 @@ crbug.com/1072022 [ Mac12 ] http/tests/security/frameNavigation/xss-ALLOWED-pare
 crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Pass Failure ]
 crbug.com/1451895 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Pass Failure ]
 crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Pass Failure ]
+
+# Temporarily disabled to unblock https://crrev.com/c/4594631
+fast/js/array-foreach.html [ Pass Failure ]
+fast/js/array-some.html [ Pass Failure ]
+fast/js/iterable-object.html [ Pass Failure ]
