@@ -168,10 +168,10 @@ void LayoutVideo::PaintReplaced(const PaintInfo& paint_info,
   VideoPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
-void LayoutVideo::UpdateLayout() {
+void LayoutVideo::UpdateAfterLayout() {
   NOT_DESTROYED();
-  UpdatePlayer(/* is_in_layout */ true);
-  LayoutMedia::UpdateLayout();
+  LayoutMedia::UpdateAfterLayout();
+  InvalidateCompositing();
 }
 
 HTMLVideoElement* LayoutVideo::VideoElement() const {
@@ -182,17 +182,13 @@ HTMLVideoElement* LayoutVideo::VideoElement() const {
 void LayoutVideo::UpdateFromElement() {
   NOT_DESTROYED();
   LayoutMedia::UpdateFromElement();
-  UpdatePlayer(/* is_in_layout */ false);
-
+  InvalidateCompositing();
+  UpdateIntrinsicSize();
   SetShouldDoFullPaintInvalidation();
 }
 
-void LayoutVideo::UpdatePlayer(bool is_in_layout) {
+void LayoutVideo::InvalidateCompositing() {
   NOT_DESTROYED();
-  if (!is_in_layout) {
-    UpdateIntrinsicSize();
-  }
-
   WebMediaPlayer* media_player = MediaElement()->GetWebMediaPlayer();
   if (!media_player)
     return;

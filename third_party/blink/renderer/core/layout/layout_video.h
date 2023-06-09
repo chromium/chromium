@@ -65,10 +65,10 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
                                  : kOverflowClipBothAxis;
   }
 
-  void UpdatePlayer(bool is_in_layout);
-
  private:
-  void UpdateFromElement() override;
+  void UpdateAfterLayout() final;
+  void UpdateFromElement() final;
+  void InvalidateCompositing();
 
   LayoutSize CalculateIntrinsicSize(float scale);
   void UpdateIntrinsicSize();
@@ -82,8 +82,6 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
 
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
-
-  void UpdateLayout() override;
 
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
