@@ -560,8 +560,9 @@ void PrintViewManagerBase::OnComposePdfDone(
 void PrintViewManagerBase::OnDidPrintDocument(DidPrintDocumentCallback callback,
                                               bool succeeded) {
   std::move(callback).Run(succeeded);
-  for (auto& observer : observers_)
+  for (auto& observer : GetTestObservers()) {
     observer.OnDidPrintDocument();
+  }
 }
 
 void PrintViewManagerBase::DidPrintDocument(
@@ -814,12 +815,12 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie,
   ReleasePrinterQuery();
 }
 
-void PrintViewManagerBase::AddObserver(Observer& observer) {
-  observers_.AddObserver(&observer);
+void PrintViewManagerBase::AddTestObserver(TestObserver& observer) {
+  test_observers_.AddObserver(&observer);
 }
 
-void PrintViewManagerBase::RemoveObserver(Observer& observer) {
-  observers_.RemoveObserver(&observer);
+void PrintViewManagerBase::RemoveTestObserver(TestObserver& observer) {
+  test_observers_.RemoveObserver(&observer);
 }
 
 void PrintViewManagerBase::RenderFrameHostStateChanged(
@@ -1161,7 +1162,7 @@ bool PrintViewManagerBase::RegisterSystemPrintClient() {
   if (!registered) {
     PRINTER_LOG(DEBUG) << "Unable to initiate a concurrent system print dialog";
   }
-  for (auto& observer : GetObservers()) {
+  for (auto& observer : GetTestObservers()) {
     observer.OnRegisterSystemPrintClient(registered);
   }
   return registered;
@@ -1200,8 +1201,9 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
 void PrintViewManagerBase::CompletePrintNow(content::RenderFrameHost* rfh) {
   GetPrintRenderFrame(rfh)->PrintRequestedPages();
 
-  for (auto& observer : GetObservers())
+  for (auto& observer : GetTestObservers()) {
     observer.OnPrintNow(rfh);
+  }
 }
 
 void PrintViewManagerBase::CompleteScriptedPrint(

@@ -38,18 +38,18 @@ using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
 namespace {
 
-class PrintObserver : public printing::PrintViewManagerBase::Observer {
+class PrintObserver : public printing::PrintViewManagerBase::TestObserver {
  public:
   explicit PrintObserver(content::RenderFrameHost* rfh)
       : print_view_manager_(PrintViewManagerImpl::FromWebContents(
             content::WebContents::FromRenderFrameHost(rfh))),
         rfh_(rfh) {
-    print_view_manager_->AddObserver(*this);
+    print_view_manager_->AddTestObserver(*this);
   }
 
-  ~PrintObserver() override { print_view_manager_->RemoveObserver(*this); }
+  ~PrintObserver() override { print_view_manager_->RemoveTestObserver(*this); }
 
-  // printing::PrintViewManagerBase::Observer:
+  // printing::PrintViewManagerBase::TestObserver:
   void OnPrintNow(const content::RenderFrameHost* rfh) override {
     EXPECT_FALSE(print_now_called_);
     EXPECT_FALSE(print_preview_called_);

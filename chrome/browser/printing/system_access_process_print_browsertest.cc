@@ -303,7 +303,7 @@ class TestPrinterQueryOop : public PrinterQueryOop {
 class SystemAccessProcessPrintBrowserTestBase
     : public PrintBrowserTest,
       public PrintJob::Observer,
-      public PrintViewManagerBase::Observer {
+      public PrintViewManagerBase::TestObserver {
  public:
   SystemAccessProcessPrintBrowserTestBase() = default;
   ~SystemAccessProcessPrintBrowserTestBase() override = default;
@@ -423,7 +423,7 @@ class SystemAccessProcessPrintBrowserTestBase
     print_backend_service_->SkipPersistentContextsCheckOnShutdown();
   }
 
-  // PrintViewManagerBase::Observer:
+  // PrintViewManagerBase::TestObserver:
   void OnRegisterSystemPrintClient(bool succeeded) override {
     system_print_registration_succeeded_ = succeeded;
   }
@@ -455,7 +455,7 @@ class SystemAccessProcessPrintBrowserTestBase
         base::BindRepeating(
             &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
             base::Unretained(this)));
-    manager->AddObserver(*this);
+    manager->AddTestObserver(*this);
     TestPrintViewManager* manager_ptr = manager.get();
     web_contents->SetUserData(PrintViewManager::UserDataKey(),
                               std::move(manager));
@@ -1984,7 +1984,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
  public:
-  class Observer : public PrintViewManagerBase::Observer {
+  class Observer : public PrintViewManagerBase::TestObserver {
    public:
     void OnPrintNow(const content::RenderFrameHost* rfh) override {
       print_now_called_ = true;
@@ -2020,7 +2020,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
   TestPrintViewManagerForContentAnalysis(content::WebContents* web_contents,
                                          OnDidCreatePrintJobCallback callback)
       : TestPrintViewManager(web_contents, std::move(callback)) {
-    AddObserver(observer_);
+    AddTestObserver(observer_);
     PrintViewManager::SetReceiverImplForTesting(this);
   }
 
@@ -2116,7 +2116,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     TestPrintViewManager::CompleteScriptedPrint(rfh, std::move(params),
                                                 std::move(callback));
 
-    for (auto& observer : GetObservers()) {
+    for (auto& observer : GetTestObservers()) {
       observer.OnScriptedPrint();
     }
   }
@@ -2203,7 +2203,7 @@ class ContentAnalysisPrintBrowserTest
         base::BindRepeating(
             &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
             base::Unretained(this)));
-    manager->AddObserver(*this);
+    manager->AddTestObserver(*this);
     TestPrintViewManagerForContentAnalysis* manager_ptr = manager.get();
     web_contents->SetUserData(PrintViewManager::UserDataKey(),
                               std::move(manager));
