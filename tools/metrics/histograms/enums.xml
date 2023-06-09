@@ -14282,6 +14282,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="CalculatorAppErasureScanResult">
+  <obsolete>
+    Code removed 2023-06.
+  </obsolete>
   <int value="0" label="NoWebAppsForProcess"/>
   <int value="1" label="BothAppsInstalled"/>
   <int value="2" label="WebAppInstalled"/>

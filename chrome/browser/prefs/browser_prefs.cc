@@ -875,6 +875,12 @@ constexpr char kSupervisedUserIncompleteKey[] =
 #endif
 
 // Deprecated 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kWebAppCalculatorAppErasureFixAppliedPref[] =
+    "web_app.calculator_app_erasure_fix_applied";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 06/2023.
 const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1239,6 +1245,12 @@ void RegisterProfilePrefsForMigration(
 // Deprecated 05/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kEventRemappedToRightClick, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kWebAppCalculatorAppErasureFixAppliedPref,
+                                false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Deprecated 06/2023.
@@ -2338,6 +2350,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 // Added 05/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kSamlPasswordSyncToken);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kWebAppCalculatorAppErasureFixAppliedPref);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 06/2023.

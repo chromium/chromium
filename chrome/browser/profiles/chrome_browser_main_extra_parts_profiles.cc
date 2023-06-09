@@ -315,7 +315,6 @@
 #include "chrome/browser/extensions/browser_context_keyed_service_factories.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
-#include "chrome/browser/web_applications/adjustments/web_app_adjustments.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/omnibox/browser/omnibox_input_watcher.h"
 #include "components/omnibox/browser/omnibox_suggestions_watcher.h"
@@ -1048,7 +1047,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   web_app::WebAppMetricsFactory::GetInstance();
   web_app::WebAppProviderFactory::GetInstance();
-  web_app::WebAppAdjustmentsFactory::GetInstance();
   web_app::IsolatedWebAppReaderRegistryFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
