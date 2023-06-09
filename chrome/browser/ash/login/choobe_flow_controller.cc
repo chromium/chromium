@@ -31,8 +31,8 @@ const int kMaxScreensToShowChoobe = 10;
 // shown in the same order they are listed in this list.
 const StaticOobeScreenId kOptionalScreens[] = {
     TouchpadScrollScreenView::kScreenId,
-    ThemeSelectionScreenView::kScreenId,
     DisplaySizeScreenView::kScreenId,
+    ThemeSelectionScreenView::kScreenId,
 };
 
 bool IsOptionalScreen(OobeScreenId screen_id) {

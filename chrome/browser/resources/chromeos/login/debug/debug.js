@@ -1588,7 +1588,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
               },
               {
                 screenID: 'screenID3',
-                icon: 'oobe-40:pin-choobe',
+                icon: 'oobe-40:scroll-choobe',
                 title: 'choobeThemeSelectionTitle',
                 synced: false,
                 is_revisitable: false,
@@ -1597,7 +1597,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
               },
               {
                 screenID: 'screenID4',
-                icon: 'oobe-40:keyboard-choobe',
+                icon: 'oobe-40:scroll-choobe',
                 title: 'choobeThemeSelectionTitle',
                 subtitle: 'choobeThemeSelectionTitle',
                 synced: true,

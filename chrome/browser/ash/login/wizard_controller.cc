@@ -1522,9 +1522,14 @@ void WizardController::OnThemeSelectionScreenExit(
   switch (result) {
     case ThemeSelectionScreen::Result::kProceed:
     case ThemeSelectionScreen::Result::kNotApplicable:
-      if (features::IsOobeChoobeEnabled()) {
-        ShowDisplaySizeScreen();
+      if (wizard_context_->return_to_choobe_screen) {
+        wizard_context_->return_to_choobe_screen = false;
+        ShowChoobeScreen();
       } else {
+        if (choobe_flow_controller_) {
+          choobe_flow_controller_->OnChoobeFlowExit();
+          choobe_flow_controller_.reset();
+        }
         ShowMarketingOptInScreen();
       }
       break;
@@ -1586,8 +1591,11 @@ void WizardController::OnDrivePinningScreenExit(
     DrivePinningScreen::Result result) {
   OnScreenExit(DrivePinningScreenView::kScreenId,
                DrivePinningScreen::GetResultString(result));
-
-  ShowThemeSelectionScreen();
+  if (features::IsOobeDisplaySizeEnabled()) {
+    ShowDisplaySizeScreen();
+  } else {
+    OnDisplaySizeScreenExit(DisplaySizeScreen::Result::kNotApplicable);
+  }
 }
 
 void WizardController::OnDisplaySizeScreenExit(
@@ -1598,17 +1606,7 @@ void WizardController::OnDisplaySizeScreenExit(
   switch (result) {
     case DisplaySizeScreen::Result::kNotApplicable:
     case DisplaySizeScreen::Result::kNext:
-      if (wizard_context_->return_to_choobe_screen) {
-        wizard_context_->return_to_choobe_screen = false;
-        ShowChoobeScreen();
-      } else {
-        if (choobe_flow_controller_) {
-          choobe_flow_controller_->OnChoobeFlowExit();
-          choobe_flow_controller_.reset();
-        }
-        ShowMarketingOptInScreen();
-        break;
-      }
+      ShowThemeSelectionScreen();
   }
 }
 
