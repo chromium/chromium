@@ -169,9 +169,6 @@ export const MainPageMixin = dedupingMixin(
           const section = await this.ensureSectionForRoute_(route);
           section.classList.add('expanded');
           this.dispatchCustomEvent_('show-container');
-
-          // Fire event used by a11y tests only.
-          this.dispatchCustomEvent_('settings-section-expanded');
         }
 
         private enterMainPage_(oldRoute: Route): Promise<void> {
