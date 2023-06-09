@@ -109,7 +109,7 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.setDoOutput(true);
         mUrlConnection.setRequestMethod("PUT");
         OutputStream out = mUrlConnection.getOutputStream();
-        out.write("dummy data".getBytes());
+        out.write("sample data".getBytes());
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("PUT");
@@ -156,7 +156,7 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.setDoOutput(true);
         OutputStream out = mUrlConnection.getOutputStream();
-        out.write("dummy data".getBytes());
+        out.write("sample data".getBytes());
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("POST");

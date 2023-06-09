@@ -485,13 +485,13 @@ class CronetHttpProtocolHandlerDelegate
       base::SysNSStringToUTF8(hostResolverRulesForTesting));
 }
 
-// This is a private dummy method that prevents the linker from stripping out
+// This is a private no-op method that prevents the linker from stripping out
 // the otherwise unreferenced methods from 'bidirectional_stream.cc'.
 + (void)preventStrippingCronetBidirectionalStream {
   bidirectional_stream_create(NULL, 0, 0);
 }
 
-// This is a private dummy method that prevents the linker from stripping out
+// This is a private no-op method that prevents the linker from stripping out
 // the otherwise unreferenced modules from 'native'.
 + (void)preventStrippingNativeCronetModules {
   Cronet_Buffer_Create();

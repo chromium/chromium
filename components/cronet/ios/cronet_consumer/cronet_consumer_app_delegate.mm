@@ -30,7 +30,7 @@
 
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
-  [Cronet setUserAgent:@"Dummy/1.0" partial:YES];
+  [Cronet setUserAgent:@"Sample/1.0" partial:YES];
   [Cronet setQuicEnabled:YES];
   [Cronet start];
   [Cronet startNetLogToFile:[self currentNetLogFileName] logBytes:NO];

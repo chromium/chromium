@@ -47,10 +47,10 @@ public class CronetUploadTest {
         List<byte[]> reads = Arrays.asList("hello".getBytes());
         mDataProvider = new TestDrivenDataProvider(executor, reads);
 
-        // Creates a dummy CronetUrlRequest, which is not used to drive CronetUploadDataStream.
+        // Creates a no-op CronetUrlRequest, which is not used to drive CronetUploadDataStream.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                "https://dummy.url", callback, callback.getExecutor());
+                "https://no-op.url", callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
 
         mUploadDataStream =

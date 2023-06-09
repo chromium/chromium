@@ -490,7 +490,7 @@ public class BidirectionalStreamTest {
             @Override
             public void onStreamReady(BidirectionalStream stream) {
                 // Start the first write.
-                stream.write(getDummyData(), false);
+                stream.write(getSampleData(), false);
                 stream.flush();
             }
 
@@ -506,22 +506,22 @@ public class BidirectionalStreamTest {
             public void onWriteCompleted(BidirectionalStream stream, UrlResponseInfo info,
                     ByteBuffer buffer, boolean endOfStream) {
                 // Flush twice to keep the flush queue non-empty.
-                stream.write(getDummyData(), false);
+                stream.write(getSampleData(), false);
                 stream.flush();
-                stream.write(getDummyData(), false);
+                stream.write(getSampleData(), false);
                 stream.flush();
             }
 
-            // Returns a piece of dummy data to send to the server.
-            private ByteBuffer getDummyData() {
+            // Returns a piece of sample data to send to the server.
+            private ByteBuffer getSampleData() {
                 byte[] data = new byte[100];
                 for (int i = 0; i < data.length; i++) {
                     data[i] = 'x';
                 }
-                ByteBuffer dummyData = ByteBuffer.allocateDirect(data.length);
-                dummyData.put(data);
-                dummyData.flip();
-                return dummyData;
+                ByteBuffer sampleData = ByteBuffer.allocateDirect(data.length);
+                sampleData.put(data);
+                sampleData.flip();
+                return sampleData;
             }
         };
         CronetBidirectionalStream stream =
@@ -545,7 +545,7 @@ public class BidirectionalStreamTest {
                 public void onStreamReady(BidirectionalStream stream) {
                     try {
                         // Attempt to write data for GET request.
-                        stream.write(ByteBuffer.wrap("dummy".getBytes()), true);
+                        stream.write(ByteBuffer.wrap("sample".getBytes()), true);
                     } catch (IllegalArgumentException e) {
                         // Expected.
                     }
@@ -555,7 +555,7 @@ public class BidirectionalStreamTest {
                     super.onStreamReady(stream);
                     try {
                         // Attempt to write data for GET request.
-                        stream.write(ByteBuffer.wrap("dummy".getBytes()), true);
+                        stream.write(ByteBuffer.wrap("sample".getBytes()), true);
                     } catch (IllegalArgumentException e) {
                         // Expected.
                     }

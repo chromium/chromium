@@ -375,7 +375,8 @@ final class FakeCronetEngine extends CronetEngineBase {
      */
     void onRequestDestroyed() {
         synchronized (mLock) {
-            // Sanity check. We should not be able to shutdown if there are still running requests.
+            // Verification check. We should not be able to shutdown if there are still running
+            // requests.
             if (mIsShutdown) {
                 throw new IllegalStateException(
                         "This instance of CronetEngine was shutdown. All requests must have been "

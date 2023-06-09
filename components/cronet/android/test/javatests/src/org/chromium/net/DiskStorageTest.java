@@ -118,8 +118,8 @@ public class DiskStorageTest {
         FileOutputStream oldPrefsOut = null;
         try {
             oldPrefsOut = new FileOutputStream(oldPrefsFile);
-            String dummy = "dummy content";
-            oldPrefsOut.write(dummy.getBytes(), 0, dummy.length());
+            String sample = "sample content";
+            oldPrefsOut.write(sample.getBytes(), 0, sample.length());
         } finally {
             if (oldPrefsOut != null) {
                 oldPrefsOut.close();
@@ -184,17 +184,17 @@ public class DiskStorageTest {
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         cronetEngine.shutdown();
 
-        // Create a dummy file in storage directory.
+        // Create a sample file in storage directory.
         String testStorage = getTestStorage(getContext());
-        File dummyFile = new File(testStorage + "/dummy.json");
-        FileOutputStream dummyFileOut = null;
-        String dummyContent = "dummy content";
+        File sampleFile = new File(testStorage + "/sample.json");
+        FileOutputStream sampleFileOut = null;
+        String sampleContent = "sample content";
         try {
-            dummyFileOut = new FileOutputStream(dummyFile);
-            dummyFileOut.write(dummyContent.getBytes(), 0, dummyContent.length());
+            sampleFileOut = new FileOutputStream(sampleFile);
+            sampleFileOut.write(sampleContent.getBytes(), 0, sampleContent.length());
         } finally {
-            if (dummyFileOut != null) {
-                dummyFileOut.close();
+            if (sampleFileOut != null) {
+                sampleFileOut.close();
             }
         }
 
@@ -209,15 +209,15 @@ public class DiskStorageTest {
         callback2.blockForDone();
         assertThat(callback2.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         engine.shutdown();
-        // Dummy file still exists.
-        BufferedReader reader = new BufferedReader(new FileReader(dummyFile));
+        // Sample file still exists.
+        BufferedReader reader = new BufferedReader(new FileReader(sampleFile));
         StringBuilder stringBuilder = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
         reader.close();
-        assertThat(stringBuilder.toString()).isEqualTo(dummyContent);
+        assertThat(stringBuilder.toString()).isEqualTo(sampleContent);
         File diskCacheDir = new File(testStorage + "/disk_cache");
         assertThat(diskCacheDir.exists()).isTrue();
         File prefsDir = new File(testStorage + "/prefs");
