@@ -76,6 +76,7 @@ dependencies = [
  "cxx",
  "cxxbridge-cmd",
  "env_logger",
+ "font-types",
  "hex",
  "hex-literal",
  "lazy_static",
@@ -87,6 +88,7 @@ dependencies = [
  "quote",
  "rand",
  "rand_pcg",
+ "read-fonts",
  "regex",
  "rstest",
  "rstest_reuse",
@@ -95,6 +97,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_json_lenient",
+ "skrifa",
  "small_ctor",
  "static_assertions",
  "syn",
@@ -173,6 +176,10 @@ version = "1.7.0"
 dependencies = [
  "instant",
 ]
+
+[[package]]
+name = "font-types"
+version = "0.1.8"
 
 [[package]]
 name = "getrandom"
@@ -321,6 +328,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "read-fonts"
+version = "0.3.0"
+dependencies = [
+ "font-types",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.2.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -433,6 +447,13 @@ dependencies = [
  "itoa 0.4.8",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "skrifa"
+version = "0.2.0"
+dependencies = [
+ "read-fonts",
 ]
 
 [[package]]
