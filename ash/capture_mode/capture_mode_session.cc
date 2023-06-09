@@ -1926,7 +1926,15 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   if (is_press_event && focus_cycler_->HasFocus())
     focus_cycler_->ClearFocus();
 
-  const bool can_change_root = !is_capture_region || is_press_event;
+  // Do not update the root on cursor moving if the capture bar is set to be
+  // anchored to the selected window. As in this case, all the widgets should be
+  // anchored to the window, they should only be updated if the window was moved
+  // to a different root window.
+  const bool is_bar_anchored_to_window =
+      controller_->source() == CaptureModeSource::kWindow &&
+      capture_window_observer_->bar_anchored_to_window();
+  const bool can_change_root =
+      !is_bar_anchored_to_window && (!is_capture_region || is_press_event);
 
   if (can_change_root)
     MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location));

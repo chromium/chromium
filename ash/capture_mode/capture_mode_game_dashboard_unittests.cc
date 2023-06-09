@@ -418,11 +418,18 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
   display::Screen* screen = display::Screen::GetScreen();
   auto* controller = StartGameCaptureModeSession();
   CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  auto* event_generator = GetEventGenerator();
   EXPECT_EQ(displays[0].id(),
             screen->GetDisplayNearestWindow(game_window()).id());
   EXPECT_EQ(Shell::GetAllRootWindows()[0],
             capture_mode_session->current_root());
   VerifyCaptureBarPosition();
+  // The current root window should not change if moving the cursor to a
+  // different display as the game window.
+  MoveMouseToAndUpdateCursorDisplay(displays[1].bounds().CenterPoint(),
+                                    event_generator);
+  EXPECT_EQ(Shell::GetAllRootWindows()[0],
+            capture_mode_session->current_root());
 
   // Using the shortcut ALT+SEARCH+M to move the window to another display.
   PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
@@ -434,6 +441,12 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
   EXPECT_EQ(Shell::GetAllRootWindows()[1],
             capture_mode_session->current_root());
   VerifyCaptureBarPosition();
+  // The current root window should not change if moving the cursor to a
+  // different display as the game window.
+  MoveMouseToAndUpdateCursorDisplay(displays[0].bounds().CenterPoint(),
+                                    event_generator);
+  EXPECT_EQ(Shell::GetAllRootWindows()[1],
+            capture_mode_session->current_root());
 
   // Using the shortcut ALT+SEARCH+M to move the window back to the previous
   // display.
