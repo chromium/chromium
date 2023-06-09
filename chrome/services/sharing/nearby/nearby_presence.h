@@ -64,7 +64,7 @@ class NearbyPresence : public mojom::NearbyPresence {
   uint64_t id_ = 0;
   mojo::SharedRemote<mojom::ScanObserver> scan_observer_remote_;
 
-  ::nearby::presence::PresenceService presence_service_;
+  std::unique_ptr<::nearby::presence::PresenceService> presence_service_;
   std::unique_ptr<::nearby::presence::PresenceClient> presence_client_;
 
   base::flat_map<uint64_t, std::unique_ptr<ScanSessionImpl>>

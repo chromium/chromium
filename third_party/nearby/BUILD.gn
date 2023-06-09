@@ -844,7 +844,7 @@ source_set("presence") {
   ]
   sources = [
     "src/presence/presence_client_impl.cc",
-    "src/presence/presence_service.cc",
+    "src/presence/presence_service_impl.cc",
   ]
   public = [
     "src/presence/presence_client.h",

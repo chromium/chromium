@@ -7,7 +7,7 @@
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/nearby/src/presence/presence_service.h"
+#include "third_party/nearby/src/presence/presence_service_impl.h"
 
 namespace {
 
@@ -37,8 +37,9 @@ namespace ash::nearby::presence {
 NearbyPresence::NearbyPresence(
     mojo::PendingReceiver<mojom::NearbyPresence> nearby_presence,
     base::OnceClosure on_disconnect)
-    : presence_service_(::nearby::presence::PresenceService()),
-      presence_client_(presence_service_.CreatePresenceClient()),
+    : presence_service_(
+          std::make_unique<::nearby::presence::PresenceServiceImpl>()),
+      presence_client_(presence_service_->CreatePresenceClient()),
       nearby_presence_(this, std::move(nearby_presence)) {
   nearby_presence_.set_disconnect_handler(std::move(on_disconnect));
 }
