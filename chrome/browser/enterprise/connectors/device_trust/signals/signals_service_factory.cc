@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_factory.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_filterer.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_impl.h"
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
@@ -32,6 +35,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/ash/ash_signals_filterer.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -105,7 +109,15 @@ std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  return std::make_unique<SignalsServiceImpl>(std::move(decorators));
+  std::unique_ptr<SignalsFilterer> signals_filterer;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  signals_filterer = std::make_unique<AshSignalsFilterer>();
+#else
+  signals_filterer = std::make_unique<SignalsFilterer>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return std::make_unique<SignalsServiceImpl>(std::move(decorators),
+                                              std::move(signals_filterer));
 }
 
 }  // namespace enterprise_connectors
