@@ -311,18 +311,17 @@ bool FencedFrameReporter::SendReport(
   auto* attribution_host = AttributionHost::FromWebContents(
       WebContents::FromRenderFrameHost(request_initiator_frame));
   if (attribution_host &&
-      request_initiator_frame->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kAttributionReporting) &&
       network::HasAttributionSupport(AttributionManager::GetSupport())) {
     BeaconId beacon_id(unique_id_counter.GetNext());
-    attribution_reporting_data.emplace(AttributionReportingData{
-        .beacon_id = beacon_id,
-        .is_automatic_beacon = navigation_id.has_value(),
-        .attribution_reporting_runtime_features =
-            attribution_reporting_runtime_features,
-    });
-    attribution_host->NotifyFencedFrameReportingBeaconStarted(
-        beacon_id, navigation_id, request_initiator_frame);
+    if (attribution_host->NotifyFencedFrameReportingBeaconStarted(
+            beacon_id, navigation_id, request_initiator_frame)) {
+      attribution_reporting_data.emplace(AttributionReportingData{
+          .beacon_id = beacon_id,
+          .is_automatic_beacon = navigation_id.has_value(),
+          .attribution_reporting_runtime_features =
+              attribution_reporting_runtime_features,
+      });
+    }
   }
 
   const url::Origin& request_initiator =

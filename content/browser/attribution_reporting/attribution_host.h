@@ -72,7 +72,9 @@ class CONTENT_EXPORT AttributionHost
   // top navigation initiated by a fenced frame. This is used to track
   // attributions that occur on a navigated page after the current page has been
   // unloaded. Otherwise `absl::nullopt`.
-  void NotifyFencedFrameReportingBeaconStarted(
+  // Returns whether fenced frame reporting beacons can support Attribution
+  // Reporting API.
+  bool NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       absl::optional<int64_t> navigation_id,
       RenderFrameHostImpl* initiator_frame_host);

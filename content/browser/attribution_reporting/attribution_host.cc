@@ -364,22 +364,22 @@ void AttributionHost::BindReceiver(
   attribution_host->receivers_.Bind(rfh, std::move(receiver));
 }
 
-void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
+bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     absl::optional<int64_t> navigation_id,
     RenderFrameHostImpl* initiator_frame_host) {
   if (!base::FeatureList::IsEnabled(
           features::kAttributionFencedFrameReportingBeacon)) {
-    return;
+    return false;
   }
 
   if (!initiator_frame_host) {
-    return;
+    return false;
   }
 
   if (!initiator_frame_host->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
-    return;
+    return false;
   }
 
   RenderFrameHostImpl* initiator_root_frame =
@@ -390,7 +390,7 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
       SuitableOrigin::Create(initiator_root_frame->GetLastCommittedOrigin());
 
   if (!initiator_root_frame_origin) {
-    return;
+    return false;
   }
 
   AttributionInputEvent input_event;
@@ -409,6 +409,7 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
           beacon_id, navigation_id, std::move(*initiator_root_frame_origin),
           initiator_frame_host->IsNestedWithinFencedFrame(), input_event,
           initiator_root_frame->GetGlobalId());
+  return true;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);
