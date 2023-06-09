@@ -961,8 +961,11 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DVLOG(1) << __func__ << " params=" << params;
   if (!CanSetUserWallpaper(params.account_id)) {
-    wallpaper_metrics_manager_->LogWallpaperResult(
-        WallpaperType::kOnline, SetWallpaperResult::kPermissionDenied);
+    // TODO(b/285387348): Add WallpaperType::kDaily metric.
+    if (!params.daily_refresh_enabled) {
+      wallpaper_metrics_manager_->LogWallpaperResult(
+          WallpaperType::kOnline, SetWallpaperResult::kPermissionDenied);
+    }
     std::move(callback).Run(/*success=*/false);
     return;
   }
