@@ -302,6 +302,16 @@ using ReauthenticationEvent::kSuccess;
                     selection:(const WebStateSelection&)selection {
   DCHECK_EQ(_webStateList, webStateList);
   switch (change.type()) {
+    case WebStateListChange::Type::kDestroy:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateListDestroyed: to here.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
     case WebStateListChange::Type::kReplace: {
       if (selection.index == webStateList->active_index()) {
         [self disableRefocus];

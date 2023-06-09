@@ -93,6 +93,15 @@ void SyncedWindowDelegateBrowserAgent::WebStateListChanged(
     const WebStateSelection& selection) {
   DCHECK_EQ(web_state_list_, web_state_list);
   switch (change.type()) {
+    case WebStateListChange::Type::kDestroy:
+      // Do nothing when a WebStateList is destroyed.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();

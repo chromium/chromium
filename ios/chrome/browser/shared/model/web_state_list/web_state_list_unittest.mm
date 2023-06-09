@@ -82,6 +82,18 @@ class WebStateListTestObserver : public WebStateListObserver {
                            const WebStateListChange& change,
                            const WebStateSelection& selection) override {
     switch (change.type()) {
+      case WebStateListChange::Type::kDestroy:
+        // TODO(crbug.com/1442546): Move the implementation from
+        // WebStateListDestroyed() to here.
+        break;
+      case WebStateListChange::Type::kDetach:
+        // TODO(crbug.com/1442546): Move the implementation from
+        // WebStateDetachedAt() to here.
+        break;
+      case WebStateListChange::Type::kMove:
+        // TODO(crbug.com/1442546): Move the implementation from
+        // WebStateMoved() to here.
+        break;
       case WebStateListChange::Type::kReplace:
         EXPECT_TRUE(web_state_list->IsMutating());
         web_state_replaced_called_ = true;

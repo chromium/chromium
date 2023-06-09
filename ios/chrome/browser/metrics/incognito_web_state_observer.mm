@@ -46,6 +46,16 @@ void IncognitoWebStateObserver::Observer::WebStateListChanged(
     const WebStateListChange& change,
     const WebStateSelection& selection) {
   switch (change.type()) {
+    case WebStateListChange::Type::kDestroy:
+      // Do nothing when a WebStateList is destroyed.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // WebStateDetachedAt() to here.
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
     case WebStateListChange::Type::kReplace:
       // This is invoked when a Tab is replaced by another Tab without any
       // visible UI change. There is nothing to do since the number of Tabs

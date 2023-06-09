@@ -109,6 +109,18 @@ using ScopedWebStateListObservation =
     return;
   }
   switch (change.type()) {
+    case WebStateListChange::Type::kDestroy:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateListDestroyed: to here.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateList:didDetachWebState:atIndex: to here.
+      break;
+    case WebStateListChange::Type::kMove:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateList:didMoveWebState:fromIndex:toIndex: to here.
+      break;
     case WebStateListChange::Type::kReplace:
     case WebStateListChange::Type::kInsert:
       NOTREACHED_NORETURN();

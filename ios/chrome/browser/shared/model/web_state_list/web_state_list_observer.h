@@ -18,6 +18,12 @@ class WebState;
 class WebStateListChange {
  public:
   enum class Type {
+    // Used when a WebStateList is destroyed.
+    kDestroy,
+    // Used when a WebState at the specified index is detached.
+    kDetach,
+    // Used when a WebState at the specified index is moved to a new index.
+    kMove,
     // Used when a WebState at the specified index is replaced with a new
     // WebState.
     kReplace,
