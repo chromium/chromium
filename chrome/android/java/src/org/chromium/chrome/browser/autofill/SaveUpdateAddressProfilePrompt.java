@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
+
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,6 +24,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditor;
+import org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow;
 import org.chromium.chrome.browser.autofill.editors.EditorDialog;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,12 +62,16 @@ public class SaveUpdateAddressProfilePrompt {
         mModalDialogManager = modalDialogManager;
 
         LayoutInflater inflater = LayoutInflater.from(activity);
+        final @UserFlow int userFlow;
         if (isMigrationToAccount) {
             mDialogView = inflater.inflate(R.layout.autofill_migrate_address_profile_prompt, null);
+            userFlow = MIGRATE_EXISTING_ADDRESS_PROFILE;
         } else if (isUpdate) {
             mDialogView = inflater.inflate(R.layout.autofill_update_address_profile_prompt, null);
+            userFlow = UPDATE_EXISTING_ADDRESS_PROFILE;
         } else {
             mDialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
+            userFlow = SAVE_NEW_ADDRESS_PROFILE;
         }
 
         if (!isUpdate && !isMigrationToAccount) setupAddressNickname();
@@ -87,8 +96,8 @@ public class SaveUpdateAddressProfilePrompt {
             }
         };
         mAddressEditor = new AddressEditor(mEditorDialog, delegate, browserProfile,
-                new AutofillAddress(activity, autofillProfile),
-                /*saveToDisk=*/false, isUpdate, isMigrationToAccount);
+                new AutofillAddress(activity, autofillProfile), userFlow,
+                /*saveToDisk=*/false);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
             mAddressEditor.showEditorDialog();
         });

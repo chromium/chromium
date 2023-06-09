@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.CREATE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
@@ -57,6 +61,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.Source;
+import org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -98,11 +103,9 @@ class AddressEditorMediator {
     private Profile mProfile;
     private AutofillProfile mProfileToEdit;
     private AutofillAddress mAddressToEdit;
+    private @UserFlow int mUserFlow;
 
     private boolean mSaveToDisk;
-    private boolean mIsUpdate;
-    private boolean mIsMigrationToAccount;
-    private boolean mIsProfileNew;
 
     private Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private List<AddressUiComponent> mVisibleEditorFields;
@@ -189,18 +192,15 @@ class AddressEditorMediator {
     }
 
     void initialize(Context context, AddressEditor.Delegate delegate, Profile profile,
-            AutofillAddress addressToEdit, boolean saveToDisk, boolean isUpdate,
-            boolean isMigrationToAccount, boolean isProfileNew) {
+            AutofillAddress addressToEdit, @UserFlow int userFlow, boolean saveToDisk) {
         mContext = context;
         mDelegate = delegate;
         mProfile = profile;
         mProfileToEdit = addressToEdit.getProfile();
         mAddressToEdit = addressToEdit;
+        mUserFlow = userFlow;
 
         mSaveToDisk = saveToDisk;
-        mIsUpdate = isUpdate;
-        mIsMigrationToAccount = isMigrationToAccount;
-        mIsProfileNew = isProfileNew;
 
         initializeEditorFields();
     }
@@ -211,7 +211,8 @@ class AddressEditorMediator {
                 new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
                         .with(LABEL, mContext.getString(R.string.autofill_profile_editor_country))
                         .with(DROPDOWN_KEY_VALUE_LIST,
-                                getSupportedCountries(isAccountAddressProfile() && !mIsProfileNew))
+                                getSupportedCountries(isAccountAddressProfile()
+                                        && mUserFlow != CREATE_NEW_ADDRESS_PROFILE))
                         .with(IS_FULL_LINE, true)
                         .build();
 
@@ -373,7 +374,7 @@ class AddressEditorMediator {
         // Already empty fields in existing address profiles are made optional even if they
         // are required by account storage rules. This allows users to save address profiles
         // as is without making them more complete during the process.
-        return mIsProfileNew || !isContentEmpty;
+        return mUserFlow == CREATE_NEW_ADDRESS_PROFILE || !isContentEmpty;
     }
 
     /**
@@ -449,7 +450,7 @@ class AddressEditorMediator {
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
         String country = mCountryField.get(VALUE);
-        if (willBeSavedInAccount() && mIsProfileNew
+        if (willBeSavedInAccount() && mUserFlow == CREATE_NEW_ADDRESS_PROFILE
                 && PersonalDataManager.getInstance().isCountryEligibleForAccountStorage(country)) {
             profile.setSource(Source.ACCOUNT);
         }
@@ -541,18 +542,18 @@ class AddressEditorMediator {
     }
 
     private boolean willBeSavedInAccount() {
-        if (mIsMigrationToAccount) {
-            return true;
+        switch (mUserFlow) {
+            case MIGRATE_EXISTING_ADDRESS_PROFILE:
+                return true;
+            case UPDATE_EXISTING_ADDRESS_PROFILE:
+                return false;
+            case SAVE_NEW_ADDRESS_PROFILE:
+                return mProfileToEdit.getSource() == Source.ACCOUNT;
+            case CREATE_NEW_ADDRESS_PROFILE:
+                return PersonalDataManager.getInstance().isEligibleForAddressAccountStorage();
         }
-
-        if (mProfileToEdit.getSource() == Source.ACCOUNT && !mIsUpdate) {
-            return true; // Only already saved address can be updated.
-        }
-
-        // User creates a new address profile, which is going to be stored in their Google account
-        // according to the storage eligibility.
-        return mIsProfileNew
-                && PersonalDataManager.getInstance().isEligibleForAddressAccountStorage();
+        assert false : String.format(Locale.US, "Missing account target for flow %d", mUserFlow);
+        return false;
     }
 
     private boolean isAccountAddressProfile() {
@@ -560,8 +561,9 @@ class AddressEditorMediator {
     }
 
     private String getEditorTitle() {
-        return mIsProfileNew ? mContext.getString(R.string.autofill_create_profile)
-                             : mContext.getString(R.string.autofill_edit_address_dialog_title);
+        return mUserFlow == CREATE_NEW_ADDRESS_PROFILE
+                ? mContext.getString(R.string.autofill_create_profile)
+                : mContext.getString(R.string.autofill_edit_address_dialog_title);
     }
 
     @Nullable
@@ -609,7 +611,10 @@ class AddressEditorMediator {
     }
 
     private boolean isAlreadySavedInAccount() {
-        return mProfileToEdit.getSource() == Source.ACCOUNT && mIsUpdate;
+        // User edits an account address profile either from Chrome settings or upon form
+        // submission.
+        return mUserFlow == UPDATE_EXISTING_ADDRESS_PROFILE
+                && mProfileToEdit.getSource() == Source.ACCOUNT;
     }
 
     private boolean isAddressSyncOn() {

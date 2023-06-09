@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
@@ -229,14 +231,12 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         if (autofillAddress == null) {
             AddressEditor addressEditor =
                     new AddressEditor(mEditorDialog, sAddressEditorDelegate, mProfile,
-                            /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
-                            /*isMigrationToAccount=*/false);
+                            /*saveToDisk=*/true);
             addressEditor.showEditorDialog();
         } else {
             AddressEditor addressEditor = new AddressEditor(mEditorDialog, sAddressEditorDelegate,
-                    mProfile, autofillAddress,
-                    /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
-                    /*isMigrationToAccount=*/false);
+                    mProfile, autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
+                    /*saveToDisk=*/true);
             addressEditor.showEditorDialog();
         }
     }

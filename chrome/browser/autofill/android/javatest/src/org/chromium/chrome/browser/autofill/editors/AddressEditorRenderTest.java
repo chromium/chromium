@@ -11,6 +11,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
+import static org.chromium.chrome.browser.autofill.editors.AddressEditor.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.UiRestriction.RESTRICTION_TYPE_PHONE;
 
@@ -235,8 +238,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             EditorDialog dialog =
                     new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor =
-                    new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false,
-                            /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+                    new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
         });
@@ -252,8 +254,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             EditorDialog dialog =
                     new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor =
-                    new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false,
-                            /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+                    new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
         });
@@ -269,8 +270,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             EditorDialog dialog =
                     new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
-                    new AutofillAddress(getActivity(), sLocalProfile), /*saveToDisk=*/false,
-                    /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+                    new AutofillAddress(getActivity(), sLocalProfile),
+                    UPDATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
         });
@@ -286,8 +287,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             EditorDialog dialog =
                     new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
-                    new AutofillAddress(getActivity(), sAccountProfile), /*saveToDisk=*/false,
-                    /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+                    new AutofillAddress(getActivity(), sAccountProfile), SAVE_NEW_ADDRESS_PROFILE,
+                    /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
         });
@@ -303,8 +304,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             EditorDialog dialog =
                     new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
-                    new AutofillAddress(getActivity(), sLocalProfile), /*saveToDisk=*/false,
-                    /*isUpdate=*/false, /*isMigrationToAccount=*/true);
+                    new AutofillAddress(getActivity(), sLocalProfile),
+                    MIGRATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
             addressEditor.showEditorDialog();
             return dialog.getDataViewForTest();
         });
