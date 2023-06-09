@@ -8567,7 +8567,6 @@ domain Page
       IndexedDBEvent
       Dummy
       AuthorizationHeader
-      WebSerial
       # Disabled for RenderFrameHost reasons
       # See content/browser/renderer_host/back_forward_cache_disable.h for explanations.
       ContentSecurityHandler
