@@ -40,9 +40,6 @@ InputMappingView::InputMappingView(
   SetBounds(content_bounds.x(), content_bounds.y(), content_bounds.width(),
             content_bounds.height());
   for (auto& action : actions) {
-    if (action->deleted()) {
-      continue;
-    }
     auto view = action->CreateView(controller_);
     if (view) {
       AddChildView(std::move(view));
@@ -80,27 +77,6 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
     action_view->SetDisplayMode(mode);
   }
   current_display_mode_ = mode;
-}
-
-void InputMappingView::OnActionAdded(Action* action) {
-  auto view = action->CreateView(controller_);
-  if (view) {
-    view->SetDisplayMode(current_display_mode_);
-    AddChildView(std::move(view));
-  }
-}
-
-void InputMappingView::OnActionRemoved(Action* action) {
-  for (auto* view : children()) {
-    auto* action_view = static_cast<ActionView*>(view);
-    if (action != action_view->action()) {
-      continue;
-    }
-
-    action->set_action_view(nullptr);
-    RemoveChildViewT(action_view);
-    break;
-  }
 }
 
 void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {

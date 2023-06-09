@@ -63,8 +63,9 @@ message ActionProto {
   repeated PositionProto positions = 3;
   // Action type for this action.
   optional ActionType action_type = 4;
-  // This action is deleted or not.
-  optional bool deleted = 5;
+  // This action is deleted or not. It is deprecated because "restore to
+  // default" function is no longer needed.
+  optional bool deleted = 5 [deprecated = true];
 }
 
 message AppDataProto {

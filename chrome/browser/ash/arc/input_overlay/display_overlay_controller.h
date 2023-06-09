@@ -72,12 +72,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // Get window state type.
   InputOverlayWindowStateType GetWindowStateType() const;
 
-  // For editor.
-  // Show the action view when adding |action|.
-  void OnActionAdded(Action* action);
-  // Remove the action view when removing |action|.
-  void OnActionRemoved(Action* action);
-
   int GetTouchInjectorActionsSize();
 
   // For menu entry hover state:

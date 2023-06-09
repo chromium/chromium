@@ -26,11 +26,6 @@ class InputMappingView : public views::View, public TouchInjectorObserver {
 
   void SetDisplayMode(const DisplayMode mode);
 
-  // Add action view for |action|.
-  void OnActionAdded(Action* action);
-  // Remove action view for |action|.
-  void OnActionRemoved(Action* action);
-
  private:
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 

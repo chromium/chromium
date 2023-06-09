@@ -541,14 +541,6 @@ InputOverlayWindowStateType DisplayOverlayController::GetWindowStateType()
   return type;
 }
 
-void DisplayOverlayController::OnActionAdded(Action* action) {
-  input_mapping_view_->OnActionAdded(action);
-}
-
-void DisplayOverlayController::OnActionRemoved(Action* action) {
-  input_mapping_view_->OnActionRemoved(action);
-}
-
 int DisplayOverlayController::GetTouchInjectorActionsSize() {
   return touch_injector_->actions().size();
 }

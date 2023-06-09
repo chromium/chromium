@@ -256,9 +256,6 @@ void Action::OverwriteFromProto(const ActionProto& proto) {
     }
     position.reset();
   }
-  if (beta_ && proto.has_deleted()) {
-    deleted_ = proto.deleted();
-  }
 }
 
 bool Action::InitFromEditor() {
@@ -371,10 +368,6 @@ void Action::RestoreToDefault() {
   if (GetCurrentDisplayedPosition() != original_positions_[0]) {
     pending_position_.reset();
     pending_position_ = std::make_unique<Position>(original_positions_[0]);
-    restored = true;
-  }
-  if (beta_ && deleted_) {
-    deleted_ = false;
     restored = true;
   }
 
@@ -553,11 +546,6 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
       auto pos_proto = current_positions_[0].ConvertToProto();
       *proto->add_positions() = *pos_proto;
       pos_proto.reset();
-      customized = true;
-    }
-
-    if (beta_ && deleted_) {
-      proto->set_deleted(true);
       customized = true;
     }
 

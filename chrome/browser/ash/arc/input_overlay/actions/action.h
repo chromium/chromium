@@ -151,9 +151,6 @@ class Action {
   ActionView* action_view() const { return action_view_; }
   void set_action_view(ActionView* action_view) { action_view_ = action_view; }
 
-  bool deleted() const { return deleted_; }
-  void set_deleted(bool deleted) { deleted_ = deleted; }
-
   bool IsOnLeftSide();
 
  protected:
@@ -226,9 +223,6 @@ class Action {
   void CreateTouchEvent(ui::EventType type,
                         const base::TimeTicks& time_stamp,
                         std::list<ui::TouchEvent>& touch_events);
-
-  // Mainly for default action to mark if it is deleted.
-  bool deleted_ = false;
 
   // Corresponds to |kArcInputOverlayBeta| flag to turn on/off the editor
   // feature of adding or removing actions.
