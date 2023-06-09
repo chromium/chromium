@@ -30,6 +30,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -662,7 +663,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 
   // Sync item.
-  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+      ![self shouldReplaceSyncSettingsWithAccountSettings]) {
     [model addItem:[self syncItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAccount];
   }
@@ -1300,6 +1302,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                         completion:nil];
       break;
     case SettingsItemTypeAccount: {
+      if ([self shouldReplaceSyncSettingsWithAccountSettings]) {
+        // Redirect to Account Settings page if the user is signed-in and
+        // not-syncing.
+        base::RecordAction(base::UserMetricsAction("Settings.Sync"));
+        [self showGoogleSync];
+        break;
+      }
       base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
       AccountsTableViewController* accountsTableViewController =
           [[AccountsTableViewController alloc] initWithBrowser:_browser
@@ -1598,6 +1607,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
   [_tabsCoordinator start];
+}
+
+- (BOOL)shouldReplaceSyncSettingsWithAccountSettings {
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos) &&
+         !SyncServiceFactory::GetForBrowserState(_browserState)
+              ->HasSyncConsent();
 }
 
 - (void)showGoogleSync {
