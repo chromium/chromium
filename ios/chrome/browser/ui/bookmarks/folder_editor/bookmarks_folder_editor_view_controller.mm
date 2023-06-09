@@ -333,12 +333,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              bookmarks::metrics::BookmarkEditSource::kUser);
     if (_folder->parent() != _parentFolder) {
       base::AutoReset<BOOL> autoReset(&_ignoresOwnMove, YES);
+      std::vector<const BookmarkNode*> bookmarksVector{_folder};
       [self.snackbarCommandsHandler
           showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
-                                  std::set<const BookmarkNode*>{_folder},
-                                  _profileBookmarkModel.get(),
+                                  bookmarksVector, _profileBookmarkModel.get(),
                                   _accountBookmarkModel.get(), _parentFolder,
                                   _browserState)];
+      // Move might change the pointer, grab the updated value.
+      CHECK_EQ(bookmarksVector.size(), 1u);
+      _folder = bookmarksVector[0];
     }
   } else {
     DCHECK(!_folder);
@@ -348,8 +351,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (_manuallyChangedTheFolder) {
     bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
-        _folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
-    SetLastUsedBookmarkFolder(_browserState->GetPrefs(), _folder, type);
+        _parentFolder, _profileBookmarkModel.get(),
+        _accountBookmarkModel.get());
+    SetLastUsedBookmarkFolder(_browserState->GetPrefs(), _parentFolder, type);
   }
   [self.view endEditing:YES];
   [self.delegate bookmarksFolderEditor:self didFinishEditingFolder:_folder];
@@ -410,6 +414,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (_folder->HasAncestor(node)) {
     _folder = nullptr;
+    if (_ignoresOwnMove) {
+      // `saveFolder` will dismiss this screen after finishing the move.
+      return;
+    }
     [self dismiss];
   } else if (_parentFolder->HasAncestor(node)) {
     // This might happen when the user has changed `_parentFolder` but has not

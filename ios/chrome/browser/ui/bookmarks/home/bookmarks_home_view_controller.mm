@@ -1096,21 +1096,23 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // Copy the list of edited nodes from BookmarksFolderChooserCoordinator
   // as the reference may become invalid when `_folderChooserCoordinator`
   // is set to nil (if `self` holds the last reference to the object).
-  std::set<const bookmarks::BookmarkNode*> editedNodes =
+  std::set<const bookmarks::BookmarkNode*> editedNodesSet =
       _folderChooserCoordinator.editedNodes;
+  // TODO(crbug.com/1446131): Change the type of `editedNodes` to std::vector.
+  std::vector<const bookmarks::BookmarkNode*> editedNodesVector(
+      editedNodesSet.begin(), editedNodesSet.end());
 
   [_folderChooserCoordinator stop];
   _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
 
   DCHECK(!folder->is_url());
-  DCHECK_GE(editedNodes.size(), 1u);
+  DCHECK_GE(editedNodesVector.size(), 1u);
 
   [self setTableViewEditing:NO];
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
-                              std::move(editedNodes),
-                              _profileBookmarkModel.get(),
+                              editedNodesVector, _profileBookmarkModel.get(),
                               _accountBookmarkModel.get(), folder,
                               self.browserState)];
 }

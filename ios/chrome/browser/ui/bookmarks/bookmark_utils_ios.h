@@ -189,11 +189,13 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
 void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
                      bookmarks::BookmarkModel* model);
 
-// Move all `bookmarks` to the given `folder`, and returns a snackbar with an
-// undo action. Returns nil if the operation wasn't successful or there's
-// nothing to undo.
+// Move all `bookmarks_to_move` to the given `folder`, and returns a snackbar
+// with an undo action. Returns nil if the operation wasn't successful or
+// there's nothing to undo.
+// This method updates `bookmarks_to_move` with new pointers to moved nodes, see
+// `MoveBookmarks` documentation for details.
 MDCSnackbarMessage* MoveBookmarksWithUndoToast(
-    std::set<const bookmarks::BookmarkNode*> bookmarks_to_move,
+    std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
     bookmarks::BookmarkModel* local_model,
     bookmarks::BookmarkModel* account_model,
     const bookmarks::BookmarkNode* destination_folder,
@@ -202,10 +204,15 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
 // Move all `bookmarks` to the given `folder`.
 // Returns whether this method actually moved bookmarks (for example, only
 // moving a folder to its parent will return `false`).
-bool MoveBookmarks(std::set<const bookmarks::BookmarkNode*> bookmarks_to_move,
-                   bookmarks::BookmarkModel* local_model,
-                   bookmarks::BookmarkModel* account_model,
-                   const bookmarks::BookmarkNode* destination_folder);
+// This method updates `bookmarks_to_move` with new pointers to moved nodes. In
+// other words, when the node contained in `bookmarks_to_move` at index N is
+// moved - the updated `BookmarkNode` pointer is saved in `bookmarks_to_move` at
+// the same index N.
+bool MoveBookmarks(
+    std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
+    bookmarks::BookmarkModel* local_model,
+    bookmarks::BookmarkModel* account_model,
+    const bookmarks::BookmarkNode* destination_folder);
 
 // Category name for all bookmarks related snackbars.
 extern NSString* const kBookmarksSnackbarCategory;
