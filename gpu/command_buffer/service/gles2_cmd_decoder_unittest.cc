@@ -290,6 +290,7 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
   abstract_texture->SetBoundImage(image.get());
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   auto* validating_texture =
       static_cast<ValidatingAbstractTextureImpl*>(abstract_texture.get());
   TextureRef* texture_ref = validating_texture->GetTextureRefForTesting();
@@ -297,6 +298,7 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
 
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(texture_ref->texture()->HasUnboundLevelImage(target, 0));
+#endif
 #endif
 
   EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();
@@ -346,10 +348,12 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   abstract_texture->SetBoundImage(image.get());
 #endif
 
-  EXPECT_EQ(abstract_texture->GetImageForTesting(), image.get());
   // Binding an image should make the texture renderable.
   EXPECT_EQ(texture->SafeToRenderFrom(), true);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  EXPECT_EQ(abstract_texture->GetImageForTesting(), image.get());
   EXPECT_EQ(texture->GetLevelImage(target, 0), image.get());
+#endif
 
   // Unbinding should make it not renderable.
 #if BUILDFLAG(IS_MAC)
@@ -359,7 +363,9 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
 #endif
 
   EXPECT_EQ(texture->SafeToRenderFrom(), false);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_EQ(abstract_texture->GetImageForTesting(), nullptr);
+#endif
 
   // Deleting |abstract_texture| should delete the platform texture as well,
   // since we haven't make a copy of the TextureRef.  Also make sure that the

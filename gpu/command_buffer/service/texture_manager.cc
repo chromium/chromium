@@ -571,6 +571,7 @@ void TexturePassthrough::SetLevelImage(GLenum target,
   SetLevelImageInternal(target, level, image, owned_service_id_);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
                                                GLint level) const {
   size_t face_idx = 0;
@@ -580,6 +581,7 @@ gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
 
   return level_images_[face_idx][level].image.get();
 }
+#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1945,6 +1947,7 @@ const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
   return nullptr;
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
   const LevelInfo* info = GetLevelInfo(target, level);
   if (!info)
@@ -1952,6 +1955,7 @@ gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
 
   return info->image.get();
 }
+#endif
 
 #if BUILDFLAG(IS_MAC)
 bool Texture::HasUnboundLevelImage(GLint target, GLint level) const {

@@ -77,8 +77,10 @@ class GPU_GLES2_EXPORT AbstractTexture {
   virtual void SetBoundImage(gl::GLImage* image) = 0;
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Return the image, if any, for testing purposes.
   virtual gl::GLImage* GetImageForTesting() const = 0;
+#endif
 
   // Marks the texture as cleared, to help prevent sending an uninitialized
   // texture to the (untrusted) renderer.  One should call this only when one

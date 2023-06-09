@@ -1679,7 +1679,7 @@ TEST_F(TextureTest, UseDeletedTexture) {
   texture_ref = nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 TEST_F(TextureTest, GetLevelImage) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
@@ -2115,7 +2115,7 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   scoped_refptr<TextureRef> restored_texture = manager_->GetTexture(client_id);
   EXPECT_EQ(produced_texture, restored_texture->texture());
   EXPECT_EQ(service_id, restored_texture->service_id());
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   EXPECT_EQ(image.get(), restored_texture->texture()->GetLevelImage(target, 0));
 #endif
 }

@@ -74,6 +74,7 @@ void PassthroughAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 gl::GLImage* PassthroughAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_passthrough_)
     return nullptr;
@@ -82,6 +83,7 @@ gl::GLImage* PassthroughAbstractTextureImpl::GetImageForTesting() const {
   return texture_passthrough_->GetLevelImage(texture_passthrough_->target(),
                                              level);
 }
+#endif
 
 void PassthroughAbstractTextureImpl::SetCleared() {
   // The passthrough decoder has no notion of 'cleared', so do nothing.

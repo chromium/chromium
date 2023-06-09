@@ -81,7 +81,9 @@ class GPU_GLES2_EXPORT TexturePassthrough final
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetLevelImage(GLenum target, GLint level, gl::GLImage* image);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   gl::GLImage* GetLevelImage(GLenum target, GLint level) const;
+#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -345,9 +347,11 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
       GLenum type,
       const SamplerState& sampler_state) const;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Get the image associated with a particular level. Returns NULL if level
   // does not exist.
   gl::GLImage* GetLevelImage(GLint target, GLint level) const;
+#endif
 
 #if BUILDFLAG(IS_MAC)
   // Returns true iff (a) there is an image associated with the particular
