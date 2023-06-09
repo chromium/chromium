@@ -1447,7 +1447,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Card_20230526",
+                    "name": "Card_20230606",
                     "params": {
                         "en_site_id": "F2fsskHvB0ugnJ3q1cK0NXLjUaK5",
                         "probability": "1.0"
@@ -1461,7 +1461,7 @@
                     ]
                 },
                 {
-                    "name": "Password_20230526",
+                    "name": "Password_20230606",
                     "params": {
                         "en_site_id": "6VQ4NCCaq0ugnJ3q1cK0TR13rB8t",
                         "probability": "1.0"
@@ -1475,7 +1475,7 @@
                     ]
                 },
                 {
-                    "name": "Address_20230526",
+                    "name": "Address_20230606",
                     "params": {
                         "en_site_id": "qQW9c2ho10ugnJ3q1cK0X48UQjZs",
                         "probability": "1.0"
