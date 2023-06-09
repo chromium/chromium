@@ -1280,6 +1280,40 @@ void FocusFakebox() {
       assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage1URL)];
 }
 
+// Tests that pressing spacebar key when having an autocomplete, removes it.
+- (void)testHWspacebarKeyOnAutocomplete {
+  // Relaunch the app with new textfield disabled, as autocomplete label exists
+  // only on legacy implementation.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kIOSNewOmniboxImplementation);
+  auto bundledConfig = std::string("OmniboxBundledExperimentV1");
+  config.additional_args.push_back("--enable-features=" + bundledConfig + "<" +
+                                   bundledConfig);
+  config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
+                                   "/Test");
+  // Disable all autocomplete providers except the history url provider.
+  config.additional_args.push_back(
+      "--force-fieldtrial-params=" + bundledConfig +
+      ".Test:" + "DisableProviders" + "/" + "524279");
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self populateHistory];
+
+  // Clears the url and replace it with local url prefix.
+  [ChromeEarlGreyUI focusOmniboxAndType:@"127"];
+
+  // We expect to have an autocomplete.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::OmniboxAutocompleteLabel()];
+
+  // Pressing spacebar.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@" " flags:0];
+
+  // Autocomplete removed.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::OmniboxAutocompleteLabel()];
+}
+
 #pragma mark - Helpers
 
 // defocus the omnibox.
@@ -1297,6 +1331,15 @@ void FocusFakebox() {
         performAction:grey_tap()];
   }
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Populate history by visiting the 2 different pages.
+- (void)populateHistory {
+  // Add all the pages to the history.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 }
 
 @end
