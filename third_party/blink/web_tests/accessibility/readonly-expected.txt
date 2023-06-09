@@ -4,7 +4,7 @@ Link Button A B C D E F G H I
  J
 1
 2
- K L M
+ K L M N
 Focusable
 Heading
 Plain div can't be readonly
@@ -41,7 +41,7 @@ PASS axElement.isReadOnly is true
 
 text-readonly2
 PASS document.activeElement == element is true
-PASS axElement.isReadOnly is false
+PASS axElement.isReadOnly is true
 
 
 checkbox1
@@ -85,6 +85,11 @@ PASS axElement.isReadOnly is false
 
 
 textarea-readonly1
+PASS document.activeElement == element is true
+PASS axElement.isReadOnly is true
+
+
+textarea-readonly2
 PASS document.activeElement == element is true
 PASS axElement.isReadOnly is true
 

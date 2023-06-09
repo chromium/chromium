@@ -1934,15 +1934,6 @@ AXRestriction AXNodeObject::Restriction() const {
   if (IsDisabled())
     return kRestrictionDisabled;
 
-  // Check aria-readonly if supported by current role.
-  bool is_read_only;
-  if (SupportsARIAReadOnly() &&
-      HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kReadOnly,
-                                    is_read_only)) {
-    // ARIA overrides other readonly state markup.
-    return is_read_only ? kRestrictionReadOnly : kRestrictionNone;
-  }
-
   // Only editable fields can be marked @readonly (unlike @aria-readonly).
   auto* text_area_element = DynamicTo<HTMLTextAreaElement>(*elem);
   if (text_area_element && text_area_element->IsReadOnly())
@@ -1950,6 +1941,15 @@ AXRestriction AXNodeObject::Restriction() const {
   if (const auto* input = DynamicTo<HTMLInputElement>(*elem)) {
     if (input->IsTextField() && input->IsReadOnly())
       return kRestrictionReadOnly;
+  }
+
+  // Check aria-readonly if supported by current role.
+  bool is_read_only;
+  if (SupportsARIAReadOnly() &&
+      HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kReadOnly,
+                                    is_read_only)) {
+    // ARIA overrides other readonly state markup.
+    return is_read_only ? kRestrictionReadOnly : kRestrictionNone;
   }
 
   // If a grid cell does not have it's own ARIA input restriction,

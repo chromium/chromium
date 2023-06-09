@@ -18,7 +18,8 @@
   J<select multiple id="listbox1"><option>1<option selected>2</select>
   K<textarea id="textarea1">Textarea</textarea>
   L<textarea id="textarea-readonly1" readonly>Textarea</textarea>
-  M<div id="focusable1" tabindex="0">Focusable</div>
+  M<textarea id="textarea-readonly2" readonly aria-readonly="false">Textarea</textarea>
+  N<div id="focusable1" tabindex="0">Focusable</div>
   <h5 id="heading1" tabindex="0">Heading</h5>
   <div id="div1" tabindex="0" aria-readonly="true">Plain div can't be readonly</div>
   <div id="aria-button1" tabindex="0" role="button" aria-readonly="false">ARIA button</div>
@@ -58,7 +59,7 @@ if (window.testRunner && window.accessibilityController) {
     check("button1", false);
     check("text1", false);
     check("text-readonly1", true);
-    check("text-readonly2", false);
+    check("text-readonly2", true);
     check("checkbox1", false);
     check("number1", false);
     check("radio1", false);
@@ -68,6 +69,7 @@ if (window.testRunner && window.accessibilityController) {
     check("listbox1", false);
     check("textarea1", false);
     check("textarea-readonly1", true);
+    check("textarea-readonly2", true);
     check("focusable1", false);
     check("heading1", false);
     check("div1", false);
