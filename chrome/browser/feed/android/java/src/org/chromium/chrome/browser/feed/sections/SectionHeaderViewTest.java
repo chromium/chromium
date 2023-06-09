@@ -10,6 +10,8 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
@@ -58,6 +60,10 @@ public final class SectionHeaderViewTest {
         // Build the class under test, and set up the fake UI.
         mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
                 R.layout.new_tab_page_multi_feed_header, null, false);
+        ViewGroup contentView = new LinearLayout(mActivity);
+        mActivity.setContentView(contentView);
+        contentView.addView(mSectionHeaderView);
+
         mSectionHeaderView.addTab();
         mSectionHeaderView.addTab();
     }

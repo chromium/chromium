@@ -474,6 +474,10 @@ public class SectionHeaderView extends LinearLayout {
     /** Shows an IPH on the web feed tab in the section header. */
     public void showWebFeedAwarenessIph(
             UserEducationHelper helper, int tabIndex, Runnable scroller) {
+        // Stop showing before in the view hierarchy, as this will fail/assert.
+        // TODO(https://crbug.com/1448368): Request IPH after parent set or something.
+        if (getParent() == null) return;
+
         helper.requestShowIPH(new IPHCommandBuilder(getContext().getResources(),
                 FeatureConstants.WEB_FEED_AWARENESS_FEATURE, R.string.web_feed_awareness,
                 R.string.web_feed_awareness)
