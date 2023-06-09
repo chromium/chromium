@@ -714,14 +714,10 @@
         'build1': 'gpu_tests_release_bot_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_reclient',
       },
-      'Comparison Linux (reclient vs reclient remote links)(small)': {
-        'build1': 'gpu_tests_release_bot_reclient',
-        'build2': 'gpu_tests_release_bot_remote_links_small_reclient',
-      },
       'Linux Builder (canonical wd) (reclient compare)': 'gpu_tests_debug_bot_reclient',
-      'Linux Builder reclient staging': 'gpu_tests_release_bot_reclient',
+      'Linux Builder reclient staging': 'gpu_tests_release_bot_remote_links_reclient',
       'Linux Builder reclient staging untrusted': 'gpu_tests_release_bot_reclient',
-      'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
+      'Linux Builder reclient test': 'gpu_tests_release_bot_remote_links_reclient',
       'Linux Builder reclient test (unified uploads)': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient test untrusted': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient test untrusted (unified uploads)': 'gpu_tests_release_bot_reclient',
@@ -2758,10 +2754,6 @@
       'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links',
     ],
 
-    'gpu_tests_release_bot_remote_links_small_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_small',
-    ],
-
     'gpu_tests_release_bot_x86_minimal_symbols': [
       'gpu_tests', 'release_bot', 'x86', 'minimal_symbols',
     ],
@@ -4688,12 +4680,7 @@
     },
 
     'use_remoteexec_links': {
-      'gn_args': 'use_remoteexec_links=true',
-    },
-
-    # Temporary configuration for testing remote linking on different worker sizes
-    'use_remoteexec_links_small': {
-      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/rewrapper_linux_link.cfg" concurrent_links=50',
+      'gn_args': 'use_remoteexec_links=true concurrent_links=50',
     },
 
     'v8_enable_debugging_features': {

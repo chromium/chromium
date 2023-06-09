@@ -449,27 +449,6 @@ ci.builder(
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
-ci.builder(
-    name = "Comparison Linux (reclient vs reclient remote links)(small)",
-    executable = "recipe:reclient_reclient_comparison",
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "cmp",
-    ),
-    execution_timeout = 6 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_clang_depscan_archive": "true",
-        "RBE_use_unified_uploads": "false",
-        "RBE_experimental_sysroot_do_not_upload": "true",
-        "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
-    },
-    reclient_cache_silo = "Comparison Linux remote links - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
-)
-
 # The following 2 builders use the untrusted RBE instance because each instance has its own
 # rewrapper configs and the trusted instance uses native windows rewrapper configs but the
 # untrusted instance uses cross compile windows rewrapper configs.
