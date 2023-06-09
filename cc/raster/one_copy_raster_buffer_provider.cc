@@ -468,7 +468,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {
     int clear_bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
-        resource_size.width(), format.resource_format());
+        resource_size.width(), format);
     SkImageInfo dst_info = SkImageInfo::MakeN32Premul(resource_size.width(),
                                                       resource_size.height());
     SkBitmap bitmap;
@@ -483,7 +483,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   }
 
   int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
-      rect_to_copy.width(), staging_buffer->format.resource_format());
+      rect_to_copy.width(), staging_buffer->format);
   int chunk_size_in_rows =
       std::max(1, max_bytes_per_copy_operation_ / bytes_per_row);
   // Align chunk size to 4. Required to support compressed texture formats.

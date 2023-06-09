@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
@@ -24,7 +25,7 @@ class ResourceUtilTest : public testing::Test {
   void TestCheckedWidthInBytes(int width, const TestFormat* test_formats) {
     for (int i = 0; i < kTestFormats; ++i) {
       size_t bytes = ResourceSizes::CheckedWidthInBytes<size_t>(
-          width, test_formats[i].format);
+          width, SharedImageFormat::SinglePlane(test_formats[i].format));
       EXPECT_EQ(bytes, test_formats[i].expected_bytes);
     }
   }
@@ -32,17 +33,8 @@ class ResourceUtilTest : public testing::Test {
   void TestUncheckedWidthInBytes(int width, const TestFormat* test_formats) {
     for (int i = 0; i < kTestFormats; ++i) {
       size_t bytes = ResourceSizes::UncheckedWidthInBytes<size_t>(
-          width, test_formats[i].format);
+          width, SharedImageFormat::SinglePlane(test_formats[i].format));
       EXPECT_EQ(bytes, test_formats[i].expected_bytes);
-    }
-  }
-
-  void TestUncheckedWidthInBytesAligned(int width,
-                                        const TestFormat* test_formats) {
-    for (int i = 0; i < kTestFormats; ++i) {
-      size_t bytes = ResourceSizes::UncheckedWidthInBytesAligned<size_t>(
-          width, test_formats[i].format);
-      EXPECT_EQ(bytes, test_formats[i].expected_bytes_aligned);
     }
   }
 
@@ -86,7 +78,6 @@ TEST_F(ResourceUtilTest, WidthInBytes) {
 
   TestCheckedWidthInBytes(width, test_formats);
   TestUncheckedWidthInBytes(width, test_formats);
-  TestUncheckedWidthInBytesAligned(width, test_formats);
 
   // Check bytes for odd width.
   int width_odd = 11;
@@ -99,7 +90,6 @@ TEST_F(ResourceUtilTest, WidthInBytes) {
 
   TestCheckedWidthInBytes(width_odd, test_formats_odd);
   TestUncheckedWidthInBytes(width_odd, test_formats_odd);
-  TestUncheckedWidthInBytesAligned(width_odd, test_formats_odd);
 }
 
 TEST_F(ResourceUtilTest, SizeInBytes) {
@@ -130,17 +120,6 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
   TestUncheckedSizeInBytesAligned(size_odd, test_formats_odd);
 }
 
-TEST_F(ResourceUtilTest, WidthInBytesOverflow) {
-  int width = 10;
-  // 10 * 16 = 160 bits, overflows in char, but fits in unsigned char.
-  signed char ignored_signed;
-  EXPECT_FALSE(ResourceSizes::MaybeWidthInBytes<signed char>(width, RGBA_4444,
-                                                             &ignored_signed));
-  unsigned char ignored_unsigned;
-  EXPECT_TRUE(ResourceSizes::MaybeWidthInBytes<unsigned char>(
-      width, RGBA_4444, &ignored_unsigned));
-}
-
 TEST_F(ResourceUtilTest, SizeInBytesOverflow) {
   gfx::Size size(10, 10);
   // 10 * 16 * 10 = 1600 bits, overflows in char, but fits in int.
@@ -157,8 +136,6 @@ TEST_F(ResourceUtilTest, WidthOverflowDoesNotCrash) {
   // 0x20000000 * 4 = 0x80000000 which overflows int. Should return false, not
   // crash.
   int bytes;
-  EXPECT_FALSE(
-      ResourceSizes::MaybeWidthInBytes<int>(size.width(), BGRA_8888, &bytes));
   EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<int>(
       size, SinglePlaneFormat::kBGRA_8888, &bytes));
 }

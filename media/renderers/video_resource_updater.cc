@@ -1212,8 +1212,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       } else {
         HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
         size_t bytes_per_row = viz::ResourceSizes::CheckedWidthInBytes<size_t>(
-            video_frame->coded_size().width(),
-            output_si_format.resource_format());
+            video_frame->coded_size().width(), output_si_format);
         const gfx::Size& plane_size = hardware_resource->resource_size();
 
         // Note: Strides may be negative in case of bottom-up layouts.
@@ -1333,7 +1332,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
     const size_t bytes_per_row =
         viz::ResourceSizes::CheckedWidthInBytes<size_t>(
-            resource_size_pixels.width(), plane_si_format.resource_format());
+            resource_size_pixels.width(), plane_si_format);
 
     // Use 4-byte row alignment (OpenGL default) for upload performance.
     // Assuming that GL_UNPACK_ALIGNMENT has not changed from default.
