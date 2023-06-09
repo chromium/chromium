@@ -26,26 +26,12 @@ class FederatedIdentityPermissionContextDelegate;
 class FederatedProviderFetcher;
 class RenderFrameHost;
 
+using FederatedAuthUserInfoRequestResult =
+    blink::mojom::FederatedAuthUserInfoRequestResult;
+
 // Fetches data for user-info request.
 class CONTENT_EXPORT FederatedAuthUserInfoRequest {
  public:
-  // Used for metrics recording. Do not modify or remove existing values. You
-  // may add new values at the end.
-  enum class RequestStatus {
-    kSuccess = 0,
-    kNotSameOrigin = 1,
-    kNotIframe = 2,
-    kNotPotentiallyTrustworthy = 3,
-    kNoApiPermission = 4,
-    kNotSignedInWithIdp = 5,
-    kNoAccountSharingPermission = 6,
-    kInvalidConfigOrWellKnown = 7,
-    kInvalidAccountsResponse = 8,
-    kNoReturningUserFromFetchedAccounts = 9,
-    kUnhandledRequest = 10,
-    kMaxValue = kUnhandledRequest
-  };
-
   // Returns an object which fetches data for user-info request.
   static std::unique_ptr<FederatedAuthUserInfoRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
@@ -87,9 +73,11 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   void Complete(
       blink::mojom::RequestUserInfoStatus status,
       absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
-      RequestStatus request_status);
+      FederatedAuthUserInfoRequestResult request_status);
 
-  void CompleteWithError(RequestStatus error);
+  void CompleteWithError(FederatedAuthUserInfoRequestResult error);
+
+  void AddDevToolsIssue(FederatedAuthUserInfoRequestResult error);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>

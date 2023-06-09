@@ -53,22 +53,15 @@ blink::protocol::String InspectorIssueCodeValue(
           ContentSecurityPolicyIssue;
     case mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue:
       return protocol::Audits::InspectorIssueCodeEnum::SharedArrayBufferIssue;
-    case mojom::blink::InspectorIssueCode::kHeavyAdIssue:
-      CHECK(false);
-      return "";
     case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
       return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
+    case mojom::blink::InspectorIssueCode::kHeavyAdIssue:
     case mojom::blink::InspectorIssueCode::kFederatedAuthRequestIssue:
-      CHECK(false);
-      return "";
+    case mojom::blink::InspectorIssueCode::kFederatedAuthUserInfoRequestIssue:
     case mojom::blink::InspectorIssueCode::kBounceTrackingIssue:
-      NOTREACHED_NORETURN();
     case mojom::blink::InspectorIssueCode::kGenericIssue:
-      NOTREACHED();
-      return "";
     case mojom::blink::InspectorIssueCode::kDeprecationIssue:
-      NOTREACHED();
-      return "";
+      NOTREACHED_NORETURN();
   }
 }
 

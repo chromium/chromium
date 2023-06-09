@@ -24,6 +24,7 @@ enum InspectorIssueCode {
   kBounceTrackingIssue,
   kGenericIssue,
   kDeprecationIssue,
+  kFederatedAuthUserInfoRequestIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -212,6 +213,30 @@ struct FederatedAuthRequestIssueDetails {
   FederatedAuthRequestResult status;
 };
 
+// Represents the fetch result from a getUserInfo() call. Should
+// be updated alongside FederatedAuthUserInfoRequestIssueReason in
+// third_party/blink/public/devtools_protocol/browser_protocol.pdl,
+// which includes all cases except for kSuccess and kUnhandledRequest.
+// Do not modify or reorder existing values, as this is used in metrics
+// recording.
+enum FederatedAuthUserInfoRequestResult {
+  kSuccess,
+  kNotSameOrigin,
+  kNotIframe,
+  kNotPotentiallyTrustworthy,
+  kNoApiPermission,
+  kNotSignedInWithIdp,
+  kNoAccountSharingPermission,
+  kInvalidConfigOrWellKnown,
+  kInvalidAccountsResponse,
+  kNoReturningUserFromFetchedAccounts,
+  kUnhandledRequest
+};
+
+struct FederatedAuthUserInfoRequestIssueDetails {
+  FederatedAuthUserInfoRequestResult status;
+};
+
 struct BounceTrackingIssueDetails {
   array<string> tracking_sites;
 };
@@ -261,6 +286,7 @@ struct InspectorIssueDetails {
   BounceTrackingIssueDetails? bounce_tracking_issue_details;
   GenericIssueDetails? generic_issue_details;
   DeprecationIssueDetails? deprecation_issue_details;
+  FederatedAuthUserInfoRequestIssueDetails? federated_auth_user_info_request_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };
 

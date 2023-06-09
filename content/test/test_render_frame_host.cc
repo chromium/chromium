@@ -160,6 +160,10 @@ void TestRenderFrameHost::ReportInspectorIssue(
              blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
     ++federated_auth_counts_[issue->details->federated_auth_request_details
                                  ->status];
+  } else if (issue->code == blink::mojom::InspectorIssueCode::
+                                kFederatedAuthUserInfoRequestIssue) {
+    ++federated_auth_user_info_counts_
+        [issue->details->federated_auth_user_info_request_details->status];
   }
   RenderFrameHostImpl::ReportInspectorIssue(std::move(issue));
 }
@@ -290,17 +294,35 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
 }
 
 int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
-    absl::optional<blink::mojom::FederatedAuthRequestResult> filter) {
-  if (!filter) {
+    absl::optional<blink::mojom::FederatedAuthRequestResult> status_type) {
+  if (!status_type) {
     int total = 0;
     for (const auto& [result, count] : federated_auth_counts_)
       total += count;
     return total;
   }
 
-  auto it = federated_auth_counts_.find(*filter);
+  auto it = federated_auth_counts_.find(*status_type);
   if (it == federated_auth_counts_.end())
     return 0;
+  return it->second;
+}
+
+int TestRenderFrameHost::GetFederatedAuthUserInfoRequestIssueCount(
+    absl::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
+        status_type) {
+  if (!status_type) {
+    int total = 0;
+    for (const auto& [result, count] : federated_auth_user_info_counts_) {
+      total += count;
+    }
+    return total;
+  }
+
+  auto it = federated_auth_user_info_counts_.find(*status_type);
+  if (it == federated_auth_user_info_counts_.end()) {
+    return 0;
+  }
   return it->second;
 }
 

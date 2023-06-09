@@ -152,7 +152,8 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
   return issue;
 }
 
-std::string FederatedAuthRequestResultToProtocol(
+protocol::Audits::FederatedAuthRequestIssueReason
+FederatedAuthRequestResultToProtocol(
     blink::mojom::FederatedAuthRequestResult result) {
   using blink::mojom::FederatedAuthRequestResult;
   namespace FederatedAuthRequestIssueReasonEnum =
@@ -258,8 +259,7 @@ std::string FederatedAuthRequestResultToProtocol(
       return FederatedAuthRequestIssueReasonEnum::ThirdPartyCookiesBlocked;
     }
     case FederatedAuthRequestResult::kSuccess: {
-      DCHECK(false);
-      return "";
+      NOTREACHED_NORETURN();
     }
   }
 }
@@ -267,12 +267,10 @@ std::string FederatedAuthRequestResultToProtocol(
 std::unique_ptr<protocol::Audits::InspectorIssue>
 BuildFederatedAuthRequestIssue(
     const blink::mojom::FederatedAuthRequestIssueDetailsPtr& issue_details) {
-  protocol::String type_string =
-      FederatedAuthRequestResultToProtocol(issue_details->status);
-
   auto federated_auth_request_details =
       protocol::Audits::FederatedAuthRequestIssueDetails::Create()
-          .SetFederatedAuthRequestIssueReason(type_string)
+          .SetFederatedAuthRequestIssueReason(
+              FederatedAuthRequestResultToProtocol(issue_details->status))
           .Build();
 
   auto protocol_issue_details =
@@ -284,6 +282,78 @@ BuildFederatedAuthRequestIssue(
   auto issue = protocol::Audits::InspectorIssue::Create()
                    .SetCode(protocol::Audits::InspectorIssueCodeEnum::
                                 FederatedAuthRequestIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
+  return issue;
+}
+
+protocol::Audits::FederatedAuthUserInfoRequestIssueReason
+FederatedAuthUserInfoRequestResultToProtocol(
+    blink::mojom::FederatedAuthUserInfoRequestResult result) {
+  using blink::mojom::FederatedAuthUserInfoRequestResult;
+  namespace FederatedAuthUserInfoRequestIssueReasonEnum =
+      protocol::Audits::FederatedAuthUserInfoRequestIssueReasonEnum;
+  switch (result) {
+    case FederatedAuthUserInfoRequestResult::kNotSameOrigin: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::NotSameOrigin;
+    }
+    case FederatedAuthUserInfoRequestResult::kNotIframe: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::NotIframe;
+    }
+    case FederatedAuthUserInfoRequestResult::kNotPotentiallyTrustworthy: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::
+          NotPotentiallyTrustworthy;
+    }
+    case FederatedAuthUserInfoRequestResult::kNoApiPermission: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::NoApiPermission;
+    }
+    case FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::NotSignedInWithIdp;
+    }
+    case FederatedAuthUserInfoRequestResult::kNoAccountSharingPermission: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::
+          NoAccountSharingPermission;
+    }
+    case FederatedAuthUserInfoRequestResult::kInvalidConfigOrWellKnown: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::
+          InvalidConfigOrWellKnown;
+    }
+    case FederatedAuthUserInfoRequestResult::kInvalidAccountsResponse: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::
+          InvalidAccountsResponse;
+    }
+    case FederatedAuthUserInfoRequestResult::
+        kNoReturningUserFromFetchedAccounts: {
+      return FederatedAuthUserInfoRequestIssueReasonEnum::
+          NoReturningUserFromFetchedAccounts;
+    }
+    case FederatedAuthUserInfoRequestResult::kSuccess:
+    case FederatedAuthUserInfoRequestResult::kUnhandledRequest: {
+      NOTREACHED_NORETURN();
+    }
+  }
+}
+
+std::unique_ptr<protocol::Audits::InspectorIssue>
+BuildFederatedAuthUserInfoRequestIssue(
+    const blink::mojom::FederatedAuthUserInfoRequestIssueDetailsPtr&
+        issue_details) {
+  auto federated_auth_user_info_request_details =
+      protocol::Audits::FederatedAuthUserInfoRequestIssueDetails::Create()
+          .SetFederatedAuthUserInfoRequestIssueReason(
+              FederatedAuthUserInfoRequestResultToProtocol(
+                  issue_details->status))
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetFederatedAuthUserInfoRequestIssueDetails(
+              std::move(federated_auth_user_info_request_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                FederatedAuthUserInfoRequestIssue)
                    .SetDetails(std::move(protocol_issue_details))
                    .Build();
   return issue;
@@ -1534,6 +1604,10 @@ void BuildAndReportBrowserInitiatedIssue(
              blink::mojom::InspectorIssueCode::kBounceTrackingIssue) {
     issue =
         BuildBounceTrackingIssue(info->details->bounce_tracking_issue_details);
+  } else if (info->code == blink::mojom::InspectorIssueCode::
+                               kFederatedAuthUserInfoRequestIssue) {
+    issue = BuildFederatedAuthUserInfoRequestIssue(
+        info->details->federated_auth_user_info_request_details);
   } else {
     NOTREACHED() << "Unsupported type of browser-initiated issue";
   }

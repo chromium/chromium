@@ -820,6 +820,25 @@ experimental domain Audits
       SilentMediationFailure
       ThirdPartyCookiesBlocked
 
+  type FederatedAuthUserInfoRequestIssueDetails extends object
+    properties
+      FederatedAuthUserInfoRequestIssueReason federatedAuthUserInfoRequestIssueReason
+
+  # Represents the failure reason when a getUserInfo() call fails.
+  # Should be updated alongside FederatedAuthUserInfoRequestResult in
+  # third_party/blink/public/mojom/devtools/inspector_issue.mojom.
+  type FederatedAuthUserInfoRequestIssueReason extends string
+    enum
+      NotSameOrigin
+      NotIframe
+      NotPotentiallyTrustworthy
+      NoApiPermission
+      NotSignedInWithIdp
+      NoAccountSharingPermission
+      InvalidConfigOrWellKnown
+      InvalidAccountsResponse
+      NoReturningUserFromFetchedAccounts
+
   # This issue tracks client hints related issues. It's used to deprecate old
   # features, encourage the use of new ones, and provide general guidance.
   type ClientHintIssueDetails extends object
@@ -871,6 +890,7 @@ experimental domain Audits
       FederatedAuthRequestIssue
       BounceTrackingIssue
       StylesheetLoadingIssue
+      FederatedAuthUserInfoRequestIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -894,6 +914,7 @@ experimental domain Audits
       optional FederatedAuthRequestIssueDetails federatedAuthRequestIssueDetails
       optional BounceTrackingIssueDetails bounceTrackingIssueDetails
       optional StylesheetLoadingIssueDetails stylesheetLoadingIssueDetails
+      optional FederatedAuthUserInfoRequestIssueDetails federatedAuthUserInfoRequestIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

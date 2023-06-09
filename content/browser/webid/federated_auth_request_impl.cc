@@ -1068,7 +1068,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
     return;
   }
 
-  AddInspectorIssue(result);
+  AddDevToolsIssue(result);
   AddConsoleErrorMessage(result);
 
   if (IsFedCmMetricsEndpointEnabled())
@@ -1827,7 +1827,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
       result != FederatedAuthRequestResult::kSuccess) {
     errors_logged_to_console_ = true;
 
-    AddInspectorIssue(result);
+    AddDevToolsIssue(result);
     AddConsoleErrorMessage(result);
 
     if (IsFedCmMetricsEndpointEnabled()) {
@@ -1891,7 +1891,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   token_request_get_infos_.clear();
 }
 
-void FederatedAuthRequestImpl::AddInspectorIssue(
+void FederatedAuthRequestImpl::AddDevToolsIssue(
     FederatedAuthRequestResult result) {
   DCHECK_NE(result, FederatedAuthRequestResult::kSuccess);
 

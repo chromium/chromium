@@ -281,7 +281,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Creates an inspector issue related to a federated authentication request to
   // the Issues panel in DevTools.
-  void AddInspectorIssue(blink::mojom::FederatedAuthRequestResult result);
+  void AddDevToolsIssue(blink::mojom::FederatedAuthRequestResult result);
 
   // Adds a console error message related to a federated authentication request
   // issue. The Issues panel is preferred, but for now we also surface console
