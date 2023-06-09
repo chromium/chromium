@@ -69,8 +69,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return sk_make_sp<ComposePaintFilter>(image_filter, record_filter);
     case PaintFilter::Type::kAlphaThreshold:
       return sk_make_sp<AlphaThresholdPaintFilter>(
-          SkRegion(SkIRect::MakeWH(100, 100)), 0.1f, 0.2f, image_filter,
-          &crop_rect);
+          SkRegion(SkIRect::MakeWH(100, 100)), image_filter, &crop_rect);
     case PaintFilter::Type::kXfermode:
       return sk_make_sp<XfermodePaintFilter>(SkBlendMode::kSrc, image_filter,
                                              record_filter, &crop_rect);

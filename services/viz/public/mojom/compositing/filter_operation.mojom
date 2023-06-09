@@ -33,7 +33,6 @@ enum FilterType {
 struct FilterOperation {
   FilterType type;
   float amount;
-  float outer_threshold;
   gfx.mojom.Point offset;
   skia.mojom.SkColor4f drop_shadow_color;
   PaintFilter image_filter;

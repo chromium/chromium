@@ -552,7 +552,6 @@ base::Value::Dict FilterOperationToDict(const cc::FilterOperation& filter) {
   }
   switch (type) {
     case cc::FilterOperation::ALPHA_THRESHOLD:
-      dict.Set("outer_threshold", filter.outer_threshold());
       dict.Set("shape", ShapeRectsToList(filter.shape()));
       break;
     case cc::FilterOperation::DROP_SHADOW:
@@ -591,7 +590,6 @@ bool FilterOperationFromDict(const base::Value& dict_value,
   const base::Value::Dict& dict = dict_value.GetDict();
   absl::optional<int> type = dict.FindInt("type");
   absl::optional<double> amount = dict.FindDouble("amount");
-  absl::optional<double> outer_threshold = dict.FindDouble("outer_threshold");
   const base::Value::Dict* offset = dict.FindDict("offset");
   const std::string* image_filter = dict.FindString("image_filter");
   const base::Value::List* matrix = dict.FindList("matrix");
@@ -616,11 +614,9 @@ bool FilterOperationFromDict(const base::Value& dict_value,
   switch (filter_type) {
     case cc::FilterOperation::ALPHA_THRESHOLD: {
       cc::FilterOperation::ShapeRects shape_rects;
-      if (!outer_threshold || !shape ||
-          !ShapeRectsFromList(*shape, &shape_rects)) {
+      if (!shape || !ShapeRectsFromList(*shape, &shape_rects)) {
         return false;
       }
-      filter.set_outer_threshold(static_cast<float>(outer_threshold.value()));
       filter.set_shape(shape_rects);
     } break;
     case cc::FilterOperation::DROP_SHADOW: {

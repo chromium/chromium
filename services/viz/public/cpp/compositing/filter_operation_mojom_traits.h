@@ -23,17 +23,12 @@ struct StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation> {
   static viz::mojom::FilterType type(const cc::FilterOperation& op);
 
   static float amount(const cc::FilterOperation& operation) {
-    if (operation.type() == cc::FilterOperation::COLOR_MATRIX ||
+    if (operation.type() == cc::FilterOperation::ALPHA_THRESHOLD ||
+        operation.type() == cc::FilterOperation::COLOR_MATRIX ||
         operation.type() == cc::FilterOperation::REFERENCE) {
       return 0.f;
     }
     return operation.amount();
-  }
-
-  static float outer_threshold(const cc::FilterOperation& operation) {
-    if (operation.type() != cc::FilterOperation::ALPHA_THRESHOLD)
-      return 0.f;
-    return operation.outer_threshold();
   }
 
   static gfx::Point offset(const cc::FilterOperation& operation) {

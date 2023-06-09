@@ -36,8 +36,7 @@ bool FilterOperation::operator==(const FilterOperation& other) const {
     return image_filter_.get() == other.image_filter_.get();
   }
   if (type_ == ALPHA_THRESHOLD) {
-    return shape_ == other.shape_ && amount_ == other.amount_ &&
-           outer_threshold_ == other.outer_threshold_;
+    return shape_ == other.shape_;
   }
   if (type_ == OFFSET) {
     return offset_ == other.offset_;
@@ -50,7 +49,6 @@ FilterOperation::FilterOperation() : FilterOperation(GRAYSCALE, 0.f) {}
 FilterOperation::FilterOperation(FilterType type, float amount)
     : type_(type),
       amount_(amount),
-      outer_threshold_(0),
       offset_(0, 0),
       drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0) {
@@ -66,7 +64,6 @@ FilterOperation::FilterOperation(FilterType type,
                                  SkTileMode tile_mode)
     : type_(type),
       amount_(amount),
-      outer_threshold_(0),
       offset_(0, 0),
       drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0),
@@ -81,7 +78,6 @@ FilterOperation::FilterOperation(FilterType type,
                                  SkColor4f color)
     : type_(type),
       amount_(stdDeviation),
-      outer_threshold_(0),
       offset_(offset),
       drop_shadow_color_(color),
       zoom_inset_(0) {
@@ -92,7 +88,6 @@ FilterOperation::FilterOperation(FilterType type,
 FilterOperation::FilterOperation(FilterType type, const Matrix& matrix)
     : type_(type),
       amount_(0),
-      outer_threshold_(0),
       offset_(0, 0),
       drop_shadow_color_(SkColors::kTransparent),
       matrix_(matrix),
@@ -103,7 +98,6 @@ FilterOperation::FilterOperation(FilterType type, const Matrix& matrix)
 FilterOperation::FilterOperation(FilterType type, float amount, int inset)
     : type_(type),
       amount_(amount),
-      outer_threshold_(0),
       offset_(0, 0),
       drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(inset) {
@@ -114,7 +108,6 @@ FilterOperation::FilterOperation(FilterType type, float amount, int inset)
 FilterOperation::FilterOperation(FilterType type, const gfx::Point& offset)
     : type_(type),
       amount_(0),
-      outer_threshold_(0),
       offset_(offset),
       drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0) {
@@ -126,7 +119,6 @@ FilterOperation::FilterOperation(FilterType type,
                                  sk_sp<PaintFilter> image_filter)
     : type_(type),
       amount_(0),
-      outer_threshold_(0),
       offset_(0, 0),
       drop_shadow_color_(SkColors::kTransparent),
       image_filter_(std::move(image_filter)),
@@ -135,13 +127,9 @@ FilterOperation::FilterOperation(FilterType type,
   matrix_.fill(0.0f);
 }
 
-FilterOperation::FilterOperation(FilterType type,
-                                 const ShapeRects& shape,
-                                 float inner_threshold,
-                                 float outer_threshold)
+FilterOperation::FilterOperation(FilterType type, const ShapeRects& shape)
     : type_(type),
-      amount_(inner_threshold),
-      outer_threshold_(outer_threshold),
+      amount_(0),
       offset_(0, 0),
       drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0),
@@ -189,7 +177,7 @@ static FilterOperation CreateNoOpFilter(FilterOperation::FilterType type) {
       return FilterOperation::CreateReferenceFilter(nullptr);
     case FilterOperation::ALPHA_THRESHOLD:
       return FilterOperation::CreateAlphaThresholdFilter(
-          FilterOperation::ShapeRects(), 1.f, 0.f);
+          FilterOperation::ShapeRects());
     case FilterOperation::OFFSET:
       return FilterOperation::CreateOffsetFilter(gfx::Point(0, 0));
   }
@@ -204,7 +192,6 @@ static float ClampAmountForFilterType(float amount,
     case FilterOperation::SEPIA:
     case FilterOperation::INVERT:
     case FilterOperation::OPACITY:
-    case FilterOperation::ALPHA_THRESHOLD:
       return std::clamp(amount, 0.f, 1.f);
     case FilterOperation::SATURATE:
     case FilterOperation::BRIGHTNESS:
@@ -217,6 +204,7 @@ static float ClampAmountForFilterType(float amount,
     case FilterOperation::HUE_ROTATE:
     case FilterOperation::SATURATING_BRIGHTNESS:
       return amount;
+    case FilterOperation::ALPHA_THRESHOLD:
     case FilterOperation::COLOR_MATRIX:
     case FilterOperation::OFFSET:
     case FilterOperation::REFERENCE:
@@ -251,6 +239,13 @@ FilterOperation FilterOperation::Blend(const FilterOperation* from,
     else
       blended_filter.set_image_filter(from_op.image_filter());
     return blended_filter;
+  } else if (to_op.type() == FilterOperation::ALPHA_THRESHOLD) {
+    if (progress > 0.5) {
+      blended_filter.set_shape(to_op.shape());
+    } else {
+      blended_filter.set_shape(from_op.shape());
+    }
+    return blended_filter;
   }
 
   blended_filter.set_amount(ClampAmountForFilterType(
@@ -273,12 +268,6 @@ FilterOperation FilterOperation::Blend(const FilterOperation* from,
         std::max(gfx::Tween::LinearIntValueBetween(
                      progress, from_op.zoom_inset(), to_op.zoom_inset()),
                  0));
-  } else if (to_op.type() == FilterOperation::ALPHA_THRESHOLD) {
-    blended_filter.set_outer_threshold(ClampAmountForFilterType(
-        gfx::Tween::FloatValueBetween(progress, from_op.outer_threshold(),
-                                      to_op.outer_threshold()),
-        to_op.type()));
-    blended_filter.set_shape(to_op.shape());
   }
 
   return blended_filter;
@@ -325,8 +314,6 @@ void FilterOperation::AsValueInto(base::trace_event::TracedValue* value) const {
       break;
     }
     case FilterOperation::ALPHA_THRESHOLD: {
-      value->SetDouble("inner_threshold", amount_);
-      value->SetDouble("outer_threshold", outer_threshold_);
       value->BeginArray("shape");
       for (const gfx::Rect& rect : shape_) {
         value->AppendInteger(rect.x());

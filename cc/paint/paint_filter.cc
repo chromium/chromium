@@ -25,6 +25,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkString.h"
@@ -414,17 +415,13 @@ bool ComposePaintFilter::EqualsForTesting(
 }
 
 AlphaThresholdPaintFilter::AlphaThresholdPaintFilter(const SkRegion& region,
-                                                     SkScalar inner_min,
-                                                     SkScalar outer_max,
                                                      sk_sp<PaintFilter> input,
                                                      const CropRect* crop_rect)
     : PaintFilter(kType, crop_rect, HasDiscardableImages(input)),
       region_(region),
-      inner_min_(inner_min),
-      outer_max_(outer_max),
       input_(std::move(input)) {
   cached_sk_filter_ = SkImageFilters::AlphaThreshold(
-      region_, inner_min_, outer_max_, GetSkFilter(input_.get()), crop_rect);
+      region_, 0.0f, 0.0f, GetSkFilter(input_.get()), crop_rect);
 }
 
 AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
@@ -432,25 +429,21 @@ AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
 size_t AlphaThresholdPaintFilter::SerializedSize() const {
   size_t region_size = region_.writeToMemory(nullptr);
   base::CheckedNumeric<size_t> total_size;
-  total_size = BaseSerializedSize() +
-               PaintOpWriter::SerializedSizeOfBytes(region_size) +
-               PaintOpWriter::SerializedSize(inner_min_) +
-               PaintOpWriter::SerializedSize(outer_max_);
+  total_size =
+      BaseSerializedSize() + PaintOpWriter::SerializedSizeOfBytes(region_size);
   total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
 sk_sp<PaintFilter> AlphaThresholdPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
-  return sk_make_sp<AlphaThresholdPaintFilter>(region_, inner_min_, outer_max_,
-                                               Snapshot(input_, image_provider),
-                                               GetCropRect());
+  return sk_make_sp<AlphaThresholdPaintFilter>(
+      region_, Snapshot(input_, image_provider), GetCropRect());
 }
 
 bool AlphaThresholdPaintFilter::EqualsForTesting(
     const AlphaThresholdPaintFilter& other) const {
-  return region_ == other.region_ && inner_min_ == other.inner_min_ &&
-         outer_max_ == other.outer_max_ &&
+  return region_ == other.region_ &&
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
 }
 

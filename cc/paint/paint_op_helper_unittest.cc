@@ -387,12 +387,10 @@ TEST(PaintOpHelperFilters, ComposePaintFilter) {
 TEST(PaintOpHelperFilters, AlphaThresholdPaintFilter) {
   PaintFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
   AlphaThresholdPaintFilter filter(SkRegion(SkIRect::MakeWH(100, 100)),
-                                   /*inner_min=*/0.1f, /*outer_max=*/0.2f,
                                    /*input=*/nullptr, &crop_rect);
   EXPECT_EQ(PaintOpHelper::ToString(filter),
             "AlphaThresholdPaintFilter(region=[0,0 100x100], "
-            "inner_min=0.100, outer_max=0.200, input=(nil), "
-            "crop_rect=[0.000,0.000 100.000x100.000])");
+            "input=(nil), crop_rect=[0.000,0.000 100.000x100.000])");
 }
 
 TEST(PaintOpHelperFilters, XfermodePaintFilter) {

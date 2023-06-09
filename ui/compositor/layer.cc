@@ -726,8 +726,8 @@ void Layer::SetLayerFilters() {
         layer_brightness_));
   }
   if (alpha_shape_) {
-    filters.Append(cc::FilterOperation::CreateAlphaThresholdFilter(
-            *alpha_shape_, 0.f, 0.f));
+    filters.Append(
+        cc::FilterOperation::CreateAlphaThresholdFilter(*alpha_shape_));
   }
 
   cc_layer_->SetFilters(filters);

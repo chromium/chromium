@@ -727,8 +727,6 @@ class PaintOpHelper {
             static_cast<const AlphaThresholdPaintFilter&>(base_filter);
         str << "AlphaThresholdPaintFilter("
             << "region=" << ToString(filter.region())
-            << ", inner_min=" << ToString(filter.inner_min())
-            << ", outer_max=" << ToString(filter.outer_max())
             << ", input=" << ToString(filter.input())
             << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
         break;

@@ -268,14 +268,8 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         SkRegion region;
         for (const gfx::Rect& rect : op.shape())
           region.op(gfx::RectToSkIRect(rect), SkRegion::kUnion_Op);
-        sk_sp<PaintFilter> alpha_filter = sk_make_sp<AlphaThresholdPaintFilter>(
-            region, op.amount(), op.outer_threshold(), nullptr);
-        if (image_filter) {
-          image_filter = sk_make_sp<ComposePaintFilter>(
-              std::move(alpha_filter), std::move(image_filter));
-        } else {
-          image_filter = std::move(alpha_filter);
-        }
+        image_filter = sk_make_sp<AlphaThresholdPaintFilter>(
+            region, std::move(image_filter));
         break;
       }
       case FilterOperation::OFFSET: {

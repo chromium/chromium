@@ -297,15 +297,11 @@ class CC_PAINT_EXPORT AlphaThresholdPaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kAlphaThreshold;
   AlphaThresholdPaintFilter(const SkRegion& region,
-                            SkScalar inner_min,
-                            SkScalar outer_max,
                             sk_sp<PaintFilter> input,
                             const CropRect* crop_rect = nullptr);
   ~AlphaThresholdPaintFilter() override;
 
   const SkRegion& region() const { return region_; }
-  SkScalar inner_min() const { return inner_min_; }
-  SkScalar outer_max() const { return outer_max_; }
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
@@ -317,8 +313,6 @@ class CC_PAINT_EXPORT AlphaThresholdPaintFilter final : public PaintFilter {
 
  private:
   SkRegion region_;
-  SkScalar inner_min_;
-  SkScalar outer_max_;
   sk_sp<PaintFilter> input_;
 };
 
