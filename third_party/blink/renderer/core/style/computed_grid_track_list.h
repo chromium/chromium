@@ -20,7 +20,6 @@ struct CORE_EXPORT ComputedGridTrackList {
 
   bool operator==(const ComputedGridTrackList& other) const {
     return track_sizes == other.track_sizes &&
-           auto_repeat_track_sizes == other.auto_repeat_track_sizes &&
            named_grid_lines == other.named_grid_lines &&
            auto_repeat_named_grid_lines == other.auto_repeat_named_grid_lines &&
            ordered_named_grid_lines == other.ordered_named_grid_lines &&
@@ -42,7 +41,6 @@ struct CORE_EXPORT ComputedGridTrackList {
   const NGGridTrackList& TrackList() const { return track_sizes.NGTrackList(); }
 
   GridTrackList track_sizes;
-  Vector<GridTrackSize, 1> auto_repeat_track_sizes;
 
   NamedGridLinesMap named_grid_lines;
   NamedGridLinesMap auto_repeat_named_grid_lines;

@@ -1307,8 +1307,6 @@ void StyleBuilderConverter::ConvertGridTrackList(
 
   GridTrackList& track_sizes = computed_grid_track_list.track_sizes;
   auto& track_list = track_sizes.NGTrackList();
-  Vector<GridTrackSize, 1>& auto_repeat_track_sizes =
-      computed_grid_track_list.auto_repeat_track_sizes;
 
   wtf_size_t current_named_grid_line = 0;
   auto ConvertLineNameOrTrackSize =
@@ -1383,8 +1381,6 @@ void StyleBuilderConverter::ConvertGridTrackList(
                              /* repeat_count */ 1,
                              /* repeat_number_of_lines */ auto_repeat_index,
                              line_name_indices_count);
-      DCHECK(auto_repeat_track_sizes.empty());
-      auto_repeat_track_sizes = std::move(repeated_track_sizes);
       computed_grid_track_list.auto_repeat_insertion_point =
           current_named_grid_line++;
       continue;
@@ -1442,7 +1438,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
   // Unless the axis is subgridded, the parser should have rejected any
   // <track-list> without any <track-size> as this is not conformant to
   // the syntax.
-  DCHECK(track_list.RepeaterCount() || !auto_repeat_track_sizes.empty() ||
+  DCHECK(track_list.RepeaterCount() ||
          computed_grid_track_list.IsSubgriddedAxis());
 }
 
