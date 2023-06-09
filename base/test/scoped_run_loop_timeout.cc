@@ -65,7 +65,7 @@ ScopedRunLoopTimeout::ScopedRunLoopTimeout(
   CHECK(timeout.has_value() || nested_timeout_)
       << "Cannot use default timeout if no default is set.";
   run_timeout_.timeout = timeout.value_or(nested_timeout_->timeout);
-  DCHECK_GT(run_timeout_.timeout, TimeDelta());
+  CHECK_GT(run_timeout_.timeout, TimeDelta());
 
   run_timeout_.on_timeout = BindRepeating(
       g_add_gtest_failure_on_timeout ? &TimeoutCallbackWithGtestFailure
