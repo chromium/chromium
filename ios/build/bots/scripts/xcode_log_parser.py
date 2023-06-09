@@ -520,8 +520,13 @@ class Xcode11LogParser(object):
             xcresult, attachments, include_jpg)
       for attachment in activity_summary.get('attachments',
                                              {}).get('_values', []):
-        payload_ref = attachment['payloadRef']['id']['_value']
         raw_file_name = str(attachment['filename']['_value'])
+        if 'payloadRef' not in attachment:
+          LOGGER.warning(
+              'Unable to export attachment %s because payloadRef is undefined' %
+              raw_file_name)
+          continue
+        payload_ref = attachment['payloadRef']['id']['_value']
         _, file_name_extension = os.path.splitext(raw_file_name)
 
         if not include_jpg and file_name_extension in ['.jpg', '.jpeg']:
