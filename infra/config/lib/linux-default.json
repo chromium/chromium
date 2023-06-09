@@ -56,6 +56,7 @@
     "Dawn Win10 x86 Release (Intel)": "Ubuntu-22.04",
     "Dawn Win10 x86 Release (NVIDIA)": "Ubuntu-22.04",
     "Deterministic Android": "Ubuntu-22.04",
+    "Deterministic Linux (dbg)": "Ubuntu-22.04",
     "GPU FYI Android arm Builder": "Ubuntu-22.04",
     "GPU FYI Android arm64 Builder": "Ubuntu-22.04",
     "GPU FYI Lacros x64 Builder": "Ubuntu-22.04",
