@@ -153,9 +153,9 @@
       }
 
       :host-context([chrome-refresh-2023].focus-outline-visible):host(:focus) {
-        border-color: transparent;
         box-shadow: none;
         outline: 2px solid var(--cr-focus-outline-color);
+        outline-offset: 2px;
       }
 
       :host(:active) {
@@ -176,7 +176,6 @@
       }
 
       #background {
-        border: 2px solid transparent;
         border-radius: inherit;
         inset: 0;
         pointer-events: none;
