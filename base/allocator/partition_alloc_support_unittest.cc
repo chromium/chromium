@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_alloc_support.h"
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,152 +30,180 @@ using testing::AllOf;
 using testing::HasSubstr;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
-  for (bool pcscan_enabled : {false, true}) {
-    test::ScopedFeatureList pcscan_scope;
-    std::vector<test::FeatureRef> empty_list = {};
-    std::vector<test::FeatureRef> pcscan_list = {
-        features::kPartitionAllocPCScanBrowserOnly};
-    pcscan_scope.InitWithFeatures(pcscan_enabled ? pcscan_list : empty_list,
-                                  pcscan_enabled ? empty_list : pcscan_list);
-#if !BUILDFLAG(USE_STARSCAN)
-    pcscan_enabled = false;
-#endif
 
-    std::string brp_expectation;
-    std::string pcscan_expectation;
+// Parameterized basic test for BRP + PCScan enablement.
+// The parameter denotes whether or not PCScan is enabled.
+class PCScanBRPBasicTest : public testing::TestWithParam<bool> {};
 
-    {
-      test::ScopedFeatureList brp_scope;
-      brp_scope.InitWithFeatures({}, {features::kPartitionAllocBackupRefPtr});
-
-      brp_expectation = "Unavailable";
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Ignore_NoGroup";
-#endif
-      pcscan_expectation = "Unavailable";
+INSTANTIATE_TEST_SUITE_P(PartitionAllocSupportTest,
+                         PCScanBRPBasicTest,
 #if BUILDFLAG(USE_STARSCAN)
-      pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
+                         testing::Bool()
+#else
+                         testing::Values(false)
+#endif
+);
+
+TEST_P(PCScanBRPBasicTest, BasicProposeSyntheticFinchTrials) {
+  const bool pcscan_enabled = GetParam();
+  test::ScopedFeatureList pcscan_scope;
+  std::vector<test::FeatureRef> empty_list = {};
+  std::vector<test::FeatureRef> pcscan_list = {
+      features::kPartitionAllocPCScanBrowserOnly};
+  pcscan_scope.InitWithFeatures(pcscan_enabled ? pcscan_list : empty_list,
+                                pcscan_enabled ? empty_list : pcscan_list);
+  std::string brp_expectation;
+  std::string pcscan_expectation;
+
+  {
+    test::ScopedFeatureList brp_scope;
+    brp_scope.InitWithFeatures({}, {features::kPartitionAllocBackupRefPtr});
+
+    brp_expectation = "Unavailable";
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Ignore_NoGroup";
+#endif
+    pcscan_expectation = "Unavailable";
+#if BUILDFLAG(USE_STARSCAN)
+    pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif
 
-      auto trials = ProposeSyntheticFinchTrials();
-      auto group_iter = trials.find("BackupRefPtr_Effective");
-      EXPECT_NE(group_iter, trials.end());
-      EXPECT_EQ(group_iter->second, brp_expectation);
-      group_iter = trials.find("PCScan_Effective");
-      EXPECT_NE(group_iter, trials.end());
-      EXPECT_EQ(group_iter->second, pcscan_expectation);
-      group_iter = trials.find("PCScan_Effective_Fallback");
-      EXPECT_NE(group_iter, trials.end());
-      EXPECT_EQ(group_iter->second, pcscan_expectation);
-    }
+    auto trials = ProposeSyntheticFinchTrials();
+    auto group_iter = trials.find("BackupRefPtr_Effective");
+    EXPECT_NE(group_iter, trials.end());
+    EXPECT_EQ(group_iter->second, brp_expectation);
+    group_iter = trials.find("PCScan_Effective");
+    EXPECT_NE(group_iter, trials.end());
+    EXPECT_EQ(group_iter->second, pcscan_expectation);
+    group_iter = trials.find("PCScan_Effective_Fallback");
+    EXPECT_NE(group_iter, trials.end());
+    EXPECT_EQ(group_iter->second, pcscan_expectation);
+  }
 
-    {
-      test::ScopedFeatureList brp_scope;
-      brp_scope.InitAndEnableFeatureWithParameters(
-          features::kPartitionAllocBackupRefPtr, {});
+  {
+    test::ScopedFeatureList brp_scope;
+    brp_scope.InitAndEnableFeatureWithParameters(
+        features::kPartitionAllocBackupRefPtr, {});
 
-      brp_expectation = "Unavailable";
+    brp_expectation = "Unavailable";
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn"
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||                  \
-    (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX)) || \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG)
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-                                       : "EnabledPrevSlot_NonRenderer";
-#else
-                                       : "EnabledBeforeAlloc_NonRenderer";
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-#else
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-                                       : "EnabledPrevSlot_BrowserOnly";
-#else
-                                       : "EnabledBeforeAlloc_BrowserOnly";
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||
-        // (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
+    // Exact enablement value of BRP may carry extra information, but
+    // for this test, we should not have to care about it (hence
+    // `testing::StartsWith()` below).
+    brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Enabled";
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      pcscan_expectation = "Unavailable";
+    pcscan_expectation = "Unavailable";
 #if BUILDFLAG(USE_STARSCAN)
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      pcscan_expectation = "Ignore_BRPIsOn";
+    pcscan_expectation = "Ignore_BRPIsOn";
 #else
-      pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
+    pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // BUILDFLAG(USE_STARSCAN)
 
-      auto trials = ProposeSyntheticFinchTrials();
-      auto group_iter = trials.find("BackupRefPtr_Effective");
-      EXPECT_NE(group_iter, trials.end());
-      EXPECT_EQ(group_iter->second, brp_expectation);
-      group_iter = trials.find("PCScan_Effective");
-      EXPECT_NE(group_iter, trials.end());
-      EXPECT_EQ(group_iter->second, pcscan_expectation);
-      group_iter = trials.find("PCScan_Effective_Fallback");
-      EXPECT_NE(group_iter, trials.end());
-      EXPECT_EQ(group_iter->second, pcscan_expectation);
-    }
+    auto trials = ProposeSyntheticFinchTrials();
+    auto group_iter = trials.find("BackupRefPtr_Effective");
+    EXPECT_NE(group_iter, trials.end());
+    EXPECT_THAT(group_iter->second, testing::StartsWith(brp_expectation));
+    group_iter = trials.find("PCScan_Effective");
+    EXPECT_NE(group_iter, trials.end());
+    EXPECT_EQ(group_iter->second, pcscan_expectation);
+    group_iter = trials.find("PCScan_Effective_Fallback");
+    EXPECT_NE(group_iter, trials.end());
+    EXPECT_EQ(group_iter->second, pcscan_expectation);
+  }
+}
 
-    const std::string kEnabledMode =
+struct BRPConfigPair {
+  const base::StringPiece arg_string;
+  const base::StringPiece mapped_feature_string;
+};
+
+constexpr base::StringPiece kBRPEnabledMode =
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        "PrevSlot_";
+    "EnabledPrevSlot_";
 #else
-        "BeforeAlloc_";
+    "EnabledBeforeAlloc_";
 #endif
-    const std::vector<std::pair<std::string, std::string>> kModes = {
-        {"disabled", "Disabled"},
-        {"enabled", "Enabled" + kEnabledMode},
-        {"disabled-but-2-way-split", "DisabledBut2WaySplit_"},
-        {"disabled-but-3-way-split", "DisabledBut3WaySplit_"}};
-    const std::vector<std::pair<std::string, std::string>> kProcesses = {
-        {"browser-only", "BrowserOnly"},
-        {"browser-and-renderer", "BrowserAndRenderer"},
-        {"non-renderer", "NonRenderer"},
-        {"all-processes", "AllProcesses"}};
 
-    for (auto mode : kModes) {
-      for (auto process_set : kProcesses) {
-        test::ScopedFeatureList brp_scope;
-        brp_scope.InitAndEnableFeatureWithParameters(
-            features::kPartitionAllocBackupRefPtr,
-            {{"brp-mode", mode.first},
-             {"enabled-processes", process_set.first}});
+// Parameterized basic test for BRP + PCScan enablement.
+// The parameter denotes
+// *  whether PCScan is enabled,
+// *  BRP mode, and
+// *  BRP process selector.
+class PCScanBRPPerProcessTest
+    : public testing::TestWithParam<
+          std::tuple<bool, BRPConfigPair, BRPConfigPair>> {};
 
-        [[maybe_unused]] bool brp_truly_enabled = false;
-        [[maybe_unused]] bool brp_nondefault_behavior = false;
-        brp_expectation = "Unavailable";
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-        brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : mode.second;
-        brp_truly_enabled = (mode.first == "enabled");
-        brp_nondefault_behavior = (mode.first != "disabled");
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-        if (brp_expectation[brp_expectation.length() - 1] == '_') {
-          brp_expectation += process_set.second;
-        }
-        pcscan_expectation = "Unavailable";
-        std::string pcscan_expectation_fallback = "Unavailable";
+INSTANTIATE_TEST_SUITE_P(
+    PartitionAllocSupportTest,
+    PCScanBRPPerProcessTest,
+    testing::Combine(
 #if BUILDFLAG(USE_STARSCAN)
-        pcscan_expectation = brp_truly_enabled
-                                 ? "Ignore_BRPIsOn"
-                                 : (pcscan_enabled ? "Enabled" : "Disabled");
-        pcscan_expectation_fallback =
-            brp_nondefault_behavior ? "Ignore_BRPIsOn"
+        testing::Bool(),
+#else
+        testing::Values(false),
+#endif
+        testing::Values(
+            BRPConfigPair{"disabled", "Disabled"},
+            BRPConfigPair{"enabled", kBRPEnabledMode},
+            BRPConfigPair{"disabled-but-2-way-split", "DisabledBut2WaySplit_"},
+            BRPConfigPair{"disabled-but-3-way-split", "DisabledBut3WaySplit_"}),
+        testing::Values(BRPConfigPair{"browser-only", "BrowserOnly"},
+                        BRPConfigPair{"browser-and-renderer",
+                                      "BrowserAndRenderer"},
+                        BRPConfigPair{"non-renderer", "NonRenderer"},
+                        BRPConfigPair{"all-processes", "AllProcesses"})));
+
+TEST_P(PCScanBRPPerProcessTest, DetailedProposeSyntheticFinchTrials) {
+  const auto [pcscan_enabled, brp_mode, brp_process_selector] = GetParam();
+
+  test::ScopedFeatureList pcscan_scope;
+  std::vector<test::FeatureRef> empty_list = {};
+  std::vector<test::FeatureRef> pcscan_list = {
+      features::kPartitionAllocPCScanBrowserOnly};
+  pcscan_scope.InitWithFeatures(pcscan_enabled ? pcscan_list : empty_list,
+                                pcscan_enabled ? empty_list : pcscan_list);
+
+  test::ScopedFeatureList brp_scope;
+  brp_scope.InitAndEnableFeatureWithParameters(
+      features::kPartitionAllocBackupRefPtr,
+      {{"brp-mode", std::string(brp_mode.arg_string)},
+       {"enabled-processes", std::string(brp_process_selector.arg_string)}});
+
+  [[maybe_unused]] bool brp_truly_enabled = false;
+  [[maybe_unused]] bool brp_nondefault_behavior = false;
+  std::string brp_expectation = "Unavailable";
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  brp_expectation =
+      pcscan_enabled ? "Ignore_PCScanIsOn" : brp_mode.mapped_feature_string;
+  brp_truly_enabled = (brp_mode.arg_string == "enabled");
+  brp_nondefault_behavior = (brp_mode.arg_string != "disabled");
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (brp_expectation[brp_expectation.length() - 1] == '_') {
+    brp_expectation += brp_process_selector.mapped_feature_string;
+  }
+  std::string pcscan_expectation = "Unavailable";
+  std::string pcscan_expectation_fallback = "Unavailable";
+#if BUILDFLAG(USE_STARSCAN)
+  pcscan_expectation = brp_truly_enabled
+                           ? "Ignore_BRPIsOn"
+                           : (pcscan_enabled ? "Enabled" : "Disabled");
+  pcscan_expectation_fallback = brp_nondefault_behavior
+                                    ? "Ignore_BRPIsOn"
                                     : (pcscan_enabled ? "Enabled" : "Disabled");
 #endif  // BUILDFLAG(USE_STARSCAN)
 
-        auto trials = ProposeSyntheticFinchTrials();
-        auto group_iter = trials.find("BackupRefPtr_Effective");
-        EXPECT_NE(group_iter, trials.end());
-        EXPECT_EQ(group_iter->second, brp_expectation);
-        group_iter = trials.find("PCScan_Effective");
-        EXPECT_NE(group_iter, trials.end());
-        EXPECT_EQ(group_iter->second, pcscan_expectation);
-        group_iter = trials.find("PCScan_Effective_Fallback");
-        EXPECT_NE(group_iter, trials.end());
-        EXPECT_EQ(group_iter->second, pcscan_expectation_fallback);
-      }
-    }
-  }
+  auto trials = ProposeSyntheticFinchTrials();
+  auto group_iter = trials.find("BackupRefPtr_Effective");
+  EXPECT_NE(group_iter, trials.end());
+  EXPECT_EQ(group_iter->second, brp_expectation);
+  group_iter = trials.find("PCScan_Effective");
+  EXPECT_NE(group_iter, trials.end());
+  EXPECT_EQ(group_iter->second, pcscan_expectation);
+  group_iter = trials.find("PCScan_Effective_Fallback");
+  EXPECT_NE(group_iter, trials.end());
+  EXPECT_EQ(group_iter->second, pcscan_expectation_fallback);
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
