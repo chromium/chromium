@@ -38,7 +38,7 @@ import {getTemplate} from './kerberos_accounts_subpage.html.js';
 const SettingsKerberosAccountsSubpageElementBase = DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsKerberosAccountsSubpageElement extends
+export class SettingsKerberosAccountsSubpageElement extends
     SettingsKerberosAccountsSubpageElementBase {
   static get is() {
     return 'settings-kerberos-accounts-subpage' as const;
