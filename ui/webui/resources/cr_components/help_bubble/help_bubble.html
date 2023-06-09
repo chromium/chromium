@@ -6,6 +6,7 @@
     --help-bubble-close-button-size: 24px;
     --help-bubble-element-spacing: 8px;
     --help-bubble-padding: 16px 20px;
+    --help-bubble-font-weight: 500;
 
     border-radius: var(--help-bubble-border-radius);
     box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15),
@@ -20,6 +21,7 @@
     --help-bubble-border-radius: 12px;
     --help-bubble-close-button-size: 20px;
     --help-bubble-padding: 20px;
+    --help-bubble-font-weight: 400;
   }
 
   #arrow {
@@ -135,7 +137,7 @@
     flex: 1;
     font-size: 14px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: var(--help-bubble-font-weight);
     letter-spacing: 0.3px;
     line-height: 20px;
     margin: 0;
@@ -247,6 +249,10 @@
                    var(--help-bubble-body-icon-image-size)) / 2);
     text-align: center;
     width: var(--help-bubble-body-icon-size);
+  }
+
+  #bodyIcon iron-icon {
+    display: block;
   }
 
   #buttons {

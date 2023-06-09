@@ -468,15 +468,15 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kBodyTextIdForTesting);
 
-// Explicitly don't use the default DIALOG_SHADOW as it will show a black
-// outline in dark mode on Mac. Use our own shadow instead. The shadow type is
-// the same for all other platforms.
 HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
                                const internal::HelpBubbleAnchorParams& anchor,
                                HelpBubbleParams params)
-    : BubbleDialogDelegateView(anchor.view,
-                               TranslateArrow(params.arrow),
-                               views::BubbleBorder::STANDARD_SHADOW),
+    : BubbleDialogDelegateView(
+          anchor.view,
+          TranslateArrow(params.arrow),
+          base::FeatureList::IsEnabled(features::kChromeRefresh2023)
+              ? views::BubbleBorder::DIALOG_SHADOW
+              : views::BubbleBorder::STANDARD_SHADOW),
       delegate_(delegate) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
@@ -805,9 +805,11 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // have to change it afterwards:
   set_adjust_if_offscreen(true);
   auto* const frame_view = GetBubbleFrameView();
-  frame_view->SetCornerRadius(
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh));
+  if (!base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+    frame_view->SetCornerRadius(
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kHigh));
+  }
   frame_view->SetDisplayVisibleArrow(anchor.show_arrow &&
                                      params.arrow != HelpBubbleArrow::kNone);
   SizeToContents();

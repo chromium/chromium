@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/chrome_typography.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/default_style.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/platform_font.h"
 
@@ -118,6 +120,9 @@ void ApplyCommonFontStyles(int context,
 #endif
     case CONTEXT_IPH_BUBBLE_TITLE:
       details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
+      if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+        details.weight = gfx::Font::Weight::MEDIUM;
+      }
       break;
     case CONTEXT_IPH_BUBBLE_BODY:
       details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
