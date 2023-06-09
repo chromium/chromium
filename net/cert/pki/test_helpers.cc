@@ -469,7 +469,7 @@ void VerifyUserConstrainedPolicySet(
     const std::set<der::Input>& actual_user_constrained_policy_set,
     const std::string& errors_file_path) {
   std::set<std::string> actual_user_constrained_policy_str_set;
-  for (const auto der_oid : actual_user_constrained_policy_set) {
+  for (const der::Input& der_oid : actual_user_constrained_policy_set) {
     actual_user_constrained_policy_str_set.insert(OidToString(der_oid));
   }
   if (expected_user_constrained_policy_str_set !=
