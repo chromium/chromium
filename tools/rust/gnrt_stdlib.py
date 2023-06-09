@@ -58,7 +58,7 @@ def main():
         RunCommand([
             os.path.join(cargo_work_dir, 'release', f'gnrt{EXE}'), 'gen',
             f'--for-std={os.path.relpath(args.rust_src_dir, CHROMIUM_DIR)}',
-            f'--cargo-path={cargo_bin}'
+            f'--cargo-path={cargo_bin}', f'--rustc-path={rustc_bin}'
         ])
 
 

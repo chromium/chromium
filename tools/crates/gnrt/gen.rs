@@ -106,6 +106,9 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
         command.cargo_path(cargo_path);
     }
+    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
+        command.env("RUSTC", rustc_path);
+    }
 
     command.current_dir(&paths.third_party);
     let dependencies = deps::collect_dependencies(&command.exec().unwrap(), None, None);
@@ -260,6 +263,9 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     let mut command = cargo_metadata::MetadataCommand::new();
     if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
         command.cargo_path(cargo_path);
+    }
+    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
+        command.env("RUSTC", rustc_path);
     }
 
     command.current_dir(paths.std_fake_root);

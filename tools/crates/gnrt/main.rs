@@ -37,6 +37,14 @@ fn main() -> Result<()> {
                         .help("Path to the cargo executable"),
                 )
                 .arg(
+                    Arg::new("rustc-path")
+                        .long("rustc-path")
+                        .value_name("RUSTC_PATH")
+                        .value_parser(clap::value_parser!(String))
+                        .num_args(1)
+                        .help("Path to the rustc executable"),
+                )
+                .arg(
                     Arg::new("for-std")
                         .long("for-std")
                         .value_parser(clap::value_parser!(String))
