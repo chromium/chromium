@@ -1632,21 +1632,6 @@
             ]
         }
     ],
-    "AutoupgradeMixedContent": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "AutoupgradeMixedContent",
-                    "enable_features": [
-                        "AutoupgradeMixedContentWebKit"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvatarsCloudMigration": [
         {
             "platforms": [
