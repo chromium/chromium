@@ -143,6 +143,10 @@ AXTreeID AXTreeManager::GetParentTreeID() const {
   return ax_tree_ ? ax_tree_->data().parent_tree_id : AXTreeIDUnknown();
 }
 
+bool AXTreeManager::IsPlatformTreeManager() const {
+  return false;
+}
+
 AXNode* AXTreeManager::GetRoot() const {
   return ax_tree_ ? ax_tree_->root() : nullptr;
 }
