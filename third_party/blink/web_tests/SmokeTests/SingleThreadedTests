@@ -92,6 +92,7 @@ compositing/reflections/nested-reflection-transformed2.html
 compositing/scroll-with-inner-clip.html
 compositing/scrollbars/nested-overlay-scrollbars.html
 compositing/shadows/shadow-drawing.html
+compositing/squashing/squash-above-fixed-1.html
 compositing/squashing/squash-above-fixed-3.html
 compositing/transform-gained-3d.html
 compositing/video/video-reflection.html
@@ -255,6 +256,7 @@ fast/cookies/local-file-can-set-cookies.html
 fast/css-generated-content/pseudo-animation-display.html
 fast/css-intrinsic-dimensions/width-avoid-floats.html
 fast/css/block-focus-ring-with-border-radius.html
+fast/css/first-letter-hover-002.html
 fast/css/first-letter-to-non-block-container.html
 fast/css/font-face-character-fallback.html
 fast/css/font-face-default-font.html
@@ -304,8 +306,10 @@ fast/dnd/dropEffect-for-effectAllowed.html
 fast/dnd/dropEffect-for-image.html
 fast/dnd/dropEffect-for-link.html
 fast/dnd/dropEffect-for-modifier-leftControl.html
+fast/dnd/dropEffect-for-modifier-leftShift.html
 fast/dnd/dropEffect-for-modifier-nokey.html
 fast/dnd/event-mouse-coordinates.html
+fast/dnd/link-dragging-draggable-div-with-link.html
 fast/dnd/link-dragging-draggable-link.html
 fast/dnd/link-dragging-non-draggable-link.html
 fast/dom/Document/readystate.html
@@ -378,6 +382,8 @@ fast/events/touch/gesture/gesture-scroll.html
 fast/events/touch/gesture/gesture-scrollbar-touchpad-fling.html
 fast/events/touch/gesture/gesture-tap-active-state.html
 fast/events/touch/gesture/gesture-tap-frame-removed.html
+fast/events/touch/gesture/gesture-tap-frame-scrollbar.html
+fast/events/touch/gesture/gesture-tap-hover-clear.html
 fast/events/touch/gesture/long-press-on-draggable-element-in-iframe-triggers-drag.html
 fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html
 fast/events/touch/gesture/touch-gesture-noscroll-body-xhidden.html
@@ -414,8 +420,10 @@ fast/forms/accent-color/checkbox-accent-color-hover-appearance.html
 fast/forms/accent-color/checkbox-accent-color-hover-dark-appearance.html
 fast/forms/accent-color/checkbox-accent-color-press-appearance.html
 fast/forms/accent-color/checkbox-accent-color-press-dark-appearance.html
+fast/forms/accent-color/radio-accent-color-hover-appearance.html
 fast/forms/accent-color/radio-accent-color-press-appearance.html
 fast/forms/accent-color/radio-accent-color-press-dark-appearance.html
+fast/forms/accent-color/range-accent-color-hover-appearance.html
 fast/forms/accent-color/range-accent-color-press-appearance.html
 fast/forms/accent-color/range-accent-color-press-dark-appearance.html
 fast/forms/autofocus-in-sandbox-with-allow-scripts.html
@@ -506,6 +514,7 @@ fast/forms/fieldset/float-before-fieldset.html
 fast/forms/fieldset/legend-after-margin-horizontal-writing-mode.html
 fast/forms/file/file-appearance-basic.html
 fast/forms/file/file-appearance-no-default-width.html
+fast/forms/file/file-input-pressed-state.html
 fast/forms/file/recover-file-input-in-unposted-form.html
 fast/forms/focus-rect/checkbox-zoom-focus-ring.html
 fast/forms/focus-rect/focus-ring-multiline-link.html
@@ -1566,6 +1575,7 @@ inspector-protocol/debugger/debugger-setTimeout-sourceUrl-dedicated-worker-loop.
 inspector-protocol/debugger/wasm-streaming-url.js
 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js
 inspector-protocol/heap-profiler/sampling-heap-profiler.js
+inspector-protocol/input/dispatchKeyEvent-focus.js
 inspector-protocol/input/dispatchMouseEvent.js
 inspector-protocol/input/dispatchTouchEvent-wait-frame.js
 inspector-protocol/input/imeSetComposition-01.js
@@ -1811,6 +1821,7 @@ svg/css/max-width-2.html
 svg/custom/anchor-on-use.svg
 svg/custom/embedding-external-svgs.xhtml
 svg/custom/focus-ring-2.svg
+svg/custom/getscreenctm-in-scrollable-div-area-nested.xhtml
 svg/custom/getscreenctm-in-scrollable-div-area.xhtml
 svg/custom/getscreenctm-in-scrollable-svg-area.xhtml
 svg/custom/grayscale-gradient-mask-2.svg
@@ -1873,6 +1884,7 @@ transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html
 transforms/3d/point-mapping/3d-point-mapping.html
 transforms/combine-transforms-properties-transform.html
 transforms/perspective-fixed-pos-descendant.html
+transforms/rotated-transform-affects-scrolling-2.html
 transforms/shadows.html
 transforms/svg-vs-css.xhtml
 transforms/transformed-caret.html
@@ -1886,9 +1898,6 @@ virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-laz
 virtual/controls-refresh-hc/fast/forms/color-scheme/button/button-appearance-basic.html
 virtual/controls-refresh-hc/fast/forms/color-scheme/color/color-suggestion-picker-appearance.html
 virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-disabled-multiple-hover-focused-unselected.html
-virtual/controls-refresh-hc/fast/forms/color-scheme/suggestion-picker/time-suggestion-picker-appearance.html
-virtual/css-highlight-inheritance/wpt_internal/css/css-pseudo/spelling-error-color-dynamic-001.html
-virtual/css-highlight-overlay-painting/wpt_internal/css/css-pseudo/spelling-error-color-dynamic-001.html
 virtual/dark-color-scheme/date/date-picker-month-year-selector.html
 virtual/dark-color-scheme/date/date-picker-open.html
 virtual/dark-color-scheme/datetimelocal-picker/datetimelocal-month-year-selector.html
@@ -1896,7 +1905,6 @@ virtual/dark-color-scheme/details_summary/details-with-summary-focus-ring.html
 virtual/dark-color-scheme/fast/forms/color-scheme/meter/meter-appearance-basic.html
 virtual/dark-color-scheme/fast/forms/color-scheme/select/select-appearance-after-closing-popup.html
 virtual/dark-color-scheme/fast/forms/color-scheme/select/select-multiple-hover-focused-unselected.html
-virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/week-suggestion-picker-appearance.html
 virtual/dark-color-scheme/media/audio-focus-ring.html
 virtual/dark-color-scheme/range/range-focus-ring.html
 virtual/disable-composite-scroll-after-paint/compositing/overflow/border-radius-on-grandparent-composited-grandchild.html
@@ -1905,12 +1913,9 @@ virtual/disable-composite-scroll-after-paint/compositing/overflow/mask-with-filt
 virtual/disable-composite-scroll-after-paint/compositing/overflow/mask-with-small-content-rect.html
 virtual/disable-composite-scroll-after-paint/compositing/overflow/scaled-mask.html
 virtual/disable-composite-scroll-after-paint/compositing/overflow/siblings-with-border-radius-ancestor.html
-virtual/disable-composite-scroll-after-paint/http/tests/devtools/layers/layer-replay-scale.js
-virtual/disable-composite-scroll-after-paint/paint/invalidation/overflow/resize-child-within-overflow.html
 virtual/disable-composite-scroll-after-paint/paint/invalidation/scroll/document-flipped-blocks-writing-mode-scroll.html
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-viewport-resize.html
 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html
-virtual/exotic-color-space/images/color-profile-group.html
 virtual/exotic-color-space/images/color-profile-iframe.html
 virtual/exotic-color-space/images/color-profile-image-shape.html
 virtual/exotic-color-space/images/color-profile-reflection.html
@@ -1943,7 +1948,6 @@ virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-l
 virtual/gpu-rasterization/images/12-55.html
 virtual/gpu-rasterization/images/182.html
 virtual/gpu-rasterization/images/2-comp.html
-virtual/gpu-rasterization/images/color-profile-background-image-cover.html
 virtual/gpu-rasterization/images/color-profile-iframe.html
 virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html
 virtual/gpu-rasterization/images/color-profile-image-shape.html
@@ -1968,9 +1972,7 @@ virtual/main-threaded-percent-based-scrolling/virtual/percent-based-scrolling/ma
 virtual/main-threaded-percent-based-scrolling/virtual/percent-based-scrolling/max-percent-delta-pinch-zoom.html
 virtual/main-threaded-percent-based-scrolling/virtual/percent-based-scrolling/max-percent-delta.html
 virtual/netinfo-constant-type/netinfo/multiple-frames.html
-virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-svg.html
 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-video-imageSmoothingEnabled.html
-virtual/offsetparent-old-behavior/fast/dom/shadow/event-path-load.html
 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-placeholder-image-source-with-worker.html
 virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html
 virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-out-of-bounds-src.html
@@ -2062,19 +2064,16 @@ virtual/plz-dedicated-worker/http/tests/devtools/forced-layout-in-microtask.js
 virtual/plz-dedicated-worker/http/tests/devtools/indexeddb/resources-panel.js
 virtual/plz-dedicated-worker/http/tests/devtools/inline-source-map-loading.js
 virtual/plz-dedicated-worker/http/tests/devtools/inspect-element.js
-virtual/plz-dedicated-worker/http/tests/devtools/layers/layers-3d-view-hit-testing.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/har-post.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/network-columns-visible.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/network-eventsource.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/network-iframe-load-and-delete.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/network-image-404.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/network-initiator-from-console.js
-virtual/plz-dedicated-worker/http/tests/devtools/network/network-worker-fetch-blocked.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/network-xhr-data-received-async-response-type-blob.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/network-xhr-post-payload.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/ping.js
 virtual/plz-dedicated-worker/http/tests/devtools/network/request-name-path.js
-virtual/plz-dedicated-worker/http/tests/devtools/persistence/automapping-rename-files.js
 virtual/plz-dedicated-worker/http/tests/devtools/persistence/persistence-do-not-overwrite-css.js
 virtual/plz-dedicated-worker/http/tests/devtools/persistence/persistence-go-to-file-dialog.js
 virtual/plz-dedicated-worker/http/tests/devtools/persistence/persistence-sync-content.js
@@ -2122,11 +2121,9 @@ virtual/plz-dedicated-worker/http/tests/inspector-protocol/accessibility/accessi
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/debugger/reload-on-pause/iframe-fetch.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/fedcm/fedcm-dialog-event-enable-after-dialog.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/fetch/dedicated-worker-main-script.js
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-service-worker-allowed-header.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/issues/content-security-policy-issue-creation-inline-script.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/get-response-body.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/raw-headers-after-navigation.js
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/page/page-events-associated-isolation.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/runtime/serialization_options.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/storage/cache-storage-request-cache-names.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/storage/indexed-db-storage-key-request-database-names.js
