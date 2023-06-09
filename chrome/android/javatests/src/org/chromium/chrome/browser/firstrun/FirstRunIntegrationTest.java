@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.partnercustomizations.BasePartnerBrowserCustomizationIntegrationTestRule;
+import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
@@ -117,6 +119,10 @@ public class FirstRunIntegrationTest {
 
     @Rule
     public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
+
+    @Rule
+    public BasePartnerBrowserCustomizationIntegrationTestRule mCustomizationRule =
+            new BasePartnerBrowserCustomizationIntegrationTestRule();
 
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
@@ -243,6 +249,13 @@ public class FirstRunIntegrationTest {
         mContext.startActivity(intent);
     }
 
+    private void launchMainIntent() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setPackage(mContext.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    }
+
     private void clickThroughFirstRun(
             FirstRunActivity firstRunActivity, FirstRunPagesTestCase testCase) throws Exception {
         // Start FRE.
@@ -330,6 +343,22 @@ public class FirstRunIntegrationTest {
         Mockito.verify(mAccountManagerFacade, atLeastOnce()).getAccounts();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mAccountsPromise.fulfill(Collections.emptyList()));
+    }
+
+    @Test
+    @MediumTest
+    public void startPartnerCustomizationDuringFRE() {
+        launchFirstRunActivity();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> PartnerBrowserCustomizations.getInstance().isInitialized());
+    }
+
+    @Test
+    @MediumTest
+    public void startPartnerCustomizationFromMainIntent() {
+        launchMainIntent();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> PartnerBrowserCustomizations.getInstance().isInitialized());
     }
 
     @Test
