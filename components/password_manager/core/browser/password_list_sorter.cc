@@ -94,7 +94,9 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
   if (credential.passkey_credential_id.empty()) {
     key += kSortKeyPasswordSymbol;
   } else {
-    key += base::HexEncode(credential.passkey_credential_id);
+    key += base::UTF16ToUTF8(credential.user_display_name) +
+           kSortKeyPartsSeparator +
+           base::HexEncode(credential.passkey_credential_id);
   }
   return key;
 }
