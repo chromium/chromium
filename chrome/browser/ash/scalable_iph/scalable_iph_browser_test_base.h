@@ -9,17 +9,17 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
 
-class ScalableIphBrowserTestBase : public InProcessBrowserTest {
+class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
  public:
-  // InProcessBrowserTest:
+  // CustomizableTestEnvBrowserTestBase:
   void SetUp() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;

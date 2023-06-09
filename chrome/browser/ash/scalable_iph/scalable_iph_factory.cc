@@ -5,15 +5,22 @@
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -54,12 +61,39 @@ void ScalableIphFactory::SetDelegateFactoryForTesting(
 
 content::BrowserContext* ScalableIphFactory::GetBrowserContextToUse(
     content::BrowserContext* browser_context) const {
+  if (g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->IsDeviceEnterpriseManaged()) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile) {
     return nullptr;
   }
 
-  if (!profile->IsRegularProfile() || profile->IsChild()) {
+  if (!profile->IsRegularProfile()) {
+    return nullptr;
+  }
+
+  if (profile->IsChild()) {
+    return nullptr;
+  }
+
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    return nullptr;
+  }
+
+  // A fail-safe behavior. If a user manager is not initialized yet, do not
+  // start ScalableIph.
+  if (!user_manager::UserManager::IsInitialized()) {
+    DCHECK(false) << "UserManager is not initialized yet.";
+    return nullptr;
+  }
+
+  if (!user_manager::UserManager::Get()->IsOwnerUser(
+          BrowserContextHelper::Get()->GetUserByBrowserContext(
+              browser_context))) {
     return nullptr;
   }
 

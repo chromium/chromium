@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -43,12 +43,18 @@ void ScalableIphBrowserTestBase::SetUp() {
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
               &ScalableIphBrowserTestBase::SetTestingFactories));
 
-  InProcessBrowserTest::SetUp();
+  CustomizableTestEnvBrowserTestBase::SetUp();
 }
 
 // `SetUpOnMainThread` is called just before a test body. Do the mock set up in
 // this function as `browser()` is not available in `SetUp` above.
 void ScalableIphBrowserTestBase::SetUpOnMainThread() {
+  // `CustomizableTestEnvBrowserTestBase::SetUpOnMainThread` must be called
+  // before our `SetUpOnMainThread` as login happens in the method, i.e. profile
+  // is not available before it.
+  CustomizableTestEnvBrowserTestBase::SetUpOnMainThread();
+  CHECK(browser()->profile());
+
   mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
       feature_engagement::TrackerFactory::GetForBrowserContext(
           browser()->profile()));
@@ -74,8 +80,6 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
   mock_delegate_ = static_cast<test::MockScalableIphDelegate*>(
       scalable_iph->delegate_for_testing());
   CHECK(mock_delegate_);
-
-  InProcessBrowserTest::SetUpOnMainThread();
 }
 
 void ScalableIphBrowserTestBase::TearDownOnMainThread() {

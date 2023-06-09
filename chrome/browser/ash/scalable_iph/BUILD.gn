@@ -16,6 +16,8 @@ source_set("scalable_iph_factory") {
     ":scalable_iph_delegate_impl",
     "//base",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
@@ -40,6 +42,20 @@ source_set("scalable_iph_delegate_impl") {
   ]
 }
 
+source_set("customizable_test_env_browser_test_base") {
+  testonly = true
+
+  sources = [
+    "customizable_test_env_browser_test_base.cc",
+    "customizable_test_env_browser_test_base.h",
+  ]
+
+  deps = [
+    "//chrome/browser/ash:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+}
+
 source_set("browser_test_base") {
   testonly = true
 
@@ -49,13 +65,13 @@ source_set("browser_test_base") {
   ]
 
   deps = [
+    ":customizable_test_env_browser_test_base",
     ":mock_scalable_iph_delegate",
     ":scalable_iph_factory",
     "//base",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
     "//components/feature_engagement/public",

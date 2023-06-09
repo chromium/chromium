@@ -4430,6 +4430,8 @@ static_library("test_support") {
     "login/test/dialog_window_waiter.h",
     "login/test/embedded_test_server_setup_mixin.cc",
     "login/test/embedded_test_server_setup_mixin.h",
+    "login/test/guest_session_mixin.cc",
+    "login/test/guest_session_mixin.h",
     "login/test/js_checker.cc",
     "login/test/js_checker.h",
     "login/test/local_state_mixin.cc",

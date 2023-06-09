@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,7 +17,22 @@
 
 namespace {
 
-using ScalableIphBrowserTest = ash::ScalableIphBrowserTestBase;
+using ScalableIphBrowserTest = ::ash::ScalableIphBrowserTestBase;
+using TestEnvironment =
+    ::ash::CustomizableTestEnvBrowserTestBase::TestEnvironment;
+using UserSessionType =
+    ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
+
+class ScalableIphBrowserTestParameterized
+    : public ash::CustomizableTestEnvBrowserTestBase,
+      public testing::WithParamInterface<TestEnvironment> {
+ public:
+  void SetUp() override {
+    SetTestEnvironment(GetParam());
+
+    ash::CustomizableTestEnvBrowserTestBase::SetUp();
+  }
+};
 
 BASE_FEATURE(kScalableIphTest,
              "ScalableIphTest",
@@ -58,5 +75,42 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
 }
 
-// TODO(b/284053005): Add a test case for available profiles.
+INSTANTIATE_TEST_SUITE_P(
+    NoScalableIph,
+    ScalableIphBrowserTestParameterized,
+    testing::Values(
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED,
+            UserSessionType::kManaged),
+        // A test case where a regular profile on a managed device.
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED,
+            UserSessionType::kRegular),
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kGuest),
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kChild),
+        // A test case where a child profile is an owner of a device.
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kChildOwner),
+        // A Test case where a managed account is an owner of an un-enrolled
+        // device.
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kManaged),
+        // A test case where a regular profile is not an owner profile.
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kRegularNonOwner)),
+    &TestEnvironment::GenerateTestName);
+
+IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestParameterized,
+                       ScalableIphNotAvailable) {
+  EXPECT_EQ(nullptr,
+            ash::ScalableIphFactory::GetForProfile(browser()->profile()));
+}
+
 // TODO(b/284053005): Add a test case for invalid event name.
