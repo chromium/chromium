@@ -209,10 +209,10 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else if (IsOutermostSVGSVGElement() &&
              (property == width_ || property == height_)) {
@@ -221,13 +221,13 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     // negative values here.
     if (property == width_) {
       if (const CSSValue* width = width_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(
-            style, property->CssPropertyId(), *width);
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
+                                                *width);
       }
     } else if (property == height_) {
       if (const CSSValue* height = height_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(
-            style, property->CssPropertyId(), *height);
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
+                                                *height);
       }
     }
   } else {

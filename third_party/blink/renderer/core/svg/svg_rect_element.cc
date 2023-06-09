@@ -121,22 +121,22 @@ void SVGRectElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
                                             width_->CssValue());
   } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
                                             height_->CssValue());
   } else if (property == rx_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRx,
                                             rx_->CssValue());
   } else if (property == ry_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRy,
                                             ry_->CssValue());
   } else {
     SVGGeometryElement::CollectStyleForPresentationAttribute(name, value,

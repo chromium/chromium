@@ -122,7 +122,7 @@ void SVGPathElement::CollectStyleForPresentationAttribute(
     // geometry sharing.
     if (const SVGElement* element = CorrespondingElement())
       path = To<SVGPathElement>(element)->GetPath();
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kD,
                                             path->CssValue());
     return;
   }

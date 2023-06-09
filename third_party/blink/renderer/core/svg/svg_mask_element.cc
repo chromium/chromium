@@ -89,16 +89,16 @@ void SVGMaskElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
                                             width_->CssValue());
   } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
                                             height_->CssValue());
   } else {
     SVGElement::CollectStyleForPresentationAttribute(name, value, style);

@@ -109,16 +109,16 @@ void SVGImageElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
                                             width_->CssValue());
   } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
                                             height_->CssValue());
   } else if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else {
     SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value,

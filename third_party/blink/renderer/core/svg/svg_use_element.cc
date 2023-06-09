@@ -171,10 +171,10 @@ void SVGUseElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else {
     SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value,
