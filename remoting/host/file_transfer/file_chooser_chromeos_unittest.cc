@@ -76,7 +76,14 @@ class FileChooserChromeOsTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(FileChooserChromeOsTest, SingleFileSelection) {
+#if defined(LEAK_SANITIZER)
+// TODO(https://crbug.com/1453685): Fix LeakSanitizer failure.
+#define MAYBE_DISABLED(name) DISABLED_##name
+#else
+#define MAYBE_DISABLED(name) name
+#endif
+
+TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(SingleFileSelection)) {
   base::test::TestFuture<FileChooser::Result> result_future;
   SetResultFileSelectionFactory(kTestFilePath);
 
@@ -86,7 +93,7 @@ TEST_F(FileChooserChromeOsTest, SingleFileSelection) {
   EXPECT_EQ(result_future.Get().success(), kTestFilePath);
 }
 
-TEST_F(FileChooserChromeOsTest, FileCancelationAllowed) {
+TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(FileCancelationAllowed)) {
   base::test::TestFuture<FileChooser::Result> result_future;
   SetCancelFileSelectionFactory();
 
@@ -97,7 +104,7 @@ TEST_F(FileChooserChromeOsTest, FileCancelationAllowed) {
             protocol::FileTransfer_Error_Type_CANCELED);
 }
 
-TEST_F(FileChooserChromeOsTest, OnlyAllowSingleFileSelection) {
+TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(OnlyAllowSingleFileSelection)) {
   base::test::TestFuture<FileChooser::Result> result_future;
   SetResultFileSelectionFactory(kTestFilePath);
 
