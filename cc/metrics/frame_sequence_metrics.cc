@@ -79,6 +79,7 @@ constexpr int kMinFramesForThroughputMetric = 100;
 constexpr int kBuiltinSequenceNum =
     static_cast<int>(FrameSequenceTrackerType::kMaxType) + 1;
 constexpr int kMaximumHistogramIndex = 3 * kBuiltinSequenceNum;
+constexpr int kMaximumJankV3HistogramIndex = 2 * kBuiltinSequenceNum;
 
 int GetIndexForMetric(SmoothEffectDrivingThread thread_type,
                       FrameSequenceTrackerType type) {
@@ -87,6 +88,15 @@ int GetIndexForMetric(SmoothEffectDrivingThread thread_type,
   if (thread_type == SmoothEffectDrivingThread::kCompositor)
     return static_cast<int>(type) + kBuiltinSequenceNum;
   return static_cast<int>(type) + 2 * kBuiltinSequenceNum;
+}
+
+int GetIndexForJankV3Metric(SmoothEffectDrivingThread thread_type,
+                            FrameSequenceTrackerType type) {
+  if (thread_type == SmoothEffectDrivingThread::kMain) {
+    return static_cast<int>(type);
+  }
+  DCHECK_EQ(thread_type, SmoothEffectDrivingThread::kCompositor);
+  return static_cast<int>(type) + kBuiltinSequenceNum;
 }
 
 std::string GetCheckerboardingHistogramName(FrameSequenceTrackerType type) {
@@ -356,8 +366,8 @@ void FrameSequenceMetrics::ReportMetrics() {
     const char* jank_thread_name = GetJankThreadTypeName(GetEffectiveThread());
     STATIC_HISTOGRAM_POINTER_GROUP(
         GetJankV3HistogramName(type_, jank_thread_name),
-        static_cast<int>(type_),
-        static_cast<int>(FrameSequenceTrackerType::kMaxType), Add(percent_jank),
+        GetIndexForJankV3Metric(GetEffectiveThread(), type_),
+        kMaximumJankV3HistogramIndex, Add(percent_jank),
         base::LinearHistogram::FactoryGet(
             GetJankV3HistogramName(type_, jank_thread_name), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
