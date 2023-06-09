@@ -121,6 +121,7 @@
     "ToTLinuxCoverage": "Ubuntu-22.04",
     "ToTLinuxPGO": "Ubuntu-22.04",
     "ToTLinuxTSan": "Ubuntu-22.04",
+    "ToTLinuxUBSanVptr": "Ubuntu-22.04",
     "VR Linux": "Ubuntu-22.04",
     "Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)": "Ubuntu-22.04",
     "Win10 FYI x64 DX12 Vulkan Release (NVIDIA)": "Ubuntu-22.04",
