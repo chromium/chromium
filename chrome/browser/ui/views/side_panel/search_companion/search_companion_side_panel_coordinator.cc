@@ -32,8 +32,8 @@ SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
       // TODO(b/269331995): Localize menu item label.
       name_(l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TITLE)),
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      icon_(vector_icons::kGoogleSuperGIcon),
-      disabled_icon_(vector_icons::kGoogleGLogoMonochromeIcon),
+      icon_(vector_icons::kGoogleSearchCompanionLogoIcon),
+      disabled_icon_(vector_icons::kGoogleSearchCompanionMonochromeLogoIcon),
 #else
       icon_(vector_icons::kSearchIcon),
       disabled_icon_(vector_icons::kSearchIcon),
