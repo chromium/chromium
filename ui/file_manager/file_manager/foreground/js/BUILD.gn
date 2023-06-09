@@ -935,6 +935,7 @@ js_library("main_window_component") {
     ":directory_model",
     ":file_selection",
     ":naming_controller",
+    "ui:directory_tree",
     "ui:file_manager_ui",
     "ui:file_tap_handler",
     "ui:list_container",

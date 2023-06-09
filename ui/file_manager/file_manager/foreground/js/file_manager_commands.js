@@ -9,6 +9,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
+import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -22,6 +23,8 @@ import {State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getFileData, getStore} from '../../state/store.js';
+import {XfTree} from '../../widgets/xf_tree.js';
+import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {ActionsModel} from './actions_model.js';
 import {constants} from './constants.js';
@@ -121,9 +124,10 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
     return [element.entry];
   }
 
-  // DirectoryTree has the selected item.
-  if (element.selectedItem && element.selectedItem.entry) {
-    return [element.selectedItem.entry];
+  // DirectoryTree has the focused item.
+  const focusedItem = getFocusedTreeItem(element);
+  if (focusedItem?.entry) {
+    return [focusedItem.entry];
   }
 
   // The event target could still be a descendant of a DirectoryItem element
@@ -171,11 +175,11 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
  * @return {DirectoryEntry|FilesAppEntry} The extracted parent entry.
  */
 CommandUtil.getParentEntry = (element, directoryModel) => {
-  if (element && element.selectedItem && element.selectedItem.parentItem &&
-      element.selectedItem.parentItem.entry) {
-    // DirectoryTree has the selected item.
-    return element.selectedItem.parentItem.entry;
-  } else if (element.parentItem && element.parentItem.entry) {
+  const focusedItem = getFocusedTreeItem(element);
+  if (focusedItem?.parentItem?.entry) {
+    // DirectoryTree has the focused item.
+    return focusedItem.parentItem.entry;
+  } else if (element.parentItem?.entry) {
     // DirectoryItem has parentItem.
     return element.parentItem.entry;
   } else if (element instanceof List) {
@@ -528,7 +532,7 @@ CommandUtil.containsNonInteractiveEntry = (entries, fileManager) => {
  */
 export class CommandHandler {
   /**
-   * @param {!CommandHandlerDeps} fileManager Classes |CommandHalder| depends.
+   * @param {!CommandHandlerDeps} fileManager Classes |CommandHandler| depends.
    * @param {!FileSelectionHandler} selectionHandler
    */
   constructor(fileManager, selectionHandler) {
@@ -971,10 +975,10 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     let targetDirectory;
     let executedFromDirectoryTree;
 
-    if (event.target instanceof DirectoryTree) {
-      targetDirectory = event.target.selectedItem.entry;
+    if (isDirectoryTree(event.target)) {
+      targetDirectory = getFocusedTreeItem(event.target)?.entry;
       executedFromDirectoryTree = true;
-    } else if (event.target instanceof DirectoryItem) {
+    } else if (isDirectoryTreeItem(event.target)) {
       targetDirectory = event.target.entry;
       executedFromDirectoryTree = true;
     } else {
@@ -1076,8 +1080,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
       event.command.setHidden(true);
       return;
     }
-    if (event.target instanceof DirectoryItem ||
-        event.target instanceof DirectoryTree) {
+    if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
       const entry = entries[0];
       if (!entry || util.isFakeEntry(entry) ||
           util.isTeamDrivesGrandRoot(entry)) {
@@ -1734,8 +1737,8 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       let entry;
       if (target.entry) {
         entry = target.entry;
-      } else if (target.selectedItem && target.selectedItem.entry) {
-        entry = target.selectedItem.entry;
+      } else if (getFocusedTreeItem(target)?.entry) {
+        entry = getFocusedTreeItem(target).entry;
       } else {
         return false;
       }
@@ -1838,16 +1841,17 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
         isRemovableRoot = true;
       }
     }
-    if (event.target instanceof DirectoryTree ||
-        event.target instanceof DirectoryItem) {
-      if (event.target instanceof DirectoryTree) {
-        const directoryTree = event.target;
+    if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
+      if (isDirectoryTree(event.target)) {
+        const directoryTree =
+            /** @type {!DirectoryTree|!XfTree} */ (event.target);
         assert(fileManager.directoryTreeNamingController)
             .attachAndStart(
-                assert(directoryTree.selectedItem), isRemovableRoot,
+                assert(getFocusedTreeItem(event.target)), isRemovableRoot,
                 volumeInfo);
-      } else if (event.target instanceof DirectoryItem) {
-        const directoryItem = event.target;
+      } else if (isDirectoryTreeItem(event.target)) {
+        const directoryItem =
+            /** @type {!DirectoryItem|!XfTreeItem} */ (event.target);
         assert(fileManager.directoryTreeNamingController)
             .attachAndStart(directoryItem, isRemovableRoot, volumeInfo);
       }

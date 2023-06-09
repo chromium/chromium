@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
-import {queryRequiredElement} from '../../common/js/dom_utils.js';
+import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
@@ -17,6 +17,8 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {XfTree} from '../../widgets/xf_tree.js';
+import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {DropEffectType} from './drop_effect_and_label.js';
@@ -67,7 +69,7 @@ export class FileTransferController {
   /**
    * @param {!Document} doc Owning document.
    * @param {!ListContainer} listContainer List container.
-   * @param {!DirectoryTree} directoryTree Directory tree.
+   * @param {!DirectoryTree|!XfTree} directoryTree Directory tree.
    * @param {function(boolean, !Array<string>): !Promise<boolean>}
    *     confirmationCallback called when operation requires user's
    *     confirmation. The operation will be executed if the return value
@@ -265,7 +267,8 @@ export class FileTransferController {
   }
 
   /**
-   * @param {!DirectoryTree} tree Its sub items will could be drop target.
+   * @param {!DirectoryTree|!XfTree} tree Its sub items will could be drop
+   *     target.
    * @private
    */
   attachTreeDropTarget_(tree) {
@@ -801,7 +804,7 @@ export class FileTransferController {
   /**
    * @param {boolean} onlyIntoDirectories True if the drag is only into
    *     directories.
-   * @param {(!List|!DirectoryTree)} list Drop target list.
+   * @param {(!List|!DirectoryTree|!XfTree)} list Drop target list.
    * @param {Event} event A dragover event of DOM.
    * @private
    */
@@ -818,7 +821,7 @@ export class FileTransferController {
   }
 
   /**
-   * @param {(!List|!DirectoryTree)} list Drop target list.
+   * @param {!List} list Drop target list.
    * @param {!Event} event A dragenter event of DOM.
    * @private
    */
@@ -843,7 +846,7 @@ export class FileTransferController {
   }
 
   /**
-   * @param {!DirectoryTree} tree Drop target tree.
+   * @param {!DirectoryTree|!XfTree} tree Drop target tree.
    * @param {!Event} event A dragenter event of DOM.
    * @private
    */
@@ -857,7 +860,7 @@ export class FileTransferController {
 
     this.lastEnteredTarget_ = event.target;
     let item = event.target;
-    while (item && !(item instanceof TreeItem)) {
+    while (item && !(item instanceof TreeItem || item instanceof XfTreeItem)) {
       item = item.parentNode;
     }
 
@@ -1104,9 +1107,10 @@ export class FileTransferController {
 
     // If current focus is on DirectoryTree, write selected item of
     // DirectoryTree to system clipboard.
-    if (document.activeElement instanceof DirectoryTree) {
+    if (isDirectoryTree(document.activeElement)) {
       this.cutOrCopyFromDirectoryTree(
-          document.activeElement, clipboardData, effectAllowed);
+          /** @type {!DirectoryTree|!XfTree} */ (document.activeElement),
+          clipboardData, effectAllowed);
       return;
     }
 
@@ -1118,17 +1122,17 @@ export class FileTransferController {
 
   /**
    * Performs cut or copy operation dispatched from directory tree.
-   * @param {!DirectoryTree} directoryTree
+   * @param {!DirectoryTree|!XfTree} directoryTree
    * @param {!DataTransfer} clipboardData
    * @param {string} effectAllowed
    */
   cutOrCopyFromDirectoryTree(directoryTree, clipboardData, effectAllowed) {
-    const selectedItem = document.activeElement.selectedItem;
-    if (selectedItem === null) {
+    const focusedItem = getFocusedTreeItem(document.activeElement);
+    if (focusedItem === null) {
       return;
     }
 
-    const entry = selectedItem.entry;
+    const entry = focusedItem.entry;
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     if (!volumeInfo) {

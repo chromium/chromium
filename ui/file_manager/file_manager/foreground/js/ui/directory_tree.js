@@ -312,6 +312,10 @@ export class DirectoryItem extends FilesTreeItem {
     this.onMetadataUpdateBound_ = undefined;
   }
 
+  get typeName() {
+    return 'directory_item';
+  }
+
   /**
    * The DirectoryEntry corresponding to this DirectoryItem. This may be
    * a dummy DirectoryEntry.
@@ -2008,6 +2012,10 @@ export class DirectoryTree extends Tree {
 
     /** @type {?function(!chrome.fileManagerPrivate.FileWatchEvent)} */
     this.privateOnDirectoryChangedBound_ = null;
+  }
+
+  get typeName() {
+    return 'directory_tree';
   }
 
   /**

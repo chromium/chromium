@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {contextMenuHandler} from './ui/context_menu_handler.js';
+import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -12,6 +12,7 @@ import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
+import {contextMenuHandler} from './ui/context_menu_handler.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
@@ -122,9 +123,10 @@ export class ActionsController {
         // DirectoryItem has "entry" attribute.
         return [element.entry];
       }
-      if (element.selectedItem && element.selectedItem.entry) {
-        // DirectoryTree has the selected item.
-        return [element.selectedItem.entry];
+      // DirectoryTree has the focused item.
+      const focusedItem = getFocusedTreeItem(element);
+      if (focusedItem?.entry) {
+        return [focusedItem.entry];
       }
     }
 
@@ -212,8 +214,8 @@ export class ActionsController {
    * @private
    */
   onNavigationListSelectionChanged_() {
-    const entry = this.ui_.directoryTree.selectedItem &&
-        this.ui_.directoryTree.selectedItem.entry;
+    const focusedItem = getFocusedTreeItem(this.ui_.directoryTree);
+    const entry = focusedItem?.entry;
 
     if (!entry) {
       this.currentDirKey_ = null;
