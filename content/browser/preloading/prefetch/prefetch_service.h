@@ -47,7 +47,8 @@ enum class PrefetchRedirectResult {
   kFailedInvalidResponseCode = 4,
   kFailedInvalidChangeInNetworkContext = 5,
   kFailedIneligible = 6,
-  kMaxValue = kFailedIneligible,
+  kFailedInsufficientReferrerPolicy = 7,
+  kMaxValue = kFailedInsufficientReferrerPolicy,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

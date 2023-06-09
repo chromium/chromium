@@ -292,7 +292,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   void MakePrefetchOnMainFrame(
       const GURL& prefetch_url,
       const PrefetchType& prefetch_type,
-      const absl::optional<GURL>& referrer_url = absl::nullopt,
+      const blink::mojom::Referrer& referrer = blink::mojom::Referrer(),
       bool enable_no_vary_search_header = false,
       network::mojom::NoVarySearchPtr&& no_vary_search_hint =
           network::mojom::NoVarySearchPtr()) {
@@ -300,11 +300,6 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
     if (enable_no_vary_search_header)
       prefetch_document_manager->EnableNoVarySearchSupport();
-
-    blink::mojom::Referrer referrer;
-    if (referrer_url.has_value()) {
-      referrer.url = referrer_url.value();
-    }
 
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type, referrer, no_vary_search_hint,
@@ -1157,11 +1152,14 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
 
   MakePrefetchService(std::move(mock_prefetch_service_delegate));
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
+
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referrer"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -1910,11 +1908,13 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
 
   ASSERT_TRUE(SetCookie(GURL("https://example.com"), "testing"));
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referrer"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -2061,11 +2061,13 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
 
   // Make a same-origin prefetch that requires the proxy. The proxy requirement
   // is only enforced for cross-origin requests.
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referring_page"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -2140,11 +2142,13 @@ TEST_F(PrefetchServiceTest,
 
   // Make a same-site cross-origin prefetch that requires the proxy. These types
   // of prefetches are blocked.
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://other.example.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referring_page"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(RequestCount(), 0);
@@ -2269,11 +2273,13 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
   PrefetchService::SetNetworkContextForProxyLookupForTesting(
       &network_context_for_proxy_lookup);
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referring_page"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -3057,6 +3063,8 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(
       redirect_info,
@@ -3465,7 +3473,7 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
       GURL("https://example.com/?a=1"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/absl::nullopt,
+      /*referrer=*/blink::mojom::Referrer(),
       /*enable_no_vary_search_header=*/true);
   base::RunLoop().RunUntilIdle();
 
@@ -3564,6 +3572,8 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(
       redirect_info,
@@ -3660,6 +3670,8 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(
       redirect_info,
@@ -3752,6 +3764,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(
       redirect_info,
@@ -3840,6 +3854,8 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
   // The redirect is considered invalid because it has a non-3XX HTTP code.
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(redirect_info, CreateURLResponseHeadForPrefetch(
                                                net::HTTP_OK, kHTMLMimeType,
@@ -3911,11 +3927,13 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referrer"));
+      /*referrer=*/referrer);
 
   base::RunLoop().RunUntilIdle();
 
@@ -3925,6 +3943,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://example.com/redirect");
   MakeSingleRedirectAndWait(redirect_info,
                             CreateURLResponseHeadForPrefetch(
@@ -4012,11 +4032,13 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referrer"));
+      /*referrer=*/referrer);
 
   base::RunLoop().RunUntilIdle();
 
@@ -4032,6 +4054,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   // proxy.
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://other.example.com/redirect");
   MakeSingleRedirectAndWait(redirect_info,
                             CreateURLResponseHeadForPrefetch(
@@ -4106,11 +4130,13 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referrer"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -4119,6 +4145,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(
       redirect_info,
@@ -4212,11 +4240,13 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referrer"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   // The same-origin request should not use the proxy.
@@ -4226,6 +4256,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(
       redirect_info,
@@ -4319,11 +4351,13 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://other.com"),
       PrefetchType(/*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://other.com"),
@@ -4332,6 +4366,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://example.com/redirect");
   MakeSingleRedirectAndWait(redirect_info,
                             CreateURLResponseHeadForPrefetch(
@@ -4442,11 +4478,13 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer_url=*/GURL("https://example.com/referrer"));
+      /*referrer=*/referrer);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -4476,6 +4514,8 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
 
   net::RedirectInfo redirect_info;
   redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   redirect_info.new_url = GURL("https://redirect.com");
   MakeSingleRedirectAndWait(
       redirect_info,
@@ -4551,6 +4591,97 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
                        PreloadingHoldbackStatus::kAllowed,
                        PreloadingTriggeringOutcome::kReady,
                        PreloadingFailureReason::kUnspecified);
+}
+
+// TODO(crbug.com/1396460): Test flaky on lacros trybots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RedirectInsufficientReferrerPolicy \
+  DISABLED_RedirectInsufficientReferrerPolicy
+#else
+#define MAYBE_RedirectInsufficientReferrerPolicy \
+  RedirectInsufficientReferrerPolicy
+#endif
+TEST_F(PrefetchServiceAllowRedirectTest,
+       MAYBE_RedirectInsufficientReferrerPolicy) {
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://referrer.com");
+  referrer.policy = network::mojom::ReferrerPolicy::kDefault;
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(/*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager),
+      /*referrer=*/referrer);
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           /*use_prefetch_proxy=*/true);
+  VerifyFollowRedirectParams(0);
+
+  // Redirect to a different site. This will check the referrer policy, but
+  // since it is not sufficiently strict, the redirect should fail.
+  net::RedirectInfo redirect_info;
+  redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
+  redirect_info.new_url = GURL("https://redirect.com");
+  MakeSingleRedirectAndWait(
+      redirect_info,
+      CreateURLResponseHeadForPrefetch(
+          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
+          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
+  VerifyFollowRedirectParams(0);
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Redirect.Result",
+      PrefetchRedirectResult::kFailedInsufficientReferrerPolicy, 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Redirect.NetworkContextStateTransition", 0);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
+
+  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
+  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
+
+  absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+      GetMetricsForMostRecentNavigation();
+  ASSERT_TRUE(serving_page_metrics);
+  EXPECT_TRUE(serving_page_metrics->prefetch_status);
+  EXPECT_EQ(serving_page_metrics->prefetch_status.value(),
+            static_cast<int>(PrefetchStatus::kPrefetchFailedInvalidRedirect));
+  EXPECT_TRUE(serving_page_metrics->required_private_prefetch_proxy);
+  EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
+  EXPECT_FALSE(serving_page_metrics->prefetch_header_latency);
+
+  base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
+      GetPrefetchToServe(GURL("https://example.com"));
+  EXPECT_FALSE(serveable_prefetch_container);
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.RedirectChainSize", 0);
+
+  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
+                       PreloadingHoldbackStatus::kAllowed,
+                       PreloadingTriggeringOutcome::kFailure,
+                       ToPreloadingFailureReason(
+                           PrefetchStatus::kPrefetchFailedInvalidRedirect));
 }
 
 class PrefetchServiceNeverBlockUntilHeadTest : public PrefetchServiceTest {
@@ -4793,7 +4924,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   MakePrefetchOnMainFrame(
       GURL("https://example.com/index.html?a=5"),
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()),
-      /* referrer_url */ absl::nullopt,
+      /* referrer */ blink::mojom::Referrer(),
       /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   base::RunLoop().RunUntilIdle();
@@ -4924,7 +5055,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   MakePrefetchOnMainFrame(
       GURL("https://example.com/index.html?a=5"),
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()),
-      /* referrer_url */ absl::nullopt,
+      /* referrer */ blink::mojom::Referrer(),
       /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   base::RunLoop().RunUntilIdle();
@@ -5047,7 +5178,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   MakePrefetchOnMainFrame(
       GURL("https://example.com/index.html?a=5"),
       PrefetchType(/*use_prefetch_proxy=*/true, GetParam()),
-      /* referrer_url */ absl::nullopt,
+      /* referrer */ blink::mojom::Referrer(),
       /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   base::RunLoop().RunUntilIdle();
