@@ -4,19 +4,15 @@
 """Provides gzip utilities for strings.
 """
 
-
 import gzip
 import io
-import subprocess
 
 
 def GzipString(data):
-  # Gzipping using Python's built in gzip: Windows doesn't ship with gzip, and
-  # OSX's gzip does not have an --rsyncable option built in. Although this is
-  # not preferable to --rsyncable, it is an option for the systems that do
-  # not have --rsyncable. If used over GzipStringRsyncable, the primary
-  # difference of this function's compression will be larger updates every time
-  # a compressed resource is changed.
+  # Gzipping using Python's built in gzip. On Linux, previously there was
+  # alternative that calls system gzip with --rsyncable to reduce delta.
+  # However, this is of dubious value, and creates inconsistencies across. So
+  # now only Python's gzip is used.
   if isinstance(data, str):
     data = data.encode('utf8')
   gzip_output = io.BytesIO()
