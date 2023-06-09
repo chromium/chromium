@@ -237,6 +237,11 @@ BASE_FEATURE(kAnchorElementInteraction,
              "AnchorElementInteraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable anchor element mouse motion estimator.
+BASE_FEATURE(kAnchorElementMouseMotionEstimator,
+             "AnchorElementMouseMotionEstimator",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
 BASE_FEATURE(kPlzDedicatedWorker,

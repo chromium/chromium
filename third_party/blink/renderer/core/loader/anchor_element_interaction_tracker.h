@@ -79,14 +79,16 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   ~AnchorElementInteractionTracker();
 
   static bool IsFeatureEnabled();
+  static bool IsMouseMotionEstimatorEnabled();
   static base::TimeDelta GetHoverDwellTime();
 
   void OnMouseMoveEvent(const WebMouseEvent& mouse_event);
   void OnPointerEvent(EventTarget& target, const PointerEvent& pointer_event);
   void HoverTimerFired(TimerBase*);
   void Trace(Visitor* visitor) const;
-  void FireHoverTimerForTesting();
-  void SetTickClockForTesting(const base::TickClock* clock);
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const base::TickClock* clock);
   Document* GetDocument() { return document_; }
 
  private:
@@ -98,9 +100,14 @@ class BLINK_EXPORT AnchorElementInteractionTracker
 
   Member<MouseMotionEstimator> mouse_motion_estimator_;
   HeapMojoRemote<mojom::blink::AnchorElementInteractionHost> interaction_host_;
-  // This hash map contains anchor element's url and the timetick at which a
-  // hover event should be reported if not cancelled.
-  HashMap<KURL, base::TimeTicks> hover_events_;
+  // This hashmap contains the anchor element's url, whether the pointer event
+  // was from a mouse and the timetick at which a hover event should be reported
+  // if not canceled.
+  struct HoverEventCandidate {
+    bool is_mouse;
+    base::TimeTicks timestamp;
+  };
+  HashMap<KURL, HoverEventCandidate> hover_event_candidates_;
   HeapTaskRunnerTimer<AnchorElementInteractionTracker> hover_timer_;
   const base::TickClock* clock_;
   Member<Document> document_;

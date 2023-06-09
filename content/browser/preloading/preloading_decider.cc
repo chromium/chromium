@@ -18,6 +18,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom.h"
 
 namespace content {
 
@@ -154,7 +155,9 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
   preconnector_.MaybePreconnect(url);
 }
 
-void PreloadingDecider::OnPointerHover(const GURL& url) {
+void PreloadingDecider::OnPointerHover(
+    const GURL& url,
+    blink::mojom::AnchorElementPointerDataPtr mouse_data) {
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerHover(url);
   }

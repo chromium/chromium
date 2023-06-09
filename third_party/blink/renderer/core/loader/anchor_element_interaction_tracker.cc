@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
+#include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
@@ -171,6 +172,9 @@ void AnchorElementInteractionTracker::MouseMotionEstimator::OnTimer(
 
 void AnchorElementInteractionTracker::MouseMotionEstimator::OnMouseMoveEvent(
     gfx::PointF position) {
+  if (!IsMouseMotionEstimatorEnabled()) {
+    return;
+  }
   AddDataPoint(clock_->NowTicks(), position);
   if (update_timer_.IsActive()) {
     update_timer_.Stop();
@@ -214,6 +218,12 @@ void AnchorElementInteractionTracker::Trace(Visitor* visitor) const {
 // static
 bool AnchorElementInteractionTracker::IsFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kAnchorElementInteraction);
+}
+
+// static
+bool AnchorElementInteractionTracker::IsMouseMotionEstimatorEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAnchorElementMouseMotionEstimator);
 }
 
 // static
@@ -281,14 +291,18 @@ void AnchorElementInteractionTracker::OnPointerEvent(
   }
 
   if (event_type == event_type_names::kPointerover) {
-    hover_events_.insert(url, clock_->NowTicks() + GetHoverDwellTime());
+    hover_event_candidates_.insert(
+        url, HoverEventCandidate{
+                 .is_mouse =
+                     pointer_event.pointerType() == pointer_type_names::kMouse,
+                 .timestamp = clock_->NowTicks() + GetHoverDwellTime()});
     if (!hover_timer_.IsActive()) {
       hover_timer_.StartOneShot(GetHoverDwellTime(), FROM_HERE);
     }
   } else if (event_type == event_type_names::kPointerout) {
     // Since the pointer is no longer hovering on the link, there is no need to
     // check the timer. We should just remove it here.
-    hover_events_.erase(url);
+    hover_event_candidates_.erase(url);
   }
 }
 
@@ -299,32 +313,36 @@ void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
   const base::TimeTicks now = clock_->NowTicks();
   auto next_fire_time = base::TimeTicks::Max();
   Vector<KURL> to_be_erased;
-  for (auto& hover_event : hover_events_) {
+  for (const auto& hover_event_candidate : hover_event_candidates_) {
     // Check whether pointer hovered long enough on the link to send the
     // PointerHover event to interaction host.
-    if (now >= hover_event.value) {
-      interaction_host_->OnPointerHover(hover_event.key);
-      to_be_erased.push_back(hover_event.key);
+    if (now >= hover_event_candidate.value.timestamp) {
+      interaction_host_->OnPointerHover(
+          /*target=*/hover_event_candidate.key,
+          mojom::blink::AnchorElementPointerData::New(
+              /*is_mouse_pointer=*/hover_event_candidate.value.is_mouse,
+              /*mouse_velocity=*/
+              mouse_motion_estimator_->GetMouseVelocity().Length(),
+              /*mouse_acceleration=*/
+              mouse_motion_estimator_->GetMouseTangentialAcceleration()));
+      to_be_erased.push_back(hover_event_candidate.key);
       continue;
     }
     // Update next fire time
-    next_fire_time = std::min(next_fire_time, hover_event.value);
+    next_fire_time =
+        std::min(next_fire_time, hover_event_candidate.value.timestamp);
   }
-  WTF::RemoveAll(hover_events_, to_be_erased);
+  WTF::RemoveAll(hover_event_candidates_, to_be_erased);
   if (!next_fire_time.is_max()) {
     hover_timer_.StartOneShot(next_fire_time - now, FROM_HERE);
   }
 }
 
-void AnchorElementInteractionTracker::FireHoverTimerForTesting() {
-  if (hover_timer_.IsActive()) {
-    hover_timer_.Stop();
-  }
-  HoverTimerFired(&hover_timer_);
-}
-
-void AnchorElementInteractionTracker::SetTickClockForTesting(
+void AnchorElementInteractionTracker::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* clock) {
+  hover_timer_.SetTaskRunnerForTesting(task_runner, clock);
+  mouse_motion_estimator_->SetTaskRunnerForTesting(task_runner, clock);
   clock_ = clock;
 }
 

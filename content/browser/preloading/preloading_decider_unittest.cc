@@ -22,6 +22,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content {
@@ -279,7 +280,8 @@ TEST_P(PreloadingDeciderTest, PrefetchOnPointerEventHeuristics) {
         preloading_decider->OnPointerDown(url);
         break;
       case EventType::kPointerHover:
-        preloading_decider->OnPointerHover(url);
+        preloading_decider->OnPointerHover(
+            url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0));
         break;
     }
   };
@@ -377,7 +379,8 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
         preloading_decider->OnPointerDown(url);
         break;
       case EventType::kPointerHover:
-        preloading_decider->OnPointerHover(url);
+        preloading_decider->OnPointerHover(
+            url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0));
         break;
     }
   };
@@ -502,7 +505,9 @@ TEST_F(PreloadingDeciderTest, CanOverridePointerHoverEagerness) {
   preloading_decider->UpdateSpeculationCandidates(candidates);
   EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
 
-  preloading_decider->OnPointerHover(GetSameOriginUrl("/candidate1.html"));
+  preloading_decider->OnPointerHover(
+      GetSameOriginUrl("/candidate1.html"),
+      blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0));
   EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
 }
 
