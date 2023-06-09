@@ -397,4 +397,45 @@ suite('SitePermissionsEditPermissionsDialog', function() {
                 `cr-radio-button[name=${SiteSet.EXTENSION_SPECIFIED}]`);
         assertTrue(isVisible(extensionSiteRadioButton));
       });
+
+  test(
+      'changing site access disabled for extensions installed by policy',
+      async function() {
+        // Set the second extension to be installed by policy.
+        element.extensions = [
+          createExtensionInfo({
+            id: 'test_1',
+            name: 'test_1',
+            iconUrl: 'icon_url',
+          }),
+          createExtensionInfo({
+            id: 'test_2',
+            name: 'test_2',
+            iconUrl: 'icon_url',
+            controlledInfo: {text: 'policy'},
+          }),
+        ];
+
+        flush();
+
+        const extensionSpecifiedRadioButton =
+            element.shadowRoot!.querySelector<HTMLElement>(
+                `cr-radio-button[name=${SiteSet.EXTENSION_SPECIFIED}]`);
+        assertTrue(!!extensionSpecifiedRadioButton);
+        extensionSpecifiedRadioButton.click();
+
+        const site = await delegate.whenCalled('getMatchingExtensionsForSite');
+        assertEquals('http://example.com/', site);
+        flush();
+
+        const siteAccessSelectMenus =
+            element.shadowRoot!.querySelectorAll<HTMLSelectElement>(
+                '.extension-host-access');
+        assertEquals(2, siteAccessSelectMenus.length);
+
+        // The second extension's site access selector should be disabled
+        // since it's installed by policy.
+        assertFalse(siteAccessSelectMenus[0]!.disabled);
+        assertTrue(siteAccessSelectMenus[1]!.disabled);
+      });
 });

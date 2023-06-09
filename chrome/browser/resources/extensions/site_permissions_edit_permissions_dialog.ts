@@ -17,6 +17,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getItemSource, SourceType} from './item_util.js';
 import {getTemplate} from './site_permissions_edit_permissions_dialog.html.js';
 import {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {matchesSubdomains, SUBDOMAIN_SPECIFIER} from './url_util.js';
@@ -26,6 +27,7 @@ interface ExtensionSiteAccessInfo {
   name: string;
   iconUrl: string;
   siteAccess: string;
+  addedByPolicy: boolean;
 }
 
 export interface SitePermissionsEditPermissionsDialogElement {
@@ -203,7 +205,10 @@ export class SitePermissionsEditPermissionsDialogElement extends
     matchingExtensionsInfo.forEach(({id, siteAccess}) => {
       assert(this.extensionsIdToInfo_.has(id));
       const {name, iconUrl} = this.extensionsIdToInfo_.get(id)!;
-      extensionSiteAccessData.push({id, name, iconUrl, siteAccess});
+      const addedByPolicy = getItemSource(this.extensionsIdToInfo_.get(id)!) ===
+          SourceType.POLICY;
+      extensionSiteAccessData.push(
+          {id, name, iconUrl, siteAccess, addedByPolicy});
 
       // Remove the unsaved HostAccess from `unsavedExtensionsIdToHostAccess_`
       // if it is now the same as `siteAccess`.

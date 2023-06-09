@@ -95,6 +95,7 @@
             <img class="extension-icon" src="[[item.iconUrl]]" alt="">
             <span class="extension-name">[[item.name]]</span>
             <select class="extension-host-access md-select"
+                disabled="[[item.addedByPolicy]]"
                 on-change="onHostAccessChange_"
                 value="[[getExtensionHostAccess_(item.id, item.siteAccess)]]">
               <option value="[[hostAccessEnum_.ON_CLICK]]">
