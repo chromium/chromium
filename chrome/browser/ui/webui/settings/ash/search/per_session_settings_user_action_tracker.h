@@ -54,6 +54,19 @@ class PerSessionSettingsUserActionTracker {
  private:
   friend class PerSessionSettingsUserActionTrackerTest;
 
+  // Clears the pref kTotalUniqueOsSettingsChanged after 7 days have passed
+  // since the user finished OOBE. We will track the changes made within the
+  // first week in
+  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek, and
+  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.SubsequentWeeks
+  // for the weeks following the first week.
+  void ClearTotalUniqueSettingsChangedPref();
+
+  // Checks whether it has been 7 days since the user has completed
+  // OOBE. It utilized the currently existing pref called kOobeOnboardingTime,
+  // which is set once the user finished the OOBE.
+  bool IsTodayInFirst7Days();
+
   void ResetMetricsCountersAndTimestamp();
 
   // Returns the size of the pref dict if it changes. Otherwise, no value will

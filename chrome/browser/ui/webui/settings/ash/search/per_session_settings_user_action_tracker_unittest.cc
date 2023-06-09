@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -294,21 +295,78 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
 
 TEST_F(PerSessionSettingsUserActionTrackerTest,
        TestTotalUniqueChangedSettings) {
+  // Simulate that the user has taken OOBE.
+  test_pref_service_->SetTime(::ash::prefs::kOobeOnboardingTime,
+                              base::Time::Now());
+
   std::set<std::string> expected_set;
 
   // Flip the WiFi toggle in Settings, this is a unique Setting that is changing
   // so the number of unique settings that have been changed increases by 1 for
-  // a total of 1
+  // a total of 1.
   tracker_->RecordSettingChange(Setting::kWifiOnOff);
   expected_set = {SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
   // Destruct tracker_ to trigger recording the data to the histogram.
   tracker_.reset();
+  // The time is still in the first week, so the data gets recorded to
+  // .FirstWeek histogram.
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
+  // There are no data in the .SubsequentWeeks histogram.
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/1,
+      /*count=*/0);
+  // Overall total unique Settings changed in the lifetime of the Device.
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      /*sample=*/1,
+      /*count=*/1);
+
+  // Fast forward the time for 7 days and 1 second. We will now record data to
+  // .SubsequentWeeks instead of .FirstWeek.
+  task_environment_.FastForwardBy(base::Days(7));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
+  // Settings page.
+  tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+
+  // test that the set has been destructed and cleared appropriately
+  expected_set = {};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Flip the Do Not Disturb toggle twice in Settings. Now that more than 7 days
+  // has passed since the user has taken OOBE, this change is a unique Setting
+  // that is changing so the number of unique settings in .SubsequentWeeks
+  // should increases by 1.
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  expected_set = {SettingAsIntString(Setting::kDoNotDisturbOnOff)};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+  // .FirstWeek will not change
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      /*sample=*/1,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/1,
+      /*count=*/1);
+  // Overall total unique Settings changed in the lifetime of the Device.
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      /*sample=*/1,
+      /*count=*/2);
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
@@ -321,7 +379,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Flip the Do Not Disturb and WiFi toggles in Settings, this is a unique
   // Setting that is changing so the number of unique settings that have been
-  // changed increases by 1 for a total of 2
+  // changed increases by 1. Note that we are still past the 1 week point, so we
+  // will add the data to .SubsequentWeeks histogram.
   tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
   tracker_->RecordSettingChange(Setting::kWifiOnOff);
   expected_set = {SettingAsIntString(Setting::kDoNotDisturbOnOff),
@@ -330,12 +389,28 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Destruct tracker_ to trigger recording the data to the histogram.
   tracker_.reset();
+  // .FirstWeek will not change
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/1,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/2,
+      /*count=*/1);
+  // Overall total unique Settings changed in the lifetime of the Device.
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      /*sample=*/1,
+      /*count=*/2);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
       /*sample=*/2,
       /*count=*/1);
 
@@ -358,11 +433,99 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
   tracker_.reset();
 
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
       /*sample=*/1,
       /*count=*/1);
   histogram_tester_.ExpectBucketCount(
-      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/1,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/2,
+      /*count=*/1);
+  // Overall total unique Settings changed in the lifetime of the Device.
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      /*sample=*/1,
+      /*count=*/2);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      /*sample=*/2,
+      /*count=*/1);
+}
+
+TEST_F(PerSessionSettingsUserActionTrackerTest,
+       TestTotalUniqueChangedSettingsWithinFirstWeek) {
+  // Simulate that the user has taken OOBE.
+  test_pref_service_->SetTime(::ash::prefs::kOobeOnboardingTime,
+                              base::Time::Now());
+  std::set<std::string> expected_set;
+
+  // Flip the Do Not Disturb and WiFi toggles in Settings, these are unique
+  // Settings that are changing so the number of unique settings that have been
+  // changed is 2.
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  expected_set = {SettingAsIntString(Setting::kDoNotDisturbOnOff),
+                  SettingAsIntString(Setting::kWifiOnOff)};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      /*sample=*/2,
+      /*count=*/1);
+  // This is within the first week, no data should be recorded in the
+  // .SubsequentWeeks histogram
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/2,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
+      /*sample=*/2,
+      /*count=*/1);
+}
+
+TEST_F(PerSessionSettingsUserActionTrackerTest,
+       TestTotalUniqueChangedSettingsAfterFirstWeek) {
+  // Simulate that the user has taken OOBE.
+  test_pref_service_->SetTime(::ash::prefs::kOobeOnboardingTime,
+                              base::Time::Now());
+  std::set<std::string> expected_set;
+  // Fast forward the time for 7 days and 1 second. We will now record data to
+  // .SubsequentWeeks instead of .FirstWeek.
+  task_environment_.FastForwardBy(base::Days(16));
+
+  // Flip the Do Not Disturb and WiFi toggles in Settings, these are unique
+  // Settings that are changing so the number of unique settings that have been
+  // changed is 2.
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  expected_set = {SettingAsIntString(Setting::kDoNotDisturbOnOff),
+                  SettingAsIntString(Setting::kWifiOnOff)};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+      "SubsequentWeeks",
+      /*sample=*/2,
+      /*count=*/1);
+  // This is after the first week, no data should be recorded in the
+  // .FirstWeek histogram
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+      /*sample=*/2,
+      /*count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
       /*sample=*/2,
       /*count=*/1);
 }

@@ -1142,6 +1142,11 @@ const char kHatsOsSettingsSearchSurveyIsSelected[] =
 //      has been used by the user during the device's lifetime.
 const char kTotalUniqueOsSettingsChanged[] =
     "settings.total_unique_os_settings_changed";
+
+// A boolean representing whether the user has used settings after at least 7
+// days have passed since the user completed OOBE.
+const char kHasResetFirst7DaysSettingsUsedCount[] =
+    "settings.has_reset_first_seven_days_settings_used_count";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

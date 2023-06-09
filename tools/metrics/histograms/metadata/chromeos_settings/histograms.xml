@@ -316,7 +316,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime"
+<histogram
+    name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.{Time}"
     units="Unique Setting(s) Changed" expires_after="2024-05-16">
   <owner>moteva@google.com</owner>
   <owner>wesokuhara@google.com</owner>
@@ -327,6 +328,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     will not record the number if the user did not make any new unique changes
     in the session.
   </summary>
+  <token key="Time">
+    <variant name="FirstWeek"
+        summary="Setting changed within the first week since the user has
+                 completed OOBE."/>
+    <variant name="SubsequentWeeks"
+        summary="Setting changed after the first week since the user has
+                 completed OOBE"/>
+    <variant name="Total"
+        summary="Total Settings changed within the lifetime of the device per
+                 each user."/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumUniqueSettingsChanged.PerSession"

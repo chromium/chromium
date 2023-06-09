@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/common/pref_names.h"
 
 namespace ash::settings {
@@ -26,6 +27,10 @@ constexpr base::TimeDelta kMinSubsequentChange = base::Milliseconds(200);
 // be updated.
 constexpr base::TimeDelta kMinDurationMetric = base::Milliseconds(100);
 constexpr base::TimeDelta kMaxDurationMetric = base::Minutes(10);
+
+// Used to check whether it has been one week since the user has finished OOBE
+// onboarding.
+constexpr base::TimeDelta kOneWeek = base::Days(7);
 
 void LogDurationMetric(const char* metric_name, base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(metric_name, duration, kMinDurationMetric,
@@ -49,6 +54,25 @@ PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
       "ChromeOS.Settings.NumUniqueSettingsChanged.PerSession",
       changed_settings_.size());
 
+  // The pref kHasResetFirst7DaysSettingsUsedCount indicates whether the pref
+  // kTotalUniqueOsSettingsChanged has been cleared once after 1 week has passed
+  // since OOBE. If the pref kHasResetFirst7DaysSettingsUsedCount is False and
+  // it has been over 7 days since the user has taken OOBE, it means that this
+  // is the first time since one week after OOBE that the user has opened and
+  // changed Settings. In this case, clear the pref
+  // kTotalUniqueOsSettingsChanged to prepare it for the
+  // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.SubsequentWeeks
+  // histogram.
+  // NOTE: prefs::kOobeOnboardingTime does not exist for users in guest mode.
+  if (!pref_service_->GetBoolean(
+          ::prefs::kHasResetFirst7DaysSettingsUsedCount) &&
+      pref_service_->HasPrefPath(prefs::kOobeOnboardingTime) &&
+      !IsTodayInFirst7Days()) {
+    pref_service_->SetBoolean(::prefs::kHasResetFirst7DaysSettingsUsedCount,
+                              true);
+    ClearTotalUniqueSettingsChangedPref();
+  }
+
   // Record number of unique settings changed in this session.
   absl::optional<int> total_unique_settings_changed_count =
       UpdateSettingsPrefTotalUniqueChanged();
@@ -56,11 +80,39 @@ PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
   // If the number of total unique setting used increased, flagged by the
   // optional variable total_unique_settings_changed_count having a value, add
   // the datapoint to the histogram.
-  if (total_unique_settings_changed_count.has_value()) {
+  // NOTE: prefs::kOobeOnboardingTime does not exist for users in guest mode.
+  if (pref_service_->HasPrefPath(prefs::kOobeOnboardingTime) &&
+      total_unique_settings_changed_count.has_value()) {
+    if (IsTodayInFirst7Days()) {
+      base::UmaHistogramCounts1000(
+          "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
+          total_unique_settings_changed_count.value());
+    } else {
+      base::UmaHistogramCounts1000(
+          "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
+          "SubsequentWeeks",
+          total_unique_settings_changed_count.value());
+    }
+    // Store the total unique Settings changed in .DeviceLifetime histogram.
     base::UmaHistogramCounts1000(
-        "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+        "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
         total_unique_settings_changed_count.value());
   }
+}
+
+bool PerSessionSettingsUserActionTracker::IsTodayInFirst7Days() {
+  // The pref kOobeOnboardingTime does not get set for users in guest mode.
+  // Because we are accessing the value of the pref, we must ensure that it does
+  // exist.
+  DCHECK(pref_service_->HasPrefPath(prefs::kOobeOnboardingTime));
+  return base::Time::Now() -
+             pref_service_->GetTime(::ash::prefs::kOobeOnboardingTime) <=
+         kOneWeek;
+}
+
+void PerSessionSettingsUserActionTracker::
+    ClearTotalUniqueSettingsChangedPref() {
+  pref_service_->ClearPref(::prefs::kTotalUniqueOsSettingsChanged);
 }
 
 void PerSessionSettingsUserActionTracker::RecordPageFocus() {
@@ -164,7 +216,7 @@ absl::optional<int>
 PerSessionSettingsUserActionTracker::UpdateSettingsPrefTotalUniqueChanged() {
   // Fetch the dictionary from the pref.
   base::Value::Dict writeable_dict =
-      pref_service_->GetDict(prefs::kTotalUniqueOsSettingsChanged).Clone();
+      pref_service_->GetDict(::prefs::kTotalUniqueOsSettingsChanged).Clone();
   int current_count = writeable_dict.size();
 
   // Set the dictionary.
@@ -179,7 +231,7 @@ PerSessionSettingsUserActionTracker::UpdateSettingsPrefTotalUniqueChanged() {
 
   // Save to pref.
   int new_count = writeable_dict.size();
-  pref_service_->SetDict(prefs::kTotalUniqueOsSettingsChanged,
+  pref_service_->SetDict(::prefs::kTotalUniqueOsSettingsChanged,
                          std::move(writeable_dict));
 
   // If the new size of the pref dictionary is the same as before, we do not
