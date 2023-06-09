@@ -416,7 +416,11 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
                                            int id,
                                            const gfx::Point& p,
                                            ui::MenuSourceType source_type) {
-  DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
+  // The IDC_SHOW_BOOKMARK_SIDE_PANEL menu item does not map to a bookmark node
+  // and therefore no context menu for it should be shown.
+  if (menu_id_to_node_map_.find(id) == menu_id_to_node_map_.end()) {
+    return false;
+  }
   const BookmarkNode* node = menu_id_to_node_map_[id];
   std::vector<const BookmarkNode*> nodes(1, node);
   context_menu_ = std::make_unique<BookmarkContextMenu>(
