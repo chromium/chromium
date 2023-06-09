@@ -14,6 +14,7 @@ struct AppInfo {
 
   // Preformatted plain-text containing information about the internal state of
   // the app.
+  // This is for debug WebUI only, so it is ok to send unstructured string data.
   string debug_info;
 };
 
@@ -37,6 +38,7 @@ struct PromiseAppInfo {
 
   // Preformatted plain-text containing information about the internal state of
   // the promise app.
+  // This is for debug WebUI only, so it is ok to send unstructured string data.
   string debug_info;
 };
 
@@ -47,6 +49,21 @@ struct AppCapabilityInfo {
 
   // Preformatted plain-text containing information about system capabilities
   // being accessed by the app.
+  // This is for debug WebUI only, so it is ok to send unstructured string data.
+  string debug_info;
+};
+
+// Contains debugging information for a single shortcut.
+struct ShortcutInfo {
+  // The unique ID for the shortcut.
+  string id;
+
+  // The shortcut's human-readable name.
+  string name;
+
+  // Preformatted plain-text containing information about the internal state of
+  // the shortcut.
+  // This is for debug WebUI only, so it is ok to send unstructured string data.
   string debug_info;
 };
 
@@ -64,6 +81,9 @@ struct DebugInfo {
 
   // Debug information about system capabilities being accessed by apps.
   array<AppCapabilityInfo> app_capability_list;
+
+  // Debug information about every shortcut.
+  array<ShortcutInfo> shortcut_list;
 };
 
 // Handler providing access to App Service information from the

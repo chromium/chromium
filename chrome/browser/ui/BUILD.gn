@@ -3585,6 +3585,7 @@ static_library("ui") {
       "//components/login",
       "//components/metrics/structured:structured_events",
       "//components/services/app_service",
+      "//components/services/app_service/public/cpp/shortcut",
       "//components/session_manager/core",
       "//components/supervised_user/core/browser:fetcher",
       "//components/tab_groups",
