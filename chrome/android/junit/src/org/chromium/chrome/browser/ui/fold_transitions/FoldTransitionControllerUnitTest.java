@@ -82,6 +82,8 @@ public class FoldTransitionControllerUnitTest {
     private Bundle mSavedInstanceState;
     @Mock
     private StartSurface mStartSurface;
+    @Mock
+    private OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier;
 
     private FoldTransitionController mFoldTransitionController;
 
@@ -245,25 +247,54 @@ public class FoldTransitionControllerUnitTest {
 
     @Test
     public void testSaveHomeSurfaceState() {
+        doReturn(true).when(mSavedInstanceState).getBoolean(DID_CHANGE_TABLET_MODE);
+
         saveHomeSurfaceState(null, mStartSurface, false);
         saveHomeSurfaceState(mSavedInstanceState, null, false);
-        saveHomeSurfaceState(mSavedInstanceState, mStartSurface, false);
         saveHomeSurfaceState(mSavedInstanceState, mStartSurface, true);
-        verify(mSavedInstanceState, never()).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
-        verify(mStartSurface, never()).isHomepageShown();
-
-        // Verifies that saved instance state should not contain RESUME_HOME_SURFACE_ON_MODE_CHANGE
-        // if Start surface isn't shown on phone.
-        doReturn(true).when(mSavedInstanceState).getBoolean(DID_CHANGE_TABLET_MODE);
-        doReturn(false).when(mStartSurface).isHomepageShown();
-        saveHomeSurfaceState(mSavedInstanceState, mStartSurface, false);
         verify(mSavedInstanceState, never()).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
 
         // Verifies that saved instance state will have RESUME_HOME_SURFACE_ON_MODE_CHANGE == true
         // if Start surface is shown on phone.
-        doReturn(true).when(mStartSurface).isHomepageShown();
         saveHomeSurfaceState(mSavedInstanceState, mStartSurface, false);
         verify(mSavedInstanceState).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+    }
+
+    @Test
+    public void testSaveUiStateWithTabSwitcherAndStartSurface() {
+        doReturn(true).when(mSavedInstanceState).getBoolean(DID_CHANGE_TABLET_MODE);
+        doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        // Sets Start surface is disabled.
+        doReturn(false).when(mStartSurfaceSupplier).hasValue();
+        // Tests the case when Tab switcher is showing with Start surface disabled.
+        mFoldTransitionController.saveUiState(mSavedInstanceState, true, false);
+        verify(mSavedInstanceState, never()).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+        verify(mSavedInstanceState).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
+
+        // Sets Start surface is enabled.
+        doReturn(true).when(mStartSurfaceSupplier).hasValue();
+        doReturn(mStartSurface).when(mStartSurfaceSupplier).get();
+        // Tests the case when Tab switcher is showing with Start surface enabled.
+        doReturn(false).when(mStartSurface).isHomepageShown();
+        mFoldTransitionController.saveUiState(mSavedInstanceState, true, false);
+        verify(mSavedInstanceState, never()).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+        verify(mSavedInstanceState, times(2)).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
+
+        // Tests the case when Start surface is showing with "Start surface refactor" disabled.
+        doReturn(true).when(mStartSurface).isHomepageShown();
+        doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        mFoldTransitionController.saveUiState(mSavedInstanceState, true, false);
+        verify(mSavedInstanceState).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+        verify(mSavedInstanceState, times(2)).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
+
+        // Sets the layout when "Start surface refactor" is enabled.
+        doReturn(false).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.START_SURFACE);
+        // Tests the case when Start surface is showing with "Start surface refactor" enabled:
+        doReturn(true).when(mStartSurface).isHomepageShown();
+        mFoldTransitionController.saveUiState(mSavedInstanceState, true, false);
+        verify(mSavedInstanceState, times(2)).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+        verify(mSavedInstanceState, times(2)).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
     }
 
     @Test
@@ -370,6 +401,6 @@ public class FoldTransitionControllerUnitTest {
         var layoutManagerSupplier = new ObservableSupplierImpl<LayoutManager>();
         layoutManagerSupplier.set(mLayoutManager);
         mFoldTransitionController = new FoldTransitionController(toolbarManagerSupplier,
-                layoutManagerSupplier, mActivityTabProvider, new OneshotSupplierImpl<>(), mHandler);
+                layoutManagerSupplier, mActivityTabProvider, mStartSurfaceSupplier, mHandler);
     }
 }
