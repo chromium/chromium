@@ -311,6 +311,8 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
 
   void SetPlaybackRate(double rate) override {}
 
+  void DisableCanChangeType() override;
+
   // Appends media data to the source buffer's stream parser associated with
   // `id`. No parsing is done, just buffering the media data for future parsing
   // via RunSegmentParserLoop calls. Returns true on success. Returns false if
@@ -597,6 +599,8 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   std::vector<std::unique_ptr<ChunkDemuxerStream>> removed_streams_;
 
   std::map<MediaTrack::Id, ChunkDemuxerStream*> track_id_to_demux_stream_map_;
+
+  bool supports_change_type_ = true;
 };
 
 }  // namespace media

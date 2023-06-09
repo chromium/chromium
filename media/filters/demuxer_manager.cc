@@ -367,6 +367,10 @@ void DemuxerManager::RespondToDemuxerMemoryUsageReport(
   }
 }
 
+void DemuxerManager::DisableDemuxerCanChangeType() {
+  demuxer_->DisableCanChangeType();
+}
+
 PipelineStatus DemuxerManager::CreateDemuxer(
     bool load_media_source,
     DataSource::Preload preload,

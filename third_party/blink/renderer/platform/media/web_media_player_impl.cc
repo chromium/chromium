@@ -2788,6 +2788,11 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
   bool old_uses_audio_service = UsesAudioService(renderer_type_);
   renderer_type_ = renderer_factory_selector_->GetCurrentRendererType();
 
+  // TODO(crbug/1426179): Support codec changing for Media Foundation.
+  if (renderer_type_ == media::RendererType::kMediaFoundation) {
+    demuxer_manager_->DisableDemuxerCanChangeType();
+  }
+
   bool new_uses_audio_service = UsesAudioService(renderer_type_);
   if (new_uses_audio_service != old_uses_audio_service)
     client_->DidUseAudioServiceChange(new_uses_audio_service);

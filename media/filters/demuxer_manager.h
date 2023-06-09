@@ -136,6 +136,7 @@ class MEDIA_EXPORT DemuxerManager {
   absl::optional<DemuxerType> GetDemuxerType();
   absl::optional<container_names::MediaContainerName> GetContainerForMetrics();
   void RespondToDemuxerMemoryUsageReport(base::OnceCallback<void(int64_t)> cb);
+  void DisableDemuxerCanChangeType();
 
   // Returns a forwarded error/success from |on_demuxer_created|, or an error
   // if a demuxer couldn't be created.
