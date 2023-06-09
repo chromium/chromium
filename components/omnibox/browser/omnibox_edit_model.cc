@@ -904,7 +904,8 @@ bool OmniboxEditModel::AcceptKeyword(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::AcceptKeyword");
 
-  DCHECK(is_keyword_hint_ && !keyword_.empty());
+  DCHECK(is_keyword_hint_ && !keyword_.empty())
+      << "is_keyword_hint_: " << is_keyword_hint_ << ", keyword_: " << keyword_;
 
   autocomplete_controller()->Stop(false);
 
@@ -1269,46 +1270,53 @@ void OmniboxEditModel::OnPaste() {
   paste_state_ = PASTING;
 }
 
-void OmniboxEditModel::OnUpOrDownKeyPressed(int count) {
-  DCHECK(count == -1 || count == 1);
+void OmniboxEditModel::OnUpOrDownPressed(bool down, bool page) {
+  // NOTE: This purposefully doesn't trigger any code that resets
+  // `paste_state_`.
 
-  // NOTE: This purposefully doesn't trigger any code that resets paste_state_.
-  if (PopupIsOpen()) {
-    // The popup is open, so the user should be able to interact with it
-    // normally.
-
-    // If, as a result of the key press, we would select the first result, then
-    // we should revert the temporary text same as what pressing escape would
-    // have done.
-    //
-    // Reverting, however, does not make sense for on-focus suggestions
-    // (user_input_in_progress_ is false) unless the first result is a
-    // verbatim match of the omnibox input (on-focus query refinements on SERP).
-    const OmniboxPopupSelection next_selection =
-        popup_selection_.GetNextSelection(
-            result(), GetPrefService(),
-            count > 0 ? OmniboxPopupSelection::kForward
-                      : OmniboxPopupSelection::kBackward,
-            OmniboxPopupSelection::kWholeLine);
-    if (result().default_match() && has_temporary_text_ &&
-        next_selection.line == 0 &&
-        (user_input_in_progress_ ||
-         result().default_match()->IsVerbatimType())) {
-      RevertTemporaryTextAndPopup();
-    } else {
-      SetPopupSelection(next_selection);
-
-      // Inform the client that a new row is now selected via arrow key down.
-      OnNavigationLikely(next_selection.line,
-                         NavigationPredictor::kUpOrDownArrowButton);
-    }
+  // The popup could be working on a query but is not open. In that case,
+  // force it to open immediately.
+  if (MaybeStartQueryForPopup() || !PopupIsOpen())
     return;
+
+  const auto direction =
+      down ? OmniboxPopupSelection::kForward : OmniboxPopupSelection::kBackward;
+  const auto step = page ? OmniboxPopupSelection::kAllLines
+                         : OmniboxPopupSelection::kWholeLine;
+
+  // The popup is open, so the user should be able to interact with it normally.
+
+  // If, as a result of the key press, we would select the first result, then
+  // we should revert the temporary text same as what pressing escape would
+  // have done.
+  //
+  // Reverting, however, does not make sense for on-focus suggestions
+  // (user_input_in_progress_ is false) unless the first result is a
+  // verbatim match of the omnibox input (on-focus query refinements on SERP).
+  const OmniboxPopupSelection next_selection =
+      popup_selection_.GetNextSelection(result(), GetPrefService(), direction,
+                                        step);
+  if (result().default_match() && has_temporary_text_ &&
+      next_selection.line == 0 &&
+      (user_input_in_progress_ || result().default_match()->IsVerbatimType())) {
+    RevertTemporaryTextAndPopup();
+  } else {
+    // Call `StepPopupSelection()` instead of `SetPopupSelection()`, as the
+    // former handles entering and leaving keyword mode before calling the
+    // latter.
+    StepPopupSelection(direction, step);
+    DCHECK(popup_selection_ == next_selection);
+
+    // Inform the client that a new row is now selected.
+    OnNavigationLikely(popup_selection_.line,
+                       NavigationPredictor::kUpOrDownArrowButton);
   }
+}
 
-  MaybeStartQueryForPopup();
-
-  // TODO(pkasting): Here, the popup could be working on a query but is not
-  // open. In that case, we should force it to open immediately.
+void OmniboxEditModel::OnTabPressed(bool shift) {
+  StepPopupSelection(shift ? OmniboxPopupSelection::kBackward
+                           : OmniboxPopupSelection::kForward,
+                     OmniboxPopupSelection::kStateOrLine);
 }
 
 void OmniboxEditModel::OnNavigationLikely(
@@ -1339,29 +1347,6 @@ void OmniboxEditModel::OpenMatchForTesting(
     base::TimeTicks match_selection_timestamp) {
   OpenMatch(OmniboxPopupSelection(index), match, disposition, alternate_nav_url,
             pasted_text, match_selection_timestamp);
-}
-
-bool OmniboxEditModel::MaybeStartQueryForPopup() {
-  if (PopupIsOpen()) {
-    return false;
-  }
-  if (!query_in_progress()) {
-    // The popup is neither open nor working on a query already.  So, start an
-    // autocomplete query for the current text.  This also sets
-    // user_input_in_progress_ to true, which we want: if the user has started
-    // to interact with the popup, changing the url_for_editing_ shouldn't
-    // change the displayed text.
-    // Note: This does not force the popup to open immediately.
-    // TODO(pkasting): We should, in fact, force this particular query to open
-    // the popup immediately.
-    if (!user_input_in_progress_)
-      InternalSetUserText(url_for_editing_);
-    if (view_) {
-      view_->UpdatePopup();
-    }
-    return true;
-  }
-  return false;
 }
 
 void OmniboxEditModel::OnPopupDataChanged(
@@ -1929,28 +1914,6 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   popup_view_->UpdatePopupAppearance();
 }
 
-OmniboxPopupSelection OmniboxEditModel::StepPopupSelection(
-    OmniboxPopupSelection::Direction direction,
-    OmniboxPopupSelection::Step step) {
-  DCHECK(popup_view_);
-  // This block steps the popup selection, with special consideration
-  // for existing keyword logic in the edit model, where ClearKeyword must be
-  // called before changing the selected line.
-  // AcceptKeyword should be called after changing the selected line so we don't
-  // accept keyword on the wrong suggestion when stepping backwards.
-  const auto old_selection = GetPopupSelection();
-  const auto new_selection = old_selection.GetNextSelection(
-      result(), GetPrefService(), direction, step);
-  if (old_selection.IsChangeToKeyword(new_selection)) {
-    ClearKeyword();
-  }
-  SetPopupSelection(new_selection);
-  if (new_selection.IsChangeToKeyword(old_selection)) {
-    AcceptKeyword(metrics::OmniboxEventProto::TAB);
-  }
-  return popup_selection_;
-}
-
 bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
   DCHECK(popup_view_);
   size_t initial_line =
@@ -2147,6 +2110,47 @@ void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
 
 PrefService* OmniboxEditModel::GetPrefService() const {
   return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
+}
+
+bool OmniboxEditModel::MaybeStartQueryForPopup() {
+  if (PopupIsOpen() || query_in_progress())
+    return false;
+
+  // The popup is neither open nor working on a query already. So, start an
+  // autocomplete query for the current text. This also sets
+  // `user_input_in_progress_` to true, which we want: if the user has started
+  // to interact with the popup, changing the `url_for_editing_` shouldn't
+  // change the displayed text.
+  // Note: This does not force the popup to open immediately.
+  // TODO(pkasting): We should, in fact, force this particular query to open
+  //   the popup immediately.
+  if (!user_input_in_progress_)
+    InternalSetUserText(url_for_editing_);
+  if (view_) {
+    view_->UpdatePopup();
+  }
+  return true;
+}
+
+void OmniboxEditModel::StepPopupSelection(
+    OmniboxPopupSelection::Direction direction,
+    OmniboxPopupSelection::Step step) {
+  DCHECK(popup_view_);
+  // This block steps the popup selection, with special consideration
+  // for existing keyword logic in the edit model, where ClearKeyword must be
+  // called before changing the selected line.
+  // AcceptKeyword should be called after changing the selected line so we don't
+  // accept keyword on the wrong suggestion when stepping backwards.
+  const auto old_selection = GetPopupSelection();
+  const auto new_selection = old_selection.GetNextSelection(
+      result(), GetPrefService(), direction, step);
+  if (old_selection.IsChangeToKeyword(new_selection)) {
+    ClearKeyword();
+  }
+  SetPopupSelection(new_selection);
+  if (new_selection.IsChangeToKeyword(old_selection)) {
+    AcceptKeyword(metrics::OmniboxEventProto::TAB);
+  }
 }
 
 void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,

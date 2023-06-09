@@ -727,10 +727,7 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
   if (!model()->PopupIsOpen())
     return false;
 
-  model()->StepPopupSelection(event.IsShiftDown()
-                                  ? OmniboxPopupSelection::kBackward
-                                  : OmniboxPopupSelection::kForward,
-                              OmniboxPopupSelection::kStateOrLine);
+  model()->OnTabPressed(event.IsShiftDown());
 
   return true;
 }
@@ -1530,10 +1527,10 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 
   switch (command) {
     case ui::TextEditCommand::MOVE_UP:
-      model()->OnUpOrDownKeyPressed(-1);
+      model()->OnUpOrDownPressed(false, false);
       break;
     case ui::TextEditCommand::MOVE_DOWN:
-      model()->OnUpOrDownKeyPressed(1);
+      model()->OnUpOrDownPressed(true, false);
       break;
     case ui::TextEditCommand::PASTE:
       OnOmniboxPaste();
@@ -1653,19 +1650,13 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
     case ui::VKEY_PRIOR:
       if (control || alt || shift || GetReadOnly())
         return false;
-      if (!model()->MaybeStartQueryForPopup()) {
-        model()->StepPopupSelection(OmniboxPopupSelection::kBackward,
-                                    OmniboxPopupSelection::kAllLines);
-      }
+      model()->OnUpOrDownPressed(false, true);
       return true;
 
     case ui::VKEY_NEXT:
       if (control || alt || shift || GetReadOnly())
         return false;
-      if (!model()->MaybeStartQueryForPopup()) {
-        model()->StepPopupSelection(OmniboxPopupSelection::kForward,
-                                    OmniboxPopupSelection::kAllLines);
-      }
+      model()->OnUpOrDownPressed(true, true);
       return true;
 
     case ui::VKEY_V:

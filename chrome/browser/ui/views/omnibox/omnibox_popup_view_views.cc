@@ -216,12 +216,6 @@ OmniboxPopupSelection OmniboxPopupViewViews::GetSelection() const {
   return edit_model_->GetPopupSelection();
 }
 
-void OmniboxPopupViewViews::UnselectButton() {
-  OmniboxPopupSelection selection = edit_model_->GetPopupSelection();
-  selection.state = OmniboxPopupSelection::NORMAL;
-  edit_model_->SetPopupSelection(selection);
-}
-
 OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
   DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))
       << "With the WebUI omnibox popup enabled, the code should not try to "

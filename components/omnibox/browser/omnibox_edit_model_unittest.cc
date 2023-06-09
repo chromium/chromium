@@ -759,12 +759,12 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
   // Test moving and wrapping down.
   for (size_t n : {1, 2, 0}) {
-    model()->OnUpOrDownKeyPressed(1);
+    model()->OnUpOrDownPressed(true, false);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
   // And down.
   for (size_t n : {2, 1, 0}) {
-    model()->OnUpOrDownKeyPressed(-1);
+    model()->OnUpOrDownPressed(false, false);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
 }
@@ -817,12 +817,12 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
 
   // Step by lines forward.
   for (size_t n : {1, 2, 3, 4, 5, 0}) {
-    model()->StepPopupSelection(Selection::kForward, Selection::kWholeLine);
+    model()->OnUpOrDownPressed(true, false);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
   // Step by lines backward.
   for (size_t n : {5, 4, 3, 2, 1, 0}) {
-    model()->StepPopupSelection(Selection::kBackward, Selection::kWholeLine);
+    model()->OnUpOrDownPressed(false, false);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
 
@@ -840,7 +840,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
            Selection(5, Selection::NORMAL),
            Selection(0, Selection::NORMAL),
        }) {
-    model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
+    model()->OnTabPressed(false);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
   // Step by states backward. Unlike prior to suggestion button row, there is
@@ -862,14 +862,14 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
            Selection(4, Selection::FOCUSED_BUTTON_HEADER),
            Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
        }) {
-    model()->StepPopupSelection(Selection::kBackward, Selection::kStateOrLine);
+    model()->OnTabPressed(true);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
 
   // Try the `kAllLines` step behavior.
-  model()->StepPopupSelection(Selection::kBackward, Selection::kAllLines);
+  model()->OnUpOrDownPressed(false, true);
   EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
-  model()->StepPopupSelection(Selection::kForward, Selection::kAllLines);
+  model()->OnUpOrDownPressed(true, true);
   EXPECT_EQ(Selection(5, Selection::NORMAL), model()->GetPopupSelection());
 }
 
@@ -907,9 +907,9 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
   // Test the simple `kAllLines` case.
-  model()->StepPopupSelection(Selection::kForward, Selection::kAllLines);
+  model()->OnUpOrDownPressed(true, true);
   EXPECT_EQ(1u, model()->GetPopupSelection().line);
-  model()->StepPopupSelection(Selection::kBackward, Selection::kAllLines);
+  model()->OnUpOrDownPressed(false, true);
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
   // Test the `kStateOrLine` case, forwards and backwards.
@@ -918,14 +918,14 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
            Selection(2, Selection::FOCUSED_BUTTON_HEADER),
            Selection(0, Selection::NORMAL),
        }) {
-    model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
+    model()->OnTabPressed(false);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
   for (auto selection : {
            Selection(2, Selection::FOCUSED_BUTTON_HEADER),
            Selection(1, Selection::NORMAL),
        }) {
-    model()->StepPopupSelection(Selection::kBackward, Selection::kStateOrLine);
+    model()->OnTabPressed(true);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
 
@@ -934,14 +934,14 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
            Selection(0, Selection::NORMAL),
            Selection(1, Selection::NORMAL),
        }) {
-    model()->StepPopupSelection(Selection::kForward, Selection::kWholeLine);
+    model()->OnUpOrDownPressed(true, false);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
   for (auto selection : {
            Selection(0, Selection::NORMAL),
            Selection(1, Selection::NORMAL),
        }) {
-    model()->StepPopupSelection(Selection::kBackward, Selection::kWholeLine);
+    model()->OnUpOrDownPressed(false, false);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
 }
@@ -976,12 +976,12 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
 
   // Step by lines forward.
   for (size_t n : {1, 2, 3, 0}) {
-    model()->StepPopupSelection(Selection::kForward, Selection::kWholeLine);
+    model()->OnUpOrDownPressed(true, false);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
   // Step by lines backward.
   for (size_t n : {3, 2, 1, 0}) {
-    model()->StepPopupSelection(Selection::kBackward, Selection::kWholeLine);
+    model()->OnUpOrDownPressed(false, false);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
 
@@ -993,7 +993,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
            Selection(3, Selection::NORMAL),
            Selection(0, Selection::NORMAL),
        }) {
-    model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
+    model()->OnTabPressed(false);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
   // Step by states backward.
@@ -1004,14 +1004,14 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
            Selection(1, Selection::NORMAL),
            Selection(0, Selection::NORMAL),
        }) {
-    model()->StepPopupSelection(Selection::kBackward, Selection::kStateOrLine);
+    model()->OnTabPressed(true);
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
 
   // Try the `kAllLines` step behavior.
-  model()->StepPopupSelection(Selection::kBackward, Selection::kAllLines);
+  model()->OnUpOrDownPressed(false, true);
   EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
-  model()->StepPopupSelection(Selection::kForward, Selection::kAllLines);
+  model()->OnUpOrDownPressed(true, true);
   EXPECT_EQ(Selection(3, Selection::NORMAL), model()->GetPopupSelection());
 }
 #endif
@@ -1059,14 +1059,14 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   EXPECT_FALSE(model()->is_temporary_text());
 
   // Tab down to second match.
-  model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
+  model()->OnTabPressed(false);
   EXPECT_EQ(Selection(1, Selection::NORMAL), model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Tab down to header above the third match, expect that we have an empty
   // string for our temporary text.
-  model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
+  model()->OnTabPressed(false);
   EXPECT_EQ(Selection(2, Selection::FOCUSED_BUTTON_HEADER),
             model()->GetPopupSelection());
   EXPECT_EQ(std::u16string(), model()->text());
@@ -1074,14 +1074,14 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
 
   // Now tab down to the third match, and expect that we update the temporary
   // text to the third match.
-  model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
+  model()->OnTabPressed(false);
   EXPECT_EQ(Selection(2, Selection::NORMAL), model()->GetPopupSelection());
   EXPECT_EQ(u"a3", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the header again, expect that we have an empty string
   // for our temporary text.
-  model()->StepPopupSelection(Selection::kBackward, Selection::kStateOrLine);
+  model()->OnTabPressed(true);
   EXPECT_EQ(Selection(2, Selection::FOCUSED_BUTTON_HEADER),
             model()->GetPopupSelection());
   EXPECT_EQ(std::u16string(), model()->text());
@@ -1089,7 +1089,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
 
   // Now tab backwards to the second match, expect we update the temporary text
   // to the second match.
-  model()->StepPopupSelection(Selection::kBackward, Selection::kStateOrLine);
+  model()->OnTabPressed(true);
   EXPECT_EQ(Selection(1, Selection::NORMAL), model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());

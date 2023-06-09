@@ -348,6 +348,8 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
     model_->SetPopupSelection(selection);
+    // Don't re-enter keyword mode if already in it. This occurs when the user
+    // was in keyword mode and re-clicked the same or a different keyword chip.
     if (model_->is_keyword_hint()) {
       const auto entry_method =
           event.IsMouseEvent() ? metrics::OmniboxEventProto::CLICK_HINT_VIEW

@@ -57,9 +57,6 @@ class OmniboxPopupViewViews : public views::View,
   // Returns current popup selection (includes line index).
   virtual OmniboxPopupSelection GetSelection() const;
 
-  // Called by the active result view to inform model (due to mouse event).
-  void UnselectButton();
-
   // Gets the OmniboxResultView for match |i|.
   OmniboxResultView* result_view_at(size_t i);
 

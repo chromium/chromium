@@ -324,13 +324,12 @@ class OmniboxEditModel {
   // Returns true if pasting is in progress.
   bool is_pasting() const { return paste_state_ == PASTING; }
 
-  // Called when the user presses up or down.  |count| is a repeat count,
-  // negative for moving up, positive for moving down. Virtual for testing.
-  virtual void OnUpOrDownKeyPressed(int count);
+  // Called when the user presses arrow up, arrow down, page up, or page down.
+  void OnUpOrDownPressed(bool down, bool page);
 
-  // If no query is in progress, starts working on an autocomplete query.
-  // Returns true if started; false otherwise.
-  bool MaybeStartQueryForPopup();
+  // Called when the user presses tab or shift+tab. The latter will traverse up
+  // the selections instead of down.
+  void OnTabPressed(bool shift);
 
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
@@ -425,13 +424,6 @@ class OmniboxEditModel {
                          bool reset_to_default = false,
                          bool force_update_ui = false);
 
-  // Changes the popup selection to the next available selection.
-  // Stepping the popup selection gives special consideration for
-  // keyword mode state.
-  OmniboxPopupSelection StepPopupSelection(
-      OmniboxPopupSelection::Direction direction,
-      OmniboxPopupSelection::Step step);
-
   // Returns true if popup selection is on the initial line, which is usually
   // the default match (except in the no-default-match case).
   bool IsPopupSelectionOnInitialLine() const;
@@ -516,6 +508,15 @@ class OmniboxEditModel {
                        // for another action such as focusing the location bar
                        // with ctrl-l or copying the selected text with ctrl-c.
   };
+
+  // If no query is in progress, starts working on an autocomplete query.
+  // Returns true if started; false otherwise.
+  bool MaybeStartQueryForPopup();
+
+  // Changes the popup selection to the next available selection. Stepping the
+  // popup selection gives special consideration for keyword mode state.
+  void StepPopupSelection(OmniboxPopupSelection::Direction direction,
+                          OmniboxPopupSelection::Step step);
 
   // Asks the browser to load the popup's currently selected item, using the
   // supplied disposition.  This may close the popup.

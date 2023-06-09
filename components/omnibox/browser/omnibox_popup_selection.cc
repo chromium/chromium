@@ -198,33 +198,27 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
 
   // Now, for each accessible line, add all the available line states to a list.
   std::vector<OmniboxPopupSelection> available_selections;
-  {
-    auto add_available_line_states_for_line = [&](size_t line_number) {
-      for (LineState line_state : all_states) {
-        if (line_state == FOCUSED_BUTTON_ACTION) {
-          constexpr size_t kMaxActionCount = 8;
-          for (size_t i = 0; i < kMaxActionCount; i++) {
-            OmniboxPopupSelection selection(line_number, line_state, i);
-            if (selection.IsControlPresentOnMatch(result, pref_service)) {
-              available_selections.push_back(selection);
-            } else {
-              // Break early when there are no more actions. Note, this
-              // implies that a match takeover action should be last
-              // to allow other actions on the match to be included.
-              break;
-            }
-          }
-        } else {
-          OmniboxPopupSelection selection(line_number, line_state);
+  for (size_t line_number = 0; line_number < result.size(); ++line_number) {
+    for (LineState line_state : all_states) {
+      if (line_state == FOCUSED_BUTTON_ACTION) {
+        constexpr size_t kMaxActionCount = 8;
+        for (size_t i = 0; i < kMaxActionCount; i++) {
+          OmniboxPopupSelection selection(line_number, line_state, i);
           if (selection.IsControlPresentOnMatch(result, pref_service)) {
             available_selections.push_back(selection);
+          } else {
+            // Break early when there are no more actions. Note, this
+            // implies that a match takeover action should be last
+            // to allow other actions on the match to be included.
+            break;
           }
         }
+      } else {
+        OmniboxPopupSelection selection(line_number, line_state);
+        if (selection.IsControlPresentOnMatch(result, pref_service)) {
+          available_selections.push_back(selection);
+        }
       }
-    };
-
-    for (size_t line_number = 0; line_number < result.size(); ++line_number) {
-      add_available_line_states_for_line(line_number);
     }
   }
   DCHECK(
