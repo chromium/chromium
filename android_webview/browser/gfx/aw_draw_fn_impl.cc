@@ -30,7 +30,7 @@ namespace {
 
 BASE_FEATURE(kCheckDrawFunctorThread,
              "CheckDrawFunctorThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Set once during process-wide initialization.
 AwDrawFnFunctionTable* g_draw_fn_function_table = nullptr;
