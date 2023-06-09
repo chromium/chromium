@@ -420,8 +420,42 @@ AlphaThresholdPaintFilter::AlphaThresholdPaintFilter(const SkRegion& region,
     : PaintFilter(kType, crop_rect, HasDiscardableImages(input)),
       region_(region),
       input_(std::move(input)) {
-  cached_sk_filter_ = SkImageFilters::AlphaThreshold(
-      region_, 0.0f, 0.0f, GetSkFilter(input_.get()), crop_rect);
+  // Historically, Skia had a specialized AlphaThreshold effect that took an
+  // inner and outer alpha threshold. If a pixel inside the region had an alpha
+  // lower than the inner threshold, its opacity would be increased to that
+  // threshold. If a pixel outside the region had an alpha higher than the
+  // outer threshold, its opacity would be lowered to that threshold.
+  //
+  // The actual usage in chrome used an inner and outer threshold of 0, which
+  // has the equivalent behavior of leaving pixels inside the region unmodified,
+  // and clearing pixels outside the region to transparent black.
+
+  SkRect cull_rect = SkRect::Make(region.getBounds());
+  if (crop_rect) {
+    if (!cull_rect.intersect(*crop_rect)) {
+      cull_rect = SkRect::MakeEmpty();
+    }
+  }
+
+  if (region.isRect()) {
+    // `cull_rect` can entirely represent the threshold effect, so avoid
+    // producing a mask image that has to be blended against and just crop it.
+    // TODO(michaelludwig): Replace with a dedicated SkImageFilters::Crop once
+    // that has been made public, but Offset(0,0) is equivalent.
+    cached_sk_filter_ =
+        SkImageFilters::Offset(0, 0, GetSkFilter(input_.get()), cull_rect);
+  } else {
+    SkPictureRecorder recorder;
+    SkCanvas* canvas = recorder.beginRecording(cull_rect, nullptr);
+    canvas->clear(SK_ColorTRANSPARENT);
+    canvas->drawRegion(region, SkPaint(SkColors::kBlack));
+    sk_sp<SkPicture> shape_mask = recorder.finishRecordingAsPicture();
+    // kSrcIn multiplies the source (input_) by the dest's alpha (shape_mask)
+    cached_sk_filter_ = SkImageFilters::Blend(
+        SkBlendMode::kSrcIn,
+        /*dst=*/SkImageFilters::Picture(std::move(shape_mask)),
+        /*src=*/GetSkFilter(input_.get()), crop_rect);
+  }
 }
 
 AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
