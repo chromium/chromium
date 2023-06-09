@@ -42,26 +42,8 @@ class ResourceUtilTest : public testing::Test {
                               const TestFormat* test_formats) {
     for (int i = 0; i < kTestFormats; ++i) {
       size_t bytes = ResourceSizes::CheckedSizeInBytes<size_t>(
-          size, test_formats[i].format);
+          size, SharedImageFormat::SinglePlane(test_formats[i].format));
       EXPECT_EQ(bytes, test_formats[i].expected_bytes);
-    }
-  }
-
-  void TestUncheckedSizeInBytes(const gfx::Size& size,
-                                const TestFormat* test_formats) {
-    for (int i = 0; i < kTestFormats; ++i) {
-      size_t bytes = ResourceSizes::UncheckedSizeInBytes<size_t>(
-          size, test_formats[i].format);
-      EXPECT_EQ(bytes, test_formats[i].expected_bytes);
-    }
-  }
-
-  void TestUncheckedSizeInBytesAligned(const gfx::Size& size,
-                                       const TestFormat* test_formats) {
-    for (int i = 0; i < kTestFormats; ++i) {
-      size_t bytes = ResourceSizes::UncheckedSizeInBytesAligned<size_t>(
-          size, test_formats[i].format);
-      EXPECT_EQ(bytes, test_formats[i].expected_bytes_aligned);
     }
   }
 };
@@ -103,8 +85,6 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
   };
 
   TestCheckedSizeInBytes(size, test_formats);
-  TestUncheckedSizeInBytes(size, test_formats);
-  TestUncheckedSizeInBytesAligned(size, test_formats);
 
   // Check bytes for odd size.
   gfx::Size size_odd(11, 11);
@@ -116,8 +96,6 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
   };
 
   TestCheckedSizeInBytes(size_odd, test_formats_odd);
-  TestUncheckedSizeInBytes(size_odd, test_formats_odd);
-  TestUncheckedSizeInBytesAligned(size_odd, test_formats_odd);
 }
 
 TEST_F(ResourceUtilTest, SizeInBytesOverflow) {

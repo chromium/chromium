@@ -1752,8 +1752,8 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       auto backing = std::make_unique<TestSoftwareBacking>();
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
       backing->pixels = std::make_unique<uint32_t[]>(
-          viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-              resource.size(), kSharedImageFormat.resource_format()));
+          viz::ResourceSizes::CheckedSizeInBytes<size_t>(resource.size(),
+                                                         kSharedImageFormat));
       resource.set_software_backing(std::move(backing));
     }
     auto* backing =

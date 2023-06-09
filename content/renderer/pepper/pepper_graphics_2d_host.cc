@@ -757,8 +757,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
   }
   void* src = image_data_->Map();
   memcpy(shared_bitmap->memory(), src,
-         viz::ResourceSizes::CheckedSizeInBytes<size_t>(pixel_image_size,
-                                                        viz::RGBA_8888));
+         viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+             pixel_image_size, viz::SinglePlaneFormat::kRGBA_8888));
   image_data_->Unmap();
 
   *transferable_resource = viz::TransferableResource::MakeSoftware(

@@ -34,8 +34,6 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   static T CheckedWidthInBytes(int width, SharedImageFormat format);
   // Dies with a CRASH() if the size can not be represented as a positive
   // number of bytes.
-  template <typename T>
-  static T CheckedSizeInBytes(const gfx::Size& size, ResourceFormat format);
   // WARNING: The `format` must be single planar.
   // TODO(hitawala): Add multiplanar format support.
   template <typename T>
@@ -44,15 +42,6 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   // computing widths for sizes that have already been checked.
   template <typename T>
   static T UncheckedWidthInBytes(int width, SharedImageFormat format);
-  // Returns the size in bytes but may overflow or return 0. Only do this for
-  // sizes that have already been checked.
-  template <typename T>
-  static T UncheckedSizeInBytes(const gfx::Size& size, ResourceFormat format);
-  // Returns the size in bytes aligned but may overflow or return 0. Only do
-  // this for sizes that have already been checked.
-  template <typename T>
-  static T UncheckedSizeInBytesAligned(const gfx::Size& size,
-                                       ResourceFormat format);
 
  private:
   template <typename T>
@@ -62,11 +51,6 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   static bool VerifyWidthInBytesInternal(int width,
                                          ResourceFormat format,
                                          bool aligned);
-
-  template <typename T>
-  static bool VerifySizeInBytesInternal(const gfx::Size& size,
-                                        ResourceFormat format,
-                                        bool aligned);
 
   template <typename T>
   static bool MaybeWidthInBytesInternal(int width,
@@ -118,18 +102,13 @@ T ResourceSizes::CheckedWidthInBytes(int width, SharedImageFormat format) {
 
 template <typename T>
 T ResourceSizes::CheckedSizeInBytes(const gfx::Size& size,
-                                    ResourceFormat format) {
+                                    SharedImageFormat format) {
   VerifyType<T>();
   CHECK(!size.IsEmpty());
   T bytes;
-  CHECK(MaybeSizeInBytesInternal<T>(size, format, false, &bytes));
+  CHECK(MaybeSizeInBytesInternal<T>(size, format.resource_format(), false,
+                                    &bytes));
   return bytes;
-}
-
-template <typename T>
-T ResourceSizes::CheckedSizeInBytes(const gfx::Size& size,
-                                    SharedImageFormat format) {
-  return CheckedSizeInBytes<T>(size, format.resource_format());
 }
 
 template <typename T>
@@ -138,24 +117,6 @@ T ResourceSizes::UncheckedWidthInBytes(int width, SharedImageFormat format) {
   DCHECK_GT(width, 0);
   DCHECK(VerifyWidthInBytesInternal<T>(width, format.resource_format(), false));
   return WidthInBytesInternal<T>(width, format.resource_format(), false);
-}
-
-template <typename T>
-T ResourceSizes::UncheckedSizeInBytes(const gfx::Size& size,
-                                      ResourceFormat format) {
-  VerifyType<T>();
-  DCHECK(!size.IsEmpty());
-  DCHECK(VerifySizeInBytesInternal<T>(size, format, false));
-  return SizeInBytesInternal<T>(size, format, false);
-}
-
-template <typename T>
-T ResourceSizes::UncheckedSizeInBytesAligned(const gfx::Size& size,
-                                             ResourceFormat format) {
-  VerifyType<T>();
-  CHECK(!size.IsEmpty());
-  DCHECK(VerifySizeInBytesInternal<T>(size, format, true));
-  return SizeInBytesInternal<T>(size, format, true);
 }
 
 template <typename T>
@@ -171,14 +132,6 @@ bool ResourceSizes::VerifyWidthInBytesInternal(int width,
                                                bool aligned) {
   T ignored;
   return MaybeWidthInBytesInternal(width, format, aligned, &ignored);
-}
-
-template <typename T>
-bool ResourceSizes::VerifySizeInBytesInternal(const gfx::Size& size,
-                                              ResourceFormat format,
-                                              bool aligned) {
-  T ignored;
-  return MaybeSizeInBytesInternal(size, format, aligned, &ignored);
 }
 
 template <typename T>

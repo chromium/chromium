@@ -495,8 +495,8 @@ void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
   gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
   // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
-  const size_t buffer_size =
-      viz::ResourceSizes::CheckedSizeInBytes<size_t>(size_, viz::RGBA_8888);
+  const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+      size_, viz::SinglePlaneFormat::kRGBA_8888);
   ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
                       kN32_SkColorType, op);
 }

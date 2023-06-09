@@ -59,7 +59,7 @@ class SoftwareOutputDeviceWinProxyTest : public testing::Test {
             testing::WithArg<1>([](base::UnsafeSharedMemoryRegion region) {
               EXPECT_TRUE(region.IsValid());
               size_t required_bytes = ResourceSizes::CheckedSizeInBytes<size_t>(
-                  kDefaultSize, ResourceFormat::RGBA_8888);
+                  kDefaultSize, SinglePlaneFormat::kRGBA_8888);
               EXPECT_GE(region.GetSize(), required_bytes);
             }));
     device_.Resize(kDefaultSize, 1.0f);
