@@ -163,10 +163,11 @@ class DlpFilesControllerAsh : public DlpFilesController {
   virtual bool IsLaunchBlocked(const apps::AppUpdate& app_update,
                                const apps::IntentPtr& intent);
 
-  // Returns a sublist of |transferred_files| which aren't allowed to be
-  // transferred to either |destination_url| or |destination_component| in
-  // |result_callback|.
+  // Returns a sublist of `transferred_files` which aren't allowed to be
+  // transferred to either `destination_url` or `destination_component` in
+  // `result_callback`.
   void IsFilesTransferRestricted(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       const std::vector<FileDaemonInfo>& transferred_files,
       const DlpFileDestination& destination,
       dlp::FileAction files_action,

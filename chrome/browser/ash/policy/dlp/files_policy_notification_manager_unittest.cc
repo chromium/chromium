@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -21,11 +22,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
 namespace {
+
+using testing::Field;
 
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
@@ -34,6 +38,15 @@ bool CreateDummyFile(const base::FilePath& path) {
 constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
 constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
 constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
+
+class IOTaskStatusObserver
+    : public file_manager::io_task::IOTaskController::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnIOTaskStatus,
+              (const file_manager::io_task::ProgressStatus&),
+              (override));
+};
 
 }  // namespace
 
@@ -182,6 +195,71 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_3));
+}
+
+// Tests that passing task id to ShowDlpWarning will pause the corresponding
+// IOTask.
+TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
+  IOTaskStatusObserver observer;
+  io_task_controller_->AddObserver(&observer);
+
+  file_manager::io_task::IOTaskId task_id = 1;
+  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_TRUE(CreateDummyFile(src_file_path));
+  auto src_url = CreateFileSystemURL(src_file_path.value());
+  ASSERT_TRUE(src_url.is_valid());
+  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
+
+  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+      file_manager::io_task::OperationType::kCopy,
+      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
+      file_system_context_);
+
+  // Task is queued.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kQueued))));
+  io_task_controller_->Add(std::move(task));
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
+  file_manager::io_task::PauseParams pause_params;
+  pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
+
+  // Task is paused.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kPaused),
+                Field(&file_manager::io_task::ProgressStatus::pause_params,
+                      pause_params))))
+      .Times(::testing::AtLeast(1));
+
+  fpnm_->ShowDlpWarning(
+      base::DoNothing(), task_id, std::vector<base::FilePath>{src_file_path},
+      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+
+  // Task is completed with error.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kError),
+                Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::policy_error,
+                      file_manager::io_task::PolicyErrorType::kDlp))))
+      .Times(::testing::AtLeast(1));
+
+  io_task_controller_->CompleteWithError(
+      task_id, file_manager::io_task::PolicyErrorType::kDlp);
+
+  base::RunLoop().RunUntilIdle();
+  io_task_controller_->RemoveObserver(&observer);
 }
 
 class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,

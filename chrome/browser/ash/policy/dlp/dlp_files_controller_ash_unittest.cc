@@ -80,6 +80,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using blink::mojom::FileSystemFileInfo;
 using blink::mojom::NativeFileInfo;
@@ -1345,13 +1346,14 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
   for (base::TimeDelta delay : delays) {
     // Report `event1` after this call if `delay` is at least `cooldown_time`.
     files_controller_->IsFilesTransferRestricted(
-        transferred_files, DlpFileDestination(dst_url),
+        /*task_id=*/1234, transferred_files, DlpFileDestination(dst_url),
         dlp::FileAction::kTransfer, cb.Get());
 
     // Report `event2` after this call if `delay` is at least `cooldown_time`.
     files_controller_->IsFilesTransferRestricted(
-        transferred_files, DlpFileDestination(dst_path.path().value()),
-        dlp::FileAction::kTransfer, cb.Get());
+        /*task_id=*/1234, transferred_files,
+        DlpFileDestination(dst_path.path().value()), dlp::FileAction::kTransfer,
+        cb.Get());
 
     task_runner_->FastForwardBy(delay);
   }
@@ -1412,7 +1414,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
 
   // Report a single `event` after this call
   files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(dst_url),
+      /*task_id=*/2345, transferred_files, DlpFileDestination(dst_url),
       dlp::FileAction::kTransfer, cb.Get());
 
   // Do not report after these calls
@@ -1692,8 +1694,9 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
   ASSERT_TRUE(dst_url.is_valid());
 
   files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(dst_url.path().value()),
-      dlp::FileAction::kTransfer, cb.Get());
+      /*task_id=*/1234, transferred_files,
+      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kTransfer,
+      cb.Get());
 
   ASSERT_EQ(events.size(), 2u);
   EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -1849,8 +1852,9 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
   EXPECT_CALL(cb, Run(files_levels)).Times(1);
 
   files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(destination_url),
-      dlp::FileAction::kDownload, cb.Get());
+      /*task_id=*/absl::nullopt, transferred_files,
+      DlpFileDestination(destination_url), dlp::FileAction::kDownload,
+      cb.Get());
 
   ASSERT_EQ(events.size(), disallowed_source_patterns.size());
   for (size_t i = 0u; i < disallowed_source_patterns.size(); ++i) {
@@ -1899,7 +1903,8 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   EXPECT_CALL(*fpnm_, ShowDlpWarning)
       .WillOnce([&choice_result](
                     OnDlpRestrictionCheckedCallback callback,
-                    const std::vector<DlpConfidentialFile>& confidential_files,
+                    absl::optional<file_manager::io_task::IOTaskId> task_id,
+                    const std::vector<base::FilePath>& warning_files,
                     const DlpFileDestination& destination,
                     dlp::FileAction action) {
         std::move(callback).Run(choice_result);
@@ -2055,11 +2060,10 @@ TEST_P(DlpFilesWarningDialogContentTest,
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
 
-  std::vector<DlpConfidentialFile> expected_files;
-  if (transfer_info.files_action != dlp::FileAction::kDownload) {
-    for (const auto& file_path : transfer_info.file_paths) {
-      expected_files.emplace_back(base::FilePath(file_path));
-    }
+  std::vector<base::FilePath> expected_files;
+
+  for (const auto& file_path : transfer_info.file_paths) {
+    expected_files.emplace_back(base::FilePath(file_path));
   }
 
   EXPECT_CALL(*rules_manager_,
@@ -2070,11 +2074,13 @@ TEST_P(DlpFilesWarningDialogContentTest,
       .Times(::testing::AnyNumber());
 
   EXPECT_CALL(*fpnm_,
-              ShowDlpWarning(base::test::IsNotNullCallback(), expected_files,
+              ShowDlpWarning(base::test::IsNotNullCallback(), {absl::nullopt},
+                             std::move(expected_files),
                              DlpFileDestination(data_controls::Component::kUsb),
                              transfer_info.files_action))
       .WillOnce([](OnDlpRestrictionCheckedCallback callback,
-                   const std::vector<DlpConfidentialFile>& confidential_files,
+                   absl::optional<file_manager::io_task::IOTaskId> task_id,
+                   const std::vector<base::FilePath>& confidential_files,
                    const DlpFileDestination& destination,
                    dlp::FileAction action) {
         std::move(callback).Run(false);
@@ -2090,8 +2096,9 @@ TEST_P(DlpFilesWarningDialogContentTest,
   ASSERT_TRUE(dst_url.is_valid());
 
   files_controller_->IsFilesTransferRestricted(
-      warned_files, DlpFileDestination(dst_url.path().value()),
-      transfer_info.files_action, cb.Get());
+      /*task_id=*/absl::nullopt, warned_files,
+      DlpFileDestination(dst_url.path().value()), transfer_info.files_action,
+      cb.Get());
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }

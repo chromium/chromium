@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -533,8 +532,8 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
 
   FileDaemonInfo file_info({}, file_path, download_src.url_or_path().value());
   IsFilesTransferRestricted(
-      {std::move(file_info)}, DlpFileDestination(file_path.value()),
-      dlp::FileAction::kDownload,
+      absl::nullopt, {std::move(file_info)},
+      DlpFileDestination(file_path.value()), dlp::FileAction::kDownload,
       base::BindOnce(
           [](CheckIfDlpAllowedCallback result_callback,
              const std::vector<std::pair<
@@ -659,6 +658,7 @@ bool DlpFilesControllerAsh::IsLaunchBlocked(const apps::AppUpdate& app_update,
 }
 
 void DlpFilesControllerAsh::IsFilesTransferRestricted(
+    absl::optional<file_manager::io_task::IOTaskId> task_id,
     const std::vector<FileDaemonInfo>& transferred_files,
     const DlpFileDestination& destination,
     dlp::FileAction files_action,
@@ -672,7 +672,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
 
   std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>> files_levels;
   std::vector<FileDaemonInfo> warned_files;
-  std::vector<DlpConfidentialFile> dialog_files;
   absl::optional<std::string> destination_pattern;
   std::vector<std::string> warned_source_patterns;
   std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata;
@@ -720,9 +719,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
         warned_files.push_back(file);
         warned_source_patterns.emplace_back(source_pattern);
         warned_rules_metadata.emplace_back(rule_metadata);
-        if (files_action != dlp::FileAction::kDownload) {
-          dialog_files.emplace_back(file.path);
-        }
         DlpHistogramEnumeration(dlp::kFileActionWarnedUMA, files_action);
         break;
       }
@@ -741,7 +737,10 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
                   "can't show policy warning UI";
     return;
   }
-
+  std::vector<base::FilePath> warning_files_paths;
+  base::ranges::for_each(warned_files, [&](auto& warned_file) {
+    warning_files_paths.push_back(warned_file.path);
+  });
   fpnm->ShowDlpWarning(
       base::BindOnce(&DlpFilesControllerAsh::OnDlpWarnDialogReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(files_levels),
@@ -749,7 +748,8 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
                      std::move(warned_rules_metadata), actual_dst,
                      destination_pattern, files_action,
                      std::move(result_callback)),
-      std::move(dialog_files), actual_dst, files_action);
+      std::move(task_id), std::move(warning_files_paths), actual_dst,
+      files_action);
 }
 
 std::vector<DlpFilesControllerAsh::DlpFileRestrictionDetails>

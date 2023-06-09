@@ -34,9 +34,10 @@ IN_PROC_BROWSER_TEST_F(FilesPolicyNotificationManagerBrowserTest,
   auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
       browser()->profile());
   ASSERT_TRUE(fpnm);
-  std::vector<DlpConfidentialFile> warning_files;
+  std::vector<base::FilePath> warning_files;
   warning_files.emplace_back(base::FilePath("file1.txt"));
-  fpnm->ShowDlpWarning(base::DoNothing(), std::move(warning_files),
+  fpnm->ShowDlpWarning(base::DoNothing(), absl::nullopt,
+                       std::move(warning_files),
                        DlpFileDestination(data_controls::Component::kDrive),
                        dlp::FileAction::kMove);
 }
@@ -48,9 +49,10 @@ IN_PROC_BROWSER_TEST_F(FilesPolicyNotificationManagerBrowserTest,
   auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
       browser()->profile());
   ASSERT_TRUE(fpnm);
-  std::vector<DlpConfidentialFile> warning_files;
+  std::vector<base::FilePath> warning_files;
   warning_files.emplace_back(base::FilePath("file1.txt"));
-  fpnm->ShowDlpWarning(base::DoNothing(), std::move(warning_files),
+  fpnm->ShowDlpWarning(base::DoNothing(), absl::nullopt,
+                       std::move(warning_files),
                        DlpFileDestination(kExampleUrl), dlp::FileAction::kMove);
 }
 
@@ -61,9 +63,10 @@ IN_PROC_BROWSER_TEST_F(FilesPolicyNotificationManagerBrowserTest,
   auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
       browser()->profile());
   ASSERT_TRUE(fpnm);
-  std::vector<DlpConfidentialFile> warning_files;
+  std::vector<base::FilePath> warning_files;
   warning_files.emplace_back(base::FilePath("file1.txt"));
-  fpnm->ShowDlpWarning(base::DoNothing(), std::move(warning_files),
+  fpnm->ShowDlpWarning(base::DoNothing(), absl::nullopt,
+                       std::move(warning_files),
                        DlpFileDestination(data_controls::Component::kDrive),
                        dlp::FileAction::kDownload);
 }

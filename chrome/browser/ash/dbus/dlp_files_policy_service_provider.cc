@@ -195,11 +195,18 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
   }
 
   policy::dlp::FileAction files_action = policy::dlp::FileAction::kTransfer;
-  if (request.has_file_action())
+  if (request.has_file_action()) {
     files_action = MapProtoToFileAction(request.file_action());
+  }
+
+  absl::optional<file_manager::io_task::IOTaskId> task_id = absl::nullopt;
+  if (request.has_io_task_id()) {
+    task_id = request.io_task_id();
+  }
 
   files_controller->IsFilesTransferRestricted(
-      std::move(files_info), std::move(destination.value()), files_action,
+      std::move(task_id), std::move(files_info), std::move(destination.value()),
+      files_action,
       base::BindOnce(
           &DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer,
           weak_ptr_factory_.GetWeakPtr(), method_call,

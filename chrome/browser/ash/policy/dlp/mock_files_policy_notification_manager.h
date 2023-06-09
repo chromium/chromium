@@ -27,7 +27,8 @@ class MockFilesPolicyNotificationManager
   MOCK_METHOD(void,
               ShowDlpWarning,
               (OnDlpRestrictionCheckedCallback callback,
-               const std::vector<DlpConfidentialFile>& confidential_files,
+               absl::optional<file_manager::io_task::IOTaskId> task_id,
+               std::vector<base::FilePath> warning_files,
                const DlpFileDestination& destination,
                dlp::FileAction action),
               (override));

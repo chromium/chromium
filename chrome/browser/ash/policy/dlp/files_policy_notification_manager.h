@@ -38,10 +38,12 @@ class FilesPolicyNotificationManager
 
   ~FilesPolicyNotificationManager() override;
 
-  // Shows DLP Warning UI.
+  // Shows DLP Warning UI. If `task_id` is set, the corresponding IOTask will be
+  // paused. Otherwise a desktop notification will be shown.
   virtual void ShowDlpWarning(
       OnDlpRestrictionCheckedCallback callback,
-      const std::vector<DlpConfidentialFile>& confidential_files,
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
+      std::vector<base::FilePath> warning_files,
       const DlpFileDestination& destination,
       dlp::FileAction action);
 
@@ -70,7 +72,9 @@ class FilesPolicyNotificationManager
   // needed for custom messaging should be added here.
   struct WarningInfo {
     WarningInfo() = delete;
-    WarningInfo(std::vector<base::FilePath> files_paths, Policy warning_reason);
+    WarningInfo(std::vector<base::FilePath> files_paths,
+                Policy warning_reason,
+                OnDlpRestrictionCheckedCallback warning_callback);
     WarningInfo(WarningInfo&& other);
     ~WarningInfo();
 
@@ -79,11 +83,13 @@ class FilesPolicyNotificationManager
     // Warning reason. There should be only one policy per warning as mixed
     // warnings aren't supported.
     Policy warning_reason;
+    // Warning callback.
+    OnDlpRestrictionCheckedCallback warning_callback;
   };
 
   // Holds needed information for each tracked IO task.
   struct IOTaskInfo {
-    IOTaskInfo();
+    explicit IOTaskInfo(dlp::FileAction action);
     IOTaskInfo(IOTaskInfo&& other);
     ~IOTaskInfo();
 
@@ -102,7 +108,8 @@ class FilesPolicyNotificationManager
                              gfx::NativeWindow modal_parent);
 
   // Starts tracking IO task with `task_id`.
-  void AddIOTask(file_manager::io_task::IOTaskId task_id);
+  void AddIOTask(file_manager::io_task::IOTaskId task_id,
+                 dlp::FileAction action);
 
   // BrowserListObserver overrides:
   // Called when opening a new Files App window to use as the modal parent for a
@@ -129,6 +136,19 @@ class FilesPolicyNotificationManager
 
   // KeyedService overrides:
   void Shutdown() override;
+
+  // Show DLP warning desktop notifications.
+  void ShowDlpWarningNotification(OnDlpRestrictionCheckedCallback callback,
+                                  std::vector<base::FilePath> warning_files,
+                                  const DlpFileDestination& destination,
+                                  dlp::FileAction action);
+
+  // Pauses IO task due to `warning_reason`.
+  void PauseIOTask(file_manager::io_task::IOTaskId task_id,
+                   OnDlpRestrictionCheckedCallback callback,
+                   std::vector<base::FilePath> warning_files,
+                   dlp::FileAction action,
+                   Policy warning_reason);
 
   // Callback to show a policy dialog after waiting to open a Files App window.
   base::OnceCallback<void(gfx::NativeWindow)> pending_callback_;

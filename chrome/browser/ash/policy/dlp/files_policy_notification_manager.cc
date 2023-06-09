@@ -100,18 +100,19 @@ FilesPolicyNotificationManager::~FilesPolicyNotificationManager() = default;
 
 void FilesPolicyNotificationManager::ShowDlpWarning(
     OnDlpRestrictionCheckedCallback callback,
-    const std::vector<DlpConfidentialFile>& confidential_files,
+    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
-  auto* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyWarnDialog>(std::move(callback),
-                                              std::move(confidential_files),
-                                              destination, action,
-                                              /*modal_parent=*/nullptr),
-      /*context=*/nullptr,
-      /*parent=*/nullptr);
-  widget->Show();
-  // TODO(ayaelattar): Timeout after total 5 minutes.
+  // If `task_id` and there's a corresponding IOTask tracker, it should be
+  // paused.
+  if (task_id.has_value() && base::Contains(io_tasks_, task_id.value())) {
+    PauseIOTask(task_id.value(), std::move(callback), std::move(warning_files),
+                action, Policy::kDlp);
+  } else {
+    ShowDlpWarningNotification(std::move(callback), std::move(warning_files),
+                               destination, action);
+  }
 }
 
 void FilesPolicyNotificationManager::ShowDlpBlockNotification(
@@ -214,8 +215,10 @@ bool FilesPolicyNotificationManager::HasIOTask(
 
 FilesPolicyNotificationManager::WarningInfo::WarningInfo(
     std::vector<base::FilePath> files_paths,
-    Policy warning_reason)
-    : warning_reason(warning_reason) {
+    Policy warning_reason,
+    OnDlpRestrictionCheckedCallback warning_callback)
+    : warning_reason(warning_reason),
+      warning_callback(std::move(warning_callback)) {
   for (const auto& file_path : files_paths) {
     files.emplace_back(file_path);
   }
@@ -226,7 +229,8 @@ FilesPolicyNotificationManager::WarningInfo::WarningInfo(WarningInfo&& other) =
 
 FilesPolicyNotificationManager::WarningInfo::~WarningInfo() = default;
 
-FilesPolicyNotificationManager::IOTaskInfo::IOTaskInfo() = default;
+FilesPolicyNotificationManager::IOTaskInfo::IOTaskInfo(dlp::FileAction action)
+    : action(action) {}
 
 FilesPolicyNotificationManager::IOTaskInfo::IOTaskInfo(IOTaskInfo&& other) =
     default;
@@ -280,8 +284,9 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
 }
 
 void FilesPolicyNotificationManager::AddIOTask(
-    file_manager::io_task::IOTaskId task_id) {
-  io_tasks_.emplace(std::move(task_id), IOTaskInfo());
+    file_manager::io_task::IOTaskId task_id,
+    dlp::FileAction action) {
+  io_tasks_.emplace(std::move(task_id), IOTaskInfo(action));
 }
 
 void FilesPolicyNotificationManager::OnBrowserSetLastActive(Browser* browser) {
@@ -310,9 +315,14 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
     return;
   }
 
+  dlp::FileAction action =
+      status.type == file_manager::io_task::OperationType::kCopy
+          ? dlp::FileAction::kCopy
+          : dlp::FileAction::kMove;
+
   if (!HasIOTask(status.task_id) &&
       status.state == file_manager::io_task::State::kQueued) {
-    AddIOTask(status.task_id);
+    AddIOTask(status.task_id, action);
   } else if (HasIOTask(status.task_id) && status.IsCompleted()) {
     // If it's in a terminal state, stop observing.
     io_tasks_.erase(status.task_id);
@@ -370,6 +380,49 @@ void FilesPolicyNotificationManager::Shutdown() {
       io_task_controller->RemoveObserver(this);
     }
   }
+}
+
+void FilesPolicyNotificationManager::ShowDlpWarningNotification(
+    OnDlpRestrictionCheckedCallback callback,
+    std::vector<base::FilePath> warning_files,
+    const DlpFileDestination& destination,
+    dlp::FileAction action) {
+  auto* widget = views::DialogDelegate::CreateDialogWidget(
+      std::make_unique<FilesPolicyWarnDialog>(
+          std::move(callback),
+          std::vector<DlpConfidentialFile>{warning_files.begin(),
+                                           warning_files.end()},
+          destination, action,
+          /*modal_parent=*/nullptr),
+      /*context=*/nullptr,
+      /*parent=*/nullptr);
+  widget->Show();
+  // TODO(ayaelattar): Timeout after total 5 minutes.
+}
+
+void FilesPolicyNotificationManager::PauseIOTask(
+    file_manager::io_task::IOTaskId task_id,
+    OnDlpRestrictionCheckedCallback callback,
+    std::vector<base::FilePath> warning_files,
+    dlp::FileAction action,
+    Policy warning_reason) {
+  auto* io_task_controller = GetIOTaskController(context_);
+  if (!io_task_controller) {
+    // Proceed because the IO task can't be paused.
+    std::move(callback).Run(/*should_proceed=*/true);
+    return;
+  }
+
+  io_tasks_.at(task_id).warning_info.emplace(
+      std::move(warning_files), warning_reason, std::move(callback));
+
+  file_manager::io_task::PauseParams pause_params;
+  pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
+  // TODO(b/285880274): Pass number of files on PolicyPauseParams because it's
+  // needed for the strings.
+  io_task_controller->Pause(task_id, std::move(pause_params));
+  // TODO(ayaelattar): Timeout after total 5 minutes.
 }
 
 }  // namespace policy

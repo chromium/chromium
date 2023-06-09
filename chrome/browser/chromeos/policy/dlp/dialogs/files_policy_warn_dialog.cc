@@ -29,7 +29,7 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
 FilesPolicyWarnDialog::~FilesPolicyWarnDialog() = default;
 
 void FilesPolicyWarnDialog::MaybeAddConfidentialRows() {
-  if (files_.empty()) {
+  if (action_ == dlp::FileAction::kDownload || files_.empty()) {
     return;
   }
 
