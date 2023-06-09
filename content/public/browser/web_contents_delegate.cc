@@ -161,7 +161,6 @@ bool WebContentsDelegate::IsFullscreenForTabOrPending(
 
 FullscreenState WebContentsDelegate::GetFullscreenState(
     const WebContents* web_contents) const {
-  NOTIMPLEMENTED_LOG_ONCE();
   FullscreenState state;
   state.target_mode =
       const_cast<WebContentsDelegate*>(this)->IsFullscreenForTabOrPending(

@@ -156,7 +156,6 @@ WorkletGlobalScope::~WorkletGlobalScope() = default;
 
 const BrowserInterfaceBrokerProxy&
 WorkletGlobalScope::GetBrowserInterfaceBroker() const {
-  NOTIMPLEMENTED();
   return GetEmptyBrowserInterfaceBroker();
 }
 
