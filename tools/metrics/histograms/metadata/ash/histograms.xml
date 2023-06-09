@@ -138,8 +138,6 @@ chromium-metrics-reviews@google.com.
     <variant name="DebugToggleVideoConferenceCameraTrayIcon"/>
     <variant name="DebugToggleWallpaperMode"/>
     <variant name="DebugTriggerCrash"/>
-    <variant name="DebugTuckFloatedWindowLeft"/>
-    <variant name="DebugTuckFloatedWindowRight"/>
     <variant name="DesksActivate0"/>
     <variant name="DesksActivate1"/>
     <variant name="DesksActivate2"/>

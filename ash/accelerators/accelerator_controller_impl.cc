@@ -813,9 +813,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanToggleProjectorMarker();
     case AcceleratorAction::kToggleResizeLockMenu:
       return accelerators::CanToggleResizeLockMenu();
-    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
-    case AcceleratorAction::kDebugTuckFloatedWindowRight:
-      return debug::CanTuckFloatedWindow();
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       return true;
 
@@ -1324,10 +1321,6 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kToggleDockedMagnifier:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Docked_Magnifier"));
       accelerators::ToggleDockedMagnifier();
-      break;
-    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
-    case AcceleratorAction::kDebugTuckFloatedWindowRight:
-      debug::PerformDebugActionIfEnabled(action);
       break;
     case AcceleratorAction::kToggleFloating:
       // UMA metrics are recorded in the function.

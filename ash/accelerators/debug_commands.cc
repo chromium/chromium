@@ -227,17 +227,6 @@ void HandleTriggerHUDDisplay() {
   hud_display::HUDDisplayView::Toggle();
 }
 
-void HandleTuckFloatedWindow(AcceleratorAction action) {
-  auto* floated_window = window_util::GetFloatedWindowForActiveDesk();
-  DCHECK(floated_window);
-
-  const float velocity_x =
-      action == AcceleratorAction::kDebugTuckFloatedWindowLeft ? -500.f : 500.f;
-  Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(floated_window,
-                                                            velocity_x,
-                                                            /*velocity_y=*/0.f);
-}
-
 // Toast debug shortcut constants.
 const std::u16string oneline_toast_text = u"SystemUI toast text string";
 const std::u16string multiline_toast_text =
@@ -347,10 +336,6 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugToggleHudDisplay:
       HandleTriggerHUDDisplay();
-      break;
-    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
-    case AcceleratorAction::kDebugTuckFloatedWindowRight:
-      HandleTuckFloatedWindow(action);
       break;
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       HandleToggleVideoConferenceCameraTrayIcon();
