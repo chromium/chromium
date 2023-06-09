@@ -104,6 +104,7 @@ mojom("mojom_platform") {
     "interest_group/ad_display_size.mojom",
     "interest_group/interest_group_types.mojom",
     "keyboard_lock/keyboard_lock.mojom",
+    "lcp_critical_path_predictor/lcp_critical_path_predictor.mojom",
     "leak_detector/leak_detector.mojom",
     "link_to_text/link_to_text.mojom",
     "loader/code_cache.mojom",

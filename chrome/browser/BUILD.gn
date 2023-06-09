@@ -1254,6 +1254,8 @@ static_library("browser") {
     "predictors/autocomplete_action_predictor_table.h",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_database.cc",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_database.h",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.cc",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_keyed_service.cc",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_keyed_service.h",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_keyed_service_factory.cc",

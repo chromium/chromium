@@ -25,6 +25,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h"
 #include "chrome/browser/predictors/network_hints_handler_impl.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.h"
@@ -97,6 +98,7 @@
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -799,6 +801,9 @@ void PopulateChromeFrameBinders(
 
   map->Add<blink::mojom::AnchorElementMetricsHost>(
       base::BindRepeating(&NavigationPredictor::Create));
+
+  map->Add<blink::mojom::LCPCriticalPathPredictorHost>(
+      base::BindRepeating(&predictors::LCPCriticalPathPredictorHost::Create));
 
   map->Add<dom_distiller::mojom::DistillabilityService>(
       base::BindRepeating(&BindDistillabilityService));

@@ -136,6 +136,7 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
@@ -1120,6 +1121,8 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::AnchorElementMetricsHost>));
   map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
+  map->Add<blink::mojom::LCPCriticalPathPredictorHost>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>));
   if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsDocumentAPI)) {
