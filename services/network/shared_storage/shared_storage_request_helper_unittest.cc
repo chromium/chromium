@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
@@ -58,7 +59,7 @@ class PausableTestDelegate : public net::TestDelegate {
 
   void OnResponseStarted(net::URLRequest* request, int net_error) override {
     response_started_ = true;
-    request_ = request;
+    request_ = request->GetWeakPtr();
     net_error_ = net_error;
     if (loop_ && loop_->running()) {
       loop_->Quit();
@@ -78,7 +79,9 @@ class PausableTestDelegate : public net::TestDelegate {
   }
 
   void ResumeOnResponseStarted() {
-    TestDelegate::OnResponseStarted(request_, net_error_);
+    if (request_) {
+      TestDelegate::OnResponseStarted(request_.get(), net_error_);
+    }
   }
 
   void ResetDelegate() {
@@ -89,7 +92,7 @@ class PausableTestDelegate : public net::TestDelegate {
  private:
   std::unique_ptr<base::RunLoop> loop_;
   bool response_started_ = false;
-  raw_ptr<net::URLRequest> request_ = nullptr;
+  base::WeakPtr<net::URLRequest> request_ = nullptr;
   int net_error_ = net::OK;
 };
 
