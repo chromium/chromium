@@ -35,6 +35,10 @@ class FakeSystemIdentityManager;
 // Returns whether the activity view is presented.
 @property(nonatomic, readonly) BOOL isActivityViewPresented;
 
+// The user email passed on the last call to
+// `startAuthActivityWithViewController:userEmail:completion:`.
+@property(nonatomic, strong, readonly) NSString* lastStartAuthActivityUserEmail;
+
 // Stores the identity to use when sign-in tap is simulated.Must be non
 // nil before calling `-simulateDidTapAddAccount` method.
 @property(nonatomic, strong, class) id<SystemIdentity> identity;

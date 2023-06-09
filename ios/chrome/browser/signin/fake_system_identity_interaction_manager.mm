@@ -98,6 +98,7 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   SigninCompletionBlock _signinCompletion;
   FakeAuthActivityViewController* _authActivityViewController;
   BOOL _isActivityViewPresented;
+  NSString* _lastStartAuthActivityUserEmail;
 }
 
 - (instancetype)initWithManager:
@@ -142,6 +143,7 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
                                   userEmail:(NSString*)userEmail
                                  completion:(SigninCompletionBlock)completion {
   DCHECK(completion);
+  _lastStartAuthActivityUserEmail = userEmail;
   _signinCompletion = completion;
   _authActivityViewController =
       [[FakeAuthActivityViewController alloc] initWithManager:self];
@@ -167,6 +169,10 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
 
 - (BOOL)isActivityViewPresented {
   return _isActivityViewPresented;
+}
+
+- (NSString*)lastStartAuthActivityUserEmail {
+  return _lastStartAuthActivityUserEmail;
 }
 
 + (id<SystemIdentity>)identity {

@@ -57,12 +57,10 @@
 - (void)showSigninWithIntent:(AddAccountSigninIntent)signinIntent {
   DCHECK(!_addAccountFlowDone);
   DCHECK(self.identityInteractionManager);
-  NSString* userEmail;
+  NSString* userEmail = nil;
   switch (signinIntent) {
-    case AddAccountSigninIntentAddSecondaryAccount: {
-      userEmail = nil;
+    case AddAccountSigninIntentAddSecondaryAccount:
       break;
-    }
     case AddAccountSigninIntentReauthPrimaryAccount: {
       CoreAccountInfo accountInfo = self.identityManager->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSync);
@@ -79,8 +77,12 @@
         userEmailString =
             self.prefService->GetString(prefs::kGoogleServicesLastUsername);
       }
-      DCHECK(!userEmailString.empty());
-      userEmail = base::SysUTF8ToNSString(userEmailString);
+
+      // Note(crbug/1443096): Gracefully handle an empty `userEmailString` by
+      // showing the sign-in screen without a prefilled email.
+      if (!userEmailString.empty()) {
+        userEmail = base::SysUTF8ToNSString(userEmailString);
+      }
       break;
     }
   }
