@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
@@ -15,9 +16,13 @@
 #include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,7 +34,35 @@ const std::string kUserName = "Test Tester";
 const std::string kDeviceId = "0123456789";
 const std::string kProfileUrl = "https://example.com";
 const base::TimeDelta kServerResponseTimeout = base::Seconds(5);
-constexpr int kServerRegistrationMaxRetries = 5;
+constexpr int kServerCommunicationMaxAttempts = 5;
+const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
+const std::vector<uint8_t> kSecretId2 = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
+const std::vector<uint8_t> kSecretId3 = {0x33, 0x33, 0x33, 0x33, 0x33, 0x33};
+const std::vector<uint8_t> kKeySeed = {
+    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
+    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
+    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44};
+
+ash::nearby::presence::mojom::SharedCredentialPtr BuildSharedCredential(
+    std::vector<uint8_t> secret_id) {
+  ash::nearby::presence::mojom::SharedCredentialPtr cred =
+      ash::nearby::presence::mojom::SharedCredential::New();
+  cred->secret_id = secret_id;
+  // To communicate across the wire this field on the mojo struct needs to be
+  // set since the mojo wire checks for this array to be size 32.
+  cred->key_seed = kKeySeed;
+  return cred;
+}
+
+std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>
+BuildSharedCredentials() {
+  std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>
+      shared_credentials;
+  shared_credentials.push_back(BuildSharedCredential(kSecretId1));
+  shared_credentials.push_back(BuildSharedCredential(kSecretId2));
+  shared_credentials.push_back(BuildSharedCredential(kSecretId3));
+  return shared_credentials;
+}
 
 }  // namespace
 
@@ -42,11 +75,14 @@ class TestNearbyPresenceCredentialManagerImpl
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>&
+          nearby_presence,
       std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider)
       : NearbyPresenceCredentialManagerImpl(
             pref_service,
             identity_manager,
             url_loader_factory,
+            nearby_presence,
             std::move(local_device_data_provider)) {}
 };
 
@@ -77,6 +113,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
             &pref_service_, identity_test_env_.identity_manager(),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
+            fake_nearby_presence_.shared_remote(),
             std::move(local_device_data_provider));
 
     first_time_registration_scheduler_ =
@@ -95,6 +132,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ash::nearby::FakeNearbyScheduler* first_time_registration_scheduler_ =
       nullptr;
+  FakeNearbyPresence fake_nearby_presence_;
   FakeLocalDeviceDataProvider* fake_local_device_data_provider_ = nullptr;
   TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -105,7 +143,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
   std::unique_ptr<NearbyPresenceCredentialManager> credential_manager_;
 };
 
-TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationSuccess) {
+TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
   // Simulate first time registration flow.
   fake_local_device_data_provider_->SetIsUserRegistrationInfoSaved(false);
   EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
@@ -113,11 +151,17 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationSuccess) {
   // Simulate the device id which will be generated in a call to |GetDeviceId|.
   fake_local_device_data_provider_->SetDeviceId(kDeviceId);
 
+  // Simulate the credentials being generated in the NP library.
+  fake_nearby_presence_.SetGenerateCredentialsResponse(BuildSharedCredentials(),
+                                                       mojom::StatusCode::kOk);
+
   // Expect success on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(true)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop run_loop;
+  credential_manager_->RegisterPresence(
+      base::BindLambdaForTesting([&](bool result) {
+        EXPECT_TRUE(result);
+        run_loop.Quit();
+      }));
 
   // Simulate the scheduler notifying the CredentialManager that the task is
   // ready when it has network connectivity.
@@ -129,6 +173,9 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationSuccess) {
   response.set_image_url(kProfileUrl);
   server_client_factory_.fake_server_client()
       ->InvokeUpdateDeviceSuccessCallback(response);
+
+  // Required for credentials to be generated and passed over the mojo pipe.
+  run_loop.Run();
 
   EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
 }
@@ -149,7 +196,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationTimeout) {
 
   // Simulate the max number of failures caused by a server response timeout.
   first_time_registration_scheduler_->SetNumConsecutiveFailures(
-      kServerRegistrationMaxRetries);
+      kServerCommunicationMaxAttempts);
   first_time_registration_scheduler_->InvokeRequestCallback();
   task_environment_.FastForwardBy(kServerResponseTimeout);
 
@@ -172,12 +219,51 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
 
   // Simulate the max number of failures caused by a RPC failure.
   first_time_registration_scheduler_->SetNumConsecutiveFailures(
-      kServerRegistrationMaxRetries);
+      kServerCommunicationMaxAttempts);
   first_time_registration_scheduler_->InvokeRequestCallback();
   server_client_factory_.fake_server_client()->InvokeUpdateDeviceErrorCallback(
       ash::nearby::NearbyHttpError::kInternalServerError);
 
   EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+}
+
+TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
+  // Simulate first time registration flow.
+  fake_local_device_data_provider_->SetIsUserRegistrationInfoSaved(false);
+  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+
+  // Simulate the device id which will be generated in a call to |GetDeviceId|.
+  fake_local_device_data_provider_->SetDeviceId(kDeviceId);
+
+  // Simulate the credentials being failed to be generated in the NP library.
+  fake_nearby_presence_.SetGenerateCredentialsResponse(
+      {}, mojom::StatusCode::kFailure);
+
+  // Expect failure on the callback.
+  base::RunLoop run_loop;
+  credential_manager_->RegisterPresence(
+      base::BindLambdaForTesting([&](bool result) {
+        EXPECT_FALSE(result);
+        run_loop.Quit();
+      }));
+
+  // Simulate the scheduler notifying the CredentialManager that the task is
+  // ready when it has network connectivity.
+  first_time_registration_scheduler_->InvokeRequestCallback();
+
+  // Mock and return the server response.
+  ash::nearby::proto::UpdateDeviceResponse response;
+  response.set_person_name(kUserName);
+  response.set_image_url(kProfileUrl);
+  server_client_factory_.fake_server_client()
+      ->InvokeUpdateDeviceSuccessCallback(response);
+
+  // Required for credentials to be generated and passed over the mojo pipe.
+  run_loop.Run();
+
+  // Since the user registration with the server was successful, this will be
+  // true.
+  EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
 }
 
 }  // namespace ash::nearby::presence

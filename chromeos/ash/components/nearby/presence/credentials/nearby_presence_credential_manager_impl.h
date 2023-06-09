@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 
 class PrefService;
 
@@ -40,7 +42,8 @@ class NearbyPresenceCredentialManagerImpl
   NearbyPresenceCredentialManagerImpl(
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence);
 
   NearbyPresenceCredentialManagerImpl(NearbyPresenceCredentialManagerImpl&) =
       delete;
@@ -61,6 +64,7 @@ class NearbyPresenceCredentialManagerImpl
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
       std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider);
 
  private:
@@ -73,19 +77,28 @@ class NearbyPresenceCredentialManagerImpl
       const ash::nearby::proto::UpdateDeviceResponse& response);
   void OnRegistrationRpcFailure(ash::nearby::NearbyHttpError error);
 
+  // Callback for credential generation in the NP library during the first
+  // time registration flow.
+  //
+  // TODO(b/286594539): Revisit this flow when there are additional triggers to
+  // regenerate credentials outside the first time flow stemming from metadata
+  // changes.
+  void OnFirstTimeCredentialsGenerated(
+      std::vector<mojom::SharedCredentialPtr> shared_credentials,
+      mojom::StatusCode status);
+
   // Constructed per RPC request, and destroyed on RPC response (server
   // interaction completed). This field is reused by multiple RPCs during the
   // lifetime of the NearbyPresenceCredentialManagerImpl object.
   std::unique_ptr<NearbyPresenceServerClient> server_client_;
 
   std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider_;
-
   const raw_ptr<PrefService> pref_service_ = nullptr;
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   base::OneShotTimer server_response_timer_;
   std::unique_ptr<NearbyScheduler> first_time_registration_on_demand_scheduler_;
-
+  const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Callback to return the result of the first time registration. Not

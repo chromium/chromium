@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
+#include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "components/prefs/pref_service.h"
@@ -38,24 +39,27 @@ namespace ash::nearby::presence {
 NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  // TODO(b/276307539): Add mojo remote as a parameter once implemented.
-  NearbyPresenceCredentialManagerImpl(
-      pref_service, identity_manager, url_loader_factory,
-      std::make_unique<LocalDeviceDataProviderImpl>(pref_service,
-                                                    identity_manager));
-}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence)
+    : NearbyPresenceCredentialManagerImpl(
+          pref_service,
+          identity_manager,
+          url_loader_factory,
+          nearby_presence,
+          std::make_unique<LocalDeviceDataProviderImpl>(pref_service,
+                                                        identity_manager)) {}
 
 NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
     std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider)
     : local_device_data_provider_(std::move(local_device_data_provider)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
+      nearby_presence_(nearby_presence),
       url_loader_factory_(url_loader_factory) {
-  // TODO(b/276307539): Add mojo remote as a parameter once implemented.
   CHECK(pref_service_);
   CHECK(identity_manager_);
   CHECK(url_loader_factory_);
@@ -86,6 +90,10 @@ void NearbyPresenceCredentialManagerImpl::RegisterPresence(
   CHECK(!IsLocalDeviceRegistered());
   on_registered_callback_ = std::move(on_registered_callback);
   first_time_registration_on_demand_scheduler_->MakeImmediateRequest();
+}
+
+void NearbyPresenceCredentialManagerImpl::UpdateCredentials() {
+  // TODO(b/276307539): Implement `UpdateCredentials`.
 }
 
 void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
@@ -148,15 +156,11 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
       /*display_name=*/response.person_name(),
       /*image_url=*/response.image_url());
 
-  // TODO(b/276307539): Currently first time registration is considered
-  // successful on the return of the user's name and image url, however this
-  // is not fully complete. Next, the CredentialManager needs to:
-  // 1. Generate the credentials
-  // 2. Upload the credentials
-  // 3. Download the credentials
-  // before executing the success callback.
-  CHECK(on_registered_callback_);
-  std::move(on_registered_callback_).Run(/*success=*/true);
+  nearby_presence_->UpdateLocalDeviceMetadataAndGenerateCredentials(
+      MetadataToMojom(local_device_data_provider_->GetDeviceMetadata()),
+      base::BindOnce(
+          &NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcFailure(
@@ -166,8 +170,35 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcFailure(
   HandleFirstTimeRegistrationFailure();
 }
 
-void NearbyPresenceCredentialManagerImpl::UpdateCredentials() {
-  // TODO(b/276307539): Implement `UpdateCredentials`.
+void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
+    std::vector<mojom::SharedCredentialPtr> shared_credentials,
+    mojom::StatusCode status) {
+  if (status != mojom::StatusCode::kOk) {
+    // TODO(b/276307539): Add metrics to record failures.
+    CHECK(on_registered_callback_);
+    std::move(on_registered_callback_).Run(/*success=*/false);
+    return;
+  }
+
+  // With regenerated credentials, the CredentialManager needs to upload the
+  // credentials to the server, and persist them to disk in order to detect
+  // changes.
+  std::vector<::nearby::internal::SharedCredential> proto_shared_credentials;
+  for (const auto& cred : shared_credentials) {
+    proto_shared_credentials.push_back(SharedCredentialFromMojom(cred.get()));
+  }
+
+  local_device_data_provider_->UpdatePersistedSharedCredentials(
+      proto_shared_credentials);
+
+  // TODO(b/276307539): Currently first time registration is considered
+  // successful on the successful return of generated credentials, however this
+  // is not fully complete. Next, the CredentialManager needs to:
+  // 1. Upload the credentials
+  // 2. Download the credentials
+  // before executing the success callback.
+  CHECK(on_registered_callback_);
+  std::move(on_registered_callback_).Run(/*success=*/true);
 }
 
 }  // namespace ash::nearby::presence

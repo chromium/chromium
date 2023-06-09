@@ -55,6 +55,8 @@ void FakeNearbyPresence::UpdateLocalDeviceMetadata(
 void FakeNearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
     mojom::MetadataPtr metadata,
     FakeNearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentialsCallback
-        callback) {}
+        callback) {
+  std::move(callback).Run(std::move(shared_credentials_), status_);
+}
 
 }  // namespace ash::nearby::presence

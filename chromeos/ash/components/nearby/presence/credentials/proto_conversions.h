@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/nearby/internal/proto/metadata.pb.h"
-
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_PROTO_CONVERSIONS_H_
+
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/internal/proto/credential.pb.h"
+#include "third_party/nearby/internal/proto/metadata.pb.h"
 
 namespace ash::nearby::presence {
 
@@ -17,6 +19,15 @@ namespace ash::nearby::presence {
     const std::string& user_name,
     const std::string& profile_url,
     const std::string& mac_address);
+
+mojom::PresenceDeviceType DeviceTypeToMojom(
+    ::nearby::internal::DeviceType device_type);
+mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata);
+
+::nearby::internal::IdentityType IdentityTypeFromMojom(
+    mojom::IdentityType identity_type);
+::nearby::internal::SharedCredential SharedCredentialFromMojom(
+    mojom::SharedCredential* shared_credential);
 
 }  // namespace ash::nearby::presence
 

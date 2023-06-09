@@ -58,6 +58,13 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
     return scan_observer_remote_;
   }
 
+  void SetGenerateCredentialsResponse(
+      std::vector<mojom::SharedCredentialPtr> shared_credentials,
+      mojom::StatusCode status) {
+    shared_credentials_ = std::move(shared_credentials);
+    status_ = status;
+  }
+
  private:
   mojo::SharedRemote<mojom::ScanObserver> scan_observer_remote_;
 
@@ -70,6 +77,8 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
   mojo::PendingRemote<mojom::ScanSession> scan_session_remote_;
 
   bool on_disconnect_called_ = false;
+  std::vector<mojom::SharedCredentialPtr> shared_credentials_;
+  mojom::StatusCode status_ = mojom::StatusCode::kFailure;
   base::WeakPtrFactory<FakeNearbyPresence> weak_ptr_factory_{this};
 };
 
