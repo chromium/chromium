@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "components/google/core/common/google_util.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
@@ -75,9 +77,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 @implementation ManageSyncSettingsCoordinator {
   // Dismiss callback for Web and app setting details view.
   DismissViewCallback _dismissWebAndAppSettingDetailsController;
-  // YES if the parent coordinator is advanced settings coordinator, NO
-  // otherwise.
-  BOOL _isInAdvancedInitialSyncSetup;
+  // The account sync state.
+  SyncSettingsAccountState _accountState;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -85,29 +86,39 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                    isInAdvancedInitialSyncSetup:
-                        (BOOL)isInAdvancedInitialSyncSetup {
+                                    accountState:
+                                        (SyncSettingsAccountState)accountState {
   if (self = [super initWithBaseViewController:navigationController
                                        browser:browser]) {
     _baseNavigationController = navigationController;
-    _isInAdvancedInitialSyncSetup = isInAdvancedInitialSyncSetup;
+    _accountState = accountState;
   }
   return self;
 }
 
 - (void)start {
   DCHECK(self.baseNavigationController);
-  // Ensure that SyncService::IsSetupInProgress is true while the
-  // manage-sync-settings UI is open.
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  syncSetupService->PrepareForFirstSyncSetup();
+  switch (_accountState) {
+    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
+    case SyncSettingsAccountState::kSyncing:
+      // Ensure that SyncService::IsSetupInProgress is true while the
+      // manage-sync-settings UI is open.
+      syncSetupService->PrepareForFirstSyncSetup();
+      break;
+    case SyncSettingsAccountState::kSignedIn:
+      break;
+    case SyncSettingsAccountState::kSignedOut:
+      NOTREACHED();
+      break;
+  }
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
-                 initWithSyncService:self.syncService
-                     userPrefService:self.browser->GetBrowserState()->GetPrefs()
-      isFromAdvancedInitialSyncSetup:_isInAdvancedInitialSyncSetup];
+      initWithSyncService:self.syncService
+          userPrefService:self.browser->GetBrowserState()->GetPrefs()
+      initialAccountState:_accountState];
   self.mediator.syncSetupService = SyncSetupServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   self.mediator.commandHandler = self;
@@ -143,6 +154,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  // Resets sync blocker if any gets set by PrepareForFirstSyncSetup.
   syncSetupService->CommitSyncChanges();
 
   _syncObserver.reset();

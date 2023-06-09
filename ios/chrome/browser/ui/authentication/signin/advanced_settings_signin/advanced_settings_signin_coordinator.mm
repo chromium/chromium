@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -139,7 +140,8 @@ using l10n_util::GetNSString;
           initWithBaseNavigationController:
               self.advancedSettingsSigninNavigationController
                                    browser:self.browser
-              isInAdvancedInitialSyncSetup:YES];
+                              accountState:SyncSettingsAccountState::
+                                               kAdvancedInitialSyncSetup];
   manageSyncSettingsCoordinator.delegate = self;
   self.syncSettingsCoordinator = manageSyncSettingsCoordinator;
   [self.syncSettingsCoordinator start];

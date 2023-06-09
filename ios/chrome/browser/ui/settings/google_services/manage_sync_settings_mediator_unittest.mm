@@ -97,15 +97,15 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
 
     mediator_ = [[ManageSyncSettingsMediator alloc]
-                   initWithSyncService:sync_service_mock_
-                       userPrefService:pref_service_
-        isFromAdvancedInitialSyncSetup:NO];
+        initWithSyncService:sync_service_mock_
+            userPrefService:pref_service_
+        initialAccountState:SyncSettingsAccountState::kSyncing];
     mediator_.syncSetupService = sync_setup_service_mock_;
     mediator_.consumer = consumer_;
   }
 
   void FirstSetupSyncOnWithConsentEnabled() {
-    mediator_.syncSettingsInAdvancedInitialSyncSetup = NO;
+    mediator_.initialAccountState = SyncSettingsAccountState::kSyncing;
     ON_CALL(*sync_service_mock_->GetMockUserSettings(),
             IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
@@ -121,12 +121,17 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
   void FirstSetupSyncOff() {
-    mediator_.syncSettingsInAdvancedInitialSyncSetup = YES;
+    mediator_.initialAccountState =
+        SyncSettingsAccountState::kAdvancedInitialSyncSetup;
     ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
+    CoreAccountInfo account_info;
+    account_info.email = "foo1@gmail.com";
+    ON_CALL(*sync_service_mock_, GetAccountInfo())
+        .WillByDefault(Return(account_info));
   }
 
  protected:

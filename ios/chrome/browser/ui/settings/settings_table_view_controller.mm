@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
@@ -1601,10 +1602,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (void)showGoogleSync {
   DCHECK(!_manageSyncSettingsCoordinator);
+  SyncSettingsAccountState accountState =
+      SyncServiceFactory::GetForBrowserState(_browserState)->HasSyncConsent()
+          ? SyncSettingsAccountState::kSyncing
+          : SyncSettingsAccountState::kSignedIn;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser
-          isInAdvancedInitialSyncSetup:NO];
+                          accountState:accountState];
   _manageSyncSettingsCoordinator.delegate = self;
   [_manageSyncSettingsCoordinator start];
 }

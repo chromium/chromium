@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
 
@@ -32,8 +33,10 @@ class SyncService;
 @property(nonatomic, assign) SyncSetupService* syncSetupService;
 // Command handler.
 @property(nonatomic, weak) id<ManageSyncSettingsCommandHandler> commandHandler;
-// YES if the parent coordinator is advanced settings coordinator, NO otherwise.
-@property(nonatomic, assign) BOOL syncSettingsInAdvancedInitialSyncSetup;
+// The initial account sync state at the time this mediator gets created.
+// While the mediator is running it gets updated only if the user signs
+// out.
+@property(nonatomic, assign) SyncSettingsAccountState initialAccountState;
 // Error command handler.
 @property(nonatomic, weak) id<SyncErrorSettingsCommandHandler> syncErrorHandler;
 // Returns YES if the encryption item should be enabled.
@@ -48,7 +51,8 @@ class SyncService;
 // `syncService`: Sync service. Should not be null.
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
-     isFromAdvancedInitialSyncSetup:(BOOL)isFromAdvancedInitialSyncSetup
+                initialAccountState:
+                    (SyncSettingsAccountState)initialAccountState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

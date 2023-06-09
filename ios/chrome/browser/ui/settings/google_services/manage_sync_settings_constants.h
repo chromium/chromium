@@ -83,4 +83,17 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   TypesListHeaderOrFooterType,
 };
 
+// States for Sync Settings page to be in.
+enum class SyncSettingsAccountState {
+  // The user clicked "settings" in the Sync opt-in screen.
+  kAdvancedInitialSyncSetup,
+  // The user is viewing sync settings page when Sync-the-feature is on.
+  kSyncing,
+  // The user is viewing sync settings page when signed-in not syncing.
+  kSignedIn,
+  // The user signed out from the sync settings page, and the UI is being
+  // dismissed.
+  kSignedOut,
+};
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSTANTS_H_

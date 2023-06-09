@@ -75,19 +75,6 @@ UIImageConfiguration* AccessoryConfiguration() {
 // Enterprise icon.
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
-// States for Sync Settings page to be in.
-enum class SyncSettingsAccountState {
-  // The user clicked "settings" in the Sync opt-in screen.
-  kAdvancedInitialSyncSetup,
-  // The user is viewing sync settings page when Sync-the-feature is on.
-  kSyncing,
-  // The user is viewing sync settings page when signed-in not syncing.
-  kSignedIn,
-  // The user signed out from the sync settings page, and the UI is being
-  // dismissed.
-  kSignedOut,
-};
-
 }  // namespace
 
 @interface ManageSyncSettingsMediator () <
@@ -131,7 +118,8 @@ enum class SyncSettingsAccountState {
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
-     isFromAdvancedInitialSyncSetup:(BOOL)isFromAdvancedInitialSyncSetup {
+                initialAccountState:
+                    (SyncSettingsAccountState)initialAccountState {
   self = [super init];
   if (self) {
     DCHECK(syncService);
@@ -142,7 +130,7 @@ enum class SyncSettingsAccountState {
         initWithPrefService:userPrefService
                    prefName:autofill::prefs::kAutofillWalletImportEnabled];
     _autocompleteWalletPreference.observer = self;
-    _syncSettingsInAdvancedInitialSyncSetup = isFromAdvancedInitialSyncSetup;
+    _initialAccountState = initialAccountState;
   }
   return self;
 }
@@ -628,19 +616,13 @@ enum class SyncSettingsAccountState {
 }
 
 - (SyncSettingsAccountState)syncAccountState {
-  if (_syncSettingsInAdvancedInitialSyncSetup) {
-    CHECK(!self.syncSetupService->IsInitialSyncFeatureSetupComplete());
-    return SyncSettingsAccountState::kAdvancedInitialSyncSetup;
-  }
+  // As the manage sync settings mediator is running, the sync account state
+  // does not change except only when the user signs out of their account.
+
   if (self.syncService->GetAccountInfo().IsEmpty()) {
     return SyncSettingsAccountState::kSignedOut;
   }
-  if (!self.syncService->HasSyncConsent()) {
-    CHECK(base::FeatureList::IsEnabled(
-        syncer::kReplaceSyncPromosWithSignInPromos));
-    return SyncSettingsAccountState::kSignedIn;
-  }
-  return SyncSettingsAccountState::kSyncing;
+  return _initialAccountState;
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate
