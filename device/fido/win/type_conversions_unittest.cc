@@ -127,5 +127,17 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
   }
 }
 
+TEST(TypeConversionsTest, Transports) {
+  for (int i = 0; i < 16; i++) {
+    const uint32_t mask = 1u << i;
+    const absl::optional<FidoTransportProtocol> transport =
+        FromWinTransportsMask(mask);
+    if (transport) {
+      const uint32_t result = ToWinTransportsMask({*transport});
+      EXPECT_EQ(result, mask);
+    }
+  }
+}
+
 }  // namespace
 }  // namespace device
