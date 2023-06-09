@@ -129,6 +129,10 @@ std::string FakeTargetDeviceConnectionBroker::GetSessionIdDisplayCode() {
   return random_session_id_.GetDisplayCode();
 }
 
+std::string FakeTargetDeviceConnectionBroker::GetPinForTests() {
+  return DerivePin(kAuthenticationToken);
+}
+
 FakeConnection* FakeTargetDeviceConnectionBroker::GetFakeConnection() {
   return connection_.get();
 }

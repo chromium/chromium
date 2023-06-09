@@ -123,6 +123,11 @@ void QuickStartScreen::OnStatusChanged(
       view_->SetQRCode(std::move(qr_code_list));
       return;
     }
+    case Step::PIN_VERIFICATION: {
+      CHECK(status.pin.length() == 4);
+      view_->SetPIN(status.pin);
+      return;
+    }
     case Step::GAIA_CREDENTIALS: {
       SavePhoneInstanceID();
       return;
@@ -149,7 +154,6 @@ void QuickStartScreen::OnStatusChanged(
     case Step::NONE:
     case Step::ADVERTISING:
     case Step::CONNECTED:
-    case Step::PIN_VERIFICATION:
       // TODO(b/282934168): Implement these screens fully
       quick_start::QS_LOG(INFO)
           << "Hit screen which is not implemented. Continuing";

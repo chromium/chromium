@@ -55,9 +55,10 @@ found in the LICENSE file.
     </div>
   </div>
   <div id="code" class="flex layout vertical center-justified center" slot="content">
-    <div id="qrCodeWrapper">
+    <div id="qrCodeWrapper" hidden="[[usePinInsteadOfQrForVerification_]]">
       <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
     </div>
+    <quick-start-pin id="pinWrapper" pin="[[pin_]]" hidden="[[!usePinInsteadOfQrForVerification_]]"></quick-start-pin>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="cancelButton" on-click="onCancelClicked_" text-key="cancelButton">

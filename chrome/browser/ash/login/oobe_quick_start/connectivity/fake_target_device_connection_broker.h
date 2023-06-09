@@ -84,6 +84,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     use_pin_authentication_ = use_pin_authentication;
   }
 
+  std::string GetPinForTests();
+
   size_t num_start_advertising_calls() const {
     return num_start_advertising_calls_;
   }

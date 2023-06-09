@@ -64,6 +64,7 @@ class TargetDeviceBootstrapController
     Step step = Step::NONE;
     Payload payload;
     std::string ssid;
+    std::string pin;
     absl::optional<std::string> password;
     std::string fido_email;
   };

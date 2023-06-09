@@ -140,8 +140,8 @@ void TargetDeviceBootstrapController::OnPinVerificationRequested(
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
   pin_ = pin;
-  // TODO: display pin
   status_.step = Step::PIN_VERIFICATION;
+  status_.pin = pin_;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
 }

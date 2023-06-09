@@ -9,7 +9,9 @@
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
+import '../../components/quick_start_pin.js';
 
+import { assert } from '//resources/ash/common/assert.js';
 import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
@@ -92,6 +94,10 @@ class QuickStartScreen extends QuickStartScreenBase {
         type: String,
         value: '',
       },
+      pin_: {
+        type: String,
+        value: '0000',
+      },
       // Whether to show the PIN for verification instead of a QR code.
       usePinInsteadOfQrForVerification_: {
         type: Boolean,
@@ -119,6 +125,7 @@ class QuickStartScreen extends QuickStartScreenBase {
     return [
       'setFigures',
       'setQRCode',
+      'setPin',
       'showConnectingToWifi',
       'showConnectedToWifi',
       'setDiscoverableName',
@@ -182,9 +189,10 @@ class QuickStartScreen extends QuickStartScreenBase {
    * @param {!Array<boolean>} qrCode
    */
   setQRCode(qrCode) {
-    const qrSize = Math.round(Math.sqrt(qrCode.length));
+    this.usePinInsteadOfQrForVerification_ = false;
     this.setUIStep(QuickStartUIState.VERIFICATION);
 
+    const qrSize = Math.round(Math.sqrt(qrCode.length));
     this.canvasSize_ = qrSize * QR_CODE_TILE_SIZE;
     flush();
     const context = this.getCanvasContext_();
@@ -201,6 +209,13 @@ class QuickStartScreen extends QuickStartScreenBase {
         index++;
       }
     }
+  }
+
+  setPin(pin) {
+    this.usePinInsteadOfQrForVerification_ = true;
+    this.setUIStep(QuickStartUIState.VERIFICATION);
+    assert(pin.length === 4);
+    this.pin_ = pin;
   }
 
   setDiscoverableName(discoverableName) {

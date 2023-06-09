@@ -36,6 +36,10 @@ void QuickStartScreenHandler::SetShapes(
   CallExternalAPI("setFigures", ToValue(shape_list));
 }
 
+void QuickStartScreenHandler::SetPIN(const std::string pin) {
+  CallExternalAPI("setPin", pin);
+}
+
 void QuickStartScreenHandler::SetQRCode(base::Value::List blob) {
   CallExternalAPI("setQRCode", std::move(blob));
 }

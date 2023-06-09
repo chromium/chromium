@@ -29,6 +29,7 @@ constexpr char kQuickStartButton[] = "quickStart";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kWifiConnectedButton[] = "wifiConnected";
+constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr test::UIPath kQuickStartButtonPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartButton};
 constexpr test::UIPath kCancelButtonLoadingDialog = {
@@ -37,6 +38,8 @@ constexpr test::UIPath kCancelButtonVerificationDialog = {
     QuickStartView::kScreenId.name, kCancelButton};
 constexpr test::UIPath kNextButtonWifiConnectedDialog = {
     QuickStartView::kScreenId.name, kWifiConnectedButton};
+constexpr test::UIPath kQuickStartPinCode = {QuickStartView::kScreenId.name,
+                                             kPinCodeWrapper};
 }  // namespace
 
 class QuickStartBrowserTestBase : public OobeBaseTest {
@@ -64,6 +67,19 @@ class QuickStartBrowserTestBase : public OobeBaseTest {
 
     test::OobeJS().ClickOnPath(kQuickStartButtonPath);
     OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  }
+
+  // Verification step is used for both QR and PIN
+  void WaitForVerificationStep() {
+    test::OobeJS()
+        .CreateWaiter(
+            test::GetOobeElementPath({QuickStartView::kScreenId.name}) +
+            ".uiStep === 'verification'")
+        ->Wait();
+  }
+
+  quick_start::FakeTargetDeviceConnectionBroker* connection_broker() {
+    return connection_broker_factory_.instances().front();
   }
 
  protected:
@@ -116,12 +132,41 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
   connection_broker_factory_.instances().front()->InitiateConnection(
       "fake_device_id");
 
-  test::OobeJS()
-      .CreateWaiter(test::GetOobeElementPath({QuickStartView::kScreenId.name}) +
-                    ".uiStep === 'verification'")
-      ->Wait();
+  WaitForVerificationStep();
+
   test::OobeJS().ExpectAttributeEQ("canvasSize_",
                                    {QuickStartView::kScreenId.name}, 185);
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
+  test::WaitForWelcomeScreen();
+  test::OobeJS().ExpectVisiblePath(kQuickStartButtonPath);
+
+  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  connection_broker()->set_use_pin_authentication(true);
+  connection_broker()->InitiateConnection("fake_device_id");
+
+  WaitForVerificationStep();
+
+  // <quick-start-pin> should become visible and contain the PIN.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartPinCode)
+      ->Wait();
+
+  // Verify that PINs match.
+  const auto pin = connection_broker()->GetPinForTests();
+  EXPECT_EQ(pin.length(), std::size_t(4));
+  for (auto i = 0; i < 4; i++) {
+    const auto digit = std::string{pin[i]};
+    test::OobeJS()
+        .CreateWaiter(test::GetOobeElementPath({QuickStartView::kScreenId.name,
+                                                kPinCodeWrapper,
+                                                "digit" + std::to_string(i)}) +
+                      ".textContent === '" + digit + "'")
+        ->Wait();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartAcceleratorBrowserTest,
@@ -156,12 +201,8 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {
   EnterQuickStartFlowFromWelcomeScreen();
 
   // Initiate connection and expect the 'verification' step.
-  connection_broker_factory_.instances().front()->InitiateConnection(
-      "fake_device_id");
-  test::OobeJS()
-      .CreateWaiter(test::GetOobeElementPath({QuickStartView::kScreenId.name}) +
-                    ".uiStep === 'verification'")
-      ->Wait();
+  connection_broker()->InitiateConnection("fake_device_id");
+  WaitForVerificationStep();
 
   // Cancel button must be present.
   test::OobeJS()
@@ -174,13 +215,12 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEnd) {
   EnterQuickStartFlowFromWelcomeScreen();
-  auto* connection_broker = connection_broker_factory_.instances().front();
 
   // Advertise, Initiate Connection, Authenticate, Transfer WiFi
-  connection_broker->on_start_advertising_callback().Run(true);
-  connection_broker->InitiateConnection("fake_device_id");
-  connection_broker->AuthenticateConnection("fake_device_id");
-  auto* connection = connection_broker->GetFakeConnection();
+  connection_broker()->on_start_advertising_callback().Run(true);
+  connection_broker()->InitiateConnection("fake_device_id");
+  connection_broker()->AuthenticateConnection("fake_device_id");
+  auto* connection = connection_broker()->GetFakeConnection();
   connection->VerifyUser(ash::quick_start::mojom::UserVerificationResponse(
       ash::quick_start::mojom::UserVerificationResult::kUserVerified,
       /*is_first_user_verification=*/true));
@@ -203,7 +243,5 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEnd) {
       UserCreationView::kScreenId);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
 }
-
-// connection_broker_factory_.instances().front()
 
 }  // namespace ash
