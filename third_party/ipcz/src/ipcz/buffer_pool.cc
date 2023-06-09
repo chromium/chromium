@@ -26,15 +26,11 @@ Fragment BufferPool::GetFragment(const FragmentDescriptor& descriptor) {
   absl::MutexLock lock(&mutex_);
   auto it = mappings_.find(descriptor.buffer_id());
   if (it == mappings_.end()) {
-    return Fragment(descriptor, nullptr);
+    return Fragment::PendingFromDescriptor(descriptor);
   }
 
   auto& [id, mapping] = *it;
-  if (descriptor.end() > mapping.bytes().size()) {
-    return {};
-  }
-
-  return Fragment(descriptor, mapping.address_at(descriptor.offset()));
+  return Fragment::MappedFromDescriptor(descriptor, mapping);
 }
 
 bool BufferPool::AddBlockBuffer(
