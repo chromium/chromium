@@ -449,22 +449,12 @@ crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-o
 
 ## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
 
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-non-reserved-words-5-of-8.html [ Failure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-too-many-uniforms.html [ Failure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Failure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL/* [ RetryOnFailure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-active-bind.html [ Failure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-draw-with-2d-and-cube.html [ Failure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-default-values.html [ Failure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conversions_scalar_to_scalar.html [ Failure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/swizzles_bvec4.html [ Failure ]
 
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
 
@@ -495,7 +485,6 @@ crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-i
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
-crbug.com/1240443 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
@@ -640,7 +629,6 @@ crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/conte
 crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1445548 [ android android-sm-a235m no-passthrough ] conformance/extensions/oes-vertex-array-object-bufferData.html [ Failure ]
 
 
 ############
@@ -685,7 +673,6 @@ crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance/c
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1429948 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Failure ]
 
 #####################
 # Lacros failures #
@@ -709,11 +696,11 @@ crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/e
 ###############################
 
 # Roll WebGL d1b65aa..b934957.
-crbug.com/1448573 [ android ] conformance/extensions/oes-texture-float.html [ Failure ]
+crbug.com/1448573 [ android angle-disabled no-passthrough qualcomm renderer-skia-gl ] conformance/extensions/oes-texture-float.html [ Failure ]
+crbug.com/1448573 [ android-pie android-shield-android-tv angle-disabled no-clang-coverage no-passthrough nvidia renderer-skia-gl target-cpu-32 ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/1448573 [ chromeos chromeos-board-amd64-generic ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1448743 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
-crbug.com/1448643 [ win angle-d3d11 ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
