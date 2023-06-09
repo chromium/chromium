@@ -190,15 +190,14 @@ void SendProcessReadyInBrowserEvent(const base::UnguessableToken& frame_token,
 }
 
 void FillFrameData(base::trace_event::TracedValue* data,
-                   RenderFrameHostImpl* frame_host) {
+                   RenderFrameHostImpl* frame_host,
+                   const GURL& url) {
   CHECK(frame_host);
   GURL::Replacements strip_fragment;
   strip_fragment.ClearRef();
-  std::string url = frame_host->GetLastCommittedURL()
-                        .ReplaceComponents(strip_fragment)
-                        .spec();
+  std::string trimmed_url = url.ReplaceComponents(strip_fragment).spec();
   data->SetString("frame", frame_host->devtools_frame_token().ToString());
-  data->SetString("url", url);
+  data->SetString("url", std::move(trimmed_url));
   data->SetString("name", frame_host->GetFrameName());
   if (frame_host->GetParent()) {
     data->SetString(
@@ -1117,7 +1116,8 @@ void TracingHandler::EmitFrameTree() {
     data->BeginArray("frames");
     wc->ForEachRenderFrameHost([&data](RenderFrameHost* rfh) {
       data->BeginDictionary();
-      FillFrameData(data.get(), static_cast<RenderFrameHostImpl*>(rfh));
+      FillFrameData(data.get(), static_cast<RenderFrameHostImpl*>(rfh),
+                    rfh->GetLastCommittedURL());
       data->EndDictionary();
     });
     data->EndArray();
@@ -1132,7 +1132,8 @@ void TracingHandler::WillInitiatePrerender(FrameTreeNode* frame_tree_node) {
     return;
   }
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  FillFrameData(data.get(), frame_tree_node->current_frame_host());
+  FillFrameData(data.get(), frame_tree_node->current_frame_host(),
+                frame_tree_node->current_url());
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "FrameCommittedInBrowser", TRACE_EVENT_SCOPE_THREAD,
                        "data", std::move(data));
@@ -1143,7 +1144,8 @@ void TracingHandler::ReadyToCommitNavigation(
   if (!did_initiate_recording_)
     return;
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  FillFrameData(data.get(), navigation_request->GetRenderFrameHost());
+  FillFrameData(data.get(), navigation_request->GetRenderFrameHost(),
+                navigation_request->GetURL());
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "FrameCommittedInBrowser", TRACE_EVENT_SCOPE_THREAD,
                        "data", std::move(data));
