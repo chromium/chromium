@@ -680,8 +680,8 @@ PrintBackendServiceManager::RegisterClient(
                 /*printer_name=*/absl::get<std::string>(destination))
           : absl::get<RemoteId>(destination);
 
-  VLOG(1) << "Registering a client with ID " << client_id
-          << " for print backend service.";
+  VLOG(1) << "Registering a client with ID " << client_id << " (client type "
+          << ClientTypeToString(client_type) << ") for print backend service.";
   switch (client_type) {
     case ClientType::kQuery:
       query_clients_.insert(client_id);

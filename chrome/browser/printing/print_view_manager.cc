@@ -282,7 +282,6 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
           web_contents());
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (rfh && scanning_data) {
-    set_snapshotting_for_content_analysis();
     GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(
         &PrintViewManager::OnGotSnapshotCallback, weak_factory_.GetWeakPtr(),
         std::move(callback), std::move(*scanning_data), rfh_id));
@@ -447,6 +446,9 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
 
 void PrintViewManager::RequestPrintPreview(
     mojom::RequestPrintPreviewParamsPtr params) {
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  set_analyzing_content(/*analyzing=*/true);
+#endif
   RejectPrintPreviewRequestIfRestricted(
       GetCurrentTargetFrame()->GetGlobalId(),
       base::BindOnce(&PrintViewManager::OnRequestPrintPreviewCallback,
@@ -458,6 +460,9 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
     mojom::RequestPrintPreviewParamsPtr params,
     content::GlobalRenderFrameHostId rfh_id,
     bool should_proceed) {
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  set_analyzing_content(/*analyzing=*/false);
+#endif
   if (!should_proceed) {
     OnPrintPreviewRequestRejected(rfh_id);
     return;
