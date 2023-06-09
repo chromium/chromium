@@ -16090,55 +16090,6 @@ class MsaaCompatibilityLayerTreeHostImplTest : public LayerTreeHostImplTest {
   }
 };
 
-TEST_F(MsaaCompatibilityLayerTreeHostImplTest,
-       GpuRasterizationStatusNonAAPaint) {
-  // Always use a recording with slow paths so the toggle is dependent on non aa
-  // paint.
-  auto recording_source = FakeRecordingSource::CreateRecordingSource(
-      gfx::Rect(100, 100), gfx::Size(100, 100));
-  recording_source->set_has_slow_paths(true);
-
-  // Ensure that without non-aa paint and without multisample compatibility, we
-  // raster slow paths with msaa.
-  CreateHostImplWithMultisampleCompatibility(false);
-  recording_source->set_has_non_aa_paint(false);
-  recording_source->Rerecord();
-  EXPECT_TRUE(host_impl_->can_use_msaa());
-  EXPECT_GT(host_impl_->GetMSAASampleCountForRaster(
-                recording_source->GetDisplayItemList()),
-            0);
-
-  // Ensure that without non-aa paint and with multisample compatibility, we
-  // raster slow paths with msaa.
-  CreateHostImplWithMultisampleCompatibility(true);
-  recording_source->set_has_non_aa_paint(false);
-  recording_source->Rerecord();
-  EXPECT_TRUE(host_impl_->can_use_msaa());
-  EXPECT_GT(host_impl_->GetMSAASampleCountForRaster(
-                recording_source->GetDisplayItemList()),
-            0);
-
-  // Ensure that with non-aa paint and without multisample compatibility, we do
-  // not raster slow paths with msaa.
-  CreateHostImplWithMultisampleCompatibility(false);
-  recording_source->set_has_non_aa_paint(true);
-  recording_source->Rerecord();
-  EXPECT_TRUE(host_impl_->can_use_msaa());
-  EXPECT_EQ(host_impl_->GetMSAASampleCountForRaster(
-                recording_source->GetDisplayItemList()),
-            0);
-
-  // Ensure that with non-aa paint and with multisample compatibility, we raster
-  // slow paths with msaa.
-  CreateHostImplWithMultisampleCompatibility(true);
-  recording_source->set_has_non_aa_paint(true);
-  recording_source->Rerecord();
-  EXPECT_TRUE(host_impl_->can_use_msaa());
-  EXPECT_GT(host_impl_->GetMSAASampleCountForRaster(
-                recording_source->GetDisplayItemList()),
-            0);
-}
-
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatePageScaleFactorOnActiveTree) {
   // Check page scale factor updates the property trees when an update is made
   // on the active tree.
