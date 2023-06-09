@@ -26,7 +26,6 @@ class GpuMemoryBufferManager;
 }
 
 namespace viz {
-class ContextProvider;
 class RasterContextProvider;
 }  // namespace viz
 
@@ -38,7 +37,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   OneCopyRasterBufferProvider(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      viz::ContextProvider* compositor_context_provider,
+      viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int max_copy_texture_chromium_size,
@@ -156,7 +155,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
                                     const gpu::SyncToken& sync_token,
                                     const gfx::ColorSpace& color_space);
 
-  const raw_ptr<viz::ContextProvider> compositor_context_provider_;
+  const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
   const raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;

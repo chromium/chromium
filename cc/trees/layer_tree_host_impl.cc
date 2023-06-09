@@ -162,7 +162,7 @@ bool IsMobileOptimized(LayerTreeImpl* active_tree) {
 
 viz::SharedImageFormat TileRasterBufferFormat(
     const LayerTreeSettings& settings,
-    viz::ContextProvider* context_provider,
+    viz::RasterContextProvider* context_provider,
     bool use_gpu_rasterization) {
   // Software compositing always uses the native skia RGBA N32 format, but we
   // just call it RGBA_8888 everywhere even though it can be BGRA ordering,
@@ -3666,7 +3666,7 @@ std::unique_ptr<RasterBufferProvider>
 LayerTreeHostImpl::CreateRasterBufferProvider() {
   DCHECK(GetTaskRunner());
 
-  viz::ContextProvider* compositor_context_provider =
+  viz::RasterContextProvider* compositor_context_provider =
       layer_tree_frame_sink_->context_provider();
   if (!compositor_context_provider)
     return std::make_unique<BitmapRasterBufferProvider>(layer_tree_frame_sink_);
@@ -4656,7 +4656,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   bool overlay_candidate = false;
 
   if (layer_tree_frame_sink_->context_provider()) {
-    viz::ContextProvider* context_provider =
+    viz::RasterContextProvider* context_provider =
         layer_tree_frame_sink_->context_provider();
     const auto& caps = context_provider->ContextCapabilities();
     overlay_candidate =
@@ -4678,7 +4678,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     // If not scaled, we can copy the pixels 1:1 from the source bitmap to our
     // destination backing of a texture or shared bitmap.
     if (layer_tree_frame_sink_->context_provider()) {
-      viz::ContextProvider* context_provider =
+      viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(
@@ -4743,7 +4743,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     if (layer_tree_frame_sink_->context_provider()) {
       SkPixmap pixmap;
       scaled_surface->peekPixels(&pixmap);
-      viz::ContextProvider* context_provider =
+      viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(

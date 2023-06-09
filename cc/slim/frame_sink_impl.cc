@@ -48,7 +48,7 @@ FrameSinkImpl::FrameSinkImpl(
         compositor_frame_sink_associated_remote,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
         client_receiver,
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     base::PlatformThreadId io_thread_id,
     std::unique_ptr<Scheduler> scheduler)
     : task_runner_(std::move(task_runner)),

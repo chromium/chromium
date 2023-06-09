@@ -142,6 +142,7 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes(
   }
 
   attributes.enable_swap_timestamps_if_supported = true;
+  attributes.enable_raster_interface = true;
 
   return attributes;
 }

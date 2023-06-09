@@ -38,7 +38,7 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"

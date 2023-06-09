@@ -104,7 +104,7 @@ base::WritableSharedMemoryMapping AllocateAndRegisterSharedBitmapMemory(
   return std::move(shm.mapping);
 }
 
-void DeleteSharedImage(scoped_refptr<ContextProvider> context_provider,
+void DeleteSharedImage(scoped_refptr<RasterContextProvider> context_provider,
                        gpu::Mailbox mailbox,
                        const gpu::SyncToken& sync_token,
                        bool is_lost) {
@@ -114,12 +114,13 @@ void DeleteSharedImage(scoped_refptr<ContextProvider> context_provider,
   sii->DestroySharedImage(sync_token, mailbox);
 }
 
-ResourceId CreateGpuResource(scoped_refptr<ContextProvider> context_provider,
-                             ClientResourceProvider* resource_provider,
-                             const gfx::Size& size,
-                             SharedImageFormat format,
-                             gfx::ColorSpace color_space,
-                             base::span<const uint8_t> pixels) {
+ResourceId CreateGpuResource(
+    scoped_refptr<RasterContextProvider> context_provider,
+    ClientResourceProvider* resource_provider,
+    const gfx::Size& size,
+    SharedImageFormat format,
+    gfx::ColorSpace color_space,
+    base::span<const uint8_t> pixels) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
@@ -237,7 +238,7 @@ void CreateTestTwoColoredTextureDrawQuad(
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
     SharedBitmapManager* shared_bitmap_manager,
-    scoped_refptr<ContextProvider> child_context_provider,
+    scoped_refptr<RasterContextProvider> child_context_provider,
     AggregatedRenderPass* render_pass) {
   // As this function renders to an RGBA_8888 texture, it makes sense to use
   // integer colors
@@ -322,7 +323,7 @@ void CreateTestTextureDrawQuad(
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
     SharedBitmapManager* shared_bitmap_manager,
-    scoped_refptr<ContextProvider> child_context_provider,
+    scoped_refptr<RasterContextProvider> child_context_provider,
     AggregatedRenderPass* render_pass) {
   // As this function renders to an RGBA_8888 texture, it makes sense to use
   // integer colors
@@ -384,7 +385,7 @@ void CreateTestTextureDrawQuad(
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
     SharedBitmapManager* shared_bitmap_manager,
-    scoped_refptr<ContextProvider> child_context_provider,
+    scoped_refptr<RasterContextProvider> child_context_provider,
     AggregatedRenderPass* render_pass) {
   float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   CreateTestTextureDrawQuad(gpu_resource, rect, texel_color, vertex_opacity,
@@ -405,7 +406,7 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
     const gfx::Rect& visible_rect,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider) {
+    RasterContextProvider* child_context_provider) {
   const bool with_alpha = (video_frame->format() == media::PIXEL_FORMAT_I420A);
 
   gfx::ColorSpace video_color_space = video_frame->ColorSpace();
@@ -526,7 +527,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
     const gfx::Rect& visible_rect,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider) {
+    RasterContextProvider* child_context_provider) {
   media::VideoFrameExternalResources resources =
       video_resource_updater->CreateExternalResourcesFromVideoFrame(
           video_frame);
@@ -611,7 +612,7 @@ void CreateTestYUVVideoDrawQuad_Striped(
     const gfx::Rect& visible_rect,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider) {
+    RasterContextProvider* child_context_provider) {
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
       format, rect.size(), rect, rect.size(), base::TimeDelta());
 
@@ -674,7 +675,7 @@ void CreateTestYUVVideoDrawQuad_TwoColor(
     media::VideoResourceUpdater* video_resource_updater,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider) {
+    RasterContextProvider* child_context_provider) {
   const gfx::Rect rect(background_size);
 
   scoped_refptr<media::VideoFrame> video_frame =
@@ -735,7 +736,7 @@ void CreateTestYUVVideoDrawQuad_Solid(
     const gfx::Rect& visible_rect,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider) {
+    RasterContextProvider* child_context_provider) {
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
       format, rect.size(), rect, rect.size(), base::TimeDelta());
   video_frame->set_color_space(color_space);
@@ -772,7 +773,7 @@ void CreateTestYUVVideoDrawQuad_NV12(
     const gfx::Rect& visible_rect,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    scoped_refptr<ContextProvider> child_context_provider) {
+    scoped_refptr<RasterContextProvider> child_context_provider) {
   bool needs_blending = true;
   const gfx::Size ya_tex_size = rect.size();
   const gfx::Size uv_tex_size = media::VideoFrame::PlaneSizeInSamples(
@@ -830,7 +831,7 @@ void CreateTestY16TextureDrawQuad_TwoColor(
     const gfx::Rect& foreground_rect,
     DisplayResourceProvider* resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider) {
+    RasterContextProvider* child_context_provider) {
   std::unique_ptr<unsigned char, base::AlignedFreeDeleter> memory(
       static_cast<unsigned char*>(
           base::AlignedAlloc(rect.size().GetArea() * 2,
@@ -1748,15 +1749,21 @@ class IntersectingVideoQuadPixelTest : public IntersectingQuadPixelTest {
     constexpr int kMaxResourceSize = 10000;
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        this->child_context_provider_.get(),
-        /*raster_context_provider=*/nullptr, nullptr,
-        this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
+        nullptr,
+        /*raster_context_provider=*/this->child_context_provider_.get(),
+        nullptr, this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
-        this->child_context_provider_.get(),
-        /*raster_context_provider=*/nullptr, nullptr,
-        this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
+        nullptr,
+        /*raster_context_provider=*/this->child_context_provider_.get(),
+        nullptr, this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
+  }
+
+  void TearDown() override {
+    video_resource_updater_.reset();
+    video_resource_updater2_.reset();
+    VizPixelTest::TearDown();
   }
 
  protected:
@@ -2159,7 +2166,7 @@ class VideoRendererPixelTestBase : public VizPixelTest {
     constexpr bool kUseR16Texture = false;
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        child_context_provider_.get(), nullptr, nullptr,
+        nullptr, child_context_provider_.get(), nullptr,
         child_resource_provider_.get(), kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
   }

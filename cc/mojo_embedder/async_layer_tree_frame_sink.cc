@@ -43,7 +43,7 @@ AsyncLayerTreeFrameSink::UnboundMessagePipes::UnboundMessagePipes(
     UnboundMessagePipes&& other) = default;
 
 AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
     std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface,
     InitParams* params)

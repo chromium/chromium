@@ -847,7 +847,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     viz::RendererSettings modified_renderer_settings = renderer_settings;

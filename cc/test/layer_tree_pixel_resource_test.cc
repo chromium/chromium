@@ -47,7 +47,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
   LayerTreeFrameSink* layer_tree_frame_sink =
       host_impl->layer_tree_frame_sink();
-  viz::ContextProvider* compositor_context_provider =
+  viz::RasterContextProvider* compositor_context_provider =
       layer_tree_frame_sink->context_provider();
   viz::RasterContextProvider* worker_context_provider =
       layer_tree_frame_sink->worker_context_provider();

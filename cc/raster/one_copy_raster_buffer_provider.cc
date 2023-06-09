@@ -21,7 +21,6 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -83,7 +82,7 @@ class OneCopyRasterBufferProvider::OneCopyGpuBacking
     pmd->AddOwnershipEdge(buffer_dump_guid, tracing_guid, importance);
   }
 
-  // The ContextProvider used to clean up the mailbox
+  // The context used to clean up the mailbox
   raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };
 
@@ -148,7 +147,7 @@ bool OneCopyRasterBufferProvider::RasterBufferImpl::
 
 OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    viz::ContextProvider* compositor_context_provider,
+    viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     int max_copy_texture_chromium_size,

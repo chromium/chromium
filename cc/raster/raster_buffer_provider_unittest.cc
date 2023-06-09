@@ -308,18 +308,17 @@ class RasterBufferProviderTest
     return completed_tasks_;
   }
 
-  void LoseContext(viz::ContextProvider* context_provider) {
-    if (!context_provider)
+  void LoseContext(viz::RasterContextProvider* context_provider,
+                   bool use_lock) {
+    if (!context_provider) {
       return;
-    context_provider->ContextGL()->LoseContextCHROMIUM(
-        GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-    context_provider->ContextGL()->Flush();
-  }
+    }
 
-  void LoseContext(viz::RasterContextProvider* context_provider) {
-    if (!context_provider)
-      return;
-    viz::RasterContextProvider::ScopedRasterContextLock lock(context_provider);
+    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+    if (use_lock) {
+      lock.emplace(context_provider);
+    }
+
     context_provider->RasterInterface()->LoseContextCHROMIUM(
         GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
     context_provider->RasterInterface()->Flush();
@@ -431,9 +430,8 @@ TEST_P(RasterBufferProviderTest, FalseThrottling) {
 }
 
 TEST_P(RasterBufferProviderTest, LostContext) {
-  LoseContext(static_cast<viz::ContextProvider*>(context_provider_.get()));
-  LoseContext(
-      static_cast<viz::RasterContextProvider*>(worker_context_provider_.get()));
+  LoseContext(context_provider_.get(), /*use_lock=*/false);
+  LoseContext(worker_context_provider_.get(), /*use_lock=*/true);
 
   AppendTask(0u);
   AppendTask(1u);
@@ -523,7 +521,7 @@ TEST_P(RasterBufferProviderTest, WaitOnSyncTokenAfterReschedulingTask) {
   RunMessageLoopUntilAllTasksHaveCompleted();
 
   {
-    viz::ContextProvider::ScopedContextLock context_lock(
+    viz::RasterContextProvider::ScopedRasterContextLock context_lock(
         worker_context_provider_.get());
     viz::TestRasterInterface* ri =
         worker_context_provider_->GetTestRasterInterface();

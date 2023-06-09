@@ -100,7 +100,7 @@ TestFrameSinkImpl::TestFrameSinkImpl(
         compositor_frame_sink_associated_remote,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
         client_receiver,
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     mojo::PendingAssociatedReceiver<viz::mojom::CompositorFrameSink>
         sink_receiver)
     : FrameSinkImpl(std::move(task_runner),

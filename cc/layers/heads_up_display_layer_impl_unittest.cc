@@ -22,7 +22,7 @@ namespace {
 void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
                     LayerTreeFrameSink* frame_sink,
                     viz::ClientResourceProvider* resource_provider,
-                    viz::ContextProvider* context_provider,
+                    viz::RasterContextProvider* context_provider,
                     DrawMode draw_mode) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;

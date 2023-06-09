@@ -62,7 +62,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   // If |begin_frame_source| is specified, |disable_display_vsync| and
   // |refresh_rate| are ignored.
   TestLayerTreeFrameSink(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const viz::RendererSettings& renderer_settings,

@@ -87,8 +87,8 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // threads. This can be called on any thread.
   // Returns null if the context does not support locking and must be used from
   // the same thread.
-  // NOTE: Helper method for ScopedContextLock. Use that instead of calling this
-  // directly.
+  // NOTE: Helper method for ScopedRasterContextLock. Use that instead of
+  // calling this directly.
   virtual base::Lock* GetLock() = 0;
 
   // Get a CacheController interface to the 3d context.  The context provider

@@ -18,6 +18,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -117,7 +118,7 @@ class PixelTest : public testing::Test {
   std::unique_ptr<viz::OutputSurface> output_surface_;
   std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<viz::DisplayResourceProvider> resource_provider_;
-  scoped_refptr<viz::ContextProvider> child_context_provider_;
+  scoped_refptr<viz::RasterContextProvider> child_context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<viz::DirectRenderer> renderer_;
   raw_ptr<viz::SoftwareRenderer> software_renderer_ = nullptr;

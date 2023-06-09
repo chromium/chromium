@@ -16,7 +16,7 @@ FrameSinkCcWrapper::FrameSinkCcWrapper(
         compositor_frame_sink_associated_remote,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
         client_receiver,
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     base::PlatformThreadId io_thread_id) {
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;

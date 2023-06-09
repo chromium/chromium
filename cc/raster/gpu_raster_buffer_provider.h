@@ -24,7 +24,6 @@ class RasterInterface;
 }  // namespace gpu
 
 namespace viz {
-class ContextProvider;
 class RasterContextProvider;
 }  // namespace viz
 
@@ -34,7 +33,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
  public:
   static constexpr float kRasterMetricProbability = 0.01;
   GpuRasterBufferProvider(
-      viz::ContextProvider* compositor_context_provider,
+      viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
       bool use_gpu_memory_buffer_resources,
       viz::SharedImageFormat tile_format,
@@ -139,7 +138,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   bool ShouldUnpremultiplyAndDitherResource(
       viz::SharedImageFormat format) const;
 
-  const raw_ptr<viz::ContextProvider> compositor_context_provider_;
+  const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
   const bool use_gpu_memory_buffer_resources_;
   const viz::SharedImageFormat tile_format_;

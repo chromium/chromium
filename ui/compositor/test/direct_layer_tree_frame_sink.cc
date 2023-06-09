@@ -28,7 +28,7 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
     const viz::FrameSinkId& frame_sink_id,
     viz::FrameSinkManagerImpl* frame_sink_manager,
     viz::Display* display,
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<cc::RasterContextProviderWrapper>
         worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,

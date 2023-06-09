@@ -538,7 +538,7 @@ class LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     auto frame_sink = LayerTreeHostCopyRequestTest::CreateLayerTreeFrameSink(
@@ -1059,7 +1059,7 @@ class LayerTreeHostCopyRequestTestCountSharedImages
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     // Since this test counts shared images and SkiaRenderer uses shared images

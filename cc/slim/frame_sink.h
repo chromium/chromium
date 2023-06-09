@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
 namespace gpu {
@@ -21,7 +21,7 @@ class GpuMemoryBufferManager;
 namespace cc::slim {
 
 // Abstraction and ownership over connections to the GPU process:
-// `viz::mojom::CompositorFrameSink` and `viz::ContextProvider`.
+// `viz::mojom::CompositorFrameSink` and `viz::RasterContextProvider`.
 // Client needs to create this when requested by `LayerTree`.
 class COMPONENT_EXPORT(CC_SLIM) FrameSink {
  public:
@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSink {
           compositor_frame_sink_associated_remote,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
           client_receiver,
-      scoped_refptr<viz::ContextProvider> context_provider,
+      scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       // Parameters below only used when wrapping cc.
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,

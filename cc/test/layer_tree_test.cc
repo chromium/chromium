@@ -64,7 +64,7 @@ namespace {
 class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
  public:
   SynchronousLayerTreeFrameSink(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const viz::RendererSettings& renderer_settings,
@@ -1210,7 +1210,7 @@ void LayerTreeTest::SetUpUnboundContextProviders(
 std::unique_ptr<TestLayerTreeFrameSink> LayerTreeTest::CreateLayerTreeFrameSink(
     const viz::RendererSettings& renderer_settings,
     double refresh_rate,
-    scoped_refptr<viz::ContextProvider> compositor_context_provider,
+    scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
     scoped_refptr<viz::RasterContextProvider> worker_context_provider) {
   constexpr bool disable_display_vsync = false;
   bool synchronous_composite =

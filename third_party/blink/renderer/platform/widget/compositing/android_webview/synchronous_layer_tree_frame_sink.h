@@ -42,10 +42,10 @@ class SkCanvas;
 namespace viz {
 class BeginFrameSource;
 class CompositorFrameSinkSupport;
-class ContextProvider;
 class Display;
 class FrameSinkManagerImpl;
 class ParentLocalSurfaceIdAllocator;
+class RasterContextProvider;
 }  // namespace viz
 
 namespace blink {
@@ -82,7 +82,7 @@ class SynchronousLayerTreeFrameSink
       public viz::ExternalBeginFrameSourceClient {
  public:
   SynchronousLayerTreeFrameSink(
-      scoped_refptr<viz::ContextProvider> context_provider,
+      scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<cc::RasterContextProviderWrapper>
           worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,

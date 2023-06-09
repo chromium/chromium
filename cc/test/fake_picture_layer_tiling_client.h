@@ -17,7 +17,7 @@
 
 namespace viz {
 class ClientResourceProvider;
-class ContextProvider;
+class RasterContextProvider;
 }
 
 namespace cc {
@@ -27,7 +27,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   FakePictureLayerTilingClient();
   explicit FakePictureLayerTilingClient(
       viz::ClientResourceProvider* resource_provider,
-      viz::ContextProvider* context_provider);
+      viz::RasterContextProvider* context_provider);
   ~FakePictureLayerTilingClient() override;
 
   // PictureLayerTilingClient implementation.

@@ -83,7 +83,7 @@ base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {
                          bitmap.computeByteSize());
 }
 
-void DeleteSharedImage(scoped_refptr<ContextProvider> context_provider,
+void DeleteSharedImage(scoped_refptr<RasterContextProvider> context_provider,
                        gpu::Mailbox mailbox,
                        const gpu::SyncToken& sync_token,
                        bool is_lost) {

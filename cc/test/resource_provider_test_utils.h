@@ -20,7 +20,7 @@ const std::
         const std::vector<viz::ResourceId>& resource_ids,
         viz::DisplayResourceProvider* resource_provider,
         viz::ClientResourceProvider* child_resource_provider,
-        viz::ContextProvider* child_context_provider);
+        viz::RasterContextProvider* child_context_provider);
 
 }  // namespace cc
 

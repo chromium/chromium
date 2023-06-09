@@ -25,7 +25,7 @@ namespace {
 class StubLayerTreeFrameSink : public LayerTreeFrameSink {
  public:
   explicit StubLayerTreeFrameSink(
-      scoped_refptr<viz::ContextProvider> context_provider,
+      scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
       : LayerTreeFrameSink(

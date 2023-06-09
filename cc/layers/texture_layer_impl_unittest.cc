@@ -10,7 +10,7 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/layer_tree_frame_sink.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "gpu/command_buffer/client/gles2_interface.h"

@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
@@ -314,7 +315,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
     viz::AggregatedRenderPass* to_pass,
     viz::DisplayResourceProvider* resource_provider,
     viz::ClientResourceProvider* child_resource_provider,
-    viz::ContextProvider* child_context_provider,
+    viz::RasterContextProvider* child_context_provider,
     viz::AggregatedRenderPassId child_pass_id,
     gpu::SyncToken* sync_token_for_mailbox_tebxture) {
   gfx::Rect rect(0, 0, 100, 100);

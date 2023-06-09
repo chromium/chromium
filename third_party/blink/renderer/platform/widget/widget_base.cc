@@ -761,7 +761,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = true;
-  attributes.enable_raster_interface = false;
+  attributes.enable_raster_interface = true;
   attributes.enable_oop_rasterization = false;
 
   constexpr bool automatic_flushes = false;

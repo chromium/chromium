@@ -15,7 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -171,7 +171,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
 ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    viz::ContextProvider* compositor_context_provider,
+    viz::RasterContextProvider* compositor_context_provider,
     viz::SharedImageFormat tile_format)
     : gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       compositor_context_provider_(compositor_context_provider),

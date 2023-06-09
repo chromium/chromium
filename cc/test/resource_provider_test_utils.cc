@@ -17,7 +17,7 @@ const std::
         const std::vector<viz::ResourceId>& resource_ids,
         viz::DisplayResourceProvider* resource_provider,
         viz::ClientResourceProvider* child_resource_provider,
-        viz::ContextProvider* child_context_provider) {
+        viz::RasterContextProvider* child_context_provider) {
   DCHECK(resource_provider);
   DCHECK(child_resource_provider);
   // Transfer resources to the parent.

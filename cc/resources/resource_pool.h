@@ -44,7 +44,7 @@ struct Capabilities;
 
 namespace viz {
 class ClientResourceProvider;
-class ContextProvider;
+class RasterContextProvider;
 }
 
 namespace cc {
@@ -209,7 +209,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // and when holding software resources, it should be null. It is used for
   // consistency checking as well as for correctness.
   ResourcePool(viz::ClientResourceProvider* resource_provider,
-               viz::ContextProvider* context_provider,
+               viz::RasterContextProvider* context_provider,
                scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                const base::TimeDelta& expiration_delay,
                bool disallow_non_exact_reuse);
@@ -463,7 +463,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   void FlushEvictedResources();
 
   const raw_ptr<viz::ClientResourceProvider> resource_provider_;
-  const raw_ptr<viz::ContextProvider> context_provider_;
+  const raw_ptr<viz::RasterContextProvider> context_provider_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const base::TimeDelta resource_expiration_delay_;
   const bool disallow_non_exact_reuse_ = false;

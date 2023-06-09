@@ -41,7 +41,6 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/single_thread_proxy.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -596,7 +595,7 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     constexpr bool disable_display_vsync = false;
@@ -1431,7 +1430,7 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     constexpr bool disable_display_vsync = false;

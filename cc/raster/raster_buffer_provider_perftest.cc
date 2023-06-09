@@ -23,7 +23,7 @@
 #include "cc/tiles/tile_task_manager.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
@@ -75,7 +75,6 @@ class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
 
 class PerfContextProvider
     : public base::RefCountedThreadSafe<PerfContextProvider>,
-      public viz::ContextProvider,
       public viz::RasterContextProvider {
  public:
   PerfContextProvider()
@@ -87,7 +86,7 @@ class PerfContextProvider
         context_gl_.get(), ContextSupport(), capabilities_);
   }
 
-  // viz::ContextProvider implementation.
+  // viz::RasterContextProvider implementation.
   void AddRef() const override {
     base::RefCountedThreadSafe<PerfContextProvider>::AddRef();
   }
@@ -329,7 +328,7 @@ class RasterBufferProviderPerfTestBase {
   }
 
  protected:
-  scoped_refptr<viz::ContextProvider> compositor_context_provider_;
+  scoped_refptr<viz::RasterContextProvider> compositor_context_provider_;
   scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
   std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;

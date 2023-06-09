@@ -25,7 +25,7 @@
 #include "build/build_config.h"
 #include "cc/base/container_util.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -94,7 +94,7 @@ void ResourcePool::GpuBacking::InitOverlayCandidateAndTextureTarget(
 
 ResourcePool::ResourcePool(
     viz::ClientResourceProvider* resource_provider,
-    viz::ContextProvider* context_provider,
+    viz::RasterContextProvider* context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TimeDelta& expiration_delay,
     bool disallow_non_exact_reuse)

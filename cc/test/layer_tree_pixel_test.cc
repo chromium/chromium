@@ -66,14 +66,14 @@ std::unique_ptr<TestLayerTreeFrameSink>
 LayerTreePixelTest::CreateLayerTreeFrameSink(
     const viz::RendererSettings& renderer_settings,
     double refresh_rate,
-    scoped_refptr<viz::ContextProvider>,
+    scoped_refptr<viz::RasterContextProvider>,
     scoped_refptr<viz::RasterContextProvider>) {
   scoped_refptr<viz::TestInProcessContextProvider> compositor_context_provider;
   scoped_refptr<viz::TestInProcessContextProvider> worker_context_provider;
   if (!use_software_renderer()) {
     compositor_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGLES2, /*support_locking=*/false);
+            viz::TestContextType::kGLES2WithRaster, /*support_locking=*/false);
 
     viz::TestContextType worker_ri_type;
     switch (raster_type()) {
