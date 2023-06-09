@@ -911,7 +911,7 @@ void WizardController::ShowNetworkScreen() {
 
 void WizardController::OnOwnershipStatusCheckDone(
     DeviceSettingsService::OwnershipStatus status) {
-  if (status == DeviceSettingsService::OWNERSHIP_NONE) {
+  if (status == DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
     ShowPackagedLicenseScreen();
   } else {
     ShowLoginScreen();

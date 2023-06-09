@@ -934,16 +934,16 @@ class EnrollmentStateFetcherImpl::Sequence {
 
   void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
     ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
-    base::UmaHistogramEnumeration(
-        kUMAStateDeterminationOwnershipStatus, status,
-        static_cast<ash::DeviceSettingsService::OwnershipStatus>(
-            ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_MAX + 1));
-    if (status == ash::DeviceSettingsService::OWNERSHIP_UNKNOWN) {
+    base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
+                                  status);
+    if (status ==
+        ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
       LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
       return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
 
-    if (status == ash::DeviceSettingsService::OWNERSHIP_TAKEN) {
+    if (status ==
+        ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
       VLOG(1) << "Device ownership is already taken. Skipping enrollment";
       return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }

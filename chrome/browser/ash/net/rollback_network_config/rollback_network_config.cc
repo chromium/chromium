@@ -498,7 +498,7 @@ bool RollbackNetworkConfig::Importer::IsOwnershipTaken() const {
     return true;
   }
   return DeviceSettingsService::Get()->GetOwnershipStatus() ==
-         DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
+         DeviceSettingsService::OwnershipStatus::kOwnershipTaken;
 }
 
 RollbackNetworkConfig::RollbackNetworkConfig() = default;

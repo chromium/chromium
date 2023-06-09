@@ -1373,7 +1373,8 @@ void DeviceSettingsProvider::DoSet(const std::string& path,
   // Make sure that either the current user is the device owner or the
   // device doesn't have an owner yet.
   if (!(device_settings_service_->HasPrivateOwnerKey() ||
-        ownership_status_ == DeviceSettingsService::OWNERSHIP_NONE)) {
+        ownership_status_ ==
+            DeviceSettingsService::OwnershipStatus::kOwnershipNone)) {
     LOG(WARNING) << "Changing settings from non-owner, setting=" << path;
 
     // Revert UI change.
@@ -1426,8 +1427,10 @@ void DeviceSettingsProvider::OwnershipStatusChanged() {
   // cache to device settings proper. It is important that writing only happens
   // in this case, as during normal operation, the contents of the cache should
   // never overwrite actual device settings.
-  if (new_ownership_status == DeviceSettingsService::OWNERSHIP_TAKEN &&
-      ownership_status_ == DeviceSettingsService::OWNERSHIP_NONE) {
+  if (new_ownership_status ==
+          DeviceSettingsService::OwnershipStatus::kOwnershipTaken &&
+      ownership_status_ ==
+          DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
     if (device_settings_service_->HasPrivateOwnerKey()) {
       // There shouldn't be any pending writes, since the cache writes are all
       // immediate.
@@ -1608,8 +1611,10 @@ bool DeviceSettingsProvider::HandlesSetting(base::StringPiece path) const {
 
 DeviceSettingsProvider::TrustedStatus
 DeviceSettingsProvider::RequestTrustedEntity() {
-  if (ownership_status_ == DeviceSettingsService::OWNERSHIP_NONE)
+  if (ownership_status_ ==
+      DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
     return TRUSTED;
+  }
   return trusted_status_;
 }
 

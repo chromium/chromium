@@ -294,10 +294,12 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   policy::BrowserPolicyConnectorAsh* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_managed = policy_connector->IsDeviceEnterpriseManaged();
-  if (status == DeviceSettingsService::OWNERSHIP_NONE)
+  if (status == DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
     is_owner_ = !is_managed;
-  else if (status == DeviceSettingsService::OWNERSHIP_TAKEN)
+  } else if (status ==
+             DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
     is_owner_ = user_manager::UserManager::Get()->IsCurrentUserOwner();
+  }
 
   // Save this value for future reuse in the wizard flow. Note: it might remain
   // unset.

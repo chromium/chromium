@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestTestWithDeviceOwner,
   EXPECT_THAT(user_manager::UserManager::Get()->GetActiveUser()->GetType(),
               Eq(user_manager::USER_TYPE_GUEST));
   EXPECT_THAT(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
-              Eq(ash::DeviceSettingsService::OWNERSHIP_TAKEN));
+              Eq(ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken));
 
   // Ensure that guest session is using owner consent.
   EXPECT_THAT(ash::StatsReportingController::Get()->IsEnabled(),

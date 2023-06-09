@@ -83,8 +83,9 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
   void WaitForOwnershipStatus() override {
     if (IsDeviceStatusKnown()) {
       InitializeProfileMetricsState(
-          is_device_owned_ ? ash::DeviceSettingsService::OWNERSHIP_TAKEN
-                           : ash::DeviceSettingsService::OWNERSHIP_NONE);
+          is_device_owned_
+              ? ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken
+              : ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone);
     }
   }
 

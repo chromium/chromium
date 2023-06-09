@@ -52,16 +52,15 @@ class SessionManagerOperation;
 class DeviceSettingsService : public SessionManagerClient::Observer {
  public:
   // Indicates ownership status of the device (listed in upgrade order).
-  enum OwnershipStatus {
+  enum class OwnershipStatus {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    OWNERSHIP_UNKNOWN = 0,
+    kOwnershipUnknown = 0,
     // Not yet owned.
-    OWNERSHIP_NONE = 1,
+    kOwnershipNone = 1,
     // Either consumer ownership or cloud management.
-    OWNERSHIP_TAKEN = 2,
-    // TODO(b/265923216): Convert to enum class and rename this to kMaxValue.
-    OWNERSHIP_MAX = OWNERSHIP_TAKEN
+    kOwnershipTaken = 2,
+    kMaxValue = kOwnershipTaken
   };
 
   using OwnershipStatusCallback = base::OnceCallback<void(OwnershipStatus)>;
@@ -290,7 +289,8 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   scoped_refptr<ownership::PublicKey> public_key_;
   base::WeakPtr<ownership::OwnerSettingsService> owner_settings_service_;
   // Ownership status before the current session manager operation.
-  OwnershipStatus previous_ownership_status_ = OWNERSHIP_UNKNOWN;
+  OwnershipStatus previous_ownership_status_ =
+      OwnershipStatus::kOwnershipUnknown;
 
   std::unique_ptr<enterprise_management::PolicyFetchResponse>
       policy_fetch_response_;

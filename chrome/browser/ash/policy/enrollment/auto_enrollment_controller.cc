@@ -391,7 +391,7 @@ void AutoEnrollmentController::SetAutoEnrollmentClientFactoryForTesting(
 void AutoEnrollmentController::OnOwnershipStatusCheckDone(
     ash::DeviceSettingsService::OwnershipStatus status) {
   switch (status) {
-    case ash::DeviceSettingsService::OWNERSHIP_NONE:
+    case ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone:
       switch (auto_enrollment_check_type_) {
         case AutoEnrollmentTypeChecker::CheckType::
             kForcedReEnrollmentExplicitlyRequired:
@@ -419,11 +419,11 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
           break;
       }
       return;
-    case ash::DeviceSettingsService::OWNERSHIP_TAKEN:
+    case ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken:
       LOG(WARNING) << "Device already owned, skipping auto-enrollment check.";
       UpdateState(AutoEnrollmentState::kNoEnrollment);
       return;
-    case ash::DeviceSettingsService::OWNERSHIP_UNKNOWN:
+    case ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown:
       LOG(ERROR) << "Ownership unknown, skipping auto-enrollment check.";
       UpdateState(AutoEnrollmentState::kNoEnrollment);
       return;

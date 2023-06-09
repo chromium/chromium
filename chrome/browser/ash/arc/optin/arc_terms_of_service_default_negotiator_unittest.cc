@@ -567,7 +567,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptMetricsNoOwner) {
   LoadOwnershipStatus();
   EXPECT_EQ(status, Status::ACCEPTED);
   EXPECT_EQ(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
-            OwnershipStatus::OWNERSHIP_NONE);
+            OwnershipStatus::kOwnershipNone);
   EXPECT_EQ(expected_metrics_state,
             ash::StatsReportingController::Get()->IsEnabled());
 }
@@ -590,7 +590,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
   // is probably setup.
   LoadOwnershipStatus();
   EXPECT_EQ(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
-            OwnershipStatus::OWNERSHIP_TAKEN);
+            OwnershipStatus::kOwnershipTaken);
   EXPECT_TRUE(ash::StatsReportingController::Get()->IsEnabled());
   EXPECT_FALSE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 

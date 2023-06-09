@@ -65,7 +65,8 @@ class DeviceSettingsServiceTest : public DeviceSettingsTestBase {
       : operation_completed_(false),
         is_owner_(true),
         is_owner_set_(false),
-        ownership_status_(DeviceSettingsService::OWNERSHIP_UNKNOWN) {}
+        ownership_status_(
+            DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {}
   ~DeviceSettingsServiceTest() override = default;
 
   void SetUp() override {
@@ -217,7 +218,7 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
 
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   EXPECT_FALSE(device_settings_service_->GetPublicKey().get());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             device_settings_service_->GetOwnershipStatus());
 
   device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
@@ -226,9 +227,10 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   ASSERT_TRUE(device_settings_service_->GetPublicKey().get());
   EXPECT_TRUE(device_settings_service_->GetPublicKey()->is_empty());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_NONE,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipNone,
             device_settings_service_->GetOwnershipStatus());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_NONE, ownership_status_);
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipNone,
+            ownership_status_);
 
   owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
   ReloadDeviceSettings();
@@ -240,9 +242,10 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN, ownership_status_);
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
+            ownership_status_);
 
   owner_key_util_->ImportPrivateKeyAndSetPublicKey(
       device_policy_->GetSigningKey());
@@ -256,9 +259,10 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN, ownership_status_);
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
+            ownership_status_);
 }
 
 TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForNonOwner) {
@@ -273,7 +277,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForNonOwner) {
 
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   EXPECT_FALSE(device_settings_service_->GetPublicKey().get());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             device_settings_service_->GetOwnershipStatus());
 
   const std::string& user_id = device_policy_->policy_data().username();
@@ -293,7 +297,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForNonOwner) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_FALSE(is_owner_set_);
 
@@ -306,7 +310,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForNonOwner) {
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_TRUE(is_owner_set_);
   EXPECT_FALSE(is_owner_);
@@ -317,7 +321,7 @@ TEST_F(DeviceSettingsServiceTest, OwnerPrivateKeyInTPMToken) {
 
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   EXPECT_FALSE(device_settings_service_->GetPublicKey().get());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             device_settings_service_->GetOwnershipStatus());
 
   const std::string& user_id = device_policy_->policy_data().username();
@@ -333,7 +337,7 @@ TEST_F(DeviceSettingsServiceTest, OwnerPrivateKeyInTPMToken) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
 
   owner_key_util_->ImportPrivateKeyAndSetPublicKey(
@@ -353,7 +357,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForOwner) {
 
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   EXPECT_FALSE(device_settings_service_->GetPublicKey().get());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             device_settings_service_->GetOwnershipStatus());
 
   const std::string& user_id = device_policy_->policy_data().username();
@@ -371,7 +375,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForOwner) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_FALSE(is_owner_set_);
 
@@ -385,7 +389,7 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForOwner) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_TRUE(is_owner_set_);
   EXPECT_TRUE(is_owner_);
@@ -396,7 +400,7 @@ TEST_F(DeviceSettingsServiceTest, IsCurrentUserOwnerAsyncWithLoadedCerts) {
 
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   EXPECT_FALSE(device_settings_service_->GetPublicKey().get());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             device_settings_service_->GetOwnershipStatus());
 
   owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
@@ -413,7 +417,7 @@ TEST_F(DeviceSettingsServiceTest, IsCurrentUserOwnerAsyncWithLoadedCerts) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_FALSE(is_owner_set_);
 
@@ -430,7 +434,7 @@ TEST_F(DeviceSettingsServiceTest, IsCurrentUserOwnerAsyncWithLoadedCerts) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_TRUE(is_owner_set_);
   EXPECT_TRUE(is_owner_);
@@ -479,7 +483,7 @@ TEST_F(DeviceSettingsServiceTest, LoadDeferredDuringOwnershipEstablishment) {
 
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   EXPECT_FALSE(device_settings_service_->GetPublicKey().get());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             device_settings_service_->GetOwnershipStatus());
 
   // Mark ownership establishment is running.
@@ -499,7 +503,7 @@ TEST_F(DeviceSettingsServiceTest, LoadDeferredDuringOwnershipEstablishment) {
   // private key.
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   ASSERT_FALSE(device_settings_service_->GetPublicKey().get());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_FALSE(is_owner_set_);
 
@@ -515,7 +519,7 @@ TEST_F(DeviceSettingsServiceTest, LoadDeferredDuringOwnershipEstablishment) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_TRUE(is_owner_set_);
   EXPECT_TRUE(is_owner_);
@@ -539,7 +543,7 @@ TEST_F(DeviceSettingsServiceTest, LoadIfNotPresentDoesntRefresh) {
   ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
   EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
             device_settings_service_->GetPublicKey()->as_string());
-  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+  EXPECT_EQ(DeviceSettingsService::OwnershipStatus::kOwnershipTaken,
             device_settings_service_->GetOwnershipStatus());
   EXPECT_FALSE(is_owner_set_);
   EXPECT_FALSE(

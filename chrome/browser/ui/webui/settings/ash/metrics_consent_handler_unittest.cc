@@ -130,7 +130,7 @@ class MetricsConsentHandlerTest : public testing::Test {
     test_user_manager_->SetOwnerId(account_id);
 
     EXPECT_THAT(DeviceSettingsService::Get()->GetOwnershipStatus(),
-                Eq(DeviceSettingsService::OWNERSHIP_TAKEN));
+                Eq(DeviceSettingsService::OwnershipStatus::kOwnershipTaken));
 
     return owner;
   }

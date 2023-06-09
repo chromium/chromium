@@ -192,7 +192,8 @@ class EnrollmentStateFetcherTest : public testing::Test {
     EXPECT_CALL(device_settings_service_, GetOwnershipStatusAsync)
         .WillOnce(DoAll(
             InvokeWithoutArgs([=]() { task_environment_.AdvanceClock(time); }),
-            RunOnceCallback<0>(ash::DeviceSettingsService::OWNERSHIP_NONE)));
+            RunOnceCallback<0>(
+                ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone)));
   }
 
   void ExpectStateKeysRequest(base::TimeDelta time = base::TimeDelta()) {
@@ -355,8 +356,8 @@ TEST_F(EnrollmentStateFetcherTest, RlzBrandCodeAndSerialNumberMissing) {
 
 TEST_F(EnrollmentStateFetcherTest, OwnershipTaken) {
   EXPECT_CALL(device_settings_service_, GetOwnershipStatusAsync)
-      .WillOnce(
-          RunOnceCallback<0>(ash::DeviceSettingsService::OWNERSHIP_TAKEN));
+      .WillOnce(RunOnceCallback<0>(
+          ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
@@ -365,8 +366,8 @@ TEST_F(EnrollmentStateFetcherTest, OwnershipTaken) {
 
 TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {
   EXPECT_CALL(device_settings_service_, GetOwnershipStatusAsync)
-      .WillOnce(
-          RunOnceCallback<0>(ash::DeviceSettingsService::OWNERSHIP_UNKNOWN));
+      .WillOnce(RunOnceCallback<0>(
+          ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
@@ -599,8 +600,9 @@ TEST_F(EnrollmentStateFetcherTest, UmaHistogramsCounts) {
   histograms.ExpectUniqueSample(kUMAStateDeterminationOnFlex, false, 1);
   histograms.ExpectUniqueSample(kUMAStateDeterminationSystemClockSynchronized,
                                 true, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationOwnershipStatus,
-                                ash::DeviceSettingsService::OWNERSHIP_NONE, 1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationOwnershipStatus,
+      ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone, 1);
   histograms.ExpectUniqueSample(kUMAStateDeterminationStateKeysRetrieved, true,
                                 1);
   histograms.ExpectUniqueSample(

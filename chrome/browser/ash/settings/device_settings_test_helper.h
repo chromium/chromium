@@ -25,7 +25,7 @@ class TestingProfile;
 namespace ash {
 
 // Wraps the singleton device settings and initializes it to the point where it
-// reports OWNERSHIP_NONE for the ownership status.
+// reports OwnershipStatus::kOwnershipNone for the ownership status.
 class ScopedDeviceSettingsTestHelper {
  public:
   ScopedDeviceSettingsTestHelper();

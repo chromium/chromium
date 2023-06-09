@@ -34,7 +34,8 @@ void OwnerPendingSettingController::Set(Profile* profile,
   DCHECK(profile);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_TAKEN) {
+  if (GetOwnershipStatus() ==
+      DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
     // The device has an owner. If the current profile is that owner, we will
     // write the value on their behalf, otherwise no action is taken.
     VLOG(1) << "Already has owner";
@@ -73,7 +74,8 @@ base::CallbackListSubscription OwnerPendingSettingController::AddObserver(
 
 void OwnerPendingSettingController::OnOwnershipTaken(
     ownership::OwnerSettingsService* service) {
-  DCHECK_EQ(GetOwnershipStatus(), DeviceSettingsService::OWNERSHIP_TAKEN);
+  DCHECK_EQ(GetOwnershipStatus(),
+            DeviceSettingsService::OwnershipStatus::kOwnershipTaken);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "OnOwnershipTaken";
 
@@ -203,8 +205,10 @@ bool OwnerPendingSettingController::ShouldReadFromPendingValue() const {
   // Chrome starts. In that case, we will read from pending value if it exists
   // (which means ownership is not taken), and read from service when pending
   // value pending is cleared (which means ownership is taken).
-  if (GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_NONE ||
-      GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_UNKNOWN) {
+  if (GetOwnershipStatus() ==
+          DeviceSettingsService::OwnershipStatus::kOwnershipNone ||
+      GetOwnershipStatus() ==
+          DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
     return true;
   }
   // Read from pending value if ownership is taken but pending value has not
