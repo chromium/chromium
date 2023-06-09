@@ -4717,6 +4717,8 @@ static_library("ui") {
       "views/commander_frontend_views.h",
       "views/commerce/ntp_discount_consent_dialog_view.cc",
       "views/commerce/ntp_discount_consent_dialog_view.h",
+      "views/commerce/price_insights_icon_view.cc",
+      "views/commerce/price_insights_icon_view.h",
       "views/commerce/price_tracking_bubble_dialog_view.cc",
       "views/commerce/price_tracking_bubble_dialog_view.h",
       "views/commerce/price_tracking_icon_view.cc",

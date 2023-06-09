@@ -60,6 +60,8 @@ class ShoppingListUiTabHelper
   virtual const gfx::Image& GetProductImage();
   // Return whether the PriceTrackingIconView is visible.
   virtual bool ShouldShowPriceTrackingIconView();
+  // Return whether the PriceInsightsIconView is visible.
+  virtual bool ShouldShowPriceInsightsIconView();
 
   // The URL for the last fetched product image. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
@@ -172,6 +174,11 @@ class ShoppingListUiTabHelper
   // The url from the previous successful main frame navigation. This will be
   // empty if this is the first navigation for this tab or post-restart.
   GURL previous_main_frame_url_;
+
+  // TODO(b/286291891): Cache the insight info instead of a bool variable, so so
+  // we know the price low/high/typical information. Whether the committed url
+  // has price insights info.
+  bool has_price_insights_info_{false};
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>

@@ -208,6 +208,10 @@
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
         Save and Track price
       </message>
+      <!-- TODO(b/286097739): Update the string for the icon tooltip and remove the translateable attribute once strings are finalized -->
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar." translateable="false">
+        Price Insights For This Page
+      </message>
     </if> <!-- use_titlecase -->
     <if expr="not use_titlecase">
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
@@ -227,6 +231,10 @@
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
         Save and track price
+      </message>
+      <!-- TODO(b/286097739): Update the string for the icon tooltip and remove the translateable attribute once strings are finalized -->
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar." translateable="false">
+        Price insights for this page
       </message>
     </if> <!-- not use_titlecase -->
 

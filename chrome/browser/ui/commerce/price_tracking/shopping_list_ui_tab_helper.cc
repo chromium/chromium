@@ -230,6 +230,11 @@ bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
              : should_show;
 }
 
+bool ShoppingListUiTabHelper::ShouldShowPriceInsightsIconView() {
+  return shopping_service_ && shopping_service_->IsPriceInsightsEligible() &&
+         has_price_insights_info_;
+}
+
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
     const GURL& url,
     const absl::optional<ProductInfo>& info) {
@@ -253,7 +258,7 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
 
   if (shopping_service_->IsPriceInsightsEligible() && info.has_value()) {
     // TODO(zhiyuancai): Also check whether we have price insights info for
-    // current url.
+    // current url. And set the |has_price_insights_info_|.
     MakeShoppingInsightsSidePanelAvailable();
   }
 }

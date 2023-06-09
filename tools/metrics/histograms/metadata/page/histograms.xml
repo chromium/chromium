@@ -196,6 +196,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ManagePasswords"/>
     <variant name="MandatoryReauth"/>
     <variant name="PaymentsOfferNotification"/>
+    <variant name="PriceInsights"/>
     <variant name="PriceTracking"/>
     <variant name="PWAInstall"/>
     <variant name="QRCodeGenerator"/>
