@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/system_tray_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/web_dialog_view.h"

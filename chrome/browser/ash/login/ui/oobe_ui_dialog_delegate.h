@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
-#include "ash/public/cpp/system_tray_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

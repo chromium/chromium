@@ -2005,6 +2005,7 @@ component("ash") {
     "system/tray/system_nudge_label.h",
     "system/tray/system_tray_notifier.cc",
     "system/tray/system_tray_notifier.h",
+    "system/tray/system_tray_observer.h",
     "system/tray/time_to_click_recorder.cc",
     "system/tray/time_to_click_recorder.h",
     "system/tray/tray_background_view.cc",

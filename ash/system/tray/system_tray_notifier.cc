@@ -4,10 +4,10 @@
 
 #include "ash/system/tray/system_tray_notifier.h"
 
-#include "ash/public/cpp/system_tray_observer.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/network/network_observer.h"
 #include "ash/system/privacy/screen_security_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
 

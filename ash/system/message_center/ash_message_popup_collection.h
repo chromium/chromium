@@ -9,10 +9,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/system_tray_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

@@ -346,7 +346,6 @@ component("cpp") {
     "system_tray.cc",
     "system_tray.h",
     "system_tray_client.h",
-    "system_tray_observer.h",
     "tab_cluster/clusterer.cc",
     "tab_cluster/clusterer.h",
     "tab_cluster/correlation_clusterer.cc",
