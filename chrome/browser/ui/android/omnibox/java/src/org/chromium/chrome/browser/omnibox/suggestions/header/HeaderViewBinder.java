@@ -37,8 +37,7 @@ public class HeaderViewBinder {
             int minHeight = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
             int paddingStart =
                     res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
-            int paddingTop =
-                    res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
+            int paddingTop = OmniboxResourceProvider.getHeaderTopPadding(view.getContext());
             int paddingBottom =
                     res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_bottom);
 
