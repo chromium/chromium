@@ -107,6 +107,54 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
 }
 
+TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
+  const int64_t kBaseVersion = 7;
+  base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
+  base::Time modification_time = creation_time + base::Seconds(1);
+
+  auto data = std::make_unique<syncer::EntityData>();
+
+  data->client_tag_hash = kTag;
+  // Leave the specifics empty.
+  data->creation_time = creation_time;
+  data->modification_time = modification_time;
+  data->name = "Name:";
+
+  // Empty specifics means this is a deletion aka tombstone.
+  ASSERT_TRUE(data->is_deleted());
+
+  CommitRequestData request_data;
+  request_data.sequence_number = 2;
+  request_data.base_version = kBaseVersion;
+  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
+                     &request_data.specifics_hash);
+  request_data.entity = std::move(data);
+
+  SyncEntity entity;
+  CommitContributionImpl::PopulateCommitProto(PREFERENCES, request_data,
+                                              &entity);
+
+  // Exhaustively verify the populated SyncEntity.
+  // It's a deletion!
+  EXPECT_TRUE(entity.deleted());
+  // Some "standard" fields are the same as for non-tombstone commits.
+  EXPECT_TRUE(entity.id_string().empty());
+  EXPECT_EQ(7, entity.version());
+  EXPECT_FALSE(entity.client_tag_hash().empty());
+  EXPECT_TRUE(entity.parent_id_string().empty());
+  EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
+  // The specifics field should be empty.
+  // Note: AdjustCommitProto() would ensure that the appropriate specifics is
+  // set (`has_preference()` is true), but this test doesn't execute that code.
+  EXPECT_EQ(0u, entity.specifics().ByteSizeLong());
+  // For deletions, mtime should still be set, but ctime shouldn't.
+  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
+  EXPECT_FALSE(entity.has_ctime());
+  // The entity name is still passed on, if it was set in the input EntityData
+  // (which it is in this test, even though in practice it isn't).
+  EXPECT_FALSE(entity.name().empty());
+}
+
 TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
