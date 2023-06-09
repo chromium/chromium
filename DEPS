@@ -990,7 +990,7 @@ deps = {
   'src/third_party/android_toolchain': {
       'packages': [
             {
-                'package': 'chromium/third_party/android_toolchain/r23c/android_toolchain',
+                'package': 'chromium/third_party/android_toolchain/android_toolchain',
                 'version': 'version:2@r23c.cr0',
             },
       ],
