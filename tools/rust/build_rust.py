@@ -61,7 +61,7 @@ from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
 
 from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          STAGE0_JSON_SHA256, THIRD_PARTY_DIR,
-                         VERSION_STAMP_PATH, GetLatestRevision)
+                         VERSION_STAMP_PATH, GetRustClangRevision)
 
 EXCLUDED_TESTS = [
     # https://github.com/rust-lang/rust/issues/45222 which appears to have
@@ -500,7 +500,7 @@ class XPy:
         subs = {}
         subs['INSTALL_DIR'] = quote_string(str(RUST_TOOLCHAIN_OUT_DIR))
         subs['LLVM_BIN'] = quote_string(str(self._llvm_bins_path))
-        subs['PACKAGE_VERSION'] = GetLatestRevision()
+        subs['PACKAGE_VERSION'] = GetRustClangRevision()
 
         subs["LLVM_CONFIG_WINDOWS_x86_64"] = quote_string(
             str(x86_64_llvm_config))
@@ -548,7 +548,7 @@ def MakeVersionStamp(git_hash):
     with open(RUST_SRC_VERSION_FILE_PATH) as version_file:
         rust_version = version_file.readline().rstrip()
     return (f'rustc {rust_version} {git_hash}'
-            f' ({GetLatestRevision()} chromium)\n')
+            f' ({GetRustClangRevision()} chromium)\n')
 
 
 def GetLatestRustCommit():

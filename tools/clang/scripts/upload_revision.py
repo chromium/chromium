@@ -223,13 +223,13 @@ def PatchRustStage0():
     f.write(content)
 
 
-def PatchRustRemoveFallback():
+def PatchRustRemoveOverride():
   with open(RUST_UPDATE_PY_PATH) as f:
     content = f.read()
 
   REV = '([0-9a-z-]+)'
-  content = re.sub(f'FALLBACK_REVISION = \'{REV}\'',
-                   f'FALLBACK_REVISION = \'\'',
+  content = re.sub(f'OVERRIDE_CLANG_REVISION = \'{REV}\'',
+                   f'OVERRIDE_CLANG_REVISION = None',
                    content,
                    count=1)
   with open(RUST_UPDATE_PY_PATH, 'w') as f:
@@ -348,9 +348,8 @@ def main():
                 'Change the sub-revision of Clang or Rust if there is '
                 'no major version change.')
     PatchRustStage0()
-    # TODO: Do this when we block Clang updates without a matching Rust
-    # compiler.
-    # PatchRustRemoveFallback()
+    if not args.skip_clang:
+      PatchRustRemoveOverride()
 
     # Changes to this file may require changes to gnrt or build_rust.py.
     has_bootstrap_dist_changes = GitDiffHasChanges(old_rust_version.git_hash,
