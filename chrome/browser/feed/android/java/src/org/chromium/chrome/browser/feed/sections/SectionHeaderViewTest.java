@@ -54,7 +54,7 @@ public final class SectionHeaderViewTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
-        mActivity.setTheme(R.style.Theme_MaterialComponents);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Build the class under test, and set up the fake UI.
