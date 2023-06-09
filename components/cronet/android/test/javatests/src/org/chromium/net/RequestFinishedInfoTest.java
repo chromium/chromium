@@ -7,7 +7,7 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -403,12 +403,8 @@ public class RequestFinishedInfoTest {
                         mUrl, callback, callback.getExecutor());
         // Empty headers are invalid and will cause start() to throw an exception.
         UrlRequest request = urlRequestBuilder.addHeader("", "").build();
-        try {
-            request.start();
-            fail("UrlRequest.start() should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header =");
-        }
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, request::start);
+        assertThat(e).hasMessageThat().isEqualTo("Invalid header =");
     }
 
     @Test

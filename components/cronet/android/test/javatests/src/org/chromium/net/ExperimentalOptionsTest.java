@@ -7,7 +7,7 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -260,19 +260,18 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     @OnlyRunNativeCronet
-    // Experimental options should be specified through a JSON compliant string. When that is not
-    // the case building a Cronet engine should fail.
+    // Experimental options should be specified through a JSON compliant string.
     public void testWrongJsonExperimentalOptions() throws Exception {
-        try {
-            mTestRule.getTestFramework().applyEngineBuilderPatch(
-                    (builder) -> builder.setExperimentalOptions("Not a serialized JSON object"));
-            fail("Setting invalid JSON should have thrown an exception.");
-        } catch (IllegalArgumentException e) {
-            // The top level exception is a side effect of using applyEngineBuilderPatch
-            assertThat(e).hasCauseThat().isInstanceOf(IllegalArgumentException.class);
-            assertThat(e).hasCauseThat().hasMessageThat().contains(
-                    "Experimental options parsing failed");
-        }
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                ()
+                        -> mTestRule.getTestFramework().applyEngineBuilderPatch(
+                                (builder)
+                                        -> builder.setExperimentalOptions(
+                                                "Not a serialized JSON object")));
+        // The top level exception is a side effect of using applyEngineBuilderPatch
+        assertThat(e).hasCauseThat().isInstanceOf(IllegalArgumentException.class);
+        assertThat(e).hasCauseThat().hasMessageThat().contains(
+                "Experimental options parsing failed");
     }
 
     @Test

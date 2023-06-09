@@ -6,21 +6,17 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
@@ -46,8 +42,6 @@ import java.net.URL;
 public class CronetFixedModeOutputStreamTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private HttpURLConnection mConnection;
 
@@ -113,16 +107,10 @@ public class CronetFixedModeOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         out.write(largeData, 0, 10);
         NativeTestServer.shutdownNativeTestServer();
-        try {
-            out.write(largeData, 10, largeData.length - 10);
-            mConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            NetworkException requestException = (NetworkException) e;
-            assertThat(requestException.getErrorCode())
-                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
-        }
+        NetworkException e = assertThrows(
+                NetworkException.class, () -> out.write(largeData, 10, largeData.length - 10));
+
+        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
     }
 
     @Test
@@ -136,29 +124,14 @@ public class CronetFixedModeOutputStreamTest {
         // Set content-length as 1 byte, so Cronet will upload once that 1 byte
         // is passed to it.
         mConnection.setFixedLengthStreamingMode(1);
-        try {
-            OutputStream out = mConnection.getOutputStream();
-            out.write(1);
-            // Forces OutputStream implementation to flush. crbug.com/653072
-            out.flush();
-            fail();
-
-        } catch (IOException e) {
-            NetworkException requestException = (NetworkException) e;
-            assertThat(requestException.getErrorCode())
-                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
-        }
-        // Make sure IOException is reported again when trying to read response
+        OutputStream out = mConnection.getOutputStream();
+        // Forces OutputStream implementation to flush. crbug.com/653072
+        NetworkException e = assertThrows(NetworkException.class, () -> out.write(1));
+        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        // Make sure NetworkException is reported again when trying to read response
         // from the mConnection.
-        try {
-            mConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            NetworkException requestException = (NetworkException) e;
-            assertThat(requestException.getErrorCode())
-                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
-        }
+        e = assertThrows(NetworkException.class, mConnection::getResponseCode);
+        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
         // Restarting server to run the test for a second time.
         assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
@@ -199,12 +172,7 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setFixedLengthStreamingMode(TestUtil.UPLOAD_DATA.length + 1);
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        try {
-            mConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-        }
+        assertThrows(IOException.class, mConnection::getResponseCode);
     }
 
     @Test
@@ -217,14 +185,9 @@ public class CronetFixedModeOutputStreamTest {
         // Set a content length that's 1 byte short.
         mConnection.setFixedLengthStreamingMode(TestUtil.UPLOAD_DATA.length - 1);
         OutputStream out = mConnection.getOutputStream();
-        try {
-            out.write(TestUtil.UPLOAD_DATA);
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            assertThat(e).hasMessageThat().isEqualTo("expected " + (TestUtil.UPLOAD_DATA.length - 1)
-                    + " bytes but received " + TestUtil.UPLOAD_DATA.length);
-        }
+        IOException e = assertThrows(IOException.class, () -> out.write(TestUtil.UPLOAD_DATA));
+        assertThat(e).hasMessageThat().isEqualTo("expected " + (TestUtil.UPLOAD_DATA.length - 1)
+                + " bytes but received " + TestUtil.UPLOAD_DATA.length);
     }
 
     @Test
@@ -240,17 +203,13 @@ public class CronetFixedModeOutputStreamTest {
         for (int i = 0; i < TestUtil.UPLOAD_DATA.length - 1; i++) {
             out.write(TestUtil.UPLOAD_DATA[i]);
         }
-        try {
-            // Try upload an extra byte.
-            out.write(TestUtil.UPLOAD_DATA[TestUtil.UPLOAD_DATA.length - 1]);
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            String expectedVariant = "expected 0 bytes but received 1";
-            String expectedVariantOnLollipop = "expected " + (TestUtil.UPLOAD_DATA.length - 1)
-                    + " bytes but received " + TestUtil.UPLOAD_DATA.length;
-            assertThat(e).hasMessageThat().isAnyOf(expectedVariant, expectedVariantOnLollipop);
-        }
+        // Try upload an extra byte.
+        IOException e = assertThrows(IOException.class,
+                () -> out.write(TestUtil.UPLOAD_DATA[TestUtil.UPLOAD_DATA.length - 1]));
+        String expectedVariant = "expected 0 bytes but received 1";
+        String expectedVariantOnLollipop = "expected " + (TestUtil.UPLOAD_DATA.length - 1)
+                + " bytes but received " + TestUtil.UPLOAD_DATA.length;
+        assertThat(e).hasMessageThat().isAnyOf(expectedVariant, expectedVariantOnLollipop);
     }
 
     @Test
@@ -375,24 +334,6 @@ public class CronetFixedModeOutputStreamTest {
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
-    private static class CauseMatcher extends TypeSafeMatcher<Throwable> {
-        private final Class<? extends Throwable> mType;
-        private final String mExpectedMessage;
-
-        public CauseMatcher(Class<? extends Throwable> type, String expectedMessage) {
-            this.mType = type;
-            this.mExpectedMessage = expectedMessage;
-        }
-
-        @Override
-        protected boolean matchesSafely(Throwable item) {
-            return item.getClass().isAssignableFrom(mType)
-                    && item.getMessage().equals(mExpectedMessage);
-        }
-        @Override
-        public void describeTo(Description description) {}
-    }
-
     @Test
     @SmallTest
     public void testRewindWithCronet() throws Exception {
@@ -402,12 +343,14 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
         mConnection.setFixedLengthStreamingMode(TestUtil.UPLOAD_DATA.length);
-        thrown.expect(instanceOf(CallbackExceptionImpl.class));
-        thrown.expectMessage("Exception received from UploadDataProvider");
-        thrown.expectCause(
-                new CauseMatcher(HttpRetryException.class, "Cannot retry streamed Http body"));
+
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        mConnection.getResponseCode();
+        CallbackExceptionImpl e =
+                assertThrows(CallbackExceptionImpl.class, mConnection::getResponseCode);
+
+        assertThat(e).hasMessageThat().isEqualTo("Exception received from UploadDataProvider");
+        assertThat(e).hasCauseThat().isInstanceOf(HttpRetryException.class);
+        assertThat(e).hasCauseThat().hasMessageThat().isEqualTo("Cannot retry streamed Http body");
     }
 }

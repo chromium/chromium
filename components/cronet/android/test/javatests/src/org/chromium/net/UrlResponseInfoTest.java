@@ -6,10 +6,11 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertThrows;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -51,22 +52,15 @@ public class UrlResponseInfoTest {
                         wasCached, negotiatedProtocol, proxyServer, receivedByteCount);
         assertThat(urlChain).isEqualTo(info.getUrlChain());
         assertThat(urlChain.get(urlChain.size() - 1)).isEqualTo(info.getUrl());
-        try {
-            info.getUrlChain().add("example.com");
-            Assert.fail("getUrlChain() returned modifyable list.");
-        } catch (UnsupportedOperationException e) {
-            // Expected.
-        }
+        assertThrows(
+                UnsupportedOperationException.class, () -> info.getUrlChain().add("example.com"));
         assertThat(info.getHttpStatusCode()).isEqualTo(httpStatusCode);
         assertThat(info.getHttpStatusText()).isEqualTo(httpStatusText);
         assertThat(info.getAllHeadersAsList()).isEqualTo(allHeadersList);
-        try {
-            info.getAllHeadersAsList().add(
-                    new AbstractMap.SimpleImmutableEntry<String, String>("X", "Y"));
-            Assert.fail("getAllHeadersAsList() returned modifyable list.");
-        } catch (UnsupportedOperationException e) {
-            // Expected.
-        }
+        assertThrows(UnsupportedOperationException.class,
+                ()
+                        -> info.getAllHeadersAsList().add(
+                                new AbstractMap.SimpleImmutableEntry<String, String>("X", "Y")));
         assertThat(info.getAllHeaders())
                 .containsExactly(header.getKey(), Arrays.asList(header.getValue()));
         assertThat(info.wasCached()).isEqualTo(wasCached);

@@ -6,7 +6,7 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -67,12 +67,7 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
         assertThat(mConnection.getResponseCode()).isEqualTo(200);
-        try {
-            mConnection.getOutputStream();
-            fail();
-        } catch (ProtocolException e) {
-            // Expected.
-        }
+        assertThrows(ProtocolException.class, mConnection::getOutputStream);
     }
 
     @Test
@@ -85,14 +80,12 @@ public class CronetBufferedOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
         mConnection.connect();
-        try {
-            // Attemp to write some more.
-            out.write(TestUtil.UPLOAD_DATA);
-            fail();
-        } catch (IllegalStateException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Use setFixedLengthStreamingMode() or "
-                    + "setChunkedStreamingMode() for writing after connect");
-        }
+        // Attempt to write some more.
+        IllegalStateException e =
+                assertThrows(IllegalStateException.class, () -> out.write(TestUtil.UPLOAD_DATA));
+
+        assertThat(e).hasMessageThat().isEqualTo("Use setFixedLengthStreamingMode() or "
+                + "setChunkedStreamingMode() for writing after connect");
     }
 
     @Test
@@ -104,12 +97,7 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setRequestMethod("POST");
         OutputStream out = mConnection.getOutputStream();
         assertThat(mConnection.getResponseCode()).isEqualTo(200);
-        try {
-            out.write(TestUtil.UPLOAD_DATA);
-            fail();
-        } catch (IllegalStateException e) {
-            // Expected
-        }
+        assertThrows(IllegalStateException.class, () -> out.write(TestUtil.UPLOAD_DATA));
     }
 
     @Test
@@ -296,12 +284,7 @@ public class CronetBufferedOutputStreamTest {
                 "Content-Length", Integer.toString(TestUtil.UPLOAD_DATA.length + 1));
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        try {
-            mConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-        }
+        assertThrows(IOException.class, mConnection::getResponseCode);
     }
 
     /**
@@ -321,14 +304,11 @@ public class CronetBufferedOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         // Write a few bytes first.
         out.write(TestUtil.UPLOAD_DATA, 0, 3);
-        try {
-            // Write remaining bytes.
-            out.write(TestUtil.UPLOAD_DATA, 3, TestUtil.UPLOAD_DATA.length - 3);
-            fail();
-        } catch (ProtocolException e) {
-            assertThat(e).hasMessageThat().isEqualTo("exceeded content-length limit of "
-                    + (TestUtil.UPLOAD_DATA.length - 1) + " bytes");
-        }
+        // Write remaining bytes.
+        ProtocolException e = assertThrows(ProtocolException.class,
+                () -> out.write(TestUtil.UPLOAD_DATA, 3, TestUtil.UPLOAD_DATA.length - 3));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "exceeded content-length limit of " + (TestUtil.UPLOAD_DATA.length - 1) + " bytes");
     }
 
     /**
@@ -346,15 +326,13 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setRequestProperty(
                 "Content-Length", Integer.toString(TestUtil.UPLOAD_DATA.length - 1));
         OutputStream out = mConnection.getOutputStream();
-        try {
+        ProtocolException e = assertThrows(ProtocolException.class, () -> {
             for (int i = 0; i < TestUtil.UPLOAD_DATA.length; i++) {
                 out.write(TestUtil.UPLOAD_DATA[i]);
             }
-            fail();
-        } catch (ProtocolException e) {
-            assertThat(e).hasMessageThat().isEqualTo("exceeded content-length limit of "
-                    + (TestUtil.UPLOAD_DATA.length - 1) + " bytes");
-        }
+        });
+        assertThat(e).hasMessageThat().isEqualTo(
+                "exceeded content-length limit of " + (TestUtil.UPLOAD_DATA.length - 1) + " bytes");
     }
 
     @Test

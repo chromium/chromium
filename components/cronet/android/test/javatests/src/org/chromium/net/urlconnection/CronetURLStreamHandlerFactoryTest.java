@@ -6,7 +6,7 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -49,12 +49,9 @@ public class CronetURLStreamHandlerFactoryTest {
     @Test
     @SmallTest
     public void testRequireConfig() throws Exception {
-        try {
-            new CronetURLStreamHandlerFactory(null);
-            fail();
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("CronetEngine is null.");
-        }
+        NullPointerException e = assertThrows(
+                NullPointerException.class, () -> new CronetURLStreamHandlerFactory(null));
+        assertThat(e).hasMessageThat().isEqualTo("CronetEngine is null.");
     }
 
     @Test

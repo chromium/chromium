@@ -6,7 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -231,12 +231,10 @@ public class DiskStorageTest {
     public void testEnableHttpCacheThrowsIfStoragePathNotSet() throws Exception {
         // Initialize a CronetEngine and shut it down.
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            try {
-                builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
-                fail("Enabling http cache without a storage path should throw an exception");
-            } catch (IllegalArgumentException e) {
-                // Expected
-            }
+            assertThrows(IllegalArgumentException.class,
+                    ()
+                            -> builder.enableHttpCache(
+                                    CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024));
         });
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();

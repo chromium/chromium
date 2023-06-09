@@ -7,6 +7,7 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -123,27 +124,25 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testBuilderChecks() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        try {
-            mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                    null, callback, callback.getExecutor());
-            fail("URL not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("URL is required.");
-        }
-        try {
-            mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                    NativeTestServer.getRedirectURL(), null, callback.getExecutor());
-            fail("Callback not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Callback is required.");
-        }
-        try {
-            mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                    NativeTestServer.getRedirectURL(), callback, null);
-            fail("Executor not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Executor is required.");
-        }
+
+        NullPointerException e = assertThrows(NullPointerException.class,
+                ()
+                        -> mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                                null, callback, callback.getExecutor()));
+        assertThat(e).hasMessageThat().isEqualTo("URL is required.");
+
+        e = assertThrows(NullPointerException.class,
+                ()
+                        -> mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                                NativeTestServer.getRedirectURL(), null, callback.getExecutor()));
+        assertThat(e).hasMessageThat().isEqualTo("Callback is required.");
+
+        e = assertThrows(NullPointerException.class,
+                ()
+                        -> mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                                NativeTestServer.getRedirectURL(), callback, null));
+        assertThat(e).hasMessageThat().isEqualTo("Executor is required.");
+
         // Verify successful creation doesn't throw.
         mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectURL(), callback, callback.getExecutor());
@@ -437,12 +436,9 @@ public class CronetUrlRequestTest {
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
         // Try to set 'null' method.
-        try {
-            builder.setHttpMethod(null);
-            fail("Exception not thrown");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Method is required.");
-        }
+        NullPointerException e =
+                assertThrows(NullPointerException.class, () -> builder.setHttpMethod(null));
+        assertThat(e).hasMessageThat().isEqualTo("Method is required.");
 
         builder.setHttpMethod(methodName);
         builder.build().start();
@@ -457,13 +453,10 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 TEST_URL, callback, callback.getExecutor());
-        try {
-            builder.setHttpMethod("bad:method!");
-            builder.build().start();
-            fail("IllegalArgumentException not thrown.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid http method bad:method!");
-        }
+        builder.setHttpMethod("bad:method!");
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        assertThat(e).hasMessageThat().isEqualTo("Invalid http method bad:method!");
     }
 
     @Test
@@ -472,13 +465,10 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 TEST_URL, callback, callback.getExecutor());
-        try {
-            builder.addHeader("header:name", "headervalue");
-            builder.build().start();
-            fail("IllegalArgumentException not thrown.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
-        }
+        builder.addHeader("header:name", "headervalue");
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
     }
 
     @Test
@@ -500,14 +490,10 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 TEST_URL, callback, callback.getExecutor());
-        try {
-            builder.addHeader("headername", "bad header\r\nvalue");
-            builder.build().start();
-            fail("IllegalArgumentException not thrown.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "Invalid header headername=bad header\r\nvalue");
-        }
+        builder.addHeader("headername", "bad header\r\nvalue");
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        assertThat(e).hasMessageThat().isEqualTo("Invalid header headername=bad header\r\nvalue");
     }
 
     @Test
@@ -932,28 +918,21 @@ public class CronetUrlRequestTest {
         callback.waitForNextStep();
 
         // Try to read using a full buffer.
-        try {
-            ByteBuffer readBuffer = ByteBuffer.allocateDirect(4);
-            readBuffer.put("full".getBytes());
-            urlRequest.read(readBuffer);
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("ByteBuffer is already full.");
-        }
+        ByteBuffer readBuffer = ByteBuffer.allocateDirect(4);
+        readBuffer.put("full".getBytes());
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> urlRequest.read(readBuffer));
+        assertThat(e).hasMessageThat().isEqualTo("ByteBuffer is already full.");
 
         // Try to read using a non-direct buffer.
-        try {
-            ByteBuffer readBuffer = ByteBuffer.allocate(5);
-            urlRequest.read(readBuffer);
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("byteBuffer must be a direct ByteBuffer.");
-        }
+        ByteBuffer readBuffer1 = ByteBuffer.allocate(5);
+        e = assertThrows(IllegalArgumentException.class, () -> urlRequest.read(readBuffer1));
+        assertThat(e).hasMessageThat().isEqualTo("byteBuffer must be a direct ByteBuffer.");
 
         // Finish the request with a direct ByteBuffer.
         callback.setAutoAdvance(true);
-        ByteBuffer readBuffer = ByteBuffer.allocateDirect(5);
-        urlRequest.read(readBuffer);
+        ByteBuffer readBuffer2 = ByteBuffer.allocateDirect(5);
+        urlRequest.read(readBuffer2);
         callback.blockForDone();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
@@ -1003,11 +982,7 @@ public class CronetUrlRequestTest {
                         .build();
 
         // Try to read before starting request.
-        try {
-            callback.startNextRead(urlRequest);
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
 
         // Verify reading right after start throws an assertion. Both must be
         // invoked on the Executor thread, to prevent receiving data until after
@@ -1016,11 +991,7 @@ public class CronetUrlRequestTest {
             @Override
             public void run() {
                 urlRequest.start();
-                try {
-                    callback.startNextRead(urlRequest);
-                    fail("Exception not thrown");
-                } catch (IllegalStateException e) {
-                }
+                assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
             }
         };
         callback.getExecutor().submit(startAndRead).get();
@@ -1028,11 +999,7 @@ public class CronetUrlRequestTest {
 
         assertThat(ResponseStep.ON_RECEIVED_REDIRECT).isEqualTo(callback.mResponseStep);
         // Try to read after the redirect.
-        try {
-            callback.startNextRead(urlRequest);
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
         urlRequest.followRedirect();
         callback.waitForNextStep();
 
@@ -1045,11 +1012,8 @@ public class CronetUrlRequestTest {
                 public void run() {
                     callback.startNextRead(urlRequest);
                     // Try to read again before the last read completes.
-                    try {
-                        callback.startNextRead(urlRequest);
-                        fail("Exception not thrown");
-                    } catch (IllegalStateException e) {
-                    }
+                    assertThrows(
+                            IllegalStateException.class, () -> callback.startNextRead(urlRequest));
                 }
             };
             callback.getExecutor().submit(readTwice).get();
@@ -1060,11 +1024,7 @@ public class CronetUrlRequestTest {
         assertThat(callback.mResponseAsString).isEqualTo(NativeTestServer.SUCCESS_BODY);
 
         // Try to read after request is complete.
-        try {
-            callback.startNextRead(urlRequest);
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
     }
 
     @Test
@@ -1080,11 +1040,7 @@ public class CronetUrlRequestTest {
                         .build();
 
         // Try to follow a redirect before starting the request.
-        try {
-            urlRequest.followRedirect();
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, urlRequest::followRedirect);
 
         // Try to follow a redirect just after starting the request. Has to be
         // done on the executor thread to avoid a race.
@@ -1092,11 +1048,7 @@ public class CronetUrlRequestTest {
             @Override
             public void run() {
                 urlRequest.start();
-                try {
-                    urlRequest.followRedirect();
-                    fail("Exception not thrown");
-                } catch (IllegalStateException e) {
-                }
+                assertThrows(IllegalStateException.class, urlRequest::followRedirect);
             }
         };
         callback.getExecutor().execute(startAndRead);
@@ -1108,11 +1060,7 @@ public class CronetUrlRequestTest {
             @Override
             public void run() {
                 urlRequest.followRedirect();
-                try {
-                    urlRequest.followRedirect();
-                    fail("Exception not thrown");
-                } catch (IllegalStateException e) {
-                }
+                assertThrows(IllegalStateException.class, urlRequest::followRedirect);
             }
         };
         callback.getExecutor().execute(followRedirectTwice);
@@ -1122,11 +1070,7 @@ public class CronetUrlRequestTest {
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
 
         while (!callback.isDone()) {
-            try {
-                urlRequest.followRedirect();
-                fail("Exception not thrown");
-            } catch (IllegalStateException e) {
-            }
+            assertThrows(IllegalStateException.class, urlRequest::followRedirect);
             callback.startNextRead(urlRequest);
             callback.waitForNextStep();
         }
@@ -1135,11 +1079,7 @@ public class CronetUrlRequestTest {
         assertThat(callback.mResponseAsString).isEqualTo(NativeTestServer.SUCCESS_BODY);
 
         // Try to follow redirect after request is complete.
-        try {
-            urlRequest.followRedirect();
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, urlRequest::followRedirect);
     }
 
     @Test
@@ -1149,21 +1089,14 @@ public class CronetUrlRequestTest {
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
-        try {
-            builder.setUploadDataProvider(null, callback.getExecutor());
-            fail("Exception not thrown");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid UploadDataProvider.");
-        }
+        NullPointerException e = assertThrows(NullPointerException.class,
+                () -> builder.setUploadDataProvider(null, callback.getExecutor()));
+        assertThat(e).hasMessageThat().isEqualTo("Invalid UploadDataProvider.");
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
                 TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
-        try {
-            builder.build().start();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> builder.build().start());
     }
 
     @Test

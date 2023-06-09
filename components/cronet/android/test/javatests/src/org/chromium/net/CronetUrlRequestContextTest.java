@@ -6,7 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_IN_MEMORY;
@@ -187,31 +187,23 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         UrlRequest urlRequest = urlRequestBuilder.build();
         urlRequest.start();
-        try {
-            cronetEngine.shutdown();
-            fail("Should throw an exception");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
-        }
+
+        Exception e = assertThrows(Exception.class, cronetEngine::shutdown);
+        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
 
         callback.waitForNextStep();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
-        try {
-            cronetEngine.shutdown();
-            fail("Should throw an exception");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
-        }
+
+        e = assertThrows(Exception.class, cronetEngine::shutdown);
+        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
+
         callback.startNextRead(urlRequest);
 
         callback.waitForNextStep();
+
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_READ_COMPLETED);
-        try {
-            cronetEngine.shutdown();
-            fail("Should throw an exception");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
-        }
+        e = assertThrows(Exception.class, cronetEngine::shutdown);
+        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
 
         // May not have read all the data, in theory. Just enable auto-advance
         // and finish the request.
@@ -234,11 +226,7 @@ public class CronetUrlRequestContextTest {
         Runnable blockingTask = new Runnable() {
             @Override
             public void run() {
-                try {
-                    block.block();
-                } catch (Exception e) {
-                    fail("Caught " + e.getMessage());
-                }
+                block.block();
             }
         };
         // Ensure that test is not running on the main thread.
@@ -257,12 +245,8 @@ public class CronetUrlRequestContextTest {
         // Shutdown will wait for init to complete on main thread.
         cronetEngine.shutdown();
         // Verify that context is shutdown.
-        try {
-            cronetEngine.getUrlRequestContextAdapter();
-            fail("Should throw an exception.");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
-        }
+        Exception e = assertThrows(Exception.class, cronetEngine::getUrlRequestContextAdapter);
+        assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
     }
 
     @Test
@@ -283,12 +267,9 @@ public class CronetUrlRequestContextTest {
                 // Shutdown right after init.
                 cronetEngine.shutdown();
                 // Verify that context is shutdown.
-                try {
-                    cronetEngine.getUrlRequestContextAdapter();
-                    fail("Should throw an exception.");
-                } catch (Exception e) {
-                    assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
-                }
+                Exception e =
+                        assertThrows(Exception.class, cronetEngine::getUrlRequestContextAdapter);
+                assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
                 block.open();
             }
         };
@@ -303,12 +284,8 @@ public class CronetUrlRequestContextTest {
     public void testMultipleShutdown() throws Exception {
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         cronetEngine.shutdown();
-        try {
-            cronetEngine.shutdown();
-            fail("Should throw an exception");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
-        }
+        Exception e = assertThrows(Exception.class, cronetEngine::shutdown);
+        assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
     }
 
     @Test
@@ -340,12 +317,10 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         UrlRequest urlRequest = urlRequestBuilder.build();
         urlRequest.start();
-        try {
-            cronetEngine.shutdown();
-            fail("Should throw an exception");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
-        }
+
+        Exception e = assertThrows(Exception.class, cronetEngine::shutdown);
+        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
+
         callback.waitForNextStep();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         urlRequest.cancel();
@@ -671,13 +646,7 @@ public class CronetUrlRequestContextTest {
         assertThat(cronetEngine.getActiveRequestCount()).isEqualTo(0);
         request.start();
         assertThat(cronetEngine.getActiveRequestCount()).isEqualTo(1);
-        boolean threwException = false;
-        try {
-            request.start();
-        } catch (Exception e) {
-            threwException = true;
-        }
-        assertThat(threwException).isTrue();
+        assertThrows(Exception.class, request::start);
         assertThat(cronetEngine.getActiveRequestCount()).isEqualTo(1);
         callback.setAutoAdvance(true);
         callback.blockForDone();
@@ -696,13 +665,7 @@ public class CronetUrlRequestContextTest {
                                      .setHttpMethod("")
                                      .build();
         assertThat(cronetEngine.getActiveRequestCount()).isEqualTo(0);
-        boolean threwException = false;
-        try {
-            request.start();
-        } catch (Exception e) {
-            threwException = true;
-        }
-        assertThat(threwException).isTrue();
+        assertThrows(Exception.class, request::start);
         assertThat(cronetEngine.getActiveRequestCount()).isEqualTo(0);
     }
 
@@ -1087,12 +1050,10 @@ public class CronetUrlRequestContextTest {
 
         File directory = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("cronet", "json", directory);
-        try {
-            cronetEngine.startNetLogToFile(file.getPath(), false);
-            fail("Should throw an exception.");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
-        }
+
+        Exception e = assertThrows(
+                Exception.class, () -> cronetEngine.startNetLogToFile(file.getPath(), false));
+        assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
         assertThat(hasBytesInNetLog(file)).isFalse();
         assertThat(file.delete()).isTrue();
         assertThat(file.exists()).isFalse();
@@ -1115,12 +1076,9 @@ public class CronetUrlRequestContextTest {
         assertThat(netLogDir.exists()).isFalse();
         assertThat(netLogDir.mkdir()).isTrue();
         File logFile = new File(netLogDir, "netlog.json");
-        try {
-            cronetEngine.startNetLogToDisk(netLogDir.getPath(), false, MAX_FILE_SIZE);
-            fail("Should throw an exception.");
-        } catch (Exception e) {
-            assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
-        }
+        Exception e = assertThrows(Exception.class,
+                () -> cronetEngine.startNetLogToDisk(netLogDir.getPath(), false, MAX_FILE_SIZE));
+        assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
         assertThat(logFile.exists()).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir);
         assertThat(netLogDir.exists()).isFalse();
@@ -1390,12 +1348,11 @@ public class CronetUrlRequestContextTest {
     public void testNoConcurrentDiskUsage() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
-        try {
-            createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
-            fail();
-        } catch (IllegalStateException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Disk cache storage path already in use");
-        }
+
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK));
+        assertThat(e).hasMessageThat().isEqualTo("Disk cache storage path already in use");
+
         String url = NativeTestServer.getFileURL("/cacheable.txt");
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, true);
@@ -1657,12 +1614,10 @@ public class CronetUrlRequestContextTest {
         CronetEngine.Builder builder = new CronetEngine.Builder(getContext());
         TestBadLibraryLoader loader = new TestBadLibraryLoader();
         builder.setLibraryLoader(loader);
-        try {
-            builder.build();
-            fail("Native library should not be loaded");
-        } catch (UnsatisfiedLinkError e) {
-            assertThat(loader.wasCalled()).isTrue();
-        }
+
+        assertThrows(
+                "Native library should not be loaded", UnsatisfiedLinkError.class, builder::build);
+        assertThat(loader.wasCalled()).isTrue();
     }
 
     @Test
@@ -1815,18 +1770,13 @@ public class CronetUrlRequestContextTest {
         ExperimentalCronetEngine.Builder builder =
                 mTestRule.getTestFramework().createNewSecondaryBuilder(getContext());
         // Try out of bounds thread priorities.
-        try {
-            builder.setThreadPriority(-21);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
-        }
-        try {
-            builder.setThreadPriority(20);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
-        }
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(-21));
+        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
+
+        e = assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(20));
+        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
+
         // Test that valid thread priority range (-20..19) is working.
         for (int threadPriority = -20; threadPriority < 20; threadPriority++) {
             builder.setThreadPriority(threadPriority);

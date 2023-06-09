@@ -6,7 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetProvider.PROVIDER_NAME_APP_PACKAGED;
 import static org.chromium.net.CronetProvider.PROVIDER_NAME_FALLBACK;
@@ -111,13 +111,8 @@ public class CronetEngineBuilderTest {
     }
 
     private void assertIllegalArgumentException(String s1, String s2) {
-        try {
-            CronetEngine.Builder.compareVersions(s1, s2);
-        } catch (IllegalArgumentException e) {
-            // Do nothing. It is expected.
-            return;
-        }
-        fail("Expected IllegalArgumentException");
+        assertThrows(
+                IllegalArgumentException.class, () -> CronetEngine.Builder.compareVersions(s1, s2));
     }
 
     // TODO(kapishnikov): Replace with a mock when mockito is supported.

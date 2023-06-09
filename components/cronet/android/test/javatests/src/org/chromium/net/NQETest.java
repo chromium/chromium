@@ -6,7 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -98,16 +98,9 @@ public class NQETest {
                 new TestNetworkQualityRttListener(networkQualityExecutor);
         TestNetworkQualityThroughputListener throughputListener =
                 new TestNetworkQualityThroughputListener(networkQualityExecutor);
-        try {
-            cronetEngine.addRttListener(rttListener);
-            fail("Should throw an exception.");
-        } catch (IllegalStateException e) {
-        }
-        try {
-            cronetEngine.addThroughputListener(throughputListener);
-            fail("Should throw an exception.");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, () -> cronetEngine.addRttListener(rttListener));
+        assertThrows(IllegalStateException.class,
+                () -> cronetEngine.addThroughputListener(throughputListener));
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());

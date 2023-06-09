@@ -6,7 +6,7 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -138,12 +138,8 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.setReadTimeout(1000);
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         InputStream in = mUrlConnection.getInputStream();
-        try {
-            in.read();
-            fail();
-        } catch (SocketTimeoutException e) {
-            // Expected
-        }
+        assertThrows(SocketTimeoutException.class, in::read);
+
         mUrlConnection.disconnect();
         mockUrlRequestJobFactory.shutdown();
     }
@@ -249,12 +245,8 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(404);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Not Found");
-        try {
-            mUrlConnection.getInputStream();
-            fail();
-        } catch (FileNotFoundException e) {
-            // Expected.
-        }
+        assertThrows(FileNotFoundException.class, mUrlConnection::getInputStream);
+
         InputStream errorStream = mUrlConnection.getErrorStream();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int byteRead;
@@ -280,14 +272,9 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        try {
-            secondConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            assertThat(e).isInstanceOf(CronetException.class);
-            assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
-                    "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
-        }
+        CronetException e = assertThrows(CronetException.class, secondConnection::getResponseCode);
+        assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
+                "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
         checkExceptionsAreThrown(secondConnection);
         // Starts the server to avoid crashing on shutdown in tearDown().
         assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
@@ -301,14 +288,9 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        try {
-            mUrlConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            assertThat(e).isInstanceOf(CronetException.class);
-            assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
-                    "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
-        }
+        CronetException e = assertThrows(CronetException.class, mUrlConnection::getResponseCode);
+        assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
+                "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
         checkExceptionsAreThrown(mUrlConnection);
     }
 
@@ -320,12 +302,7 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        try {
-            mUrlConnection.getResponseCode();
-            fail();
-        } catch (CronetException e) {
-            // Expected.
-        }
+        assertThrows(CronetException.class, mUrlConnection::getResponseCode);
         checkExceptionsAreThrown(mUrlConnection);
     }
 
@@ -351,18 +328,8 @@ public class CronetHttpURLConnectionTest {
         // Close mUrlConnection before mUrlConnection is made has no effect.
         mUrlConnection.connect();
         mUrlConnection.disconnect();
-        try {
-            mUrlConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Ignored.
-        }
-        try {
-            mUrlConnection.getInputStream();
-            fail();
-        } catch (IOException e) {
-            // Ignored.
-        }
+        assertThrows(IOException.class, mUrlConnection::getResponseCode);
+        assertThrows(IOException.class, mUrlConnection::getInputStream);
     }
 
     @Test
@@ -412,14 +379,11 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoAllHeadersURL());
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.addRequestProperty("header-name", "value1");
-        try {
-            mUrlConnection.addRequestProperty("header-Name", "value2");
-            fail();
-        } catch (UnsupportedOperationException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "Cannot add multiple headers of the same key, header-Name. "
-                    + "crbug.com/432719.");
-        }
+        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
+                () -> mUrlConnection.addRequestProperty("header-Name", "value2"));
+        assertThat(e).hasMessageThat().isEqualTo(
+                "Cannot add multiple headers of the same key, header-Name. "
+                + "crbug.com/432719.");
     }
 
     @Test
@@ -494,18 +458,10 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.addRequestProperty("header-name", "value");
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
-        try {
-            mUrlConnection.setRequestProperty("foo", "bar");
-            fail();
-        } catch (IllegalStateException e) {
-            // Expected.
-        }
-        try {
-            mUrlConnection.addRequestProperty("foo", "bar");
-            fail();
-        } catch (IllegalStateException e) {
-            // Expected.
-        }
+        assertThrows(
+                IllegalStateException.class, () -> mUrlConnection.setRequestProperty("foo", "bar"));
+        assertThrows(
+                IllegalStateException.class, () -> mUrlConnection.addRequestProperty("foo", "bar"));
     }
 
     @Test
@@ -514,21 +470,12 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoAllHeadersURL());
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.addRequestProperty("header-name", "value");
+
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
 
-        try {
-            mUrlConnection.getRequestProperties();
-            fail();
-        } catch (IllegalStateException e) {
-            // Expected.
-        }
-
-        try {
-            assertThat(mUrlConnection.getRequestProperty("header-name")).isEqualTo("value");
-        } catch (IllegalStateException e) {
-            fail();
-        }
+        assertThrows(IllegalStateException.class, mUrlConnection::getRequestProperties);
+        assertThat(mUrlConnection.getRequestProperty("header-name")).isEqualTo("value");
     }
 
     @Test
@@ -538,20 +485,11 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.addRequestProperty("header-name", "value");
         Map<String, List<String>> headers = mUrlConnection.getRequestProperties();
-        try {
-            headers.put("foo", Arrays.asList("v1", "v2"));
-            fail();
-        } catch (UnsupportedOperationException e) {
-            // Expected.
-        }
+        assertThrows(UnsupportedOperationException.class,
+                () -> headers.put("foo", Arrays.asList("v1", "v2")));
 
         List<String> values = headers.get("header-name");
-        try {
-            values.add("v3");
-            fail();
-        } catch (UnsupportedOperationException e) {
-            // Expected.
-        }
+        assertThrows(UnsupportedOperationException.class, () -> values.add("v3"));
     }
 
     @Test
@@ -564,27 +502,12 @@ public class CronetHttpURLConnectionTest {
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         InputStream in = mUrlConnection.getInputStream();
-        try {
-            // Negative byteOffset.
-            int r = in.read(new byte[10], -1, 1);
-            fail();
-        } catch (IndexOutOfBoundsException e) {
-            // Expected.
-        }
-        try {
-            // Negative byteCount.
-            int r = in.read(new byte[10], 1, -1);
-            fail();
-        } catch (IndexOutOfBoundsException e) {
-            // Expected.
-        }
-        try {
-            // Read more than what buffer can hold.
-            int r = in.read(new byte[10], 0, 11);
-            fail();
-        } catch (IndexOutOfBoundsException e) {
-            // Expected.
-        }
+
+        assertThrows(IndexOutOfBoundsException.class, () -> in.read(new byte[10], -1, 1));
+        // Negative byteCount.
+        assertThrows(IndexOutOfBoundsException.class, () -> in.read(new byte[10], 1, -1));
+        // Read more than what buffer can hold.
+        assertThrows(IndexOutOfBoundsException.class, () -> in.read(new byte[10], 0, 11));
     }
 
     @Test
@@ -745,27 +668,17 @@ public class CronetHttpURLConnectionTest {
         // Read one byte and disconnect.
         assertThat(in.read()).isNotEqualTo(1);
         mUrlConnection.disconnect();
-        // Continue reading, and make sure the message loop will not block.
-        try {
-            int b = 0;
-            while (b != -1) {
-                b = in.read();
+        // TODO(crbug/1453579): This might be racy
+        // Continue reading, and make sure the message loop will not block and the connection is
+        // disconnected before EOF, since the response body is big.
+        IOException e = assertThrows(IOException.class, () -> {
+            while (in.read() != -1) {
             }
-            // The response body is big, the mUrlConnection should be disconnected
-            // before EOF can be received.
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
-        }
+        });
+        assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
         // Read once more, and make sure exception is thrown.
-        try {
-            in.read();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
-        }
+        e = assertThrows(IOException.class, in::read);
+        assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
     }
 
     /**
@@ -781,27 +694,17 @@ public class CronetHttpURLConnectionTest {
         // Read one byte and shut down the server.
         assertThat(in.read()).isNotEqualTo(-1);
         NativeTestServer.shutdownNativeTestServer();
-        // Continue reading, and make sure the message loop will not block.
-        try {
-            int b = 0;
-            while (b != -1) {
-                b = in.read();
+        // Continue reading, and make sure the message loop will not block and the server closes
+        // the connection before EOF is received.
+        IOException e = assertThrows(IOException.class, () -> {
+            while (in.read() != -1) {
             }
-            // Server closes the mUrlConnection before EOF can be received.
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
-        }
+        });
+        assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
 
         // Read once more, and make sure exception is thrown.
-        try {
-            in.read();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
-        }
+        e = assertThrows(IOException.class, in::read);
+        assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
         // Spins up server to avoid crash when shutting it down in tearDown().
         assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
     }
@@ -876,12 +779,7 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getFileURL("/redirect.html"));
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.setInstanceFollowRedirects(false);
-        try {
-            mUrlConnection.getInputStream();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-        }
+        assertThrows(IOException.class, mUrlConnection::getInputStream);
         assertThat(mUrlConnection.getErrorStream()).isNull();
     }
 
@@ -906,20 +804,13 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         Map<String, List<String>> responseHeaders = mUrlConnection.getHeaderFields();
         // Make sure response header map is not modifiable.
-        try {
-            responseHeaders.put("foo", Arrays.asList("v1", "v2"));
-            fail();
-        } catch (UnsupportedOperationException e) {
-            // Expected.
-        }
+        assertThrows(UnsupportedOperationException.class,
+                () -> responseHeaders.put("foo", Arrays.asList("v1", "v2")));
+
         List<String> contentType = responseHeaders.get("Content-type");
         // Make sure map value is not modifiable as well.
-        try {
-            contentType.add("v3");
-            fail();
-        } catch (UnsupportedOperationException e) {
-            // Expected.
-        }
+        assertThrows(UnsupportedOperationException.class, () -> contentType.add("v3"));
+
         // Make sure map look up is key insensitive.
         List<String> contentTypeWithOddCase = responseHeaders.get("ContENt-tYpe");
         assertThat(contentTypeWithOddCase).isEqualTo(contentType);
@@ -1017,12 +908,7 @@ public class CronetHttpURLConnectionTest {
             assertThat(TestUtil.getResponseAsString(mUrlConnection))
                     .isEqualTo("this is a cacheable file\n");
         } else {
-            try {
-                mUrlConnection.getResponseCode();
-                fail();
-            } catch (IOException e) {
-                // Expected.
-            }
+            assertThrows(IOException.class, mUrlConnection::getResponseCode);
         }
     }
 
@@ -1083,26 +969,9 @@ public class CronetHttpURLConnectionTest {
     }
 
     private static void checkExceptionsAreThrown(HttpURLConnection urlConnection) throws Exception {
-        try {
-            urlConnection.getInputStream();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-        }
-
-        try {
-            urlConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-        }
-
-        try {
-            urlConnection.getResponseMessage();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-        }
+        assertThrows(IOException.class, urlConnection::getInputStream);
+        assertThrows(IOException.class, urlConnection::getResponseCode);
+        assertThrows(IOException.class, urlConnection::getResponseMessage);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Map<String, List<String>> headers = urlConnection.getHeaderFields();
@@ -1225,13 +1094,8 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         // This should not throw, even though internally it may encounter an exception.
         mUrlConnection.getHeaderField("blah");
-        try {
-            // This should throw an IOException.
-            mUrlConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Expected
-        }
+        // This should throw an IOException.
+        assertThrows(IOException.class, mUrlConnection::getResponseCode);
     }
 
     @Test

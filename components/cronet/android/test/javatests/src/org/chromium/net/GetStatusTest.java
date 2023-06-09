@@ -6,7 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -115,12 +115,9 @@ public class GetStatusTest {
     @Test
     @SmallTest
     public void testInvalidLoadState() throws Exception {
-        try {
-            UrlRequestBase.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE);
-            fail();
-        } catch (IllegalArgumentException e) {
-            // Expected because LoadState.WAITING_FOR_APPCACHE is not mapped.
-        }
+        assertThrows(IllegalArgumentException.class,
+                () -> UrlRequestBase.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE));
+        // Expected throw because LoadState.WAITING_FOR_APPCACHE is not mapped.
 
         thrown.expect(Throwable.class);
         UrlRequestBase.convertLoadState(-1);

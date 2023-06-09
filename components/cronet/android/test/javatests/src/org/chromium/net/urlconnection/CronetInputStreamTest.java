@@ -6,6 +6,8 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertThrows;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -16,7 +18,6 @@ import org.chromium.base.test.util.Batch;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.Callable;
 
 /** Test for {@link CronetInputStream}. */
 @Batch(Batch.UNIT_TESTS)
@@ -42,7 +43,7 @@ public class CronetInputStreamTest {
         IOException expected = new IOException();
         underTest.setResponseDataCompleted(expected);
 
-        IOException actual = assertThrowsIoException(() -> underTest.available());
+        IOException actual = assertThrows(IOException.class, underTest::available);
 
         assertThat(actual).isSameInstanceAs(expected);
     }
@@ -99,20 +100,9 @@ public class CronetInputStreamTest {
         IOException expected = new IOException();
         underTest.setResponseDataCompleted(expected);
 
-        IOException actual = assertThrowsIoException(() -> underTest.read());
+        IOException actual = assertThrows(IOException.class, underTest::read);
 
         assertThat(actual).isSameInstanceAs(expected);
-    }
-
-    private static IOException assertThrowsIoException(Callable<?> callable) throws Exception {
-        try {
-            callable.call();
-        } catch (IOException e) {
-            return e;
-        } catch (Exception e) {
-            throw e;
-        }
-        throw new AssertionError("No exception was thrown!");
     }
 
     private static class MockHttpURLConnection extends CronetHttpURLConnection {

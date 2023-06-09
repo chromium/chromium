@@ -6,7 +6,7 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -73,12 +73,7 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setRequestMethod("POST");
         mConnection.setChunkedStreamingMode(0);
         assertThat(mConnection.getResponseCode()).isEqualTo(200);
-        try {
-            mConnection.getOutputStream();
-            fail();
-        } catch (ProtocolException e) {
-            // Expected.
-        }
+        assertThrows(ProtocolException.class, mConnection::getOutputStream);
     }
 
     @Test
@@ -91,12 +86,7 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setChunkedStreamingMode(0);
         OutputStream out = mConnection.getOutputStream();
         assertThat(mConnection.getResponseCode()).isEqualTo(200);
-        try {
-            out.write(UPLOAD_DATA);
-            fail();
-        } catch (IOException e) {
-            // Expected.
-        }
+        assertThrows(IOException.class, () -> out.write(UPLOAD_DATA));
     }
 
     @Test
@@ -110,15 +100,9 @@ public class CronetChunkedOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         out.write(UPLOAD_DATA);
         NativeTestServer.shutdownNativeTestServer();
-        try {
-            out.write(TestUtil.getLargeData());
-            mConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            NetworkException requestException = (NetworkException) e;
-            assertThat(requestException.getErrorCode())
-                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
-        }
+        NetworkException e =
+                assertThrows(NetworkException.class, () -> out.write(TestUtil.getLargeData()));
+        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
     }
 
     @Test
@@ -132,31 +116,15 @@ public class CronetChunkedOutputStreamTest {
         // Set 1 byte as chunk size so internally Cronet will try upload when
         // 1 byte is filled.
         mConnection.setChunkedStreamingMode(1);
-        try {
-            OutputStream out = mConnection.getOutputStream();
-            out.write(1);
-            out.write(1);
-            // Forces OutputStream implementation to flush. crbug.com/653072
-            out.flush();
-            fail();
-        } catch (IOException e) {
-            NetworkException requestException = (NetworkException) e;
-            assertThat(requestException.getErrorCode())
-                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
-        }
+        OutputStream out = mConnection.getOutputStream();
+        out.write(1);
+        NetworkException e = assertThrows(NetworkException.class, () -> out.write(1));
+        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+
         // Make sure IOException is reported again when trying to read response
         // from the mConnection.
-        try {
-            mConnection.getResponseCode();
-            fail();
-        } catch (IOException e) {
-            // Expected.
-            NetworkException requestException = (NetworkException) e;
-            assertThat(requestException.getErrorCode())
-                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
-        }
-        // Restarting server to run the test for a second time.
-        assertThat(NativeTestServer.startNativeTestServer(getContext())).isTrue();
+        e = assertThrows(NetworkException.class, mConnection::getResponseCode);
+        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
     }
 
     @Test
