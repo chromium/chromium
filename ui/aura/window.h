@@ -558,6 +558,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // Overrides from ui::PropertyHandler
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
+  // viz::HostFrameSinkClient:
+  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
+
  private:
   friend class DefaultWindowOcclusionChangeBuilder;
   friend class HitTestDataProviderAura;
@@ -670,11 +675,6 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   void ConvertEventToTarget(const ui::EventTarget* target,
                             ui::LocatedEvent* event) const override;
   gfx::PointF GetScreenLocationF(const ui::LocatedEvent& event) const override;
-
-  // viz::HostFrameSinkClient:
-  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token,
-                           base::TimeTicks activation_time) override;
 
   // Updates the layer name based on the window's name and id.
   void UpdateLayerName();

@@ -4,12 +4,15 @@
 
 #include "components/exo/pointer.h"
 
+#include <memory>
+
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -38,13 +41,18 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/compositor/compositor_switches.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
@@ -58,6 +66,27 @@ using ::testing::AnyNumber;
 
 namespace exo {
 namespace {
+
+// A host window that ensures a root frame sink commit happens
+// before OnFirstSurfaceActivation updates host window surface id.
+// Used in `SetCursorWithSurfaceChange`.
+class PointerTestHostWindow : public aura::Window {
+ public:
+  PointerTestHostWindow()
+      : aura::Window(nullptr, aura::client::WINDOW_TYPE_CONTROL) {}
+
+  PointerTestHostWindow(const PointerTestHostWindow&) = delete;
+  PointerTestHostWindow& operator=(const PointerTestHostWindow) = delete;
+
+  // Overridden from viz::HostFrameSinkClient:
+  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
+    // Ensure there is a draw on root frame sink and
+    // BeginFrame is handled before OnFirstSurfaceActivation.
+    ui::DrawWaiterForTest::WaitForCommit(layer()->GetCompositor());
+
+    aura::Window::OnFirstSurfaceActivation(surface_info);
+  }
+};
 
 void DispatchGesture(ui::EventType gesture_type, gfx::Point location) {
   ui::GestureEventDetails event_details(gesture_type);
@@ -171,6 +200,10 @@ class PointerTest : public test::ExoTestBase,
   PointerTest& operator=(const PointerTest&) = delete;
 
   void SetUp() override {
+    // The `SetCursorWithSurfaceChange` test requires pixel output.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnablePixelOutputInTests);
+
     test::ExoTestBase::SetUp();
     // Sometimes underlying infra (i.e. X11 / Xvfb) may emit pointer events
     // which can break MockPointerDelegate's expectations, so they should be
@@ -1993,6 +2026,72 @@ TEST_P(PointerTest, DontSendMouseEventDuringMove) {
             gfx::Point(11, 11));
 
   ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+}
+
+TEST_P(PointerTest, SetCursorWithSurfaceChange) {
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
+  MockPointerDelegate delegate;
+  Seat seat;
+  auto pointer = std::make_unique<Pointer>(&delegate, &seat);
+  pointer->SetHostWindowForTesting(std::make_unique<PointerTestHostWindow>(),
+                                   "TestPointerHostWindow");
+  ui::test::EventGenerator* generator = AshTestBase::GetEventGenerator();
+
+  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate, OnPointerFrame()).Times(1);
+  EXPECT_CALL(delegate, OnPointerEnter(surface, gfx::PointF(), 0));
+  generator->MoveMouseTo(surface->window()->GetBoundsInScreen().origin());
+
+  pointer->SetCursorType(ui::mojom::CursorType::kIBeam);
+
+  EXPECT_EQ(nullptr, pointer->root_surface());
+  aura::client::CursorClient* cursor_client = aura::client::GetCursorClient(
+      shell_surface->GetWidget()->GetNativeWindow()->GetRootWindow());
+  EXPECT_EQ(ui::mojom::CursorType::kIBeam, cursor_client->GetCursor().type());
+
+  // Set a red cursor with the big size.
+  constexpr gfx::Size kBigBufferSize(20, 20);
+  auto red_surface = std::make_unique<Surface>();
+  auto red_buffer =
+      std::make_unique<SolidColorBuffer>(SkColors::kRed, kBigBufferSize);
+  red_surface->Damage(gfx::Rect(kBigBufferSize));
+  red_surface->Attach(red_buffer.get());
+  red_surface->Commit();
+  pointer->SetCursor(red_surface.get(), gfx::Point());
+  test::WaitForLastFrameAck(pointer.get());
+
+  // Pointer should have a surface by now.
+  ASSERT_TRUE(pointer->host_window()->layer()->GetSurfaceId());
+
+  // Immediately set a green cursor with the small size.
+  constexpr gfx::Size kSmallBufferSize(10, 10);
+  auto green_surface = std::make_unique<Surface>();
+  auto green_buffer =
+      std::make_unique<SolidColorBuffer>(SkColors::kGreen, kSmallBufferSize);
+  green_surface->Damage(gfx::Rect(kSmallBufferSize));
+  green_surface->Attach(green_buffer.get());
+  green_surface->Commit();
+
+  pointer->SetCursor(green_surface.get(), gfx::Point());
+
+  // Wait for cursor to change.
+  ui::Cursor previous_cursor = cursor_client->GetCursor();
+  while (previous_cursor == cursor_client->GetCursor()) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+    run_loop.Run();
+  }
+
+  // Check that we get the correct cursor bitmap.
+  SkBitmap cursor_bitmap = cursor_client->GetCursor().custom_bitmap();
+  EXPECT_EQ(SK_ColorGREEN, cursor_bitmap.getColor(0, 0));
+
+  EXPECT_CALL(delegate, OnPointerDestroying(pointer.get()));
+  pointer.reset();
 }
 
 }  // namespace

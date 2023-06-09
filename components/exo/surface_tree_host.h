@@ -143,6 +143,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   void SubmitCompositorFrameForTesting(viz::CompositorFrame frame);
 
+  // Set and initialize the host window for testing.
+  void SetHostWindowForTesting(std::unique_ptr<aura::Window> test_host_window,
+                               const std::string& window_name);
+
  protected:
   void UpdateDisplayOnTree();
 
@@ -177,6 +181,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   float GetScaleFactor();
 
  private:
+  void InitHostWindow(const std::string& window_name);
+
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
 
   void HandleContextLost();
