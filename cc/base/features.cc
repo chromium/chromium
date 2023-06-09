@@ -87,7 +87,12 @@ BASE_FEATURE(kNormalPriorityImageDecoding,
 
 BASE_FEATURE(kUseDMSAAForTiles,
              "UseDMSAAForTiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kUpdateBrowserControlsWithoutProxy,
              "UpdateBrowserControlsWithoutProxy",
