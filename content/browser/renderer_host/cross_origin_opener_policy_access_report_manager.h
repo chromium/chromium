@@ -59,10 +59,14 @@ class CrossOriginOpenerPolicyAccessReportManager {
   // Generate a new, previously unused, virtual CoopRelatedGroup ID.
   static int NextVirtualCoopRelatedGroup();
 
-  // Install the CoopAccessMonitors monitoring accesses from |accessing_node|
-  // toward |accessed_node|.
+  // Install the CoopAccessMonitors monitoring accesses from `accessing_node`
+  // toward `accessed_node`. `is_in_same_virtual_coop_related_group` indicates
+  // whether the two nodes would be in the same CoopRelatedGroup. If that's the
+  // case, do not report window.postMessage() and window.closed accesses, which
+  // would be permitted by COOP: restrict-properties.
   void MonitorAccesses(FrameTreeNode* accessing_node,
-                       FrameTreeNode* accessed_node);
+                       FrameTreeNode* accessed_node,
+                       bool is_in_same_virtual_coop_related_group);
 
   std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter_;
 };

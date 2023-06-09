@@ -1271,14 +1271,16 @@ void LocalFrameMojoHandler::ZoomToFindInPageRect(
 void LocalFrameMojoHandler::InstallCoopAccessMonitor(
     const FrameToken& accessed_window,
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-        coop_reporter_params) {
+        coop_reporter_params,
+    bool is_in_same_virtual_coop_related_group) {
   blink::Frame* accessed_frame = Frame::ResolveFrame(accessed_window);
   // The Frame might have been deleted during the cross-process communication.
   if (!accessed_frame)
     return;
 
   accessed_frame->DomWindow()->InstallCoopAccessMonitor(
-      frame_, std::move(coop_reporter_params));
+      frame_, std::move(coop_reporter_params),
+      is_in_same_virtual_coop_related_group);
 }
 
 void LocalFrameMojoHandler::OnPortalActivated(

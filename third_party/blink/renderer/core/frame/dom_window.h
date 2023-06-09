@@ -148,7 +148,8 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   void InstallCoopAccessMonitor(
       LocalFrame* accessing_frame,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-          coop_reporter_params);
+          coop_reporter_params,
+      bool is_in_same_virtual_coop_related_group);
   // Whenever we detect that the enforcement of a report-only COOP policy would
   // have resulted in preventing access to this window, a report is potentially
   // sent when calling this function.
@@ -219,6 +220,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
         reporter;
     bool endpoint_defined;
     WTF::String reported_window_url;
+    bool is_in_same_virtual_coop_related_group = false;
   };
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   WTF::Vector<CoopAccessMonitor> coop_access_monitor_;

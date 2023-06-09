@@ -237,7 +237,8 @@ class LocalFrameMojoHandler
   void InstallCoopAccessMonitor(
       const FrameToken& accessed_window,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-          coop_reporter_params) final;
+          coop_reporter_params,
+      bool is_in_same_virtual_coop_related_group) final;
   void OnPortalActivated(
       const PortalToken& portal_token,
       mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
