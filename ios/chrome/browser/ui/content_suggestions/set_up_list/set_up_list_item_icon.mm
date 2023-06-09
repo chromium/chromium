@@ -35,14 +35,20 @@ constexpr int kAnimationSparkleFrameCount = 36;
 // `colorName`.
 UIImageView* IconForSymbol(NSString* symbol,
                            BOOL compact_layout,
-                           NSString* colorName = nil) {
+                           NSString* color_name = nil) {
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithWeight:UIImageSymbolWeightLight];
+  if (color_name) {
+    // Create a palette which uses whiteColor as the stroke color. whiteColor
+    // is the same in Dark and Light modes.
+    NSArray<UIColor*>* palette =
+        @[ [UIColor whiteColor], [UIColor colorNamed:color_name] ];
+    UIImageSymbolConfiguration* colorConfig =
+        [UIImageSymbolConfiguration configurationWithPaletteColors:palette];
+    config = [config configurationByApplyingConfiguration:colorConfig];
+  }
   UIImage* image = DefaultSymbolWithConfiguration(symbol, config);
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
-  if (colorName) {
-    icon.tintColor = [UIColor colorNamed:colorName];
-  }
   icon.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat icon_width = compact_layout ? kCompactIconSize : kIconSize;
   [NSLayoutConstraint activateConstraints:@[
@@ -54,16 +60,36 @@ UIImageView* IconForSymbol(NSString* symbol,
 
 UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImageView* container = [[UIImageView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  // The custom symbol Chrome icon has the circle around the blue center as
+  // transparent. We can make it appear white by adding a white circle
+  // behind it.
+  UIImageView* circle = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kCircleFillSymbol,
+                                               kSymbolPointSize)];
+  circle.tintColor = [UIColor whiteColor];
+  circle.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:circle];
+  AddSameCenterConstraints(circle, container);
+  // Create the main icon view.
   UIImage* image = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kChromeSymbol, kSymbolPointSize));
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:icon];
+  AddSameConstraints(icon, container);
+  // Set the widths.
   CGFloat icon_width = compact_layout ? kCompactIconSize : kIconSize;
+  // The white background circle must be smaller so that the edges don't show.
+  CGFloat white_background_width = icon_width - 2;
   [NSLayoutConstraint activateConstraints:@[
-    [icon.widthAnchor constraintEqualToConstant:icon_width],
-    [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
+    [container.widthAnchor constraintEqualToConstant:icon_width],
+    [container.heightAnchor constraintEqualToAnchor:container.widthAnchor],
+    [circle.widthAnchor constraintEqualToConstant:white_background_width],
+    [circle.heightAnchor constraintEqualToAnchor:circle.widthAnchor],
   ]];
-  return icon;
+  return container;
 #else
   return IconForSymbol(kDefaultBrowserSymbol, compact_layout);
 #endif
@@ -76,8 +102,8 @@ UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
 UIImageView* IconInCircle(NSString* symbol,
                           BOOL compact_layout,
                           NSString* circle_color_name) {
-  UIImageView* circle_view =
-      IconForSymbol(kCircleFillSymbol, compact_layout, circle_color_name);
+  UIImageView* circle_view = IconForSymbol(kCircleFillSymbol, compact_layout);
+  circle_view.tintColor = [UIColor colorNamed:circle_color_name];
   UIImageConfiguration* compactImageConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kSymbolPointSize
                           weight:UIImageSymbolWeightLight
@@ -89,7 +115,7 @@ UIImageView* IconInCircle(NSString* symbol,
   CHECK(symbol_image);
 
   UIImageView* symbol_view = [[UIImageView alloc] initWithImage:symbol_image];
-  symbol_view.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+  symbol_view.tintColor = [UIColor whiteColor];
   symbol_view.translatesAutoresizingMaskIntoConstraints = NO;
   [circle_view addSubview:symbol_view];
   AddSameCenterConstraints(symbol_view, circle_view);
@@ -198,7 +224,7 @@ UIImageView* IconInCircle(NSString* symbol,
       return DefaultBrowserIcon(_compactLayout);
     case SetUpListItemType::kAutofill:
       return IconInCircle(kEllipsisRectangleSymbol, _compactLayout,
-                          kBlue600Color);
+                          kBlue500Color);
     case SetUpListItemType::kAllSet:
       return IconForSymbol(kCheckmarkSealFillSymbol, _compactLayout,
                            kBlue500Color);
