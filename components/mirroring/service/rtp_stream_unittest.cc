@@ -156,6 +156,7 @@ TEST_F(RtpStreamTest, VideoStreaming) {
   client_.SetVideoRtpStream(&video_stream);
   ExpectVideoFrames(video_stream, 1);
   ExpectTimerRunning(video_stream);
+  client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamEmitsFramesWhenNoUpdates) {
@@ -168,6 +169,7 @@ TEST_F(RtpStreamTest, VideoStreamEmitsFramesWhenNoUpdates) {
   client_.SetVideoRtpStream(&video_stream);
   ExpectVideoFrames(video_stream, 5);
   ExpectTimerRunning(video_stream);
+  client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamDoesNotRefreshWithZeroInterval) {
@@ -180,6 +182,7 @@ TEST_F(RtpStreamTest, VideoStreamDoesNotRefreshWithZeroInterval) {
   client_.SetVideoRtpStream(&video_stream);
   ExpectVideoFrames(video_stream, 1);
   ExpectTimerNotRunning(video_stream);
+  client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamTimerNotRunningWhenNoFramesDelivered) {
@@ -196,6 +199,7 @@ TEST_F(RtpStreamTest, VideoStreamTimerNotRunningWhenNoFramesDelivered) {
   task_environment_.FastForwardBy(base::Milliseconds(5));
 
   ExpectTimerNotRunning(video_stream);
+  client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamTimerRestartsWhenFramesDeliveredAgain) {
@@ -219,6 +223,7 @@ TEST_F(RtpStreamTest, VideoStreamTimerRestartsWhenFramesDeliveredAgain) {
   task_environment_.FastForwardBy(base::Milliseconds(5));
 
   ExpectTimerRunning(video_stream);
+  client_.SetVideoRtpStream(nullptr);
 }
 
 // Test the audio streaming pipeline.
