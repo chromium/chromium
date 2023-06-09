@@ -2013,14 +2013,16 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
 
   explicit TestPrintViewManagerForContentAnalysis(
       content::WebContents* web_contents)
-      : TestPrintViewManager(web_contents) {
-    AddObserver(observer_);
-    PrintViewManager::SetReceiverImplForTesting(this);
+      : TestPrintViewManagerForContentAnalysis(web_contents,
+                                               /*callback=*/base::DoNothing()) {
   }
 
   TestPrintViewManagerForContentAnalysis(content::WebContents* web_contents,
                                          OnDidCreatePrintJobCallback callback)
-      : TestPrintViewManager(web_contents, std::move(callback)) {}
+      : TestPrintViewManager(web_contents, std::move(callback)) {
+    AddObserver(observer_);
+    PrintViewManager::SetReceiverImplForTesting(this);
+  }
 
   ~TestPrintViewManagerForContentAnalysis() override {
     PrintViewManager::SetReceiverImplForTesting(nullptr);
@@ -2111,7 +2113,8 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
   void CompleteScriptedPrint(content::RenderFrameHost* rfh,
                              mojom::ScriptedPrintParamsPtr params,
                              ScriptedPrintCallback callback) override {
-    std::move(callback).Run(nullptr);
+    TestPrintViewManager::CompleteScriptedPrint(rfh, std::move(params),
+                                                std::move(callback));
 
     for (auto& observer : GetObservers()) {
       observer.OnScriptedPrint();
@@ -2248,10 +2251,10 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
   void RunScriptedPrintTest(const std::string& script) {
     AddPrinter("printer_name");
 
-    if (UseService()) {
-      // Test does not do extra cleanup beyond the check for analysis
-      // permission.
-      SkipPersistentContextsCheckOnShutdown();
+    if (UseService() && content_analysis_allows_print()) {
+      // TODO(crbug.com/1450620):  Remove skipping of test once system print
+      // no longer crashes with OOPPD printing after content analysis.
+      GTEST_SKIP();
     }
 
     ASSERT_TRUE(embedded_test_server()->Started());
@@ -2262,17 +2265,66 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
     auto* print_view_manager =
-        TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-            web_contents);
+        SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+
+    if (content_analysis_allows_print()) {
+      if (UseService()) {
+        // TODO(crbug.com/1450620):  Update expectations once skipping of test
+        // is removed, when system print no longer crashes with OOPPD printing
+        // after content analysis.
+      } else {
+        // The expected events for this are:
+        // 1.  The print job used for scanning is destroyed.
+        // 2.  Use default settings.
+        // 3.  Ask the user for settings.
+        // 4.  Wait until all processing for DidPrintDocument is known to have
+        //     completed, to ensure printing finished cleanly before completing
+        //     the test.
+        // 5.  Wait for the actual printing job to be destroyed, to ensure
+        //     printing finished cleanly before completing the test.
+        SetNumExpectedMessages(/*num=*/5);
+      }
+    } else {
+#if BUILDFLAG(IS_WIN)
+      // The expected events for this are:
+      // 1.  Use default settings.
+      // 2.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/2);
+#else
+      if (UseService()) {
+        // The expected events for this are:
+        // 1.  The print job used for scanning is destroyed.
+        SetNumExpectedMessages(/*num=*/1);
+      } else {
+        // The expected events for this are:
+        // 1.  Use default settings.
+        // 2.  The print job used for scanning is destroyed.
+        SetNumExpectedMessages(/*num=*/2);
+      }
+#endif
+
+      if (UseService()) {
+        // When printing is denied, the printing context in the Print Backend
+        // service leaks with no way to delete it.  It will persist there until
+        // there is a gap with no printing activity from the user, at which
+        // point the Print Backend service is shutdown.
+        SkipPersistentContextsCheckOnShutdown();
+      }
+    }
+
     content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(), script);
+    WaitUntilCallbackReceived();
 
     print_view_manager->WaitOnScanning();
     ASSERT_EQ(print_view_manager->scripted_print_called(),
               content_analysis_allows_print());
 
-    // Validate that `NewDocument` was never call as that can needlessly
-    // prompt the user.
-    ASSERT_EQ(new_document_called_count(), 0);
+    // Validate that `NewDocument` is only called for actual printing, not as
+    // part of content analysis, since that can needlessly prompt the user.
+    // When printing OOP, an extra call for a new document will occur since it
+    // gets called in both the browser process and in the Print Backend service.
+    EXPECT_EQ(new_document_called_count(),
+              content_analysis_allows_print() ? (UseService() ? 2 : 1) : 0);
   }
 };
 
@@ -2281,8 +2333,15 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
   AddPrinter("printer_name");
 
   if (UseService()) {
-    // Test does not do extra cleanup beyond the check for analysis permission.
-    SkipPersistentContextsCheckOnShutdown();
+    if (content_analysis_allows_print()) {
+      // TODO(crbug.com/1450620):  Remove skipping of test once system print no
+      // longer crashes with OOPPD printing after content analysis.
+      GTEST_SKIP();
+    } else {
+      // Test does not do extra cleanup beyond the check for analysis
+      // permission.
+      SkipPersistentContextsCheckOnShutdown();
+    }
   }
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -2293,8 +2352,42 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto* print_view_manager =
-      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-          web_contents);
+      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+
+  if (content_analysis_allows_print()) {
+    if (UseService()) {
+      // TODO(crbug.com/1450620):  Update expectations once skipping of test
+      // is removed, when system print no longer crashes with OOPPD printing
+      // after content analysis.
+    } else {
+      // The expected events for this are:
+      // 1.  The print job used for scanning is destroyed.
+      // 2.  Get the default settings.
+      // 3.  Ask the user for settings.
+      // 4.  The print compositor will complete generating the document.
+      // 5.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/5);
+    }
+  } else {
+#if BUILDFLAG(IS_WIN)
+    // The expected events for this are:
+    // 1.  Get the default settings.
+    // 2.  The print job used for scanning is destroyed.
+    SetNumExpectedMessages(/*num=*/2);
+#else
+    if (UseService()) {
+      // The expected events for this are:
+      // 1.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/1);
+    } else {
+      // The expected events for this are:
+      // 1.  Get the default settings.
+      // 2.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/2);
+    }
+#endif
+  }
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2304,17 +2397,21 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
              /*has_selection=*/false);
 
   print_view_manager->WaitOnScanning();
+  WaitUntilCallbackReceived();
 
   // PrintNow uses the same code path as scripted prints to scan printed pages,
   // so print_now_called() should always happen and scripted_print_called()
   // should be called with the same result that is expected from scanning.
-  ASSERT_TRUE(print_view_manager->print_now_called());
-  ASSERT_EQ(print_view_manager->scripted_print_called(),
+  EXPECT_TRUE(print_view_manager->print_now_called());
+  EXPECT_EQ(print_view_manager->scripted_print_called(),
             content_analysis_allows_print());
 
-  // Validate that `NewDocument` was never call as that can needlessly
-  // prompt the user.
-  ASSERT_EQ(new_document_called_count(), 0);
+  // Validate that `NewDocument` is only called for actual printing, not as
+  // part of content analysis, since that can needlessly prompt the user.
+  // When printing OOP, an extra call for a new document will occur since it
+  // gets called in both the browser process and in the Print Backend service.
+  EXPECT_EQ(new_document_called_count(),
+            content_analysis_allows_print() ? (UseService() ? 2 : 1) : 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
@@ -2381,10 +2478,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
 #else
       // TODO(http://b/285243428):  Update expectation once a second analysis
       // scan isn't done for system print from Print Preview.
-      // The expected events for this are:
-      // 1.  The print job used for scanning before Print Preview is destroyed.
-      // 2.  The print job used for scanning before system print is destroyed.
-      SetNumExpectedMessages(/*num=*/2);
+      // TODO(crbug.com/1450620):  Remove skipping of test once system print no
+      // longer crashes with OOPPD printing after content analysis.
+      GTEST_SKIP();
 #endif
     } else {
 #if BUILDFLAG(IS_WIN)
@@ -2397,10 +2493,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
       // TODO(http://b/285243428):  Update expectation once a second analysis
       // scan isn't done for system print from Print Preview.
       // The expected events for this are:
-      // 1.  The print job used for scanning before Print Preview is destroyed.
-      // 2.  Get default settings for actual printing job.
-      // 3.  The print job used for scanning before system print is destroyed.
-      SetNumExpectedMessages(/*num=*/3);
+      // 1.  The print job used for scanning is destroyed.
+      // 2.  The print job used for a second scan is destroyed.
+      // 3.  Use default settings.
+      // 4.  Ask the user for settings.
+      // 5.  Wait until all processing for DidPrintDocument is known to have
+      //     completed, to ensure printing finished cleanly before completing
+      //     the test.
+      // 6.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/6);
 #endif
     }
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
@@ -2419,35 +2521,33 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
   ASSERT_EQ(print_view_manager->preview_allowed(),
             content_analysis_allows_print());
 
+#if BUILDFLAG(IS_WIN)
   // One print job is always used to do scanning, and if printing is allowed
   // then a second print job will be used for actual printing.
   EXPECT_EQ(print_job_destruction_count(),
             content_analysis_allows_print() ? 2 : 1);
 
-#if BUILDFLAG(IS_WIN)
+  // There should be only one scan made, even though there could be up to two
+  // printing dialogs presented to the user.
+  EXPECT_EQ(print_view_manager->got_snapshot_count(), 1);
+#else
+  // TODO(http://b/285243428):  Update expectations to match Windows behavior
+  // once a second analysis scan isn't done for system print from Print Preview.
+
+  // A separate print job is always used for each scan, and if printing is
+  // allowed then another print job will be used for actual printing.
+  EXPECT_EQ(print_job_destruction_count(),
+            content_analysis_allows_print() ? 3 : 1);
+  EXPECT_EQ(print_view_manager->got_snapshot_count(),
+            content_analysis_allows_print() ? 2 : 1);
+#endif
+
   // Validate that `NewDocument` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
   // When printing OOP, an extra call for a new document will occur since it
   // gets called in both the browser process and in the Print Backend service.
   EXPECT_EQ(new_document_called_count(),
             content_analysis_allows_print() ? (UseService() ? 2 : 1) : 0);
-
-  // There should be only one scan made, even though there could be up to two
-  // printing dialogs presented to the user.
-  EXPECT_EQ(print_view_manager->got_snapshot_count(), 1);
-#else
-  // Linux and macOS use `ScriptedPrint()`, which is a different call path
-  // than Windows for system print from the Print Preview.  Since
-  // `TestPrintViewManagerForContentAnalysis` overrides
-  // `CompleteScriptedPrint()` to drop the system print job, there should not
-  // be any actual calls for a new document to be generated.
-  EXPECT_EQ(new_document_called_count(), 0);
-
-  // TODO(http://b/285243428):  Update expectation once a second analysis scan
-  // isn't done for system print from Print Preview.
-  EXPECT_EQ(print_view_manager->got_snapshot_count(),
-            content_analysis_allows_print() ? 2 : 1);
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
