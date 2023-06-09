@@ -769,7 +769,8 @@ public abstract class AsyncInitializationActivity
                     display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
 
             if (BuildInfo.getInstance().isAutomotive) {
-                smallestScreenWidth = (int) (smallestScreenWidth / UI_SCALING_FACTOR_FOR_AUTO);
+                smallestScreenWidth =
+                        (int) (smallestScreenWidth / DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO);
             }
             return smallestScreenWidth;
         }

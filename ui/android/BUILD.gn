@@ -532,6 +532,7 @@ robolectric_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/base/LocalizationUtilsTest.java",
     "junit/src/org/chromium/ui/base/MimeTypeUtilsTest.java",
     "junit/src/org/chromium/ui/base/SelectFileDialogTest.java",
+    "junit/src/org/chromium/ui/display/DisplayUtilTest.java",
     "junit/src/org/chromium/ui/dragdrop/AnimatedImageDragShadowBuilderUnitTest.java",
     "junit/src/org/chromium/ui/dragdrop/DragAndDropDelegateImplUnitTest.java",
     "junit/src/org/chromium/ui/dragdrop/DragEventDispatchHelperUnitTest.java",
