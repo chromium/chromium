@@ -2554,7 +2554,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             unsupportedField: 'In ad component',
             }]
         },
-        /*joinDurationSec=*/1);
+        /*joinDurationSec=*/1000);
   } catch (e) {
     return e.toString();
   }
@@ -2567,6 +2567,100 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   });
   auto storage_groups = GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(storage_groups.size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupMissingLifetimeMs) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "Missing required field lifetimeMs",
+      EvalJs(shell(),
+             JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+        });
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                       test_origin.Serialize().c_str(), url.spec().c_str())));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinInterestGroupLifetimeMs) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          lifetimeMs: 1000000
+        });
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                              test_origin.Serialize().c_str(),
+                                              url.spec().c_str())));
+  WaitForAccessObserved({
+      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
+  });
+  auto storage_groups = GetInterestGroupsForOwner(test_origin);
+  ASSERT_EQ(storage_groups.size(), 1u);
+  // Unfortunately, we can't use MOCK_TIME in browser tests, and blink code
+  // doesn't run in unit tests, so we can't verify the expiry time, since
+  // base::Time clocks can skew backwards.
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupLifetimeMsAndDeprecatedDuration) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          lifetimeMs: 1000000
+        },
+        /*joinDurationSec=*/1000);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                              test_origin.Serialize().c_str(),
+                                              url.spec().c_str())));
+  WaitForAccessObserved({
+      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
+  });
+  auto storage_groups = GetInterestGroupsForOwner(test_origin);
+  ASSERT_EQ(storage_groups.size(), 1u);
+  // Unfortunately, we can't use MOCK_TIME in browser tests, and blink code
+  // doesn't run in unit tests, so we can't verify the expiry time, since
+  // base::Time clocks can skew backwards.
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

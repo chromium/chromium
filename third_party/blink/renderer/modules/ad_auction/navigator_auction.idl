@@ -17,7 +17,7 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   SecureContext
 ] partial interface Navigator {
   [CallWith=ScriptState, Measure, RaisesException]
-  Promise<void> joinAdInterestGroup(AuctionAdInterestGroup group, double durationSeconds);
+  Promise<void> joinAdInterestGroup(AuctionAdInterestGroup group, optional double durationSeconds);
 
   [CallWith=ScriptState, Measure, RaisesException]
   Promise<void> leaveAdInterestGroup(optional AuctionAdInterestGroupKey group);
