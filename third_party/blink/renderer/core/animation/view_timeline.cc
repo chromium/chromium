@@ -323,8 +323,9 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
 
   state->scroll_offsets =
       absl::make_optional<ScrollOffsets>(start_offset, end_offset);
-  state->view_offsets = absl::make_optional<ScrollOffsets>(
-      target_offset_min, target_offset_min + target_size);
+  // TODO(crbug.com/1448294): This will change to handle entry/exit stickiness.
+  state->view_offsets =
+      absl::make_optional<ViewOffsets>(target_size, target_size);
 }
 
 absl::optional<LayoutSize> ViewTimeline::SubjectSize() const {

@@ -23,6 +23,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
  public:
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
   using ScrollAxis = V8ScrollAxis::Enum;
+  using ViewOffsets = TimelineRange::ViewOffsets;
 
   explicit ScrollSnapshotTimeline(Document*);
 
@@ -61,7 +62,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   // Return the latest resolved scroll/view offsets. This will be empty when
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
-  absl::optional<ScrollOffsets> GetResolvedViewOffsets() const;
+  absl::optional<ViewOffsets> GetResolvedViewOffsets() const;
 
   float GetResolvedZoom() const { return timeline_state_snapshotted_.zoom; }
 
@@ -106,7 +107,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
     absl::optional<base::TimeDelta> current_time;
     absl::optional<ScrollOffsets> scroll_offsets;
     // The view offsets will be null unless using a view timeline.
-    absl::optional<ScrollOffsets> view_offsets;
+    absl::optional<ViewOffsets> view_offsets;
     // Zoom factor applied to the scroll offsets.
     float zoom = 1.0f;
     // The scroller driving the timeline.

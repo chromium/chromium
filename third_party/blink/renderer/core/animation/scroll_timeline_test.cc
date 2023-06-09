@@ -997,7 +997,8 @@ TEST_F(ScrollTimelineTest, ScrollTimelineGetTimelineRange) {
   EXPECT_TRUE(timeline->GetTimelineRange().IsEmpty());
 
   timeline->UpdateSnapshotForTesting();
-  EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(0, 300)),
+  EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(0, 300),
+                          TimelineRange::ViewOffsets(0, 0)),
             timeline->GetTimelineRange());
 }
 
@@ -1033,7 +1034,7 @@ TEST_F(ScrollTimelineTest, ViewTimelineGetTimelineRange) {
 
   timeline->UpdateSnapshotForTesting();
   EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(100, 300),
-                          /* subject_size */ 100),
+                          TimelineRange::ViewOffsets(100, 100)),
             timeline->GetTimelineRange());
 }
 

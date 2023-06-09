@@ -29,8 +29,8 @@ absl::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedScrollOffsets()
   return timeline_state_snapshotted_.scroll_offsets;
 }
 
-absl::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedViewOffsets()
-    const {
+absl::optional<ScrollSnapshotTimeline::ViewOffsets>
+ScrollSnapshotTimeline::GetResolvedViewOffsets() const {
   return timeline_state_snapshotted_.view_offsets;
 }
 
@@ -119,13 +119,11 @@ TimelineRange ScrollSnapshotTimeline::GetTimelineRange() const {
     return TimelineRange();
   }
 
-  absl::optional<ScrollOffsets> view_offsets = GetResolvedViewOffsets();
-  // The subject_size is always zero for ScrollTimelines.
-  double subject_size = view_offsets.has_value()
-                            ? (view_offsets->end - view_offsets->start)
-                            : 0.0f;
+  absl::optional<ViewOffsets> view_offsets = GetResolvedViewOffsets();
 
-  return TimelineRange(scroll_offsets.value(), subject_size);
+  return TimelineRange(scroll_offsets.value(), view_offsets.has_value()
+                                                   ? view_offsets.value()
+                                                   : ViewOffsets());
 }
 
 void ScrollSnapshotTimeline::ServiceAnimations(TimingUpdateReason reason) {
