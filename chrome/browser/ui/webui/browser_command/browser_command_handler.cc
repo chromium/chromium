@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
@@ -107,6 +108,10 @@ void BrowserCommandHandler::CanExecuteCommand(
                     BrowserSupportsCustomizeChromeSidePanel() &&
                     DefaultSearchProviderIsGoogle();
       break;
+    case Command::kStartPasswordManagerTutorial:
+      can_execute =
+          !!GetTutorialService() && BrowserSupportsNewPasswordManager();
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -175,6 +180,9 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kOpenNTPAndStartCustomizeChromeTutorial:
       OpenNTPAndStartCustomizeChromeTutorial(disposition);
+      break;
+    case Command::kStartPasswordManagerTutorial:
+      StartPasswordManagerTutorial();
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
@@ -271,6 +279,36 @@ void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial(
       tutorial_id, tutorial_service->IsRunningTutorial());
 
   NavigateToURL(GURL(chrome::kChromeUINewTabPageURL), disposition);
+}
+
+bool BrowserCommandHandler::BrowserSupportsNewPasswordManager() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordManagerRedesign);
+}
+
+void BrowserCommandHandler::StartPasswordManagerTutorial() {
+  user_education::TutorialService* tutorial_service = GetTutorialService();
+
+  // Should never happen since we return false in CanExecuteCommand(), but
+  // avoid a browser crash anyway.
+  if (!tutorial_service) {
+    return;
+  }
+
+  const ui::ElementContext context = GetUiElementContext();
+  if (!context) {
+    return;
+  }
+
+  if (!BrowserSupportsNewPasswordManager()) {
+    return;
+  }
+
+  user_education::TutorialIdentifier tutorial_id = kPasswordManagerTutorialId;
+
+  tutorial_service->StartTutorial(tutorial_id, context);
+  tutorial_service->LogStartedFromWhatsNewPage(
+      tutorial_id, tutorial_service->IsRunningTutorial());
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

@@ -25,6 +25,7 @@ enum Command {
   kNoOpCommand = 7,
   kOpenPerformanceSettings = 8,
   kOpenNTPAndStartCustomizeChromeTutorial = 9,
+  kStartPasswordManagerTutorial = 10,
 };
 
 // Click information needed to determine user's desired window disposition using
