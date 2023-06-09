@@ -27,54 +27,53 @@ using HoverStateChangeCallback =
 using AnchoredNudgeClickCallback = base::RepeatingCallback<void()>;
 using AnchoredNudgeDismissCallback = base::RepeatingCallback<void()>;
 
-// Describes the contents of an AnchoredNudge, which is a notifier that anchors
-// to an `anchor_view` and informs users about something that might enhance
-// their experience immediately. See the "Educational Nudges" section in
-// go/notifier-framework for example usages.
+// Describes the contents of a System Nudge (AnchoredNudge), which is a notifier
+// that may anchor to an `anchor_view` and informs users about something that
+// might enhance their experience immediately. See the "Educational Nudges"
+// section in go/notifier-framework for example usages.
+// TODO(b/285988235): `AnchoredNudge` will replace the existing `SystemNudge`
+// and take over its name.
 struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   AnchoredNudgeData(const std::string& id,
                     AnchoredNudgeCatalogName catalog_name,
-                    const std::u16string& text,
+                    const std::u16string& body_text,
                     views::View* anchor_view);
   AnchoredNudgeData(AnchoredNudgeData&& other);
   AnchoredNudgeData& operator=(AnchoredNudgeData&& other);
   ~AnchoredNudgeData();
 
+  // Required system nudge elements.
   std::string id;
   AnchoredNudgeCatalogName catalog_name;
-  std::u16string text;
+  std::u16string body_text;
+
+  // Optional system nudge view elements. If not empty, a leading image or nudge
+  // title will be created.
+  ui::ImageModel image_model;
+  std::u16string title_text;
+
+  // Optional system nudge buttons. If the text is not empty, the respective
+  // button will be created. Pressing the button will execute its callback, if
+  // any, followed by the nudge being closed. `second_button_text` should only
+  // be set if `dismiss_text` has also been set.
+  // TODO(b/285023559): Add a `ChainedCancelCallback` class instead of a
+  // `RepeatingClosure` so we don't have to manually modify the provided
+  // callbacks in the manager.
+  std::u16string dismiss_text;
+  base::RepeatingClosure dismiss_callback;
+
+  std::u16string second_button_text;
+  base::RepeatingClosure second_button_callback;
 
   // Unowned. Must outlive the `AnchoredNudge`.
+  // TODO(b/285988197): Make setting an `anchor_view` optional. Nudges without
+  // an anchor will show on the leading bottom of the screen.
   raw_ptr<views::View> anchor_view;
-
-  HoverStateChangeCallback hover_state_change_callback = base::DoNothing();
-  AnchoredNudgeClickCallback nudge_click_callback = base::DoNothing();
-  AnchoredNudgeDismissCallback nudge_dimiss_callback = base::DoNothing();
 
   // Used to set bubble placement in relation to the anchor view.
   // A value of `BOTTOM_CENTER` means that the nudge will be anchored from its
   // bottom center to the anchor view.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;
-
-  // If `dismiss_text` is not empty, a dismiss button will be created.
-  // Pressing the button will execute `dismiss_callback`, if any, followed by
-  // the nudge being closed.
-  std::u16string dismiss_text;
-  // TODO(b/285023559): Add and use a `ChainedCancelCallback` class instead of a
-  // `RepeatingClosure` so we don't have to manually modify the provided
-  // callbacks in the manager.
-  base::RepeatingClosure dismiss_callback;
-
-  // If `second_button_text` is not empty, a second button will be created.
-  // Pressing the button will execute `second_button_callback`, if any, followed
-  // by the nudge being closed.
-  // TODO(b/283159669): Will use `SystemToastStyle` with a second button
-  // temporarily for M116, migrate to `DialogStyle` once implemented.
-  std::u16string second_button_text;
-  // TODO(b/285023559): Add and use a `ChainedCancelCallback` class instead of a
-  // `RepeatingClosure` so we don't have to manually modify the provided
-  // callbacks in the manager.
-  base::RepeatingClosure second_button_callback;
 
   // To disable dismiss via timer, set `has_infinite_duration_` to true.
   // A nudge with infinite duration will be displayed until the dismiss button
@@ -82,9 +81,10 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // anchor view is deleted, user locks session, etc.)
   bool has_infinite_duration = false;
 
-  // If `leading_icon` has a value other than `kNoneIcon` it will place a
-  // leading icon next to the nudge text.
-  const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon;
+  // Nudge action callbacks.
+  HoverStateChangeCallback hover_state_change_callback;
+  AnchoredNudgeClickCallback nudge_click_callback;
+  AnchoredNudgeDismissCallback nudge_dimiss_callback;
 };
 
 }  // namespace ash

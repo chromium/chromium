@@ -1583,6 +1583,11 @@ BASE_FEATURE(kNewLockScreenReauthLayout,
              "NewLockScreenReauthLayout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the use of the new System Nudges. (go/cros-educationalnudge-spec)
+BASE_FEATURE(kSystemNudgeV2,
+             "SystemNudgeV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, "NightLight", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3193,6 +3198,12 @@ bool IsOAuthIppEnabled() {
 
 bool IsNewLockScreenReauthLayoutEnabled() {
   return base::FeatureList::IsEnabled(kNewLockScreenReauthLayout);
+}
+
+bool IsSystemNudgeV2Enabled() {
+  return base::FeatureList::IsEnabled(kSystemNudgeV2) ||
+         IsVideoConferenceEnabled();  // System Nudge V2 is launching
+                                      // together with the VC project.
 }
 
 bool IsNotificationExpansionAnimationEnabled() {

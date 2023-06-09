@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/style/system_toast_style.h"
 #include "base/functional/bind.h"
@@ -22,8 +23,6 @@
 
 namespace ash {
 
-///////////////////////////////////////////////////////////////////////////////
-//  AnchoredNudge
 AnchoredNudge::AnchoredNudge(const AnchoredNudgeData& nudge_data)
     : views::BubbleDialogDelegateView(nudge_data.anchor_view,
                                       nudge_data.arrow,
@@ -31,15 +30,18 @@ AnchoredNudge::AnchoredNudge(const AnchoredNudgeData& nudge_data)
       id_(nudge_data.id),
       nudge_click_callback_(std::move(nudge_data.nudge_click_callback)),
       nudge_dismiss_callback_(std::move(nudge_data.nudge_dimiss_callback)) {
+  DCHECK(features::IsSystemNudgeV2Enabled());
+
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);
   SetLayoutManager(std::make_unique<views::FlexLayout>());
+
+  // TODO(b/285987916): Replace `SystemToastStyle` with `SystemNudgeView`.
   toast_contents_view_ = AddChildView(std::make_unique<SystemToastStyle>(
-      nudge_data.dismiss_callback, nudge_data.text, nudge_data.dismiss_text));
-  // TODO(b/283159669): Will use `SystemToastStyle` with a second button
-  // temporarily for M116, migrate to `DialogStyle` once implemented.
+      nudge_data.dismiss_callback, nudge_data.body_text,
+      nudge_data.dismiss_text));
   if (nudge_data.second_button_text != std::u16string()) {
     toast_contents_view_->AddSecondButton(nudge_data.second_button_callback,
                                           nudge_data.second_button_text);

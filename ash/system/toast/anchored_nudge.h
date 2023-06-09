@@ -17,15 +17,17 @@ class Widget;
 }  // namespace views
 
 namespace ui {
-class MouseEvent;
 class GestureEvent;
+class MouseEvent;
 }  // namespace ui
 
 namespace ash {
 
 class SystemToastStyle;
 
-// Contents view class for the anchored nudge widget.
+// Creates and manages the widget and contents view for an anchored nudge.
+// TODO(b/285988235): `AnchoredNudge` will replace the existing `SystemNudge`
+// and take over its name.
 class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AnchoredNudge);
@@ -35,13 +37,10 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;
 
-  // Gets the text set by the label in `toast_contents_view_`.
+  // Getters for elements set in `toast_contents_view_`.
+  // TODO(b/285987916): Replace `SystemToastStyle` with `SystemNudgeView`.
   const std::u16string& GetText();
-
-  // Gets the dismiss button shown in `toast_contents_view_`.
   views::LabelButton* GetDismissButton();
-
-  // Gets the second button shown in `toast_contents_view_`.
   views::LabelButton* GetSecondButton();
 
   // views::WidgetDelegate:
@@ -64,6 +63,7 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   AnchoredNudgeDismissCallback nudge_dismiss_callback_;
 
   // Owned by the views hierarchy. Contents view of the anchored nudge.
+  // TODO(b/285987916): Replace `SystemToastStyle` with `SystemNudgeView`.
   raw_ptr<SystemToastStyle> toast_contents_view_ = nullptr;
 };
 

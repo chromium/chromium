@@ -4,6 +4,7 @@
 
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -13,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -22,11 +24,9 @@ namespace ash {
 class AnchoredNudgeManagerImplTest : public AshTestBase {
  public:
   AnchoredNudgeManagerImplTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  AnchoredNudgeManagerImplTest(const AnchoredNudgeManagerImplTest&) = delete;
-  AnchoredNudgeManagerImplTest& operator=(const AnchoredNudgeManagerImplTest&) =
-      delete;
-  ~AnchoredNudgeManagerImplTest() override = default;
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeature(features::kSystemNudgeV2);
+  }
 
   AnchoredNudgeManagerImpl* anchored_nudge_manager() {
     return Shell::Get()->anchored_nudge_manager();
@@ -50,6 +50,9 @@ class AnchoredNudgeManagerImplTest : public AshTestBase {
   std::map<std::string, raw_ptr<AnchoredNudge>> GetShownNudges() {
     return anchored_nudge_manager()->shown_nudges_;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a nudge can be shown and its contents are properly sent.

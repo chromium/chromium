@@ -16,11 +16,11 @@ namespace ash {
 
 AnchoredNudgeData::AnchoredNudgeData(const std::string& id,
                                      AnchoredNudgeCatalogName catalog_name,
-                                     const std::u16string& text,
+                                     const std::u16string& body_text,
                                      views::View* anchor_view)
     : id(std::move(id)),
       catalog_name(catalog_name),
-      text(text),
+      body_text(body_text),
       anchor_view(anchor_view) {}
 
 AnchoredNudgeData::AnchoredNudgeData(AnchoredNudgeData&& other) = default;
