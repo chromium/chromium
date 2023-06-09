@@ -449,10 +449,11 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
   }
 
   request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
-  const AtomicString& target = GetEffectiveTarget();
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(navigation_policy);
   frame_request.SetClientRedirectReason(ClientNavigationReason::kAnchorClick);
+  const AtomicString& target =
+      frame_request.CleanNavigationTarget(GetEffectiveTarget());
   if (HasRel(kRelationNoReferrer)) {
     frame_request.SetNoReferrer();
     frame_request.SetNoOpener();

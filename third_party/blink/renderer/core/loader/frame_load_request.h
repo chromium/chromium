@@ -216,6 +216,10 @@ struct CORE_EXPORT FrameLoadRequest {
     return GetWindowFeatures().is_fullscreen && GetWindowFeatures().is_popup;
   }
 
+  // This function is meant to be used in HTML/SVG attributes where dangling
+  // markup injection occurs. See https://github.com/whatwg/html/pull/9309.
+  const AtomicString& CleanNavigationTarget(const AtomicString& target) const;
+
  private:
   LocalDOMWindow* origin_window_;
   ResourceRequest resource_request_;
