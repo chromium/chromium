@@ -5,8 +5,8 @@
 create {
   source {
     url {
-      download_url: "https://dl.google.com/android/repository/android-ndk-r23c-linux.zip"
-      version: "r23c"
+      download_url: "https://dl.google.com/android/repository/android-ndk-r25c-linux.zip"
+      version: "r25c"
       extension: ".zip"
     }
     unpack_archive: true
