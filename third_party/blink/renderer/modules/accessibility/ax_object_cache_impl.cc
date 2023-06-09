@@ -2142,6 +2142,13 @@ void AXObjectCacheImpl::DocumentTitleChanged() {
 void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
   DCHECK(node);
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+
+  // It's not necessary to process text nodes here,because we'll also get a call
+  // for the attachment of the parent element.
+  if (IsA<Text>(node)) {
+    return;
+  }
+
   Document* document = DynamicTo<Document>(node);
   if (document) {
     // A popup is being shown.
@@ -2163,20 +2170,13 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   if (!node || !node->isConnected())
     return;
 
-  // Ignore attached nodes that are not elements, including text nodes and
-  // #shadow-root nodes. This matches previous implementations that worked,
-  // but it is not clear if that could potentially lead to missing content.
   Element* element = DynamicTo<Element>(node);
-  if (!element)
-    return;
-
-  Document* document = &node->GetDocument();
-  if (!document)
-    return;
 
 #if DCHECK_IS_ON()
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
-      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
+  DCHECK(node->GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean)
+      << "Unclean document at lifecycle "
+      << node->GetDocument().Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
   // Process any relation attributes that can affect ax objects already created.
@@ -2193,7 +2193,10 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   // descendants of the attached node, thus ChildrenChangedWithCleanLayout()
   // must be called. It handles ignored logic, ensuring that the first ancestor
   // that should have this as a child will be updated.
-  ChildrenChangedWithCleanLayout(LayoutTreeBuilderTraversal::Parent(*node));
+  Node* parent_node = IsA<ShadowRoot>(node)
+                          ? &To<ShadowRoot>(node)->host()
+                          : LayoutTreeBuilderTraversal::Parent(*node);
+  ChildrenChangedWithCleanLayout(parent_node);
 
   // If an image map area is added, we need to update children on the image.
   if (IsA<HTMLAreaElement>(node))
