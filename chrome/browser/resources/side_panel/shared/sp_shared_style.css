@@ -90,7 +90,7 @@
 .sp-icon-buttons-row {
   align-items: center;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   grid-auto-columns: 16px;
   grid-auto-flow: column;
   justify-items: center;
