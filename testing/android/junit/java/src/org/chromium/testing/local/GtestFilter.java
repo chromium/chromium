@@ -79,14 +79,18 @@ class GtestFilter extends Filter {
         if (description.getMethodName() == null) return true;
 
         String gtestName = description.getClassName() + "." + description.getMethodName();
+        // getDisplayName includes the SDK version when robolectric property
+        // alwaysIncludeVariantMarkersInTestName is set.
+        String gtestSdkName = description.getClassName() + "." + description.getDisplayName();
+
         for (Pattern p : mNegativeRegexes) {
-            if (p.matcher(gtestName).matches()) return false;
+            if (p.matcher(gtestName).matches() || p.matcher(gtestSdkName).matches()) return false;
         }
 
         if (mPositiveRegexes.isEmpty()) return true;
 
         for (Pattern p : mPositiveRegexes) {
-            if (p.matcher(gtestName).matches()) return true;
+            if (p.matcher(gtestName).matches() || p.matcher(gtestSdkName).matches()) return true;
         }
 
         return false;

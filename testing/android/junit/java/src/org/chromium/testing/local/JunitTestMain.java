@@ -84,9 +84,10 @@ public final class JunitTestMain {
         Class[] classes = findClassesFromClasspath();
 
         Computer computer;
+        // Causes test names to have the sdk version as a [suffix].
+        // This enables sharding by SDK version.
+        System.setProperty("robolectric.alwaysIncludeVariantMarkersInTestName", "true");
         if (parser.isListTests()) {
-            // Causes test names to have the sdk version as a [suffix].
-            System.setProperty("robolectric.alwaysIncludeVariantMarkersInTestName", "true");
             computer = new TestListComputer(System.out);
         } else {
             GtestLogger gtestLogger = new GtestLogger(System.out);
