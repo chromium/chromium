@@ -25,6 +25,7 @@ const extension_toolbar_tests = {
     // </if>
     FailedUpdateFiresLoadError:
         'failed local extension update files load error',
+    NarrowModeShowsMenu: 'narrow mode shows menu',
   },
 };
 
@@ -180,6 +181,14 @@ suite(extension_toolbar_tests.suiteName, function() {
         await proxyDelegate.whenCalled('updateAllExtensions');
         await verifyLoadErrorFired(true);
       });
+
+  test(extension_toolbar_tests.TestNames.NarrowModeShowsMenu, function() {
+    toolbar.narrow = true;
+    assertTrue(toolbar.$.toolbar.showMenu);
+
+    toolbar.narrow = false;
+    assertFalse(toolbar.$.toolbar.showMenu);
+  });
 
   // <if expr="chromeos_ash">
   test(extension_toolbar_tests.TestNames.KioskMode, function() {

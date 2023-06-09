@@ -13,6 +13,7 @@ import './pack_dialog.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -39,6 +40,7 @@ export interface ExtensionsToolbarElement {
     devMode: CrToggleElement,
     loadUnpacked: HTMLElement,
     packExtensions: HTMLElement,
+    toolbar: CrToolbarElement,
     updateNow: HTMLElement,
 
     // <if expr="chromeos_ash">
@@ -77,6 +79,11 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
       kioskEnabled: Boolean,
       // </if>
 
+      narrow: {
+        type: Boolean,
+        notify: true,
+      },
+
       canLoadUnpacked: Boolean,
 
       expanded_: Boolean,
@@ -99,6 +106,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   kioskEnabled: boolean;
   // </if>
 
+  narrow: boolean;
   canLoadUnpacked: boolean;
 
   private expanded_: boolean;

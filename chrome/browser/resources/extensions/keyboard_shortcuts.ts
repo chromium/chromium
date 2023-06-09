@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shortcut_input.js';
 
-import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,8 +23,7 @@ interface RepeaterEvent<T> extends CustomEvent {
   };
 }
 
-const ExtensionsKeyboardShortcutsElementBase =
-    I18nMixin(CrContainerShadowMixin(PolymerElement));
+const ExtensionsKeyboardShortcutsElementBase = I18nMixin(PolymerElement);
 
 // The UI to display and manage keyboard shortcuts set for extension commands.
 export class ExtensionsKeyboardShortcutsElement extends

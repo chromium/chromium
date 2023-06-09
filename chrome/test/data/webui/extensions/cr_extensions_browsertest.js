@@ -107,6 +107,10 @@ TEST_F('CrExtensionsToolbarTest', 'FailedUpdateFiresLoadError', function() {
       extension_toolbar_tests.TestNames.FailedUpdateFiresLoadError);
 });
 
+TEST_F('CrExtensionsToolbarTest', 'NarrowModeShowsMenu', function() {
+  this.runMochaTest(extension_toolbar_tests.TestNames.NarrowModeShowsMenu);
+});
+
 // TODO(crbug.com/882342) Disabled on other platforms but MacOS due to timeouts.
 GEN('#if !BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_ClickHandlers DISABLED_ClickHandlers');
@@ -499,6 +503,13 @@ TEST_F(
     'CrExtensionsManagerTestWithMultipleExtensionTypesInstalled', 'ChangePages',
     function() {
       this.runMochaTest(extension_manager_tests.TestNames.ChangePages);
+    });
+
+TEST_F(
+    'CrExtensionsManagerTestWithMultipleExtensionTypesInstalled',
+    'CloseDrawerOnNarrowModeExit', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.CloseDrawerOnNarrowModeExit);
     });
 
 TEST_F(

@@ -12,6 +12,7 @@ const extension_manager_tests = {
   suiteName: 'ExtensionManagerTest',
   TestNames: {
     ChangePages: 'change pages',
+    CloseDrawerOnNarrowModeExit: 'close drawer when exiting narrow mode',
     ItemListVisibility: 'item list visibility',
     SplitItems: 'split items',
     PageTitleUpdate: 'updates the title based on current route',
@@ -112,11 +113,6 @@ suite(extension_manager_tests.suiteName, function() {
   });
 
   test(extension_manager_tests.TestNames.ChangePages, function() {
-    manager.shadowRoot!.querySelector('extensions-toolbar')!.shadowRoot!
-        .querySelector('cr-toolbar')!.shadowRoot!
-        .querySelector<HTMLElement>('#menuButton')!.click();
-    flush();
-
     // We start on the item list.
     manager.shadowRoot!.querySelector(
                            'extensions-sidebar')!.$.sectionsExtensions.click();
@@ -152,6 +148,25 @@ suite(extension_manager_tests.suiteName, function() {
     flush();
     assertViewActive('extensions-item-list');
   });
+
+  test(
+      extension_manager_tests.TestNames.CloseDrawerOnNarrowModeExit,
+      async function() {
+        manager.$.toolbar.narrow = true;
+        flush();
+
+        manager.shadowRoot!.querySelector('extensions-toolbar')!.shadowRoot!
+            .querySelector('cr-toolbar')!.shadowRoot!
+            .querySelector<HTMLElement>('#menuButton')!.click();
+        flush();
+
+        const drawer = manager.shadowRoot!.querySelector('cr-drawer')!;
+        await eventToPromise('cr-drawer-opened', drawer);
+
+        manager.$.toolbar.narrow = false;
+        flush();
+        await eventToPromise('close', drawer);
+      });
 
   test(extension_manager_tests.TestNames.PageTitleUpdate, function() {
     assertEquals('Extensions', document.title);

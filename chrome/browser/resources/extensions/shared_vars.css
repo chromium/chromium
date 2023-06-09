@@ -16,6 +16,7 @@ html {
   --warning-color: rgb(242, 153, 0);
   --extensions-card-height: 160px;
   --separator-gap: 9px;
+  --sidebar-width: 256px;
 }
 
 @media (prefers-color-scheme: dark) {

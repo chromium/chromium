@@ -59,7 +59,6 @@ a[href] {
 
 .page-container {
   height: 100%;
-  overflow: overlay;
 }
 
 .page-content {
