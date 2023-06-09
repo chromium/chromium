@@ -48,4 +48,39 @@ TEST_F(RasterScaleControllerTest, RasterScaleOnlyUpdatesIfChanges) {
   EXPECT_EQ(std::vector<float>{1.0f}, tracker.TakeRasterScaleChanges());
 }
 
+TEST_F(RasterScaleControllerTest, RasterScalePause) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
+  auto tracker = RasterScaleChangeTracker(window.get());
+
+  EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
+  EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
+
+  auto scoped_pause = std::make_unique<ScopedPauseRasterScaleUpdates>();
+
+  {
+    ScopedSetRasterScale scoped1(window.get(), 2.0f);
+
+    // Since updates are paused, expect nothing to change.
+    EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
+    EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
+
+    // Unpausing should set it to 2.0f now.
+    scoped_pause.reset();
+    EXPECT_EQ(2.0f, window->GetProperty(aura::client::kRasterScale));
+    EXPECT_EQ(std::vector<float>{2.0f}, tracker.TakeRasterScaleChanges());
+
+    // Pause again, and then destroy scoped1.
+    scoped_pause = std::make_unique<ScopedPauseRasterScaleUpdates>();
+  }
+
+  // It should still be at 2.0f since we are paused.
+  EXPECT_EQ(2.0f, window->GetProperty(aura::client::kRasterScale));
+  EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
+
+  // Unpausing should set it to 1.0f now.
+  scoped_pause.reset();
+  EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
+  EXPECT_EQ(std::vector<float>{1.0f}, tracker.TakeRasterScaleChanges());
+}
+
 }  // namespace ash

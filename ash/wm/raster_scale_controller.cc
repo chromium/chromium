@@ -58,6 +58,14 @@ void ScopedSetRasterScale::OnWindowDestroying(aura::Window* window) {
   Shutdown();
 }
 
+ScopedPauseRasterScaleUpdates::ScopedPauseRasterScaleUpdates() {
+  Shell::Get()->raster_scale_controller()->Pause();
+}
+
+ScopedPauseRasterScaleUpdates::~ScopedPauseRasterScaleUpdates() {
+  Shell::Get()->raster_scale_controller()->Unpause();
+}
+
 RasterScaleController::RasterScaleController() = default;
 RasterScaleController::~RasterScaleController() = default;
 
@@ -67,13 +75,9 @@ void RasterScaleController::PushRasterScale(aura::Window* window,
     windows_observation_.AddObservation(window);
   }
 
-  const auto previous_scale = GetRasterScaleForWindow(window);
   window_scales_[window].push_back(raster_scale);
 
-  const auto current_scale = GetRasterScaleForWindow(window);
-  if (current_scale != previous_scale) {
-    window->SetProperty(aura::client::kRasterScale, current_scale);
-  }
+  MaybeSetRasterScale(window);
 }
 
 void RasterScaleController::PopRasterScale(aura::Window* window,
@@ -86,32 +90,31 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
   }
 
   auto& scales = iter->second;
-
-  const auto previous_scale = GetRasterScaleForWindow(window);
   DCHECK(base::Contains(scales, raster_scale));
   auto scale_iter = std::find(scales.begin(), scales.end(), raster_scale);
   if (scale_iter != scales.end()) {
     scales.erase(scale_iter);
   }
 
+  MaybeSetRasterScale(window);
+
   if (scales.empty()) {
     window_scales_.erase(window);
-    windows_observation_.RemoveObservation(window);
-  }
 
-  const auto current_scale = GetRasterScaleForWindow(window);
-  if (current_scale != previous_scale) {
-    window->SetProperty(aura::client::kRasterScale, current_scale);
+    // If we still hold a reference to this window, we need to keep observing
+    // it.
+    if (!pending_windows_.contains(window)) {
+      windows_observation_.RemoveObservation(window);
+    }
   }
 }
 
-float RasterScaleController::GetRasterScaleForWindow(aura::Window* window) {
+float RasterScaleController::ComputeRasterScaleForWindow(aura::Window* window) {
   auto iter = window_scales_.find(window);
-  if (iter == window_scales_.end()) {
+  if (iter == window_scales_.end() || iter->second.empty()) {
     return 1.0f;
   }
 
-  DCHECK(!iter->second.empty());
   float raster_scale = 0.0;
   for (auto scale : iter->second) {
     raster_scale = std::max(raster_scale, scale);
@@ -122,6 +125,41 @@ float RasterScaleController::GetRasterScaleForWindow(aura::Window* window) {
 void RasterScaleController::OnWindowDestroying(aura::Window* window) {
   windows_observation_.RemoveObservation(window);
   window_scales_.erase(window);
+  pending_windows_.erase(window);
+}
+
+void RasterScaleController::MaybeSetRasterScale(aura::Window* window) {
+  if (pause_count_ > 0) {
+    pending_windows_.insert(window);
+    return;
+  }
+
+  const float previous_scale = window->GetProperty(aura::client::kRasterScale);
+  const auto current_scale = ComputeRasterScaleForWindow(window);
+  if (current_scale != previous_scale) {
+    window->SetProperty(aura::client::kRasterScale, current_scale);
+  }
+}
+
+void RasterScaleController::Pause() {
+  pause_count_++;
+}
+
+void RasterScaleController::Unpause() {
+  pause_count_--;
+  DCHECK_GE(pause_count_, 0);
+  if (pause_count_ == 0) {
+    for (auto* window : pending_windows_) {
+      MaybeSetRasterScale(window);
+
+      // If we kept observing a window since it had a pending change, we can
+      // stop observing now if there is no scale set.
+      if (!window_scales_.contains(window)) {
+        windows_observation_.RemoveObservation(window);
+      }
+    }
+    pending_windows_.clear();
+  }
 }
 
 }  // namespace ash

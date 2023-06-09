@@ -10,11 +10,26 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
+
+// ScopedPauseRasterScaleUpdates pauses any updates to all windows raster scales
+// until it is destructed. Once it is destructed and there are no other
+// ScopedPauseRasterScaleUpdates objects, windows that still exist will have
+// their raster scales updated if they have changed.
+class ASH_EXPORT ScopedPauseRasterScaleUpdates {
+ public:
+  ScopedPauseRasterScaleUpdates();
+
+  ScopedPauseRasterScaleUpdates(const ScopedPauseRasterScaleUpdates&) = delete;
+  ScopedPauseRasterScaleUpdates& operator=(
+      const ScopedPauseRasterScaleUpdates&) = delete;
+  ~ScopedPauseRasterScaleUpdates();
+};
 
 // ScopedSetRasterScale keeps the raster scale property of the given window
 // at or above the given value while in scope. This is necessary because,
@@ -73,13 +88,26 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
 
   void PopRasterScale(aura::Window* window, float raster_scale);
 
+  float ComputeRasterScaleForWindow(aura::Window* window);
+
  private:
-  float GetRasterScaleForWindow(aura::Window* window);
+  friend class ScopedPauseRasterScaleUpdates;
+
+  void Pause();
+  void Unpause();
+
+  void MaybeSetRasterScale(aura::Window* window);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
+  int pause_count_ = 0;
+
   base::flat_map<aura::Window*, std::vector<float>> window_scales_;
+
+  // Holds a set of windows that have had their raster scales change while
+  // RasterScaleController is paused.
+  base::flat_set<aura::Window*> pending_windows_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       windows_observation_{this};
