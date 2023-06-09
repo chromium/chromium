@@ -260,9 +260,8 @@ FragmentRef<RouterLinkState> NodeLinkMemory::GetInitialRouterLinkState(
   FragmentDescriptor descriptor(kPrimaryBufferId,
                                 ToOffset(state, primary_buffer_memory_.data()),
                                 sizeof(RouterLinkState));
-  return FragmentRef<RouterLinkState>(
-      RefCountedFragment::kUnmanagedRef,
-      Fragment::FromDescriptorUnsafe(descriptor, state));
+  return FragmentRef<RouterLinkState>(RefCountedFragment::kUnmanagedRef,
+                                      Fragment(descriptor, state));
 }
 
 Fragment NodeLinkMemory::GetFragment(const FragmentDescriptor& descriptor) {
