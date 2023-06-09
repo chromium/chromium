@@ -18,6 +18,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "media/base/audio_pull_fifo.h"
@@ -27,6 +28,12 @@
 namespace media {
 
 namespace {
+
+void CheckTimeDeltaRange(const base::TimeDelta delta,
+                         const base::TimeDelta expected_absolute_range) {
+  CHECK(-expected_absolute_range < delta);
+  CHECK(delta < expected_absolute_range);
+}
 
 void WrapBufferList(AudioBufferList* buffer_list, AudioBus* bus, int frames) {
   const int channels = bus->channels();
@@ -143,6 +150,7 @@ bool AUHALStream::Open() {
     hardware_latency_ = core_audio_mac::GetHardwareLatency(
         audio_unit_->audio_unit(), device_, kAudioObjectPropertyScopeOutput,
         params_.sample_rate());
+    CheckTimeDeltaRange(hardware_latency_, base::Seconds(10));
   }
 
   DVLOG(1) << __FUNCTION__ << " this " << this << " received hardware latency "
@@ -359,11 +367,13 @@ void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
   lock_.AssertAcquired();
   DCHECK(source_);
 
-  const base::TimeTicks playout_time =
-      current_playout_time_ +
+  const base::TimeDelta frame_delay_time =
       AudioTimestampHelper::FramesToTime(frame_delay, params_.sample_rate());
+  CheckTimeDeltaRange(frame_delay_time, base::Seconds(1));
+  const base::TimeTicks playout_time = current_playout_time_ + frame_delay_time;
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta delay = playout_time - now;
+  CheckTimeDeltaRange(delay, base::Seconds(10));
 
   // Supply the input data and render the output data.
   source_->OnMoreData(delay, now, glitch_info_accumulator_.GetAndReset(), dest);
@@ -409,12 +419,16 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
 
   if (last_sample_time_) {
     DCHECK_NE(0U, last_number_of_frames_);
+    CheckTimeDeltaRange(AudioTimestampHelper::FramesToTime(
+                            last_number_of_frames_, params_.sample_rate()),
+                        base::Seconds(1));
     UInt32 sample_time_diff =
         static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
     DCHECK_GE(sample_time_diff, last_number_of_frames_);
     UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
     base::TimeDelta lost_audio_duration =
         AudioTimestampHelper::FramesToTime(lost_frames, params_.sample_rate());
+    CheckTimeDeltaRange(lost_audio_duration, base::Seconds(10));
     glitch_reporter_.UpdateStats(lost_audio_duration);
     if (!lost_audio_duration.is_zero()) {
       glitch_info_accumulator_.Add(
