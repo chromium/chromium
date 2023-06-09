@@ -6701,3 +6701,5 @@ crbug.com/1452163 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/an
 crbug.com/1453235 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Pass Failure Timeout ]
 crbug.com/1072022 [ Mac12 ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Failure Timeout ]
 crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Pass Failure ]
+crbug.com/1451895 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Pass Failure ]
+crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Pass Failure ]
