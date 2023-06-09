@@ -688,7 +688,7 @@ TEST_F(IntegrationTest, UpdateApp) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-#if BUILDFLAG(IS_WIN)  // TODO(crbug.com/1422385): fix for macOS and Linux.
+#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, InstallUpdaterAndApp) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
