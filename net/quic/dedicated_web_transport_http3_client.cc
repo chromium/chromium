@@ -122,6 +122,8 @@ class ConnectStream : public quic::QuicSpdyClientStream {
                 DedicatedWebTransportHttp3Client* client)
       : quic::QuicSpdyClientStream(id, session, type), client_(client) {}
 
+  ~ConnectStream() override { client_->OnConnectStreamDeleted(); }
+
   void OnInitialHeadersComplete(
       bool fin,
       size_t frame_len,
@@ -341,6 +343,7 @@ void DedicatedWebTransportHttp3Client::Connect() {
 
 void DedicatedWebTransportHttp3Client::Close(
     const absl::optional<WebTransportCloseInfo>& close_info) {
+  CHECK(session());
   base::TimeDelta probe_timeout = base::Microseconds(
       connection_->sent_packet_manager().GetPtoDelay().ToMicroseconds());
   // Wait for at least three PTOs similar to what's used in
@@ -634,6 +637,12 @@ void DedicatedWebTransportHttp3Client::
 void DedicatedWebTransportHttp3Client::OnConnectStreamAborted() {
   SetErrorIfNecessary(session_ready_ ? ERR_FAILED : ERR_METHOD_NOT_SUPPORTED);
   TransitionToState(WebTransportState::FAILED);
+}
+
+void DedicatedWebTransportHttp3Client::OnConnectStreamDeleted() {
+  // `web_transport_session_` is owned by ConnectStream. Clear so that it
+  // doesn't get dangling.
+  web_transport_session_ = nullptr;
 }
 
 void DedicatedWebTransportHttp3Client::OnCloseTimeout() {

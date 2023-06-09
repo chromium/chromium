@@ -68,6 +68,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void OnHeadersComplete(const spdy::Http2HeaderBlock& headers);
   void OnConnectStreamWriteSideInDataRecvdState();
   void OnConnectStreamAborted();
+  void OnConnectStreamDeleted();
   void OnCloseTimeout();
   void OnDatagramProcessed(absl::optional<quic::MessageStatus> status);
 
@@ -178,8 +179,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   std::unique_ptr<DatagramClientSocket> socket_;
   std::unique_ptr<quic::QuicSpdyClientSession> session_;
   raw_ptr<quic::QuicConnection> connection_;  // owned by |session_|
-  raw_ptr<quic::WebTransportSession, DanglingUntriaged> web_transport_session_ =
-      nullptr;
+  raw_ptr<quic::WebTransportSession> web_transport_session_ = nullptr;
   std::unique_ptr<QuicChromiumPacketReader> packet_reader_;
   std::unique_ptr<QuicEventLogger> event_logger_;
   quic::QuicClientPushPromiseIndex push_promise_index_;
