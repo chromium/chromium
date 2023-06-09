@@ -91,6 +91,10 @@ const display::Display* ScopedFakeAshProxy::GetDisplayForId(
   return nullptr;
 }
 
+aura::Window* ScopedFakeAshProxy::GetSelectFileContainer() {
+  return nullptr;
+}
+
 void ScopedFakeAshProxy::CreateVideoCapturer(
     mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> video_capturer) {
   DCHECK(receiver_) << "Your test must call SetVideoCapturerReceiver() first";

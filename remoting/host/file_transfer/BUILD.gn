@@ -49,7 +49,15 @@ source_set("file_transfer") {
   }
 
   if (is_chromeos_ash) {
-    sources += [ "file_chooser_chromeos.cc" ]
+    sources += [
+      "file_chooser_chromeos.cc",
+      "file_chooser_chromeos.h",
+    ]
+    deps += [
+      "//remoting/host/chromeos:chromeos",
+      "//ui/display",
+      "//ui/shell_dialogs",
+    ]
   } else if (is_linux) {
     sources += [ "file_chooser_linux.cc" ]
     deps += [
@@ -98,8 +106,6 @@ source_set("test_support") {
 
   sources = [
     "ensure_user_no_op.cc",
-    "fake_file_chooser.cc",
-    "fake_file_chooser.h",
     "fake_file_operations.cc",
     "fake_file_operations.h",
     "get_desktop_directory.cc",
@@ -110,6 +116,31 @@ source_set("test_support") {
     "//base:base",
     "//remoting/protocol",
   ]
+  public_deps = []
+
+  if (is_chromeos_ash) {
+    sources += [
+      "file_chooser_chromeos.cc",
+      "file_chooser_chromeos.h",
+    ]
+    deps += [
+      "//base",
+      "//remoting/host/chromeos:chromeos",
+      "//remoting/protocol",
+      "//remoting/resources",
+      "//ui/display",
+      "//ui/shell_dialogs",
+    ]
+    public_deps += [
+      "//ui/aura:aura",
+      "//ui/base:base",
+    ]
+  } else {
+    sources += [
+      "fake_file_chooser.cc",
+      "fake_file_chooser.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -118,8 +149,6 @@ source_set("unit_tests") {
   sources = [
     "buffered_file_writer_unittest.cc",
     "file_transfer_message_handler_unittest.cc",
-    "ipc_file_operations_unittest.cc",
-    "local_file_operations_unittest.cc",
     "rtc_log_file_operations_unittest.cc",
   ]
 
@@ -135,4 +164,19 @@ source_set("unit_tests") {
     "//remoting/protocol:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "file_chooser_chromeos_unittest.cc" ]
+    deps += [
+      "//content/test:test_support",
+      "//remoting/host/chromeos:chromeos",
+      "//remoting/host/chromeos:unit_tests",
+      "//ui/shell_dialogs",
+    ]
+  } else {
+    sources += [
+      "ipc_file_operations_unittest.cc",
+      "local_file_operations_unittest.cc",
+    ]
+  }
 }

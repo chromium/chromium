@@ -17,6 +17,7 @@ class SecurityCurtainController;
 
 namespace aura {
 class ScopedWindowCaptureRequest;
+class Window;
 }  // namespace aura
 
 namespace viz {
@@ -50,6 +51,7 @@ class AshProxy {
   virtual const std::vector<display::Display>& GetActiveDisplays() const = 0;
   virtual const display::Display* GetDisplayForId(
       DisplayId display_id) const = 0;
+  virtual aura::Window* GetSelectFileContainer() = 0;
 
   virtual ash::curtain::SecurityCurtainController&
   GetSecurityCurtainController() = 0;

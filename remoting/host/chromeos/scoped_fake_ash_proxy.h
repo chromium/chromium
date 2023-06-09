@@ -44,6 +44,7 @@ class ScopedFakeAshProxy : public AshProxy {
   DisplayId GetPrimaryDisplayId() const override;
   const std::vector<display::Display>& GetActiveDisplays() const override;
   const display::Display* GetDisplayForId(DisplayId display_id) const override;
+  aura::Window* GetSelectFileContainer() override;
   ash::curtain::SecurityCurtainController& GetSecurityCurtainController()
       override;
 
