@@ -29,11 +29,12 @@ namespace password_manager {
 
 class PasswordManagerClient;
 
-// A map from field names to field types.
-using FieldTypeMap = std::map<std::u16string, autofill::ServerFieldType>;
-// A map from field names to field vote types.
-using VoteTypeMap =
-    std::map<std::u16string, autofill::AutofillUploadContents::Field::VoteType>;
+// Map from a field's renderer id to a field type.
+using FieldTypeMap =
+    std::map<autofill::FieldRendererId, autofill::ServerFieldType>;
+// A map from field's renderer id to a vote type (e.g. CREDENTIALS_REUSED).
+using VoteTypeMap = std::map<autofill::FieldRendererId,
+                             autofill::AutofillUploadContents::Field::VoteType>;
 
 // Contains information for sending a SINGLE_USERNAME vote.
 struct SingleUsernameVoteData {

@@ -159,6 +159,7 @@ class VotesUploaderTest : public testing::Test {
     for (size_t i = 0; i < kNumberOfFields; ++i) {
       FormFieldData field;
       field.name = GetFieldNameByIndex(i);
+      field.unique_renderer_id = FieldRendererId(i);
       form_to_upload_.form_data.fields.push_back(field);
       submitted_form_.form_data.fields.push_back(field);
     }
@@ -187,18 +188,21 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
   VotesUploader votes_uploader(&client_, true);
   std::u16string new_password_element = GetFieldNameByIndex(3);
   std::u16string confirmation_element = GetFieldNameByIndex(11);
-  form_to_upload_.new_password_element = new_password_element;
-  submitted_form_.new_password_element = new_password_element;
-  form_to_upload_.confirmation_password_element = confirmation_element;
-  submitted_form_.confirmation_password_element = confirmation_element;
+  form_to_upload_.new_password_element_renderer_id = FieldRendererId(3);
+  submitted_form_.new_password_element_renderer_id = FieldRendererId(3);
+  form_to_upload_.confirmation_password_element_renderer_id =
+      FieldRendererId(11);
+  submitted_form_.confirmation_password_element_renderer_id =
+      FieldRendererId(11);
   form_to_upload_.new_password_value = u"new_password_value";
   submitted_form_.new_password_value = u"new_password_value";
   submitted_form_.submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
   ServerFieldTypeSet expected_field_types = {NEW_PASSWORD,
                                              CONFIRMATION_PASSWORD};
-  FieldTypeMap expected_types = {{new_password_element, NEW_PASSWORD},
-                                 {confirmation_element, CONFIRMATION_PASSWORD}};
+  std::map<std::u16string, ServerFieldType> expected_types = {
+      {new_password_element, NEW_PASSWORD},
+      {confirmation_element, CONFIRMATION_PASSWORD}};
   SubmissionIndicatorEvent expected_submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
 
@@ -216,12 +220,12 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
   VotesUploader votes_uploader(&client_, false);
-  std::u16string password_element = GetFieldNameByIndex(5);
-  std::u16string confirmation_element = GetFieldNameByIndex(12);
-  form_to_upload_.password_element = password_element;
-  submitted_form_.password_element = password_element;
-  form_to_upload_.confirmation_password_element = confirmation_element;
-  submitted_form_.confirmation_password_element = confirmation_element;
+  form_to_upload_.password_element_renderer_id = FieldRendererId(5);
+  submitted_form_.password_element_renderer_id = FieldRendererId(5);
+  form_to_upload_.confirmation_password_element_renderer_id =
+      FieldRendererId(12);
+  submitted_form_.confirmation_password_element_renderer_id =
+      FieldRendererId(12);
   submitted_form_.submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
   ServerFieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
@@ -297,7 +301,7 @@ TEST_F(VotesUploaderTest, UploadPasswordAttributes) {
     if (autofill_type == autofill::NEW_PASSWORD ||
         autofill_type == autofill::PROBABLY_NEW_PASSWORD ||
         autofill_type == autofill::NOT_NEW_PASSWORD) {
-      form_to_upload_.new_password_element = u"new_password_element";
+      form_to_upload_.new_password_element_renderer_id = FieldRendererId(11);
       form_to_upload_.new_password_value = u"new_password_value";
     }
 
@@ -1000,16 +1004,22 @@ TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
   votes_uploader.MaybeSendSingleUsernameVote();
 }
 
-// Tests FieldNameCollisionInVotes metric reports "true" when multiple fields in
-// the form to be uploaded have the same name.
+// Tests FieldNameCollisionInVotes metric doesn't report "true" when multiple
+// fields in the form to be uploaded have the same name.
 TEST_F(VotesUploaderTest, FieldNameCollisionInVotes) {
   VotesUploader votes_uploader(&client_, false);
   std::u16string password_element = GetFieldNameByIndex(5);
   form_to_upload_.password_element = password_element;
+  form_to_upload_.password_element_renderer_id = FieldRendererId(5);
   submitted_form_.password_element = password_element;
+  submitted_form_.password_element_renderer_id = FieldRendererId(5);
   form_to_upload_.confirmation_password_element = password_element;
+  form_to_upload_.confirmation_password_element_renderer_id =
+      FieldRendererId(11);
   submitted_form_.confirmation_password_element = password_element;
-  ServerFieldTypeSet expected_field_types = {CONFIRMATION_PASSWORD};
+  submitted_form_.confirmation_password_element_renderer_id =
+      FieldRendererId(11);
+  ServerFieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
 
   EXPECT_CALL(mock_autofill_download_manager_,
               StartUploadRequest(_, false, expected_field_types,
@@ -1022,19 +1032,19 @@ TEST_F(VotesUploaderTest, FieldNameCollisionInVotes) {
       form_to_upload_, submitted_form_, PASSWORD, login_form_signature_));
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.FieldNameCollisionInVotes", true, 1);
+      "PasswordManager.FieldNameCollisionInVotes", false, 1);
 }
 
 // Tests FieldNameCollisionInVotes metric reports "false" when all fields in the
 // form to be uploaded have different names.
 TEST_F(VotesUploaderTest, NoFieldNameCollisionInVotes) {
   VotesUploader votes_uploader(&client_, false);
-  std::u16string password_element = GetFieldNameByIndex(5);
-  std::u16string confirmation_element = GetFieldNameByIndex(12);
-  form_to_upload_.password_element = password_element;
-  submitted_form_.password_element = password_element;
-  form_to_upload_.confirmation_password_element = confirmation_element;
-  submitted_form_.confirmation_password_element = confirmation_element;
+  form_to_upload_.password_element_renderer_id = FieldRendererId(5);
+  submitted_form_.password_element_renderer_id = FieldRendererId(5);
+  form_to_upload_.confirmation_password_element_renderer_id =
+      FieldRendererId(12);
+  submitted_form_.confirmation_password_element_renderer_id =
+      FieldRendererId(12);
   ServerFieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
 
   EXPECT_CALL(mock_autofill_download_manager_,

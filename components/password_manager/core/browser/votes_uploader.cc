@@ -61,12 +61,16 @@ constexpr uint32_t kNumberOfLowEntropyHashValues = 64;
 // TODO(crbug/1260336): The function is needed to only detect a
 // field name collision and report that in a metric. Once the bug is fixed, the
 // metric becomes obsolete and the function can be inlined.
-void SetFieldType(const std::u16string& field_name,
+void SetFieldType(const FieldRendererId& field_renderer_id,
                   const ServerFieldType type,
                   FieldTypeMap& field_types,
                   bool& field_name_collision) {
+  if (field_renderer_id.is_null()) {
+    return;
+  }
+
   std::pair<FieldTypeMap::iterator, bool> it = field_types.insert(
-      std::pair<std::u16string, ServerFieldType>(field_name, type));
+      std::pair<FieldRendererId, ServerFieldType>(field_renderer_id, type));
   if (!it.second) {
     field_name_collision = true;
     // To preserve the old behavior, overwrite the type.
@@ -87,13 +91,16 @@ void SetFieldLabelsOnUpdate(const ServerFieldType password_type,
          password_type == autofill::PROBABLY_NEW_PASSWORD ||
          password_type == autofill::NOT_NEW_PASSWORD)
       << password_type;
-  if (submitted_form.new_password_element.empty())
+  if (submitted_form.new_password_element_renderer_id.is_null()) {
     return;
+  }
 
-  SetFieldType(submitted_form.password_element, autofill::PASSWORD, field_types,
-               field_name_collision);
-  SetFieldType(submitted_form.new_password_element, password_type, field_types,
-               field_name_collision);
+  if (submitted_form.password_element_renderer_id) {
+    SetFieldType(submitted_form.password_element_renderer_id,
+                 autofill::PASSWORD, field_types, field_name_collision);
+  }
+  SetFieldType(submitted_form.new_password_element_renderer_id, password_type,
+               field_types, field_name_collision);
 }
 
 // Sets the autofill type of the password field stored in |submitted_form| to
@@ -107,11 +114,11 @@ void SetFieldLabelsOnSave(const ServerFieldType password_type,
          password_type == autofill::NOT_ACCOUNT_CREATION_PASSWORD)
       << password_type;
 
-  if (!form.new_password_element.empty()) {
-    SetFieldType(form.new_password_element, password_type, field_types,
-                 field_name_collision);
-  } else if (!form.password_element.empty()) {
-    SetFieldType(form.password_element, password_type, field_types,
+  if (!form.new_password_element_renderer_id.is_null()) {
+    SetFieldType(form.new_password_element_renderer_id, password_type,
+                 field_types, field_name_collision);
+  } else if (!form.password_element_renderer_id.is_null()) {
+    SetFieldType(form.password_element_renderer_id, password_type, field_types,
                  field_name_collision);
   }
 }
@@ -131,21 +138,18 @@ void LabelFields(const FieldTypeMap& field_types,
     AutofillField* field = form_structure->field(i);
 
     ServerFieldType type = autofill::UNKNOWN_TYPE;
-    if (!field->name.empty()) {
-      auto iter = field_types.find(field->name);
-      if (iter != field_types.end()) {
-        type = iter->second;
-        available_field_types->insert(type);
-      }
-
-      auto vote_type_iter = vote_types.find(field->name);
-      if (vote_type_iter != vote_types.end()) {
-        field->set_vote_type(vote_type_iter->second);
-      }
-      DCHECK(type != autofill::USERNAME ||
-             field->vote_type() !=
-                 AutofillUploadContents::Field::NO_INFORMATION);
+    if (auto iter = field_types.find(field->unique_renderer_id);
+        iter != field_types.end()) {
+      type = iter->second;
+      available_field_types->insert(type);
     }
+
+    if (auto vote_type_iter = vote_types.find(field->unique_renderer_id);
+        vote_type_iter != vote_types.end()) {
+      field->set_vote_type(vote_type_iter->second);
+    }
+    CHECK(type != autofill::USERNAME ||
+          field->vote_type() != AutofillUploadContents::Field::NO_INFORMATION);
     ServerFieldTypeSet types;
     types.insert(type);
     field->set_possible_types(types);
@@ -222,6 +226,59 @@ AutofillUploadContents::ValueType GetValueType(
     return AutofillUploadContents::VALUE_WITH_WHITESPACE;
 
   return AutofillUploadContents::VALUE_WITH_NO_WHITESPACE;
+}
+
+// Fills fake renderer id for to the significant field with `field_name` iff
+// it isn't set.
+void FillRendererIdIfNotSet(
+    const std::u16string& field_name,
+    autofill::FieldRendererId* element_renderer_id,
+    const std::map<std::u16string, autofill::FieldRendererId>&
+        field_name_to_renderer_id) {
+  CHECK(element_renderer_id->is_null())
+      << "Unexpected non-null renderer_id in a form deserialized from "
+         "LoginDatabase.";
+  if (!field_name.empty()) {
+    auto iter = field_name_to_renderer_id.find(field_name);
+    if (iter != field_name_to_renderer_id.end()) {
+      *element_renderer_id = iter->second;
+    }
+  }
+}
+
+// Generates fake renderer ids for the `matched_form` deserialized from
+// `LoginDatabase`. Field renderer id is used later in `UploadPasswordVote` to
+// identify fields and generate votes for this form.
+// TODO(crbug/1260336): The function is needed to only provide a way to identify
+// fields using field renderer ids for forms from LoginDatabase as it doesn't
+// store renderer ids for fields. It should be removed after migrating to a
+// stable unique field identifier (e.g. FieldSignature).
+void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
+  uint32_t renderer_id_counter_ = 1;
+
+  std::map<std::u16string, autofill::FieldRendererId> field_name_to_renderer_id;
+  for (autofill::FormFieldData& field : matched_form.form_data.fields) {
+    CHECK(field.unique_renderer_id.is_null())
+        << "Unexpected non-null unique_renderer_id in a from deserialized form "
+           "LoginDatabase.";
+    field.unique_renderer_id =
+        autofill::FieldRendererId(renderer_id_counter_++);
+    field_name_to_renderer_id.insert({field.name, field.unique_renderer_id});
+  }
+
+  FillRendererIdIfNotSet(matched_form.username_element,
+                         &matched_form.username_element_renderer_id,
+                         field_name_to_renderer_id);
+  FillRendererIdIfNotSet(matched_form.password_element,
+                         &matched_form.password_element_renderer_id,
+                         field_name_to_renderer_id);
+  FillRendererIdIfNotSet(matched_form.new_password_element,
+                         &matched_form.new_password_element_renderer_id,
+                         field_name_to_renderer_id);
+  FillRendererIdIfNotSet(
+      matched_form.confirmation_password_element,
+      &matched_form.confirmation_password_element_renderer_id,
+      field_name_to_renderer_id);
 }
 
 }  // namespace
@@ -376,8 +433,9 @@ bool VotesUploader::UploadPasswordVote(
                        autofill_type == autofill::NOT_NEW_PASSWORD;
 
       if (is_update) {
-        if (form_to_upload.new_password_element.empty())
+        if (form_to_upload.new_password_element_renderer_id.is_null()) {
           return false;
+        }
         SetFieldLabelsOnUpdate(autofill_type, form_to_upload, field_types,
                                field_name_collision);
       } else {  // Saving.
@@ -388,7 +446,7 @@ bool VotesUploader::UploadPasswordVote(
         // If |autofill_type| == autofill::ACCOUNT_CREATION_PASSWORD, Chrome
         // will upload a vote for another form: the one that the credential was
         // saved on.
-        SetFieldType(submitted_form.confirmation_password_element,
+        SetFieldType(submitted_form.confirmation_password_element_renderer_id,
                      autofill::CONFIRMATION_PASSWORD, field_types,
                      field_name_collision);
         form_structure.set_passwords_were_revealed(
@@ -405,8 +463,8 @@ bool VotesUploader::UploadPasswordVote(
       if (generation_popup_was_shown_)
         AddGeneratedVote(&form_structure);
       if (username_change_state_ == UsernameChangeState::kChangedToKnownValue) {
-        SetFieldType(form_to_upload.username_element, autofill::USERNAME,
-                     field_types, field_name_collision);
+        SetFieldType(form_to_upload.username_element_renderer_id,
+                     autofill::USERNAME, field_types, field_name_collision);
         username_vote_type = AutofillUploadContents::Field::USERNAME_EDITED;
       }
     } else {  // User reuses credentials.
@@ -414,8 +472,8 @@ bool VotesUploader::UploadPasswordVote(
       // username.
       if (!submitted_form.username_value.empty()) {
         DCHECK(submitted_form.username_value == form_to_upload.username_value);
-        SetFieldType(form_to_upload.username_element, autofill::USERNAME,
-                     field_types, field_name_collision);
+        SetFieldType(form_to_upload.username_element_renderer_id,
+                     autofill::USERNAME, field_types, field_name_collision);
         username_vote_type = AutofillUploadContents::Field::CREDENTIALS_REUSED;
       }
     }
@@ -430,16 +488,17 @@ bool VotesUploader::UploadPasswordVote(
                                      &form_structure);
     }
   } else {  // User overwrites username.
-    SetFieldType(form_to_upload.username_element, autofill::USERNAME,
-                 field_types, field_name_collision);
-    SetFieldType(form_to_upload.password_element,
+    SetFieldType(form_to_upload.username_element_renderer_id,
+                 autofill::USERNAME, field_types, field_name_collision);
+    SetFieldType(form_to_upload.password_element_renderer_id,
                  autofill::ACCOUNT_CREATION_PASSWORD, field_types,
                  field_name_collision);
     username_vote_type = AutofillUploadContents::Field::USERNAME_OVERWRITTEN;
   }
-  LabelFields(field_types, field_name_collision,
-              {{form_to_upload.username_element, username_vote_type}},
-              &form_structure, &available_field_types);
+  LabelFields(
+      field_types, field_name_collision,
+      {{form_to_upload.username_element_renderer_id, username_vote_type}},
+      &form_structure, &available_field_types);
 
   // Force uploading as these events are relatively rare and we want to make
   // sure to receive them.
@@ -485,14 +544,14 @@ void VotesUploader::UploadFirstLoginVotes(
 
   FieldTypeMap field_types;
   bool field_name_collision = false;
-  SetFieldType(form_to_upload.username_element, autofill::USERNAME, field_types,
-               field_name_collision);
-  VoteTypeMap vote_types = {{form_to_upload.username_element,
+  SetFieldType(form_to_upload.username_element_renderer_id, autofill::USERNAME,
+               field_types, field_name_collision);
+  VoteTypeMap vote_types = {{form_to_upload.username_element_renderer_id,
                              AutofillUploadContents::Field::FIRST_USE}};
   if (!password_overridden_) {
-    SetFieldType(form_to_upload.password_element, autofill::PASSWORD,
-                 field_types, field_name_collision);
-    vote_types[form_to_upload.password_element] =
+    SetFieldType(form_to_upload.password_element_renderer_id,
+                 autofill::PASSWORD, field_types, field_name_collision);
+    vote_types[form_to_upload.password_element_renderer_id] =
         AutofillUploadContents::Field::FIRST_USE;
   }
 
@@ -728,6 +787,7 @@ bool VotesUploader::FindUsernameInOtherAlternativeUsernames(
     if (element.value == username) {
       username_correction_vote_ = match;
       username_correction_vote_->username_element = element.name;
+      GenerateSyntheticRenderIdsAndAssignThem(*username_correction_vote_);
       return true;
     }
   }

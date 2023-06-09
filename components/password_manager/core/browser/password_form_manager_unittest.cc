@@ -1186,16 +1186,16 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
   // fields where is not trivial to pick the right field as username. Chrome
   // picked the wrong field as username - the full name field.
   saved_match_.username_value = u"John Smith";
-  // The actual username (the email address) is among these values. They are
-  // all values entered by the user on the signup form.
+  // The actual username (the email address) is among these values. They are all
+  // values entered by the user on the signup form. Password form deserialized
+  // from a form storage and doesn't contain field_renderer_id.
   saved_match_.all_alternative_usernames = {
       {AlternativeElement::Value(u"user@gmail.com"),
-       autofill::FieldRendererId(13), AlternativeElement::Name(u"email_field")},
-      {AlternativeElement::Value(u"John Smith"), autofill::FieldRendererId(15),
+       autofill::FieldRendererId(), AlternativeElement::Name(u"email_field")},
+      {AlternativeElement::Value(u"John Smith"), autofill::FieldRendererId(),
        AlternativeElement::Name(u"fname_field")},
       {AlternativeElement::Value(u"+1(650)000-0000"),
-       autofill::FieldRendererId(17),
-       AlternativeElement::Name(u"phone_field")}};
+       autofill::FieldRendererId(), AlternativeElement::Name(u"phone_field")}};
   // Add fields because it is necessary for vote uploading.
   for (const AlternativeElement& alternative :
        saved_match_.all_alternative_usernames) {
@@ -1203,13 +1203,13 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
     text_field.name = alternative.name;
     text_field.form_control_type = "text";
     // Uniqueness doesn't matter in this test.
-    text_field.unique_renderer_id = autofill::FieldRendererId(2);
+    text_field.unique_renderer_id = autofill::FieldRendererId();
     saved_match_.form_data.fields.push_back(text_field);
   }
   FormFieldData password_field;
   password_field.name = saved_match_.password_element;
   password_field.form_control_type = "password";
-  password_field.unique_renderer_id = autofill::FieldRendererId(4);
+  password_field.unique_renderer_id = autofill::FieldRendererId();
   saved_match_.form_data.fields.push_back(password_field);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
@@ -1280,10 +1280,11 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAnotherFieldValue) {
   EXPECT_EQ(user_chosen_username,
             form_manager_->GetPendingCredentials().username_value);
 
-  FieldTypeMap expected_types = {{u"firstname", autofill::USERNAME},
-                                 {u"password", autofill::PASSWORD}};
+  std::map<std::u16string, ServerFieldType> expected_types = {
+      {u"firstname", autofill::USERNAME}, {u"password", autofill::PASSWORD}};
   VoteTypeMap expected_vote_types = {
-      {u"firstname", AutofillUploadContents::Field::USERNAME_EDITED}};
+      {submitted_form_.fields[0].unique_renderer_id,
+       AutofillUploadContents::Field::USERNAME_EDITED}};
   EXPECT_CALL(mock_autofill_download_manager_,
               StartUploadRequest(AllOf(UploadedAutofillTypesAre(expected_types),
                                        HasGenerationVote(false),

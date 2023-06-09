@@ -375,6 +375,8 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
     const std::u16string& new_username) {
   DCHECK(parsed_submitted_form_);
   parsed_submitted_form_->username_value = new_username;
+  parsed_submitted_form_->username_element_renderer_id =
+      autofill::FieldRendererId();
   parsed_submitted_form_->username_element.clear();
 
   password_save_manager_->UsernameUpdatedInBubble();
@@ -392,6 +394,8 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
 
     if (alternative_username_it != alternative_usernames.end()) {
       parsed_submitted_form_->username_element = alternative_username_it->name;
+      parsed_submitted_form_->username_element_renderer_id =
+          alternative_username_it->field_renderer_id;
       votes_uploader_.set_username_change_state(
           VotesUploader::UsernameChangeState::kChangedToKnownValue);
     } else {
@@ -420,6 +424,8 @@ void PasswordFormManager::OnUpdatePasswordFromPrompt(
       alternative_passwords, new_password, &AlternativeElement::value);
   if (alternative_password_it != alternative_passwords.end()) {
     parsed_submitted_form_->password_element = alternative_password_it->name;
+    parsed_submitted_form_->password_element_renderer_id =
+        alternative_password_it->field_renderer_id;
   }
 
   CreatePendingCredentials();

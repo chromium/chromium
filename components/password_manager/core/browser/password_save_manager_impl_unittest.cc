@@ -10,6 +10,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -929,6 +930,8 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
 
   PasswordForm expected = password_save_manager_impl()->GetPendingCredentials();
   expected.password_value = password;
+  expected.password_element_renderer_id =
+      submitted_form.fields[0].unique_renderer_id;
   expected.password_element = submitted_form.fields[0].name;
 
   // Simulate that the user updates value to save for the first password field
@@ -1250,6 +1253,73 @@ TEST_P(PasswordSaveManagerImplTest, DontIncrementTimesUsedWhenBasicHTTPAuth) {
   EXPECT_CALL(*mock_profile_form_saver(),
               Update(Field(&PasswordForm::times_used_in_html_form, 0), _, _));
   password_save_manager_impl()->Save(&observed_form_, saved_credential);
+}
+
+TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
+  // Setup a matched form in the storage for the currently submitted form.
+  const std::u16string matched_form_username_field_name = u"new_username_id";
+  FormFieldData field;
+  field.name = matched_form_username_field_name;
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+  field.form_control_type = "text";
+  saved_match_.form_data.fields.push_back(field);
+
+  field.name = u"firstname";
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+  field.form_control_type = "text";
+  saved_match_.form_data.fields.push_back(field);
+  saved_match_.username_element = field.name;
+
+  field.name = u"password";
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+  field.form_control_type = "password";
+  saved_match_.form_data.fields.push_back(field);
+  saved_match_.password_element = field.name;
+
+  const std::u16string username = u"user1";
+  saved_match_.all_alternative_usernames.emplace_back(
+      AlternativeElement::Value(username), autofill::FieldRendererId(),
+      AlternativeElement::Name(matched_form_username_field_name));
+
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  // Use the same credentials on the submitted form.
+  submitted_form_ = observed_form_;
+  submitted_form_.fields[kUsernameFieldIndex].value = username;
+  submitted_form_.fields[kPasswordFieldIndex].value =
+      saved_match_.password_value;
+
+  PasswordForm parsed_submitted_form = Parse(submitted_form_);
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  // Check that a vote is sent for the password field.
+  std::map<std::u16string, autofill::ServerFieldType> expected_types;
+  expected_types[submitted_form_.fields[kPasswordFieldIndex].name] =
+      autofill::PASSWORD;
+
+  EXPECT_CALL(*mock_autofill_download_manager(),
+              StartUploadRequest(UploadedAutofillTypesAre(expected_types),
+                                 false, _, _, true, nullptr, _));
+
+  // Check that correction vote is sent for the earlier saved form.
+  std::map<std::u16string, autofill::ServerFieldType>
+      correction_upload_expected_types;
+  correction_upload_expected_types[matched_form_username_field_name] =
+      autofill::USERNAME;
+  correction_upload_expected_types[u"password"] =
+      autofill::ACCOUNT_CREATION_PASSWORD;
+  EXPECT_CALL(*mock_autofill_download_manager(),
+              StartUploadRequest(
+                  UploadedAutofillTypesAre(correction_upload_expected_types),
+                  false, _, _, true, nullptr, _));
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
