@@ -6661,10 +6661,10 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OOBE_DISPLAY_SIZE_VALUE" desc="The currently selected display size percentage.">
     <ph name="DISPLAY_ZOOM">$1<ex>120</ex></ph>%
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_POSITIVE_BUTTON_ARIA" desc="The message to be announced by ChromeVox in the display size screen when the button to increase the size is focused" translateable="false">
+  <message name="IDS_OOBE_DISPLAY_SIZE_POSITIVE_BUTTON_ARIA" desc="The message to be announced by ChromeVox in the display size screen when the button to increase the size is focused">
     Increase display and text size
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_NEGATIVE_BUTTON_ARIA" desc="The message to be announced by ChromeVox in the display size screen when the button to decrease the size is focused" translateable="false">
+  <message name="IDS_OOBE_DISPLAY_SIZE_NEGATIVE_BUTTON_ARIA" desc="The message to be announced by ChromeVox in the display size screen when the button to decrease the size is focused">
     Decrease display and text size
   </message>
 
@@ -6701,43 +6701,41 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- CHOOBE Screen -->
-  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
-  <message name="IDS_OOBE_CHOOBE_TITLE" desc="Title of the CHOOBE screen." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_TITLE" desc="Title of the CHOOBE screen.">
     Choose more features to set up
   </message>
-  <message name="IDS_OOBE_CHOOBE_DESCRIPTION" desc="Subitle of the CHOOBE screen." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_DESCRIPTION" desc="Subitle of the CHOOBE screen.">
     You can also find these options in Settings after you finish setting up your Chromebook
   </message>
-  <message name="IDS_OOBE_CHOOBE_SKIP_BUTTON" desc="Skip button for the CHOOBE screen" translateable="false">
+  <message name="IDS_OOBE_CHOOBE_SKIP_BUTTON" desc="Skip button for the CHOOBE screen">
     Skip
   </message>
 
   <!-- CHOOBE Tiles -->
-  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
-  <message name="IDS_OOBE_CHOOBE_THEME_SELECTION_TILE_TITLE" desc="Title of the theme selection tile in the CHOOBE screen." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_THEME_SELECTION_TILE_TITLE" desc="Title of the theme selection tile in the CHOOBE screen.">
     Select light or dark theme
   </message>
-  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_TILE_TITLE" desc="Title of the touchpad scroll tile in the CHOOBE screen." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_TILE_TITLE" desc="Title of the touchpad scroll tile in the CHOOBE screen.">
     Change touchpad scrolling direction
   </message>
-  <message name="IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE" desc="Title of the display size tile in the CHOOBE screen." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE" desc="Title of the display size tile in the CHOOBE screen.">
     Change display and text size
   </message>
-  <message name="IDS_OOBE_CHOOBE_RETURN_BUTTON" desc="Label for the return button shown in the last optional screen selected by the user if there still exists more features thaat the user can select." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_RETURN_BUTTON" desc="Label for the return button shown in the last optional screen selected by the user if there still exists more features thaat the user can select.">
     Save and see more
   </message>
-  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_SUBTITLE_ENABLED" desc="Subtitle of the touchpad scroll tile in the CHOOBE screen if reverse scroll enabled." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_SUBTITLE_ENABLED" desc="Subtitle of the touchpad scroll tile in the CHOOBE screen if reverse scroll enabled.">
     Reverse scrolling enabled
   </message>
-  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_SUBTITLE_DISABLED" desc="Subtitle of the touchpad scroll tile in the CHOOBE screen if reverse scroll disabled." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_SUBTITLE_DISABLED" desc="Subtitle of the touchpad scroll tile in the CHOOBE screen if reverse scroll disabled.">
     Reverse scrolling disabled
   </message>
 
   <!-- CHOOBE Tiles Accessibility -->
-  <message name="IDS_OOBE_CHOOBE_TILE_SYNCED" desc="message will be announced by the chromevox if the tile is synced and contain the sync icons." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_TILE_SYNCED" desc="message will be announced by the chromevox if the tile is synced and contain the sync icons.">
     Setting synced from your previous device.
   </message>
-  <message name="IDS_OOBE_CHOOBE_TILE_VISITED" desc="message will be announced by the chromevox if the tile is visited." translateable="false">
+  <message name="IDS_OOBE_CHOOBE_TILE_VISITED" desc="message will be announced by the chromevox if the tile is visited.">
     Visited
   </message>
 
