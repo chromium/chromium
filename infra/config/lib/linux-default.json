@@ -114,6 +114,7 @@
     "ToTAndroid x86": "Ubuntu-22.04",
     "ToTAndroid64": "Ubuntu-22.04",
     "ToTAndroidASan": "Ubuntu-22.04",
+    "ToTAndroidCoverage x86": "Ubuntu-22.04",
     "ToTAndroidOfficial": "Ubuntu-22.04",
     "ToTChromeOS": "Ubuntu-22.04",
     "ToTChromeOS (dbg)": "Ubuntu-22.04",
