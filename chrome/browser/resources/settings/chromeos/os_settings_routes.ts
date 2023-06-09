@@ -327,10 +327,8 @@ export function createRoutes(): OsSettingsRoutes {
       createSubpage(r.DEVICE, routesMojom.STYLUS_SUBPAGE_PATH, Subpage.kStylus);
   r.DISPLAY = createSubpage(
       r.DEVICE, routesMojom.DISPLAY_SUBPAGE_PATH, Subpage.kDisplay);
-  if (loadTimeData.getBoolean('enableAudioSettingsPage')) {
-    r.AUDIO =
-        createSubpage(r.DEVICE, routesMojom.AUDIO_SUBPAGE_PATH, Subpage.kAudio);
-  }
+  r.AUDIO =
+      createSubpage(r.DEVICE, routesMojom.AUDIO_SUBPAGE_PATH, Subpage.kAudio);
   if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
     r.PER_DEVICE_KEYBOARD = createSubpage(
         r.DEVICE, routesMojom.PER_DEVICE_KEYBOARD_SUBPAGE_PATH,

@@ -46,7 +46,6 @@ var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kAudioSettingsPage',
         'ash::features::kInputDeviceSettingsSplit',
       ],
     };

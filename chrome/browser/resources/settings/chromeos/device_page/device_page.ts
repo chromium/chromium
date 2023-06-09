@@ -99,17 +99,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       },
 
       /**
-       * Whether audio management info should be shown.
-       */
-      showAudioInfo_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableAudioSettingsPage');
-        },
-        readOnly: true,
-      },
-
-      /**
        * Whether settings should be split per device.
        */
       isDeviceSettingsSplitEnabled_: {

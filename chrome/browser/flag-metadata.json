@@ -425,11 +425,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "audio-settings-page",
-    "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "auto-framing-override",
     "owners": [ "kamesan", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116

@@ -794,7 +794,6 @@ void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
 }
 
 void SystemTrayClientImpl::ShowAudioSettings() {
-  DCHECK(ash::features::IsAudioSettingsPageEnabled());
   base::RecordAction(base::UserMetricsAction("ShowAudioSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kAudioSubpagePath);

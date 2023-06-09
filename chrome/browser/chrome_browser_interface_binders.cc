@@ -1423,11 +1423,9 @@ void PopulateChromeWebUIFrameBinders(
       ash::bluetooth_config::mojom::CrosBluetoothConfig,
       ash::BluetoothPairingDialogUI, ash::settings::OSSettingsUI>(map);
 
-  if (ash::features::IsAudioSettingsPageEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::audio_config::mojom::CrosAudioConfig, ash::settings::OSSettingsUI>(
-        map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::audio_config::mojom::CrosAudioConfig, ash::settings::OSSettingsUI>(
+      map);
 
   if (ash::features::IsHotspotEnabled()) {
     RegisterWebUIControllerInterfaceBinder<

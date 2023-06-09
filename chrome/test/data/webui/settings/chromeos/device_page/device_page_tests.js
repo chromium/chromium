@@ -486,8 +486,6 @@ suite('SettingsDevicePage', function() {
 
     await init();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
-
-    // enableAudioSettingsPage feature flag by default is turned on in tests.
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
 
     // enableInputDeviceSettingsSplit feature flag by default is turned on.
@@ -523,14 +521,6 @@ suite('SettingsDevicePage', function() {
     webUIListenerCallback('has-mouse-changed', true);
     await flushTasks();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-  });
-
-  test('audio row visibility', async function() {
-    loadTimeData.overrideValues({
-      enableAudioSettingsPage: false,
-    });
-    await init();
-    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
   });
 
   test('per-device-mouse row visibility', async function() {
@@ -946,9 +936,6 @@ suite('SettingsDevicePage', function() {
     }
 
     setup(async function() {
-      loadTimeData.overrideValues({
-        enableAudioSettingsPage: true,
-      });
       await init();
 
       // FakeAudioConfig must be set before audio subpage is loaded.

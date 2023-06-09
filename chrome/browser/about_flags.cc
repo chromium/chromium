@@ -3979,13 +3979,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrasSplitAlsaUsbInternalName,
      flag_descriptions::kCrasSplitAlsaUsbInternalDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrasSplitAlsaUSBInternal")},
-    {
-        "audio-settings-page",
-        flag_descriptions::kAudioSettingsPageName,
-        flag_descriptions::kAudioSettingsPageDescription,
-        kOsCrOS,
-        FEATURE_VALUE_TYPE(ash::features::kAudioSettingsPage),
-    },
     {"disable-explicit-dma-fences",
      flag_descriptions::kDisableExplicitDmaFencesName,
      flag_descriptions::kDisableExplicitDmaFencesDescription, kOsCrOS,

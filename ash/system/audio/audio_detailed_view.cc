@@ -29,7 +29,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "ash/system/unified/unified_slider_view.h"
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -533,7 +532,6 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
 }
 
 void AudioDetailedView::OnSettingsButtonClicked() {
-  CHECK(features::IsAudioSettingsPageEnabled());
   if (!TrayPopupUtils::CanOpenWebUISettings()) {
     return;
   }
@@ -841,16 +839,14 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
 }
 
 void AudioDetailedView::CreateExtraTitleRowButtons() {
-  if (features::IsAudioSettingsPageEnabled()) {
-    tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
-    std::unique_ptr<views::Button> settings =
-        base::WrapUnique(CreateSettingsButton(
-            base::BindRepeating(&AudioDetailedView::OnSettingsButtonClicked,
-                                weak_factory_.GetWeakPtr()),
-            IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS));
-    settings_button_ =
-        tri_view()->AddView(TriView::Container::END, std::move(settings));
-  }
+  tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
+  std::unique_ptr<views::Button> settings =
+      base::WrapUnique(CreateSettingsButton(
+          base::BindRepeating(&AudioDetailedView::OnSettingsButtonClicked,
+                              weak_factory_.GetWeakPtr()),
+          IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS));
+  settings_button_ =
+      tri_view()->AddView(TriView::Container::END, std::move(settings));
 }
 
 // SodaInstaller::Observer:

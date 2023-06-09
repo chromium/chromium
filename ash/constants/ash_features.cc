@@ -187,12 +187,6 @@ BASE_FEATURE(kAudioSourceFetcherResampling,
              "AudioSourceFetcherResampling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Audio Settings Page in System Settings, which allows
-// audio configuration. crbug.com/1092970.
-BASE_FEATURE(kAudioSettingsPage,
-             "AudioSettingsPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Audio URL that is designed to help user debug or troubleshoot
 // common issues on ChromeOS.
 BASE_FEATURE(kAudioUrl, "AudioUrl", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2641,10 +2635,6 @@ bool IsArcInputOverlayAlphaV2Enabled() {
 
 bool IsAssistantNativeIconsEnabled() {
   return base::FeatureList::IsEnabled(kAssistantNativeIcons);
-}
-
-bool IsAudioSettingsPageEnabled() {
-  return base::FeatureList::IsEnabled(kAudioSettingsPage);
 }
 
 bool IsAutoNightLightEnabled() {

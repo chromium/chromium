@@ -136,6 +136,16 @@ const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
        {.setting = mojom::Setting::kPowerIdleBehaviorWhileOnBattery},
        {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY_ALT1,
         SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS,
+       mojom::kAudioSubpagePath,
+       mojom::SearchResultIcon::kAudio,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kAudio},
+       {IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT1,
+        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT2,
+        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT3,
+        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT4, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -554,22 +564,6 @@ const std::vector<SearchConcept>& GetStylusSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kStylus}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetAudioSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS,
-       mojom::kAudioSubpagePath,
-       mojom::SearchResultIcon::kAudio,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kAudio},
-       {IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT1,
-        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT2,
-        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT3,
-        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT4, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -1092,14 +1086,10 @@ DeviceSection::DeviceSection(Profile* profile,
     updater.AddSearchTags(GetExternalStorageSearchConcepts());
   }
 
-  if (ash::features::IsAudioSettingsPageEnabled()) {
-    updater.AddSearchTags(GetAudioSearchConcepts());
-
-    // Only when the feature is enabled, the toggle buttons for charging sounds
-    // and the low battery sound will be shown up.
-    if (ash::features::AreSystemSoundsEnabled()) {
-      updater.AddSearchTags(GetAudioPowerSoundsSearchConcepts());
-    }
+  // Only when the feature is enabled, the toggle buttons for charging sounds
+  // and the low battery sound will be shown up.
+  if (ash::features::AreSystemSoundsEnabled()) {
+    updater.AddSearchTags(GetAudioPowerSoundsSearchConcepts());
   }
 
   chromeos::PowerManagerClient* power_manager_client =
@@ -1693,10 +1683,6 @@ void DeviceSection::AddDevicePointersStrings(
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 
   html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
-
-  html_source->AddBoolean(
-      "enableAudioSettingsPage",
-      base::FeatureList::IsEnabled(ash::features::kAudioSettingsPage));
 
   html_source->AddBoolean(
       "enableInputDeviceSettingsSplit",

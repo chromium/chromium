@@ -256,7 +256,6 @@ void OSSettingsUI::BindInterface(
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<audio_config::mojom::CrosAudioConfig> receiver) {
-  DCHECK(features::IsAudioSettingsPageEnabled());
   GetAudioConfigService(std::move(receiver));
 }
 

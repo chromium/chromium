@@ -4,11 +4,9 @@
 
 #include "chromeos/ash/components/audio/cros_audio_config_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
@@ -143,7 +141,6 @@ class CrosAudioConfigImplTest : public testing::Test {
   ~CrosAudioConfigImplTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kAudioSettingsPage);
     CrasAudioClient::InitializeFake();
     fake_cras_audio_client_ = FakeCrasAudioClient::Get();
     CrasAudioHandler::InitializeForTesting();
@@ -372,7 +369,6 @@ class CrosAudioConfigImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
       nullptr;  // Not owned.

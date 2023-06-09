@@ -4,8 +4,6 @@
 
 #include "chromeos/ash/components/audio/in_process_instance.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/check.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/audio/cros_audio_config_impl.h"
 
@@ -13,7 +11,6 @@ namespace ash::audio_config {
 
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosAudioConfig> pending_receiver) {
-  CHECK(features::IsAudioSettingsPageEnabled());
   static base::NoDestructor<CrosAudioConfigImpl> instance;
   instance->BindPendingReceiver(std::move(pending_receiver));
 }

@@ -70,12 +70,10 @@
     <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
         on-click="onDisplayClick_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    <template is="dom-if" if="[[showAudioInfo_]]">
-      <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
-          on-click="onAudioClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
+    <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
+        on-click="onAudioClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
     <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
         label="$i18n{storageTitle}" on-click="onStorageClick_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
@@ -145,7 +143,7 @@
   </template>
   <template is="dom-if" route-path="/audio">
     <os-settings-subpage page-title="$i18n{audioTitle}">
-      <settings-audio prefs="{{prefs}}" show-audio-info="[[showAudioInfo_]]">
+      <settings-audio prefs="{{prefs}}">
       </settings-audio>
     </os-settings-subpage>
   </template>

@@ -5216,11 +5216,6 @@ const char kAudioHFPSwbName[] = "Audio Bluetooth HFP Super-wide-band support";
 const char kAudioHFPSwbDescription[] =
     "Enable Bluetooth HFP Super-wide-band codec if supported.";
 
-const char kAudioSettingsPageName[] = "Audio Settings Page";
-const char kAudioSettingsPageDescription[] =
-    "Enables the dedicated Audio Settings Page in system settings, which "
-    "allows for greater audio configuration.";
-
 const char kAutoFramingOverrideName[] = "Auto-framing control override";
 const char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "
