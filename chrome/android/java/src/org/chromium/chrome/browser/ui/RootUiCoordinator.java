@@ -152,6 +152,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -308,6 +309,7 @@ public class RootUiCoordinator
     @Nullable
     private final BackPressManager mBackPressManager;
     private final @NonNull Supplier<Bundle> mSavedInstanceStateSupplier;
+    protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     @Nullable
     private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
@@ -502,6 +504,8 @@ public class RootUiCoordinator
         });
         mFoldTransitionController = new FoldTransitionController(mToolbarManagerOneshotSupplier,
                 mLayoutManagerSupplier, mActivityTabProvider, mStartSurfaceSupplier, new Handler());
+        mExpandedBottomSheetHelper =
+                new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -1470,10 +1474,9 @@ public class RootUiCoordinator
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
-                mBrowserControlsManager, mModalDialogManagerSupplier,
-                this::getBottomSheetSnackbarManager, mTabObscuringHandlerSupplier.get(),
-                mOmniboxFocusStateSupplier, panelManagerSupplier,
-                mLayoutStateProviderOneShotSupplier);
+                mBrowserControlsManager, mExpandedBottomSheetHelper,
+                this::getBottomSheetSnackbarManager, mOmniboxFocusStateSupplier,
+                panelManagerSupplier, mLayoutStateProviderOneShotSupplier);
 
         // TODO(crbug.com/1279941): Consider moving handler registration to feature code.
         if (BackPressManager.isEnabled()) {

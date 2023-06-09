@@ -44,6 +44,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -81,6 +82,8 @@ public class PageInsightsCoordinatorTest {
     private BrowserControlsSizer mBrowserControlsSizer;
     @Mock
     private BottomSheetController mBottomUiController;
+    @Mock
+    private ExpandedSheetHelper mExpandedSheetHelper;
 
     private PageInsightsCoordinator mPageInsightsCoordinator;
     private ManagedBottomSheetController mPageInsightsController;
@@ -123,9 +126,9 @@ public class PageInsightsCoordinatorTest {
                     initializedCallback, activity.getWindow(),
                     KeyboardVisibilityDelegate.getInstance(), () -> rootView());
         });
-        mPageInsightsCoordinator =
-                new PageInsightsCoordinator(activity, mTabProvider, mPageInsightsController,
-                        mBottomUiController, mBrowserControlsStateProvider, mBrowserControlsSizer);
+        mPageInsightsCoordinator = new PageInsightsCoordinator(activity, mTabProvider,
+                mPageInsightsController, mBottomUiController, mExpandedSheetHelper,
+                mBrowserControlsStateProvider, mBrowserControlsSizer);
         mTestSupport = new BottomSheetTestSupport(mPageInsightsController);
         TestThreadUtils.runOnUiThreadBlocking(mPageInsightsCoordinator::launch);
         waitForAnimationToFinish();
@@ -144,14 +147,23 @@ public class PageInsightsCoordinatorTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mTestSupport.endAllAnimations());
     }
 
+    private void expandSheet() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(mPageInsightsController::expandSheet);
+        waitForAnimationToFinish();
+    }
+
+    private void collapseSheet() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mPageInsightsController.collapseSheet(true));
+        waitForAnimationToFinish();
+    }
+
     @Test
     @MediumTest
     public void testRoundTopCornerAtExpandedState() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(0.f, mPageInsightsCoordinator.getCornerRadiusForTesting(), ASSERTION_DELTA);
 
-        TestThreadUtils.runOnUiThreadBlocking(mPageInsightsController::expandSheet);
-        waitForAnimationToFinish();
+        expandSheet();
         int maxCornerRadiusPx = sTestRule.getActivity().getResources().getDimensionPixelSize(
                 R.dimen.bottom_sheet_corner_radius);
         assertEquals(maxCornerRadiusPx, mPageInsightsCoordinator.getCornerRadiusForTesting(),
@@ -230,5 +242,15 @@ public class PageInsightsCoordinatorTest {
         waitForAnimationToFinish();
         assertEquals("Sheet should be restored", SheetState.PEEK,
                 mPageInsightsController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandSheetHelper() throws Exception {
+        createPageInsightsCoordinator();
+        expandSheet();
+        verify(mExpandedSheetHelper).onSheetExpanded();
+        collapseSheet();
+        verify(mExpandedSheetHelper).onSheetCollapsed();
     }
 }

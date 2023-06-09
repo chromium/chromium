@@ -22,6 +22,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.url.GURL;
 
@@ -55,6 +56,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     // away the bottom sheet in sync with the controls.
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 
+    private final ExpandedSheetHelper mExpandedSheetHelper;
+
     // Sheet background drawable whose top corners needs to be rounded.
     private GradientDrawable mBackgroundDrawable;
 
@@ -74,7 +77,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     public PageInsightsMediator(PageInsightsSheetContent sheetContent,
             ObservableSupplier<Tab> tabObservable,
             ManagedBottomSheetController bottomSheetController,
-            BottomSheetController bottomUiController,
+            BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer) {
         mSheetContent = sheetContent;
@@ -84,6 +87,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             if (tab != null) tab.addObserver(this);
         });
         mLoadingFirstPage = true;
+        mExpandedSheetHelper = expandedSheetHelper;
         mBrowserControlsSizer = browserControlsSizer;
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
             @Override
@@ -169,10 +173,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     @Override
-    public void onSheetOpened(@StateChangeReason int reason) {}
+    public void onSheetOpened(@StateChangeReason int reason) {
+        mExpandedSheetHelper.onSheetExpanded();
+    }
 
     @Override
-    public void onSheetClosed(@StateChangeReason int reason) {}
+    public void onSheetClosed(@StateChangeReason int reason) {
+        mExpandedSheetHelper.onSheetCollapsed();
+    }
 
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {

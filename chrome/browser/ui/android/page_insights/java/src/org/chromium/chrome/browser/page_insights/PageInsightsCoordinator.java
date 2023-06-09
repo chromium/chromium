@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 
 /**
@@ -28,6 +29,8 @@ public class PageInsightsCoordinator {
     private final BottomSheetController mBottomUiController;
     private final BrowserControlsStateProvider mControlsStateProvider;
     private final BrowserControlsSizer mBrowserControlsSizer;
+    private final ExpandedSheetHelper mExpandedSheetHelper;
+
     private PageInsightsMediator mMediator;
     private PageInsightsSheetContent mSheetContent;
 
@@ -35,16 +38,22 @@ public class PageInsightsCoordinator {
      * Constructor.
      * @param context The associated {@link Context}.
      * @param tabProvider Provider of the current activity tab.
-     * @param bottomSheetController {@link ManagedBottomSheetController} for page insights hub.
+     * @param bottomSheetController {@link ManagedBottomSheetController} for page insights.
+     * @param bottomUiController {@link BottomSheetController} for other bottom sheet UIs.
+     * @param expandedSheetHelper Helps interaction with other UI in expanded mode.
+     * @param tabObscuringHandler A delegate that provides the functionality of obscuring all tabs.
+     * @param controlsStateProvider Provides the browser controls' state.
+     * @param browserControlsSizer Bottom browser controls resizer.
      */
     public PageInsightsCoordinator(Context context, ObservableSupplier<Tab> tabProvider,
             ManagedBottomSheetController bottomSheetController,
-            BottomSheetController bottomUiController,
+            BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer) {
         mContext = context;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
+        mExpandedSheetHelper = expandedSheetHelper;
         mBottomUiController = bottomUiController;
         mControlsStateProvider = controlsStateProvider;
         mBrowserControlsSizer = browserControlsSizer;
@@ -58,9 +67,9 @@ public class PageInsightsCoordinator {
             mSheetContent = new PageInsightsSheetContent(mContext);
         }
         if (mMediator == null) {
-            mMediator =
-                    new PageInsightsMediator(mSheetContent, mTabProvider, mBottomSheetController,
-                            mBottomUiController, mControlsStateProvider, mBrowserControlsSizer);
+            mMediator = new PageInsightsMediator(mSheetContent, mTabProvider,
+                    mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
+                    mControlsStateProvider, mBrowserControlsSizer);
         }
         mMediator.requestShowContent();
     }

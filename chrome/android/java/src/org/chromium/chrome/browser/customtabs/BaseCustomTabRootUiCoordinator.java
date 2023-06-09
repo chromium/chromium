@@ -288,8 +288,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         controller.setAccessibilityUtil(ChromeAccessibilityUtil.get());
 
         mPageInsightsCoordinator = new PageInsightsCoordinator(mActivity, mActivityTabProvider,
-                controller, getBottomSheetController(), mBrowserControlsManager,
-                mBrowserControlsManager);
+                controller, getBottomSheetController(), mExpandedBottomSheetHelper,
+                mBrowserControlsManager, mBrowserControlsManager);
 
         mContextualSearchObserver = new ContextualSearchObserver() {
             @Override
