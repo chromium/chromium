@@ -22,8 +22,10 @@ declare_args() {
   # This only applies to Chromium itself, so the build_with_chromium check
   # should not be removed.
   # TODO(crbug.com/1386212): Mac
-  enable_rust = !is_mac && !is_ios && !(is_official_build && is_mac) &&
-                build_with_chromium
+  # TODO(crbug.com/1271215): Windows
+  enable_rust =
+      !is_mac && !is_ios && !is_win &&
+      !(is_official_build && (is_mac || is_win)) && build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
