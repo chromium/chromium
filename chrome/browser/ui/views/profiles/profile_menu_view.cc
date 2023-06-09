@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/profile_view_utils.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -114,6 +113,22 @@ std::u16string GetSyncErrorButtonText(AvatarSyncErrorType error) {
   }
 }
 
+void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
+  // Create a URL so that the account chooser is shown if the account with
+  // |email| is not signed into the web. Include a UTM parameter to signal the
+  // source of the navigation.
+  GURL google_account = net::AppendQueryParameter(
+      GURL(chrome::kGoogleAccountURL), "utm_source", "chrome-profile-chooser");
+
+  GURL url(chrome::kGoogleAccountChooserURL);
+  url = net::AppendQueryParameter(url, "Email", email);
+  url = net::AppendQueryParameter(url, "continue", google_account.spec());
+
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 // Returns the number of browsers associated with |profile|.
 // Note: For regular profiles this includes incognito sessions.
 int CountBrowsersFor(Profile* profile) {
@@ -122,6 +137,10 @@ int CountBrowsersFor(Profile* profile) {
     browser_count += chrome::GetBrowserCount(
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   return browser_count;
+}
+
+bool IsSyncPaused(Profile* profile) {
+  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kSyncPaused;
 }
 
 }  // namespace
@@ -640,7 +659,12 @@ void ProfileMenuView::BuildSyncInfo() {
 
 void ProfileMenuView::BuildFeatureButtons() {
   Profile* profile = browser()->profile();
-  bool has_unconsented_account = HasUnconstentedProfile(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  const bool has_unconsented_account =
+      !profile->IsGuestSession() &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+
   if (has_unconsented_account && !IsSyncPaused(profile)) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // The Google G icon needs to be shrunk, so it won't look too big compared
@@ -681,8 +705,6 @@ void ProfileMenuView::BuildFeatureButtons() {
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
   const bool has_primary_account =
       !profile->IsGuestSession() &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);

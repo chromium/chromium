@@ -1389,8 +1389,6 @@ static_library("ui") {
       "privacy_sandbox/privacy_sandbox_prompt.h",
       "privacy_sandbox/privacy_sandbox_prompt_helper.cc",
       "privacy_sandbox/privacy_sandbox_prompt_helper.h",
-      "profile_view_utils.cc",
-      "profile_view_utils.h",
       "sad_tab.cc",
       "sad_tab.h",
       "sad_tab_helper.cc",
