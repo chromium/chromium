@@ -7491,7 +7491,9 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
       case net::HTTP_NON_AUTHORITATIVE_INFORMATION:
         break;
       default:
-        NOTREACHED();
+        SCOPED_CRASH_KEY_NUMBER("PrerenderUnexpected", "http_status_code",
+                                params->http_status_code);
+        NOTREACHED_NORETURN();
     }
   } else {
     DCHECK_EQ(params->http_status_code, net::HTTP_OK);
