@@ -28,7 +28,10 @@ android_library("js_sandbox_aidl_java") {
 }
 
 android_library("javascriptengine_common_java") {
-  sources = [ "src/main/java/androidx/javascriptengine/common/Utils.java" ]
+  sources = [
+    "src/main/java/androidx/javascriptengine/common/LengthLimitExceededException.java",
+    "src/main/java/androidx/javascriptengine/common/Utils.java",
+  ]
 
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
