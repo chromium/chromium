@@ -283,6 +283,10 @@ vars = {
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'webrtc_git': 'https://webrtc.googlesource.com',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling V8
+  # and whatever else without interference from each other.
+  'src_internal_revision': 'refs/heads/chromium/5735',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
   'skia_revision': 'refs/heads/chrome/m114',
@@ -1962,7 +1966,11 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': Var('chrome_git') + '/chrome/src-internal.git@refs/heads/chromium/5735',
+    'url': Var('chrome_git') + '/chrome/src-internal.git' + '@' + Var('src_internal_revision'),
+    'condition': 'checkout_src_internal',
+  },
+  'src/internal': {
+    'url': Var('chrome_git') + '/chrome/src-internal.git' + '@' + Var('src_internal_revision'),
     'condition': 'checkout_src_internal',
   },
 
