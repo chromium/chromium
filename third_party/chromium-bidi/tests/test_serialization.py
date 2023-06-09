@@ -530,7 +530,8 @@ async def test_serialization_node(websocket, context_id, html):
             "childNodeCount": 2,
             "attributes": {
                 "some_attr_name": "some_attr_value"
-            }
+            },
+            'shadowRoot': None,
         }
     } == result["result"]
 
@@ -577,7 +578,8 @@ async def test_serialization_nested_node(websocket, context_id, html,
             "attributes": {
                 "some_attr_name": "some_attr_value"
             },
-        }
+            'shadowRoot': None,
+        },
     } == extract_delegate(result["result"])
 
 
