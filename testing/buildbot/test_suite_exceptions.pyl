@@ -467,8 +467,6 @@
         'swarming': {
           "shards": 12,
         },
-        # TODO(crbug.com/1453198): Re-enable on CQ.
-        'ci_only': True,
       },
       'Win10 Tests x64 (dbg)': {
         'args': [
@@ -841,8 +839,6 @@
         'swarming': {
           "shards": 18,
         },
-        # TODO(crbug.com/1453198): Re-enable on CQ.
-        'ci_only': True,
       },
       'Win10 Tests x64 (dbg)': {
         'args': [
