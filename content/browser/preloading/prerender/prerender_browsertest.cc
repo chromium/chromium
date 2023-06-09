@@ -7807,7 +7807,7 @@ class MultiplePrerendersWithLimitedMemoryBrowserTest
            // Allow prerendering on low-end trybot devices so that prerendering
            // can run on any bots.
            {"memory_threshold_in_mb", "0"}}}},
-        {});
+        {kPrerender2BypassMemoryLimitCheck});
   }
 
  private:

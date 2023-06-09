@@ -56,6 +56,7 @@ struct PrerenderAttributes;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrerender2IgnoreFailureOnMemoryFootprintQuery);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2BypassMemoryLimitCheck);
 
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
 // for NavigationRequest to activate the prerendered page. This is created per

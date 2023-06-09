@@ -440,6 +440,15 @@ BASE_FEATURE(kPrerender2IgnoreFailureOnMemoryFootprintQuery,
              "Prerender2IgnoreFailureOnMemoryFootprintQuery",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill-switch controlled by the field trial. When this feature is enabled,
+// PrerenderHostRegistry doesn't query about the current memory footprint and
+// bypasses the memory limit check, while it still checks the limit on the
+// number of ongoing prerendering requests and memory pressure events to prevent
+// excessive memory usage. See https://crbug.com/1382697 for details.
+BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
+             "Prerender2BypassMemoryLimitCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
     : memory_pressure_listener_(
           FROM_HERE,
@@ -1563,8 +1572,14 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
 
 void PrerenderHostRegistry::DestroyWhenUsingExcessiveMemory(
     int frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2MemoryControls))
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrerender2MemoryControls)) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(kPrerender2BypassMemoryLimitCheck)) {
+    return;
+  }
 
   // Override the memory restriction when the DevTools is open.
   if (IsDevToolsOpen(*web_contents())) {
