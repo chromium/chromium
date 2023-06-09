@@ -150,6 +150,18 @@
       'ios_runtime_cache_16_4',
     ],
   },
+  'SIM_IPAD_AIR_5TH_GEN_16_4': {
+    'args': [
+      '--platform',
+      'iPad Air (5th generation)',
+      '--version',
+      '16.4'
+    ],
+    'identifier': 'iPad Air (5th generation) 16.4',
+    'mixins': [
+      'ios_runtime_cache_16_4',
+    ],
+  },
   'SIM_IPAD_AIR_5TH_GEN_17_0': {
     'args': [
       '--platform',
@@ -221,6 +233,18 @@
       'ios_runtime_cache_15_5',
     ],
   },
+  'SIM_IPAD_PRO_6TH_GEN_16_4': {
+    'args': [
+      '--platform',
+      'iPad Pro (12.9-inch) (6th generation)',
+      '--version',
+      '16.4',
+    ],
+    'identifier': 'iPad Pro (12.9-inch) (6th generation) 16.4',
+    'mixins': [
+      'ios_runtime_cache_16_4',
+    ],
+  },
   'SIM_IPAD_6_GEN_16_2': {
     'args': [
       '--platform',
@@ -233,14 +257,14 @@
       'ios_runtime_cache_16_2',
     ],
   },
-  'SIM_IPAD_6_GEN_16_4': {
+  'SIM_IPAD_10TH_GEN_16_4': {
     'args': [
       '--platform',
-      'iPad (6th generation)',
+      'iPad (10th generation)',
       '--version',
       '16.4',
     ],
-    'identifier': 'iPad (6th generation) 16.4',
+    'identifier': 'iPad (10th generation) 16.4',
     'mixins': [
       'ios_runtime_cache_16_4',
     ],
@@ -305,6 +329,18 @@
       'ios_runtime_cache_16_2',
     ],
   },
+  'SIM_IPHONE_14_16_4': {
+    'args': [
+      '--platform',
+      'iPhone 14',
+      '--version',
+      '16.4',
+    ],
+    'identifier': 'iPhone 14 16.4',
+    'mixins': [
+      'ios_runtime_cache_16_4',
+    ],
+  },
   'SIM_IPHONE_14_17_0': {
     'args': [
       '--platform',
@@ -315,6 +351,18 @@
     'identifier': 'iPhone 14 17.0',
     'mixins': [
       'ios_runtime_cache_17_0',
+    ],
+  },
+  'SIM_IPHONE_14_PRO_MAX_16_4': {
+    'args': [
+      '--platform',
+      'iPhone 14 Pro Max',
+      '--version',
+      '16.4',
+    ],
+    'identifier': 'iPhone 14 Pro Max 16.4',
+    'mixins': [
+      'ios_runtime_cache_16_4',
     ],
   },
   'SIM_IPHONE_SE_1ST_GEN_15_5': {
