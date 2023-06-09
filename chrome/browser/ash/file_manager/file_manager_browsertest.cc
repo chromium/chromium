@@ -2205,7 +2205,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableSearchV2(),
         TestCase("searchDocumentsProviderWithRecencyOptions")
             .EnableGenericDocumentsProvider()
-            .EnableSearchV2()
+            .EnableSearchV2(),
+        TestCase("searchFileSystemProvider").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

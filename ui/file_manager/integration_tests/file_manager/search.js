@@ -1063,3 +1063,31 @@ testcase.searchDocumentsProviderWithRecencyOptions = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(recentHellos));
 };
+
+/**
+ * Checks that search works on volumes mounted via fileSystemProvider.
+ */
+testcase.searchFileSystemProvider = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  await sendTestMessage({
+    name: 'launchProviderExtension',
+    manifest: 'manifest_source_device.json',
+  });
+  await remoteCall.waitForElement(
+      appId, '.tree-row .icon[volume-type-icon="provided"]');
+  await navigateWithDirectoryTree(appId, '/Test (1)');
+  await remoteCall.waitForElement(
+      appId, '.tree-row[selected] .icon[volume-type-icon="provided"]');
+  await remoteCall.typeSearchText(appId, 'folder');
+  const expectedFolder = new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'folder',
+    lastModifiedTime: 'Jan 1, 2000, 1:00 PM',
+    nameText: 'folder',
+    sizeText: '--',
+    typeText: 'Folder',
+  });
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([expectedFolder]),
+      {ignoreLastModifiedTime: true});
+};

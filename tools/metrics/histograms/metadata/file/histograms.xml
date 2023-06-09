@@ -1160,6 +1160,7 @@ chromium-metrics-reviews@google.com.
     <variant name="DocumentsProvider"/>
     <variant name="Drive"/>
     <variant name="Local"/>
+    <variant name="Provided"/>
     <variant name="Removable"/>
   </token>
 </histogram>

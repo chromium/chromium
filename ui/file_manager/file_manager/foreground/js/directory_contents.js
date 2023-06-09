@@ -393,11 +393,12 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @param {number} modifiedTimestamp
    * @param {chrome.fileManagerPrivate.FileCategory} category
    * @param {number} maxResults
+   * @param {string} metricName
    * @return {!Promise<!Array<!Entry>>}
    * @private
    */
   makeReadEntriesRecursivelyPromise_(
-      folder, modifiedTimestamp, category, maxResults) {
+      folder, modifiedTimestamp, category, maxResults, metricName) {
     // A promise that resolves to an entry if it is modified after cutoffDate or
     // null, otherwise. Used to filter entries by modified time. If we fail to
     // get metadata for an entry we return it without comparison, to be on the
@@ -412,7 +413,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           });
     });
     return new Promise((resolve, reject) => {
-      metrics.startInterval('Search.DocumentsProvider.Latency');
+      metrics.startInterval(`Search.${metricName}.Latency`);
       const collectedEntries = [];
       let workLeft = 1;
       util.readEntriesRecursively(
@@ -442,8 +443,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                     collectedEntries.push(...modified.filter(e => e !== null));
                     workLeft -= modified.length;
                     if (workLeft <= 0) {
-                      metrics.recordInterval(
-                          'Search.DocumentsProvider.Latency');
+                      metrics.recordInterval(`Search.${metricName}.Latency`);
                       resolve(collectedEntries);
                     }
                   });
@@ -452,7 +452,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           // All entries read callback.
           () => {
             if (--workLeft <= 0) {
-              metrics.recordInterval('Search.DocumentsProvider.Latency');
+              metrics.recordInterval(`Search.${metricName}.Latency`);
               resolve(collectedEntries);
             }
           },
@@ -555,7 +555,26 @@ export class SearchV2ContentScanner extends ContentScanner {
         VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER);
     return rootFolderList.map(
         rootFolder => this.makeReadEntriesRecursivelyPromise_(
-            rootFolder, modifiedTimestamp, category, maxResults));
+            rootFolder, modifiedTimestamp, category, maxResults,
+            'DocumentsProvider'));
+  }
+
+  /**
+   * Returns an array of promises that, when fulfilled, return an array of
+   * entries matching the current query, modified timestamp, and category for
+   * all known file system provider volumes.
+   * @param {number} modifiedTimestamp
+   * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
+   * @return {!Array<!Promise<!Array<Entry>>>}
+   * @private
+   */
+  createFileSystemProviderSearch_(modifiedTimestamp, category, maxResults) {
+    const rootFolderList = this.getRootFoldersByVolumeType_(
+        VolumeManagerCommon.VolumeType.PROVIDED);
+    return rootFolderList.map(
+        rootFolder => this.makeReadEntriesRecursivelyPromise_(
+            rootFolder, modifiedTimestamp, category, maxResults, 'Provided'));
   }
 
   /**
@@ -614,7 +633,12 @@ export class SearchV2ContentScanner extends ContentScanner {
         this.getTopMostVolume_(this.entry_);
     if (this.rootType_ === VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER) {
       return [this.makeReadEntriesRecursivelyPromise_(
-          searchFolder, modifiedTimestamp, category, maxResults)];
+          searchFolder, modifiedTimestamp, category, maxResults,
+          'DocumentsProvider')];
+    }
+    if (this.rootType_ === VolumeManagerCommon.RootType.PROVIDED) {
+      return [this.makeReadEntriesRecursivelyPromise_(
+          searchFolder, modifiedTimestamp, category, maxResults, 'Provided')];
     }
     // My Files or a folder nested in it.
     return this.makeFileSearchPromiseList_(
@@ -635,6 +659,8 @@ export class SearchV2ContentScanner extends ContentScanner {
       ...this.createRemovablesSearch_(modifiedTimestamp, category, maxResults),
       this.createDriveSearch_(modifiedTimestamp, category, maxResults),
       ...this.createDocumentsProviderSearch_(
+          modifiedTimestamp, category, maxResults),
+      ...this.createFileSystemProviderSearch_(
           modifiedTimestamp, category, maxResults),
     ];
   }
