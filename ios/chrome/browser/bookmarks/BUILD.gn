@@ -90,13 +90,18 @@ source_set("test_support") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "bookmark_model_bridge_observer_unittest.mm" ]
+  sources = [
+    "bookmark_model_bridge_observer_unittest.mm",
+    "bookmarks_utils_unittest.mm",
+  ]
   deps = [
     ":bookmarks",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

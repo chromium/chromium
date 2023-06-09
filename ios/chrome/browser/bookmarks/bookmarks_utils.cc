@@ -111,6 +111,7 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     const BookmarkNode* result =
         bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
     if (result && result->is_folder()) {
+      // Make sure the bookmark node is a folder. See crbug.com/1450146.
       return result;
     }
   }
