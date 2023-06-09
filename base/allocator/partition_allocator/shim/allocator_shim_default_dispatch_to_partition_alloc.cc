@@ -162,7 +162,6 @@ class MainPartitionConstructor {
             .thread_cache = thread_cache,
             .quarantine =
                 partition_alloc::PartitionOptions::Quarantine::kAllowed,
-            .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
             .backup_ref_ptr =
                 partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         });
@@ -605,7 +604,6 @@ void ConfigurePartitions(
           .thread_cache =
               partition_alloc::PartitionOptions::ThreadCache::kDisabled,
           .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-          .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
           .backup_ref_ptr =
               enable_brp
                   ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
@@ -631,7 +629,6 @@ void ConfigurePartitions(
                 partition_alloc::PartitionOptions::ThreadCache::kDisabled,
             .quarantine =
                 partition_alloc::PartitionOptions::Quarantine::kAllowed,
-            .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
             .backup_ref_ptr =
                 partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         });

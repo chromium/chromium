@@ -52,9 +52,7 @@ constexpr size_t kLoopIterations = kSamplingFrequency * 4;
 constexpr int kSuccess = 0;
 constexpr int kFailure = 1;
 
-constexpr partition_alloc::PartitionOptions kAllocatorOptions = {
-    .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-};
+constexpr partition_alloc::PartitionOptions kAllocatorOptions = {};
 
 static void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory.";

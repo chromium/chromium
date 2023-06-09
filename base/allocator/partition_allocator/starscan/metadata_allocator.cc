@@ -12,9 +12,7 @@
 namespace partition_alloc::internal {
 
 namespace {
-constexpr PartitionOptions kConfig{
-    .cookie = PartitionOptions::Cookie::kAllowed,
-};
+constexpr PartitionOptions kConfig{};
 }  // namespace
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)

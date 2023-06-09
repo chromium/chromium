@@ -1517,8 +1517,7 @@ class BackupRefPtrTest : public testing::Test {
     // new/delete once PartitionAlloc Everywhere is fully enabled.
     partition_alloc::PartitionAllocGlobalInit(HandleOOM);
     allocator_.init(
-        {.cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-         .backup_ref_ptr =
+        {.backup_ref_ptr =
              partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
          .memory_tagging =
              base::CPU::GetInstanceNoAllocation().has_mte()

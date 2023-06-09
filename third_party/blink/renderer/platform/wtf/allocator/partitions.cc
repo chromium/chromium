@@ -117,7 +117,6 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
 
   return PartitionOptions{
       .quarantine = PartitionOptions::Quarantine::kAllowed,
-      .cookie = PartitionOptions::Cookie::kAllowed,
       .backup_ref_ptr = brp_setting,
       .memory_tagging = memory_tagging,
   };
@@ -202,7 +201,6 @@ void Partitions::InitializeArrayBufferPartition() {
   // aligned as required by ArrayBufferContents.
   array_buffer_allocator->init(partition_alloc::PartitionOptions{
       .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
       .backup_ref_ptr =
           partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
       // When the V8 virtual memory cage is enabled, the ArrayBuffer partition

@@ -101,9 +101,7 @@ class PartitionAllocator : public Allocator {
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 
  private:
-  ThreadSafePartitionRoot alloc_{PartitionOptions{
-      .cookie = PartitionOptions::Cookie::kAllowed,
-  }};
+  ThreadSafePartitionRoot alloc_{PartitionOptions{}};
 };
 
 class PartitionAllocatorWithThreadCache : public Allocator {
@@ -130,7 +128,6 @@ class PartitionAllocatorWithThreadCache : public Allocator {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     .thread_cache = PartitionOptions::ThreadCache::kEnabled,
 #endif
-    .cookie = PartitionOptions::Cookie::kAllowed,
   };
   PartitionAllocatorForTesting<internal::DisallowLeaks> allocator_{kOpts};
   internal::ThreadCacheProcessScopeForTesting scope_;
@@ -161,9 +158,7 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
 
  private:
   bool const register_hooks_;
-  ThreadSafePartitionRoot alloc_{PartitionOptions{
-      .cookie = PartitionOptions::Cookie::kAllowed,
-  }};
+  ThreadSafePartitionRoot alloc_{PartitionOptions{}};
   ::base::allocator::dispatcher::Dispatcher& dispatcher_ =
       ::base::allocator::dispatcher::Dispatcher::GetInstance();
   ::base::debug::tracer::AllocationTraceRecorder recorder_;

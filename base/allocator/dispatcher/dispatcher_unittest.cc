@@ -109,9 +109,7 @@ struct PartitionAllocator {
   }
 
  private:
-  ThreadSafePartitionRoot alloc_{PartitionOptions{
-      .cookie = PartitionOptions::Cookie::kAllowed,
-  }};
+  ThreadSafePartitionRoot alloc_{PartitionOptions{}};
 };
 
 TEST_F(BaseAllocatorDispatcherTest, VerifyNotificationUsingPartitionAllocator) {

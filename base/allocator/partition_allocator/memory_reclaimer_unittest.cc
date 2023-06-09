@@ -47,7 +47,6 @@ class MemoryReclaimerTest : public ::testing::Test {
     allocator_ =
         std::make_unique<PartitionAllocatorForTesting>(PartitionOptions{
             .quarantine = PartitionOptions::Quarantine::kAllowed,
-            .cookie = PartitionOptions::Cookie::kAllowed,
         });
     allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
     PartitionAllocGlobalInit(HandleOOM);

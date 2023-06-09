@@ -81,7 +81,6 @@ void ArrayBufferAllocator::InitializePartition() {
   // These configuration options are copied from blink's ArrayBufferPartition.
   partition_allocator->init(partition_alloc::PartitionOptions{
       .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
       .backup_ref_ptr =
           partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
       .use_configurable_pool =

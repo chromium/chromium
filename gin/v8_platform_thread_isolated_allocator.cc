@@ -28,7 +28,6 @@ void ThreadIsolatedAllocator::Initialize(int pkey) {
   allocator_.init(partition_alloc::PartitionOptions{
       .aligned_alloc =
           partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
       .thread_isolation = partition_alloc::ThreadIsolationOption(pkey_),
   });
 }

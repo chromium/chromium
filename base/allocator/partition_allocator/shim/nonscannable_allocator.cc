@@ -64,7 +64,6 @@ void NonScannableAllocatorImpl<quarantinable>::NotifyPCScanEnabled() {
           quarantinable
               ? partition_alloc::PartitionOptions::Quarantine::kAllowed
               : partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
       .backup_ref_ptr =
           partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
   });

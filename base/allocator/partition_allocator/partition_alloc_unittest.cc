@@ -369,7 +369,6 @@ class PartitionAllocTest
         pkey_allocator.root(),
         PartitionOptions{
             .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
-            .cookie = PartitionOptions::Cookie::kAllowed,
             .ref_count_size = GetParam().ref_count_size,
             .thread_isolation = ThreadIsolationOption(pkey_),
         },
@@ -380,7 +379,6 @@ class PartitionAllocTest
           allocator.root(),
           PartitionOptions{
               .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
-              .cookie = PartitionOptions::Cookie::kAllowed,
               .ref_count_size = GetParam().ref_count_size,
               .thread_isolation = ThreadIsolationOption(pkey_),
           },
@@ -400,7 +398,6 @@ class PartitionAllocTest
             // the allocation. Extras after the allocation are ok.
             .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
 #endif
-            .cookie = PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
             .backup_ref_ptr = PartitionOptions::BackupRefPtr::kEnabled,
 #endif
@@ -4818,7 +4815,6 @@ TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
                                 PurgeFlags::kDiscardUnusedSystemPages);
   std::unique_ptr<PartitionRoot> new_root = CreateCustomTestRoot(
       PartitionOptions{
-          .cookie = PartitionOptions::Cookie::kAllowed,
           .ref_count_size = GetParam().ref_count_size,
       },
       PartitionTestOptions{.set_bucket_distribution = true});
@@ -5020,7 +5016,6 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
 
     std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
         PartitionOptions{
-            .cookie = PartitionOptions::Cookie::kAllowed,
             .use_configurable_pool =
                 PartitionOptions::UseConfigurablePool::kIfAvailable,
             .ref_count_size = GetParam().ref_count_size,
@@ -5055,7 +5050,6 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // slot span size cap.
   std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
       PartitionOptions{
-          .cookie = PartitionOptions::Cookie::kAllowed,
           .ref_count_size = GetParam().ref_count_size,
       },
       PartitionTestOptions{.set_bucket_distribution = true});
@@ -5111,7 +5105,6 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
 TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
       PartitionOptions{
-          .cookie = PartitionOptions::Cookie::kAllowed,
           .use_configurable_pool =
               PartitionOptions::UseConfigurablePool::kIfAvailable,
           .ref_count_size = GetParam().ref_count_size,
