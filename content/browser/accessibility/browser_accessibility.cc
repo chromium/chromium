@@ -1936,12 +1936,15 @@ ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()
   // and exposed on the text field itself. Otherwise, assistive software (AT)
   // won't be able to see them because the native field's descendants are an
   // implementation detail that is hidden from AT.
-  if (IsAtomicTextField()) {
+  if (IsAtomicTextField() && !node()->GetValueForControl().empty()) {
     int start_offset = 0;
+    // Note that in PDFs, static_text will always be null. This is because text
+    // fields are not given descendants by `PdfAccessibilityTreeBuilder`.
     for (BrowserAccessibility* static_text =
              BrowserAccessibilityManager::NextTextOnlyObject(
                  InternalGetFirstChild());
          static_text; static_text = static_text->InternalGetNextSibling()) {
+      DCHECK(static_text->IsDescendantOf(this));
       ui::TextAttributeMap text_spelling_attributes =
           static_text->GetSpellingAndGrammarAttributes();
       for (auto& attribute : text_spelling_attributes) {
