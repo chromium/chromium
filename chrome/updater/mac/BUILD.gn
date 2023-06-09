@@ -559,7 +559,6 @@ if (!is_component_build && enable_dsyms) {
                          root_build_dir),
              "-m",
              "-g",
-             "-d",
              rebase_path(
                  "$root_out_dir/{{source_file_part}}.dSYM/Contents/Resources/DWARF/{{source_file_part}}",
                  root_build_dir),
