@@ -13,6 +13,8 @@ namespace enterprise_connectors {
 // payload, e.g., for privacy reasons.
 class SignalsFilterer {
  public:
+  virtual ~SignalsFilterer() = default;
+
   // Modifies `signals` based on the current device context.
   virtual void Filter(base::Value::Dict& signals);
 };
