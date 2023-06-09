@@ -71,7 +71,6 @@ class GitCL(object):
         self._cwd = cwd
         self._git_executable_name = Git.find_executable_name(
             host.executive, host.platform)
-        self._issue_number = None
 
     def run(self, args):
         """Runs git-cl with the given arguments and returns the output.
@@ -128,13 +127,9 @@ class GitCL(object):
         # "<Optional message> Issue number: 1234 (<url>)".
         # Note: git cl gets the number from local git config, e.g.
         #   by running `git config branch.<branchname>.gerritissue`.
-        if self._issue_number:
-            return self._issue_number
-
         output = self.run(['issue']).split()
         if 'number:' in output:
-            self._issue_number = output[output.index('number:') + 1]
-            return self._issue_number
+            return output[output.index('number:') + 1]
         return 'None'
 
     def _get_cl_status(self):
