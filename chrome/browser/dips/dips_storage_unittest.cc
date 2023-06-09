@@ -11,15 +11,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_file_util.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/test/base/testing_profile.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/test/browser_task_environment.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,10 +61,6 @@ class ScopedDIPSFeatureEnabledWithParams {
 TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   TestStorage storage;
 
-  content::BrowserTaskEnvironment task_environment;
-  base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
-  auto profile = TestingProfile::Builder().SetPath(data_path).Build();
-
   GURL kBounceUrl("https://bounce.com");
   GURL kStorageUrl("https://storage.com");
   GURL kStatefulBounceUrl("https://stateful_bounce.com");
@@ -85,15 +77,14 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeature(dips::kFeature);
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
-                testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
   }
   // Call 'GetSitesToClear' when DIPS is triggered by bounces.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         dips::kFeature, {{"triggering_action", "bounce"}});
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
                                      GetSiteForDIPS(kStatefulBounceUrl)));
   }
@@ -102,7 +93,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         dips::kFeature, {{"triggering_action", "storage"}});
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
                                      GetSiteForDIPS(kStorageUrl)));
   }
@@ -111,7 +102,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         dips::kFeature, {{"triggering_action", "stateful_bounce"}});
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
   }
 }
@@ -125,10 +116,6 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
 
   TestStorage storage;
   storage.SetClockForTesting(&clock);
-
-  content::BrowserTaskEnvironment task_environment;
-  base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
-  auto profile = TestingProfile::Builder().SetPath(data_path).Build();
 
   GURL kUrl("https://example.com");
   GURL kLateUrl("https://late_example.com");
@@ -153,12 +140,11 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
   // custom_grace_period` and verify that no sites are returned without using
   // the custom grace period.
   clock.Advance(base::Seconds(10));
-  EXPECT_THAT(storage.GetSitesToClear(nullptr, absl::nullopt),
-              testing::IsEmpty());
+  EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
   // Verify that using a custom grace period less than the amount time was
   // advanced returns only `kUrl` since `kLateUrl` is still within its grace
   // period.
-  EXPECT_THAT(storage.GetSitesToClear(nullptr, custom_grace_period),
+  EXPECT_THAT(storage.GetSitesToClear(custom_grace_period),
               testing::ElementsAre(GetSiteForDIPS(kUrl)));
 }
 
@@ -169,10 +155,6 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
 
   TestStorage storage;
   storage.SetClockForTesting(&clock);
-
-  content::BrowserTaskEnvironment task_environment;
-  base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
-  auto profile = TestingProfile::Builder().SetPath(data_path).Build();
 
   GURL kBounceUrl("https://bounce.com");
   GURL kStorageUrl("https://storage.com");
@@ -194,12 +176,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `dips::kGracePeriod` and verify that no sites
     // are returned
     clock.Advance(dips::kGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
-                testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced still returns nothing when the trigger is unset.
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
-                testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
 
     // Reset `clock` to `start`.
     clock.SetNow(start);
@@ -214,11 +194,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `dips::kGracePeriod` and verify that no sites
     // are returned without using a custom grace period.
     clock.Advance(dips::kGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
-                testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on bounces.
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), grace_period),
+    EXPECT_THAT(storage.GetSitesToClear(grace_period),
                 testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
                                      GetSiteForDIPS(kStatefulBounceUrl)));
 
@@ -235,11 +214,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `dips::kGracePeriod` and verify that no sites
     // are returned without using a custom grace period.
     clock.Advance(dips::kGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
-                testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on storage.
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), grace_period),
+    EXPECT_THAT(storage.GetSitesToClear(grace_period),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
                                      GetSiteForDIPS(kStorageUrl)));
 
@@ -256,11 +234,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `dips::kGracePeriod` and verify that no sites
     // are returned without using a custom grace period.
     clock.Advance(dips::kGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), absl::nullopt),
-                testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on stateful bounces.
-    EXPECT_THAT(storage.GetSitesToClear(profile.get(), grace_period),
+    EXPECT_THAT(storage.GetSitesToClear(grace_period),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
   }
 }
