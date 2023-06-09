@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/common/api/automation_internal.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -85,6 +86,13 @@ class AutomationApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::ExtensionApiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        extensions::switches::kAllowlistedExtensionID,
+        "ddchlicdkolnonkihahngkmmmjnjlkkf");
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -583,7 +591,7 @@ class AutomationApiTestWithDeviceScaleFactor : public AutomationApiTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutomationApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2.0");
+    command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "2.0");
   }
 };
 
