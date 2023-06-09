@@ -695,6 +695,8 @@ const struct {
   const char* zip = "78744";
   const char* country = "US";
   const char* phone = "15125551234";
+  const char* company = "Initech";
+  const char* email = "red.swingline@initech.com";
 } kDefaultAddressValues;
 
 const std::vector<FieldValue> kDefaultAddress{
@@ -1120,10 +1122,11 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     test::SetProfileInfo(
         &profile, kDefaultAddressValues.first_name,
         kDefaultAddressValues.middle_name, kDefaultAddressValues.last_name,
-        "red.swingline@initech.com", "Initech", kDefaultAddressValues.address1,
-        kDefaultAddressValues.address2, kDefaultAddressValues.city,
-        kDefaultAddressValues.state, kDefaultAddressValues.zip,
-        kDefaultAddressValues.country, kDefaultAddressValues.phone);
+        kDefaultAddressValues.email, kDefaultAddressValues.company,
+        kDefaultAddressValues.address1, kDefaultAddressValues.address2,
+        kDefaultAddressValues.city, kDefaultAddressValues.state,
+        kDefaultAddressValues.zip, kDefaultAddressValues.country,
+        kDefaultAddressValues.phone);
     profile.set_use_count(9999999);  // We want this to be the first profile.
     AddTestProfile(browser()->profile(), profile);
   }
@@ -1367,6 +1370,22 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicFormFill) {
                             .after_select = ExpectValues(MergeValue(
                                 kEmptyAddress, {"firstname", "M"}))}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
+}
+
+// Test that hidden selects get filled. Hidden selects are often used by widgets
+// which look like <select>s but are actually constructed out of divs.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FillHiddenSelect) {
+  CreateTestProfile();
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/autofill/form_hidden_select.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+
+  // Make sure the form was filled correctly.
+  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
+  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
+  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
+  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
 }
 
 // AutofillInteractiveTest subclass which disables autofilling <selectmenu>.
@@ -2282,6 +2301,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
           var selectinput = false;
           var selectchange = false;
           var selectblur = false;
+          var selectmenufocus = false;
+          var selectmenuinput = false;
+          var selectmenuchange = false;
+          var selectmenublur = false;
           </script>
           A form for testing events.
           <form action="https://www.example.com/" method="POST" id="shipping">
@@ -2314,11 +2337,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <select id="country">
+           <selectmenu id="country"
+           onfocus="selectmenufocus = true" oninput="selectmenuinput = true"
+           onchange="selectmenuchange = true" onblur="selectmenublur = true" >
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
-           </select><br>
+           </selectmenu><br>
           <label for="phone">Phone number:</label>
            <input type="text" id="phone"><br>
           </form> )";
@@ -2353,6 +2378,12 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectinput;"));
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectchange;"));
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectblur;"));
+
+  // Checks that all the events were fired for the selectmenu field.
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenufocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenuinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenuchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectmenublur;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
