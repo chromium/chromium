@@ -628,14 +628,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Explanation of terms:
   //   5000 = offset from top of nested iframe to top of containing div, due to
-  //          scroll offset of div
+  //          scroll offset of div. This needs to be scaled by DSF or the test
+  //          will fail on HighDPI devices.
   //   child_div_offset_top = offset of containing div from top of child frame
   //   50 = offset of child frame's intersection with the top document viewport
   //       from the top of the child frame (i.e, clipped amount at top of child)
   //   view_height * 0.15 = padding added to the top of the compositing rect
   //                        (half the the 30% total padding)
-  int expected_offset =
-      5000 - ((child_div_offset_top - 50) * scale_factor) - expansion;
+  int expected_offset = (5000 * scale_factor) -
+                        ((child_div_offset_top - 50) * scale_factor) -
+                        expansion;
 
   // Allow a small amount for rounding differences from applying page and
   // device scale factors at different times.
