@@ -559,8 +559,20 @@ std::string KSAdminApp::SwitchValue(const std::string& arg) const {
 }
 
 void KSAdminApp::Delete() {
-  // TODO(crbug.com/1250524): Implement.
-  Shutdown(1);
+  // Existing updater clients may call `ksadmin --delete` to delete an app
+  // ticket in one of the following situations:
+  // 1) The app is uninstalled. In this case, the path existence checker should
+  //    return false. That means the app will be un-registered by the periodic
+  //    tasks at certain point.
+  // 2) The user updater figures that the app is managed by the system updater
+  //    as well. A common scenario is that a second user installed the same app
+  //    and then promoted it to a system app. In this case, we can ignore the
+  //    deletion request and just rely on the system updater to run update.
+  //    The downside is that sometimes the user updater gets the app update
+  //    error. But this could an existing problem when two user updaters manage
+  //    the same app together.
+  // So in summary, we can just omit the ticket deletion request here.
+  Shutdown(0);
 }
 
 NSDictionary<NSString*, KSTicket*>* KSAdminApp::LoadTicketStore() const {
