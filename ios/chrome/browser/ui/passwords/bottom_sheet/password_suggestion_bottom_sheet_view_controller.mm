@@ -50,6 +50,9 @@ CGFloat const kPortraitTableViewWidthMultiplier = 0.95;
 
 // TableView's width constraint multiplier in landscape mode.
 CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
+
+// Scroll view's bottom anchor constant.
+CGFloat const kScrollViewBottomAnchorConstant = 10;
 }  // namespace
 
 @interface PasswordSuggestionBottomSheetViewController () <
@@ -120,6 +123,9 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   self.topAlignedLayout = YES;
   self.actionHandler = self;
   self.scrollEnabled = NO;
+  self.customScrollViewBottomInsets = 0;
+
+  [self updateCustomGradientViewHeight:0];
 
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
@@ -456,21 +462,17 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   return NSUInteger(indexPath.row) == (_suggestions.count - 1);
 }
 
-// Returns the cumulative height of the bottom sheet subviews.
-- (CGFloat)cumulativeHeightOfSubviews {
-  [self.view layoutIfNeeded];
-  CGFloat subviewsHeight = 0;
-  // Add height of the bottom sheet subviews. This include the navigation bar,
-  // the scroll view, the actions stack view and the gradient view.
-  for (UIView* subview in self.view.subviews) {
-    subviewsHeight += CGRectGetHeight(subview.frame);
-  }
-  return subviewsHeight;
+// Returns the height of the bottom sheet view.
+- (CGFloat)bottomSheetHeight {
+  return
+      [self.view
+          systemLayoutSizeFittingSize:CGSizeMake(self.view.frame.size.width, 1)]
+          .height;
 }
 
 // Returns the initial height of the bottom sheet while showing a single row.
 - (CGFloat)initialHeight {
-  CGFloat bottomSheetHeight = [self cumulativeHeightOfSubviews];
+  CGFloat bottomSheetHeight = [self bottomSheetHeight];
   if (bottomSheetHeight > 0) {
     return bottomSheetHeight;
   }
@@ -481,15 +483,9 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 // Returns the desired height for the bottom sheet (can be larger than the
 // screen).
 - (CGFloat)fullHeight {
-  CGFloat bottomSheetHeight = [self cumulativeHeightOfSubviews];
-
-  // when this method is called, the table view has only one row and no padding.
-  CGFloat effectiveRowHeight = _tableView.contentSize.height;
-
-  // Add missing row height without calculating the one that is currently
-  // displayed, hence the -1.
-  if (bottomSheetHeight > 0 && effectiveRowHeight > 0) {
-    return bottomSheetHeight + (effectiveRowHeight * (_suggestions.count - 1));
+  CGFloat bottomSheetHeight = [self bottomSheetHeight];
+  if (bottomSheetHeight > 0) {
+    return bottomSheetHeight;
   }
 
   // Return an estimated height for the bottom sheet while showing all rows
@@ -502,6 +498,11 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 - (void)setTableViewScrollEnabled:(BOOL)enabled {
   _tableView.scrollEnabled = enabled;
   self.scrollEnabled = enabled;
+
+  // Add gradient view to show that the user can scroll.
+  if (enabled) {
+    [self updateCustomGradientViewHeight:16];
+  }
 }
 
 // Performs the expand bottom sheet animation.
@@ -509,6 +510,9 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
   if (@available(iOS 16, *)) {
+    // Update the bottom anchor constant value.
+    [self changeScrollViewBottomAnchorConstant:kScrollViewBottomAnchorConstant];
+
     // Expand to custom size (only available for iOS 16+).
     CGFloat fullHeight = [self fullHeight];
 
@@ -517,6 +521,11 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
         id<UISheetPresentationControllerDetentResolutionContext> context) {
       BOOL tooLarge = (fullHeight > context.maximumDetentValue);
       [weakSelf setTableViewScrollEnabled:tooLarge];
+      if (tooLarge) {
+        // Reset bottom anchor constant value so there is enough space for the
+        // gradient view.
+        [self resetScrollViewBottomAnchorConstant];
+      }
       return tooLarge ? context.maximumDetentValue : fullHeight;
     };
     UISheetPresentationControllerDetent* customDetentExpand =

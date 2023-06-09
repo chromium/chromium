@@ -125,6 +125,9 @@
 - (instancetype)initWithNibName:(NSString*)name
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 
+// Sets the custom scroll view bottom insets.
+@property(nonatomic, assign) CGFloat customScrollViewBottomInsets;
+
 // Can be overridden by subclasses to customize the secondary title, e.g. set a
 // different style, or a UITextViewDelegate. The default implementation does
 // nothing.
@@ -134,6 +137,16 @@
 // different style, or a UITextViewDelegate. The default implementation does
 // nothing.
 - (void)customizeSubtitle:(UITextView*)subtitle;
+
+// Sets the custom height for the gradient view.
+- (void)updateCustomGradientViewHeight:(CGFloat)height;
+
+// Sets the new constant value for the scroll view bottom anchor constraint.
+- (void)changeScrollViewBottomAnchorConstant:(CGFloat)constant;
+
+// Reset the constant value for the scroll view bottom anchor constraint to the
+// default one.
+- (void)resetScrollViewBottomAnchorConstant;
 
 // Detent that attempts to fit the preferred height of the content. Detent may
 // be inactive in some size classes, so it should be used together with at
