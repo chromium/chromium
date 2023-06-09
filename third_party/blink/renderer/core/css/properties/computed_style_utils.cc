@@ -1740,24 +1740,15 @@ CSSValue* ComputedStyleUtils::ValueForGridAutoTrackList(
     GridTrackSizingDirection track_direction,
     const LayoutObject* layout_object,
     const ComputedStyle& style) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   const GridTrackList& grid_auto_track_list = track_direction == kForColumns
                                                   ? style.GridAutoColumns()
                                                   : style.GridAutoRows();
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-
-  if (layout_object && layout_object->IsLayoutNGGrid()) {
-    const NGGridTrackList& auto_track_list = grid_auto_track_list.NGTrackList();
-    if (auto_track_list.RepeaterCount() == 1) {
-      for (wtf_size_t i = 0; i < auto_track_list.RepeatSize(0); ++i) {
-        list->Append(*SpecifiedValueForGridTrackSize(
-            auto_track_list.RepeatTrackSize(0, i), style));
-      }
-    }
-  } else {
-    const Vector<GridTrackSize, 1>& auto_track_sizes =
-        grid_auto_track_list.LegacyTrackList();
-    for (auto& track_size : auto_track_sizes) {
-      list->Append(*SpecifiedValueForGridTrackSize(track_size, style));
+  const NGGridTrackList& auto_track_list = grid_auto_track_list.NGTrackList();
+  if (auto_track_list.RepeaterCount() == 1) {
+    for (wtf_size_t i = 0; i < auto_track_list.RepeatSize(0); ++i) {
+      list->Append(*SpecifiedValueForGridTrackSize(
+          auto_track_list.RepeatTrackSize(0, i), style));
     }
   }
   return list;

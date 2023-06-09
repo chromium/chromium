@@ -142,10 +142,7 @@ class GridTrackList {
 
   GridTrackList(const GridTrackList& other);
   explicit GridTrackList(const GridTrackSize& default_track_size);
-  explicit GridTrackList(Vector<GridTrackSize, 1>& legacy_tracks);
-
-  Vector<GridTrackSize, 1>& LegacyTrackList();
-  const Vector<GridTrackSize, 1>& LegacyTrackList() const;
+  explicit GridTrackList(const Vector<GridTrackSize, 1>& track_sizes);
 
   NGGridTrackList& NGTrackList();
   const NGGridTrackList& NGTrackList() const;
@@ -158,7 +155,6 @@ class GridTrackList {
 
  private:
   void AssignFrom(const GridTrackList& other);
-  Vector<GridTrackSize, 1> legacy_track_list_;
   NGGridTrackList ng_track_list_;
 };
 

@@ -1330,8 +1330,6 @@ void StyleBuilderConverter::ConvertGridTrackList(
       DCHECK_EQ(computed_grid_track_list.axis_type,
                 GridAxisType::kStandaloneAxis);
       ++current_named_grid_line;
-      track_sizes.LegacyTrackList().push_back(
-          ConvertGridTrackSize(state, curr_value));
     }
     return line_name_indices_count;
   };
@@ -1444,8 +1442,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
   // Unless the axis is subgridded, the parser should have rejected any
   // <track-list> without any <track-size> as this is not conformant to
   // the syntax.
-  DCHECK(!track_sizes.LegacyTrackList().empty() ||
-         !auto_repeat_track_sizes.empty() ||
+  DCHECK(track_list.RepeaterCount() || !auto_repeat_track_sizes.empty() ||
          computed_grid_track_list.IsSubgriddedAxis());
 }
 

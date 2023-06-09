@@ -221,25 +221,15 @@ bool NGGridTrackList::operator==(const NGGridTrackList& other) const {
 }
 
 GridTrackList::GridTrackList(const GridTrackList& other) {
-  AssignFrom(other);
+  ng_track_list_ = other.ng_track_list_;
 }
 
 GridTrackList::GridTrackList(const GridTrackSize& default_track_size) {
   ng_track_list_.AddRepeater({default_track_size});
-  legacy_track_list_.push_back(default_track_size);
 }
 
-GridTrackList::GridTrackList(Vector<GridTrackSize, 1>& legacy_tracks)
-    : legacy_track_list_(std::move(legacy_tracks)) {
-  ng_track_list_.AddRepeater(legacy_track_list_);
-}
-
-Vector<GridTrackSize, 1>& GridTrackList::LegacyTrackList() {
-  return legacy_track_list_;
-}
-
-const Vector<GridTrackSize, 1>& GridTrackList::LegacyTrackList() const {
-  return legacy_track_list_;
+GridTrackList::GridTrackList(const Vector<GridTrackSize, 1>& track_sizes) {
+  ng_track_list_.AddRepeater(track_sizes);
 }
 
 NGGridTrackList& GridTrackList::NGTrackList() {
@@ -254,7 +244,7 @@ void GridTrackList::SetNGGridTrackList(const NGGridTrackList& other) {
 }
 
 void GridTrackList::operator=(const GridTrackList& other) {
-  AssignFrom(other);
+  ng_track_list_ = other.ng_track_list_;
 }
 
 bool GridTrackList::operator==(const GridTrackList& other) const {
@@ -263,11 +253,6 @@ bool GridTrackList::operator==(const GridTrackList& other) const {
 
 bool GridTrackList::operator!=(const GridTrackList& other) const {
   return !(*this == other);
-}
-
-void GridTrackList::AssignFrom(const GridTrackList& other) {
-  ng_track_list_ = other.ng_track_list_;
-  legacy_track_list_ = other.legacy_track_list_;
 }
 
 }  // namespace blink
