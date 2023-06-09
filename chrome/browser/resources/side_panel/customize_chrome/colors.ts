@@ -8,11 +8,12 @@ import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import './strings.m.js'; // Required by <managed-dialog>.
 
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ColorElement} from './color.js';
-import {Color, ColorType, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
+import {Color, ColorType, DARK_BASELINE_BLUE_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
 import {getTemplate} from './colors.html.js';
 import {ChromeColor, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -115,8 +116,11 @@ export class ColorsElement extends PolymerElement {
   }
 
   private computeDefaultColor_(): Color {
-    return this.theme_.systemDarkMode ? DARK_DEFAULT_COLOR :
-                                        LIGHT_DEFAULT_COLOR;
+    if (loadTimeData.getString('chromeRefresh2023Attribute')) {
+      return this.theme_.isDarkMode ? DARK_BASELINE_BLUE_COLOR :
+                                      LIGHT_BASELINE_BLUE_COLOR;
+    }
+    return this.theme_.isDarkMode ? DARK_DEFAULT_COLOR : LIGHT_DEFAULT_COLOR;
   }
 
   private computeMainColor_(): SkColor|undefined {

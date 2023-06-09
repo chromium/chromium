@@ -5,11 +5,12 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
-import {Color, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://customize-chrome-side-panel.top-chrome/color_utils.js';
+import {Color, DARK_BASELINE_BLUE_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://customize-chrome-side-panel.top-chrome/color_utils.js';
 import {ColorsElement} from 'chrome://customize-chrome-side-panel.top-chrome/colors.js';
 import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, Theme} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -33,35 +34,51 @@ suite('ColorsTest', () => {
     callbackRouter = CustomizeChromeApiProxy.getInstance()
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     chromeColorsResolver = new PromiseResolver();
+  });
+
+  function initializeElement() {
     handler.setResultFor(
         'getOverviewChromeColors', chromeColorsResolver.promise);
     colorsElement = new ColorsElement();
     document.body.appendChild(colorsElement);
-  });
+  }
 
   ([
-    [true, DARK_DEFAULT_COLOR],
-    [false, LIGHT_DEFAULT_COLOR],
-  ] as Array<[boolean, Color]>)
-      .forEach(([systemDarkMode, defaultColor]) => {
-        test('renders default color', async () => {
-          const theme: Theme = createTheme(systemDarkMode);
+    [true, DARK_DEFAULT_COLOR, false],
+    [false, LIGHT_DEFAULT_COLOR, false],
+    [true, DARK_BASELINE_BLUE_COLOR, true],
+    [false, LIGHT_BASELINE_BLUE_COLOR, true],
+  ] as Array<[boolean, Color, boolean]>)
+      .forEach(([isDarkMode, defaultColor, refreshFlagOn]) => {
+        test(
+            `render GM3 ${refreshFlagOn} DarkMode ${isDarkMode} default color`,
+            async () => {
+              if (refreshFlagOn) {
+                loadTimeData.overrideValues({
+                  chromeRefresh2023Attribute: 'chrome-refresh-2023',
+                });
+              }
 
-          callbackRouter.setTheme(theme);
-          await callbackRouter.$.flushForTesting();
-          await waitAfterNextRender(colorsElement);
+              initializeElement();
+              const theme: Theme = createTheme(isDarkMode);
 
-          const defaultColorElement =
-              $$<ColorElement>(colorsElement, '#defaultColor')!;
-          assertDeepEquals(
-              defaultColor.foreground, defaultColorElement.foregroundColor);
-          assertDeepEquals(
-              defaultColor.background, defaultColorElement.backgroundColor);
-          assertDeepEquals(defaultColor.base, defaultColorElement.baseColor);
-        });
+              callbackRouter.setTheme(theme);
+              await callbackRouter.$.flushForTesting();
+              await waitAfterNextRender(colorsElement);
+
+              const defaultColorElement =
+                  $$<ColorElement>(colorsElement, '#defaultColor')!;
+              assertDeepEquals(
+                  defaultColor.foreground, defaultColorElement.foregroundColor);
+              assertDeepEquals(
+                  defaultColor.background, defaultColorElement.backgroundColor);
+              assertDeepEquals(
+                  defaultColor.base, defaultColorElement.baseColor);
+            });
       });
 
   test('sets default color', async () => {
+    initializeElement();
     const theme = createTheme();
     theme.foregroundColor = undefined;
     callbackRouter.setTheme(theme);
@@ -74,6 +91,7 @@ suite('ColorsTest', () => {
   });
 
   test('renders main color', async () => {
+    initializeElement();
     const theme: Theme = createTheme();
     theme.foregroundColor = {value: 7};
     theme.backgroundImage = createBackgroundImage('https://foo.com');
@@ -89,6 +107,7 @@ suite('ColorsTest', () => {
   });
 
   test('sets main color', async () => {
+    initializeElement();
     const theme = createTheme();
     theme.foregroundColor = {value: 7};
     theme.backgroundImage = createBackgroundImage('https://foo.com');
@@ -104,6 +123,7 @@ suite('ColorsTest', () => {
   });
 
   test('renders chrome colors', async () => {
+    initializeElement();
     const colors = {
       colors: [
         {
@@ -143,6 +163,7 @@ suite('ColorsTest', () => {
   });
 
   test('sets chrome color', async () => {
+    initializeElement();
     const colors = {
       colors: [
         {
@@ -166,6 +187,7 @@ suite('ColorsTest', () => {
   });
 
   test('sets custom color', () => {
+    initializeElement();
     colorsElement.$.colorPicker.value = '#ff0000';
     colorsElement.$.colorPicker.dispatchEvent(new Event('change'));
 
@@ -175,6 +197,7 @@ suite('ColorsTest', () => {
   });
 
   test('updates custom color for theme', async () => {
+    initializeElement();
     const colors = {
       colors: [
         {
@@ -219,6 +242,7 @@ suite('ColorsTest', () => {
   });
 
   test('checks selected color', async () => {
+    initializeElement();
     const colors = {
       colors: [
         {
@@ -321,6 +345,7 @@ suite('ColorsTest', () => {
     test(
         `background color visibility if theme has image ${hasBackgroundImage}`,
         async () => {
+          initializeElement();
           const theme = createTheme();
           if (hasBackgroundImage) {
             theme.backgroundImage = createBackgroundImage('https://foo.com');
@@ -346,6 +371,7 @@ suite('ColorsTest', () => {
   ] as Array<[string, number?, number?]>)
       .forEach(([selector, foregroundColor, mainColor]) => {
         test(`respects policy for ${selector}`, async () => {
+          initializeElement();
           const colors = {
             colors: [
               {

@@ -145,8 +145,7 @@ export class ChromeColorsElement extends PolymerElement {
   }
 
   private computeDefaultColor_(): Color {
-    return this.theme_.systemDarkMode ? DARK_DEFAULT_COLOR :
-                                        LIGHT_DEFAULT_COLOR;
+    return this.theme_.isDarkMode ? DARK_DEFAULT_COLOR : LIGHT_DEFAULT_COLOR;
   }
 
   private isChromeColorSelected_(color: SkColor): boolean {

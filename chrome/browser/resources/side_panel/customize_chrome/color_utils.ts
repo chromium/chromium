@@ -12,15 +12,25 @@ export interface Color {
 export const LIGHT_DEFAULT_COLOR: Color = {
   background: {value: 0xffffffff},
   foreground: {value: 0xffdee1e6},
-  // TODO(crbug/1430277): Update with actual base color for light default.
-  base: {value: 0xffa7abb7},
+  base: {value: 0},
 };
 
 export const DARK_DEFAULT_COLOR: Color = {
   background: {value: 0xff323639},
   foreground: {value: 0xff202124},
-  // TODO(crbug/1430277): Update with actual base color for dark default.
-  base: {value: 0xffa7abb7},
+  base: {value: 0},
+};
+
+export const LIGHT_BASELINE_BLUE_COLOR: Color = {
+  background: {value: 0xff0b57d0},
+  foreground: {value: 0xffd3e3fd},
+  base: {value: 0xffc7c7c7},
+};
+
+export const DARK_BASELINE_BLUE_COLOR: Color = {
+  background: {value: 0xffa8c7fa},
+  foreground: {value: 0xff0842a0},
+  base: {value: 0xff757575},
 };
 
 export enum ColorType {

@@ -58,11 +58,11 @@ export function createThirdPartyThemeInfo(
   };
 }
 
-export function createTheme(systemDarkMode = false): Theme {
+export function createTheme(isDarkMode = false): Theme {
   return {
     backgroundImage: undefined,
     thirdPartyThemeInfo: undefined,
-    systemDarkMode,
+    isDarkMode,
     seedColor: {value: 0xff0000ff},
     backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,

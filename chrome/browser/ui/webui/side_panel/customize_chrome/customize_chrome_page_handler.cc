@@ -34,6 +34,7 @@
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -304,7 +305,18 @@ void CustomizeChromePageHandler::UpdateTheme() {
       web_contents_->GetColorProvider().GetColor(kColorNewTabPageText);
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   CHECK(native_theme);
-  theme->system_dark_mode = native_theme->ShouldUseDarkColors();
+  // If Chrome WebUI Refresh 2023 flag is enabled and BrowserColorScheme is not
+  // set to follow the system, use BrowserColorScheme for deciding dark mode
+  // boolean. Otherwise, use the system value.
+  ThemeService::BrowserColorScheme colorScheme =
+      theme_service_->GetBrowserColorScheme();
+  if (features::IsChromeWebuiRefresh2023() &&
+      colorScheme != ThemeService::BrowserColorScheme::kSystem) {
+    theme->is_dark_mode =
+        colorScheme == ThemeService::BrowserColorScheme::kDark;
+  } else {
+    theme->is_dark_mode = native_theme->ShouldUseDarkColors();
+  }
   page_->SetTheme(std::move(theme));
 }
 
