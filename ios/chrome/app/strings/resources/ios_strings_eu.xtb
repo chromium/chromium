@@ -91,7 +91,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="152234381334907219">Ez dira inoiz gordeko</translation>
 <translation id="1523341279170789507">Eman baimena cookie guztiei</translation>
 <translation id="1524563461097350801">Ez, eskerrik asko</translation>
-<translation id="1531836666020185856">Aipagarria</translation>
 <translation id="1535268707340844072">Baliteke oraingo ezarpenek zenbait webgune etetea eragitea. Webgune guztietako cookieak kudeatzeko, ikusi <ph name="BEGIN_LINK" />"Cookieen ezarpenak" atala<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Helbidea (1)</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
@@ -193,6 +192,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="225943865679747347">Errore-kodea: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Gehitu kontu bat</translation>
 <translation id="2268044343513325586">Mugatu</translation>
+<translation id="2269277877025820298">Ikusi gehiago</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
 <translation id="2286505070150039482">Nabarmendutako testua</translation>
 <translation id="2287614783861766820">{count,plural, =1{Helbidea gailutik ezabatuko da.}other{Helbideak gailutik ezabatuko dira.}}</translation>
@@ -218,7 +218,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2423077901494354337">Orain, ahalik eta etekin handiena aterako diozu Chrome-ri gailuan.</translation>
 <translation id="2434405374328098816">Gordeta daukazu jada "<ph name="USERNAME" />" erabiltzaile-izenari eta <ph name="WEBSITE" /> webguneari dagokien pasahitza</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
-<translation id="2439425774439590">Webgune bisitatuenak</translation>
 <translation id="2451654228769116489">Ainguratu fitxa</translation>
 <translation id="2461070143328828326">Pasahitzen ezarpenak</translation>
 <translation id="2469960372084740698">Arakatze segurua desaktibatu nahi duzu?</translation>

@@ -141,6 +141,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1550406609415860283">Mga device na available</translation>
 <translation id="1550523713251050646">Mag-click para sa higit pang mga opsyon</translation>
 <translation id="1555130319947370107">Asul</translation>
+<translation id="1576511610858879060">Gumagamit ng mas lumang bersyon ng Bluetooth ang iyong Chromebook o Bluetooth device. Gumamit ng ibang source ng input para sa mas magandang kalidad ng audio.</translation>
 <translation id="1576623706766186887">Mag-zoom out kapag naka-on ang magnifier</translation>
 <translation id="1586324912145647027">Pumunta sa desk 1 hanggang 8</translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
@@ -356,6 +357,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="256712445991462162">ang naka-dock na magnifier</translation>
 <translation id="2573588302192866788">Hindi maikonekta ang <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Na-disable ang maraming pag-sign in</translation>
+<translation id="2579264398927991698">Mga Update sa Firmware</translation>
 <translation id="2582112259361606227">I-restart para mag-update</translation>
 <translation id="2586561057878260610">Pindutin ang Ctrl + W para isama sa <ph name="DESK_NAME" />. Pindutin ang Ctrl + Shift + W para isara ang desk at mga window.</translation>
 <translation id="2595239820337756193">5K sa milya</translation>
@@ -687,6 +689,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4028481283645788203">Kinakailangan ang password para sa higit pang seguridad</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ibinabahagi mo ang iyong screen</translation>
+<translation id="404437169852192935">Natapos na ang mga update</translation>
 <translation id="4049230407053723315">Mga Mabilisang Setting</translation>
 <translation id="4057003836560082631">Tab ng browser na <ph name="INDEX" /> sa <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off sa isa app}one{Off sa # app}other{Off sa # na app}}</translation>
@@ -1017,11 +1020,13 @@ Isaksak ang iyong device.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> o <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">May mga available na update sa firmware</translation>
 <translation id="5503884284981862082">Buksan/isara ang Google Assistant</translation>
+<translation id="550391772491508736">Ipagpatuloy ang pag-cast</translation>
 <translation id="5506975627792768506">I-on o i-off ang magnifier</translation>
 <translation id="5512042095225963688">I-delete ang nakaraang salita</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5523434445161341166">Kumokonekta ang <ph name="FEATURE_NAME" />.</translation>
+<translation id="5529587891732734495">I-pause ang pag-cast</translation>
 <translation id="5532994612895037630">Mag-tap kahit saan para i-record ang full screen</translation>
 <translation id="5536723544185013515">Mga Kamakailang App, mag-navigate gamit ang pakaliwa o pakanang arrow key para ma-access ang lahat ng kamakailang app</translation>
 <translation id="553675580533261935">Lumalabas sa session</translation>
@@ -1388,6 +1393,7 @@ Kaka-install lang</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Magre-revert sa lumang resolution sa loob ng <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">I-refresh</translation>
+<translation id="7185362672357349361">I-on ang nudge sa pag-mute? Aabisuhan ka kung nagsasalita ka habang naka-mute. Hindi naipapadala ang audio mula sa iyong device.</translation>
 <translation id="7187711731540696127">Naka-on ang hotspot ng iyong <ph name="DEVICE_NAME" />, walang nakakonektang device</translation>
 <translation id="7188494361780961876">Inilipat ang menu sa kaliwang sulok sa itaas ng screen.</translation>
 <translation id="7189412385142492784">Gaano kalayo ang Venus</translation>

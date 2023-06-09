@@ -91,7 +91,6 @@
 <translation id="152234381334907219">ಎಂದಿಗೂ ಉಳಿಸದಿರುವಂತವು</translation>
 <translation id="1523341279170789507">ಎಲ್ಲಾ ಕುಕೀಸ್ ಅನುಮತಿಸಿ</translation>
 <translation id="1524563461097350801">ಬೇಡ</translation>
-<translation id="1531836666020185856">ವೈಶಿಷ್ಟ್ಯವಿರುವುದು</translation>
 <translation id="1535268707340844072">ನಿಮ್ಮ ಈಗಿನ ಸೆಟ್ಟಿಂಗ್ ಕೆಲವು ಸೈಟ್‌ಗಳು ಬ್ರೇಕ್ ಆಗಲು ಕಾರಣವಾಗಬಹುದು. ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="BEGIN_LINK" />ಕುಕಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="1540800554400757039">ವಿಳಾಸ 1</translation>
 <translation id="1545749641540134597">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -218,7 +217,6 @@
 <translation id="2423077901494354337">ನೀವು ಈಗ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ Chrome ನಿಂದ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನವನ್ನು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="2434405374328098816">ನೀವು ಈಗಾಗಲೇ <ph name="WEBSITE" /> ನಲ್ಲಿ "<ph name="USERNAME" />" ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಉಳಿಸಿದ್ದೀರಿ</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
-<translation id="2439425774439590">ಅತಿ ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳು</translation>
 <translation id="2451654228769116489">ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="2461070143328828326">ಪಾಸ್‌ವರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2469960372084740698">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
@@ -1246,7 +1244,7 @@
 <translation id="8985320356172329008">Google ಗೆ ಹೀಗೆ ಸೈನ್‌ ಇನ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8986567980592931173">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಸಿಂಕ್ ಮಾಡಲು ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="8998289560386111590">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ</translation>
-<translation id="9000089900434778519">ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್ <ph name="DSE_NAME" /> ಆಗಿದೆ. ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
+<translation id="9000089900434778519">ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ <ph name="DSE_NAME" /> ಆಗಿದೆ. ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="9008201768610948239">ನಿರ್ಲಕ್ಷಿಸಿ</translation>
 <translation id="9034759925968272072">Google ಖಾತೆಯಿಂದ ನೀವು ಸೈನ್ ಔಟ್ ಆಗಲಾಗುವುದಿಲ್ಲ. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸದ ಇತರ ಪ್ರಕಾರಗಳನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="9037965129289936994">ಮೂಲವನ್ನು ತೋರಿಸು</translation>

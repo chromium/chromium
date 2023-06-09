@@ -91,7 +91,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="152234381334907219">Aldrei vistað</translation>
 <translation id="1523341279170789507">Leyfa öll fótspor</translation>
 <translation id="1524563461097350801">Nei, takk</translation>
-<translation id="1531836666020185856">Sérvalið</translation>
 <translation id="1535268707340844072">Núverandi stilling kann að valda því að sum vefsvæði frjósa. Fyrir upplýsingar um stjórnun fótspora fyrir öll vefsvæði, sjá <ph name="BEGIN_LINK" />Fótsporastillingar<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Heimilisfang 1</translation>
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
@@ -193,6 +192,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="225943865679747347">Villukóði: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Bæta reikningi við</translation>
 <translation id="2268044343513325586">Þrengja</translation>
+<translation id="2269277877025820298">Sjá meira</translation>
 <translation id="2273327106802955778">Valmynd fyrir meira</translation>
 <translation id="2286505070150039482">Áherslumerktur texti</translation>
 <translation id="2287614783861766820">{count,plural, =1{Þessu heimilisfangi verður eytt úr tækinu.}one{Þessum heimilisföngum verður eytt úr tækinu.}other{Þessum heimilisföngum verður eytt úr tækinu.}}</translation>
@@ -218,7 +218,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2423077901494354337">Nú mun Chrome nýtast þér sem best í tækinu.</translation>
 <translation id="2434405374328098816">Þú hefur þegar vistað aðgangsorð fyrir „<ph name="USERNAME" />“ á <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
-<translation id="2439425774439590">Vefsvæðin sem eru opnuð oftast</translation>
 <translation id="2451654228769116489">Festa flipa</translation>
 <translation id="2461070143328828326">Stillingar fyrir aðgangsorð</translation>
 <translation id="2469960372084740698">Viltu slökkva á öruggri vefnotkun?</translation>

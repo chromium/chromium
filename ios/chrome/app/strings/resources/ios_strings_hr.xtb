@@ -91,7 +91,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="152234381334907219">Nikad spremljeno</translation>
 <translation id="1523341279170789507">Dopusti sve kolačiće</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
-<translation id="1531836666020185856">Istaknuto</translation>
 <translation id="1535268707340844072">Vaša trenutačna postavka može onemogućiti funkcioniranje nekih web-lokacija. Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="BEGIN_LINK" />Postavke kolačića<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">1. adresni redak</translation>
 <translation id="1545749641540134597">Skeniranje QR koda</translation>
@@ -193,6 +192,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="225943865679747347">Kôd pogreške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Pročišćavanje</translation>
+<translation id="2269277877025820298">Prikaži više</translation>
 <translation id="2273327106802955778">Izbornik Više</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ta će se adresa izbrisati s ovog uređaja.}one{Te će se adrese izbrisati s ovog uređaja.}few{Te će se adrese izbrisati s ovog uređaja.}other{Te će se adrese izbrisati s ovog uređaja.}}</translation>
@@ -218,7 +218,6 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2423077901494354337">Sada ćete iskoristiti sve prednosti Chromea na uređaju.</translation>
 <translation id="2434405374328098816">Već ste spremili zaporku za korisničko ime <ph name="USERNAME" /> na web-lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
-<translation id="2439425774439590">Najposjećenije web-lokacije</translation>
 <translation id="2451654228769116489">Prikvači karticu</translation>
 <translation id="2461070143328828326">Postavke zaporke</translation>
 <translation id="2469960372084740698">Želite li isključiti sigurno pregledavanje?</translation>

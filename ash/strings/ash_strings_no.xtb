@@ -141,6 +141,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1550406609415860283">Enheter er tilgjengelige</translation>
 <translation id="1550523713251050646">Klikk for å se flere alternativer</translation>
 <translation id="1555130319947370107">Blå</translation>
+<translation id="1576511610858879060">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Bruk en annen inndatakilde for bedre lydkvalitet.</translation>
 <translation id="1576623706766186887">Zoom ut når forstørreren er på</translation>
 <translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
@@ -356,6 +357,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="256712445991462162">den dokkede lupen</translation>
 <translation id="2573588302192866788">Kunne ikke koble til <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multipålogging er slått av</translation>
+<translation id="2579264398927991698">Fastvareoppdateringer</translation>
 <translation id="2582112259361606227">Start på nytt for å oppdatere</translation>
 <translation id="2586561057878260610">Trykk på Ctrl + W for å kombinere med <ph name="DESK_NAME" />. Trykk på Ctrl + Shift + W for å lukke skrivebordet og vinduene.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
@@ -687,6 +689,7 @@ Koble enheten til strøm.</translation>
 <translation id="4028481283645788203">Passord kreves for mer sikkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Du deler skjermen din</translation>
+<translation id="404437169852192935">Enheten får ikke oppdateringer lenger</translation>
 <translation id="4049230407053723315">Hurtiginnstillinger</translation>
 <translation id="4057003836560082631">Nettleserfane <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Av for én app}other{Av for # apper}}</translation>
@@ -1017,11 +1020,13 @@ Koble enheten til strøm.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> eller <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Fastvareoppdateringer er tilgjengelige</translation>
 <translation id="5503884284981862082">Åpne/lukk Google-assistenten</translation>
+<translation id="550391772491508736">Gjenoppta castingen</translation>
 <translation id="5506975627792768506">Slå på forstørreren av eller på</translation>
 <translation id="5512042095225963688">Slett forrige ord</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratoren din har fjernet alle eSIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> kobler til.</translation>
+<translation id="5529587891732734495">Sett castingen på pause</translation>
 <translation id="5532994612895037630">Trykk hvor som helst for å ta opp i fullskjerm</translation>
 <translation id="5536723544185013515">Nylige apper – naviger med venstrepilen eller høyrepilen for å få tilgang til alle nylige apper</translation>
 <translation id="553675580533261935">Avslutning av økten</translation>
@@ -1153,6 +1158,7 @@ Koble enheten til strøm.</translation>
 <translation id="6059276912018042191">Nylige Chrome-faner</translation>
 <translation id="6062360702481658777">Du logges automatisk av om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Ferdig med filen</translation>
+<translation id="6068258534237496331">Kontroller for videosamtaler</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6074087755403037157">Betakanal</translation>
 <translation id="6093867385179428431">Deaktivert av administratoren</translation>
@@ -1388,6 +1394,7 @@ Nylig installert</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Går tilbake til den gamle oppløsningen om <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
+<translation id="7185362672357349361">Vil du slå på påminnelser om at mikrofonen er avslått? Du blir varslet hvis du snakker mens mikrofonen er avslått. Lyden forlater aldri enheten.</translation>
 <translation id="7187711731540696127">Wifi-sonen på <ph name="DEVICE_NAME" /> er på – ingen enheter er tilkoblet</translation>
 <translation id="7188494361780961876">Menyen ble flyttet til øvre venstre hjørne av skjermen.</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>

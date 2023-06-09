@@ -91,7 +91,6 @@
 <translation id="152234381334907219">არასოდეს შენახულა</translation>
 <translation id="1523341279170789507">ყველა ქუქი-ჩანაწერის დაშვება</translation>
 <translation id="1524563461097350801">არა, გმადლობთ</translation>
-<translation id="1531836666020185856">გამორჩეული</translation>
 <translation id="1535268707340844072">ამჟამინდელმა პარამეტრმა შეიძლება ზოგიერთი საიტის არასათანადო მუშაობა გამოიწვიოს. ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად გადადით <ph name="BEGIN_LINK" />ქუქი-ჩანაწერების პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">მისამართი 1</translation>
 <translation id="1545749641540134597">QR კოდის სკანირება</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">შეცდომის კოდი: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ანგარიშის დამატება</translation>
 <translation id="2268044343513325586">დახვეწა</translation>
+<translation id="2269277877025820298">მეტის ნახვა</translation>
 <translation id="2273327106802955778">ვარიანტების მენიუ</translation>
 <translation id="2286505070150039482">გამოყოფილი ტექსტი</translation>
 <translation id="2287614783861766820">{count,plural, =1{ეს მისამართი წაიშლება ამ მოწყობილობიდან.}other{ეს მისამართები წაიშლება ამ მოწყობილობიდან.}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">ამიერიდან თქვენს მოწყობილობაზე Chrome-ის შესაძლებლობებს მაქსიმალურად გამოიყენებთ.</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" />-დან „<ph name="USERNAME" />“-ის პაროლი უკვე შეინახეთ</translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
-<translation id="2439425774439590">ყველაზე ხშირად მონახულებული საიტები</translation>
 <translation id="2451654228769116489">ჩანართის ჩამაგრება</translation>
 <translation id="2461070143328828326">პაროლების პარამეტრები</translation>
 <translation id="2469960372084740698">გსურთ, გამორთოთ Safe Browsing?</translation>

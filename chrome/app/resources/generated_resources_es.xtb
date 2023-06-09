@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Para proteger tus datos, se han quitado los permisos de un sitio que llevas 2 meses sin visitar}other{Para proteger tus datos, se han quitado los permisos de sitios que llevas 2 meses sin visitar}}</translation>
 <translation id="1009663062402466586">Controles de juegos ya disponibles</translation>
-<translation id="1010498023906173788">Esta pestaña está conectada a un puerto serie.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La página no responde}other{Las páginas no responden}}</translation>
 <translation id="1011003645819296594">Dispositivos guardados</translation>
 <translation id="1011355516189274711">Volumen de conversión de texto a voz</translation>
@@ -297,7 +296,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos los marcadores</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restablecer la configuración.</translation>
-<translation id="1243002225871118300">Cambiar el tamaño de la pantalla y del texto</translation>
+<translation id="1243002225871118300">Cambiar el tamaño de visualización y del texto</translation>
 <translation id="1243314992276662751">Subir</translation>
 <translation id="1243436884219965846">Revisar contraseñas</translation>
 <translation id="1244265436519979884">Hay una restauración de Linux en curso</translation>
@@ -632,7 +631,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1541346352678737112">No se ha encontrado ninguna red</translation>
 <translation id="154198613844929213">{0,plural, =0{Eliminando}=1{Se eliminarán en 1 segundo}other{Se eliminarán en # segundos}}</translation>
 <translation id="1542137295869176367">No se han podido actualizar tus datos de inicio de sesión</translation>
-<translation id="1542514202066550870">Esta pestaña está proyectando contenido de realidad virtual a un visor.</translation>
 <translation id="1543284117603151572">Importado desde Edge</translation>
 <translation id="1543538514740974167">Accede a esta página más rápido</translation>
 <translation id="1544588554445317666">Intenta utilizar un nombre de archivo más corto o guardarlo en otra carpeta.</translation>
@@ -1048,7 +1046,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1873920700418191231">Volver a dar permisos a <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Puede mostrar cualquier anuncio</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Mover pestaña a otra ventana}other{Mover pestañas a otra ventana}}</translation>
-<translation id="1875386316419689002">Esta pestaña está conectada a un dispositivo HID.</translation>
 <translation id="1875387611427697908">Este elemento solo se puede añadir desde <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">No se ha podido obtener el token de autenticación. Cierra la sesión y vuelve a iniciarla para intentarlo de nuevo.</translation>
@@ -1905,7 +1902,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2581455244799175627">Más información sobre permitir las cookies de terceros</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">No se ha podido obtener el ticket de Kerberos. Vuelve a intentarlo o ponte en contacto con el administrador de dispositivos de tu organización. Código de error: <ph name="ERROR_CODE" />.</translation>
-<translation id="2585724835339714757">Esta pestaña está compartiendo tu pantalla.</translation>
 <translation id="2586561813241011046">No se ha podido instalar <ph name="APP_NAME" />. Vuelve a intentarlo o ponte en contacto con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2586672484245266891">Introduce una URL más corta</translation>
@@ -2134,7 +2130,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2777525873368474674">Pega el enlace de la imagen</translation>
 <translation id="2778471504622896352">Añadir aplicaciones remotas al menú de aplicaciones de ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Las extensiones están permitidas en este sitio</translation>
 <translation id="2782104745158847185">Error al instalar la aplicación de Linux</translation>
 <translation id="2783024642731649028">Hay 1 artículo en tu carrito con un <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visto: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -2487,7 +2482,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3080933187214341848">Esta red no está sincronizada con tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" />: <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Esta pestaña está utilizando tu cámara o tu micrófono.</translation>
 <translation id="3083193146044397360">Bloqueado temporalmente para proteger tu seguridad</translation>
 <translation id="3083899879156272923">Mover la pantalla manteniendo el ratón en el centro</translation>
 <translation id="3083998949001524405">Con permiso para usar cookies de terceros</translation>
@@ -2604,7 +2598,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3201237270673604992">De la Z a la A</translation>
 <translation id="3201422919974259695">Los dispositivos USB disponibles se mostrarán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
-<translation id="3202173864863109533">El audio de esta pestaña se está silenciando.</translation>
 <translation id="3202578601642193415">Los más recientes</translation>
 <translation id="3204648577100496185">Puede que los datos asociados a esta aplicación se eliminen de este dispositivo</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
@@ -3012,7 +3005,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3575121482199441727">Permitir en este sitio web</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="3577745545227000795">Recogida de datos de hardware de <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Se está compartiendo el contenido de esta pestaña.</translation>
 <translation id="3578874072190212775">Ayuda a los sitios a luchar contra el fraude y a distinguir a los bots de las personas</translation>
 <translation id="3581605050355435601">Configurar automáticamente la dirección IP</translation>
 <translation id="3582057310199111521">Introducida en un sitio web engañoso y encontrada en una brecha de seguridad de datos</translation>
@@ -3553,6 +3545,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4021941025609472374">Cerrar pestañas a la izquierda</translation>
 <translation id="402211067068791756">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por sitios mostrados</translation>
 <translation id="4022426551683927403">&amp;Añadir al diccionario</translation>
+<translation id="4024768890073681126">Tu padre o madre gestiona tu navegador</translation>
 <translation id="4025039777635956441">Silenciar el sitio web seleccionado</translation>
 <translation id="402707738228916911">Instrucción <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recibida</translation>
 <translation id="4027569221211770437">Carpeta <ph name="FOLDER_TITLE" /></translation>
@@ -4028,7 +4021,6 @@ Si decides no compartir las señales, este perfil se cerrará.</translation>
 <translation id="4448914100439890108">Ocultar contraseña de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Gestionar permisos</translation>
 <translation id="4449948729197510913">Tu nombre de usuario pertenece a la cuenta de empresa de tu organización. Para registrar dispositivos en la cuenta, primero verifica la propiedad del dominio en la consola de administración. Necesitas tener privilegios de administrador para poder verificar la cuenta.</translation>
-<translation id="4449996769074858870">Esta pestaña está reproduciendo audio.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ha detectado un TPM activo que puede almacenar tus datos de forma más segura.</translation>
 <translation id="4451479197788154834">La contraseña está guardada en este dispositivo y en tu cuenta de Google</translation>
@@ -5121,6 +5113,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5439680044267106777">Saltar y configurar perfil nuevo</translation>
 <translation id="544083962418256601">Crear accesos directos...</translation>
 <translation id="5441133529460183413">Aplicación web instalada desde el navegador Chrome</translation>
+<translation id="5441292787273562014">Volver a cargar la página</translation>
 <translation id="5441466871879044658">Traducir a este idioma</translation>
 <translation id="5442228125690314719">No se ha podido crear la imagen de disco. Inténtalo de nuevo.</translation>
 <translation id="5442550868130618860">Activar actualización automática</translation>
@@ -5260,7 +5253,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5559311991468302423">Eliminar dirección</translation>
 <translation id="55601339223879446">Ajusta los extremos de tu escritorio en la pantalla</translation>
 <translation id="5561162485081632007">Detecta y te advierte de los eventos peligrosos cuando suceden</translation>
-<translation id="5562781907504170924">Esta pestaña está conectada a un dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
 <translation id="5563234215388768762">Buscar en Google o escribir una URL</translation>
 <translation id="5565735124758917034">Activo</translation>
@@ -5624,7 +5616,6 @@ Puedes enviarlo a Google para comprobar si no es seguro. Los análisis suelen ta
 <translation id="5882919346125742463">Redes conocidas</translation>
 <translation id="5883356647197510494">Con bloqueo automático: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensión</translation>
-<translation id="5884474295213649357">Esta pestaña está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">Tu organización gestionará este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conecta y configura rápidamente dispositivos con Emparejamiento rápido cercanos</translation>
@@ -8446,7 +8437,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo se guardará durante 1 hora y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {HOURS} horas y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
 <translation id="8338952601723052325">Sitio web para desarrolladores</translation>
-<translation id="8339288417038613756">Tamaño de la pantalla y del texto</translation>
+<translation id="8339288417038613756">Tamaño de visualización y del texto</translation>
 <translation id="833986336429795709">Para abrir este enlace, elige una aplicación</translation>
 <translation id="8340547030807793004">Más acciones de <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que ha enviado muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que han enviado muchas notificaciones recientemente}}</translation>
@@ -8597,7 +8588,6 @@ Si decides no compartir las señales, este perfil se cerrará.</translation>
 <translation id="8464132254133862871">Esta cuenta de usuario no es apta para utilizar este servicio.</translation>
 <translation id="8465252176946159372">No válido</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> necesita tu permiso para ejecutarse</translation>
-<translation id="8466417995783206254">En esta pestaña se está reproduciendo un vídeo en modo imagen en imagen.</translation>
 <translation id="8467326454809944210">Elegir otro idioma</translation>
 <translation id="8468087214092422866">Sin permiso para buscar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Contraseñas guardadas de <ph name="ORIGIN" /></translation>
@@ -8930,7 +8920,6 @@ Si decides no compartir las señales, este perfil se cerrará.</translation>
 <translation id="8755584192133371929">Selecciona una pestaña para compartirla</translation>
 <translation id="875604634276263540">La URL de la imagen no es válida</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
-<translation id="8757203080302669031">En esta pestaña se están buscando dispositivos Bluetooth de forma activa.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> quitado</translation>
 <translation id="8759753423332885148">Más información</translation>
 <translation id="8761945298804995673">El usuario indicado ya existe</translation>

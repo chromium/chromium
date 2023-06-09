@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Untuk menyemak sama ada kata laluan anda selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Beberapa sambungan Chromium telah mengakses peranti HID}=1{Beberapa sambungan Chromium sedang mengakses peranti HID}other{Beberapa sambungan Chromium sedang mengakses # peranti HID}}</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Penjimat Memori Menjadikan Chromium Lebih Pantas</translation>
 <translation id="1262876892872089030">Semasa tab ini tidak aktif, memori dikosongkan untuk mengekalkan kepantasan Chromium. Anda boleh memilih untuk sentiasa mengecualikan laman ini daripada menjadi tidak aktif.</translation>
@@ -185,7 +184,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4987820182225656817">Tetamu boleh menggunakan Chromium tanpa meninggalkan apa-apa.</translation>
 <translation id="4994636714258228724">Tambahkan diri anda kepada Chromium</translation>
 <translation id="5114678101347489141">Chromium sedang menerokai ciri baharu yang membolehkan laman menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang maklumat anda</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit.}other{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit.}}</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chromium ini. Tindakan ini akan membuat profil Chromium baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Untuk menggunakan perubahan anda, mulakan semula Chromium</translation>
@@ -250,7 +248,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6327105987658262776">Kemas kini tidak tersedia.</translation>
 <translation id="6333502561965082103">Terdapat operasi lain sedang dijalankan pada Chromium. Sila cuba sebentar lagi.</translation>
 <translation id="6334986366598267305">Kini lebih mudah menggunakan Chromium dengan Akaun Google anda dan pada komputer yang dikongsi.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Pentadbir anda akan memadamkan data semakan imbas secara automatik apabila ciri ini tidak digunakan selama 1 minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda yang sedia ada akan kekal terbuka.}other{Pentadbir anda akan memadamkan data semakan imbas secara automatik apabila ciri ini tidak digunakan selama # minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda yang sedia ada akan kekal terbuka.}}</translation>
 <translation id="6373523479360886564">Adakah anda pasti mahu menyahpasang Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chromium dapat menganggarkan minat anda. Kemudian, laman yang anda lawati boleh meminta Chromium melihat minat anda untuk memeribadikan iklan yang anda lihat.</translation>
 <translation id="6403826409255603130">Chromium merupakan penyemak imbas yang mengendalikan laman web dan aplikasi dengan kelajuan sepantas kilat. Chromium cepat, stabil dan mudah digunakan. Semak imbas web lebih selamat dengan perlindungan perisian hasad dan pancingan data terbina dalam Chromium.</translation>

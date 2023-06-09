@@ -91,7 +91,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="152234381334907219">Nikada se ne čuva</translation>
 <translation id="1523341279170789507">Dozvoli sve kolačiće</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
-<translation id="1531836666020185856">Istaknuto</translation>
 <translation id="1535268707340844072">Trenutno podešavanje može da dovede do problema na nekim sajtovima. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja kolačića<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">1. red za adresu</translation>
 <translation id="1545749641540134597">Skenirajte QR kôd</translation>
@@ -193,6 +192,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="225943865679747347">Kôd greške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj nalog</translation>
 <translation id="2268044343513325586">Preciziraj</translation>
+<translation id="2269277877025820298">Prikaži još</translation>
 <translation id="2273327106802955778">Meni Još</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ova adresa će biti izbrisana sa ovog uređaja.}one{Ove adrese će biti izbrisane sa ovog uređaja.}few{Ove adrese će biti izbrisane sa ovog uređaja.}other{Ove adrese će biti izbrisane sa ovog uređaja.}}</translation>
@@ -218,7 +218,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2423077901494354337">Sada ćete iskoristiti sve prednosti Chrome-a na uređaju.</translation>
 <translation id="2434405374328098816">Već ste sačuvali lozinku za „<ph name="USERNAME" />“ na <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
-<translation id="2439425774439590">Najposećeniji sajtovi</translation>
 <translation id="2451654228769116489">Zakači karticu</translation>
 <translation id="2461070143328828326">Podešavanja lozinke</translation>
 <translation id="2469960372084740698">Želite da isključite Bezbednosno pregledanje?</translation>

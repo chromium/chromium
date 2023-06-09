@@ -428,6 +428,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3290249595466894471">Il transmet également un petit échantillon de pages, de téléchargements, de l'activité des extensions et de données système afin de cerner les nouvelles menaces</translation>
 <translation id="3293181007446299124">Votre historique de navigation est privé sur votre appareil et il y a un retard d’envoi des rapports pour protéger votre identité</translation>
 <translation id="3303414029551471755">Lancer le téléchargement du contenu?</translation>
+<translation id="3305130791745726624">Envoyer aux appareils</translation>
 <translation id="3305795716056605962">Traduisez des pages à l'aide du bouton Plus d'options</translation>
 <translation id="3319664549618064419">Passer au site pour ordinateurs pour une meilleure vue de ce site</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier?</translation>
@@ -1181,7 +1182,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7304072650267745798">Il est possible que votre appareil Android ait un paramètre similaire. Si ce paramètre est activé dans Chrome et sur votre appareil Android, une entreprise peut être capable de mesurer l'efficacité d'une annonce sur les sites Web que vous visitez et les applications que vous utilisez.</translation>
 <translation id="7304873321153398381">Hors ligne. Chrome ne peut pas vérifier vos mots de passe.</translation>
 <translation id="7313188324932846546">Touchez pour configurer la synchronisation</translation>
-<translation id="7324354302972299151">Envoyer une requête "Do Not Track"</translation>
+<translation id="7324354302972299151">Envoyer une demande « Ne pas suivre »</translation>
 <translation id="7332075081379534664">Connexion réussie</translation>
 <translation id="7333232495927792353">Synchronisez vos données pour accéder à du contenu plus pertinent de Google</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>

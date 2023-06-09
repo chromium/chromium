@@ -141,6 +141,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1550406609415860283">Dispositius disponibles</translation>
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
+<translation id="1576511610858879060">El Chromebook o el dispositiu Bluetooth utilitza una versió anterior de Bluetooth. Fes servir una altra font d'entrada per millorar la qualitat de l'àudio.</translation>
 <translation id="1576623706766186887">Redueix quan la lupa estigui activada</translation>
 <translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
@@ -356,6 +357,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="256712445991462162">la lupa acoblada</translation>
 <translation id="2573588302192866788">No s'han pogut connectar els <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'inici de sessió múltiple s'ha desactivat</translation>
+<translation id="2579264398927991698">Actualitzacions de microprogramari</translation>
 <translation id="2582112259361606227">Reinicia per actualitzar</translation>
 <translation id="2586561057878260610">Prem Ctrl+W per combinar amb <ph name="DESK_NAME" />. Prem Ctrl+Shift+W per tancar l'escriptori i les finestres</translation>
 <translation id="2595239820337756193">5 km en milles</translation>
@@ -687,6 +689,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4028481283645788203">Cal introduir la contrasenya per disposar de més seguretat</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estàs compartint la pantalla</translation>
+<translation id="404437169852192935">Les actualitzacions han finalitzat</translation>
 <translation id="4049230407053723315">Configuració ràpida</translation>
 <translation id="4057003836560082631">Pestanya <ph name="INDEX" /> de <ph name="TOTAL_COUNT" /> del navegador. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No en una app}other{No en # apps}}</translation>
@@ -1017,11 +1020,13 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> o <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Hi ha actualitzacions de microprogramari disponibles</translation>
 <translation id="5503884284981862082">Obre/Tanca l'Assistent de Google</translation>
+<translation id="550391772491508736">Reprèn l'emissió</translation>
 <translation id="5506975627792768506">Activa o desactiva la lupa</translation>
 <translation id="5512042095225963688">Suprimeix la paraula anterior</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'administrador ha suprimit tots els perfils d'eSIM. Contacta amb l'administrador per obtenir més informació.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> s'està connectant.</translation>
+<translation id="5529587891732734495">Posa en pausa l'emissió</translation>
 <translation id="5532994612895037630">Toca en qualsevol lloc per gravar la pantalla completa</translation>
 <translation id="5536723544185013515">Aplicacions recents, navega amb la fletxa esquerra o dreta per accedir a les aplicacions recents</translation>
 <translation id="553675580533261935">S'està tancant la sessió</translation>
@@ -1388,6 +1393,7 @@ Instal·lació nova</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualitza</translation>
+<translation id="7185362672357349361">Vols activar el toc per avisar de micròfon silenciat? Si parles mentre el micròfon està silenciat, rebràs una notificació. No s'emetrà àudio des del dispositiu.</translation>
 <translation id="7187711731540696127">El teu punt d'accés Wi-Fi <ph name="DEVICE_NAME" /> està activat; no hi ha cap dispositiu connectat</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>

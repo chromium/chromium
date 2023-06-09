@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">לא עכשיו</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{כדי להגן על הנתונים שלך, הוסרו ההרשאות מאתר שלא נכנסת אליו במשך חודשיים}one{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם במשך חודשיים}two{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם במשך חודשיים}other{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם במשך חודשיים}}</translation>
 <translation id="1009663062402466586">פקדי המשחקים זמינים עכשיו</translation>
-<translation id="1010498023906173788">הכרטיסייה הזו מחוברת ליציאה טורית.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{הדף אינו מגיב}one{הדפים אינם מגיבים}two{הדפים אינם מגיבים}other{הדפים אינם מגיבים}}</translation>
 <translation id="1011003645819296594">המכשירים השמורים</translation>
 <translation id="1011355516189274711">‏עוצמת קול של המרת טקסט לדיבור (TTS)</translation>
@@ -634,7 +633,6 @@
 <translation id="1541346352678737112">לא נמצאה רשת</translation>
 <translation id="154198613844929213">{0,plural, =0{נתוני הגלישה יימחקו עכשיו}=1{נתוני הגלישה יימחקו בעוד: שנייה אחת}one{נתוני הגלישה יימחקו בעוד: # שניות}two{נתוני הגלישה יימחקו בעוד: # שניות}other{נתוני הגלישה יימחקו בעוד: # שניות}}</translation>
 <translation id="1542137295869176367">לא ניתן לעדכן את פרטי הכניסה שלך</translation>
-<translation id="1542514202066550870">‏הכרטיסייה הזו מציגה תוכן VR במשקפי VR.</translation>
 <translation id="1543284117603151572">‏ייבוא מ-Edge</translation>
 <translation id="1543538514740974167">רוצה להגיע לכאן מהר יותר?</translation>
 <translation id="1544588554445317666">אפשר לנסות להשתמש בשם קובץ קצר יותר או לשמור את הקובץ בתיקייה אחרת</translation>
@@ -1059,7 +1057,6 @@
 <translation id="1873920700418191231">צריך לאשר שוב את ההרשאות עבור <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">מורשים להציג מודעות מכל סוג</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{העברת כרטיסייה לחלון אחר}one{העברת כרטיסיות לחלון אחר}two{העברת כרטיסיות לחלון אחר}other{העברת כרטיסיות לחלון אחר}}</translation>
-<translation id="1875386316419689002">‏הכרטיסייה הזו מחוברת להתקן HID.</translation>
 <translation id="1875387611427697908">ניתן להוסיף את הפריט הזה רק מ-<ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">תווית (אופציונלי)</translation>
 <translation id="1877520246462554164">לא ניתן לקבל אסימון אימות. עליך לצאת ולאחר מכן להיכנס מחדש ולנסות שוב.</translation>
@@ -1918,7 +1915,6 @@
 <translation id="2581455244799175627">‏מידע נוסף על הרשאת השימוש בקובצי cookie של צדדים שלישיים</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (פלטפורמה <ph name="PLATFORM_VERSION" />‏) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">‏לא ניתן לקבל כרטיס Kerberos. עליך לנסות שוב, או ליצור קשר עם מנהל המכשיר בארגון. (קוד שגיאה <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">הכרטיסייה הזו משתפת את המסך שלך.</translation>
 <translation id="2586561813241011046">לא הצלחנו להתקין את האפליקציה <ph name="APP_NAME" />. אפשר לנסות שוב או ליצור קשר עם מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2586672484245266891">יש להזין כתובת אתר קצרה יותר</translation>
@@ -2148,7 +2144,6 @@
 <translation id="2777525873368474674">הדבקת הקישור לתמונה</translation>
 <translation id="2778471504622896352">‏הוספת אפליקציות מרוחקות למרכז האפליקציות של ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">התוספים מותרים באתר הזה</translation>
 <translation id="2782104745158847185">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux</translation>
 <translation id="2783024642731649028">פריט אחד עם <ph name="DISCOUNT_TEXT" /> בעגלת הקניות שלך ב-<ph name="MERCHANT_NAME" />,‏ <ph name="MERCHANT_DOMAIN" />, נצפה <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ההורדה בוצעה</translation>
@@ -2501,7 +2496,6 @@
 <translation id="3080933187214341848">הרשת הזו לא מסונכרנת לחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">הכרטיסייה הזו משתמשת במצלמה או במיקרופון שלך.</translation>
 <translation id="3083193146044397360">האתר נחסם זמנית כדי להגן על האבטחה שלך</translation>
 <translation id="3083899879156272923">הזזת המסך כשהעכבר נשאר במרכז המסך</translation>
 <translation id="3083998949001524405">‏מורשים להשתמש בקובצי cookie של צדדים שלישיים</translation>
@@ -2618,7 +2612,6 @@
 <translation id="3201237270673604992">סדר אלפביתי יורד</translation>
 <translation id="3201422919974259695">‏התקני USB זמינים יופיעו כאן.</translation>
 <translation id="3202131003361292969">נתיב</translation>
-<translation id="3202173864863109533">האודיו בכרטיסייה זו מושתק.</translation>
 <translation id="3202578601642193415">החדש ביותר</translation>
 <translation id="3204648577100496185">יכול להיות שיוסרו מהמכשיר נתונים המשויכים לאפליקציה הזו</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
@@ -3026,7 +3019,6 @@
 <translation id="3575121482199441727">אישור לאתר הזה</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577745545227000795">איסוף נתוני חומרה של <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">התוכן בכרטיסייה הזו משותף.</translation>
 <translation id="3578874072190212775">במסגרת פעילות באתרים, יש אפשרות להבדיל בין בוטים לאנשים כדי למנוע תרמיות</translation>
 <translation id="3581605050355435601">‏הגדרה אוטומטית של כתובת IP</translation>
 <translation id="3582057310199111521">הוזנה באתר מטעה ונמצאה בפרצה באבטחת מידע</translation>
@@ -3568,6 +3560,7 @@
 <translation id="4021941025609472374">סגירת הכרטיסיות משמאל</translation>
 <translation id="402211067068791756">הפעולה הזו תגרום למחיקת <ph name="TOTAL_USAGE" /> של נתונים שאוחסנו על ידי האתרים המוצגים</translation>
 <translation id="4022426551683927403">&amp;הוספה למילון</translation>
+<translation id="4024768890073681126">הדפדפן מנוהל על ידי ההורה שלך</translation>
 <translation id="4025039777635956441">השתקת האתרים שנבחרו</translation>
 <translation id="402707738228916911">התקבלה הוראה של <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">תיקיית <ph name="FOLDER_TITLE" /></translation>
@@ -4043,7 +4036,6 @@
 <translation id="4448914100439890108">הסתרת הסיסמה של <ph name="USERNAME" /> ב-<ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">ניהול הרשאות</translation>
 <translation id="4449948729197510913">‏שם המשתמש שלך שייך לחשבון הארגוני של הארגון שלך. כדי לרשום מכשירים בחשבון, תחילה יש לאמת שיש לך בעלות על הדומיין במסוף Admin. נדרשות הרשאות אדמין בחשבון כדי לבצע את האימות.</translation>
-<translation id="4449996769074858870">הכרטיסייה הזו מפעילה תוכן אודיו.</translation>
 <translation id="4450974146388585462">אבחן</translation>
 <translation id="445099924538929605">‏מערכת <ph name="DEVICE_OS" /> זיהתה TPM פעיל שניתן לשמור בו את הנתונים שלך באופן מאובטח יותר.</translation>
 <translation id="4451479197788154834">‏הסיסמה שלך שמורה במכשיר הזה ובחשבון Google שלך</translation>
@@ -5137,6 +5129,7 @@
 <translation id="5439680044267106777">אני רוצה לדלג ולהגדיר פרופיל חדש</translation>
 <translation id="544083962418256601">יצירת קיצורי דרך...</translation>
 <translation id="5441133529460183413">‏אפליקציית האינטרנט הותקנה דרך דפדפן Chrome</translation>
+<translation id="5441292787273562014">טען דף מחדש</translation>
 <translation id="5441466871879044658">תרגום לשפה זו</translation>
 <translation id="5442228125690314719">קרתה שגיאה ביצירת תמונת הדיסק. צריך לנסות שוב.</translation>
 <translation id="5442550868130618860">הפעלת עדכון אוטומטי</translation>
@@ -5276,7 +5269,6 @@
 <translation id="5559311991468302423">מחיקת הכתובת</translation>
 <translation id="55601339223879446">שינוי גבולות שולחן העבודה שלך בצג</translation>
 <translation id="5561162485081632007">מזהה אירועים מסוכנים כשהם מתרחשים ומזהיר אותך על כך</translation>
-<translation id="5562781907504170924">‏הכרטיסייה הזו מחוברת להתקן Bluetooth.</translation>
 <translation id="556321030400250233">קובץ מקומי או משותף</translation>
 <translation id="5563234215388768762">‏אפשר לחפש ב-Google או להקליד כתובת אתר</translation>
 <translation id="5565735124758917034">פעילה</translation>
@@ -5296,7 +5288,7 @@
 <translation id="5581876958763461074">כל ההערות</translation>
 <translation id="5581972110672966454">לא ניתן לצרף את המכשיר אל הדומיין. יש לנסות שוב, או לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582634344048669777">8 נקודות</translation>
-<translation id="5582839680698949063">תפריט ראשי</translation>
+<translation id="5582839680698949063">התפריט הראשי</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">לשמור את שם המשתמש?</translation>
 <translation id="5584091888252706332">כשפותחים את הדפדפן</translation>
@@ -5640,7 +5632,6 @@
 <translation id="5882919346125742463">רשתות מוכרות</translation>
 <translation id="5883356647197510494">ההרשאות הבאות נחסמו אוטומטית: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">התאמה אישית לכל תוסף</translation>
-<translation id="5884474295213649357">‏הכרטיסייה הזו מחוברת להתקן USB.</translation>
 <translation id="5885314688092915589">הארגון שלך ינהל את הפרופיל הזה</translation>
 <translation id="5886009770935151472">אצבע ראשונה</translation>
 <translation id="5886112770923972514">חיבור והגדרה מהירה של מכשירים קרובים עם התאמה מהירה</translation>
@@ -8618,7 +8609,6 @@
 <translation id="8464132254133862871">חשבון משתמש זה אינו זכאי לקבלת השירות.</translation>
 <translation id="8465252176946159372">לא חוקי</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> צריך אישור ממך כדי לפעול</translation>
-<translation id="8466417995783206254">בכרטיסייה הזו מופעל סרטון במצב 'תמונה בתוך תמונה'.</translation>
 <translation id="8467326454809944210">בחירת שפה אחרת</translation>
 <translation id="8468087214092422866">‏אין הרשאה לאתר מכשירי Bluetooth</translation>
 <translation id="8470513973197838199">סיסמאות שנשמרו בשביל <ph name="ORIGIN" /></translation>
@@ -8951,7 +8941,6 @@
 <translation id="8755584192133371929">בחירת כרטיסייה לשיתוף</translation>
 <translation id="875604634276263540">‏כתובת ה-URL של התמונה לא תקינה</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>
-<translation id="8757203080302669031">‏הכרטיסייה הזו מבצעת סריקה באופן פעיל כדי לאתר התקני Bluetooth.</translation>
 <translation id="8757368836647541092">הסרת את <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">למידע נוסף</translation>
 <translation id="8761945298804995673">משתמש זה כבר קיים</translation>

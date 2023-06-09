@@ -91,7 +91,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="152234381334907219">Aldrig sparat</translation>
 <translation id="1523341279170789507">Tillåt alla cookies</translation>
 <translation id="1524563461097350801">Nej tack</translation>
-<translation id="1531836666020185856">Utvalda</translation>
 <translation id="1535268707340844072">Vissa webbplatser kanske inte fungerar med dina nuvarande inställningar. Du kan hantera cookies för alla webbplatser i <ph name="BEGIN_LINK" />Cookie-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adressrad 1</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
@@ -193,6 +192,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="225943865679747347">Felkod: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Lägg till konto</translation>
 <translation id="2268044343513325586">Finjustera</translation>
+<translation id="2269277877025820298">Visa mer</translation>
 <translation id="2273327106802955778">Mer-menyn</translation>
 <translation id="2286505070150039482">Markerad text</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen raderas från enheten.}other{Dessa adresser raderas från enheten.}}</translation>
@@ -218,7 +218,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2423077901494354337">Nu får du ut mesta möjliga av Chrome på din enhet.</translation>
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
-<translation id="2439425774439590">Mest besökta webbplatser</translation>
 <translation id="2451654228769116489">Fäst flik</translation>
 <translation id="2461070143328828326">Lösenordsinställningar</translation>
 <translation id="2469960372084740698">Vill du inaktivera Säker webbsökning?</translation>

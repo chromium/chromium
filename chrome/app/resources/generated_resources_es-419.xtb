@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Para proteger tus datos, se quitaron los permisos de un sitio que no visitaste en 2 meses.}other{Para proteger tus datos, se quitaron los permisos de los sitios que no visitaste en 2 meses.}}</translation>
 <translation id="1009663062402466586">Los controles de juego ya están disponibles</translation>
-<translation id="1010498023906173788">Esta pestaña está conectada a un puerto en serie.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La página no responde.}other{Las páginas no responden.}}</translation>
 <translation id="1011003645819296594">Dispositivos guardados</translation>
 <translation id="1011355516189274711">Volumen para texto a voz</translation>
@@ -629,7 +628,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1541346352678737112">No se encontraron redes</translation>
 <translation id="154198613844929213">{0,plural, =0{Borrando}=1{Se borrará dentro de 1 segundo}other{Se borrará dentro de # segundos}}</translation>
 <translation id="1542137295869176367">No se pudieron actualizar tus datos de acceso.</translation>
-<translation id="1542514202066550870">Esta pestaña muestra contenido de RV en un visor.</translation>
 <translation id="1543284117603151572">Importados desde Edge</translation>
 <translation id="1543538514740974167">Accede rápidamente</translation>
 <translation id="1544588554445317666">Intenta utilizar un nombre más corto para el archivo o guardarlo en una carpeta diferente.</translation>
@@ -1045,7 +1043,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1873920700418191231">Volver a otorgar permisos para <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Puede mostrar cualquier anuncio</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Mover la pestaña a otra ventana}other{Mover las pestañas a otra ventana}}</translation>
-<translation id="1875386316419689002">Esta pestaña está conectada a un dispositivo HID.</translation>
 <translation id="1875387611427697908">Este elemento se puede agregar solamente desde <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">No se pudo obtener el token de autenticación. Para volver a intentarlo, sal de la cuenta y vuelve a acceder.</translation>
@@ -1901,7 +1898,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2581455244799175627">Más información para permitir cookies de terceros</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">No se pudo obtener el ticket de Kerberos. Vuelve a intentarlo o comunícate con el administrador de dispositivos de tu organización. (Código de error <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Esta pestaña está compartiendo tu pantalla.</translation>
 <translation id="2586561813241011046">No se pudo instalar <ph name="APP_NAME" />. Inténtalo de nuevo o comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2586672484245266891">Ingresa una URL más corta</translation>
@@ -2130,7 +2126,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2777525873368474674">Pegar vínculo de imagen</translation>
 <translation id="2778471504622896352">Agregar apps remotas al selector de ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Se permiten las extensiones en este sitio</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
 <translation id="2783024642731649028"><ph name="DISCOUNT_TEXT" /> en 1 artículo de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visto <ph name="RELATIVE_TIME" /> que está en tu carrito</translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -2483,7 +2478,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3080933187214341848">Esta red no está sincronizada con tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Esta pestaña está utilizando tu cámara o micrófono.</translation>
 <translation id="3083193146044397360">Se bloqueó temporalmente para proteger tu seguridad</translation>
 <translation id="3083899879156272923">Mover pantalla mientras el mouse se mantiene en el centro</translation>
 <translation id="3083998949001524405">Pueden usar cookies de terceros</translation>
@@ -2600,7 +2594,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3201237270673604992">De la Z a la A</translation>
 <translation id="3201422919974259695">Los dispositivos USB disponibles aparecerán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
-<translation id="3202173864863109533">El audio de esta pestaña está silenciado.</translation>
 <translation id="3202578601642193415">Más reciente</translation>
 <translation id="3204648577100496185">Es posible que los datos asociados a esta app se quiten de este dispositivo</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
@@ -3008,7 +3001,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="3577745545227000795">Recopilación de datos de hardware de <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Se está compartiendo el contenido de esta pestaña.</translation>
 <translation id="3578874072190212775">Ayuda a los sitios a combatir el fraude y distinguir los bots de las personas.</translation>
 <translation id="3581605050355435601">Configurar la dirección IP de forma automática</translation>
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
@@ -3550,6 +3542,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4021941025609472374">Cerrar pestañas a la izquierda</translation>
 <translation id="402211067068791756">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por los sitios que se muestran.</translation>
 <translation id="4022426551683927403">&amp;Agregar a diccionario</translation>
+<translation id="4024768890073681126">Tu madre o padre administra el navegador</translation>
 <translation id="4025039777635956441">Silenciar el sitio seleccionado</translation>
 <translation id="402707738228916911">Instrucciones <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recibidas</translation>
 <translation id="4027569221211770437">Carpeta <ph name="FOLDER_TITLE" /></translation>
@@ -4025,7 +4018,6 @@ Si decides no compartir las señales, se cerrará este perfil.</translation>
 <translation id="4448914100439890108">Ocultar contraseña de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Administrar permisos</translation>
 <translation id="4449948729197510913">Tu nombre de usuario pertenece a la cuenta empresarial de tu organización. Si deseas inscribir dispositivos en la cuenta, primero debes revisar la propiedad del dominio en la Consola del administrador. Deberás tener privilegios administrativos de la cuenta que deseas verificar.</translation>
-<translation id="4449996769074858870">Esta pestaña está reproduciendo audio.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detectó un TPM activo que puede almacenar tus datos de manera más segura.</translation>
 <translation id="4451479197788154834">La contraseña está guardada en este dispositivo y en tu Cuenta de Google</translation>
@@ -5118,6 +5110,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5439680044267106777">Omitir y configurar nuevo perfil</translation>
 <translation id="544083962418256601">Crear accesos directos...</translation>
 <translation id="5441133529460183413">Se instaló la aplicación web desde el navegador Chrome</translation>
+<translation id="5441292787273562014">Volver a cargar página</translation>
 <translation id="5441466871879044658">Traducir a este idioma</translation>
 <translation id="5442228125690314719">Se produjo un error al crear la imagen de disco. Vuelve a intentarlo.</translation>
 <translation id="5442550868130618860">Activar la actualización automática</translation>
@@ -5257,7 +5250,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5559311991468302423">Borrar dirección</translation>
 <translation id="55601339223879446">Ajustar los límites de tu escritorio en la pantalla</translation>
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
-<translation id="5562781907504170924">Esta pestaña está conectada con un dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
 <translation id="5563234215388768762">Busca en Google o escribe una URL</translation>
 <translation id="5565735124758917034">Activo</translation>
@@ -5621,7 +5613,6 @@ Puedes enviarlo a Google para comprobar que sea seguro. Los análisis suelen tar
 <translation id="5882919346125742463">Redes conocidas</translation>
 <translation id="5883356647197510494">Permisos bloqueados automáticamente: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensión</translation>
-<translation id="5884474295213649357">Esta pestaña está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">Tu organización administrará este perfil</translation>
 <translation id="5886009770935151472">Huella dactilar 1</translation>
 <translation id="5886112770923972514">Conéctate a dispositivos cercanos con Vinculación rápida y configúralos rápidamente</translation>
@@ -8594,7 +8585,6 @@ Si decides no compartir las señales, se cerrará este perfil.</translation>
 <translation id="8464132254133862871">Esta cuenta de usuario no es elegible para el servicio.</translation>
 <translation id="8465252176946159372">No válido</translation>
 <translation id="8465444703385715657">Se necesita tu permiso para ejecutar <ph name="PLUGIN_NAME" /></translation>
-<translation id="8466417995783206254">Esta pestaña está reproduciendo un video en el modo de pantalla en pantalla.</translation>
 <translation id="8467326454809944210">Elegir otro idioma</translation>
 <translation id="8468087214092422866">No puede buscar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Se guardaron contraseñas para <ph name="ORIGIN" /></translation>
@@ -8927,7 +8917,6 @@ Si decides no compartir las señales, se cerrará este perfil.</translation>
 <translation id="8755584192133371929">Selecciona una pestaña para compartir</translation>
 <translation id="875604634276263540">La URL de la imagen no es válida</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
-<translation id="8757203080302669031">Esta pestaña está buscando dispositivos Bluetooth de forma activa.</translation>
 <translation id="8757368836647541092">Se quitó <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Más información</translation>
 <translation id="8761945298804995673">Ya existe este usuario</translation>

@@ -276,6 +276,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2567545343356994513">Mas mabilis at proactive na proteksyon laban sa mga mapanganib na website, download, at extension</translation>
 <translation id="2569733278091928697">Madali mong mapapamahalaan ang mga kontrol ng media, Incognito session, download, at higit pa</translation>
 <translation id="2571711316400087311">Mag-alok na ipadala sa Google Translate ang mga page na nasa iba pang wika</translation>
+<translation id="2571834852878229351">Gumawa ng sarili kong password</translation>
 <translation id="2573452357057307036">Alamin kung paano itakda ang Chrome bilang iyong default</translation>
 <translation id="257470231920177468">Kapag naka-on, lalabas dito ang listahan ng mga binibisita mong site na humuhula ng iyong mga interes.</translation>
 <translation id="2580436639406015883">Umaasa ang pagbawas ng spam at panloloko sa mga private state token para matulungan ang mga site na labanan ang panloloko at matukoy ang mga bot kumpara sa mga tao.
@@ -567,6 +568,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4108314971463891922">Subaybayan</translation>
 <translation id="4108998448622696017">Nagde-detect ng mga mapanganib na event at nagbibigay sa iyo ng babala tungkol sa mga ito kapag nangyari ang mga ito.</translation>
 <translation id="4116038641877404294">I-download ang mga page para magamit ang mga ito offline</translation>
+<translation id="4121654769234887259">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager para sa <ph name="USERNAME" /></translation>
 <translation id="4124152339699379357">Nakabukas ang proseso ng pahintulot sa notification nang buo ang taas</translation>
 <translation id="4135200667068010335">Nakasara ang listahan ng mga device kung saan magbabahagi ng tab.</translation>
 <translation id="4137746084635924146">Kasalukuyang wika ng device</translation>
@@ -779,6 +781,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5171045022955879922">Hanapin o i-type ang URL</translation>
 <translation id="5174700554036517242">Ibinalik ang tab sa unang taas</translation>
 <translation id="5184329579814168207">Buksan sa Chrome</translation>
+<translation id="5186634140793586141">Pamahalaan ang mga paksa at paghahanap kung saan ka interesado</translation>
 <translation id="5191251636205085390">Matuto pa tungkol sa at kontrolin ang mga bagong teknolohiyang naglalayong palitan ang third-party na cookies</translation>
 <translation id="5193988420012215838">Kinopya sa iyong clipboard</translation>
 <translation id="5204967432542742771">Ipasok ang password</translation>
@@ -1362,6 +1365,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8127542551745560481">I-edit ang homepage</translation>
 <translation id="8130309322784422030">Posibleng hindi updated ang iyong naka-store na impormasyon sa pag-sign in</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
+<translation id="8137562778192957619">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager.</translation>
 <translation id="8156139159503939589">Anong mga wika ang binabasa mo?</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> (na) file ang natitira</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>

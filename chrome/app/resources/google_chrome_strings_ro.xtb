@@ -80,7 +80,9 @@
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2399868464369312507">Google Chrome încearcă să modifice metodele de plată.</translation>
 <translation id="2401189691232800402">Sistemul de operare Chrome</translation>
+<translation id="2424440923901031101">Această extensie încalcă politica Magazinului web Chrome și ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="2467438592969358367">Google Chrome vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
+<translation id="2472092250898121027">Această extensie conține programe malware și este nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
 <translation id="2534507159460261402">Google Pay (copiat în Chrome)</translation>
 <translation id="2556847002339236023">Organizația ta închide Chrome dacă nu este folosit timp de <ph name="TIMEOUT_DURATION" />. Datele de navigare au fost șterse. Aici pot fi incluse istoricul, completările automate și descărcările.</translation>
@@ -222,7 +224,6 @@
 <translation id="4970947549776831107">Chrome a blocat fișierul deoarece acest tip de fișier este periculos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{O extensie Google Chrome accesa dispozitive HID}=1{O extensie Google Chrome accesează un dispozitiv HID}few{O extensie Google Chrome accesează # dispozitive HID}other{O extensie Google Chrome accesează # de dispozitive HID}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Administratorul închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Administratorul închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Administratorul închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="5098668839038261629">Când opțiunea este activată, te vei deconecta de la Chrome</translation>
 <translation id="5132929315877954718">Descoperă aplicații, jocuri, extensii și teme extraordinare pentru Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizează-ți profilul Chrome</translation>
@@ -280,7 +281,7 @@
 <translation id="6291549208091401781">Google Chrome este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
 <translation id="6326175484149238433">Eliminați din Chrome</translation>
 <translation id="6327105987658262776">Nu este disponibilă nicio actualizare.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de un minut. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}few{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}other{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # de minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}}</translation>
+<translation id="6360449101159168105">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chrome. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
 <translation id="648319183876919572">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor și a descărcărilor periculoase</translation>
@@ -363,6 +364,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8005666035647241369">În Manager de parole Google pe acest dispozitiv</translation>
 <translation id="8008534537613507642">Reinstalați Chrome</translation>
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
+<translation id="8019103195866286235">Dezvoltatorul a anulat publicarea acestei extensii și ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="80471789339884597">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești toate browserele.</translation>
 <translation id="8064015586118426197">Sistemul de operare Chrome Flex</translation>
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
@@ -374,7 +376,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8290100596633877290">Hopa! Google Chrome s-a blocat. Repornești acum?</translation>
 <translation id="8342675569599923794">Fișierul este periculos, așadar Chrome l-a blocat.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chrome despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Administratorul închide automat Chrome dacă nu este folosit timp de un minut.}few{Administratorul închide automat Chrome dacă nu este folosit timp de # minute.}other{Administratorul închide automat Chrome dacă nu este folosit timp de # de minute.}}</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> Chrome îți poate estima interesele. Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>

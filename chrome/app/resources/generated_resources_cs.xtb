@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Teď ne</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Z důvodu ochrany vašich dat byla odebrána oprávnění webu, který jste dva měsíce nenavštívili}few{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste dva měsíce nenavštívili}many{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste dva měsíce nenavštívili}other{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste dva měsíce nenavštívili}}</translation>
 <translation id="1009663062402466586">K dispozici jsou ovládací prvky hry</translation>
-<translation id="1010498023906173788">Tato karta je připojená k sériovému portu.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Stránka nereaguje}few{Stránky nereagují}many{Stránky nereagují}other{Stránky nereagují}}</translation>
 <translation id="1011003645819296594">Uložená zařízení</translation>
 <translation id="1011355516189274711">Hlasitost převodu textu na řeč</translation>
@@ -634,7 +633,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1541346352678737112">Nebyla nalezena žádná síť</translation>
 <translation id="154198613844929213">{0,plural, =0{Probíhá mazání.}=1{Ke smazání dojde za 1 sekundu}few{Ke smazání dojde za # sekundy}many{Ke smazání dojde za # sekundy}other{Ke smazání dojde za # sekund}}</translation>
 <translation id="1542137295869176367">Vaše přihlašovací údaje nebylo možné aktualizovat</translation>
-<translation id="1542514202066550870">Tato karta odesílá VR obsah do náhlavní soupravy.</translation>
 <translation id="1543284117603151572">Importováno z aplikace Edge</translation>
 <translation id="1543538514740974167">Rychlejší přístup</translation>
 <translation id="1544588554445317666">Zkuste použít kratší název souboru nebo soubor uložit do jiné složky</translation>
@@ -1050,7 +1048,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1873920700418191231">Znovu povolit oprávnění webu <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Povolení zobrazovat jakékoliv reklamy</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Přesunout kartu do jiného okna}few{Přesunout karty do jiného okna}many{Přesunout karty do jiného okna}other{Přesunout karty do jiného okna}}</translation>
-<translation id="1875386316419689002">Tato karta je připojena k zařízení HID.</translation>
 <translation id="1875387611427697908">Lze přidat pouze ze stránek <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Štítek (volitelné)</translation>
 <translation id="1877520246462554164">Nepodařilo se získat ověřovací token. Chcete-li to zkusit znovu, odhlaste se a poté se znovu přihlaste.</translation>
@@ -1906,7 +1903,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2581455244799175627">Další informace o povolení souborů cookie třetích stran</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Lístek Kerberos se nepodařilo získat. Zkuste to znovu nebo kontaktujte správce zařízení své organizace. (Kód chyby <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Tato karta sdílí vaši obrazovku.</translation>
 <translation id="2586561813241011046">Instalace aplikace <ph name="APP_NAME" /> se nezdařila. Zkuste to znovu, nebo kontaktujte administrátora. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2586672484245266891">Zadejte prosím kratší adresu URL</translation>
@@ -2135,7 +2131,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2777525873368474674">Vložit odkaz na obrázek</translation>
 <translation id="2778471504622896352">Přidání vzdálených aplikací do spouštěče ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Rozšíření jsou na tomto webu povolena</translation>
 <translation id="2782104745158847185">Při instalaci aplikace pro Linux došlo k chybě</translation>
 <translation id="2783024642731649028">1 položka ve vašem košíku <ph name="DISCOUNT_TEXT" /> od <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, zobrazeno <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Staženo</translation>
@@ -2488,7 +2483,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3080933187214341848">Tato síť se nesynchronizuje do vašeho účtu. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Tato karta používá vaši kameru nebo mikrofon.</translation>
 <translation id="3083193146044397360">Dočasně zablokováno z důvodu ochrany vaší bezpečnosti</translation>
 <translation id="3083899879156272923">Posouvat obrazovku tak, aby ukazatel myši zůstal uprostřed obrazovky</translation>
 <translation id="3083998949001524405">Povolení používat soubory cookie třetích stran</translation>
@@ -2605,7 +2599,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3201237270673604992">Z až A</translation>
 <translation id="3201422919974259695">Zde se budou zobrazovat dostupná zařízení USB.</translation>
 <translation id="3202131003361292969">Cesta</translation>
-<translation id="3202173864863109533">Zvuk této karty je vypnut.</translation>
 <translation id="3202578601642193415">Nejnovější</translation>
 <translation id="3204648577100496185">Je možné, že z tohoto zařízení budou odstraněna data přidružená k této aplikaci</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
@@ -3013,7 +3006,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3575121482199441727">Povolit pro tento web</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3577745545227000795">Shromažďování dat o hardwaru systémem <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Obsah této karty je sdílen.</translation>
 <translation id="3578874072190212775">Pomozte webům bojovat proti podvodům a odlišit roboty od lidí</translation>
 <translation id="3581605050355435601">Automaticky konfigurovat IP adresu</translation>
 <translation id="3582057310199111521">Zadáno na klamavém webu a nalezeno v porušení zabezpečení údajů</translation>
@@ -3554,6 +3546,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4021941025609472374">Zavřít karty vlevo</translation>
 <translation id="402211067068791756">Tímto vymažete <ph name="TOTAL_USAGE" /> dat, která uložily zobrazené weby</translation>
 <translation id="4022426551683927403">Přid&amp;at do slovníku</translation>
+<translation id="4024768890073681126">Tvůj prohlížeč spravují rodiče</translation>
 <translation id="4025039777635956441">Ztlumit vybraný web</translation>
 <translation id="402707738228916911">Byl přijat pokyn <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Složka <ph name="FOLDER_TITLE" /></translation>
@@ -4029,7 +4022,6 @@ Pokud signály sdílet nebudete, tento profil bude uzavřen.</translation>
 <translation id="4448914100439890108">Skrýt heslo uživatele <ph name="USERNAME" /> na webu <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Spravovat oprávnění</translation>
 <translation id="4449948729197510913">Vaše uživatelské jméno patří pod podnikový účet vaší organizace. Chcete-li do tohoto účtu zaregistrovat zařízení, nejdříve v administrátorské konzoli ověřte vlastnictví domény. Budete potřebovat administrátorská práva k ověřovanému účtu.</translation>
-<translation id="4449996769074858870">Tato karta přehrává zvuk.</translation>
 <translation id="4450974146388585462">Diagnostikovat</translation>
 <translation id="445099924538929605">Systém <ph name="DEVICE_OS" /> zjistil aktivní čip TPM, který umožňuje ukládat data bezpečněji.</translation>
 <translation id="4451479197788154834">Heslo je uloženo v zařízení i v účtu Google</translation>
@@ -5122,6 +5114,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5439680044267106777">Přeskočit a nastavit nový profil</translation>
 <translation id="544083962418256601">Vytvořit zástupce…</translation>
 <translation id="5441133529460183413">Webová aplikace nainstalovaná z prohlížeče Chrome</translation>
+<translation id="5441292787273562014">Znovu načíst stránku</translation>
 <translation id="5441466871879044658">Přeložit do tohoto jazyka</translation>
 <translation id="5442228125690314719">Při vytváření obrazu disku došlo k chybě. Zkuste to znovu.</translation>
 <translation id="5442550868130618860">Zapnout automatické aktualizace</translation>
@@ -5261,7 +5254,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5559311991468302423">Smazat adresu</translation>
 <translation id="55601339223879446">Úprava ohraničení plochy v rámci obrazovky</translation>
 <translation id="5561162485081632007">Rozpoznává nebezpečné události a upozorňuje vás na ně, když k nim dojde.</translation>
-<translation id="5562781907504170924">Tato karta je propojena se zařízením Bluetooth.</translation>
 <translation id="556321030400250233">místní nebo sdílený soubor</translation>
 <translation id="5563234215388768762">Hledejte na Googlu nebo zadejte adresu URL</translation>
 <translation id="5565735124758917034">Aktivní</translation>
@@ -5623,7 +5615,6 @@ Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný. Kontrola obvykle t
 <translation id="5882919346125742463">Známé sítě</translation>
 <translation id="5883356647197510494">Automaticky zablokována oprávnění <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Přizpůsobit pro každé rozšíření</translation>
-<translation id="5884474295213649357">Tato karta je připojena k zařízení USB.</translation>
 <translation id="5885314688092915589">Tento profil bude spravovat vaše organizace</translation>
 <translation id="5886009770935151472">Prst 1</translation>
 <translation id="5886112770923972514">Připojte se a rychle nastavte zařízení s Rychlým párováním v okolí</translation>
@@ -8598,7 +8589,6 @@ Pokud signály sdílet nebudete, tento profil bude uzavřen.</translation>
 <translation id="8464132254133862871">Uživatelský účet nemá přístup do této služby.</translation>
 <translation id="8465252176946159372">Neplatné</translation>
 <translation id="8465444703385715657">Plugin <ph name="PLUGIN_NAME" /> potřebuje ke spuštění vaše povolení</translation>
-<translation id="8466417995783206254">Na této kartě se přehrává video v režimu obrazu v obraze</translation>
 <translation id="8467326454809944210">Vybrat jiný jazyk</translation>
 <translation id="8468087214092422866">Není povoleno vyhledávat zařízení Bluetooth</translation>
 <translation id="8470513973197838199">Uložená hesla z webu <ph name="ORIGIN" /></translation>
@@ -8930,7 +8920,6 @@ Pokud signály sdílet nebudete, tento profil bude uzavřen.</translation>
 <translation id="8755584192133371929">Vyberte kartu, kterou chcete sdílet</translation>
 <translation id="875604634276263540">Adresa URL obrázku není platná</translation>
 <translation id="8756969031206844760">Aktualizovat heslo?</translation>
-<translation id="8757203080302669031">Tato karta aktivně hledá zařízení Bluetooth.</translation>
 <translation id="8757368836647541092">Uživatel <ph name="USER_NAME_OR_EMAIL" /> byl odstraněn</translation>
 <translation id="8759753423332885148">Další informace</translation>
 <translation id="8761945298804995673">Tento uživatel již existuje</translation>

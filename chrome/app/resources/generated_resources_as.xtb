@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">এতিয়া নহয়</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{আপোনাৰ ডাটা সুৰক্ষিত কৰিবলৈ, আপুনি ২ মাহ ধৰি এক্সেছ নকৰা এটা ছাইটৰ পৰা অনুমতিসমূহ আঁতৰোৱা হৈছে}one{আপোনাৰ ডাটা সুৰক্ষিত কৰিবলৈ, আপুনি ২ মাহ ধৰি এক্সেছ নকৰা ছাইটসমূহৰ পৰা অনুমতিসমূহ আঁতৰোৱা হৈছে}other{আপোনাৰ ডাটা সুৰক্ষিত কৰিবলৈ, আপুনি ২ মাহ ধৰি এক্সেছ নকৰা ছাইটসমূহৰ পৰা অনুমতিসমূহ আঁতৰোৱা হৈছে}}</translation>
 <translation id="1009663062402466586">গে’মৰ নিয়ন্ত্ৰণসমূহ এতিয়া উপলব্ধ</translation>
-<translation id="1010498023906173788">এই টেবটো এটা ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰা হৈছে।</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{পৃষ্ঠাটোৱে সঁহাৰি জনোৱা নাই}one{পৃষ্ঠাসমূহে সঁহাৰি জনোৱা নাই}other{পৃষ্ঠাসমূহে সঁহাৰি জনোৱা নাই}}</translation>
 <translation id="1011003645819296594">ছেভ কৰা ডিভাইচ</translation>
 <translation id="1011355516189274711">পাঠৰ পৰা কথনৰ ভলিউম</translation>
@@ -635,7 +634,6 @@
 <translation id="1541346352678737112">কোনো নেটৱৰ্ক পোৱা নগ’ল</translation>
 <translation id="154198613844929213">{0,plural, =0{এতিয়াই মচা হ’ব।}=1{মচা হ’ব: ১ ছেকেণ্ডত}one{মচা হ’ব: # ছেকেণ্ডত}other{মচা হ’ব: # ছেকেণ্ডত}}</translation>
 <translation id="1542137295869176367">আপোনাৰ ছাইন ইন ডেটা আপডে’ট কৰিব পৰা নগ’ল</translation>
-<translation id="1542514202066550870">এই টেবটোৱে কোনো হেডছেটত VR সমল উপস্থাপন কৰি আছে।</translation>
 <translation id="1543284117603151572">Edgeৰ পৰা আমদানি কৰা হৈছে</translation>
 <translation id="1543538514740974167">ইয়ালৈ খৰতকীয়াকৈ আহি পাওক</translation>
 <translation id="1544588554445317666">এটা বেছি চুটি ফাইলৰ নাম ব্যৱহাৰ কৰি অথবা অন্য এটা ফ’ল্ডাৰত ছেভ কৰি চাওক</translation>
@@ -1063,7 +1061,6 @@
 <translation id="1873920700418191231"><ph name="WEBSITE" />ৰ বাবে পুনৰ অনুমতি দিয়ক</translation>
 <translation id="1874248162548993294">যিকোনো বিজ্ঞাপন দেখুওৱাৰ অনুমতি আছে</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{টেবটো অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{টেবসমূহ অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{টেবসমূহ অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>
-<translation id="1875386316419689002">এই টেবটো এটা HID ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে।</translation>
 <translation id="1875387611427697908">ইয়াক কেৱল <ph name="CHROME_WEB_STORE" />ৰ পৰাহে যোগ কৰিব পাৰি</translation>
 <translation id="1877377290348678128">লেবেল (ঐচ্ছিক)</translation>
 <translation id="1877520246462554164">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ টকেন পাব পৰা নগ’ল। আকৌ চেষ্টা কৰিবলৈ এবাৰ ছাইন আউট কৰি পুনৰ ছাইন ইন কৰক।</translation>
@@ -1924,7 +1921,6 @@
 <translation id="2581455244799175627">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়াৰ বিষয়ে অধিক</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (প্লেটফ’র্ম <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos টিকেট লাভ কৰিব পৰা নগ’ল। আকৌ চেষ্টা কৰক অথবা আপোনাৰ প্ৰতিষ্ঠানৰ ডিভাইচ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। (আসোঁৱাহ ক’ড <ph name="ERROR_CODE" />)।</translation>
-<translation id="2585724835339714757">এই টেবটোৱে আপোনাৰ স্ক্ৰীন শ্বেয়াৰ কৰি আছে।</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> ইনষ্টল কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
 <translation id="2586672484245266891">অনুগ্ৰহ কৰি এটি চুটি URL দিয়ক</translation>
@@ -2154,7 +2150,6 @@
 <translation id="2777525873368474674">প্ৰতিচ্ছবিৰ লিংকটো পেষ্ট কৰক</translation>
 <translation id="2778471504622896352">ChromeOS লঞ্চাৰটোত ৰিম’ট এপ্ যোগ দিয়ক</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">এই ছাইটটোত এক্সটেনশ্বনৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2782104745158847185">Linux এপ্লিকেশ্বন ইনষ্টল কৰোঁতে কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="2783024642731649028">আপোনাৰ কাৰ্টত থকা ১ টা বস্তুত <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />ৰ পৰা <ph name="DISCOUNT_TEXT" /> পাইছে, <ph name="RELATIVE_TIME" /> চোৱা হৈছে</translation>
 <translation id="2783298271312924866">ডাউনল’ড কৰা হ‘ল</translation>
@@ -2510,7 +2505,6 @@
 <translation id="3080933187214341848">এই নেটৱর্কটো আপোনাৰ একাউণ্টৰ সৈতে ছিংক কৰা নাই। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">এই টেবে আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="3083193146044397360">আপোনাৰ সুৰক্ষাৰ বাবে অস্থায়ীভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="3083899879156272923">মাউছটো স্ক্ৰীনখনৰ ঠিক মাজত ৰাখি স্ক্ৰীনখন লৰচৰ কৰক</translation>
 <translation id="3083998949001524405">তৃতীয় পক্ষৰ কুকি ব্যৱহাৰ কৰিবলৈ দিয়া হয়</translation>
@@ -2627,7 +2621,6 @@
 <translation id="3201237270673604992">Zৰ পৰা Aলৈ</translation>
 <translation id="3201422919974259695">উপলব্ধ ইউএছবি ডিভাইচসমূহ ইয়াত দেখা পোৱা যাব।</translation>
 <translation id="3202131003361292969">পথ</translation>
-<translation id="3202173864863109533">এই টেবটোৰ অডিঅ’ মিউট কৰি থকা হৈছে।</translation>
 <translation id="3202578601642193415">একেবাৰে নতুন</translation>
 <translation id="3204648577100496185">এই এপ্‌টোৰ সৈতে জড়িত ডেটা এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব পাৰে</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
@@ -3037,7 +3030,6 @@
 <translation id="3575121482199441727">এই ছাইটটোৰ বাবে অনুমতি দিয়ক</translation>
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />ৰ হাৰ্ডৱেৰৰ ডেটা সংগ্ৰহ</translation>
-<translation id="3578594933904494462">এই টেবটোৰ সমল শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="3578874072190212775">ছাইটসমূহক প্ৰৱঞ্চনাৰ বিৰুদ্ধে যুঁজাত আৰু ব’টসমূহক ব্যক্তিৰ পৰা পৃথক কৰাত সহায় কৰক</translation>
 <translation id="3581605050355435601">আইপি ঠিকনা স্বয়ংক্ৰিয়ভাৱে কনফিগাৰ কৰক</translation>
 <translation id="3582057310199111521">প্ৰৱঞ্চনামূলক ছাইটত দিয়া হৈছিল আৰু ডেটা উলংঘনত পোৱা গৈছিল</translation>
@@ -3579,6 +3571,7 @@
 <translation id="4021941025609472374">বাওঁফালে থকা টেববোৰ বন্ধ কৰক</translation>
 <translation id="402211067068791756">এই কাৰ্যই প্ৰদৰ্শিত ছাইটসমূহে ষ্ট’ৰ কৰা <ph name="TOTAL_USAGE" /> ডেটা মচিব</translation>
 <translation id="4022426551683927403">&amp;অভিধানত যোগ কৰক</translation>
+<translation id="4024768890073681126">আপোনাৰ অভিভাৱকে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
 <translation id="4025039777635956441">বাছনি কৰা ছাইটটো মিউট কৰক</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> নিৰ্দেশনা লাভ কৰা হৈছে</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ফ’ল্ডাৰ</translation>
@@ -4054,7 +4047,6 @@
 <translation id="4448914100439890108"><ph name="USERNAME" />ৰ <ph name="DOMAIN" />ৰ পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="4449247303975391730">অনুমতি পৰিচালনা কৰক</translation>
 <translation id="4449948729197510913">আপোনাৰ ব্যৱহাৰকাৰী নামটোৰ গৰাকী হৈছে আপোনাৰ প্ৰতিষ্ঠানৰ এণ্টাৰপ্ৰাইজ একাউণ্টটো। ডিভাইচসমূহ একাউণ্টটোত পঞ্জীয়ন কৰিবলৈ, প্ৰথমতে প্রশাসকৰ কনছ’লত ড’মেইনৰ গৰাকীস্বত্ব সত্যাপন কৰক। সত্যাপন কৰিবলৈ আপোনাক একাউণ্টটোত প্ৰশাসকীয় বিশেষ সুবিধাসমূহৰ আৱশ্যক হ’ব।</translation>
-<translation id="4449996769074858870">এই টেবটোৱে অডিঅ' প্লে' কৰি আছে।</translation>
 <translation id="4450974146388585462">বিসংগতিৰ কাৰণ নিৰ্ণয় কৰক</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" />এ এটা সক্ৰিয় TPM চিনাক্ত কৰিছে যিয়ে আপোনাৰ ডেটা অধিক সুৰক্ষিতভাৱে ষ্ট’ৰ কৰিব পাৰে।</translation>
 <translation id="4451479197788154834">আপোনাৰ পাছৱৰ্ডটো এই ডিভাইচটোত আৰু আপোনাৰ Google একাউণ্টত ছেভ কৰা আছে</translation>
@@ -5295,7 +5287,6 @@
 <translation id="5559768063688681413">কোনো ছেভ কৰি থোৱা প্ৰিণ্টাৰ নাই</translation>
 <translation id="55601339223879446">আপোনাৰ ডেস্কটপৰ সীমাসমূহ ডিছপ্লে’ৰ ভিতৰত মিলাওক</translation>
 <translation id="5561162485081632007">বিপজ্জনক ঘটনাবোৰ চিনাক্ত কৰে আৰু সেইবোৰ ঘটাৰ সময়ত আপোনাক সকীয়নি দিয়ে</translation>
-<translation id="5562781907504170924">এই টেবটো ব্লুটুথ ডিভাইচৰ সৈতে সংযোগ হৈ আছে।</translation>
 <translation id="556321030400250233">স্থানীয় অথবা শ্বেয়াৰ কৰা ফাইল</translation>
 <translation id="5563234215388768762">Googleত সন্ধান কৰক বা এটা URL টাইপ কৰক</translation>
 <translation id="5565735124758917034">সক্ৰিয়</translation>
@@ -5659,7 +5650,6 @@
 <translation id="5882919346125742463">জ্ঞাত নেটৱর্ক</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ক স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="5884447826201752041">প্ৰতিটো এক্সটেনশ্বনৰ বাবে কাষ্টমাইজ কৰক</translation>
-<translation id="5884474295213649357">এই টেবটো USB ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে।</translation>
 <translation id="5885314688092915589">আপোনাৰ প্ৰতিষ্ঠানে এই প্ৰ’ফাইলটো পৰিচালনা কৰিব</translation>
 <translation id="5886009770935151472">আঙুলি ১</translation>
 <translation id="5886112770923972514">নিকটৱৰ্তী Fast Pair ডিভাইচৰ সৈতে সংযোগ কৰক আৰু দ্ৰুততাৰে ছেট আপ কৰক</translation>
@@ -8644,7 +8634,6 @@
 <translation id="8464132254133862871">এই ব্যৱহাৰকাৰীৰ একাউন্টটো সেৱাটোৰ বাবে যোগ্য নহয়।</translation>
 <translation id="8465252176946159372">মান্য নহয়</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" />ক চলিবলৈ আপোনাৰ অনুমতিৰ আৱশ্যক</translation>
-<translation id="8466417995783206254">এই টেবটোৱে চিত্ৰৰ ভিতৰত চিত্ৰ ম'ডত এটা ভিডিঅ' প্লে' কৰি আছে।</translation>
 <translation id="8467326454809944210">অন্য এটা ভাষা বাছনি কৰক</translation>
 <translation id="8468087214092422866">ব্লুটুথ ডিভাইচ বিচাৰিবলৈ অনুমতি দিয়া নহয়</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />ৰ বাবে ছেভ কৰি থোৱা পাছৱৰ্ড</translation>
@@ -8978,7 +8967,6 @@
 <translation id="8755584192133371929">শ্বেয়াৰ কৰিবলৈ এটা টেব বাছনি কৰক</translation>
 <translation id="875604634276263540">প্ৰতিচ্ছবিৰ URL অমান্য</translation>
 <translation id="8756969031206844760">পাছৱৰ্ড আপডে’ট কৰিবনে?</translation>
-<translation id="8757203080302669031">এই টেবটোৱে সক্ৰিয়ভাৱে ব্লুটুথ ডিভাইচসমূহৰ বাবে স্কেন কৰি আছে।</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> আঁতৰোৱা হ’ল</translation>
 <translation id="8759753423332885148">অধিক জানক।</translation>
 <translation id="8761945298804995673">এই ব্যৱহাৰকাৰীজন ইতিমধ্যে উপলব্ধ</translation>

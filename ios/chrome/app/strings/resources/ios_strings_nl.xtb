@@ -91,7 +91,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="152234381334907219">Nooit opgeslagen</translation>
 <translation id="1523341279170789507">Alle cookies toestaan</translation>
 <translation id="1524563461097350801">Nee, bedankt</translation>
-<translation id="1531836666020185856">Aanbevolen</translation>
 <translation id="1535268707340844072">Je huidige instelling kan ervoor zorgen dat bepaalde sites niet goed werken. Ga naar <ph name="BEGIN_LINK" />Cookie-instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="1545749641540134597">QR-code scannen</translation>
@@ -193,6 +192,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="225943865679747347">Foutcode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Account toevoegen</translation>
 <translation id="2268044343513325586">Verfijnen</translation>
+<translation id="2269277877025820298">Meer zien</translation>
 <translation id="2273327106802955778">Menu Meer</translation>
 <translation id="2286505070150039482">Gemarkeerde tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat.}other{Deze adressen worden verwijderd van dit apparaat.}}</translation>
@@ -218,7 +218,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2423077901494354337">Je kunt nu optimaal gebruikmaken van Chrome op je apparaat.</translation>
 <translation id="2434405374328098816">Je hebt al een wachtwoord voor <ph name="USERNAME" /> opgeslagen op <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
-<translation id="2439425774439590">Meest bezochte sites</translation>
 <translation id="2451654228769116489">Tabblad vastzetten</translation>
 <translation id="2461070143328828326">Wachtwoordinstellingen</translation>
 <translation id="2469960372084740698">Safe Browsing uitzetten?</translation>

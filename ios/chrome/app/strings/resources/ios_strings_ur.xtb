@@ -91,7 +91,6 @@
 <translation id="152234381334907219">کبھی محفوظ نہیں ہوئے</translation>
 <translation id="1523341279170789507">سبھی کوکیز کی اجازت دیں</translation>
 <translation id="1524563461097350801">نہیں شکریہ</translation>
-<translation id="1531836666020185856">نمایاں کردہ</translation>
 <translation id="1535268707340844072">آپ کی موجودہ ترتیب کی وجہ سے ممکن ہے کچھ سائٹس کام نہ کریں۔ سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />کوکی کی ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="1540800554400757039">پتہ 1</translation>
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">اکاؤنٹ شامل کریں</translation>
 <translation id="2268044343513325586">بہتر بنائیں</translation>
+<translation id="2269277877025820298">مزید دیکھیں</translation>
 <translation id="2273327106802955778">مزید مینیو</translation>
 <translation id="2286505070150039482">نمایاں کردہ ٹیکسٹ</translation>
 <translation id="2287614783861766820">{count,plural, =1{یہ پتہ اس آلے سے حذف ہو جائے گا۔}other{یہ پتے اس آلے سے حذف ہو جائیں گے۔}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">‏اب آپ اپنے آلے پر Chrome سے زیادہ سے زیادہ فائدہ اٹھائیں گے۔</translation>
 <translation id="2434405374328098816">آپ نے <ph name="WEBSITE" /> پر "<ph name="USERNAME" />" کے لیے پہلے ہی پاس ورڈ محفوظ کر لیا ہے</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
-<translation id="2439425774439590">سب سے زیادہ دیکھی جانے والی سائٹس</translation>
 <translation id="2451654228769116489">ٹیب کو پن کریں</translation>
 <translation id="2461070143328828326">پاس ورڈ کی ترتیبات</translation>
 <translation id="2469960372084740698">محفوظ براؤزنگ آف کریں؟</translation>

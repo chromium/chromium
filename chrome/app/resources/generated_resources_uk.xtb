@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Щоб захистити ваші дані, було скасовано дозволи для сайту, який ви не відвідували протягом 2 місяців}one{Щоб захистити ваші дані, було скасовано дозволи для сайтів, які ви не відвідували протягом 2 місяців}few{Щоб захистити ваші дані, було скасовано дозволи для сайтів, які ви не відвідували протягом 2 місяців}many{Щоб захистити ваші дані, було скасовано дозволи для сайтів, які ви не відвідували протягом 2 місяців}other{Щоб захистити ваші дані, було скасовано дозволи для сайтів, які ви не відвідували протягом 2 місяців}}</translation>
 <translation id="1009663062402466586">Тепер доступні елементи керування іграми</translation>
-<translation id="1010498023906173788">Цю вкладку підключено до послідовного порту</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Сторінка не відповідає}one{Сторінки не відповідають}few{Сторінки не відповідають}many{Сторінки не відповідають}other{Сторінки не відповідають}}</translation>
 <translation id="1011003645819296594">Збережені пристрої</translation>
 <translation id="1011355516189274711">Гучність синтезу мовлення</translation>
@@ -638,7 +637,6 @@
 <translation id="1541346352678737112">Мережу не знайдено</translation>
 <translation id="154198613844929213">{0,plural, =0{Видаляється.}=1{Видалиться через 1 секунду}one{Видалиться через # секунду}few{Видалиться через # секунди}many{Видалиться через # секунд}other{Видалиться через # секунди}}</translation>
 <translation id="1542137295869176367">Не вдалось оновити дані для входу</translation>
-<translation id="1542514202066550870">Ця вкладка транслює VR-вміст на гарнітуру.</translation>
 <translation id="1543284117603151572">Імпортовано з Edge</translation>
 <translation id="1543538514740974167">Відкривайте потрібні сторінки швидше</translation>
 <translation id="1544588554445317666">Спробуйте вказати коротшу назву файлу або зберегти його в іншу папку</translation>
@@ -1063,7 +1061,6 @@
 <translation id="1873920700418191231">Відновити дозволи для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Дозволено показувати всі оголошення</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Перемістити вкладку в інше вікно}one{Перемістити вкладки в інше вікно}few{Перемістити вкладки в інше вікно}many{Перемістити вкладки в інше вікно}other{Перемістити вкладки в інше вікно}}</translation>
-<translation id="1875386316419689002">Цю вкладку під'єднано до пристрою HID.</translation>
 <translation id="1875387611427697908">Можна додавати лише із сайту <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Мітка (необов'язково)</translation>
 <translation id="1877520246462554164">Не вдалось отримати маркер автентифікації. Щоб повторити спробу, вийдіть і знову ввійдіть в обліковий запис.</translation>
@@ -1922,7 +1919,6 @@
 <translation id="2581455244799175627">Докладніше про дозвіл використовувати сторонні файли cookie</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Не вдалось отримати квиток Kerberos. Повторіть спробу або зв'яжіться з адміністратором пристрою у своїй організації. (Код помилки: <ph name="ERROR_CODE" />)</translation>
-<translation id="2585724835339714757">Ця вкладка має доступ до вашого екрана.</translation>
 <translation id="2586561813241011046">Не вдалося встановити додаток <ph name="APP_NAME" />. Повторіть спробу або зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2586672484245266891">Введіть коротшу URL-адресу</translation>
@@ -2151,7 +2147,6 @@
 <translation id="2777525873368474674">Вставте посилання на зображення</translation>
 <translation id="2778471504622896352">Додайте віддалені додатки на панель запуску ОС Chrome</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">На цьому сайті дозволено розширення</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2783024642731649028">1 товар у кошику (<ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Завантажено</translation>
@@ -2504,7 +2499,6 @@
 <translation id="3080933187214341848">Цю мережу не синхронізовано з вашим обліковим записом. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Ця вкладка використовує вашу камеру чи мікрофон.</translation>
 <translation id="3083193146044397360">Тимчасово заблоковано, щоб захистити вашу конфіденційність</translation>
 <translation id="3083899879156272923">Зафіксувати курсор по центру рухомого екрана</translation>
 <translation id="3083998949001524405">Дозволено використовувати сторонні файли cookie</translation>
@@ -2621,7 +2615,6 @@
 <translation id="3201237270673604992">Від Я до А</translation>
 <translation id="3201422919974259695">Тут з’являться доступні пристрої USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
-<translation id="3202173864863109533">Звук на цій вкладці вимкнено.</translation>
 <translation id="3202578601642193415">Найновіше</translation>
 <translation id="3204648577100496185">Дані, пов’язані з цим додатком, може бути видалено з пристрою</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
@@ -3029,7 +3022,6 @@
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="3577745545227000795">Збір даних із пристрою "<ph name="DEVICE_OS" />"</translation>
-<translation id="3578594933904494462">До вмісту цієї вкладки надано доступ.</translation>
 <translation id="3578874072190212775">Допоможіть сайтам боротись із шахрайством і відрізняти ботів від людей</translation>
 <translation id="3581605050355435601">Автоматичне налаштування ІР-адреси</translation>
 <translation id="3582057310199111521">Введено на оманливому сайті та виявлено порушення безпеки даних</translation>
@@ -3571,6 +3563,7 @@
 <translation id="4021941025609472374">Закрити вкладки ліворуч</translation>
 <translation id="402211067068791756">Буде видалено <ph name="TOTAL_USAGE" /> даних, збережених показаними сайтами</translation>
 <translation id="4022426551683927403">&amp;Додати до словника</translation>
+<translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
 <translation id="4025039777635956441">Вимкнути звук на вибраному сайті</translation>
 <translation id="402707738228916911">Отримано вказівку "<ph name="AUTHORIZE_INSTRUCTION_NAME" />"</translation>
 <translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
@@ -4046,7 +4039,6 @@
 <translation id="4448914100439890108">Сховати пароль для користувача <ph name="USERNAME" /> на сайті <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Керувати дозволами</translation>
 <translation id="4449948729197510913">Ваше ім'я користувача належить корпоративному обліковому запису вашої організації. Щоб зареєструвати пристрої в обліковому записі, спершу підтвердьте право власності на домен у Консолі адміністратора. Для цього потрібні права адміністратора.</translation>
-<translation id="4449996769074858870">На цій вкладці відтворюється аудіофайл.</translation>
 <translation id="4450974146388585462">Діагностувати</translation>
 <translation id="445099924538929605">ОС <ph name="DEVICE_OS" /> виявила активний модуль TPM, який дозволяє надійніше зберігати ваші дані.</translation>
 <translation id="4451479197788154834">Ваш пароль збережено на цьому пристрої та в обліковому записі Google</translation>
@@ -5140,6 +5132,7 @@
 <translation id="5439680044267106777">Пропустити та створити новий профіль</translation>
 <translation id="544083962418256601">Створення ярликів...</translation>
 <translation id="5441133529460183413">Веб-додаток установлено з веб-переглядача Chrome</translation>
+<translation id="5441292787273562014">Оновити сторінку</translation>
 <translation id="5441466871879044658">Перекладати на цю мову</translation>
 <translation id="5442228125690314719">Не вдалося створити образ диска. Повторіть спробу.</translation>
 <translation id="5442550868130618860">Увімкнути автооновлення</translation>
@@ -5279,7 +5272,6 @@
 <translation id="5559311991468302423">Видалити адресу</translation>
 <translation id="55601339223879446">Налаштуйте межі робочого столу на дисплеї</translation>
 <translation id="5561162485081632007">Виявляє небезпечні події та повідомляє про них</translation>
-<translation id="5562781907504170924">Цю вкладку під’єднано до пристрою Bluetooth.</translation>
 <translation id="556321030400250233">локальний або спільний файл</translation>
 <translation id="5563234215388768762">Шукайте в Google або введіть URL-адресу</translation>
 <translation id="5565735124758917034">Активний клієнт</translation>
@@ -5641,7 +5633,6 @@
 <translation id="5882919346125742463">Відомі мережі</translation>
 <translation id="5883356647197510494">Автоматично заблоковано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Налаштувати для кожного розширення</translation>
-<translation id="5884474295213649357">Цю вкладку під’єднано до пристрою USB.</translation>
 <translation id="5885314688092915589">Цим профілем керуватиме ваша організація</translation>
 <translation id="5886009770935151472">Палець 1</translation>
 <translation id="5886112770923972514">Підключайтеся до пристроїв поруч і налаштовуйте для них швидку пару</translation>
@@ -8618,7 +8609,6 @@
 <translation id="8464132254133862871">Цей обліковий запис користувача не може використовуватися для цієї служби.</translation>
 <translation id="8465252176946159372">Недійсний</translation>
 <translation id="8465444703385715657">Щоб запустити плагін <ph name="PLUGIN_NAME" />, потрібен ваш дозвіл</translation>
-<translation id="8466417995783206254">На цій вкладці відтворюється відео в режимі "картинка в картинці".</translation>
 <translation id="8467326454809944210">Вибрати іншу мову</translation>
 <translation id="8468087214092422866">Заборонено шукати пристрої з Bluetooth</translation>
 <translation id="8470513973197838199">Збережені паролі для <ph name="ORIGIN" /></translation>
@@ -8951,7 +8941,6 @@
 <translation id="8755584192133371929">Виберіть вкладку, якою хочете поділитися</translation>
 <translation id="875604634276263540">URL-адреса зображення недійсна</translation>
 <translation id="8756969031206844760">Оновити пароль?</translation>
-<translation id="8757203080302669031">Ця вкладка активно шукає пристрої з Bluetooth.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" />: видалено</translation>
 <translation id="8759753423332885148">Докладніше.</translation>
 <translation id="8761945298804995673">Такий користувач уже існує</translation>

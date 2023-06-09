@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{У мэтах абароны вашых даных адкліканы дазволы ў сайта, які вы не наведвалі на працягу 2 месяцаў}one{У мэтах абароны вашых даных адкліканы дазволы ў сайтаў, якія вы не наведвалі на працягу 2 месяцаў}few{У мэтах абароны вашых даных адкліканы дазволы ў сайтаў, якія вы не наведвалі на працягу 2 месяцаў}many{У мэтах абароны вашых даных адкліканы дазволы ў сайтаў, якія вы не наведвалі на працягу 2 месяцаў}other{У мэтах абароны вашых даных адкліканы дазволы ў сайтаў, якія вы не наведвалі на працягу 2 месяцаў}}</translation>
 <translation id="1009663062402466586">Цяпер можна кіраваць гульнёй</translation>
-<translation id="1010498023906173788">Гэта ўкладка падключана да паслядоўнага порта.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Старонка не адказвае}one{Старонкі не адказваюць}few{Старонкі не адказваюць}many{Старонкі не адказваюць}other{Старонкі не адказваюць}}</translation>
 <translation id="1011003645819296594">Захаваныя прылады</translation>
 <translation id="1011355516189274711">Гучнасць сінтэзу маўлення</translation>
@@ -635,7 +634,6 @@
 <translation id="1541346352678737112">Сетак не знойдзена</translation>
 <translation id="154198613844929213">{0,plural, =0{Даныя выдаляюцца}=1{Даныя будуць выдалены праз 1 секунду}one{Даныя будуць выдалены праз # секунду}few{Даныя будуць выдалены праз # секунды}many{Даныя будуць выдалены праз # секунд}other{Даныя будуць выдалены праз # секунды}}</translation>
 <translation id="1542137295869176367">Не ўдалося абнавіць даныя для ўваходу</translation>
-<translation id="1542514202066550870">Гэта ўкладка перадае VR-змесціва на гарнітуру.</translation>
 <translation id="1543284117603151572">Імпартаваныя з Edge</translation>
 <translation id="1543538514740974167">Хуткае адкрыццё старонак</translation>
 <translation id="1544588554445317666">Паспрабуйце выкарыстаць карацейшую назву файла або захаваць яго ў іншую папку</translation>
@@ -1051,7 +1049,6 @@
 <translation id="1873920700418191231">Даць дазволы вэб-сайту <ph name="WEBSITE" /> зноў</translation>
 <translation id="1874248162548993294">Дазволена паказваць любую рэкламу</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Перамясціць укладку ў іншае акно}one{Перамясціць укладкі ў іншае акно}few{Перамясціць укладкі ў іншае акно}many{Перамясціць укладкі ў іншае акно}other{Перамясціць укладкі ў іншае акно}}</translation>
-<translation id="1875386316419689002">Гэта ўкладка падключана да прылады HID.</translation>
 <translation id="1875387611427697908">Гэта можна дадаць толькі з <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Метка (неабавязкова)</translation>
 <translation id="1877520246462554164">Не ўдалося атрымаць маркер аўтэнтыфікацыі. Выйдзіце і ўвайдзіце зноў, каб паўтарыць спробу.</translation>
@@ -1907,7 +1904,6 @@
 <translation id="2581455244799175627">Дадатковая інфармацыя пра дазвол выкарыстоўваць староннія файлы cookie</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Не ўдалося атрымаць білет Kerberos. Паўтарыце спробу або звярніцеся да адміністратара прылад сваёй арганізацыі. (Код памылкі: <ph name="ERROR_CODE" />.)</translation>
-<translation id="2585724835339714757">Гэта ўкладка абагульвае ваш экран.</translation>
 <translation id="2586561813241011046">Не ўдалося ўсталяваць праграму <ph name="APP_NAME" />. Паўтарыце спробу або звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2586672484245266891">Увядзіце карацейшы URL-адрас</translation>
@@ -2136,7 +2132,6 @@
 <translation id="2777525873368474674">Устаўце спасылку на відарыс</translation>
 <translation id="2778471504622896352">Дадаваць праграмы з аддаленым доступам на панэль запуску ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Пашырэнні на гэтым сайце разблакіраваны</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
 <translation id="2783024642731649028">На 1 тавар у кошыку дзейнічае скідка <ph name="DISCOUNT_TEXT" /> ад <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прагледжана <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Спампавана</translation>
@@ -2489,7 +2484,6 @@
 <translation id="3080933187214341848">Гэта сетка не сінхранізавана з уліковым запісам. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Гэта ўкладка выкарыстоўвае вашу камеру або мікрафон.</translation>
 <translation id="3083193146044397360">Часова заблакіравана ў мэтах абароны вашай бяспекі</translation>
 <translation id="3083899879156272923">Перамяшчаць экран, трымаючы ўказальнік мышы ў цэнтры экрана</translation>
 <translation id="3083998949001524405">Сайты, якім дазволена выкарыстоўваць староннія файлы cookie</translation>
@@ -2606,7 +2600,6 @@
 <translation id="3201237270673604992">У адваротным алфавітным парадку</translation>
 <translation id="3201422919974259695">Тут з'явяцца даступныя прылады USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
-<translation id="3202173864863109533">Гук на гэтай укладцы выключаны.</translation>
 <translation id="3202578601642193415">самыя новыя</translation>
 <translation id="3204648577100496185">Даныя, звязаныя з дадзенай праграмай, могуць быць выдалены з гэтай прылады</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
@@ -3014,7 +3007,6 @@
 <translation id="3575121482199441727">Дазволіць для гэтага сайта</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3577745545227000795">Збор даных аб апаратным забеспячэнні <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Змесціва гэтай укладкі абагульваецца.</translation>
 <translation id="3578874072190212775">Дапамажыце сайтам выяўляць махлярства і адрозніваць ботаў ад людзей</translation>
 <translation id="3581605050355435601">Задаваць IP-адрас аўтаматычна</translation>
 <translation id="3582057310199111521">Уведзены на сайце, вядомым падманнымі паводзінамі, і раскрыты пры ўцечцы даных</translation>
@@ -3554,6 +3546,7 @@
 <translation id="4021941025609472374">Закрыць укладкі злева</translation>
 <translation id="402211067068791756">Будуць выдалены даныя (<ph name="TOTAL_USAGE" />), захаваныя паказанымі сайтамі</translation>
 <translation id="4022426551683927403">&amp;Дадаць у слоўнік</translation>
+<translation id="4024768890073681126">Браўзерам кіруюць бацькі</translation>
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
 <translation id="402707738228916911">Атрымана інструкцыя: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Папка: <ph name="FOLDER_TITLE" /></translation>
@@ -4029,7 +4022,6 @@
 <translation id="4448914100439890108">Не паказваць пароль карыстальніка <ph name="USERNAME" /> для <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Кіраваць дазволамі</translation>
 <translation id="4449948729197510913">Ваша імя карыстальніка належыць карпаратыўнаму ўліковаму запісу вашай арганізацыі. Каб рэгістраваць прылады ў гэтым уліковым запісе, спачатку пацвердзіце права ўласнасці на дамен у кансолі адміністратара. Для пацвярджэння вам спатрэбяцца паўнамоцтвы адміністратара ўліковага запісу.</translation>
-<translation id="4449996769074858870">На гэтай укладцы прайграецца аўдыя.</translation>
 <translation id="4450974146388585462">Дыягностыка</translation>
 <translation id="445099924538929605">Аперацыйная сістэма <ph name="DEVICE_OS" /> выявіла актыўны модуль TPM, які можа больш надзейна захоўваць даныя.</translation>
 <translation id="4451479197788154834">Пароль захаваны на гэтай прыладзе і ва Уліковым запісе</translation>
@@ -5261,7 +5253,6 @@
 <translation id="5559311991468302423">Выдаленне адраса</translation>
 <translation id="55601339223879446">Рэгуліроўка граніц працоўнага стала ў межах дысплэя</translation>
 <translation id="5561162485081632007">Выяўляе небяспечныя падзеі і папярэджвае пра іх</translation>
-<translation id="5562781907504170924">Гэта ўкладка падключана да прылады Bluetooth.</translation>
 <translation id="556321030400250233">лакальны ці абагулены файл</translation>
 <translation id="5563234215388768762">Увядзіце URL-адрас або запыт для пошуку праз Google</translation>
 <translation id="5565735124758917034">Актыўны</translation>
@@ -5625,7 +5616,6 @@
 <translation id="5882919346125742463">Вядомыя сеткі</translation>
 <translation id="5883356647197510494">Заблакіравана аўтаматычна: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Наладжваць для кожнага пашырэння</translation>
-<translation id="5884474295213649357">Гэта ўкладка падключана да прылады USB.</translation>
 <translation id="5885314688092915589">Гэтым профілем будзе кіраваць ваша арганізацыя</translation>
 <translation id="5886009770935151472">Палец 1</translation>
 <translation id="5886112770923972514">Падключаць і наладжваць прылады паблізу з дапамогай функцыі хуткага спалучэння</translation>
@@ -8603,7 +8593,6 @@
 <translation id="8464132254133862871">Сэрвіс недаступны для гэтага ўліковага запісу.</translation>
 <translation id="8465252176946159372">Памылка ўводу</translation>
 <translation id="8465444703385715657">Убудове "<ph name="PLUGIN_NAME" />" для запуску патрабуецца ваш дазвол</translation>
-<translation id="8466417995783206254">Гэта ўкладка прайграе відэа ў рэжыме "відарыс у відарысе".</translation>
 <translation id="8467326454809944210">Выбраць іншую мову</translation>
 <translation id="8468087214092422866">Забаронена шукаць прылады з Bluetooth</translation>
 <translation id="8470513973197838199">Захаваныя паролі для сайта <ph name="ORIGIN" /></translation>
@@ -8936,7 +8925,6 @@
 <translation id="8755584192133371929">Выберыце ўкладку для абагульвання</translation>
 <translation id="875604634276263540">Няправільны URL-адрас відарыса</translation>
 <translation id="8756969031206844760">Абнавіць пароль?</translation>
-<translation id="8757203080302669031">Гэта ўкладка шукае прылады з Bluetooth.</translation>
 <translation id="8757368836647541092">Карыстальнік <ph name="USER_NAME_OR_EMAIL" /> выдалены</translation>
 <translation id="8759753423332885148">Даведацца больш.</translation>
 <translation id="8761945298804995673">Гэты карыстальнік ужо існуе</translation>

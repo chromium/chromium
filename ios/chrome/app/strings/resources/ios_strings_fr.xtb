@@ -91,7 +91,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="152234381334907219">Jamais enregistrés</translation>
 <translation id="1523341279170789507">Autoriser tous les cookies</translation>
 <translation id="1524563461097350801">Non, merci</translation>
-<translation id="1531836666020185856">Extraits disponibles</translation>
 <translation id="1535268707340844072">Vos paramètres actuels peuvent perturber le bon fonctionnement de certains sites. Pour gérer les cookies de l'ensemble des sites, consultez la page <ph name="BEGIN_LINK" />Paramètres relatifs aux cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Scanner le code QR</translation>
@@ -193,6 +192,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
+<translation id="2269277877025820298">Afficher plus</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2286505070150039482">Texte en surbrillance</translation>
 <translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Cette adresse sera supprimée de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
@@ -218,7 +218,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2423077901494354337">Vous allez maintenant exploiter tout le potentiel de Chrome sur votre appareil.</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour "<ph name="USERNAME" />" sur <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
-<translation id="2439425774439590">Sites les plus consultés</translation>
 <translation id="2451654228769116489">Épingler l'onglet</translation>
 <translation id="2461070143328828326">Paramètres de mot de passe</translation>
 <translation id="2469960372084740698">Désactiver la navigation sécurisée ?</translation>

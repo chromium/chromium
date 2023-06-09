@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium 拡張機能が HID デバイスにアクセスしていました}=1{Chromium 拡張機能が HID デバイスにアクセスしています}other{Chromium 拡張機能が # 個の HID デバイスにアクセスしています}}</translation>
 <translation id="1185134272377778587">Chromium について</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、管理者は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1261119230216066228">メモリセーバーで Chromium の速度を向上</translation>
 <translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
@@ -179,7 +178,6 @@
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
 <translation id="5114678101347489141">Chromium では、使用されるユーザー情報の量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は Chromium を自動的に終了します。}other{# 分間使用しなかった場合、管理者は Chromium を自動的に終了します。}}</translation>
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> さんはこの Chromium プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chromium プロファイルが作成されます。</translation>
 <translation id="5277894862589591112">変更を適用するには Chromium を再起動してください</translation>
@@ -244,7 +242,6 @@
 <translation id="6327105987658262776">利用できるアップデートはありません。</translation>
 <translation id="6333502561965082103">Chromium で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="6334986366598267305">共有パソコンの Chromium で Google アカウントが簡単に使用できるようになりました。</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}other{# 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}}</translation>
 <translation id="6373523479360886564">Chromium をアンインストールしてもよろしいですか？</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> Chromium はユーザーの興味 / 関心を推定する場合があります。その後、アクセスしたサイトは、表示する広告をパーソナライズするために、Chromium にユーザーの興味 / 関心を提示するよう依頼できます。</translation>
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>

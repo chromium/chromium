@@ -91,7 +91,6 @@
 <translation id="152234381334907219">Nikoli shranjeno</translation>
 <translation id="1523341279170789507">Dovoli vse piškotke</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
-<translation id="1531836666020185856">Priljubljeno</translation>
 <translation id="1535268707340844072">Zaradi trenutne nastavitve nekatera spletna mesta morda ne bodo delovala. Če želite upravljati piškotke za vsa spletna mesta, si oglejte <ph name="BEGIN_LINK" />Nastavitve piškotkov<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Naslov 1</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">Koda napake: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Izboljšaj iskanje</translation>
+<translation id="2269277877025820298">Več</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2286505070150039482">Označeno besedilo</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ta naslov bo izbrisan iz te naprave.}one{Ti naslovi bodo izbrisani iz te naprave.}two{Ti naslovi bodo izbrisani iz te naprave.}few{Ti naslovi bodo izbrisani iz te naprave.}other{Ti naslovi bodo izbrisani iz te naprave.}}</translation>
@@ -218,7 +218,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2423077901494354337">Zdaj boste lahko v napravi kar najbolje izkoristili Chrome.</translation>
 <translation id="2434405374328098816">Na <ph name="WEBSITE" /> ste že shranili geslo za »<ph name="USERNAME" />«.</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
-<translation id="2439425774439590">Najbolj obiskana spletna mesta</translation>
 <translation id="2451654228769116489">Pripni zavihek</translation>
 <translation id="2461070143328828326">Nastavitve gesel</translation>
 <translation id="2469960372084740698">Želite izklopiti varno brskanje?</translation>

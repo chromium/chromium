@@ -91,7 +91,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="152234381334907219">Erioed wedi'i gadw</translation>
 <translation id="1523341279170789507">Caniatáu'r Holl Gwcis</translation>
 <translation id="1524563461097350801">Dim diolch</translation>
-<translation id="1531836666020185856">Wedi'i gynnwys</translation>
 <translation id="1535268707340844072">Mae'n bosib y bydd eich gosodiad presennol yn achosi i rai gwefannau dorri. I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau Cwcis<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Cyfeiriad 1</translation>
 <translation id="1545749641540134597">Sganio Cod QR</translation>
@@ -193,6 +192,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="225943865679747347">Cod gwall: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ychwanegu Cyfrif</translation>
 <translation id="2268044343513325586">Mireinio</translation>
+<translation id="2269277877025820298">Gweld Rhagor</translation>
 <translation id="2273327106802955778">Dewislen rhagor</translation>
 <translation id="2286505070150039482">Testun a Amlygir</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bydd y cyfeiriad hwn yn cael ei ddileu o'r ddyfais hon.}zero{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}two{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}few{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}many{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}other{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}}</translation>
@@ -218,7 +218,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2423077901494354337">Byddwch nawr yn manteisio i'r eithaf ar Chrome ar eich dyfais.</translation>
 <translation id="2434405374328098816">Rydych eisoes wedi cadw cyfrinair ar gyfer "<ph name="USERNAME" />" yn <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
-<translation id="2439425774439590">Gwefannau yr Ymwelir â Hwy Mwyaf</translation>
 <translation id="2451654228769116489">Pinio Tab</translation>
 <translation id="2461070143328828326">Cyfrinair Gosodiadau</translation>
 <translation id="2469960372084740698">Diffodd Pori'n Ddiogel?</translation>

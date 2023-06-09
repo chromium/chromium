@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{ເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ, ລະບົບໄດ້ລຶບສິດການອະນຸຍາດຈາກເວັບໄຊທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງມາເປັນເວລາ 2 ເດືອນອອກແລ້ວ}other{ເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ, ລະບົບໄດ້ລຶບສິດການອະນຸຍາດຈາກເວັບໄຊທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງມາເປັນເວລາ 2 ເດືອນອອກແລ້ວ}}</translation>
 <translation id="1009663062402466586">ຕອນນີ້ສາມາດໃຊ້ການຄວບຄຸມເກມໄດ້ແລ້ວ</translation>
-<translation id="1010498023906173788">ແຖບນີ້ເຊື່ອມຕໍ່ກັບຜອດອະນຸກຳ.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ໜ້າ​ບໍ່​ຕອບ​ຮັບ}other{ໜ້າ​ບໍ່​ຕອບ​ຮັບ}}</translation>
 <translation id="1011003645819296594">ອຸປະກອນທີ່ບັນທຶກໄວ້</translation>
 <translation id="1011355516189274711">ລະດັບສຽງການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
@@ -633,7 +632,6 @@
 <translation id="1541346352678737112">ບໍ່ພົບເຄືອຂ່າຍ</translation>
 <translation id="154198613844929213">{0,plural, =0{ກຳລັງລຶບຕອນນີ້.}=1{ຈະລຶບໃນ: 1 ວິນາທີ}other{ຈະລຶບໃນ: # ວິນາທີ}}</translation>
 <translation id="1542137295869176367">ບໍ່ສາມາດອັບເດດຂໍ້ມູນການເຂົ້າສູ່ລະບົບຂອງທ່ານໄດ້</translation>
-<translation id="1542514202066550870">ແຖບນີ້ກຳລັງນໍາສະເໜີເນື້ອຫາ VR ໄປຍັງຊຸດຫູຟັງ.</translation>
 <translation id="1543284117603151572">ນຳເຂົ້າຈາກ Edge</translation>
 <translation id="1543538514740974167">ມາທີ່ນີ້ໄດ້ໄວກວ່າ</translation>
 <translation id="1544588554445317666">ໃຫ້ລອງໃຊ້ຊື່ໄຟລ໌ທີ່ສັ້ນລົງ ຫຼື ບັນທຶກໄປໃສ່ໂຟນເດີອື່ນ</translation>
@@ -1057,7 +1055,6 @@
 <translation id="1873920700418191231">ອະນຸຍາດສິດການອະນຸຍາດອີກຄັ້ງສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງໂຄສະນາຕ່າງໆ</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}other{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
-<translation id="1875386316419689002">ແຖບນີ້ເຊື່ອມຕໍ່ກັບອຸປະກອນ HID.</translation>
 <translation id="1875387611427697908">ສາມາດເພີ່ມອັນນີ້ໄດ້ຈາກ <ph name="CHROME_WEB_STORE" /> ເທົ່ານັ້ນ</translation>
 <translation id="1877377290348678128">ປ້າຍກຳກັບ (ບໍ່ບັງຄັບ)</translation>
 <translation id="1877520246462554164">ຮັບເອົາໂທເຄັນການຮັບຮອງຄວາມຖືກຕ້ອງບໍ່ສຳເລັດ. ກະລຸນນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່ເພື່ອລອງອີກຄັ້ງ.</translation>
@@ -1918,7 +1915,6 @@
 <translation id="2581455244799175627">ເພີ່ມເຕີມກ່ຽວກັບການອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (ພະແລັດຟອມ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">ບໍ່ສາມາດຮັບປີ້ Kerberos ໄດ້. ລອງອີກຄັ້ງ ຫຼື ຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງອົງການຂອງທ່ານ. (ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">ແຖບນີ້ກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="2586561813241011046">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
 <translation id="2586672484245266891">ກະລຸນາປ້ອນ URL ທີ່ສັ້ນລົງ</translation>
@@ -2147,7 +2143,6 @@
 <translation id="2777525873368474674">ວາງລິ້ງຮູບ</translation>
 <translation id="2778471504622896352">ເພີ່ມແອັບຣີໂໝດຫາຕົວເປີດໃຊ້ ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">ສ່ວນຂະຫຍາຍຖືກອະນຸຍາດຢູ່ເວັບໄຊນີ້</translation>
 <translation id="2782104745158847185">ເກີດຜິດພາດໃນການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux</translation>
 <translation id="2783024642731649028">1 ລາຍການໃນກະຕະຂອງທ່ານ <ph name="DISCOUNT_TEXT" /> ຈາກ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, ໄດ້ເບິ່ງ<ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ດາວ​ໂຫລດແລ້ວ</translation>
@@ -2500,7 +2495,6 @@
 <translation id="3080933187214341848">ເຄືອຂ່າຍນີ້ບໍ່ໄດ້ຊິ້ງຂໍ້ມູນກັບບັນຊີຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">ແຖບ​ນີ້​ກໍາລັງ​ໃຊ້​ກ້ອງ​ຖ່າຍ​ຮູບ​ຫຼືໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
 <translation id="3083193146044397360">ບລັອກໄວ້ຊົ່ວຄາວແລ້ວເພື່ອປົກປ້ອງຄວາມປອດໄພຂອງທ່ານ</translation>
 <translation id="3083899879156272923">ຍ້າຍໜ້າຈໍໂດຍຮັກສາເມົ້າໄວ້ຢູ່ເຄິ່ງກາງໜ້າຈໍ</translation>
 <translation id="3083998949001524405">ອະນຸຍາດໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
@@ -2617,7 +2611,6 @@
 <translation id="3201237270673604992">Z ຫາ A</translation>
 <translation id="3201422919974259695">ອຸປະກອນ USB ທີ່ສາມາດໃຊ້ໄດ້ຈະປາກົດຢູ່ບ່ອນນີ້.</translation>
 <translation id="3202131003361292969">ເສັ້ນທາງ</translation>
-<translation id="3202173864863109533">ສຽງ​ແຖບ​ຂອງ​ນີ້​ກໍາລັງຖືກປິດ.</translation>
 <translation id="3202578601642193415">ໃໝ່ສຸດ</translation>
 <translation id="3204648577100496185">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ອາດຖືກລຶບອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
@@ -3025,7 +3018,6 @@
 <translation id="3575121482199441727">ອະນຸຍາດສຳລັບເວັບໄຊນີ້</translation>
 <translation id="3577473026931028326">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="3577745545227000795">ການເກັບກຳຂໍ້ມູນຮາດແວ <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">ແຊຣ໌ເນື້ອໃນຂອງແຖບນີ້ຢູ່.</translation>
 <translation id="3578874072190212775">ຊ່ວຍເວັບໄຊສູ້ກັບການສໍ້ໂກງ ແລະ ແຍກບັອດອອກຈາກຄົນ</translation>
 <translation id="3581605050355435601">ຕັ້ງຄ່າທີ່ຢູ່ IP ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3582057310199111521">ປ້ອນໃສ່ເວັບໄຊຫຼອກລວງ ແລະ ພົບເຫັນໃນການລະເມີດຂໍ້ມູນ</translation>
@@ -3567,6 +3559,7 @@
 <translation id="4021941025609472374">ປິດແຖບຢູ່ທາງຊ້າຍ</translation>
 <translation id="402211067068791756">ການດຳເນີນການນີ້ຈະລຶບລ້າງຂໍ້ມູນ <ph name="TOTAL_USAGE" /> ທີ່ຈັດເກັບໄວ້ໂດຍເວັບໄຊສະແດງຜົນ</translation>
 <translation id="4022426551683927403">ເພີ່ມໃສ່ພົດຈະນານຸກົມ</translation>
+<translation id="4024768890073681126">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍຜູ້ປົກຄອງຂອງທ່ານ</translation>
 <translation id="4025039777635956441">ປິດສຽງເວັບໄຊທີ່ເລືອກ</translation>
 <translation id="402707738228916911">ໄດ້ຮັບຄຳສັ່ງ <ph name="AUTHORIZE_INSTRUCTION_NAME" /> ລາຍການແລ້ວ</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ໂຟນເດີ</translation>
@@ -4042,7 +4035,6 @@
 <translation id="4448914100439890108">ເຊື່ອງລະຫັດຜ່ານສຳລັບ <ph name="USERNAME" /> ຢູ່ <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">ຈັດການການອະນຸຍາດ</translation>
 <translation id="4449948729197510913">ຊື່ຜູ້ໃຊ້ຂອງທ່ານຂຶ້ນກັບບັນຊີວິສາຫະກິດຂອງອົງການຂອງທ່ານ. ເພື່ອລົງທະບຽນອຸປະກອນກັບບັນຊີ, ກະລຸນາຢັ້ງຢືນຄວາມເປັນເຈົ້າຂອງໂດເມນໃນຄອນໂຊນຜູ້ເບິ່ງແຍງລະບົບກ່ອນ. ທ່ານຈຳເປັນຕ້ອງມີສິດທິຂອງຜູ້ເບິ່ງແຍງລະບົບໃນບັນຊີເພື່ອຢັ້ງຢືນ.</translation>
-<translation id="4449996769074858870">ແຖບ​ນີ້ກໍາລັງ​ຫຼີ້ນ​ສຽງ​.</translation>
 <translation id="4450974146388585462">ກວດວິເຄາະ</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ກວດພົບ TPM ທີ່ເຮັດວຽກຢູ່ເຊິ່ງສາມາດຈັດເກັບຂໍ້ມູນຂອງທ່ານໄດ້ປອດໄພກວ່າ.</translation>
 <translation id="4451479197788154834">ລະຫັດຜ່ານຂອງທ່ານຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ ແລະ ໃນບັນຊີ Google ຂອງທ່ານ</translation>
@@ -5274,7 +5266,6 @@
 <translation id="5559311991468302423">ລຶບທີ່ຢູ່</translation>
 <translation id="55601339223879446">ປັບຂອບເຂດເດັສທັອບຂອງທ່ານຢູ່ພາຍໃນຈໍສະແດງຜົນ</translation>
 <translation id="5561162485081632007">ກວດຫາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍເມື່ອພວກມັນເກີດຂຶ້ນ</translation>
-<translation id="5562781907504170924">ແຖບນີ້ຖືກເຊື່ອມຕໍ່ກັບອຸປະກອນ Bluetooth.</translation>
 <translation id="556321030400250233">ໄຟລ໌ໃນເຄື່ອງ ຫຼື ທີ່ແບ່ງປັນ</translation>
 <translation id="5563234215388768762">ຊອກຫາໃນ Google ຫຼື ພິມ URL</translation>
 <translation id="5565735124758917034">ເປີດຢູ່</translation>
@@ -5638,7 +5629,6 @@
 <translation id="5882919346125742463">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
 <translation id="5883356647197510494">ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ໂດຍອັດຕະໂນມັດແລ້ວ</translation>
 <translation id="5884447826201752041">ປັບແຕ່ງສຳລັບແຕ່ລະສ່ວນຂະຫຍາຍ</translation>
-<translation id="5884474295213649357">ແຖບນີ້ຖືກເຊື່ອມຕໍ່ກັບອຸປະກອນ USB.</translation>
 <translation id="5885314688092915589">ອົງການຂອງທ່ານຈະຈັດການໂປຣໄຟລ໌ນີ້</translation>
 <translation id="5886009770935151472">ນິ້ວ 1</translation>
 <translation id="5886112770923972514">ເຊື່ອມຕໍ່ ແລະ ຕັ້ງຄ່າອຸປະກອນການຈັບຄູ່ດ່ວນທີ່ຢູ່ໃກ້ຄຽງຢ່າງວ່ອງໄວ</translation>
@@ -8608,7 +8598,6 @@
 <translation id="8464132254133862871">ບັນຊີຜູ້ໃຊ້ນີ້ບໍ່ມີສິດສໍາລັບການບໍລິການ.</translation>
 <translation id="8465252176946159372">ບໍ່​ຖືກ​ຕ້ອງ</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ຕ້ອງການການອະນຸຍາດຂອງທ່ານເພື່ອເປີດໃຊ້</translation>
-<translation id="8466417995783206254">ແຖບນີ້ກຳລັງຫຼິ້ນວິດີໂອໃນໂໝດສະແດງຜົນຊ້ອນກັນ.</translation>
 <translation id="8467326454809944210">ເລືອກພາສາອື່ນ</translation>
 <translation id="8468087214092422866">ບໍ່ອະນຸຍາດໃຫ້ຊອກຫາອຸປະກອນ Bluetooth</translation>
 <translation id="8470513973197838199">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="ORIGIN" /></translation>
@@ -8941,7 +8930,6 @@
 <translation id="8755584192133371929">ເລືອກແຖບເພື່ອແບ່ງປັນ</translation>
 <translation id="875604634276263540">URL ຮູບບໍ່ຖືກຕ້ອງ</translation>
 <translation id="8756969031206844760">ອັບເດດລະຫັດຜ່ານບໍ?</translation>
-<translation id="8757203080302669031">ແຖບນີ້ກຳລັງສະແກນຫາອຸປະກອນ Bluetooth ຢ່າງຈິງຈັງ.</translation>
 <translation id="8757368836647541092">ລຶບ <ph name="USER_NAME_OR_EMAIL" /> ອອກແລ້ວ</translation>
 <translation id="8759753423332885148">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ​.</translation>
 <translation id="8761945298804995673">ມີຜູ້ໃຊ້ນີ້ຢູ່ແລ້ວ</translation>

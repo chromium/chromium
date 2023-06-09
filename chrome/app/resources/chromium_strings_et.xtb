@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromiumi laiendused pääsesid juurde HID-seadmele}=1{Chromiumi laiendused pääsevad juurde HID-seadmele}other{Chromiumi laiendused pääsevad juurde # HID-seadmele}}</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Teie administraator sulgeb Chromiumi automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie administraator sulgeb Chromiumi automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
 <translation id="1261119230216066228">Mälusäästja muutis Chromiumi kiiremaks</translation>
 <translation id="1315551408014407711">Uue Chromiumi profiili seadistamine</translation>
@@ -179,7 +178,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4987820182225656817">Külastajad saavad kasutada Chromiumi jälgi jätmata.</translation>
 <translation id="4994636714258228724">Lisa Chromiumi</translation>
 <translation id="5114678101347489141">Chromium katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema teabemahu juures samasugust sirvimiskogemust</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Teie administraator sulgeb Chromiumi automaatselt, kui seda ei kasutata 1 minuti jooksul.}other{Teie administraator sulgeb Chromiumi automaatselt, kui seda ei kasutata # minuti jooksul.}}</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> on juba sellele Chromiumi profiilile sisse logitud. See loob konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uue Chromiumi profiili.</translation>
 <translation id="5277894862589591112">Muudatuste rakendamiseks käivitage Chromium uuesti</translation>
@@ -244,7 +242,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="6327105987658262776">Ühtegi uuendust ei ole saadaval.</translation>
 <translation id="6333502561965082103">Teine toiming on Chromiumis pooleli. Proovige hiljem uuesti.</translation>
 <translation id="6334986366598267305">Nüüd on Chromiumi lihtsam kasutada Google'i kontoga ja jagatud arvutistes.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Teie administraator kustutab sirvimisandmed automaatselt, kui neid ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}other{Teie administraator kustutab sirvimisandmed automaatselt, kui neid ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}}</translation>
 <translation id="6373523479360886564">Kas soovite kindlasti Chromiumi desinstallida?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Chromium saab teie huvisid prognoosida. Hiljem saab teie külastatav sait taotleda Chromiumilt teie huvisid, et isikupärastada teile kuvatavaid reklaame.</translation>
 <translation id="6403826409255603130">Chromium on veebibrauser, mis avab veebilehti ja rakendusi välgukiirusel. See on kiire, stabiilne ja hõlpsasti kasutatav. Sirvige veebi turvalisemalt tänu Chromiumi sisseehitatud pahavara- ja andmepüügikaitsele.</translation>

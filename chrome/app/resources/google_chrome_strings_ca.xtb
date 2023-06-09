@@ -81,7 +81,9 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2399868464369312507">Google Chrome està provant d'editar les formes de pagament.</translation>
 <translation id="2401189691232800402">Sistema Chrome OS</translation>
+<translation id="2424440923901031101">Aquesta extensió infringeix la política de Chrome Web Store i podria no ser segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="2467438592969358367">Google Chrome vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
+<translation id="2472092250898121027">Aquesta extensió conté programari maliciós i no és segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
 <translation id="2534507159460261402">Google Pay (copiada a Chrome)</translation>
 <translation id="2556847002339236023">La teva organització tanca Chrome quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />. Les dades de navegació s'han suprimit. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.</translation>
@@ -223,7 +225,6 @@
 <translation id="4970947549776831107">Chrome ha bloquejat aquest fitxer perquè aquest tipus de fitxer és perillós</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Una extensió de Google Chrome estava accedint als dispositius HID}=1{Una extensió de Google Chrome està accedint a un dispositiu HID}other{Una extensió de Google Chrome està accedint a # dispositius HID}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{El teu administrador tanca Chrome automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{El teu administrador tanca Chrome automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="5098668839038261629">Si aquesta opció està activada, també se't tancarà la sessió de Chrome</translation>
 <translation id="5132929315877954718">Descobriu aplicacions, jocs, extensions i temes genials per a Google Chrome.</translation>
 <translation id="5139423532931106058">Personalitza el teu perfil de Chrome</translation>
@@ -281,7 +282,7 @@
 <translation id="6291549208091401781">Ja tens instal·lat Google Chrome per a tots els usuaris de l'ordinador.</translation>
 <translation id="6326175484149238433">Suprimeix de Chrome</translation>
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{El teu administrador suprimeix automàticament les dades de navegació quan no es fan servir durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes que estan obertes, continuaran així.}other{El teu administrador suprimeix automàticament les dades de navegació quan no s'utilitzen durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes que estan obertes, continuaran així.}}</translation>
+<translation id="6360449101159168105">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chrome funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="6418662306461808273">Vols canviar al perfil de Chrome existent?</translation>
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
@@ -364,6 +365,7 @@
 <translation id="8005666035647241369">Ves al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="8008534537613507642">Torna a instal·lar Chrome</translation>
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
+<translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
@@ -375,7 +377,6 @@
 <translation id="8290100596633877290">Google Chrome s'ha bloquejat. Voleu tornar-lo a iniciar?</translation>
 <translation id="8342675569599923794">Chrome ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{El teu administrador tanca Chrome automàticament quan no s'utilitza durant 1 minut.}other{El teu administrador tanca Chrome automàticament quan no s'utilitza durant # minuts.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: Chrome pot estimar els teus interessos. Després, un lloc web que visitis pot demanar els teus interessos a Chrome per personalitzar els anuncis que veus.</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>

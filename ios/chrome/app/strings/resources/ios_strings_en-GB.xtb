@@ -91,7 +91,6 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="152234381334907219">Never saved</translation>
 <translation id="1523341279170789507">Allow All Cookies</translation>
 <translation id="1524563461097350801">No, Thanks</translation>
-<translation id="1531836666020185856">Featured</translation>
 <translation id="1535268707340844072">Your current setting may cause some sites to break. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -219,7 +218,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2423077901494354337">You'll now get the most out of Chrome on your device.</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Show password</translation>
-<translation id="2439425774439590">Most visited sites</translation>
 <translation id="2451654228769116489">Pin tab</translation>
 <translation id="2461070143328828326">Password settings</translation>
 <translation id="2469960372084740698">Turn off Safe Browsing?</translation>

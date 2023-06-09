@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chromium hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium kengaytmalari HID qurilmalarga kirgan}=1{Chromium kengaytmalari HID qurilmalarga kirmoqda}other{Chromium kengaytmalari # ta HID qurilmaga kirmoqda}}</translation>
 <translation id="1185134272377778587">Chromium haqida</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Administrator Chromium 1 daqiqa davomida ishlatilmasa avtomatik yopilishini sozlagan. Brauzer maʼlumotlari oʻchiriladi. Jumladan, tarix, avtomatik kiritish va yuklanmalar.}other{Administrator Chromium # daqiqa davomida ishlatilmasa avtomatik yopilishini sozlagan. Brauzer maʼlumotlari oʻchiriladi. Jumladan, tarix, avtomatik kiritish va yuklanmalar.}}</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
 <translation id="1261119230216066228">Xotirani tejash funksiyasi Chromiumni tezlashtirdi</translation>
 <translation id="1262876892872089030">Bu varaq nonfaol boʻlganida Chromium tezroq ishlashi uchun xotira boʻshatiladi. Bu saytni har doim nofaol boʻlmasligini tanlash mumkin.</translation>
@@ -183,7 +182,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4987820182225656817">Agar tashrif buyurgan saytlaringiz haqidagi ma’lumotlar saqlanmasligini xohlasangiz, Chromium mehmon rejimidan foydalaning.</translation>
 <translation id="4994636714258228724">Chromium foydalanuvchini qo‘shish</translation>
 <translation id="5114678101347489141">Chromium saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Administrator Chromium 1 daqiqa davomida ishlatilmasa avtomatik yopilishini sozlagan.}other{Administrator Chromium # daqiqa davomida ishlatilmasa avtomatik yopilishini sozlagan.}}</translation>
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> allaqachon ushbu Chromium profiliga kirgan. Bunda <ph name="USER_EMAIL_ADDRESS" /> uchun yangi Chromium profili yaratiladi</translation>
 <translation id="5277894862589591112">O‘zgarishlarni tatbi qilish uchun Chromium qayta ishga tushirilishi zarur</translation>
@@ -248,7 +246,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="6327105987658262776">Hech qanday yangilanish mavjud emas.</translation>
 <translation id="6333502561965082103">Chromium boshqa amalni bajarmoqda. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="6334986366598267305">Endi Google hisobida Chromium bilan ishlash yanada qulay bo‘ladi, jumladan umumiy kompyuterlarda ham.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Administrator brauzer 1 daqiqa davomida ishlatilmasa uning maʼlumotlari avtomatik oʻchirib tashlanishini sozlagan. Jumladan, tarix, avtomatik kiritish va yuklanmalar. Joriy varaqlar ochiq qoladi.}other{Administrator brauzer # daqiqa davomida ishlatilmasa uning maʼlumotlari avtomatik oʻchirib tashlanishini sozlagan. Jumladan, tarix, avtomatik kiritish va yuklanmalar. Joriy varaqlar ochiq qoladi.}}</translation>
 <translation id="6373523479360886564">Siz haqiqatdan ham Chromium brauzerini o‘chirib tashlamoqchimisiz?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Bu axborotdan qanday foydalanamiz:<ph name="END_BOLD" /> Chromium qiziqishlaringizni taxmin qila oladi. Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromium ilovasidan qiziqishlaringiz haqida soʻrashi mumkin.</translation>
 <translation id="6403826409255603130">Chromium - veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Chromium brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>

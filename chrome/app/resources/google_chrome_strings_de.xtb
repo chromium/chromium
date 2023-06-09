@@ -223,7 +223,6 @@
 <translation id="4970947549776831107">Chrome hat diese Datei blockiert, weil der Dateityp gefährlich ist</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Eine Google Chrome-Erweiterung hat auf HID-Geräte zugegriffen}=1{Eine Google Chrome-Erweiterung greift auf 1 HID-Gerät zu}other{Eine Google Chrome-Erweiterung greift auf # HID-Geräte zu}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="5098668839038261629">Wenn aktiviert, wirst du auch aus Chrome abgemeldet</translation>
 <translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
 <translation id="5139423532931106058">Chrome-Profil personalisieren</translation>
@@ -281,7 +280,6 @@
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6327105987658262776">Es ist kein Update verfügbar.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Dein Administrator hat festgelegt, dass Browserdaten automatisch gelöscht werden, wenn Chromium eine Minute lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}other{Dein Administrator hat festgelegt, dass Browserdaten automatisch gelöscht werden, wenn Chromium # Minuten lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}}</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
@@ -375,7 +373,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8290100596633877290">Google Chrome ist abgestürzt. Jetzt neu starten?</translation>
 <translation id="8342675569599923794">Diese Datei ist schädlich und wurde von Chrome blockiert.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Websites können Daten zu deinen Interessen bei Chrome speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird.}other{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Chrome kann deine Interessen schätzen. Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
 <translation id="8387459386171870978">Chrome weiterhin verwenden</translation>

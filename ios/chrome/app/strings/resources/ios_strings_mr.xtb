@@ -91,7 +91,6 @@
 <translation id="152234381334907219">कधीही सेव्ह न केलेले</translation>
 <translation id="1523341279170789507">सर्व कुकीना परवानगी द्या</translation>
 <translation id="1524563461097350801">नाही, नको</translation>
-<translation id="1531836666020185856">वैशिष्ट्यीकृत</translation>
 <translation id="1535268707340844072">तुमच्या सद्य सेटिंगमुळे काही साइट खंडित होऊ शकतात. सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="1540800554400757039">पत्ता 1</translation>
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाते जोडा</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
+<translation id="2269277877025820298">आणखी पहा</translation>
 <translation id="2273327106802955778">अधिक मेनू</translation>
 <translation id="2286505070150039482">हायलाइट केलेला मजकूर</translation>
 <translation id="2287614783861766820">{count,plural, =1{हा पत्ता या डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते या डिव्हाइसवरून हटवले जातील.}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">तुम्ही आता तुमच्या डिव्हाइसवर Chrome चा पुरेपूर वापर कराल.</translation>
 <translation id="2434405374328098816">तुम्ही <ph name="WEBSITE" /> वर "<ph name="USERNAME" />" चा पासवर्ड आधीच सेव्ह केला आहे</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
-<translation id="2439425774439590">सर्वाधिक वेळा भेट दिलेल्या साइट</translation>
 <translation id="2451654228769116489">टॅब पिन करा</translation>
 <translation id="2461070143328828326">पासवर्ड सेटिंग्ज</translation>
 <translation id="2469960372084740698">सुरक्षित ब्राउझिंग बंद करायचे का?</translation>

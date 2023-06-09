@@ -224,7 +224,6 @@
 <translation id="4970947549776831107">Chrome blokeeris selle faili, kuna see failitüüp on ohtlik</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome'i laiendus pääses juurde HID-seadmetele}=1{Google Chrome'i laiendus pääseb juurde ühele HID-seadmele}other{Google Chrome'i laiendus pääseb juurde # HID-seadmele}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="5098668839038261629">Kui see on sisse lülitatud, logitakse teid ka Chrome'ist välja</translation>
 <translation id="5132929315877954718">Avastage Google Chrome'i jaoks suurepäraseid rakendusi, mänge, laiendusi ja teemasid.</translation>
 <translation id="5139423532931106058">Kohandage oma Chrome'i profiili</translation>
@@ -284,7 +283,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6291549208091401781">Google Chrome on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
 <translation id="6326175484149238433">Eemalda Chrome'ist</translation>
 <translation id="6327105987658262776">Ühtegi uuendust ei ole saadaval.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Teie administraator kustutab sirvimisandmed automaatselt, kui neid ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}other{Teie administraator kustutab sirvimisandmed automaatselt, kui neid ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}}</translation>
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
 <translation id="648319183876919572">Täiustatud ohutu sirvimine kaitseb teid paremini ohtlike veebisaitide ja allalaadimiste eest</translation>
@@ -378,7 +376,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8290100596633877290">Tohoh! Google Chrome jooksis kokku. Kas soovite kohe taaskäivitada?</translation>
 <translation id="8342675569599923794">Chrome blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul.}other{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul.}}</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Chrome saab teie huvisid prognoosida. Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame.</translation>
 <translation id="8387459386171870978">Jätkan Chrome'i kasutamist.</translation>

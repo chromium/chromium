@@ -89,7 +89,6 @@
 <translation id="152234381334907219">一律不保存</translation>
 <translation id="1523341279170789507">允许所有 Cookie</translation>
 <translation id="1524563461097350801">不用了</translation>
-<translation id="1531836666020185856">精选</translation>
 <translation id="1535268707340844072">您目前的设置可能会导致部分网站无法正常运行。若要管理所有网站的 Cookie，请查看 <ph name="BEGIN_LINK" />Cookie 设置<ph name="END_LINK" />。</translation>
 <translation id="1540800554400757039">地址第1行</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
@@ -216,7 +215,6 @@
 <translation id="2423077901494354337">您现在可以在设备上充分利用 Chrome 了。</translation>
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2435457462613246316">显示密码</translation>
-<translation id="2439425774439590">最常访问的网站</translation>
 <translation id="2451654228769116489">固定标签页</translation>
 <translation id="2461070143328828326">密码设置</translation>
 <translation id="2469960372084740698">关闭“安全浏览”功能？</translation>
@@ -262,7 +260,7 @@
 <translation id="2704491540504985681">下载内容</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2709516037105925701">自动填充</translation>
-<translation id="271033894570825754">新建</translation>
+<translation id="271033894570825754">新</translation>
 <translation id="2712127207578915686">无法打开该文件</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
 <translation id="2747003861858887689">上一个字段</translation>

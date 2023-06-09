@@ -91,7 +91,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="152234381334907219">Hindi Kailanman Na-save</translation>
 <translation id="1523341279170789507">Payagan ang Lahat ng Cookies</translation>
 <translation id="1524563461097350801">Hindi, Salamat na lang</translation>
-<translation id="1531836666020185856">Itinampok</translation>
 <translation id="1535268707340844072">Posibleng maging dahilan ng pagkasira ng ilang site ang iyong kasalukuyang setting. Para pamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="BEGIN_LINK" />Mga Setting ng Cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">I-scan ang QR Code</translation>
@@ -193,6 +192,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="225943865679747347">Code ng error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Magdagdag ng Account</translation>
 <translation id="2268044343513325586">Pinuhin</translation>
+<translation id="2269277877025820298">Tumingin Pa</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
 <translation id="2286505070150039482">Naka-highlight na Text</translation>
 <translation id="2287614783861766820">{count,plural, =1{Made-delete ang address na ito sa device na ito.}one{Made-delete ang mga address na ito sa device na ito.}other{Made-delete ang mga address na ito sa device na ito.}}</translation>
@@ -218,7 +218,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2423077901494354337">Masusulit mo na ngayon ang Chrome sa iyong device.</translation>
 <translation id="2434405374328098816">May na-save ka nang password para sa "<ph name="USERNAME" />" sa <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
-<translation id="2439425774439590">Mga Site na Pinakamadalas Bisitahin</translation>
 <translation id="2451654228769116489">I-pin ang Tab</translation>
 <translation id="2461070143328828326">Mga Setting ng Password</translation>
 <translation id="2469960372084740698">I-off ang Ligtas na Pag-browse?</translation>

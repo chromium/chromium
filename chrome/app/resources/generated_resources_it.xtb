@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Non adesso</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni da un sito che non hai visitato per 2 mesi}other{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni da siti che non hai visitato per 2 mesi}}</translation>
 <translation id="1009663062402466586">Sono disponibili i controlli per i giochi</translation>
-<translation id="1010498023906173788">Questa scheda è collegata a una porta seriale.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La pagina non risponde}other{Le pagine non rispondono}}</translation>
 <translation id="1011003645819296594">Dispositivi salvati</translation>
 <translation id="1011355516189274711">Volume sintesi vocale</translation>
@@ -524,6 +523,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1448779317883494811">Strumento Pennello</translation>
 <translation id="1449191289887455076">Premi di nuovo "<ph name="CURRENTKEY" />" per confermare l'assegnazione e <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Pagina web, fine singolo</translation>
+<translation id="145280054552001290">Aggiungi e rimuovi lingue per i sottotitoli codificati</translation>
 <translation id="1453561711872398978">Invia <ph name="BEGIN_LINK" />log di debug<ph name="END_LINK" /> (opzione consigliata)</translation>
 <translation id="1454223536435069390">&amp;Acquisisci screenshot</translation>
 <translation id="145432137617179457">Lingue controllo ortografico</translation>
@@ -633,7 +633,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1541346352678737112">Nessuna rete trovata</translation>
 <translation id="154198613844929213">{0,plural, =0{Eliminazione in corso ora}=1{Eliminazione tra 1 secondo}other{Eliminazione tra # secondi}}</translation>
 <translation id="1542137295869176367">Impossibile aggiornare i dati di accesso</translation>
-<translation id="1542514202066550870">Questa scheda mostra contenuti VR a un auricolare.</translation>
 <translation id="1543284117603151572">Importati da Edge</translation>
 <translation id="1543538514740974167">Arriva qui più velocemente</translation>
 <translation id="1544588554445317666">Prova a usare un nome di file più breve o a salvare l'elemento in un'altra cartella</translation>
@@ -1049,7 +1048,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1873920700418191231">Consenti di nuovo le autorizzazioni per il sito <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Possono mostrare qualsiasi annuncio</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Sposta scheda in un'altra finestra}other{Sposta schede in un'altra finestra}}</translation>
-<translation id="1875386316419689002">La scheda è connessa a un dispositivo HID.</translation>
 <translation id="1875387611427697908">È possibile aggiungerla soltanto dal <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etichetta (facoltativa)</translation>
 <translation id="1877520246462554164">Recupero del token di autenticazione non riuscito. Esci e accedi nuovamente per riprovare.</translation>
@@ -1909,7 +1907,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2581455244799175627">Scopri di più sull'autorizzazione dei cookie di terze parti</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (piattaforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Impossibile recuperare la richiesta di Kerberos. Riprova o contatta l'amministratore del dispositivo dell'organizzazione. (Codice errore: <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Questa scheda sta condividendo il tuo schermo.</translation>
 <translation id="2586561813241011046">Impossibile installare <ph name="APP_NAME" />. Riprova o contatta l'amministratore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Appunti</translation>
 <translation id="2586672484245266891">Inserisci un URL più breve</translation>
@@ -2139,7 +2136,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2777525873368474674">Incolla link immagine</translation>
 <translation id="2778471504622896352">Aggiunta di app remote ad Avvio app di ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Le estensioni sono consentite su questo sito</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
 <translation id="2783024642731649028">1 articolo nel carrello <ph name="DISCOUNT_TEXT" /> da <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visualizzato <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Scaricato</translation>
@@ -2494,7 +2490,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3080933187214341848">Questa rete non è sincronizzata con il tuo account. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Questa scheda utilizza la fotocamera o il microfono.</translation>
 <translation id="3083193146044397360">Bloccata temporaneamente per tutelare la tua sicurezza</translation>
 <translation id="3083899879156272923">Sposta lo schermo tenendo il puntatore del mouse al centro</translation>
 <translation id="3083998949001524405">Autorizzati a utilizzare i cookie di terze parti</translation>
@@ -2611,7 +2606,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3201237270673604992">Dalla Z alla A</translation>
 <translation id="3201422919974259695">I dispositivi USB disponibili vengono indicati qui.</translation>
 <translation id="3202131003361292969">Percorso</translation>
-<translation id="3202173864863109533">L'audio di questa scheda sta per essere disattivato.</translation>
 <translation id="3202578601642193415">Ultimo</translation>
 <translation id="3204648577100496185">I dati associati a questa app potrebbero essere rimossi dal dispositivo</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
@@ -3022,7 +3016,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3575121482199441727">Consenti per questo sito</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3577745545227000795">Raccolta dei dati relativi all'hardware da parte di <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">I contenuti di questa scheda vengono condivisi.</translation>
 <translation id="3578874072190212775">Aiuta i siti a contrastare le attività fraudolente e a distinguere i bot dalle persone</translation>
 <translation id="3581605050355435601">Configura automaticamente indirizzo IP</translation>
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
@@ -3567,6 +3560,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4021941025609472374">Chiudi schede a sinistra</translation>
 <translation id="402211067068791756">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti visualizzati</translation>
 <translation id="4022426551683927403">&amp;Aggiungi al dizionario</translation>
+<translation id="4024768890073681126">Il tuo browser è gestito da un genitore</translation>
 <translation id="4025039777635956441">Disattiva l'audio del sito selezionato</translation>
 <translation id="402707738228916911">È stata ricevuta l'istruzione <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Cartella <ph name="FOLDER_TITLE" /></translation>
@@ -3592,6 +3586,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4044612648082411741">Inserisci la password del certificato</translation>
 <translation id="4044708573046946214">Password del blocco schermo</translation>
 <translation id="404493185430269859">Motore di ricerca predefinito</translation>
+<translation id="4045196801416070837">Suoni del dispositivo</translation>
 <translation id="4046013316139505482">Queste estensioni non devono vedere e modificare le informazioni su questo sito.</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -4043,7 +4038,6 @@ Se scegli di non condividere gli indicatori, questo profilo verrà chiuso.</tran
 <translation id="4448914100439890108">Nascondi password per <ph name="USERNAME" /> su <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Gestisci autorizzazioni</translation>
 <translation id="4449948729197510913">Il tuo nome utente appartiene all'account aziendale della tua organizzazione. Per registrare dispositivi all'account, verifica innanzitutto la proprietà del dominio nella Console di amministrazione. Per la verifica, avrai bisogno dei privilegi di amministratore sull'account.</translation>
-<translation id="4449996769074858870">In questa scheda c'è audio in riproduzione.</translation>
 <translation id="4450974146388585462">Diagnostica</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ha rilevato un TPM attivo che può memorizzare i tuoi dati in modo più sicuro.</translation>
 <translation id="4451479197788154834">La password è salvata su questo dispositivo e nel tuo Account Google</translation>
@@ -5141,6 +5135,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5439680044267106777">Ignora e configura un nuovo profilo</translation>
 <translation id="544083962418256601">Crea scorciatoie...</translation>
 <translation id="5441133529460183413">App web installata dal browser Chrome</translation>
+<translation id="5441292787273562014">Ricarica pagina</translation>
 <translation id="5441466871879044658">Traduci in questa lingua</translation>
 <translation id="5442228125690314719">Errore durante la creazione dell'immagine disco. Riprova.</translation>
 <translation id="5442550868130618860">Attiva aggiornamento automatico</translation>
@@ -5186,6 +5181,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> oggi stesso. <ph name="LINK_BEGIN" />Visualizza dettagli<ph name="LINK_END" />}other{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> entro {NUM_DAYS} giorni. <ph name="LINK_BEGIN" />Visualizza dettagli<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Aggiungi app</translation>
+<translation id="5485435764083510385">Lingua preferita per i sottotitoli codificati</translation>
 <translation id="5485754497697573575">Ripristina tutte le schede</translation>
 <translation id="5486261815000869482">Conferma password</translation>
 <translation id="5486561344817861625">Simula riavvio browser</translation>
@@ -5281,7 +5277,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5559311991468302423">Elimina indirizzo</translation>
 <translation id="55601339223879446">Regola i bordi del desktop all'interno del display</translation>
 <translation id="5561162485081632007">Rileva e ti avvisa quando si verificano eventi pericolosi</translation>
-<translation id="5562781907504170924">Questa scheda è connessa a un dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">file locale o condiviso</translation>
 <translation id="5563234215388768762">Cerca con Google o digita un URL</translation>
 <translation id="5565735124758917034">Attivo</translation>
@@ -5645,7 +5640,6 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="5882919346125742463">Reti note</translation>
 <translation id="5883356647197510494">Autorizzazioni bloccate automaticamente: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizza per ogni estensione</translation>
-<translation id="5884474295213649357">La scheda è connessa a un dispositivo USB.</translation>
 <translation id="5885314688092915589">La tua organizzazione gestirà questo profilo</translation>
 <translation id="5886009770935151472">Dito 1</translation>
 <translation id="5886112770923972514">Connetti e configura rapidamente i dispositivi con Accoppiamento rapido nelle vicinanze</translation>
@@ -7359,6 +7353,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7400839060291901923">Configura la connessione sul tuo <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Elimina questo messaggio</translation>
 <translation id="7402198013420237102">Spostare le password salvate nel tuo Account Google?</translation>
+<translation id="740333000181878130">Suono di avvio del dispositivo</translation>
 <translation id="7403642243184989645">Download delle risorse</translation>
 <translation id="7404065585741198296">Telefono con cavo USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Il controllo di sicurezza è stato eseguito 1 ora fa}other{Il controllo di sicurezza è stato eseguito {NUM_HOURS} ore fa}}</translation>
@@ -8261,7 +8256,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8154790740888707867">Nessun file</translation>
 <translation id="8154912474061769055">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
 <translation id="815491593104042026">Spiacenti, impossibile eseguire l'autenticazione perché è stato configurato l'utilizzo di un URL non protetto (<ph name="BLOCKED_URL" />). Contatta l'amministratore.</translation>
-<translation id="8155003161114963960">Traduci…</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Non sono state trovate password compromesse}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8157248655669507702">Attiva i dati mobili per installare un profilo eSIM</translation>
 <translation id="8157704005178149728">Impostazione della supervisione</translation>
@@ -8626,7 +8620,6 @@ Se scegli di non condividere gli indicatori, questo profilo verrà chiuso.</tran
 <translation id="8464132254133862871">Questo account utente non è idoneo per il servizio.</translation>
 <translation id="8465252176946159372">Non valido</translation>
 <translation id="8465444703385715657">Per poter eseguire <ph name="PLUGIN_NAME" /> è necessaria la tua autorizzazione</translation>
-<translation id="8466417995783206254">In questa scheda è in corso la riproduzione di un video in modalità Picture in picture.</translation>
 <translation id="8467326454809944210">Seleziona un'altra lingua</translation>
 <translation id="8468087214092422866">Non autorizzati a cercare dispositivi Bluetooth</translation>
 <translation id="8470513973197838199">Password salvate per il sito <ph name="ORIGIN" /></translation>
@@ -8959,7 +8952,6 @@ Se scegli di non condividere gli indicatori, questo profilo verrà chiuso.</tran
 <translation id="8755584192133371929">Seleziona una scheda da condividere</translation>
 <translation id="875604634276263540">L'URL dell'immagine non è valido</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
-<translation id="8757203080302669031">Questa scheda sta eseguendo attivamente la ricerca dei dispositivi Bluetooth.</translation>
 <translation id="8757368836647541092">Utente <ph name="USER_NAME_OR_EMAIL" /> rimosso</translation>
 <translation id="8759753423332885148">Scopri di più.</translation>
 <translation id="8761945298804995673">Questo utente esiste già</translation>

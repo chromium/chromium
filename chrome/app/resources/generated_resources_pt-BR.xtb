@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Não agora</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Para proteger seus dados, as permissões de um site que você não acessa há dois meses foram removidas}one{Para proteger seus dados, as permissões de um site que você não acessa há dois meses foram removidas}other{Para proteger seus dados, as permissões de sites que você não acessa há dois meses foram removidas}}</translation>
 <translation id="1009663062402466586">Controles do jogo já disponíveis</translation>
-<translation id="1010498023906173788">Esta guia está conectada a uma porta serial.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Página sem resposta}one{Páginas sem resposta}other{Páginas sem resposta}}</translation>
 <translation id="1011003645819296594">Dispositivos salvos</translation>
 <translation id="1011355516189274711">Volume da conversão de texto em voz</translation>
@@ -636,7 +635,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1541346352678737112">Nenhuma rede encontrada</translation>
 <translation id="154198613844929213">{0,plural, =0{Excluindo agora.}=1{Excluindo em 1 segundo}one{Excluindo em # segundo}other{Excluindo em # segundos}}</translation>
 <translation id="1542137295869176367">Não foi possível atualizar os dados de login</translation>
-<translation id="1542514202066550870">Esta guia está apresentando conteúdo de RV em um headset.</translation>
 <translation id="1543284117603151572">Importados do Edge</translation>
 <translation id="1543538514740974167">Acessar esta página mais rapidamente</translation>
 <translation id="1544588554445317666">Tente usar um nome de arquivo mais curto ou salve em uma pasta diferente</translation>
@@ -1061,7 +1059,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1873920700418191231">Conceder permissões novamente para <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Permitir a exibição de todos os anúncios</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Mover guia para outra janela}one{Mover guia para outra janela}other{Mover guias para outra janela}}</translation>
-<translation id="1875386316419689002">Esta guia está conectada a um dispositivo HID.</translation>
 <translation id="1875387611427697908">Esse item só por ser adicionado a partir da <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">Falha ao receber o token de autenticação. Saia e faça login novamente para tentar mais uma vez.</translation>
@@ -1920,7 +1917,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2581455244799175627">Saiba mais sobre como permitir cookies de terceiros</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Não foi possível acessar o tíquete do Kerberos. Tente novamente ou entre em contato com o administrador do dispositivo da sua organização. Código de erro: <ph name="ERROR_CODE" />.</translation>
-<translation id="2585724835339714757">Esta guia está compartilhando sua tela.</translation>
 <translation id="2586561813241011046">Não foi possível instalar o app <ph name="APP_NAME" />. Tente novamente ou entre em contato com o administrador. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2586672484245266891">Informe um URL menor</translation>
@@ -2148,7 +2144,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2777525873368474674">Cole o link de uma imagem</translation>
 <translation id="2778471504622896352">Adicionar apps remotos ao iniciador do ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">As extensões são permitidas neste site</translation>
 <translation id="2782104745158847185">Erro ao instalar o aplicativo Linux</translation>
 <translation id="2783024642731649028">1 item no seu carrinho com <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) visualizado <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Download concluído</translation>
@@ -2501,7 +2496,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3080933187214341848">A rede não está sincronizada com a conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Esta guia está usando sua câmera ou microfone.</translation>
 <translation id="3083193146044397360">Bloqueada temporariamente para proteger sua segurança</translation>
 <translation id="3083899879156272923">Mover a tela, mantendo o mouse no centro dela</translation>
 <translation id="3083998949001524405">O uso de cookies de terceiros foi permitido</translation>
@@ -2618,7 +2612,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3201237270673604992">De Z a A</translation>
 <translation id="3201422919974259695">Os dispositivos USB disponíveis serão exibidos aqui.</translation>
 <translation id="3202131003361292969">Caminho</translation>
-<translation id="3202173864863109533">O áudio desta guia está sendo desativado.</translation>
 <translation id="3202578601642193415">Mais recente</translation>
 <translation id="3204648577100496185">Os dados associados a esse app poderão ser removidos deste dispositivo</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
@@ -3027,7 +3020,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3575121482199441727">Permitir para este site</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3577745545227000795">Coleta de dados de hardware do <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">O conteúdo desta guia está sendo compartilhado.</translation>
 <translation id="3578874072190212775">Ajude os sites a lutar contra fraudes e a distinguir robôs de pessoas</translation>
 <translation id="3581605050355435601">Configurar endereço IP automaticamente</translation>
 <translation id="3582057310199111521">Inserida em um fraudulento e encontrada em uma violação de dados</translation>
@@ -3569,6 +3561,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4021941025609472374">Fechar guias à esquerda</translation>
 <translation id="402211067068791756">Essa ação vai apagar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites mostrados</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao dicionário</translation>
+<translation id="4024768890073681126">O navegador é gerenciado pelo seu familiar responsável</translation>
 <translation id="4025039777635956441">Desativar som do site selecionado</translation>
 <translation id="402707738228916911">Instrução <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recebida</translation>
 <translation id="4027569221211770437">Pasta <ph name="FOLDER_TITLE" /></translation>
@@ -4044,7 +4037,6 @@ Se você não compartilhar os indicadores, o perfil será fechado.</translation>
 <translation id="4448914100439890108">Ocultar a senha para <ph name="USERNAME" /> em <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Gerenciar permissões</translation>
 <translation id="4449948729197510913">Seu nome de usuário pertence à conta corporativa da sua organização. Para registrar dispositivos nessa conta, verifique a propriedade do domínio no Admin Console antes. Para verificar, você precisa de privilégios de administrador.</translation>
-<translation id="4449996769074858870">Esta guia está reproduzindo áudio.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605">O <ph name="DEVICE_OS" /> detectou um TPM ativo que pode salvar dados com mais segurança.</translation>
 <translation id="4451479197788154834">Sua senha foi salva neste dispositivo e na sua Conta do Google</translation>
@@ -5138,6 +5130,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5439680044267106777">Pular e configurar um perfil novo</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
 <translation id="5441133529460183413">App da Web instalado pelo navegador Chrome</translation>
+<translation id="5441292787273562014">Atualizar página</translation>
 <translation id="5441466871879044658">Traduzir para este idioma</translation>
 <translation id="5442228125690314719">Erro ao criar imagem de disco. Tente novamente.</translation>
 <translation id="5442550868130618860">Ativar a atualização automática</translation>
@@ -5277,7 +5270,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5559311991468302423">Excluir endereço</translation>
 <translation id="55601339223879446">Ajustar as fronteiras da sua área de trabalho dentro da tela</translation>
 <translation id="5561162485081632007">Detecta e avisa você sobre eventos perigosos quando eles acontecem</translation>
-<translation id="5562781907504170924">Esta guia está conectada a um dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">arquivo compartilhado ou local</translation>
 <translation id="5563234215388768762">Pesquise no Google ou digite um URL</translation>
 <translation id="5565735124758917034">Ativo</translation>
@@ -5642,7 +5634,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5882919346125742463">Redes conhecidas</translation>
 <translation id="5883356647197510494">Bloqueados automaticamente: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensão</translation>
-<translation id="5884474295213649357">Esta guia está conectada a um dispositivo USB.</translation>
 <translation id="5885314688092915589">Sua organização vai gerenciar este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conectar e configurar rapidamente os dispositivos próximos com Pareamento rápido</translation>
@@ -8617,7 +8608,6 @@ Se você não compartilhar os indicadores, o perfil será fechado.</translation>
 <translation id="8464132254133862871">Esta conta de usuário não está qualificada para o serviço.</translation>
 <translation id="8465252176946159372">Entrada inválida</translation>
 <translation id="8465444703385715657">O pulg-in <ph name="PLUGIN_NAME" /> precisa da sua permissão para ser executado</translation>
-<translation id="8466417995783206254">Esta guia está reproduzindo um vídeo em picture-in-picture.</translation>
 <translation id="8467326454809944210">Escolher outro idioma</translation>
 <translation id="8468087214092422866">Sem permissão para procurar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Senhas salvas para <ph name="ORIGIN" /></translation>
@@ -8950,7 +8940,6 @@ Se você não compartilhar os indicadores, o perfil será fechado.</translation>
 <translation id="8755584192133371929">Selecione uma guia para compartilhar</translation>
 <translation id="875604634276263540">O URL da imagem é inválido</translation>
 <translation id="8756969031206844760">Atualizar senha?</translation>
-<translation id="8757203080302669031">Esta guia está procurando dispositivos Bluetooth no momento.</translation>
 <translation id="8757368836647541092">Usuário <ph name="USER_NAME_OR_EMAIL" /> removido</translation>
 <translation id="8759753423332885148">Saiba mais.</translation>
 <translation id="8761945298804995673">Esse usuário já existe</translation>

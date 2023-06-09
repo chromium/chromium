@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Ha ellenőrizni szeretné, hogy jelszavai biztonságban vannak-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chromiumba<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{A Chromium-bővítmények hozzáfértek a HID-eszközökhöz}=1{A Chromium-bővítmények hozzáférnek a HID-eszközökhöz}other{A Chromium-bővítmények # HID-eszközhöz férnek hozzá}}</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{A rendszergazda automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is.}other{A rendszergazda automatikusan bezárja a Chromiumot, ha # percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is.}}</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
 <translation id="1261119230216066228">A Memóriatakarékos mód felgyorsította a Chromiumot</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
@@ -179,7 +178,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="4987820182225656817">A vendégek úgy használhatják a Chromiumot, hogy nem hagynak hátra semmit.</translation>
 <translation id="4994636714258228724">Adja hozzá magát a Chromiumban</translation>
 <translation id="5114678101347489141">A Chromium olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{A rendszergazda automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban.}other{A rendszergazda automatikusan bezárja a Chromiumot, ha # percig nincs használatban.}}</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chromium-profilba. Ezzel új Chromium-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>
 <translation id="5277894862589591112">A módosítások alkalmazásához indítsa újra a Chromiumot</translation>
@@ -244,7 +242,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6327105987658262776">Nincs rendelkezésre álló frissítés.</translation>
 <translation id="6333502561965082103">Egy másik Chromium-művelet is folyamatban van. Próbálkozzon újra később.</translation>
 <translation id="6334986366598267305">Google-fiókjával most még egyszerűbben használhatja a Chromiumot közösen használt számítógépeken.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{A rendszergazda automatikusan törli a böngészési adatokat, ha 1 percig nincs használatban a böngésző. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is. A megnyitott lapok nyitva maradnak.}other{A rendszergazda automatikusan törli a böngészési adatokat, ha # percig nincs használatban a böngésző. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is. A megnyitott lapok nyitva maradnak.}}</translation>
 <translation id="6373523479360886564">Biztos, hogy el szeretné távolítani a Chromiumot?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A Chromium meg tudja becsülni az Ön érdeklődési köreit. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chromiumtól az Ön érdeklődési köreinek megismerését.</translation>
 <translation id="6403826409255603130">A Chromium olyan böngésző, amely villámgyorsan futtatja a weboldalakat és az alkalmazásokat. Gyors, stabil és könnyen használható. A beépített, adathalászat és kártékony programok elleni védelemmel biztonságosabban böngészhet az interneten.</translation>

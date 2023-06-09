@@ -223,7 +223,6 @@
 <translation id="4970947549776831107">Chrome memblokir file ini karena jenis file ini berbahaya</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Ekstensi Google Chrome telah mengakses perangkat HID}=1{Ekstensi Google Chrome sedang mengakses 1 perangkat HID}other{Ekstensi Google Chrome sedang mengakses # perangkat HID}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Administrator akan otomatis menutup Chrome jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Administrator akan otomatis menutup Chrome jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="5098668839038261629">Jika aktif, Anda juga akan logout dari Chrome</translation>
 <translation id="5132929315877954718">Temukan aplikasi, game, ekstensi, dan tema yang hebat untuk Google Chrome.</translation>
 <translation id="5139423532931106058">Sesuaikan profil Chrome Anda</translation>
@@ -281,7 +280,6 @@
 <translation id="6291549208091401781">Google Chrome sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
 <translation id="6327105987658262776">Tidak ada update yang tersedia.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}other{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}}</translation>
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
 <translation id="648319183876919572">Safe Browsing yang Disempurnakan melakukan lebih banyak hal untuk melindungi Anda dari situs dan download berbahaya</translation>
@@ -375,7 +373,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8290100596633877290">Aduh! Google Chrome ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="8342675569599923794">File ini berbahaya, jadi Chrome telah memblokirnya.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Situs dapat menyimpan informasi tentang minat Anda ke Chrome. Misalnya, jika Anda mengunjungi suatu situs untuk membeli sepatu maraton, situs tersebut dapat menetapkan minat Anda sebagai lari maraton. Kemudian, jika Anda mengunjungi situs lain untuk mendaftar lomba lari, situs tersebut dapat menampilkan iklan sepatu lari berdasarkan minat Anda.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Administrator akan otomatis menutup Chrome jika tidak digunakan selama 1 menit.}other{Administrator akan otomatis menutup Chrome jika tidak digunakan selama # menit.}}</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome dapat memperkirakan minat Anda. Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="8387459386171870978">Terus gunakan Chrome</translation>

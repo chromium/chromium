@@ -226,7 +226,6 @@
 <translation id="4970947549776831107">由於此檔案類型不安全，因此 Chrome 已封鎖此檔案</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome 擴充程式當時正在存取 HID 裝置}=1{Google Chrome 擴充程式正在存取 1 部 HID 裝置}other{Google Chrome 擴充程式正在存取 # 部 HID 裝置}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{管理員會在 Chrome 閒置 1 分鐘後自動關閉 Chrome。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}other{管理員會在 Chrome 閒置 # 分鐘後自動關閉 Chrome。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}}</translation>
 <translation id="5098668839038261629">開啟時，您亦將會從 Chrome 登出</translation>
 <translation id="5132929315877954718">為您的 Google Chrome 探索各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="5139423532931106058">自訂您的 Chrome 設定檔</translation>
@@ -288,7 +287,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6291549208091401781">電腦上的所有使用者均安裝了 Google Chrome。</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6327105987658262776">沒有可用的更新。</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{管理員會在閒置 1 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。現有分頁會保持開啟。}other{管理員會在閒置 # 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。現有分頁會保持開啟。}}</translation>
 <translation id="6412673304250309937">使用儲存在 Chrome 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="6418662306461808273">要切換至現有 Chrome 設定檔嗎？</translation>
 <translation id="648319183876919572">「強化安全瀏覽」可進一步保護您免受危險網站和下載檔案威脅</translation>
@@ -382,7 +380,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8290100596633877290">真糟糕！Google Chrome 當機了，要立即重新啟動嗎？</translation>
 <translation id="8342675569599923794">此檔案不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />網站可將您的興趣相關資料儲存在 Chrome 中。例如，如果您瀏覽某個網站想購買適合馬拉松的跑步鞋，網站可能會判斷您的興趣為跑馬拉松。如果您日後瀏覽其他網站報名參加比賽，該網站就可以根據您的興趣向您顯示跑步鞋的廣告。</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{管理員會在 Chrome 閒置 1 分鐘後自動關閉 Chrome。}other{管理員會在 Chrome 閒置 # 分鐘後自動關閉 Chrome。}}</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />我們如何使用這項資料：<ph name="END_BOLD" />Chrome 可以推測您的興趣。您日後瀏覽的網站可向 Chrome 要求查看您的興趣，以便向您顯示個人化廣告。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>

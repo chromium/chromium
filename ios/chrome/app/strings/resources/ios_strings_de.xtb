@@ -91,7 +91,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="152234381334907219">Nie speichern für...</translation>
 <translation id="1523341279170789507">Alle Cookies zulassen</translation>
 <translation id="1524563461097350801">Nein danke</translation>
-<translation id="1531836666020185856">Vorgestellt</translation>
 <translation id="1535268707340844072">Deine aktuellen Einstellungen führen möglicherweise dazu, dass Websites nicht korrekt ausgeführt werden. Cookies für alle Websites kannst du in den <ph name="BEGIN_LINK" />Cookie-Einstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">QR-Code scannen</translation>
@@ -193,6 +192,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="225943865679747347">Fehlercode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Konto hinzufügen</translation>
 <translation id="2268044343513325586">Verfeinern</translation>
+<translation id="2269277877025820298">Mehr anzeigen</translation>
 <translation id="2273327106802955778">Menü "Mehr"</translation>
 <translation id="2286505070150039482">Markierter Text</translation>
 <translation id="2287614783861766820">{count,plural, =1{Diese Adresse wird von diesem Gerät gelöscht.}other{Diese Adressen werden von diesem Gerät gelöscht.}}</translation>
@@ -218,7 +218,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2423077901494354337">Jetzt kannst du Chrome auf deinem Gerät optimal nutzen.</translation>
 <translation id="2434405374328098816">Du hast für „<ph name="USERNAME" />“ schon ein Passwort bei <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
-<translation id="2439425774439590">Am häufigsten besuchte Websites</translation>
 <translation id="2451654228769116489">Tab anpinnen</translation>
 <translation id="2461070143328828326">Passworteinstellungen</translation>
 <translation id="2469960372084740698">Safe Browsing deaktivieren?</translation>

@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">ఇప్పుడు కాదు</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{మీ డేటాను సురక్షితంగా ఉంచడానికి, 2 నెలలుగా మీరు ఉపయోగించని సైట్ నుండి అనుమతులు తీసివేయబడ్డాయి}other{మీ డేటాను సురక్షితంగా ఉంచడానికి, 2 నెలలుగా మీరు ఉపయోగించని సైట్‌ల నుండి అనుమతులు తీసివేయబడ్డాయి}}</translation>
 <translation id="1009663062402466586">గేమ్ కంట్రోల్స్ ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
-<translation id="1010498023906173788">ఈ ట్యాబ్ ఒక సీరియల్ పోర్ట్‌కు కనెక్ట్ చేయబడింది.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{పేజీ ప్రతిస్పందించడం లేదు}other{పేజీలు ప్రతిస్పందించడం లేదు}}</translation>
 <translation id="1011003645819296594">సేవ్ చేసిన పరికరాలు</translation>
 <translation id="1011355516189274711">టెక్ట్స్-టు-స్పీచ్ వాల్యూమ్</translation>
@@ -635,7 +634,6 @@
 <translation id="1541346352678737112">నెట్‌వర్క్ ఏదీ కనుగొనబడలేదు</translation>
 <translation id="154198613844929213">{0,plural, =0{ఇప్పుడు తొలగించబడుతోంది.}=1{తొలగింపబడటానికి మిగిలి ఉన్న సమయం: 1 సెకను}other{తొలగింపబడటానికి మిగిలి ఉన్న సమయం: # సెకన్లు}}</translation>
 <translation id="1542137295869176367">మీ సైన్-ఇన్ డేటాను అప్‌డేట్ చేయడం సాధ్యం కాలేదు</translation>
-<translation id="1542514202066550870">ఈ ట్యాబ్ హెడ్‌సెట్ ద్వారా VR కంటెంట్‌ని ప్రదర్శిస్తోంది.</translation>
 <translation id="1543284117603151572">Edge నుండి దిగుమతి చేసినవి</translation>
 <translation id="1543538514740974167">ఇక్కడకు త్వరగా చేరుకోండి</translation>
 <translation id="1544588554445317666">చిన్నగా ఉన్న ఫైల్ పేరుతో ట్రై చేయండి లేదా వేరే ఫోల్డర్‌లో సేవ్ చేయడానికి ట్రై చేయండి</translation>
@@ -1058,7 +1056,6 @@
 <translation id="1873920700418191231"><ph name="WEBSITE" />‌కు అనుమతులను తిరిగి మంజూరు చేయండి</translation>
 <translation id="1874248162548993294">ఏవైనా యాడ్‌లను చూపించడానికి అనుమతించబడింది</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{ట్యాబ్‌ను మరొక విండోకు తరలించండి}other{ట్యాబ్‌లను మరొక విండోకు తరలించండి}}</translation>
-<translation id="1875386316419689002">HID పరికరానికి ఈ ట్యాబ్ కనెక్ట్ చేయబడింది.</translation>
 <translation id="1875387611427697908">దీనిని <ph name="CHROME_WEB_STORE" /> నుండి మాత్రమే జోడించవచ్చు</translation>
 <translation id="1877377290348678128">లేబుల్ (ఆప్షనల్)</translation>
 <translation id="1877520246462554164">ప్రమాణీకరణ టోకెన్‌ను పొందడం విఫలమైంది. దయచేసి సైన్ అవుట్ చేసి, సైన్ ఇన్ చేసిన తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -1917,7 +1914,6 @@
 <translation id="2581455244799175627">థర్డ్-పార్టీ కుక్కీలను అనుమతించడం గురించి మరింత సమాచారం</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (ప్లాట్‌ఫారమ్ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos టిక్కెట్‌ను పొందడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ సంస్థ పరికర నిర్వాహకులను సంప్రదించండి. (ఎర్రర్ కోడ్ <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">ఈ ట్యాబ్‌ మీ స్క్రీన్‌ను షేర్ చేస్తోంది.</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి లేదా మీ నిర్వాహకుడిని సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">క్లిప్‌బోర్డ్</translation>
 <translation id="2586672484245266891">దయచేసి చిన్న URLని నమోదు చేయండి</translation>
@@ -2146,7 +2142,6 @@
 <translation id="2777525873368474674">ఇమేజ్ లింక్‌ను పేస్ట్ చేయండి</translation>
 <translation id="2778471504622896352">ChromeOS లాంచర్‌కు రిమోట్ యాప్‌లను జోడించండి</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">ఈ సైట్‌లోని ఎక్స్‌టెన్షన్‌లు అనుమతించబడతాయి</translation>
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />‌లోని మీ కార్ట్‌లోని <ph name="DISCOUNT_TEXT" /> గల 1 ఐటెమ్‌ను, <ph name="RELATIVE_TIME" /> చూడటం జరిగింది</translation>
 <translation id="2783298271312924866">డౌన్‌లోడ్ చేయబడింది</translation>
@@ -2499,7 +2494,6 @@
 <translation id="3080933187214341848">ఈ నెట్‌వర్క్ మీ ఖాతాతో సింక్ చేయబడలేదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">ఈ ట్యాబ్ మీ కెమెరా లేదా మైక్రోఫోన్‌ను ఉపయోగిస్తోంది.</translation>
 <translation id="3083193146044397360">మీ భద్రత నిమిత్తం తాత్కాలికంగా బ్లాక్ చేయబడింది</translation>
 <translation id="3083899879156272923">మౌస్‌ను స్క్రీన్ కేంద్రంలో ఉంచి స్క్రీన్‌ను జరుపుతుంది</translation>
 <translation id="3083998949001524405">థర్డ్-పార్టీ కుక్కీలను ఉపయోగించడానికి అనుమతించబడింది</translation>
@@ -2616,7 +2610,6 @@
 <translation id="3201237270673604992">Z నుండి A వరకు</translation>
 <translation id="3201422919974259695">అందుబాటులో గల USB పరికరాలు ఇక్కడ కనిపిస్తాయి.</translation>
 <translation id="3202131003361292969">పాథ్‌</translation>
-<translation id="3202173864863109533">ఈ ట్యాబ్ ఆడియో మ్యూట్ చేయబడుతోంది.</translation>
 <translation id="3202578601642193415">సరిక్రొత్తది</translation>
 <translation id="3204648577100496185">ఈ యాప్‌తో అనుబంధించబడిన డేటా ఈ పరికరం నుండి తీసివేయబడవచ్చు</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
@@ -3024,7 +3017,6 @@
 <translation id="3575121482199441727">ఈ సైట్‌కు అనుమతించండి</translation>
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> హార్డ్‌వేర్ డేటా సేకరణ</translation>
-<translation id="3578594933904494462">ఈ ట్యాబ్ యొక్క కంటెంట్ భాగస్వామ్యం చేయబడుతోంది.</translation>
 <translation id="3578874072190212775">మోసాలను ఎదుర్కోవడంలో, అలాగే వ్యక్తులు, బాట్‌ల మధ్య ఉన్న తేడాను గుర్తించడంలో సైట్‌లకు సహాయపడుతుంది</translation>
 <translation id="3581605050355435601">ఆటో కాన్ఫిగర్ IP అడ్రస్‌</translation>
 <translation id="3582057310199111521">మోసపూరిత సైట్‌లో ఎంటర్ చేయబడింది, డేటా ఉల్లంఘనలో కనుగొనబడింది</translation>
@@ -3566,6 +3558,7 @@
 <translation id="4021941025609472374">ఎడమ వైపునకు ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="402211067068791756">దీని వలన ప్రదర్శించబడిన సైట్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది</translation>
 <translation id="4022426551683927403">నిఘంటువుకు &amp;జోడించు</translation>
+<translation id="4024768890073681126">మీ బ్రౌజర్‌ను పేరెంట్ మేనేజ్ చేస్తోంది</translation>
 <translation id="4025039777635956441">ఎంపిక చేసిన సైట్‌ను మ్యూట్ చేయి</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> సూచన అందింది</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ఫోల్డర్</translation>
@@ -4041,7 +4034,6 @@
 <translation id="4448914100439890108"><ph name="DOMAIN" />లో <ph name="USERNAME" /> పాస్‌వర్డ్‌ను దాచిపెట్టు</translation>
 <translation id="4449247303975391730">అనుమతులను మేనేజ్ చేయండి</translation>
 <translation id="4449948729197510913">మీ యూజర్‌నేమ్ మీ సంస్థ ఎంటర్‌ప్రైజ్ ఖాతాకు చెంది ఉంటుంది. ఖాతాకు పరికరాలను ఎన్‌రోల్ చేయడానికి, మొదట అడ్మిన్ కన్సోల్‌లో డొమైన్ యాజమాన్య హక్కును వెరిఫై చేయండి. వెరిఫై చేయడానికి మీకు ఖాతాలో నిర్వాహక ప్రత్యేకాధికారాలు ఉండాలి.</translation>
-<translation id="4449996769074858870">ఈ ట్యాబ్ ఆడియో‌ను ప్లే చేస్తోంది.</translation>
 <translation id="4450974146388585462">విశ్లేషించు</translation>
 <translation id="445099924538929605">మీ డేటాను మరింత సురక్షితంగా స్టోర్ చేయగల ఒక యాక్టివ్ TPMను <ph name="DEVICE_OS" /> గుర్తించింది.</translation>
 <translation id="4451479197788154834">మీ పాస్‌వర్డ్ ఈ పరికరంలో అలాగే మీ Google ఖాతాలో సేవ్ చేయబడింది</translation>
@@ -5135,6 +5127,7 @@
 <translation id="5439680044267106777">స్కిప్ చేసి, కొత్త ప్రొఫైల్‌ను సెటప్ చేయండి</translation>
 <translation id="544083962418256601">షార్ట్‌కట్‌లను క్రియేట్ చేయండి...</translation>
 <translation id="5441133529460183413">Chrome బ్రౌజర్ నుండి వెబ్ యాప్ ఇన్‌స్టాల్ చేయబడింది</translation>
+<translation id="5441292787273562014">పేజీని మళ్లీ లోడ్ చేయి</translation>
 <translation id="5441466871879044658">ఈ భాషలోకి అనువదించు</translation>
 <translation id="5442228125690314719">డిస్క్ ఇమేజ్‌ను సృష్టించడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5442550868130618860">స్వీయ-అప్‌డేట్‌ని ఆన్ చేయి</translation>
@@ -5274,7 +5267,6 @@
 <translation id="5559311991468302423">అడ్రస్‌ను తొలగించండి</translation>
 <translation id="55601339223879446">డిస్‌ప్లేలో మీ డెస్క్‌టాప్ సరిహద్దులను సర్దుబాటు చేయండి</translation>
 <translation id="5561162485081632007">ప్రమాదకరమైన సంఘటనలు జరిగినప్పుడు గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది</translation>
-<translation id="5562781907504170924">ఈ ట్యాబ్ బ్లూటూత్ పరికరానికి కనెక్ట్ చేయబడింది.</translation>
 <translation id="556321030400250233">స్థానిక లేదా షేర్ చేసిన ఫైల్</translation>
 <translation id="5563234215388768762">Googleలో వెతకండి లేదా URLను టైప్ చేయండి</translation>
 <translation id="5565735124758917034">సక్రియం</translation>
@@ -5638,7 +5630,6 @@
 <translation id="5882919346125742463">తెలిసిన నెట్‌వర్క్‌లు</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5884447826201752041">ప్రతి ఎక్స్‌టెన్షన్‌ను అనుకూలంగా మార్చండి</translation>
-<translation id="5884474295213649357">ఈ ట్యాబ్ USB పరికరానికి కనెక్ట్ చేయబడింది.</translation>
 <translation id="5885314688092915589">మీ సంస్థ ఈ ప్రొఫైల్‌ని మేనేజ్ చేస్తుంది</translation>
 <translation id="5886009770935151472">1వ వేలు</translation>
 <translation id="5886112770923972514">సమీపంలోని ఉన్న ఫాస్ట్ పెయిర్ పరికరాలకు త్వరితంగా కనెక్ట్ అయి, వాటిని సెటప్ చేయండి</translation>
@@ -8607,7 +8598,6 @@
 <translation id="8464132254133862871">ఈ వినియోగదారు ఖాతా ఆ సేవ కోసం అర్హత పొందలేదు.</translation>
 <translation id="8465252176946159372">చెల్లదు</translation>
 <translation id="8465444703385715657">అమలు చేయడానికి <ph name="PLUGIN_NAME" />కి మీ అనుమతి అవసరం</translation>
-<translation id="8466417995783206254">ఈ ట్యాబ్ వీడియోను చిత్రంలో చిత్రం మోడ్‌లో ప్లే చేస్తోంది.</translation>
 <translation id="8467326454809944210">మరొక భాషను ఎంచుకోండి</translation>
 <translation id="8468087214092422866">బ్లూటూత్ పరికరాల కోసం వెతకడానికి అనుమతి లేదు</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> కోసం సేవ్ చేసిన పాస్‌వర్డ్‌లు</translation>
@@ -8940,7 +8930,6 @@
 <translation id="8755584192133371929">షేర్ చేయడానికి ట్యాబ్‌ను ఎంచుకోండి</translation>
 <translation id="875604634276263540">ఇమేజ్ URL చెల్లదు</translation>
 <translation id="8756969031206844760">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయాలా?</translation>
-<translation id="8757203080302669031">ఈ ట్యాబ్ బ్లూటూత్ పరికరాల కోసం యాక్టివ్‌గా స్కానింగ్ చేస్తోంది.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> తీసివేయబడ్డారు</translation>
 <translation id="8759753423332885148">మరింత తెలుసుకోండి.</translation>
 <translation id="8761945298804995673">ఈ వినియోగదారు ఇప్పటికే ఉన్నారు.</translation>

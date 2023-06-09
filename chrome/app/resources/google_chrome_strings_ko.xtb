@@ -227,7 +227,6 @@
 <translation id="4970947549776831107">위험한 유형의 파일이기 때문에 Chrome에서 파일을 차단했습니다.</translation>
 <translation id="4990567037958725628">Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Chrome 확장 프로그램에서 HID 기기에 액세스함}=1{Chrome 확장 프로그램에서 1대의 HID 기기에 액세스하는 중}other{Chrome 확장 프로그램에서 #대의 HID 기기에 액세스하는 중}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 관리자가 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chrome을 #분 동안 사용하지 않으면 관리자가 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="5098668839038261629">이 설정을 사용하면 Chrome에서도 로그아웃됩니다</translation>
 <translation id="5132929315877954718">Chrome에 사용할 유용한 애플리케이션, 게임, 확장 프로그램 및 테마를 찾아보세요.</translation>
 <translation id="5139423532931106058">Chrome 프로필 맞춤설정</translation>
@@ -289,7 +288,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{1분 동안 사용하지 않으면 관리자가 자동으로 인터넷 사용 기록을 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 기존 탭은 계속 열려 있습니다.}other{#분 동안 사용하지 않으면 관리자가 자동으로 인터넷 사용 기록을 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 기존 탭은 계속 열려 있습니다.}}</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6418662306461808273">기존 Chrome 프로필로 전환하시겠습니까?</translation>
 <translation id="648319183876919572">향상된 세이프 브라우징은 위험한 웹사이트와 다운로드로부터 사용자를 보호합니다.</translation>
@@ -383,7 +381,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 관리자가 자동으로 종료합니다.}other{Chrome을 #분 동안 사용하지 않으면 관리자가 자동으로 종료합니다.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Google의 데이터 사용 방식:<ph name="END_BOLD" /> Chrome은 관심분야를 예측할 수 있습니다. 방문하는 사이트에서 광고 개인 최적화를 위해 내 관심분야를 보여달라고 Chrome에 요청할 수 있습니다.</translation>
 <translation id="8387459386171870978">Chrome 계속 사용</translation>

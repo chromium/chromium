@@ -222,7 +222,6 @@
 <translation id="4970947549776831107">危険なファイル形式のため Chrome でブロックされました</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome 拡張機能が HID デバイスにアクセスしていました}=1{Google Chrome 拡張機能が 1 個の HID デバイスにアクセスしています}other{Google Chrome 拡張機能が # 個の HID デバイスにアクセスしています}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、管理者は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="5098668839038261629">オンにすると、Chrome からもログアウトします</translation>
 <translation id="5132929315877954718">Google Chrome のすばらしいアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
 <translation id="5139423532931106058">Chrome プロファイルをカスタマイズ</translation>
@@ -280,7 +279,6 @@
 <translation id="6291549208091401781">Google Chrome は既にパソコンのすべてのユーザー対してインストールされています。</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
 <translation id="6327105987658262776">利用できるアップデートはありません。</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}other{# 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}}</translation>
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6418662306461808273">既存の Chrome プロファイルに切り替えますか？</translation>
 <translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>
@@ -374,7 +372,6 @@
 <translation id="8290100596633877290">エラー: Google Chrome で問題が発生しました。今すぐ再起動しますか？</translation>
 <translation id="8342675569599923794">このファイルは危険なファイルであるため、Chrome でブロックしました。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> サイトでは、ユーザーの興味 / 関心に関する情報を Chrome に保存できます。たとえば、マラソン用のシューズを購入するためにあるサイトにアクセスすると、そのサイトでは「ランニング」をユーザーの興味 / 関心として定義する可能性があります。その後、別のサイトにアクセスして競技に登録しようとすると、そのサイトでは、ユーザーの興味 / 関心に基づいてランニング用シューズの広告が表示される場合があります。</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は Chrome を自動的に終了します。}other{# 分間使用しなかった場合、管理者は Chrome を自動的に終了します。}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> Chrome はユーザーの興味 / 関心を推定できます。その後、アクセスしたサイトは、表示する広告をパーソナライズするために、Chrome にユーザーの興味 / 関心を確認するよう依頼できます。</translation>
 <translation id="8387459386171870978">Chrome を引き続き使用</translation>

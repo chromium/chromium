@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">ليس الآن</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{لحماية بياناتك، تمّت إزالة الأذونات من موقع إلكتروني لم تزُره منذ شهرَين.}zero{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها منذ شهرَين.}two{لحماية بياناتك، تمّت إزالة الأذونات من موقعَين إلكترونيَّين لم تزُرهما منذ شهرَين.}few{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها منذ شهرَين.}many{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها منذ شهرَين.}other{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها منذ شهرَين.}}</translation>
 <translation id="1009663062402466586">عناصر التحكُّم في الألعاب متاحة الآن</translation>
-<translation id="1010498023906173788">علامة التبويب هذه مرتبطة بمنفذ تسلسلي.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ صفحة واحدة غير مستجيبة}zero{ صفحات غير مستجيبة}two{صفحتان غير مستجيبتين}few{ صفحات غير مستجيبة}many{ صفحة غير مستجيبة}other{ من الصفحات غير مستجيبة}}</translation>
 <translation id="1011003645819296594">الأجهزة المحفوظة</translation>
 <translation id="1011355516189274711">مستوى صوت "تحويل النص إلى كلام"</translation>
@@ -635,7 +634,6 @@
 <translation id="1541346352678737112">لم يتم العثور على شبكة</translation>
 <translation id="154198613844929213">{0,plural, =0{سيتم حذف بيانات التصفُّح الآن.}=1{سيتم حذف بيانات التصفُّح بعد ثانية واحدة.}two{سيتم حذف بيانات التصفُّح بعد ثانيتَين.}few{سيتم حذف بيانات التصفُّح بعد # ثوانٍ.}many{سيتم حذف بيانات التصفُّح بعد # ثانية.}other{سيتم حذف بيانات التصفُّح بعد # ثانية.}}</translation>
 <translation id="1542137295869176367">تعذّر تعديل بيانات تسجيل الدخول.</translation>
-<translation id="1542514202066550870">‏تقدم علامة التبويب هذه محتوى VR إلى سماعة رأس.</translation>
 <translation id="1543284117603151572">‏تم الاستيراد من شبكة Edge</translation>
 <translation id="1543538514740974167">الانتقال إلى هنا بشكل أسرع</translation>
 <translation id="1544588554445317666">جرِّب تسمية الملف باسم أقصر أو حفظه في مجلد آخر.</translation>
@@ -1051,7 +1049,6 @@
 <translation id="1873920700418191231">السماح بالأذونات مرة أخرى لـ <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">المواقع الإلكترونية التي يُسمح لها بعرض كل أنواع الإعلانات</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{نقل علامة تبويب واحدة إلى نافذة أخرى}zero{نقل علامات تبويب إلى نافذة أخرى}two{نقل علامتَي تبويب إلى نافذة أخرى}few{نقل علامات تبويب إلى نافذة أخرى}many{نقل علامات تبويب إلى نافذة أخرى}other{نقل علامات تبويب إلى نافذة أخرى}}</translation>
-<translation id="1875386316419689002">‏علامة التبويب هذه متصّلة بجهاز HID.</translation>
 <translation id="1875387611427697908">لا يمكن إضافة ذلك إلا من <ph name="CHROME_WEB_STORE" />.</translation>
 <translation id="1877377290348678128">التصنيف (اختياري)</translation>
 <translation id="1877520246462554164">تعذّر الحصول على الرمز المميز للمصادقة. يُرجى الخروج ثم تسجيل الدخول مرّة أخرى لإعادة المحاولة.</translation>
@@ -1909,7 +1906,6 @@
 <translation id="2581455244799175627">مزيد من المعلومات حول السماح باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (النظام الأساسي <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">‏تعذّر الحصول على تذكرة Kerberos. يُرجى إعادة المحاولة أو التواصل مع مشرف أجهزة مؤسستك. (رمز الخطأ <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">تشارك علامة التبويب هذه شاشتك.</translation>
 <translation id="2586561813241011046">تعذّر تثبيت <ph name="APP_NAME" />. يُرجى إعادة المحاولة أو التواصل مع المشرف. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">الحافظة</translation>
 <translation id="2586672484245266891">‏يُرجى إدخال عنوان URL أقصر.</translation>
@@ -2138,7 +2134,6 @@
 <translation id="2777525873368474674">لصق رابط الصورة</translation>
 <translation id="2778471504622896352">‏إضافة التطبيقات عن بُعد إلى مشغِّل التطبيقات في ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">الإضافات مفعّلة على هذا الموقع الإلكتروني.</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2783024642731649028">سلعة واحدة في سلة التسوّق متوفّرة بخصم ‫<ph name="DISCOUNT_TEXT" /> من "<ph name="MERCHANT_NAME" />" على <ph name="MERCHANT_DOMAIN" />، وتم الاطّلاع عليها <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">تم التنزيل</translation>
@@ -2491,7 +2486,6 @@
 <translation id="3080933187214341848">لم تتم مزامنة هذه الشبكة مع حسابك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">‏معرف موارد منتظم (URI)</translation>
-<translation id="3082780749197361769">تستخدم علامة التبويب هذه الكاميرا أو الميكروفون.</translation>
 <translation id="3083193146044397360">تم الحظر مؤقتًا لحماية أمانك</translation>
 <translation id="3083899879156272923">تحريك الشاشة مع الإبقاء على مؤشر الماوس في منتصف الشاشة</translation>
 <translation id="3083998949001524405">المواقع الإلكترونية التي يُسمح لها باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
@@ -2608,7 +2602,6 @@
 <translation id="3201237270673604992">من الياء إلى الألف</translation>
 <translation id="3201422919974259695">‏ستظهر أجهزة USB المتاحة هنا.</translation>
 <translation id="3202131003361292969">المسار</translation>
-<translation id="3202173864863109533">تم كتم صوت علامة التبويب.</translation>
 <translation id="3202578601642193415">الأحدث</translation>
 <translation id="3204648577100496185">قد تتم إزالة البيانات المرتبطة بهذا التطبيق من هذا الجهاز.</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
@@ -3016,7 +3009,6 @@
 <translation id="3575121482199441727">سماح لهذا الموقع الإلكتروني</translation>
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3577745545227000795">جمع بيانات أجهزة <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">تجري مشاركة محتوى علامة التبويب هذه.</translation>
 <translation id="3578874072190212775">مساعدة المواقع الإلكترونية على مكافحة الاحتيال وتمييز برامج التتبُّع عن الأشخاص</translation>
 <translation id="3581605050355435601">‏ضبط عنوان IP تلقائيًا</translation>
 <translation id="3582057310199111521">تم إدخال كلمة المرور على موقع إلكتروني مريب وتبيّن أنها مستخدَمة في عملية اختراق البيانات.</translation>
@@ -3556,6 +3548,7 @@
 <translation id="4021941025609472374">إغلاق علامات التبويب على اليسار</translation>
 <translation id="402211067068791756">سيؤدي هذا الإجراء إلى محو <ph name="TOTAL_USAGE" /> من البيانات التي خزّنتها المواقع الإلكترونية المُدرَجة.</translation>
 <translation id="4022426551683927403">إ&amp;ضافة إلى القاموس</translation>
+<translation id="4024768890073681126">يتولّى أحد والدَيك إدارة متصفِّحك.</translation>
 <translation id="4025039777635956441">كتم صوت الموقع الإلكتروني المحدد</translation>
 <translation id="402707738228916911">تم تلقي تعليمات "<ph name="AUTHORIZE_INSTRUCTION_NAME" />".</translation>
 <translation id="4027569221211770437">مجلد "<ph name="FOLDER_TITLE" />"</translation>
@@ -4031,7 +4024,6 @@
 <translation id="4448914100439890108">عدم عرض كلمة المرور للمستخدم <ph name="USERNAME" /> ضِمن النطاق <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">إدارة الأذونات</translation>
 <translation id="4449948729197510913">يتبع اسم المستخدِم إلى حساب العمل الخاص بمؤسستك. ولتسجيل الأجهزة في الحساب، يجب أولاً إثبات ملكية النطاق في "وحدة تحكُّم المشرف". وستحتاج إلى امتيازات المشرف في الحساب لإثبات ملكية النطاق.</translation>
-<translation id="4449996769074858870">تشغّل علامة التبويب هذه صوتًا.</translation>
 <translation id="4450974146388585462">التشخيص</translation>
 <translation id="445099924538929605">‏رصدَ <ph name="DEVICE_OS" /> وحدة TPM نشطة يمكنها تخزين البيانات بمزيد من الأمان.</translation>
 <translation id="4451479197788154834">‏تم حفظ كلمة المرور على هذا الجهاز وعلى حسابك في Google.</translation>
@@ -5124,6 +5116,7 @@
 <translation id="5439680044267106777">التخطّي وإعداد ملف شخصي جديد</translation>
 <translation id="544083962418256601">إنشاء اختصارات...</translation>
 <translation id="5441133529460183413">‏تطبيقات الويب المثبَّتة من متصفّح Chrome</translation>
+<translation id="5441292787273562014">إعادة تحميل الصفحة</translation>
 <translation id="5441466871879044658">ترجمة لهذه اللغة</translation>
 <translation id="5442228125690314719">لقد حدث خطأ أثناء إنشاء نسخة القرص. يُرجى إعادة المحاولة.</translation>
 <translation id="5442550868130618860">تفعيل التحديث التلقائي</translation>
@@ -5263,7 +5256,6 @@
 <translation id="5559311991468302423">حذف العنوان</translation>
 <translation id="55601339223879446">ضبط الحدود لسطح المكتب ضمن الشاشة</translation>
 <translation id="5561162485081632007">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
-<translation id="5562781907504170924">علامة التبويب هذه متصلة بجهاز بلوتوث.</translation>
 <translation id="556321030400250233">ملف محلي أو ملف مشترك</translation>
 <translation id="5563234215388768762">‏البحث في Google أو كتابة عنوان URL</translation>
 <translation id="5565735124758917034">نشط</translation>
@@ -5627,7 +5619,6 @@
 <translation id="5882919346125742463">الشبكات المعروفة</translation>
 <translation id="5883356647197510494">تم حظر إذن <ph name="PERMISSION_1" /> وإذن <ph name="PERMISSION_2" /> تلقائيًا.</translation>
 <translation id="5884447826201752041">تخصيص الإعدادات لكل إضافة</translation>
-<translation id="5884474295213649357">‏علامة التبويب هذه متصلة بجهاز USB.</translation>
 <translation id="5885314688092915589">ستدير مؤسستك هذا الملف الشخصي</translation>
 <translation id="5886009770935151472">إصبع 1</translation>
 <translation id="5886112770923972514">الاتصال بالأجهزة القريبة التي تستخدم ميزة "الإقران السريع" وضبط إعداداتها بسرعة</translation>
@@ -8609,7 +8600,6 @@
 <translation id="8464132254133862871">حساب المستخدم هذا غير مؤهل للخدمة.</translation>
 <translation id="8465252176946159372">غير صالح</translation>
 <translation id="8465444703385715657">يتطلب تشغيل <ph name="PLUGIN_NAME" /> إذنًا منك</translation>
-<translation id="8466417995783206254">تشغِّل علامة التبويب هذه فيديو في وضع "نافذة ضمن نافذة".</translation>
 <translation id="8467326454809944210">اختيار لغة أخرى</translation>
 <translation id="8468087214092422866">المواقع الإلكترونية التي لا يُسمح لها بالبحث عن أجهزة تتضمّن بلوتوث</translation>
 <translation id="8470513973197838199">كلمات المرور المحفوظة لـ <ph name="ORIGIN" /></translation>
@@ -8942,7 +8932,6 @@
 <translation id="8755584192133371929">اختيار علامة تبويب لمشاركتها</translation>
 <translation id="875604634276263540">‏عنوان URL للصورة غير صالح.</translation>
 <translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>
-<translation id="8757203080302669031">تبحث علامة التبويب هذه بشكل نشط عن أجهزة تتضمّن بلوتوث.</translation>
 <translation id="8757368836647541092">تمت إزالة <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">معرفة المزيد.</translation>
 <translation id="8761945298804995673">هذا المستخدم موجود من قبل.</translation>

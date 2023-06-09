@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{2 aydır ziyaret etmediğiniz sitenin izinleri, verilerinizi korumak için kaldırıldı}other{2 aydır ziyaret etmediğiniz sitelerin izinleri, verilerinizi korumak için kaldırıldı}}</translation>
 <translation id="1009663062402466586">Oyun denetimleri artık kullanılabilir</translation>
-<translation id="1010498023906173788">Bu sekme bir seri bağlantı noktasına bağlıdır.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Sayfa Yanıt Vermiyor}other{Sayfalar Yanıt Vermiyor}}</translation>
 <translation id="1011003645819296594">Kayıtlı cihazlar</translation>
 <translation id="1011355516189274711">Metin okuma ses düzeyi</translation>
@@ -632,7 +631,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1541346352678737112">Ağ bulunamadı</translation>
 <translation id="154198613844929213">{0,plural, =0{Şu anda siliniyor.}=1{1 saniye sonra silinecek}other{# saniye sonra silinecek}}</translation>
 <translation id="1542137295869176367">Oturum açma verileriniz güncellenemedi</translation>
-<translation id="1542514202066550870">Bu sekme bir başlığa VR içeriği sunuyor.</translation>
 <translation id="1543284117603151572">Edge'den Aktarıldı</translation>
 <translation id="1543538514740974167">Buraya daha hızlı ulaşın</translation>
 <translation id="1544588554445317666">Daha kısa bir dosya adı kullanmayı veya farklı bir klasöre kaydetmeyi deneyin</translation>
@@ -1048,7 +1046,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1873920700418191231"><ph name="WEBSITE" /> sitesine tekrar izin verin</translation>
 <translation id="1874248162548993294">Her reklamı göstermesine izin verilen siteler</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Sekmeyi başka bir pencereye taşı}other{Sekmeleri başka bir pencereye taşı}}</translation>
-<translation id="1875386316419689002">Bu sekme bir HID cihazına bağlı.</translation>
 <translation id="1875387611427697908">Bu yalnızca <ph name="CHROME_WEB_STORE" /> kullanılarak eklenebilir</translation>
 <translation id="1877377290348678128">Etiket (isteğe bağlı)</translation>
 <translation id="1877520246462554164">Kimlik doğrulama jetonu alınamadı. Tekrar denemek için lütfen oturumu kapatıp sonra yeniden oturum açın.</translation>
@@ -1902,7 +1899,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2581455244799175627">Üçüncü taraf çerezlerine izin verme hakkında daha fazla bilgi</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform: <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos bileti alınamadı. Tekrar deneyin veya kuruluşunuzun cihaz yöneticisi ile iletişim kurun. (Hata kodu <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Bu sekme, ekranınızı paylaşıyor.</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> yüklenemedi. Lütfen tekrar deneyin veya yöneticinizle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2586672484245266891">Lütfen daha kısa bir URL girin</translation>
@@ -2131,7 +2127,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2777525873368474674">Resim bağlantısı yapıştırın</translation>
 <translation id="2778471504622896352">ChromeOS başlatıcıya uzaktan uygulama ekleme</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Bu sitede uzantılara izin veriliyor</translation>
 <translation id="2782104745158847185">Linux uygulaması yüklenirken hata oluştu</translation>
 <translation id="2783024642731649028">Alışveriş sepetinizdeki 1 ürün için <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) adlı satıcıda <ph name="DISCOUNT_TEXT" /> mevcut. Görüntüleme zamanı: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">İndirildi</translation>
@@ -2484,7 +2479,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3080933187214341848">Bu ağ, hesabınızla senkronize değildir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Bu sekme kameranızı ve/veya mikrofonunuzu kullanıyor.</translation>
 <translation id="3083193146044397360">Güvenliğinizi korumak için geçici olarak engellendi</translation>
 <translation id="3083899879156272923">Fareyi ekranın ortasında tutarak ekranı taşı</translation>
 <translation id="3083998949001524405">Üçüncü taraf çerezlerini kullanmasına izin verilen siteler</translation>
@@ -2601,7 +2595,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3201237270673604992">Z'den A'ya</translation>
 <translation id="3201422919974259695">Kullanılabilir USB cihazlar burada görünür.</translation>
 <translation id="3202131003361292969">Yol</translation>
-<translation id="3202173864863109533">Bu sekmenin sesi kapatılıyor.</translation>
 <translation id="3202578601642193415">En yeni</translation>
 <translation id="3204648577100496185">Bu uygulamayla ilişkili veriler bu cihazdan kaldırılabilir</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
@@ -3009,7 +3002,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3575121482199441727">Bu site için izin ver</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> donanım verileri toplama</translation>
-<translation id="3578594933904494462">Bu sekmenin içeriği paylaşılıyor.</translation>
 <translation id="3578874072190212775">Sitelerin sahtekarlıkla mücadele etmesine ve botları insanlardan ayırt etmesine yardımcı olun</translation>
 <translation id="3581605050355435601">IP adresini otomatik olarak yapılandır</translation>
 <translation id="3582057310199111521">Yanıltıcı bir sitede girildi ve veri ihlali kapsamında bulundu</translation>
@@ -3551,6 +3543,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4021941025609472374">Soldaki sekmeleri kapat</translation>
 <translation id="402211067068791756">Bu işlem, görüntülenen siteler tarafından depolanan <ph name="TOTAL_USAGE" /> veriyi temizleyecek</translation>
 <translation id="4022426551683927403">Sözlüğe &amp;Ekle</translation>
+<translation id="4024768890073681126">Tarayıcınız, ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4025039777635956441">Seçili Sitenin Sesini Kapat</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> talimatı alındı</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> klasörü</translation>
@@ -4026,7 +4019,6 @@ Sinyalleri paylaşmamayı seçerseniz bu profil kapatılır.</translation>
 <translation id="4448914100439890108"><ph name="USERNAME" /> adlı kullanıcı için <ph name="DOMAIN" /> alanındaki şifreyi gizle</translation>
 <translation id="4449247303975391730">İzinleri yönetme</translation>
 <translation id="4449948729197510913">Kullanıcı adınız, kuruluşunuzun kurumsal hesabına aittir. Hesaba cihaz kaydettirmek için önce Yönetici konsolunda alan sahipliğini doğrulayın. Doğrulamak için hesapta yönetici ayrıcalıklarınızın olması gerekir.</translation>
-<translation id="4449996769074858870">Bu sekmede ses çalınıyor.</translation>
 <translation id="4450974146388585462">Teşhis Et</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" />, verilerinizi daha güvenle depolayabilecek etkin bir TPM saptadı.</translation>
 <translation id="4451479197788154834">Şifreniz bu cihazda ve Google Hesabınızda kayıtlı</translation>
@@ -5119,6 +5111,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5439680044267106777">Atla ve Yeni profil oluştur</translation>
 <translation id="544083962418256601">Kısayol oluştur...</translation>
 <translation id="5441133529460183413">Chrome tarayıcıdan yüklenen web uygulaması</translation>
+<translation id="5441292787273562014">Sayfayı yeniden yükle</translation>
 <translation id="5441466871879044658">Şu dile çevir</translation>
 <translation id="5442228125690314719">Disk görüntüsü oluşturulurken hata oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="5442550868130618860">Otomatik güncellemeyi aç</translation>
@@ -5258,7 +5251,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5559311991468302423">Adresi sil</translation>
 <translation id="55601339223879446">Ekranda masaüstünüzün sınırlarını ayarlayın</translation>
 <translation id="5561162485081632007">Tehlikeli etkinlik meydana geldiğinde tespit ederek sizi uyarır.</translation>
-<translation id="5562781907504170924">Bu sekme bir Bluetooth Cihazına bağlı.</translation>
 <translation id="556321030400250233">yerel veya paylaşılan dosya</translation>
 <translation id="5563234215388768762">Google'da arayın veya URL'yi yazın</translation>
 <translation id="5565735124758917034">Etkin</translation>
@@ -5623,7 +5615,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5882919346125742463">Bilinen Ağlar</translation>
 <translation id="5883356647197510494">Otomatik olarak engellendi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Her uzantı için özelleştirin</translation>
-<translation id="5884474295213649357">Bu sekme bir USB cihazına bağlı.</translation>
 <translation id="5885314688092915589">Bu profil kuruluşunuz tarafından yönetilecektir.</translation>
 <translation id="5886009770935151472">1. parmak</translation>
 <translation id="5886112770923972514">Yakındaki Hızlı Eşleme cihazlarına bağlanıp bunları hızlıca kurun</translation>
@@ -8595,7 +8586,6 @@ Sinyalleri paylaşmamayı seçerseniz bu profil kapatılır.</translation>
 <translation id="8464132254133862871">Bu kullanıcı hesabı hizmet için uygun değil.</translation>
 <translation id="8465252176946159372">Geçerli değil</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> eklentisinin çalışması için izniniz gerekiyor</translation>
-<translation id="8466417995783206254">Bu sekmede bir video pencere içinde pencere modunda oynatılıyor.</translation>
 <translation id="8467326454809944210">Başka bir dil seç</translation>
 <translation id="8468087214092422866">Bluetooth cihazları aramasına izin verilmeyen siteler</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> için kaydedilmiş şifreler</translation>
@@ -8928,7 +8918,6 @@ Sinyalleri paylaşmamayı seçerseniz bu profil kapatılır.</translation>
 <translation id="8755584192133371929">Paylaşılacak bir sekme seçin</translation>
 <translation id="875604634276263540">Görsel URL'si geçerli değil</translation>
 <translation id="8756969031206844760">Şifre güncellensin mi?</translation>
-<translation id="8757203080302669031">Bu sekme, aktif olarak Bluetooth cihazlarını tarıyor.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> kaldırıldı</translation>
 <translation id="8759753423332885148">Daha fazla bilgi edinin.</translation>
 <translation id="8761945298804995673">Bu kullanıcı zaten var</translation>

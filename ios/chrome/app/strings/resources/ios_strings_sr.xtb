@@ -91,7 +91,6 @@
 <translation id="152234381334907219">Никада се не чува</translation>
 <translation id="1523341279170789507">Дозволи све колачиће</translation>
 <translation id="1524563461097350801">Не, хвала</translation>
-<translation id="1531836666020185856">Истакнуто</translation>
 <translation id="1535268707340844072">Тренутно подешавање може да доведе до проблема на неким сајтовима. Да бисте управљали колачићима за све сајтове, погледајте <ph name="BEGIN_LINK" />Подешавања колачића<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">1. ред за адресу</translation>
 <translation id="1545749641540134597">Скенирајте QR кôд</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">Кôд грешке: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додај налог</translation>
 <translation id="2268044343513325586">Прецизирај</translation>
+<translation id="2269277877025820298">Прикажи још</translation>
 <translation id="2273327106802955778">Мени Још</translation>
 <translation id="2286505070150039482">Истакнути текст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ова адреса ће бити избрисана са овог уређаја.}one{Ове адресе ће бити избрисане са овог уређаја.}few{Ове адресе ће бити избрисане са овог уређаја.}other{Ове адресе ће бити избрисане са овог уређаја.}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">Сада ћете искористити све предности Chrome-а на уређају.</translation>
 <translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
-<translation id="2439425774439590">Најпосећенији сајтови</translation>
 <translation id="2451654228769116489">Закачи картицу</translation>
 <translation id="2461070143328828326">Подешавања лозинке</translation>
 <translation id="2469960372084740698">Желите да искључите Безбедносно прегледање?</translation>

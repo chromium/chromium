@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Հիմա չէ</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Ձեր տվյալները պաշտպանելու համար թույլտվությունները հեռացվել են կայքից, որը 2 ամիս չեք այցելել}one{Ձեր տվյալները պաշտպանելու համար թույլտվությունները հեռացվել են կայքից, որը 2 ամիս չեք այցելել}other{Ձեր տվյալները պաշտպանելու համար թույլտվությունները հեռացվել են կայքերից, որոնք 2 ամիս չեք այցելել}}</translation>
 <translation id="1009663062402466586">Այժմ հասանելի են խաղերի կառավարման տարրեր</translation>
-<translation id="1010498023906173788">Այս ներդիրը միացված է հերթական միացքին:</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{էջ չի պատասխանում}one{էջ չի պատասխանում}other{էջ չի պատասխանում}}</translation>
 <translation id="1011003645819296594">Պահված սարքեր</translation>
 <translation id="1011355516189274711">Տեքստի հնչեցման ձայնի ուժգնությունը</translation>
@@ -634,7 +633,6 @@
 <translation id="1541346352678737112">Ցանց չի գտնվել</translation>
 <translation id="154198613844929213">{0,plural, =0{Ջնջում է հիմա։}=1{Կջնջի 1 վայրկյանից}one{Կջնջի # վայրկյանից}other{Կջնջի # վայրկյանից}}</translation>
 <translation id="1542137295869176367">Չհաջողվեց թարմացնել ձեր մուտքի տվյալները</translation>
-<translation id="1542514202066550870">Այս ներդիրը VR բովանդակություն է հեռարձակում ակնոցին։</translation>
 <translation id="1543284117603151572">Edge-ից ներմուծված</translation>
 <translation id="1543538514740974167">Արագ հասանելիություն</translation>
 <translation id="1544588554445317666">Ընտրեք ֆայլի ավելի կարճ անվանում կամ փորձեք պահել այլ պանակում</translation>
@@ -1050,7 +1048,6 @@
 <translation id="1873920700418191231">Նորից թույլտվություններ տրամադրել <ph name="WEBSITE" /> կայքի համար</translation>
 <translation id="1874248162548993294">Թույլատրվում է ցուցադրել ցանկացած գովազդ</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Բացել ներդիրն այլ պատուհանում}one{Բացել ներդիրներն այլ պատուհանում}other{Բացել ներդիրներն այլ պատուհանում}}</translation>
-<translation id="1875386316419689002">Այս ներդիրը միացված է HID սարքին։</translation>
 <translation id="1875387611427697908">Սա կարող է ավելացվել միայն <ph name="CHROME_WEB_STORE" />-ից</translation>
 <translation id="1877377290348678128">Պիտակ (կամընտիր)</translation>
 <translation id="1877520246462554164">Չհաջողվեց ստանալ նույնականացման թոքենը։ Դուրս եկեք հաշվից ու նորից մուտք գործեք:</translation>
@@ -1906,7 +1903,6 @@
 <translation id="2581455244799175627">Մանրամասն երրորդ կողմի քուքիները թույլատրելու մասին</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (հենք՝ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Չհաջողվեց բեռնել Kerberos տոմսը: Փորձեք նորից կամ կապվեք կազմակերպության սարքի ադմինիստրատորի հետ (սխալի կոդը՝ <ph name="ERROR_CODE" />):</translation>
-<translation id="2585724835339714757">Այս ներդիրը հասանելի է դարձնում ձեր էկրանը:</translation>
 <translation id="2586561813241011046">Չհաջողվեց տեղադրել <ph name="APP_NAME" /> հավելվածը։ Փորձեք նորից կամ դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2586672484245266891">Մուտքագրեք ավելի կարճ URL</translation>
@@ -2135,7 +2131,6 @@
 <translation id="2777525873368474674">Տեղադրեք պատկերի հղումը</translation>
 <translation id="2778471504622896352">Ավելացնել հեռակա հավելվածներ ChromeOS-ի գործարկիչում</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Ընդլայնումները թույլատրված են այս կայքում</translation>
 <translation id="2782104745158847185">Չհաջողվեց տեղադրել Լինուքսի հավելվածը</translation>
 <translation id="2783024642731649028">1 ապրանք ձեր զամբյուղում. <ph name="DISCOUNT_TEXT" /> <ph name="MERCHANT_NAME" />-ից, <ph name="MERCHANT_DOMAIN" />, վերջին դիտումը՝ <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Ներբեռնված է</translation>
@@ -2488,7 +2483,6 @@
 <translation id="3080933187214341848">Այս ցանցը համաժամացված չէ ձեր հաշվի հետ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Այս ներդիրն օգտագործում է ձեր տեսախցիկը և խոսափողը:</translation>
 <translation id="3083193146044397360">Ժամանակավորապես արգելափակվել է՝ անվտանգության նկատառումներից ելնելով</translation>
 <translation id="3083899879156272923">Տեղափոխել էկրանը՝ մկնիկը կենտրոնում պահելով</translation>
 <translation id="3083998949001524405">Թույլատրված է օգտագործել երրորդ կողմի քուքիներ</translation>
@@ -2605,7 +2599,6 @@
 <translation id="3201237270673604992">Z–A</translation>
 <translation id="3201422919974259695">Հասանելի USB սարքերը կցուցադրվեն այստեղ:</translation>
 <translation id="3202131003361292969">Ուղի</translation>
-<translation id="3202173864863109533">Այս ներդիրի ձայնն անջատված է:</translation>
 <translation id="3202578601642193415">Ամենանոր</translation>
 <translation id="3204648577100496185">Այս հավելվածին առնչվող տվյալները կարող են հեռացվել այս սարքից</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
@@ -3013,7 +3006,6 @@
 <translation id="3575121482199441727">Թույլատրել այս կայքի համար</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> օպերացիոն համակարգով աշխատող սարքակազմի տվյալների հավաքում</translation>
-<translation id="3578594933904494462">Այս ներդիրի բովանդակությունը համօգտագործվում է:</translation>
 <translation id="3578874072190212775">Օգնեք կայքերին պայքարել խարդախության դեմ և տարբերել բոտերին մարդկանցից</translation>
 <translation id="3581605050355435601">IP հասցեի ավտոմատ կարգավորում</translation>
 <translation id="3582057310199111521">Մուտքագրվել է կասկածելի կայքում և հայտնաբերվել տվյալների արտահոսքում</translation>
@@ -3555,6 +3547,7 @@
 <translation id="4021941025609472374">Փակել ձախ կողմի ներդիրները</translation>
 <translation id="402211067068791756"><ph name="TOTAL_USAGE" /> ծավալով տվյալները, որոնք պահվել են ցուցադրված կայքերի կողմից, կջնջվեն։</translation>
 <translation id="4022426551683927403">&amp;Ավելացնել բառացանկին</translation>
+<translation id="4024768890073681126">Ձեր դիտարկիչը կառավարում է ձեր ծնողը</translation>
 <translation id="4025039777635956441">Անջատել նշված կայքի ձայնը</translation>
 <translation id="402707738228916911">Ստացվել է ուղեցույց՝ <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">«<ph name="FOLDER_TITLE" />» պանակ</translation>
@@ -4030,7 +4023,6 @@
 <translation id="4448914100439890108">Թաքցնել <ph name="USERNAME" /> հաշվի գաղտնաբառը <ph name="DOMAIN" /> տիրույթում</translation>
 <translation id="4449247303975391730">Կառավարել թույլտվությունները</translation>
 <translation id="4449948729197510913">Ձեր օգտանունը պատկանում է ձեր կազմակերպության կորպորատիվ հաշվին։ Սարքերը հաշվում գրանցելու համար նախ հաստատեք տիրույթի պատկանելիությունը ադմինիստրատորի վահանակում։ Հաստատելու համար ձեզ անհրաժեշտ կլինեն հաշվի ադմինիստրատորի արտոնություններ։</translation>
-<translation id="4449996769074858870">Այս ներդիրը աուդիո ֆայլ է նվագարկում:</translation>
 <translation id="4450974146388585462">Ախտորոշել</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" />-ը հայտնաբերել է ակտիվ TPM, որը կարող է ավելի անվտանգ պահել ձեր տվյալները։</translation>
 <translation id="4451479197788154834">Ձեր գաղտնաբառը պահվել է այս սարքում և ձեր Google հաշվում</translation>
@@ -5265,7 +5257,6 @@
 <translation id="5559311991468302423">Հասցեի ջնջում</translation>
 <translation id="55601339223879446">Կարգավորեք աշխատասեղանի սահմանագծերը տվյալ էկրանում</translation>
 <translation id="5561162485081632007">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
-<translation id="5562781907504170924">Այս ներդիրը միացած է Bluetooth սարքի:</translation>
 <translation id="556321030400250233">տեղային կամ ընդհանուր ֆայլ</translation>
 <translation id="5563234215388768762">Որոնեք Google-ում կամ մուտքագրեք URL</translation>
 <translation id="5565735124758917034">Ակտիվ է</translation>
@@ -5627,7 +5618,6 @@
 <translation id="5882919346125742463">Պահված ցանցեր</translation>
 <translation id="5883356647197510494">Ավտոմատ արգելափակված թույլտվություններ՝ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Անհատականացնել թույլտվությունները յուրաքանչյուր ընդլայնման համար</translation>
-<translation id="5884474295213649357">Այս ներդիրը միացված է USB սարքին:</translation>
 <translation id="5885314688092915589">Այս պրոֆիլը կկառավարի ձեր կազմակերպությունը</translation>
 <translation id="5886009770935151472">Մատ 1</translation>
 <translation id="5886112770923972514">Միացեք մոտակայքում գտնվող Արագ զուգակցման սարքերին և արագ կարգավորեք դրանք</translation>
@@ -8599,7 +8589,6 @@
 <translation id="8464132254133862871">Օգտատիրոջ այս հաշիվը չի կարող օգտվել ծառայությունից:</translation>
 <translation id="8465252176946159372">Անվավեր է</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> փլագինն աշխատեցնելու համար հարկավոր է ձեր թույլտվությունը</translation>
-<translation id="8466417995783206254">Այս ներդիրում նվագարկվում է տեսանյութ «նկար նկարի մեջ» ռեժիմում։</translation>
 <translation id="8467326454809944210">Ընտրել մեկ այլ լեզու</translation>
 <translation id="8468087214092422866">Bluetooth սարքեր որոնելու թույլտվություն չունեցող կայքեր</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> կայքի պահված գաղտնաբառերը</translation>
@@ -8932,7 +8921,6 @@
 <translation id="8755584192133371929">Ընտրեք ներդիրը, որով ուզում եք կիսվել</translation>
 <translation id="875604634276263540">Պատկերի URL-ն անվավեր է</translation>
 <translation id="8756969031206844760">Թարմացնե՞լ գաղտնաբառը</translation>
-<translation id="8757203080302669031">Այս ներդիրն ակտիվորեն որոնում է Bluetooth սարքեր։</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> օգտատերը հեռացվեց</translation>
 <translation id="8759753423332885148">Մանրամասն:</translation>
 <translation id="8761945298804995673">Այդպիսի օգտատեր արդեն գոյություն ունի</translation>

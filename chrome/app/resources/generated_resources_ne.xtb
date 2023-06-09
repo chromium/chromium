@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">अहिले होइन</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{तपाईंका डेटाको सुरक्षार्थ तपाईंले २ महिनादेखि नखोलेको साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{तपाईंका डेटाको सुरक्षार्थ तपाईंले २ महिनादेखि नखोलेका साइटहरूलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
 <translation id="1009663062402466586">गेम कन्ट्रोलहरू अब उपलब्ध छन्</translation>
-<translation id="1010498023906173788">यो ट्याब कुनै सिरियल पोर्टमा जडान भएको छ।</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ पृष्ठ प्रतिक्रियाविहीन}other{ पृष्ठहरू प्रतिक्रियाविहीन}}</translation>
 <translation id="1011003645819296594">सेभ गरिएका डिभाइस</translation>
 <translation id="1011355516189274711">टेक्स्ट-टू-स्पिचको भोल्युम</translation>
@@ -631,7 +630,6 @@
 <translation id="1541346352678737112">कुनै पनि नेटवर्क फेला परेन</translation>
 <translation id="154198613844929213">{0,plural, =0{अहिले मेटाइँदै छ।}=1{निम्न समयपछि मेटाइन्छ: १ सेकेन्ड}other{निम्न समयपछि मेटाइन्छ: # सेकेन्ड}}</translation>
 <translation id="1542137295869176367">तपाईंको साइन इन डेटा परिवर्तन गर्न सकिएन</translation>
-<translation id="1542514202066550870">यो ट्याबले एउटा हेडसेटमा VR सामग्री प्रस्तुत गर्दै छ।</translation>
 <translation id="1543284117603151572">Edge बाट आयात गरिएको</translation>
 <translation id="1543538514740974167">यो पृष्ठमा अझ छिटो पुग्नुहोस्</translation>
 <translation id="1544588554445317666">फाइलको अझ छोटो नाम प्रयोग गरी हेर्नुहोस् वा कुनै अर्को फोल्डरमा सेभ गरी हेर्नुहोस्</translation>
@@ -1045,7 +1043,6 @@
 <translation id="1873920700418191231"><ph name="WEBSITE" /> लाई फेरि अनुमति दिनुहोस्</translation>
 <translation id="1874248162548993294">जुनसुकै विज्ञापनहरू देखाउने अनुमति दिइएका साइटहरू</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{ट्याब सारेर अर्को विन्डोमा लैजानुहोस्}other{ट्याबहरू सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
-<translation id="1875386316419689002">यो ट्याब कुनै HID यन्त्रमा जोडिएको छ।</translation>
 <translation id="1875387611427697908">यसलाई <ph name="CHROME_WEB_STORE" /> बाट मात्रै थप्न सकिन्छ</translation>
 <translation id="1877377290348678128">लेबल (ऐच्छिक)</translation>
 <translation id="1877520246462554164">प्रमाणीकरणको टोकन प्राप्त गर्न सकिएन। कृपया फेरि प्रयास गर्न साइन आउट गर्नुहोस्, त्यसपछि फेरि साइन इन गर्नुहोस्।</translation>
@@ -1901,7 +1898,6 @@
 <translation id="2581455244799175627">तेस्रो पक्षीय कुकीहरू प्रयोग गर्न अनुमति दिने सम्बन्धमा थप जानकारी</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (मञ्च <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos को टिकट प्राप्त गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो सङ्गठनका यन्त्र व्यवस्थापकलाई सम्पर्क गर्नुहोस्। (त्रुटि कोड <ph name="ERROR_CODE" />)।</translation>
-<translation id="2585724835339714757">यो ट्याबले तपाईंको स्क्रिन साझा गर्दै छ।</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> इन्स्टल गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2586672484245266891">कृपया कुनै अझ छोटो URL प्रविष्टि गर्नुहोस्</translation>
@@ -2130,7 +2126,6 @@
 <translation id="2777525873368474674">फोटोको लिंक पेस्ट गर्नुहोस्</translation>
 <translation id="2778471504622896352">ChromeOS लन्चरमा रिमोट एपहरू हाल्नुहोस्</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">यो साइटमा एक्स्टेन्सनहरूलाई अनुमति दिइएको छ</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2783024642731649028">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएको <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> को १ वस्तु <ph name="RELATIVE_TIME" /> हेरिए</translation>
 <translation id="2783298271312924866">डाउनलोड गरिएको</translation>
@@ -2484,7 +2479,6 @@
 <translation id="3080933187214341848">यो नेटवर्क र तपाईंको खाता बिच सिंक भएको छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">यो ट्याबले तपाईंको क्यामेरा वा माइक्रोफोन प्रयोग गरिरहेको छ।</translation>
 <translation id="3083193146044397360">तपाईंको सुरक्षाको बचाउ गर्नका लागि यसमाथि केही बेर रोक लगाइएको छ</translation>
 <translation id="3083899879156272923">माउसको कर्सर स्क्रिनको केन्द्रमा राखेर स्क्रिन सारियोस्</translation>
 <translation id="3083998949001524405">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएका</translation>
@@ -2601,7 +2595,6 @@
 <translation id="3201237270673604992">Z देखि A का क्रममा</translation>
 <translation id="3201422919974259695">उपलब्ध USB यन्त्रहरू यहाँ देखिने छन्।</translation>
 <translation id="3202131003361292969">पथ</translation>
-<translation id="3202173864863109533">यस ट्याबको अडियो म्युट गरिएको छ।</translation>
 <translation id="3202578601642193415">नवीनतम</translation>
 <translation id="3204648577100496185">यो डिभाइसबाट यस एपसँग सम्बन्धित डेटा हटाइन सक्छ</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
@@ -3009,7 +3002,6 @@
 <translation id="3575121482199441727">यो साइटलाई अनुमति दिनुहोस्</translation>
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> ले हार्डवेयरसम्बन्धी डेटा सङ्कलन गर्ने सम्बन्धमा</translation>
-<translation id="3578594933904494462">यस ट्याबको सामग्री साझाँ गरिदेँछ।</translation>
 <translation id="3578874072190212775">साइटहरूलाई ठगी रोकथाम गर्न र बट तथा मान्छेहरूबिचको फरक छुट्याउन मद्दत गर्नुहोस्</translation>
 <translation id="3581605050355435601">IP एड्रेस स्वतः कन्फिगर गर्नुहोस्</translation>
 <translation id="3582057310199111521">यो पासवर्ड भ्रामक साइटमा प्रविष्टि गरिएको थियो र पासवर्डको खुलासा भएको पाइयो</translation>
@@ -3550,6 +3542,7 @@
 <translation id="4021941025609472374">बायाँतिरका ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="402211067068791756">तपाईंले यसो गर्नुभयो भने देखाइएका साइटहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटिने छ</translation>
 <translation id="4022426551683927403">शब्दकोषमा &amp;थप्नुहोस्</translation>
+<translation id="4024768890073681126">तपाईंका अभिभावक तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="4025039777635956441">चयन गरिएको साइट म्युट गर्नुहोस्</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> सम्बन्धी निर्देशन प्राप्त भयो</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> फोल्डर</translation>
@@ -4025,7 +4018,6 @@
 <translation id="4448914100439890108"><ph name="DOMAIN" /> मा <ph name="USERNAME" /> को पासवर्ड लुकाइयोस्</translation>
 <translation id="4449247303975391730">अनुमतिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4449948729197510913">तपाईंको युजरनेम तपाईंको सङ्गठनको संस्थागत खातासँग सम्बद्ध छ। यो खातामा यन्त्रहरू दर्ता गर्न सर्वप्रथम एड्मिन कन्सोलमा गई डोमेनको स्वामित्व आफूसँग रहेको कुरा पुष्टि गर्नुहोस्। डोमेनको स्वामित्व पुष्टि गर्न तपाईंसँग उक्त खाताको प्रशासकीय विशेषाधिकार हुनु पर्छ।</translation>
-<translation id="4449996769074858870">यो ट्याबले अडियो प्ले गरिरहेको छ।</translation>
 <translation id="4450974146388585462">पत्ता लगाउनुहोस्</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ले तपाईंको डेटा अझ सुरक्षित तरिकाले भण्डारण गर्न सक्ने सक्रिय TPM पत्ता लगाएको छ।</translation>
 <translation id="4451479197788154834">तपाईंको पासवर्ड यो डिभाइस र तपाईंको Google खातामा सुरक्षित गरिएको छ</translation>
@@ -5257,7 +5249,6 @@
 <translation id="5559311991468302423">ठेगाना मेटाउनुहोस्</translation>
 <translation id="55601339223879446">आफ्नो डेस्कटपको सीमालाई प्रदर्शन भित्रै समायोजन गर्नुहोस्</translation>
 <translation id="5561162485081632007">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ</translation>
-<translation id="5562781907504170924">यो ट्याब एउटा ब्लुटुथ यन्त्रमा जडान गरिएको अवस्थामा छ।</translation>
 <translation id="556321030400250233">स्थानीय वा साझा फाइल</translation>
 <translation id="5563234215388768762">Google मा खोज्नुहोस्‌ वा कुनै URL टाइप गर्नुहोस्</translation>
 <translation id="5565735124758917034">सक्रिय</translation>
@@ -5621,7 +5612,6 @@
 <translation id="5882919346125742463">ज्ञात नेटवर्कहरू</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> सम्बन्धी अनुमति स्वतः ब्लक गरिएका छन्</translation>
 <translation id="5884447826201752041">हरेक एक्स्टेन्सनका हकमा साइट हेर्ने अनुमतिसम्बन्धी सेटिङ कस्टमाइज गर्नुहोस्</translation>
-<translation id="5884474295213649357">यो ट्याब एउटा USB यन्त्रमा जडान गरिएको अवस्थामा छ।</translation>
 <translation id="5885314688092915589">तपाईंको सङ्गठनले यो प्रोफाइल व्यवस्थापन गर्ने छ</translation>
 <translation id="5886009770935151472">औँला १</translation>
 <translation id="5886112770923972514">नजिकै रहेका फास्ट पेयर डिभाइसहरू कनेक्ट गर्नुहोस् तथा द्रुत रूपमा सेटअप गर्नुहोस्</translation>
@@ -8592,7 +8582,6 @@
 <translation id="8464132254133862871">यो प्रयोगकर्ता खाता सेवाको लागि योग्य छैन।</translation>
 <translation id="8465252176946159372">मान्य छैन</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> सञ्चालन गर्नका लागि तपाईंको अनुमति चाहिन्छ</translation>
-<translation id="8466417995783206254">यो ट्याबले picture-in-picture मोडमा भिडियो प्ले गर्दै छ।</translation>
 <translation id="8467326454809944210">अर्को भाषा छनौट गर्नुहोस्</translation>
 <translation id="8468087214092422866">ब्लुटुथ डिभाइसहरू खोज्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> का सुरक्षित गरिएका पासवर्डहरू</translation>
@@ -8925,7 +8914,6 @@
 <translation id="8755584192133371929">आफूले सेयर गर्न चाहेको ट्याब चयन गर्नुहोस्</translation>
 <translation id="875604634276263540">इमेजको URL अवैध छ</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
-<translation id="8757203080302669031">यो ट्याब सक्रिय रूपमा वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू खोज्दै छ।</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> लाई हटाइयो</translation>
 <translation id="8759753423332885148">बढी जान्नुहोस्।</translation>
 <translation id="8761945298804995673">यी प्रयोगकर्ता पहिले नै विद्यमान छन्</translation>

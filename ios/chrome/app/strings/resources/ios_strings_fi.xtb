@@ -91,7 +91,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="152234381334907219">Tallentamattomat</translation>
 <translation id="1523341279170789507">Salli kaikki evästeet</translation>
 <translation id="1524563461097350801">Ei kiitos</translation>
-<translation id="1531836666020185856">Esittelyt</translation>
 <translation id="1535268707340844072">Nykyinen asetuksesi saattaa aiheuttaa joidenkin sivustojen rikkoutumisen. Jos haluat ylläpitää kaikkien sivustojen evästeitä, siirry <ph name="BEGIN_LINK" />Evästeasetuksiin<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Osoite 1</translation>
 <translation id="1545749641540134597">Skannaa QR-koodi</translation>
@@ -193,6 +192,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="225943865679747347">Virhekoodi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Lisää tili</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
+<translation id="2269277877025820298">Näytä lisää</translation>
 <translation id="2273327106802955778">Lisäasetusvalikko</translation>
 <translation id="2286505070150039482">Korostettu teksti</translation>
 <translation id="2287614783861766820">{count,plural, =1{Osoite poistetaan tältä laitteelta.}other{Nämä osoitteet poistetaan tältä laitteelta.}}</translation>
@@ -218,7 +218,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2423077901494354337">Saat nyt enemmän irti Chromesta laitteellasi.</translation>
 <translation id="2434405374328098816">Olet jo tallentanut salasanan (käyttäjätunnus: <ph name="USERNAME" />) täällä: <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
-<translation id="2439425774439590">Eniten avatut sivustot</translation>
 <translation id="2451654228769116489">Kiinnitä välilehti</translation>
 <translation id="2461070143328828326">Salasana-asetukset</translation>
 <translation id="2469960372084740698">Laitetaanko Selaussuoja pois päältä?</translation>

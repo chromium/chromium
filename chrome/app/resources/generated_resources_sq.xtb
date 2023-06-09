@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Jo tani</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Për të mbrojtur të dhënat e tua, lejet u hoqën nga një sajt që nuk e ke vizituar për 2 muaj}other{Për të mbrojtur të dhënat e tua, lejet u hoqën nga sajtet që nuk i ke vizituar për 2 muaj}}</translation>
 <translation id="1009663062402466586">Kontrollet e lojës janë të disponueshme tani</translation>
-<translation id="1010498023906173788">Kjo skedë është e lidhur me një portë seriale.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{faqe nuk reagon}other{faqe nuk reagojnë}}</translation>
 <translation id="1011003645819296594">Pajisjet e ruajtura</translation>
 <translation id="1011355516189274711">Volumi për "tekstin në ligjërim"</translation>
@@ -629,7 +628,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1541346352678737112">Nuk u gjet asnjë rrjet</translation>
 <translation id="154198613844929213">{0,plural, =0{Po fshihen tani.}=1{Do të fshihen pas: 1 sekonde}other{Do të fshihen pas: # sekondash}}</translation>
 <translation id="1542137295869176367">Të dhënat e tua të identifikimit nuk mund të përditësoheshin</translation>
-<translation id="1542514202066550870">Kjo skedë po prezanton përmbajtje VR në një kufje.</translation>
 <translation id="1543284117603151572">Të importuar nga Edge</translation>
 <translation id="1543538514740974167">Si të mbërrish këtu më shpejt</translation>
 <translation id="1544588554445317666">Provo të përdorësh një emër më të shkurtër skedari ose ta ruash atë në një dosje tjetër</translation>
@@ -1045,7 +1043,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1873920700418191231">Lejo përsëri lejet për <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Lejohen të shfaqin çdo reklamë</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
-<translation id="1875386316419689002">Kjo skedë është e lidhur me një pajisje HID.</translation>
 <translation id="1875387611427697908">Kjo mund të shtohet vetëm nga <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiketa (opsionale)</translation>
 <translation id="1877520246462554164">Marrja e kodit të shenjës së vërtetimit dështoi. Dil dhe më pas identifikohu përsëri për të provuar përsëri.</translation>
@@ -1902,7 +1899,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2581455244799175627">Më shumë rreth lejimit të kukive të palëve të treta</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Nuk mund të merrej bileta e Kerberos. Provo përsëri ose kontakto me administratorin e pajisjes së organizatës. (Kodi i gabimit <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Kjo skedë po ndan ekranin tënd.</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> nuk mund të instalohej. Provo përsëri ose kontakto me administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Kujtesa e fragmenteve</translation>
 <translation id="2586672484245266891">Fut një URL më të shkurtër</translation>
@@ -2131,7 +2127,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2777525873368474674">Ngjit lidhjen e imazhit</translation>
 <translation id="2778471504622896352">Shto aplikacione në distancë te nisësi i ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Shtesat nuk lejohen në këtë sajt</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
 <translation id="2783024642731649028">1 artikull në karrocën tënde me <ph name="DISCOUNT_TEXT" /> nga <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, shikuar <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">U shkarkua</translation>
@@ -2484,7 +2479,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3080933187214341848">Ky rrjet nuk është sinkronizuar me llogarinë tënde. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Kjo skedë po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="3083193146044397360">U bllokua përkohësisht për të mbrojtur sigurinë tënde</translation>
 <translation id="3083899879156272923">Lëvize ekranin duke e mbajtur miun në qendër të ekranit</translation>
 <translation id="3083998949001524405">Lejo që të përdoren kukit e palëve të treta</translation>
@@ -2601,7 +2595,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3201237270673604992">Nga Z-ja tek A-ja</translation>
 <translation id="3201422919974259695">Pajisjet USB të ofruara do të shfaqen këtu.</translation>
 <translation id="3202131003361292969">Shtegu</translation>
-<translation id="3202173864863109533">Audioja e kësaj skede është vendosur në heshtje.</translation>
 <translation id="3202578601642193415">Më të rejat</translation>
 <translation id="3204648577100496185">Të dhënat e lidhura me këtë aplikacion mund të hiqen nga kjo pajisje</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
@@ -3009,7 +3002,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3575121482199441727">Lejo për këtë sajt</translation>
 <translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="3577745545227000795">Mbledhja e të dhënave të harduerit të <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Përmbajtja e kësaj skede po ndahet.</translation>
 <translation id="3578874072190212775">Ndihmo sajtet të luftojnë mashtrimet dhe të dallojnë robotët nga personat</translation>
 <translation id="3581605050355435601">Konfiguro automatikisht adresën IP</translation>
 <translation id="3582057310199111521">Është futur në një sajt mashtrues dhe është gjendur në një nxjerrje të paautorizuar të të dhënave</translation>
@@ -3551,6 +3543,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4021941025609472374">Mbyll skedat në të majtë</translation>
 <translation id="402211067068791756">Kjo do të pastrojë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga sajtet e shfaqura</translation>
 <translation id="4022426551683927403">&amp;Shto në fjalor</translation>
+<translation id="4024768890073681126">Shfletuesi yt menaxhohet nga prindi yt</translation>
 <translation id="4025039777635956441">Çaktivizo zërin e sajtit të zgjedhur</translation>
 <translation id="402707738228916911">U mor udhëzimi: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Dosja "<ph name="FOLDER_TITLE" />"</translation>
@@ -4026,7 +4019,6 @@ Nëse zgjedh që të mos i ndash sinjalet, ky profil do të mbyllet.</translatio
 <translation id="4448914100439890108">Fshih fjalëkalimin për <ph name="USERNAME" /> në <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Menaxho lejet</translation>
 <translation id="4449948729197510913">Emri yt i përdoruesit i përket llogarisë së ndërmarrjes së organizatës sate. Për të regjistruar pajisjet te llogaria, në fillim verifiko pronësinë e domenit në "Panelin e administratorit". Do të duhen privilegjet administrative në llogari për ta verifikuar.</translation>
-<translation id="4449996769074858870">Kjo skedë po lexon audion</translation>
 <translation id="4450974146388585462">Diagnostiko</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> zbuloi një TPM aktive, e cila mund t'i ruajë të dhënat e tua në mënyrë më të sigurt.</translation>
 <translation id="4451479197788154834">Fjalëkalimi yt është ruajtur në këtë pajisje dhe në "Llogarinë tënde të Google"</translation>
@@ -5258,7 +5250,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5559311991468302423">Fshi adresën</translation>
 <translation id="55601339223879446">Rregullo kufijtë e desktopit tënd brenda ekranit</translation>
 <translation id="5561162485081632007">Zbulon dhe të paralajmëron rreth ngjarjeve të rrezikshme kur ato ndodhin</translation>
-<translation id="5562781907504170924">Kjo skedë është e lidhur me një pajisje me Bluetooth.</translation>
 <translation id="556321030400250233">skedar lokal ose i ndarë</translation>
 <translation id="5563234215388768762">Kërko në Google ose shkruaj një URL</translation>
 <translation id="5565735124758917034">Aktiv</translation>
@@ -5622,7 +5613,6 @@ Mund ta dërgosh atë te Google për të kontrolluar nëse nuk është i sigurt.
 <translation id="5882919346125742463">Rrjetet e njohura</translation>
 <translation id="5883356647197510494">Të bllokuara automatikisht: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizoji për çdo shtesë</translation>
-<translation id="5884474295213649357">Kjo skedë është e lidhur me një pajisje me USB.</translation>
 <translation id="5885314688092915589">Këtë profil do ta menaxhojë organizata jote</translation>
 <translation id="5886009770935151472">Gishti 1</translation>
 <translation id="5886112770923972514">Lidhu dhe konfiguro me shpejtësi pajisjet në afërsi me "Çiftimin e sigurt"</translation>
@@ -8593,7 +8583,6 @@ Nëse zgjedh që të mos i ndash sinjalet, ky profil do të mbyllet.</translatio
 <translation id="8464132254133862871">Kjo llogari përdoruesi nuk është e përshtatshme për shërbimin.</translation>
 <translation id="8465252176946159372">Nuk është e vlefshme</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ka nevojë për leje që të ekzekutohet</translation>
-<translation id="8466417995783206254">Kjo skedë po luan një video në modalitetin "figurë brenda figurës".</translation>
 <translation id="8467326454809944210">Zgjidh një gjuhë tjetër</translation>
 <translation id="8468087214092422866">Nuk lejohen të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="8470513973197838199">Fjalëkalimet e ruajtura për <ph name="ORIGIN" /></translation>
@@ -8926,7 +8915,6 @@ Nëse zgjedh që të mos i ndash sinjalet, ky profil do të mbyllet.</translatio
 <translation id="8755584192133371929">Zgjidh një skedë për ta ndarë</translation>
 <translation id="875604634276263540">URL e imazhit është e pavlefshme</translation>
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
-<translation id="8757203080302669031">Kjo skedë po skanon në mënyrë aktive për pajisje Bluetooth.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> u hoq</translation>
 <translation id="8759753423332885148">Mëso më shumë.</translation>
 <translation id="8761945298804995673">Ky përdorues ekziston tashmë</translation>

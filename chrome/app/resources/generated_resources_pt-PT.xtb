@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Agora não</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Para proteger os seus dados, foram removidas as autorizações de um site que não visita há 2 meses}other{Para proteger os seus dados, foram removidas as autorizações dos sites que não visita há 2 meses}}</translation>
 <translation id="1009663062402466586">Controlos de jogos já disponíveis</translation>
-<translation id="1010498023906173788">Este separador está associado a uma porta de série.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Página sem resposta}other{Páginas sem resposta}}</translation>
 <translation id="1011003645819296594">Dispositivos guardados</translation>
 <translation id="1011355516189274711">Volume da conversão de texto em voz</translation>
@@ -633,7 +632,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1541346352678737112">Nenhuma rede encontrada</translation>
 <translation id="154198613844929213">{0,plural, =0{A eliminar agora.}=1{A eliminar dentro de: 1 segundo}other{A eliminar dentro de: # segundos}}</translation>
 <translation id="1542137295869176367">Não foi possível atualizar os seus dados de início de sessão</translation>
-<translation id="1542514202066550870">Este separador está a transmitir conteúdos de RV para um capacete de realidade virtual.</translation>
 <translation id="1543284117603151572">Importado do Edge</translation>
 <translation id="1543538514740974167">Aceda aqui mais rapidamente</translation>
 <translation id="1544588554445317666">Tente usar um nome de ficheiro mais curto ou guardar numa pasta diferente</translation>
@@ -1049,7 +1047,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1873920700418191231">Permitir novamente autorizações para <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Com autorização para mostrar quaisquer anúncios</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Mover separador para outra janela}other{Mover separadores para outra janela}}</translation>
-<translation id="1875386316419689002">Este separador está associado a um dispositivo HID.</translation>
 <translation id="1875387611427697908">Só é possível adicioná-la a partir da <ph name="CHROME_WEB_STORE" />.</translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">Falha ao obter o símbolo de autenticação. Termine e inicie sessão novamente para tentar de novo.</translation>
@@ -1909,7 +1906,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2581455244799175627">Mais informações sobre a autorização de cookies de terceiros</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Não foi possível obter a permissão Kerberos. Tente novamente ou contacte o administrador do dispositivo da entidade. (Código de erro <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Este separador está a partilhar o seu ecrã.</translation>
 <translation id="2586561813241011046">Não foi possível instalar a app <ph name="APP_NAME" />. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2586672484245266891">Introduza um URL mais curto.</translation>
@@ -2139,7 +2135,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2777525873368474674">Colar link da imagem</translation>
 <translation id="2778471504622896352">Adicionar apps remotas ao Launcher do Chrome OS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">As extensões são permitidas neste site</translation>
 <translation id="2782104745158847185">Ocorreu um erro ao instalar a aplicação para Linux.</translation>
 <translation id="2783024642731649028">1 artigo no seu carrinho com <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visualizado <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Transferido</translation>
@@ -2495,7 +2490,6 @@ Pretende pará-lo?</translation>
 <translation id="3080933187214341848">Esta rede não está sincronizada com a sua conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Este separador está a utilizar a sua câmara ou microfone.</translation>
 <translation id="3083193146044397360">Foi bloqueado temporariamente para proteger a sua segurança</translation>
 <translation id="3083899879156272923">Mover o ecrã mantendo o rato no centro do ecrã</translation>
 <translation id="3083998949001524405">Com autorização para usar cookies de terceiros</translation>
@@ -2612,7 +2606,6 @@ Pretende pará-lo?</translation>
 <translation id="3201237270673604992">Z a A</translation>
 <translation id="3201422919974259695">Os dispositivos USB disponíveis são apresentados aqui.</translation>
 <translation id="3202131003361292969">Caminho</translation>
-<translation id="3202173864863109533">O som deste separador foi desativado.</translation>
 <translation id="3202578601642193415">O mais recente</translation>
 <translation id="3204648577100496185">Os dados associados a esta app poderão ser removidos deste dispositivo</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
@@ -3023,7 +3016,6 @@ Pretende pará-lo?</translation>
 <translation id="3575121482199441727">Permitir neste site</translation>
 <translation id="3577473026931028326">Algo correu mal. Tente novamente.</translation>
 <translation id="3577745545227000795">Recolha de dados do hardware do dispositivo <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">O conteúdo deste separador está a ser partilhado.</translation>
 <translation id="3578874072190212775">Ajude os sites a combater fraudes e distinguir bots de pessoas</translation>
 <translation id="3581605050355435601">Configurar automaticamente o endereço IP</translation>
 <translation id="3582057310199111521">Acedeu a um site fraudulento e encontrou uma violação de dados.</translation>
@@ -3568,6 +3560,7 @@ Pretende pará-lo?</translation>
 <translation id="4021941025609472374">Fechar separadores à esquerda</translation>
 <translation id="402211067068791756">Esta ação irá limpar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites apresentados</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao Dicionário</translation>
+<translation id="4024768890073681126">O teu navegador é gerido por um dos teus pais</translation>
 <translation id="4025039777635956441">Desativar o som do site selecionado</translation>
 <translation id="402707738228916911">Instrução <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recebida</translation>
 <translation id="4027569221211770437">Pasta <ph name="FOLDER_TITLE" /></translation>
@@ -4044,7 +4037,6 @@ Se optar por não partilhar os sinais, este perfil é fechado.</translation>
 <translation id="4448914100439890108">Ocultar palavra-passe para <ph name="USERNAME" /> em <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Faça a gestão das autorizações</translation>
 <translation id="4449948729197510913">O nome de utilizador pertence à conta empresarial da sua entidade. Para inscrever dispositivos na conta, valide primeiro a propriedade do domínio na Consola do administrador. Necessita de privilégios de administrador na conta para efeitos de validação.</translation>
-<translation id="4449996769074858870">Este separador está a reproduzir áudio.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605">O <ph name="DEVICE_OS" /> detetou um TPM ativo que pode armazenar os seus dados com mais segurança.</translation>
 <translation id="4451479197788154834">A sua palavra-passe foi guardada neste dispositivo e na sua Conta Google.</translation>
@@ -5142,6 +5134,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5439680044267106777">Ignorar e configurar novo perfil</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
 <translation id="5441133529460183413">App Web instalada a partir do navegador Chrome</translation>
+<translation id="5441292787273562014">Atualizar página</translation>
 <translation id="5441466871879044658">Traduza para este idioma</translation>
 <translation id="5442228125690314719">Ocorreu um erro ao criar a imagem do disco. Tente novamente.</translation>
 <translation id="5442550868130618860">Ativar atualização automática</translation>
@@ -5282,7 +5275,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5559311991468302423">Apagar morada</translation>
 <translation id="55601339223879446">Ajustar os limites do seu ambiente de trabalho no ecrã</translation>
 <translation id="5561162485081632007">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
-<translation id="5562781907504170924">Este separador está ligado a um dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">ficheiro local ou partilhado</translation>
 <translation id="5563234215388768762">Pesquise no Google ou escreva um URL</translation>
 <translation id="5565735124758917034">Ativo</translation>
@@ -5649,7 +5641,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5882919346125742463">Redes conhecidas</translation>
 <translation id="5883356647197510494">Bloqueou automaticamente <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensão</translation>
-<translation id="5884474295213649357">Este separador está associado a um dispositivo USB.</translation>
 <translation id="5885314688092915589">A sua organização irá gerir este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Ligue e configure rapidamente dispositivos com o Fast Pair nas proximidades</translation>
@@ -8266,7 +8257,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8154790740888707867">Sem ficheiro</translation>
 <translation id="8154912474061769055">As funcionalidades em muitos sites podem não funcionar</translation>
 <translation id="815491593104042026">Ups! A autenticação falhou, porque foi configurada para utilizar um URL não seguro (<ph name="BLOCKED_URL" />). Contacte o gestor.</translation>
-<translation id="8155003161114963960">Traduzir…</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Não foram encontradas palavras-passe comprometidas.}=1{{COUNT} palavra-passe comprometida.}other{{COUNT} palavras-passe comprometidas.}}</translation>
 <translation id="8157248655669507702">Ative os dados móveis para instalar um perfil do eSIM</translation>
 <translation id="8157704005178149728">A configurar a supervisão</translation>
@@ -8631,7 +8621,6 @@ Se optar por não partilhar os sinais, este perfil é fechado.</translation>
 <translation id="8464132254133862871">Esta conta de utilizador não é elegível para o serviço.</translation>
 <translation id="8465252176946159372">Não é válido</translation>
 <translation id="8465444703385715657">O <ph name="PLUGIN_NAME" /> necessita da sua autorização para ser executado</translation>
-<translation id="8466417995783206254">Este separador está a reproduzir um vídeo no modo ecrã no ecrã.</translation>
 <translation id="8467326454809944210">Selecionar outro idioma</translation>
 <translation id="8468087214092422866">Sem autorização para procurar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Palavras-passe guardadas para <ph name="ORIGIN" /></translation>
@@ -8964,7 +8953,6 @@ Se optar por não partilhar os sinais, este perfil é fechado.</translation>
 <translation id="8755584192133371929">Selecione um separador para partilhar</translation>
 <translation id="875604634276263540">O URL da imagem é inválido</translation>
 <translation id="8756969031206844760">Pretende atualizar a palavra-passe?</translation>
-<translation id="8757203080302669031">Este separador está ativamente a procurar dispositivos Bluetooth.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> removido</translation>
 <translation id="8759753423332885148">Saiba mais.</translation>
 <translation id="8761945298804995673">Este utilizador já existe.</translation>

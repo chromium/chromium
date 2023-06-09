@@ -91,7 +91,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="152234381334907219">Gemmes aldrig</translation>
 <translation id="1523341279170789507">Tillad alle cookies</translation>
 <translation id="1524563461097350801">Nej tak</translation>
-<translation id="1531836666020185856">Fremhævede</translation>
 <translation id="1535268707340844072">Din aktuelle indstilling kan medføre, at nogle websites går ned. Gå til <ph name="BEGIN_LINK" />indstillingerne for cookies<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
@@ -193,6 +192,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="225943865679747347">Fejlkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Tilføj konto</translation>
 <translation id="2268044343513325586">Juster</translation>
+<translation id="2269277877025820298">Se mere</translation>
 <translation id="2273327106802955778">Menuen Mere</translation>
 <translation id="2286505070150039482">Fremhævet tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enhed.}one{Adressen slettes fra denne enhed.}other{Adresserne slettes fra denne enhed.}}</translation>
@@ -218,7 +218,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2423077901494354337">Nu får du mest muligt ud af Chrome på din enhed.</translation>
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
-<translation id="2439425774439590">Mest besøgte websites</translation>
 <translation id="2451654228769116489">Fastgør fane</translation>
 <translation id="2461070143328828326">Adgangskodeindstillinger</translation>
 <translation id="2469960372084740698">Vil du deaktivere Beskyttet browsing?</translation>

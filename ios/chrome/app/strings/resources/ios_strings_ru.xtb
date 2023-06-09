@@ -91,7 +91,6 @@
 <translation id="152234381334907219">Сайты, пароли для которых не сохраняются</translation>
 <translation id="1523341279170789507">Разрешить все файлы сookie</translation>
 <translation id="1524563461097350801">Нет, спасибо</translation>
-<translation id="1531836666020185856">Популярные</translation>
 <translation id="1535268707340844072">Из-за текущего параметра некоторые сайты могут работать некорректно. Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="1540800554400757039">Адрес, строка 1</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавить аккаунт</translation>
 <translation id="2268044343513325586">Уточнить</translation>
+<translation id="2269277877025820298">Ещё</translation>
 <translation id="2273327106802955778">Меню "Ещё"</translation>
 <translation id="2286505070150039482">Выделенный текст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Адрес будет удален с устройства.}one{Адреса будут удалены с устройства.}few{Адреса будут удалены с устройства.}many{Адреса будут удалены с устройства.}other{Адреса будут удалены с устройства.}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">Теперь вы сможете использовать все возможности Chrome.</translation>
 <translation id="2434405374328098816">Пароль пользователя <ph name="USERNAME" /> для сайта <ph name="WEBSITE" /> уже сохранен.</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
-<translation id="2439425774439590">Часто открываемые сайты</translation>
 <translation id="2451654228769116489">Закрепить вкладку</translation>
 <translation id="2461070143328828326">Настройки паролей</translation>
 <translation id="2469960372084740698">Отключить Безопасный просмотр?</translation>

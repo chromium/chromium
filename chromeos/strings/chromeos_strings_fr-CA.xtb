@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Bureaux</translation>
 <translation id="1018219910092211213">Impossible de résoudre le DNS</translation>
 <translation id="1018656279737460067">Annulé</translation>
+<translation id="1020274983236703756">Éléments <ph name="PRODUCT_NAME" /> exclusifs désormais disponibles</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Une nouvelle fonctionnalité est proposée, servez-vous de la touche de flèche vers le haut pour en savoir plus.</translation>
@@ -269,6 +270,7 @@
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3226657629376379887">Menu des actions de mise en page</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
+<translation id="3248223063252096240">éléments exclusifs <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
 <translation id="3275729367986477355">Image d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
@@ -321,6 +323,7 @@
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
 <translation id="3639846061339007994">haut</translation>
 <translation id="3651050199673793219">Sélectionnez une unité de température</translation>
+<translation id="3663574643422533538">Sélectionnez l'illustration exclusive de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="3708186454126126312">Connectés précédemment</translation>
@@ -370,6 +373,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Sélectionner un album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pavé tactile USB</translation>
+<translation id="4113067922640381334">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mode sombre</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
@@ -935,6 +939,7 @@
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8593058461203131755">mettre le contenu multimédia en pause</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>
+<translation id="8626489604350149811">Autres actions pour <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Violet clair</translation>
 <translation id="8651481478098336970">désactiver le son</translation>
 <translation id="8655295600908251630">Version</translation>

@@ -91,7 +91,6 @@
 <translation id="152234381334907219">저장하지 않음</translation>
 <translation id="1523341279170789507">모든 쿠키 허용</translation>
 <translation id="1524563461097350801">아니요</translation>
-<translation id="1531836666020185856">추천 기능</translation>
 <translation id="1535268707340844072">현재 설정에서는 일부 사이트의 기능이 손상될 수 있습니다. 모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="1540800554400757039">주소 1</translation>
 <translation id="1545749641540134597">QR 코드 스캔</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">계정 추가</translation>
 <translation id="2268044343513325586">상세검색</translation>
+<translation id="2269277877025820298">더보기</translation>
 <translation id="2273327106802955778">더보기 메뉴</translation>
 <translation id="2286505070150039482">강조표시된 텍스트</translation>
 <translation id="2287614783861766820">{count,plural, =1{이 주소가 이 기기에서 삭제됩니다.}other{이 주소가 이 기기에서 삭제됩니다.}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">이제 기기에서 Chrome을 최대한 활용할 수 있습니다.</translation>
 <translation id="2434405374328098816"><ph name="USERNAME" />님의 <ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
-<translation id="2439425774439590">자주 방문한 사이트</translation>
 <translation id="2451654228769116489">탭 고정</translation>
 <translation id="2461070143328828326">비밀번호 설정</translation>
 <translation id="2469960372084740698">세이프 브라우징을 사용 중지하시겠습니까?</translation>

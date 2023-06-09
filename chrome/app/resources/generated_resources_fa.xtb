@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">حالا نه</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{برای محافظت از داده‌هایتان، اجازه‌های سایتی که ۲ ماه است به آن مراجعه نکرده‌اید برداشته شد}one{برای محافظت از داده‌هایتان، اجازه‌های سایتی که ۲ ماه است به آن مراجعه نکرده‌اید برداشته شد}other{برای محافظت از داده‌هایتان، اجازه‌های سایت‌هایی که ۲ ماه است به آن مراجعه نکرده‌اید برداشته شد}}</translation>
 <translation id="1009663062402466586">کنترل‌های بازی اکنون دردسترس است</translation>
-<translation id="1010498023906173788">این برگه به درگاه سریال متصل است.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{صفحه غیرپاسخگو}one{صفحه‌های غیرپاسخگو}other{صفحه‌های غیرپاسخگو}}</translation>
 <translation id="1011003645819296594">دستگاه‌های ذخیره‌شده</translation>
 <translation id="1011355516189274711">میزان صدای نوشتار به گفتار</translation>
@@ -633,7 +632,6 @@
 <translation id="1541346352678737112">شبکه‌ای پیدا نشد</translation>
 <translation id="154198613844929213">{0,plural, =0{اکنون حذف می‌شود.}=1{یک ثانیه دیگر حذف می‌شود}one{# ثانیه دیگر حذف می‌شود}other{# ثانیه دیگر حذف می‌شود}}</translation>
 <translation id="1542137295869176367">داده‌های ورود به سیستم به‌روزرسانی نشد</translation>
-<translation id="1542514202066550870">‏این برگه محتوای VR را به هدست ارائه می‌دهد.</translation>
 <translation id="1543284117603151572">‏وارد شده از Edge</translation>
 <translation id="1543538514740974167">دسترسی سریع‌تر به‌اینجا</translation>
 <translation id="1544588554445317666">از نام فایل کوتاه‌تری استفاده کنید یا فایل را در پوشه دیگری ذخیره کنید</translation>
@@ -1057,7 +1055,6 @@
 <translation id="1873920700418191231">اعطای مجدد اجازه‌ها به <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">اجازه دارد همه آگهی‌ها را نشان دهد</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{انتقال برگه به پنجره‌ای دیگر}one{انتقال برگه‌ها به پنجره‌ای دیگر}other{انتقال برگه‌ها به پنجره‌ای دیگر}}</translation>
-<translation id="1875386316419689002">‏این برگه به دستگاه HID متصل است.</translation>
 <translation id="1875387611427697908">این مورد را فقط می‌توان از <ph name="CHROME_WEB_STORE" /> اضافه کرد</translation>
 <translation id="1877377290348678128">برچسب (اختیاری)</translation>
 <translation id="1877520246462554164">کد اصالت‌سنجی دریافت نشد. لطفاً از سیستم خارج شوید و برای امتحان مجدد دوباره به سیستم وارد شوید.</translation>
@@ -1916,7 +1913,6 @@
 <translation id="2581455244799175627">اطلاعات بیشتر درباره مجاز کردن کوکی‌های شخص ثالث</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (پلتفورم <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">‏بلیت Kerberos اضافه نشد. دوباره امتحان کنید یا با سرپرست دستگاه سازمانتان تماس بگیرید. (کد خطا: <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">این برگه درحال اشتراک‌گذاری صفحه‌نمایش شماست.</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> نصب نشد. لطفاً دوباره امتحان کنید، یا با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">بریده‌دان</translation>
 <translation id="2586672484245266891">لطفاً نشانی وب کوتاه‌تری وارد کنید</translation>
@@ -2145,7 +2141,6 @@
 <translation id="2777525873368474674">جای‌گذاری پیوند تصویر</translation>
 <translation id="2778471504622896352">‏افزودن برنامه‌های کنترل ازراه‌دور به راه‌انداز ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">افزونه‌های این سایت مجاز است</translation>
 <translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
 <translation id="2783024642731649028">یک محصول موجود در سبد خرید شما با <ph name="DISCOUNT_TEXT" /> از <ph name="MERCHANT_NAME" />، <ph name="MERCHANT_DOMAIN" />، زمان مشاهده: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">بارگیری شد</translation>
@@ -2498,7 +2493,6 @@
 <translation id="3080933187214341848">این شبکه با حسابتان همگام‌سازی نشده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">این برگه از دوربین یا میکروفن شما استفاده می‌کند.</translation>
 <translation id="3083193146044397360">برای محافظت از امنیت شما، به‌طور موقت مسدود شده است</translation>
 <translation id="3083899879156272923">حرکت صفحه درحالی‌که موشواره در مرکز صفحه ثابت می‌ماند</translation>
 <translation id="3083998949001524405">مجاز است از کوکی‌های شخص ثالث استفاده کند</translation>
@@ -2615,7 +2609,6 @@
 <translation id="3201237270673604992">ی تا الف</translation>
 <translation id="3201422919974259695">‏دستگاه‌های USB دردسترس در اینجا نشان داده می‌شود.</translation>
 <translation id="3202131003361292969">مسیر</translation>
-<translation id="3202173864863109533">صدای این برگه قطع شده است.</translation>
 <translation id="3202578601642193415">جدیدترین</translation>
 <translation id="3204648577100496185">داده‌های مرتبط با این برنامه ممکن است از این دستگاه برداشته شود.</translation>
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
@@ -3023,7 +3016,6 @@
 <translation id="3575121482199441727">مجاز برای این سایت</translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="3577745545227000795">مجموعه داده‌های سخت‌افزار <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">محتوای این برگه اشتراک‌گذاری می‌شود.</translation>
 <translation id="3578874072190212775">کمک به سایت‌ها در مبارزه با تقلب و تشخیص روبات‌ها از افراد</translation>
 <translation id="3581605050355435601">‏پیکربندی خودکار نشانی IP</translation>
 <translation id="3582057310199111521">در سایت فریب‌دهنده وارد و در نقض داده پیدا شد</translation>
@@ -3565,6 +3557,7 @@
 <translation id="4021941025609472374">بستن برگه‌های سمت چپ</translation>
 <translation id="402211067068791756">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌های نشان‌داده‌شده ذخیره کرده‌اند پاک می‌شود</translation>
 <translation id="4022426551683927403">&amp;افزودن به واژه‌نامه</translation>
+<translation id="4024768890073681126">ولی‌تان مرورگر را مدیریت می‌کند</translation>
 <translation id="4025039777635956441">بی‌صدا کردن سایت انتخاب‌شده</translation>
 <translation id="402707738228916911">دستورالعمل <ph name="AUTHORIZE_INSTRUCTION_NAME" /> دریافت شده است</translation>
 <translation id="4027569221211770437">پوشه <ph name="FOLDER_TITLE" /></translation>
@@ -4040,7 +4033,6 @@
 <translation id="4448914100439890108">پنهان کردن گذرواژه مربوط به <ph name="USERNAME" /> در <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">مدیریت اجازه‌ها</translation>
 <translation id="4449948729197510913">نام کاربری شما به حساب سازمانی سازمانتان تعلق دارد. برای ثبت‌نام دستگاه‌ها در حساب، ابتدا مالکیت دامنه را در کنسول سرپرست به‌تأیید برسانید. باید امتیازهای سرپرستی در حساب به‌تأیید برسد.</translation>
-<translation id="4449996769074858870">این برگه در حال پخش صدا است.</translation>
 <translation id="4450974146388585462">تشخیص</translation>
 <translation id="445099924538929605">‏<ph name="DEVICE_OS" /> TPM فعالی را شناسایی کرد که می‌تواند داده‌هایتان را با ایمنی بیشتری ذخیره کند.</translation>
 <translation id="4451479197788154834">‏گذرواژه‌تان در این دستگاه و در «حساب Google» شما ذخیره می‌شود</translation>
@@ -5134,6 +5126,7 @@
 <translation id="5439680044267106777">رد کردن و راه‌اندازی نمایه جدید</translation>
 <translation id="544083962418256601">ایجاد میان‌برها...</translation>
 <translation id="5441133529460183413">‏«برنامه وب» از مرورگر Chrome نصب شد</translation>
+<translation id="5441292787273562014">بار کردن مجدد صفحه</translation>
 <translation id="5441466871879044658">به این زبان ترجمه شود</translation>
 <translation id="5442228125690314719">هنگام ایجاد تصویر دیسک خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="5442550868130618860">روشن کردن به‌روزرسانی خودکار</translation>
@@ -5273,7 +5266,6 @@
 <translation id="5559311991468302423">حذف نشانی</translation>
 <translation id="55601339223879446">تنظیم محدوه دسک‌تاپ شما در صفحه نمایشگر</translation>
 <translation id="5561162485081632007">رویدادهای خطرناک را درصورت وقوع شناسایی می‌کند و به شما هشدار می‌دهد</translation>
-<translation id="5562781907504170924">این برگه به دستگاه بلوتوث متصل است.</translation>
 <translation id="556321030400250233">فایل‌های محلی یا اشتراک‌گذاری شده</translation>
 <translation id="5563234215388768762">‏جستجوی Google یا تایپ نشانی وب</translation>
 <translation id="5565735124758917034">فعال</translation>
@@ -5637,7 +5629,6 @@
 <translation id="5882919346125742463">شبکه‌های شناخته‌شده</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> به‌طور خودکار مسدود شده‌اند</translation>
 <translation id="5884447826201752041">سفارشی کردن برای هر افزونه</translation>
-<translation id="5884474295213649357">‏این برگه به دستگاه USB متصل است.</translation>
 <translation id="5885314688092915589">سازمانتان این نمایه را مدیریت خواهد کرد</translation>
 <translation id="5886009770935151472">انگشت ۱</translation>
 <translation id="5886112770923972514">به‌سرعت دستگاه‌های مجهز به «جفت‌سازی سریع» در اطرافتان را راه‌اندازی کنید و به آن‌ها متصل شوید</translation>
@@ -8611,7 +8602,6 @@
 <translation id="8464132254133862871">این حساب کاربر برای سرویس واجد شرایط نیست.</translation>
 <translation id="8465252176946159372">معتبر نیست</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> برای اجرا به مجوز شما نیاز دارد</translation>
-<translation id="8466417995783206254">این برگه درحال پخش ویدیو در حالت تصویردرتصویر است.</translation>
 <translation id="8467326454809944210">انتخاب زبانی دیگر</translation>
 <translation id="8468087214092422866">اجازه ندارند دستگاه‌های بلوتوث را جستجو کند</translation>
 <translation id="8470513973197838199">گذرواژه‌های ذخیره‌شده برای <ph name="ORIGIN" /></translation>
@@ -8944,7 +8934,6 @@
 <translation id="8755584192133371929">برگه‌ای را برای هم‌رسانی انتخاب کنید</translation>
 <translation id="875604634276263540">نشانی وب تصویر نامعتبر است</translation>
 <translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>
-<translation id="8757203080302669031">این برگه به‌طور فعال درحال اسکن کردن دستگاه‌های بلوتوث است.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> برداشته شد</translation>
 <translation id="8759753423332885148">بیشتر بدانید.</translation>
 <translation id="8761945298804995673">این کاربر از قبل وجود دارد</translation>

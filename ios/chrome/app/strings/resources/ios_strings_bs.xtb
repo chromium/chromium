@@ -91,7 +91,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="152234381334907219">Nikada nije sačuvano</translation>
 <translation id="1523341279170789507">Dozvoli sve kolačiće</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
-<translation id="1531836666020185856">Istaknuto</translation>
 <translation id="1535268707340844072">Trenutna postavka može uzrokovati prekid rada nekih web lokacija. Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke kolačića<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
 <translation id="1545749641540134597">Skeniraj QR kôd</translation>
@@ -193,6 +192,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="225943865679747347">Kȏd greške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Traži detaljnije</translation>
+<translation id="2269277877025820298">Prikaži više</translation>
 <translation id="2273327106802955778">Meni Više</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adresa će se izbrisati s uređaja.}one{Adrese će se izbrisati s uređaja.}few{Adrese će se izbrisati s uređaja.}other{Adrese će se izbrisati s uređaja.}}</translation>
@@ -218,7 +218,6 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2423077901494354337">Sada možete iskoristiti sve prednosti Chromea na uređaju.</translation>
 <translation id="2434405374328098816">Već ste sačuvali lozinku za korisnika "<ph name="USERNAME" />" na web lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
-<translation id="2439425774439590">Najposjećenije web lokacije</translation>
 <translation id="2451654228769116489">Zakači karticu</translation>
 <translation id="2461070143328828326">Postavke lozinki</translation>
 <translation id="2469960372084740698">Isključiti Sigurno pregledanje?</translation>

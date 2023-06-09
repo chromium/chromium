@@ -91,7 +91,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="152234381334907219">Parollar saqlanmaydigan saytlar</translation>
 <translation id="1523341279170789507">Barcha cookie fayllariga ruxsat berish</translation>
 <translation id="1524563461097350801">Kerak emas</translation>
-<translation id="1531836666020185856">Tavsiya etiladi</translation>
 <translation id="1535268707340844072">Joriy sozlama bilan ayrim saytlar ishlamay qolishi mumkin. Barcha saytlar uchun cookie fayllarni boshqarish uchun <ph name="BEGIN_LINK" />Cookie sozlamalari<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="1540800554400757039">Manzil, 1-qator</translation>
 <translation id="1545749641540134597">QR kodni skanerlash</translation>
@@ -193,6 +192,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="225943865679747347">Xatolik kodi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hisob kiritish</translation>
 <translation id="2268044343513325586">Aniqlashtirish</translation>
+<translation id="2269277877025820298">Yana</translation>
 <translation id="2273327106802955778">Batafsil menyusi</translation>
 <translation id="2286505070150039482">Belgilangan matn</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu qurilmadan quyidagi manzil oʻchirib tashlanadi.}other{Bu qurilmadan quyidagi manzillar oʻchirib tashlanadi.}}</translation>
@@ -218,7 +218,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2423077901494354337">Endi qurilmangizda Chromedan unumli foydalanasiz.</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> saytidagi <ph name="USERNAME" /> paroli allaqachon saqlangan</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
-<translation id="2439425774439590">Eng koʻp kirilgan saytlar</translation>
 <translation id="2451654228769116489">Varaqni mahkamlash</translation>
 <translation id="2461070143328828326">Parol sozlamalari</translation>
 <translation id="2469960372084740698">Saytlarni xavfsiz kezish faolsizlantirilsinmi?</translation>

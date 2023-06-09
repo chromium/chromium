@@ -226,7 +226,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4970947549776831107">Chrome heeft dit bestand geblokkeerd omdat dit type bestand gevaarlijk is</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Een Google Chrome-extensie had toegang tot HID-apparaten}=1{Een Google Chrome-extensie heeft toegang tot 1 HID-apparaat}other{Een Google Chrome-extensie heeft toegang tot # HID-apparaten}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Je beheerder sluit Chrome automatisch als deze 1 minuut niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}other{Je beheerder sluit Chrome automatisch als deze # minuten niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}}</translation>
 <translation id="5098668839038261629">Als de schakelaar aanstaat, word je ook uitgelogd van Chrome</translation>
 <translation id="5132929315877954718">Ontdek fantastische apps, games, extensies en thema's voor Google Chrome.</translation>
 <translation id="5139423532931106058">Je Chrome-profiel aanpassen</translation>
@@ -286,7 +285,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6291549208091401781">Google Chrome is al geïnstalleerd voor alle gebruikers op je computer.</translation>
 <translation id="6326175484149238433">Verwijderen uit Chrome</translation>
 <translation id="6327105987658262776">Er is geen update beschikbaar.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Je beheerder verwijdert browsegegevens automatisch als de browser 1 minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je bestaande tabbladen blijven geopend.}other{Je beheerder verwijdert browsegegevens automatisch als de browser # minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je bestaande tabbladen blijven geopend.}}</translation>
 <translation id="6412673304250309937">Controleert URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
 <translation id="6418662306461808273">Overschakelen naar bestaand Chrome-profiel?</translation>
 <translation id="648319183876919572">De uitgebreide versie van Safe Browsing doet meer om je te beschermen tegen gevaarlijke websites en downloads</translation>
@@ -380,7 +378,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8290100596633877290">Oeps! Google Chrome is vastgelopen. Nu opnieuw starten?</translation>
 <translation id="8342675569599923794">Dit bestand is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses in Chrome opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Je beheerder sluit Chrome automatisch als deze 1 minuut niet wordt gebruikt.}other{Je beheerder sluit Chrome automatisch als deze # minuten niet wordt gebruikt.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome kan een schatting van je interesses maken. Later kan een site die je bezoekt Chrome vragen om je interesses te bekijken zodat de advertenties die je ziet kunnen worden gepersonaliseerd.</translation>
 <translation id="8387459386171870978">Chrome blijven gebruiken</translation>

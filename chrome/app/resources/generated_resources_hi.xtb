@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">अभी नहीं</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{आपने पिछले दो महीने से इस साइट का इस्तेमाल नहीं किया है, इसलिए इस साइट को दी गई अनुमतियां हटा दी गई हैं. ऐसा आपके डेटा को सुरक्षित रखने के लिए किया गया है}one{आपने पिछले दो महीने से इस साइट का इस्तेमाल नहीं किया है, इसलिए इस साइट को दी गई अनुमतियां हटा दी गई हैं. ऐसा आपके डेटा को सुरक्षित रखने के लिए किया गया है}other{आपने पिछले दो महीने से इन साइटों का इस्तेमाल नहीं किया है, इसलिए इन साइटों को दी गई अनुमतियां हटा दी गई हैं. ऐसा आपके डेटा को सुरक्षित रखने के लिए किया गया है}}</translation>
 <translation id="1009663062402466586">गेम के कंट्रोल अब उपलब्ध हैं</translation>
-<translation id="1010498023906173788">यह टैब किसी सीरियल पोर्ट से कनेक्ट है.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{पेज काम नहीं कर रहा}one{पेज काम नहीं कर रहे}other{पेज काम नहीं कर रहे}}</translation>
 <translation id="1011003645819296594">सेव किए गए डिवाइस</translation>
 <translation id="1011355516189274711">लिखाई को बोली में बदलने की आवाज़ का लेवल</translation>
@@ -539,6 +538,7 @@
 <translation id="1461288887896722288">आपने अभी-अभी मैनेज किए जा रहे खाते से साइन इन किया है. मैनेज की जा रही नई प्रोफ़ाइल बनाने पर, आपको उस खाते से जुड़े कुछ संसाधनों का ऐक्सेस मिल जाएगा.</translation>
 <translation id="146219525117638703">ONC स्‍थिति</translation>
 <translation id="146220085323579959">इंटरनेट डिस्‍कनेक्‍ट हो गया है. कृपया अपना इंटरनेट कनेक्‍शन जाँचें और फिर से कोशिश करें.</translation>
+<translation id="1462480037563370607">मैन्युअल तरीके से साइटें जोड़ें</translation>
 <translation id="1462850958694534228">आइकॉन में हुआ बदलाव देखें</translation>
 <translation id="1463112138205428654">'बेहतर सुरक्षा' की मदद से <ph name="FILE_NAME" /> पर रोक लगाई गई थी.</translation>
 <translation id="1464044141348608623">साइटों को यह जानने की अनुमति न दें कि आप अपने डिवाइस का इस्तेमाल कब करते हैं</translation>
@@ -636,7 +636,6 @@
 <translation id="1541346352678737112">कोई भी नेटवर्क नहीं मिला</translation>
 <translation id="154198613844929213">{0,plural, =0{अब मिटाया जा रहा है.}=1{मिटाए जाने में बचा समय: 1 सेकंड}one{मिटाए जाने में बचा समय: # सेकंड}other{मिटाए जाने में बचा समय: # सेकंड}}</translation>
 <translation id="1542137295869176367">आपका साइन इन करने के लिए डेटा अपडेट नहीं किया जा सका</translation>
-<translation id="1542514202066550870">यह टैब, हेडसेट में VR सामग्री को दिखाता है.</translation>
 <translation id="1543284117603151572">Edge से आयात किया गया</translation>
 <translation id="1543538514740974167">यहां तेज़ी से पहुंचें</translation>
 <translation id="1544588554445317666">फ़ाइल का पाथ छोटा करें या इसे किसी दूसरी जगह सेव करके देखें</translation>
@@ -1061,7 +1060,6 @@
 <translation id="1873920700418191231"><ph name="WEBSITE" /> को फिर से अनुमतियां दें</translation>
 <translation id="1874248162548993294">कोई भी विज्ञापन दिखाने की अनुमति है</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{टैब को किसी और विंडो पर ले जाएं}one{टैब को किसी और विंडो पर ले जाएं}other{टैब को किसी और विंडो पर ले जाएं}}</translation>
-<translation id="1875386316419689002">इस टैब को किसी एचआईडी डिवाइस से कनेक्ट किया गया है.</translation>
 <translation id="1875387611427697908">इसे केवल <ph name="CHROME_WEB_STORE" /> से ही जोड़ा जा सकता है</translation>
 <translation id="1877377290348678128">लेबल (ज़रूरी नहीं)</translation>
 <translation id="1877520246462554164">प्रमाणीकरण टोकन नहीं पा सके. दोबारा कोशिश करने के लिए, कृपया साइन आउट करें और फिर से साइन इन करें.</translation>
@@ -1687,6 +1685,7 @@
 <translation id="2390347491606624519">प्रॉक्सी से कनेक्ट नहीं किया जा सकता, कृपया फिर से साइन इन करें</translation>
 <translation id="2390782873446084770">वाई-फ़ाई सिंक</translation>
 <translation id="2391419135980381625">मानक फ़ॉन्ट</translation>
+<translation id="2391805183137601570">Steam खोलें</translation>
 <translation id="2392369802118427583">सक्रिय करें</translation>
 <translation id="2393136602862631930">अपने Chromebook पर <ph name="APP_NAME" /> सेट अप करें</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex की शर्तों का कॉन्टेंट</translation>
@@ -1755,6 +1754,7 @@
 <translation id="2445484935443597917">नई प्रोफ़ाइल बनाएं</translation>
 <translation id="2445726032315793326">स्क्रीन पर मौजूद कॉन्टेंट के किसी हिस्से को बड़ा करके दिखाने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="244641233057214044">आपकी खोज से मिलता-जुलता</translation>
+<translation id="2447587550790814052">अब Steam for Chromebook (बीटा वर्शन) का इस्तेमाल किया जा सकता है</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2448810255793562605">अपने-आप स्कैन करने की सुविधा को ऐक्सेस करने का तरीका बदलें</translation>
 <translation id="2450021089947420533">'Chrome इतिहास' में आपकी गतिविधियां</translation>
@@ -1776,6 +1776,7 @@
 <translation id="2458591546854598341">डिवाइस प्रबंधन टोकन गलत है.</translation>
 <translation id="2459703812219683497">ऐक्टिवेशन कोड की पहचान की गई</translation>
 <translation id="2460356425461033301">अपने ब्राउज़र के डेटा का बैक अप लें और इसे किसी भी डिवाइस पर इस्तेमाल करें</translation>
+<translation id="2462332841984057083">Steam को पहले से ही सेट अप किया जा रहा है. सेटअप पूरा होने का इंतज़ार करें.</translation>
 <translation id="2462724976360937186">प्रमाणन प्राधिकरण कुंजी आईडी</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> जोड़ा गया</translation>
 <translation id="2467755475704469005">किसी भी डिवाइस का पता नहीं चला <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -1818,6 +1819,7 @@
 <translation id="249113932447298600">क्षमा करें, डिवाइस <ph name="DEVICE_LABEL" /> इस समय समर्थित नहीं है.</translation>
 <translation id="2492461744635776704">अनुरोध किए गए प्रमाणपत्र पर हस्ताक्षर की तैयारी हो रही है</translation>
 <translation id="249330843868392562">लिखाई को बोली में बदलने की सेटिंग खोलें</translation>
+<translation id="2494555621641843783">Steam को इंस्टॉल नहीं किया जा सकता</translation>
 <translation id="2495524171012645395">हाल में देखी गई रेसिपी</translation>
 <translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
 <translation id="2497229222757901769">माउस की गति</translation>
@@ -1920,7 +1922,6 @@
 <translation id="2581455244799175627">तीसरे पक्ष की कुकी को अनुमति देने के बारे में ज़्यादा जानकारी</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (प्‍लेटफ़ॉर्म <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos टिकट नहीं मिल सका. फिर से कोशिश करें या अपने संगठन के डिवाइस एडमिन से संपर्क करें. (गड़बड़ी कोड <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">यह टैब आपकी स्क्रीन शेयर कर रहा है.</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> इंस्टॉल नहीं किया जा सका. कृपया फिर से कोशिश करें या अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2586672484245266891">कृपया थोड़ा छोटा यूआरएल लिखें</translation>
@@ -2092,6 +2093,7 @@
 <translation id="27349076983469322">हल्का बैकग्राउंड</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
+<translation id="2737538893171115082">Steam for Chromebook (बीटा वर्शन) को आपके एडमिन ने ब्लॉक किया है. आपके एडमिन को ये नीतियां चालू करनी होंगी:</translation>
 <translation id="2737719817922589807">बुकमार्क और सूचियां</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद कॉन्टेंट को <ph name="TARGET_NAME" /> के साथ शेयर करना चाहता है.</translation>
 <translation id="2738030019664645674">साइटों को आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने की अनुमति न दें</translation>
@@ -2149,7 +2151,6 @@
 <translation id="2777525873368474674">इमेज का लिंक पेस्ट करें</translation>
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">इस साइट पर एक्सटेंशन को अनुमति दी गई है</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
 <translation id="2783024642731649028">आपके कार्ट में मौजूद एक आइटम के लिए <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> पर <ph name="DISCOUNT_TEXT" /> मिल रहा है, <ph name="RELATIVE_TIME" /> देखा गया</translation>
 <translation id="2783298271312924866">डाउनलोड किए गए</translation>
@@ -2167,6 +2168,7 @@
 <translation id="2792465461386711506">अपने फ़ोन में Chrome पर हाल ही में खोले गए टैब देखने के लिए, Chrome सिंक की सुविधा चालू करें</translation>
 <translation id="2792697226874849938">पाबंदी से जुड़ी इमेज</translation>
 <translation id="2794522004398861033">ई-सिम सेट अप करने के लिए, वाई-फ़ाई या ईथरनेट से कनेक्ट करें</translation>
+<translation id="2794977172822818797">मौजूदा साइटें जोड़ें</translation>
 <translation id="2795716239552913152">आम तौर पर, साइटें, काम की सुविधाओं या जानकारी के लिए, आपकी जगह की जानकारी का इस्तेमाल करती हैं. जैसे कि स्थानीय समाचार या आस-पास की दुकानें</translation>
 <translation id="2796740370559399562">कुकी को अनुमति देना जारी रखें</translation>
 <translation id="2798347533012571708">अपडेट जारी रखें</translation>
@@ -2263,6 +2265,7 @@
 <translation id="2875698561019555027">(Chrome गड़बड़ी पृष्‍ठ)</translation>
 <translation id="2876336351874743617">उंगली दो</translation>
 <translation id="2876369937070532032">आपकी सुरक्षा को खतरा होने पर उन पेज के यूआरएल भेजे जाते हैं जिन पर आप Google के ज़रिए जाते हैं.</translation>
+<translation id="2876484123356705658">समयसीमा चुनें</translation>
 <translation id="2876556152483133018">साइट खोज</translation>
 <translation id="2877467134191447552">आप वेबसाइटें और ऐप्लिकेशन ऐक्सेस करने के लिए, अपने अतिरिक्त खाते जोड़ सकते हैं.</translation>
 <translation id="2878782256107578644">स्कैन किया जा रहा है, क्या इसे अभी खोलना चाहते हैं?</translation>
@@ -2502,7 +2505,6 @@
 <translation id="3080933187214341848">यह नेटवर्क आपके खाते से सिंक नहीं है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">यह टैब आपके कैमरे या माइक्रोफ़ोन का उपयोग कर रहा है.</translation>
 <translation id="3083193146044397360">आपकी सुरक्षा के लिए कुछ समय तक ब्लॉक किया गया</translation>
 <translation id="3083899879156272923">माउस को स्क्रीन के बीच में रखकर स्क्रीन को घुमाएं</translation>
 <translation id="3083998949001524405">तीसरे पक्ष की कुकी इस्तेमाल करने की अनुमति दी गई</translation>
@@ -2619,7 +2621,6 @@
 <translation id="3201237270673604992">Z से A के क्रम में</translation>
 <translation id="3201422919974259695">उपलब्ध यूएसबी डिवाइस यहां दिखाई देंगे.</translation>
 <translation id="3202131003361292969">पाथ</translation>
-<translation id="3202173864863109533">इस टैब का ऑडियो म्‍यूट किया जा रहा है.</translation>
 <translation id="3202578601642193415">नवीनतम</translation>
 <translation id="3204648577100496185">इस ऐप्लिकेशन से जुड़े डेटा को इस डिवाइस से हटाया जा सकता है</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
@@ -2701,6 +2702,7 @@
 <translation id="3283148363895519428">सेटअप जारी रखने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें. पक्का करें कि आपका फ़ोन आस-पास हो और ब्लूटूथ चालू हो.</translation>
 <translation id="3284050785966252943">ऑटोमैटिक भरने की सुविधा के मेटाडेटा की झलक</translation>
 <translation id="3285322247471302225">नया &amp;टैब</translation>
+<translation id="3285465040399788513">सेटअप पूरा करने के लिए, डिवाइस में स्टोरेज कम है. जगह खाली करें और फिर से कोशिश करें.</translation>
 <translation id="3285500645985761267">मिलती-जुलती साइटों को ग्रुप में आपकी गतिविधि से जुड़ी जानकारी देखने की अनुमति दें</translation>
 <translation id="328571385944182268">क्या आप पासवर्ड सेव करना चाहते हैं?</translation>
 <translation id="3288047731229977326">डेवलपर मोड में चलने वाले एक्सटेंशन आपके कंप्यूटर को नुकसान पहुंचा सकते हैं. अगर आप डेवलपर नहीं हैं तो, सुरक्षित रहने के लिए आपको डेवलपर मोड मे चलने वाले इन एक्सटेंशन को बंद कर देना चाहिए.</translation>
@@ -2794,6 +2796,7 @@
 <translation id="3371351218553893534">लाइन बहुत लंबी है: <ph name="ERROR_LINE" /></translation>
 <translation id="337286756654493126">  ऐप्लिकेशन में खोले गए फ़ोल्डर पढ़ें</translation>
 <translation id="3373059063088819384">रीडिंग मोड में खोलें</translation>
+<translation id="3373196968211632036">बच्चे के Google खाते के लिए, Steam for Chromebook (बीटा वर्शन) उपलब्ध नहीं है</translation>
 <translation id="3373701465337594448">इस सेटिंग के चालू होने पर, यहां उन साइटों की सूची दिखती है जो आपकी पसंद का अनुमान लगाती हैं</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' को '<ph name="NEW_FOLDER_TITLE" />' में भेज दिया गया.</translation>
 <translation id="3378572629723696641">यह एक्‍सटेंशन दूषित हो सकता है.</translation>
@@ -2948,6 +2951,7 @@
 <translation id="3496213124478423963">ज़ूम आउट</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (नहीं चुनी गई)</translation>
 <translation id="3496689104192986836"><ph name="PERCENTAGE" />% बैटरी बची है</translation>
+<translation id="3496797737329654668">चलिए, गेमिंग का आनंद लें</translation>
 <translation id="3496995426334945408">आम तौर पर साइटें, JavaScript का इस्तेमाल इंटरैक्टिव सुविधाओं को दिखाने के लिए करती हैं. जैसे, वीडियो गेम या वेब फ़ॉर्म</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> का यूएसबी डिवाइस (प्रॉडक्ट <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">डूडल शेयर करें</translation>
@@ -3027,7 +3031,6 @@
 <translation id="3575121482199441727">इस साइट के लिए सूचनाओं को अनुमति दें</translation>
 <translation id="3577473026931028326">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> हार्डवेयर डेटा क्लेकशन</translation>
-<translation id="3578594933904494462">इस टैब की सामग्री को शेयर किया जा रहा है.</translation>
 <translation id="3578874072190212775">धोखाधड़ी से निपटने के साथ-साथ लोगों और बॉट में अंतर करने में, साइटों की मदद करता है</translation>
 <translation id="3581605050355435601">आईपी पता अपने-आप कॉन्फ़िगर होने की सुविधा/विकल्प</translation>
 <translation id="3582057310199111521">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था और यह हैक हो चुका है</translation>
@@ -3082,6 +3085,7 @@
 <translation id="3624567683873126087">डिवाइस अनलॉक करें और 'Google खाते' में साइन इन करें</translation>
 <translation id="3624583033347146597">तीसरे पक्ष की कुकी से जुड़ी प्राथमिकताएं चुनें</translation>
 <translation id="3625481642044239431">गलत फ़ाइल चुनी गई. फिर से कोशिश करें.</translation>
+<translation id="3626032419324745085">आपने जो साइटें जोड़ी हैं वे हमेशा ऐक्टिव रहेंगी. साथ ही, उनकी मेमोरी को खाली नहीं किया जाएगा. <ph name="BEGIN_LINK" />साइट को शामिल न करने के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">इस Chromebook को चार्ज करने के लिए इसके साथ काम करने वाली Dell बैटरी इस्तेमाल करें.</translation>
 <translation id="3627320433825461852">1 मिनट से भी कम शेष है</translation>
 <translation id="3627588569887975815">लिंक को गुप्त&amp; विंडो में खोलें</translation>
@@ -3355,6 +3359,7 @@
 <translation id="383891835335927981">कोई भी साइट ज़ूम इन या ज़ूम आउट नहीं की गई है</translation>
 <translation id="3839509547554145593">माउस से स्क्रोल करने की रफ़्तार बढ़ाने की सुविधा चालू करें</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> को क्लिपबोर्ड देखने से हमेशा ब्लॉक करें</translation>
+<translation id="3841282988425489367">Steam for Chromebook (बीटा वर्शन) को सेट अप नहीं किया जा सकता</translation>
 <translation id="3841319830220785495">डिफ़ॉल्ट के तौर पर सेट की गई अच्छी क्वालिटी वाली आवाज़</translation>
 <translation id="3841964634449506551">पासवर्ड अमान्य है</translation>
 <translation id="3842552989725514455">Serif फ़ॉन्ट</translation>
@@ -3402,6 +3407,7 @@
 <translation id="3884152383786131369">कई भाषाओं में उपलब्ध वेब कॉन्टेंट, इस सूची में दी गई पहली भाषा में दिखाया जाएगा. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">अपडेट को आपका एडमिन मैनेज करता है</translation>
 <translation id="3887022758415973389">डिवाइसों की सूची दिखाएं</translation>
+<translation id="3888501106166145415">जुड़े हुए वाई-फ़ाई नेटवर्क</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> से नोट लेना</translation>
 <translation id="3888586133700543064">इस जानकारी से, हमें Assistant से जुड़ी आपकी समस्या को बेहतर तरीके से समझने में मदद मिलती है. इस जानकारी को 90 दिनों तक सेव करके रखा जाता है. साथ ही, इसका ऐक्सेस उन इंजीनियरिंग और फ़ीडबैक टीमों के पास ही रहता है जो आपकी समस्या पर काम करती हैं.</translation>
 <translation id="3890064827463908288">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए 'Chrome सिंक' चालू करें</translation>
@@ -3568,6 +3574,7 @@
 <translation id="4021941025609472374">बाईं ओर के टैब बंद करें</translation>
 <translation id="402211067068791756">इससे, देखी गई साइटों के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="4022426551683927403">शब्दकोश में &amp;जोड़ें</translation>
+<translation id="4024768890073681126">आपके ब्राउज़र को आपके माता-पिता मैनेज करते हैं</translation>
 <translation id="4025039777635956441">चुनी गई साइट म्यूट करें</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> निर्देश मिला</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> फ़ोल्डर</translation>
@@ -3787,6 +3794,7 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}one{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}other{कुछ एक्सटेंशन के इस्तेमाल की अनुमति नहीं है}}</translation>
 <translation id="4231095370974836764">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">गेम कंट्रोल बंद करें</translation>
+<translation id="4231231258999726714">Steam for Chromebook को सेट अप किया जा रहा है</translation>
 <translation id="4231542173270219144">ट्रायल के दौरान, स्पैम और धोखाधड़ी में कमी प्राइवेट स्टेट टोकन पर निर्भर करती है. इससे, लोगों और बॉट में अंतर करने के साथ-साथ, धोखाधड़ी से निपटने में साइटों को मदद मिलती है.</translation>
 <translation id="4232375817808480934">Kerberos कॉन्फ़िगर करें</translation>
 <translation id="4233739489690259993">आपके Chromebook को अब सुरक्षा और सॉफ़्टवेयर के अपडेट नहीं मिलेंगे. सुरक्षा के नए अपडेट और नई सुविधाएं पाने के लिए, अपना डिवाइस अपग्रेड करें. ऑफ़र की शर्तें लागू.</translation>
@@ -4043,7 +4051,6 @@
 <translation id="4448914100439890108"><ph name="DOMAIN" /> पर <ph name="USERNAME" /> का पासवर्ड छिपाएं</translation>
 <translation id="4449247303975391730">अनुमतियां मैनेज करें</translation>
 <translation id="4449948729197510913">आपका उपयोगकर्ता नाम आपके संगठन के एंटरप्राइज़ खाते से जुड़ा है. खाते में डिवाइस का नाम दर्ज करने के लिए, पहले Admin console में डोमेन के मालिकाना हक की पुष्टि करें. पुष्टि करने के लिए आपको व्यवस्थापकीय विशेषाधिकार की ज़रूरत होगी.</translation>
-<translation id="4449996769074858870">यह टैब ऑडियो चला रहा है.</translation>
 <translation id="4450974146388585462">निदान करें</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ने एक ऐसे चालू TPM का पता लगाया है जो डेटा को ज़्यादा सुरक्षित तरीके से सेव कर सकता है.</translation>
 <translation id="4451479197788154834">आपका पासवर्ड इस डिवाइस और आपके Google खाते में सेव हो गया है</translation>
@@ -4067,6 +4074,7 @@
 <translation id="4472298120638043495">आपके पास Google खाते की पसंदीदा भाषा (<ph name="NEW_LOCALE_FROM_GAIA" />) का इस्तेमाल करने का विकल्प है</translation>
 <translation id="447252321002412580">Chrome के फ़ीचर और परफ़ॉर्मेंस को बेहतर बनाने में सहायता करें</translation>
 <translation id="4472575034687746823">शुरू करें</translation>
+<translation id="4473996011558324141">लगने वाला अनुमानित समय</translation>
 <translation id="4474155171896946103">सभी टैब बुकमार्क करें...</translation>
 <translation id="4475552974751346499">डाउनलोड खोजें</translation>
 <translation id="4475830133618397783">उन पासवर्ड को चुनें जिन्हें अपने Google खाते में भेजना चाहते हैं. आप जब भी साइन इन हों, उन्हें ऐक्सेस कर सकते हैं.</translation>
@@ -4258,6 +4266,7 @@
 <translation id="4637252186848840278">{COUNT,plural, =1{टेक्स्ट}one{# टेक्स्ट}other{# टेक्स्ट}}</translation>
 <translation id="4638930039313743000">ADB डीबग करने की सुविधा चालू करें</translation>
 <translation id="4641539339823703554">Chrome, सिस्टम का समय सेट नहीं कर सका. कृपया नीचे दिया गया समय देखें और ज़रुरत होने पर उसे सही करें.</translation>
+<translation id="4642587497923912728">Steam for Chromebook (बीटा वर्शन) सिर्फ़ उस खाते के लिए उपलब्ध है जिससे इस Chromebook पर पहले साइन इन किया गया है.</translation>
 <translation id="4643612240819915418">वीडियो नए टैब में &amp;खोलें</translation>
 <translation id="4643833688073835173">आपका Chromebook, बिल्ट-इन सेंसर की मदद से डिवाइस की स्क्रीन के सामने लोगों की मौजूदगी का पता लगाता है. सारा डेटा तुरंत ही आपके डिवाइस पर प्रोसेस किया जाता है. इसके बाद, डेटा को मिटा दिया जाता है. सेंसर का डेटा कभी भी Google को नहीं भेजा जाता.</translation>
 <translation id="4644205769234414680">गुप्त मोड में अनुमति दें</translation>
@@ -5043,6 +5052,7 @@
 <translation id="5353252989841766347">Chrome से पासवर्ड निर्यात करें</translation>
 <translation id="5355099869024327351">Assistant को आपको सूचनाएं दिखाने दें</translation>
 <translation id="5355191726083956201">बेहतर सुरक्षा की सुविधा चालू है</translation>
+<translation id="5355498626146154079">आपको “Borealis Enabled” फ़्लैग को चालू करना होगा</translation>
 <translation id="5355501370336370394">एंटरप्राइज़ डिवाइस का नाम दर्ज करें</translation>
 <translation id="5355926466126177564">एक्सटेंशन "<ph name="EXTENSION_NAME" />" ने यह बदल दिया है कि जब आप ऑम्निबॉक्स से खोजते हैं तब कौन सा पेज दिखाया जाए.</translation>
 <translation id="5356155057455921522">आपके एडमिन के इस अपडेट की मदद से, आपके संगठन में इस्तेमाल होने वाले ऐप्लिकेशन और जल्दी खोले जा सकेंगे. अपडेट पूरा होने में कुछ मिनट लग सकते हैं.</translation>
@@ -5070,6 +5080,7 @@
 <translation id="5376931455988532197">फ़ाइल बहुत बड़ी है</translation>
 <translation id="5379140238605961210">माइक्रोफ़ोन का एक्सेस ब्लॉक करना जारी रखें</translation>
 <translation id="5380424552031517043"><ph name="PERMISSION" /> को हटाया गया</translation>
+<translation id="5380526436444479273">कुछ मिनट बाद दोबारा कोशिश करें</translation>
 <translation id="5382591305415226340">समर्थित लिंक प्रबंधित करें</translation>
 <translation id="5383377866517186886">Mac सिस्टम प्राथमिकताओं में कैमरा बंद किया गया है</translation>
 <translation id="5383740867328871413">बिना नाम वाला ग्रुप - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -5105,6 +5116,7 @@
 <translation id="5414198321558177633">प्रोफ़ाइल की सूची रीफ़्रेश की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="5414566801737831689">आप जिन वेबसाइट पर जाते हैं, उनके आइकॉन पढ़ें</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
+<translation id="5415328625985164836">यह बीटा प्रोग्राम है. अब Chromebook पर कुछ गेम खेलने के लिए, Steam का इस्तेमाल किया जा सकता है.</translation>
 <translation id="5417312524372586921">ब्राउज़र थीम</translation>
 <translation id="5417353542809767994">जनरेट किया गया मज़बूत पासवर्ड इस्तेमाल करें</translation>
 <translation id="541737483547792035">स्क्रीन ज़ूम करने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
@@ -5137,6 +5149,7 @@
 <translation id="5439680044267106777">नई प्रोफ़ाइल सेट अप करें</translation>
 <translation id="544083962418256601">शॉर्टकट बनाएं...</translation>
 <translation id="5441133529460183413">Chrome ब्राउज़र से वेब ऐप्लिकेशन को इंस्टॉल किया गया</translation>
+<translation id="5441292787273562014">पेज फिर से लोड करें</translation>
 <translation id="5441466871879044658">इस भाषा में अनुवाद करें</translation>
 <translation id="5442228125690314719">डिस्क इमेज बनाते समय गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="5442550868130618860">अपने आप होने वाले अपडेट चालू करें</translation>
@@ -5168,6 +5181,7 @@
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> को ब्लॉक किया गया है</translation>
 <translation id="5468173180030470402">फ़ाइल शेयर को ढूंढा जा रहा है</translation>
 <translation id="5468330507528805311">टेदरिंग का स्टेटस:</translation>
+<translation id="5469540749878136997">इस्तेमाल के हिसाब से मेमोरी खाली करें</translation>
 <translation id="5469852975082458401">टेक्स्ट कर्सर की मदद से आप पेजों पर जा सकते हैं. कैरेट ब्राउज़िंग को बंद करने के लिए F7 दबाएं.</translation>
 <translation id="5470735824776589490">डिवाइस को 'पावरवॉश' से रीसेट करने से पहले रीस्टार्ट करना ज़रूरी है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">नमस्ते! मैं आपकी लिखाई को बोली में बदलने वाली आवाज़ हूं.</translation>
@@ -5276,7 +5290,6 @@
 <translation id="5559311991468302423">पता मिटाएं</translation>
 <translation id="55601339223879446">डिसप्ले के भीतर अपने डेस्कटॉप की सीमाएं समायोजित करें</translation>
 <translation id="5561162485081632007">नुकसान पहुंचाने वाली घटनाएं होने पर उनकी पहचान करता है और उनके बारे में आपको चेतावनी देता है.</translation>
-<translation id="5562781907504170924">यह टैब किसी ब्लूटूथ डिवाइस से कनेक्ट है.</translation>
 <translation id="556321030400250233">स्थानीय या शेयर की गई फ़ाइल</translation>
 <translation id="5563234215388768762">Google पर खोजें या कोई यूआरएल टाइप करें</translation>
 <translation id="5565735124758917034">सक्रिय</translation>
@@ -5454,6 +5467,7 @@
 <translation id="5724642200346111167">सभी विंडो बंद करने पर, आपके डिवाइस से साइट डेटा अपने-आप मिट जाएगा</translation>
 <translation id="5727728807527375859">एक्सटेंशन, ऐप्स , और थीम आपके कंप्यूटर को हानि पहुंचा सकते हैं. क्या आप वाकई जारी रखना चाहते हैं?</translation>
 <translation id="5728450728039149624">लॉक स्क्रीन के लिए स्मार्ट लॉक के विकल्प</translation>
+<translation id="572914206753951782">पक्का करें कि आपके Chromebook में सबसे नए वर्शन का इस्तेमाल किया जा रहा हो. इसके बाद, Chromebook को रीस्टार्ट करें और फिर से कोशिश करें.</translation>
 <translation id="5729712731028706266">&amp;देखें</translation>
 <translation id="5731247495086897348">चिप&amp;काएं और जाएं</translation>
 <translation id="5733109311583381874">उपयोगकर्ता डिक्शनरी में अपने शब्द जोड़ें, ताकि उम्मीदवारों को आसानी से ग्राहकों में बदला जा सके.</translation>
@@ -5549,6 +5563,7 @@
 <translation id="5811614940486072060">यह फ़ाइल आम तौर पर डाउनलोड नहीं की जाती है और यह खतरनाक हो सकती है</translation>
 <translation id="5812674658566766066">सभी दिखाएं</translation>
 <translation id="5815645614496570556">X.400 पता</translation>
+<translation id="5816166985204777171">यह सिस्टम ऐप्लिकेशन, आपके डिवाइस पर पहले से इंस्टॉल है</translation>
 <translation id="5816434091619127343">प्रिंटर में जिन बदलावों का अनुरोध किया गया है, उनकी वजह से प्रिंटर का इस्तेमाल नहीं किया जा सकेगा.</translation>
 <translation id="581659025233126501">सिंक करने की सुविधा चालू करें</translation>
 <translation id="5817069030404929329">इस डिवाइस से कौनसे पासवर्ड आपके Google खाते में ले जाने हैं?</translation>
@@ -5640,7 +5655,6 @@
 <translation id="5882919346125742463">ज्ञात नेटवर्क</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> को अपने-आप ब्लॉक किया गया</translation>
 <translation id="5884447826201752041">साइट ऐक्सेस करने की सेटिंग को हर एक्सटेंशन के हिसाब से बनाएं</translation>
-<translation id="5884474295213649357">यह टैब किसी USB डिवाइस से कनेक्ट है.</translation>
 <translation id="5885314688092915589">आपका संगठन इस प्रोफ़ाइल को मैनेज करेगा</translation>
 <translation id="5886009770935151472">उंगली 1</translation>
 <translation id="5886112770923972514">आस-पास मौजूद फ़ास्ट पेयर वाले डिवाइसों को जोड़ें और फटाफट सेट अप करें</translation>
@@ -6343,6 +6357,7 @@
 <translation id="6508261954199872201">ऐप्‍लिकेशन: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">मीडिया लाइसेंस</translation>
 <translation id="6511279028091289182">यह वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करता है. यह <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> पर मौजूद, मैनेज की जा रही सेवा देने वाली कंपनी का इस्तेमाल करता है</translation>
+<translation id="6511607461419653612">अपना Chromebook रीस्टार्ट करें और फिर से कोशिश करें</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> को मिटाएं, ताकि इस डिवाइस का इस्तेमाल करने वाले अन्य लोग, आपके पासवर्ड न देख सकें</translation>
 <translation id="6512808201725371249">इस खाते का पासवर्ड, पहले से ही आपके Google Password Manager (<ph name="USER_EMAIL" />) में सेव है</translation>
 <translation id="6513247462497316522">अगर आप कि‍सी अन्‍य नेटवर्क से कनेक्‍ट न हों तो Google Chrome मोबाइल डेटा का उपयोग करेगा.</translation>
@@ -6837,6 +6852,7 @@
 <translation id="6931690462168617033">क्लिक की क्षमता</translation>
 <translation id="6935286146439255109">पेपर ट्रे नहीं है</translation>
 <translation id="6938386202199793006">आपके पास सेव किया गया एक प्रिंटर है.</translation>
+<translation id="6938387822292071111">टैब पर कर्सर घुमाकर झलक दिखाने वाले कार्ड पर इमेज दिखाएं</translation>
 <translation id="6938606182859551396">अपने <ph name="DEVICE_TYPE" /> पर अपने फ़ोन की सूचनाएं पाने के लिए, अपने फ़ोन पर दिए निर्देशों का पालन करें. ये निर्देश 'Google Play सेवाओं' को आपकी सूचनाओं का ऐक्सेस देने के लिए है.</translation>
 <translation id="694168622559714949">आपके एडमिन ने एक डिफ़ॉल्ट भाषा सेट की है. इसमें बदलाव नहीं किया जा सकता.</translation>
 <translation id="6941937518557314510"><ph name="HOST_NAME" /> को अपने प्रमाणपत्र के साथ अधिकृत करने के लिए, कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
@@ -6870,9 +6886,11 @@
 <translation id="6964390816189577014">हीरो</translation>
 <translation id="6964760285928603117">समूह से हटाएं</translation>
 <translation id="6965382102122355670">ठीक है</translation>
+<translation id="6965607054907047032">टैब इस्तेमाल न होने पर, मेमोरी में जगह खाली करें</translation>
 <translation id="6965648386495488594">पोर्ट</translation>
 <translation id="6965978654500191972">डिवाइस</translation>
 <translation id="6966370001499648704">कंट्रोल करें कि सुरक्षा कुंजी के तौर पर किस फ़ोन का इस्तेमाल किया जाना है</translation>
+<translation id="6967112302799758487">Steam for Chromebook (बीटा वर्शन) का इस्तेमाल करके इंस्टॉल किए गए सभी ऐप्लिकेशन और गेम इस डिवाइस से हटा दिए जाएंगे. इन ऐप्लिकेशन और गेम से जुड़ा डेटा भी हटा दिया जाएगा. अनइंस्टॉल करने से पहले, सेव किए गए ऐप्लिकेशन और गेम का बैक अप ज़रूर लें.</translation>
 <translation id="6967430741871315905">हम यह नहीं देख पा रहे हैं कि इस डिवाइस पर वीएम चलाने की अनुमति है या नहीं</translation>
 <translation id="696780070563539690">अलग-अलग साइटों पर आपकी ब्राउज़िंग गतिविधि देखने के लिए, साइटें कुकी का इस्तेमाल नहीं कर सकतीं. जैसे, दर्शकों की पसंद को ध्यान में रखकर विज्ञापन दिखाने के लिए</translation>
 <translation id="6968288415730398122">स्क्रीन लॉक कॉन्फ़िगर करने के लिए अपना पासवर्ड डालें</translation>
@@ -7016,6 +7034,7 @@
 <translation id="7078120482318506217">सभी नेटवर्क</translation>
 <translation id="708060913198414444">ऑडियो के पते को कॉ&amp;पी करें</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> को आपका एडमिन मैनेज करता है</translation>
+<translation id="7083774521940805477">आपके Chromebook पर, Steam for Chromebook (बीटा वर्शन) उपलब्ध नहीं है.</translation>
 <translation id="7085389578340536476">Chrome को ऑडियो रिकॉर्ड करने दें?</translation>
 <translation id="708550780726587276">(कॉन्फ़िगर नहीं की गई)</translation>
 <translation id="7086672505018440886">संग्रह में Chrome लॉग फ़ाइलों को शामिल करें.</translation>
@@ -7074,6 +7093,7 @@
 <translation id="7141105143012495934">साइन इन नहीं हो पाया क्योंकि आपके खाते की जानकारी फिर से नहीं पाई जा सकी. कृपया अपने एडमिन से संपर्क करें या फिर से कोशिश करें.</translation>
 <translation id="7141844554192012199">जांच</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
+<translation id="7143409552554575716">ChromeOS के फ़्लैग</translation>
 <translation id="7144856456372460176"><ph name="APP" /> इंस्टॉल करें...</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7148426638542880639">ऐसा हो सकता है कि साइटें आपकी उम्मीद के मुताबिक काम न करें. अगर आपको अपने डिवाइस में विज़िट की गई साइटों की जानकारी सेव नहीं करनी है, तो इस विकल्प को चुनें.</translation>
@@ -7751,6 +7771,7 @@
 <translation id="7728668285692163452">चैनल बदलाव बाद में लागू किया जाएगा</translation>
 <translation id="7730449930968088409">अपनी स्क्रीन की सामग्री कैप्चर करें</translation>
 <translation id="7730683939467795481">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने इस पेज में बदलाव किया है</translation>
+<translation id="7732702411411810416">पक्का करें कि आपका डिवाइस, इंटरनेट से कनेक्ट हो. इसके बाद, फिर से कोशिश करें</translation>
 <translation id="773511996612364297">उच्चारण के चिह्न</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" से जोड़ा जा रहा है ...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> निर्देश मिला</translation>
@@ -8435,6 +8456,7 @@
 <translation id="8314381333424235892">एक्सटेंशन मौजूद नहीं है या अनइंस्टाॅल कर दिया गया है</translation>
 <translation id="831440797644402910">इस फ़ोल्डर को खोला नहीं जा सकता</translation>
 <translation id="8314835274931377415">क्या आप ऐक्सेस का तरीका बदलने वाले स्विच का सेट अप शुरू करना चाहते हैं?</translation>
+<translation id="8315018673856831477">मेमोरी सेवर के विकल्प</translation>
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोड़ें</translation>
 <translation id="8317965619823678157">पासवर्ड कॉपी करना</translation>
 <translation id="8318266828739827371">स्क्रीन का ज़ूम इन किया गया हिस्सा देखने के लिए, स्प्लिट स्क्रीन व्यू का इस्तेमाल करें. स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + D का इस्तेमाल करें.</translation>
@@ -8613,7 +8635,6 @@
 <translation id="8464132254133862871">इस उपयोगकर्ता खाता को सेवा की मंज़ूरी नहीं दी गई है.</translation>
 <translation id="8465252176946159372">मान्य नहीं है</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> को चलाने के लिए आपकी अनुमति चाहिए</translation>
-<translation id="8466417995783206254">यह टैब वीडियो को 'पिक्चर में पिक्चर' मोड में चला रहा है.</translation>
 <translation id="8467326454809944210">कोई दूसरी भाषा चुनें</translation>
 <translation id="8468087214092422866">ब्लूटूथ डिवाइसों को खोजने की अनुमति नहीं है</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> के लिए सेव किए गए पासवर्ड</translation>
@@ -8946,7 +8967,6 @@
 <translation id="8755584192133371929">शेयर करने के लिए कोई टैब चुनें</translation>
 <translation id="875604634276263540">इमेज का यूआरएल अमान्य है</translation>
 <translation id="8756969031206844760">पासवर्ड अपडेट करें?</translation>
-<translation id="8757203080302669031">यह टैब, ब्लूटूथ डिवाइस के लिए लगातार स्कैन कर रहा है.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> को हटा दिया गया</translation>
 <translation id="8759753423332885148">ज़्यादा जानें.</translation>
 <translation id="8761945298804995673">यह उपयोगकर्ता पहले से मौजूद है</translation>
@@ -9298,6 +9318,7 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{एक दिन में करीब 1 सूचना}one{एक दिन में करीब {NUM_NOTIFICATION} सूचना}other{एक दिन में करीब {NUM_NOTIFICATION} सूचनाएं}}</translation>
 <translation id="9058760336383947367">प्रिंटर के लिए पीपीडी फ़ाइल देखें</translation>
 <translation id="9061383912634843744">सेव किए गए क्रेडेंशियल का इस्तेमाल करके, साइटों और ऐप्लिकेशन में अपने-आप साइन इन की सुविधा. इस सुविधा के बंद होने पर, किसी साइट या ऐप्लिकेशन में साइन इन करने से पहले, आपसे हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
+<translation id="9061694916020926968">Steam for Chromebook (बीटा वर्शन) का इस्तेमाल करने के लिए, आपको Google खाते में साइन-इन करना होगा. साइन इन करके फिर से कोशिश करें.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">लाइन <ph name="ERROR_LINE_START" /> से <ph name="ERROR_LINE_END" /> तक में गड़बड़ी</translation>
 <translation id="9064275926664971810">फ़ॉर्म को एक ही क्लिक में भरने के लिए ऑटोमैटिक भरना चालू करें</translation>

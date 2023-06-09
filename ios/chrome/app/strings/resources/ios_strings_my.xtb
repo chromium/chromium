@@ -91,7 +91,6 @@
 <translation id="152234381334907219">ဘယ်တော့မှ သိမ်းဆည်းခြင်းမပြုပါ</translation>
 <translation id="1523341279170789507">ကွတ်ကီးအားလုံးကို ခွင့်ပြုရန်</translation>
 <translation id="1524563461097350801">မလိုပါ</translation>
-<translation id="1531836666020185856">အထူးဝန်ဆောင်မှုများ</translation>
 <translation id="1535268707340844072">သင့်လက်ရှိဆက်တင်များသည် အချို့ဝဘ်ဆိုက်များ အလုပ်လုပ်ခြင်းမှရပ်တန့်သွားစေနိုင်သည်။ ဝဘ်ဆိုက်အားလုံးအတွက် ကွတ်ကီးများကို စီမံရန် <ph name="BEGIN_LINK" />ကွတ်ကီးဆက်တင်များ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="1540800554400757039">လိပ်စာ: 1</translation>
 <translation id="1545749641540134597">QR ကုဒ်ကို ဖတ်ပါ</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">အမှား ကုဒ်: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">အကောင့်ထည့်ပါ</translation>
 <translation id="2268044343513325586">ပြန်မွမ်းမံ</translation>
+<translation id="2269277877025820298">ပိုမြင်ရရန်</translation>
 <translation id="2273327106802955778">မီနူးကို ပိုပြပေးပါ</translation>
 <translation id="2286505070150039482">ရွေးထားသော စာသား</translation>
 <translation id="2287614783861766820">{count,plural, =1{ဤလိပ်စာကို ယခုစက်မှ ဖျက်ပါမည်။}other{ဤလိပ်စာများကို ယခုစက်မှ ဖျက်ပါမည်။}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">သင့်စက်ရှိ Chrome ကို အကောင်းဆုံးအသုံးချနိုင်ပါမည်။</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> တွင် “<ph name="USERNAME" />” အတွက် စကားဝှက်ကို သိမ်းပြီးဖြစ်သည်</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
-<translation id="2439425774439590">အများဆုံး ကြည့်ထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="2451654228769116489">တဘ် ပင်ထိုးရန်</translation>
 <translation id="2461070143328828326">စကားဝှက် ဆက်တင်များ</translation>
 <translation id="2469960372084740698">ဘေးကင်းစွာ ကြည့်ရှုခြင်းကို ပိတ်မလား။</translation>

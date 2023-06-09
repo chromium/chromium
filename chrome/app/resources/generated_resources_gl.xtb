@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Agora non</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Para protexer os teus datos, quitáronse os permisos dun sitio que levas 2 meses sen visitar}other{Para protexer os teus datos, quitáronse os permisos dos sitios que levas 2 meses sen visitar}}</translation>
 <translation id="1009663062402466586">Os controis de xogo xa están dispoñibles</translation>
-<translation id="1010498023906173788">Esta pestana está conectada a un porto en serie.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Páxina que non responde}other{Páxinas que non responden}}</translation>
 <translation id="1011003645819296594">Dispositivos gardados</translation>
 <translation id="1011355516189274711">Volume da saída de texto a voz</translation>
@@ -631,7 +630,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1541346352678737112">Non se atopou ningunha rede</translation>
 <translation id="154198613844929213">{0,plural, =0{Eliminando agora.}=1{Eliminarase dentro de: 1 segundo}other{Eliminarase dentro de: # segundos}}</translation>
 <translation id="1542137295869176367">Non se puideron actualizar os teus datos de inicio de sesión</translation>
-<translation id="1542514202066550870">Esta pestana envía contido de RV a un visor.</translation>
 <translation id="1543284117603151572">Importados de Edge</translation>
 <translation id="1543538514740974167">Accede aquí máis rápido</translation>
 <translation id="1544588554445317666">Proba a poñerlle ao ficheiro un nome máis curto ou a gardalo nun cartafol distinto</translation>
@@ -1047,7 +1045,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1873920700418191231">Volver conceder permisos a <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Sitios que poden mostrar calquera anuncio</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Mover pestana a outra ventá}other{Mover pestanas a outra ventá}}</translation>
-<translation id="1875386316419689002">Esta pestana está conectada a un dispositivo HID.</translation>
 <translation id="1875387611427697908">Este elemento só se pode engadir desde <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">Produciuse un erro ao obter o token de autenticación. Pecha sesión e volve iniciala para tentalo de novo.</translation>
@@ -1903,7 +1900,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2581455244799175627">Máis información sobre permitir cookies de terceiros</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Non se puido obter o tícket de Kerberos. Téntao outra vez ou contacta co administrador de dispositivos da túa organización. (Código de erro <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Esta pestana está compartindo a túa pantalla.</translation>
 <translation id="2586561813241011046">Non se puido instalar a aplicación <ph name="APP_NAME" />. Téntao de novo ou ponte en contacto co teu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
 <translation id="2586672484245266891">Introduce un URL máis curto</translation>
@@ -2132,7 +2128,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2777525873368474674">Copia a ligazón da imaxe</translation>
 <translation id="2778471504622896352">Engadir aplicacións remotas ao menú de aplicacións de ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Permitíronse as extensións neste sitio</translation>
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
 <translation id="2783024642731649028">Hai 1 produto no teu carro cun <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) visto <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -2485,7 +2480,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3080933187214341848">Esta rede non está sincronizada coa túa conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Esta pestana está utilizando a túa cámara ou micrófono.</translation>
 <translation id="3083193146044397360">Bloqueouse o permiso temporalmente para protexer a túa seguranza</translation>
 <translation id="3083899879156272923">Mover pantalla de tal xeito que o rato se manteña no centro</translation>
 <translation id="3083998949001524405">Permítese o uso de cookies de terceiros</translation>
@@ -2602,7 +2596,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3201237270673604992">Do Z ao A</translation>
 <translation id="3201422919974259695">Os dispositivos USB dispoñibles aparecerán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
-<translation id="3202173864863109533">Estase silenciando o audio desta pestana.</translation>
 <translation id="3202578601642193415">Máis recente</translation>
 <translation id="3204648577100496185">Os datos asociados a esta aplicación pódense quitar deste dispositivo</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
@@ -3010,7 +3003,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
 <translation id="3577745545227000795">Recompilación de datos de hardware por parte de <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Estase compartindo o contido desta pestana.</translation>
 <translation id="3578874072190212775">Axúdalles aos sitios a loitar contra a fraude, así como a distinguir entre os bots e as persoas</translation>
 <translation id="3581605050355435601">Configurar enderezo IP de forma automática</translation>
 <translation id="3582057310199111521">Escribiuse nun sitio enganoso e viuse implicado nunha violación da seguranza dos datos</translation>
@@ -3552,6 +3544,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4021941025609472374">Pechar pestanas á esquerda</translation>
 <translation id="402211067068791756">Ao realizar esta acción, borraranse os datos almacenados nos sitios que se mostran (<ph name="TOTAL_USAGE" />)</translation>
 <translation id="4022426551683927403">&amp;Engadir ao dicionario</translation>
+<translation id="4024768890073681126">O teu pai ou nai xestiona o teu navegador</translation>
 <translation id="4025039777635956441">Silenciar sitio seleccionado</translation>
 <translation id="402707738228916911">Recibiuse a instrución <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Cartafol <ph name="FOLDER_TITLE" /></translation>
@@ -4025,7 +4018,6 @@ Se non os compartes, pecharase este perfil.</translation>
 <translation id="4448914100439890108">Ocultar contrasinal de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Xestionar os permisos</translation>
 <translation id="4449948729197510913">O teu nome de usuario pertence á conta de empresa da túa organización. Para rexistrar dispositivos na conta, verifica a propiedade do dominio na consola de administración. Se queres realizar esta verificación, deberás ter privilexios administrativos sobre a conta.</translation>
-<translation id="4449996769074858870">Esta pestana está reproducindo audio.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detectou un TPM activo que pode almacenar os teus datos dun xeito máis seguro.</translation>
 <translation id="4451479197788154834">O contrasinal está gardado neste dispositivo e na túa Conta de Google</translation>
@@ -5257,7 +5249,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5559311991468302423">Eliminar o enderezo</translation>
 <translation id="55601339223879446">Axustar os límites do escritorio dentro da pantalla</translation>
 <translation id="5561162485081632007">Móstrache unha advertencia cando detecta eventos perigosos</translation>
-<translation id="5562781907504170924">Esta pestana está conectada a un dispositivo Bluetooth.</translation>
 <translation id="556321030400250233">ficheiro local ou compartido</translation>
 <translation id="5563234215388768762">Realiza unha busca en Google ou escribe un URL</translation>
 <translation id="5565735124758917034">Activo</translation>
@@ -5619,7 +5610,6 @@ Podes envialo a Google para comprobar se é seguro ou non. As análises adoitan 
 <translation id="5882919346125742463">Redes coñecidas</translation>
 <translation id="5883356647197510494">Bloqueáronse automaticamente os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensión</translation>
-<translation id="5884474295213649357">Esta pestana está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">A túa organización xestionará este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conéctate con dispositivos compatibles coa función Vinculación rápida que estean preto de ti e configúraos velozmente</translation>
@@ -8590,7 +8580,6 @@ Se non os compartes, pecharase este perfil.</translation>
 <translation id="8464132254133862871">Esta conta de usuario non é apta para este servizo.</translation>
 <translation id="8465252176946159372">Non válido</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> precisa do teu permiso para executarse</translation>
-<translation id="8466417995783206254">Esta pestana está reproducindo un vídeo no modo de pantalla superposta.</translation>
 <translation id="8467326454809944210">Escoller outro idioma</translation>
 <translation id="8468087214092422866">Sitios que non teñen permiso para buscar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Gardáronse os contrasinais para <ph name="ORIGIN" /></translation>
@@ -8923,7 +8912,6 @@ Se non os compartes, pecharase este perfil.</translation>
 <translation id="8755584192133371929">Selecciona unha pestana para compartir</translation>
 <translation id="875604634276263540">O URL da imaxe non é valido</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
-<translation id="8757203080302669031">Esta pestana está buscando dispositivos Bluetooth de maneira activa.</translation>
 <translation id="8757368836647541092">Quitouse a <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Máis información</translation>
 <translation id="8761945298804995673">Este usuario xa existe</translation>

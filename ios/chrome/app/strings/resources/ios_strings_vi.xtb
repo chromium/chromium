@@ -91,7 +91,6 @@
 <translation id="152234381334907219">Không bao giờ lưu</translation>
 <translation id="1523341279170789507">Cho phép Tất cả Cookie</translation>
 <translation id="1524563461097350801">Không, cảm ơn</translation>
-<translation id="1531836666020185856">Nổi bật</translation>
 <translation id="1535268707340844072">Chế độ cài đặt hiện tại của bạn có thể khiến một số trang web gặp sự cố. Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Địa chỉ 1</translation>
 <translation id="1545749641540134597">Quét mã QR</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">Mã lỗi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Thêm tài khoản</translation>
 <translation id="2268044343513325586">Tinh chỉnh</translation>
+<translation id="2269277877025820298">Xem thêm</translation>
 <translation id="2273327106802955778">Menu khác</translation>
 <translation id="2286505070150039482">Văn bản được đánh dấu</translation>
 <translation id="2287614783861766820">{count,plural, =1{Địa chỉ này sẽ bị xoá khỏi thiết bị này.}other{Các địa chỉ này sẽ bị xoá khỏi thiết bị này.}}</translation>
@@ -218,7 +218,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2423077901494354337">Giờ đây, bạn có thể khai thác tối đa Chrome trên thiết bị của mình.</translation>
 <translation id="2434405374328098816">Bạn đã lưu mật khẩu cho "<ph name="USERNAME" />" tại <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
-<translation id="2439425774439590">Các trang web được truy cập nhiều nhất</translation>
 <translation id="2451654228769116489">Ghim thẻ</translation>
 <translation id="2461070143328828326">Cài đặt mật khẩu</translation>
 <translation id="2469960372084740698">Tắt tính năng Duyệt web an toàn?</translation>

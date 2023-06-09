@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium uzantıları, HID cihazlarına erişiyordu}=1{Chromium uzantıları, HID cihazlarına erişiyor}other{Chromium uzantıları, # HID cihazına erişiyor}}</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Yöneticiniz, 1 dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Yöneticiniz, # dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="1203500561924088507">Yüklediğiniz için teşekkürler. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tarayıcınızı yeniden başlatmanız gerekir.</translation>
 <translation id="1261119230216066228">Bellek Tasarrufu Sayesinde Chromium Artık Daha Hızlı</translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi oluşturun</translation>
@@ -177,7 +176,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="4987820182225656817">Misafirler Chromium'u geride hiçbir şey bırakmadan kullanabilir.</translation>
 <translation id="4994636714258228724">Kendinizi Chromium'a ekleyin</translation>
 <translation id="5114678101347489141">Chromium, sitelerin daha az veri kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri keşfediyor</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Yöneticiniz, 1 dakika kullanılmadığında Chromium'u otomatik olarak kapatır.}other{Yöneticiniz, # dakika kullanılmadığında Chromium'u otomatik olarak kapatır.}}</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chromium profilinde açık. Bu işlem, <ph name="USER_EMAIL_ADDRESS" /> için yeni bir Chromium profili oluşturacak</translation>
 <translation id="5277894862589591112">Yaptığınız değişiklikleri uygulamak için Chromium'u yeniden başlatın</translation>
@@ -242,7 +240,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
 <translation id="6333502561965082103">Chromium'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="6334986366598267305">Chromium'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Yöneticiniz, 1 dakika kullanılmadığında tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}other{Yöneticiniz, # dakika kullanılmadığında tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}}</translation>
 <translation id="6373523479360886564">Chromium'u kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Chromium, ilgi alanlarınızı tahmin edebilir. Daha sonra ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chromium'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
 <translation id="6403826409255603130">Chromium, Web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir Web tarayıcısıdır. Hızlı ve kararlı çalışır, kolay kullanılır. Chromium'da dahili olarak bulunan zararlı yazılım ve kimlik avı koruması sayesinde Web'de daha güvenli gezinin.</translation>

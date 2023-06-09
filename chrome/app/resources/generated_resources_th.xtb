@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">ไม่ใช่ตอนนี้</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{ระบบได้นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมนาน 2 เดือนเพื่อปกป้องข้อมูลของคุณ}other{ระบบได้นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมนาน 2 เดือนเพื่อปกป้องข้อมูลของคุณ}}</translation>
 <translation id="1009663062402466586">การควบคุมเกมพร้อมใช้งานแล้ว</translation>
-<translation id="1010498023906173788">แท็บนี้เชื่อมต่ออยู่กับพอร์ตอนุกรม</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{หน้าไม่ตอบสนอง}other{หน้าไม่ตอบสนอง}}</translation>
 <translation id="1011003645819296594">อุปกรณ์ที่บันทึกไว้</translation>
 <translation id="1011355516189274711">ระดับเสียงของการอ่านออกเสียงข้อความ</translation>
@@ -535,6 +534,7 @@
 <translation id="1461288887896722288">คุณเพิ่งลงชื่อเข้าใช้บัญชีที่จัดการ การสร้างโปรไฟล์ที่มีการจัดการใหม่จะทําให้คุณเข้าถึงทรัพยากรบางอย่างที่เชื่อมโยงกับบัญชีนั้นได้</translation>
 <translation id="146219525117638703">ONC State</translation>
 <translation id="146220085323579959">อินเทอร์เน็ตถูกตัดการเชื่อมต่อ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
+<translation id="1462480037563370607">เพิ่มเว็บไซต์ด้วยตนเอง</translation>
 <translation id="1462850958694534228">ตรวจสอบการอัปเดตไอคอน</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> ถูกบล็อกโดยการปกป้องขั้นสูง</translation>
 <translation id="1464044141348608623">ไม่อนุญาตให้เว็บไซต์ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
@@ -632,7 +632,6 @@
 <translation id="1541346352678737112">ไม่พบเครือข่าย</translation>
 <translation id="154198613844929213">{0,plural, =0{กำลังจะลบตอนนี้}=1{กำลังจะลบในอีก 1 วินาที}other{กำลังจะลบในอีก # วินาที}}</translation>
 <translation id="1542137295869176367">อัปเดตข้อมูลการลงชื่อเข้าใช้ไม่ได้</translation>
-<translation id="1542514202066550870">แท็บนี้กำลังนำเสนอเนื้อหา VR ไปยังชุดหูฟัง</translation>
 <translation id="1543284117603151572">นำเข้าจาก Edge</translation>
 <translation id="1543538514740974167">มาที่นี่ได้เร็วขึ้น</translation>
 <translation id="1544588554445317666">ลองใช้ชื่อไฟล์ที่สั้นลงหรือบันทึกลงในโฟลเดอร์อื่น</translation>
@@ -1048,7 +1047,6 @@
 <translation id="1873920700418191231">อนุญาตสิทธิ์อีกครั้งสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">ได้รับอนุญาตให้แสดงโฆษณาใดก็ได้</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายหลายแท็บไปที่หน้าต่างใหม่}}</translation>
-<translation id="1875386316419689002">แท็บนี้เชื่อมต่ออยู่กับอุปกรณ์ HID</translation>
 <translation id="1875387611427697908">ต้องเพิ่มจาก <ph name="CHROME_WEB_STORE" /> เท่านั้น</translation>
 <translation id="1877377290348678128">ป้ายกำกับ (ไม่บังคับ)</translation>
 <translation id="1877520246462554164">ไม่ได้รับโทเค็นการตรวจสอบสิทธิ์ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้งเพื่อลองอีกครั้ง</translation>
@@ -1671,6 +1669,7 @@
 <translation id="2390347491606624519">เชื่อมต่อพร็อกซีไม่สำเร็จ โปรดลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="2390782873446084770">การซิงค์ Wi-Fi</translation>
 <translation id="2391419135980381625">แบบอักษรมาตรฐาน</translation>
+<translation id="2391805183137601570">เปิด Steam</translation>
 <translation id="2392369802118427583">เปิดใช้งาน</translation>
 <translation id="2393136602862631930">ตั้งค่า <ph name="APP_NAME" /> ใน Chromebook</translation>
 <translation id="2393313392064891208">เนื้อหาข้อกำหนดของ Google Chrome OS Flex</translation>
@@ -1739,6 +1738,7 @@
 <translation id="2445484935443597917">สร้างโปรไฟล์ใหม่</translation>
 <translation id="2445726032315793326">แว่นขยายแบบบางส่วน</translation>
 <translation id="244641233057214044">เกี่ยวข้องกับการค้นหาของคุณ</translation>
+<translation id="2447587550790814052">ตอนนี้คุณใช้ Steam สําหรับ Chromebook (เบต้า) ได้แล้ว</translation>
 <translation id="2448312741937722512">ประเภท</translation>
 <translation id="2448810255793562605">การสแกนอัตโนมัติของการเข้าถึงด้วยสวิตช์</translation>
 <translation id="2450021089947420533">เส้นทางการท่องเว็บ</translation>
@@ -1760,6 +1760,7 @@
 <translation id="2458591546854598341">โทเค็นการจัดการอุปกรณ์ไม่ถูกต้อง</translation>
 <translation id="2459703812219683497">ตรวจพบรหัสเปิดใช้งาน</translation>
 <translation id="2460356425461033301">สำรองข้อมูลเบราว์เซอร์และใช้ได้ในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="2462332841984057083">กําลังตั้งค่า Steam อยู่แล้ว โปรดรอให้การตั้งค่าเสร็จสมบูรณ์</translation>
 <translation id="2462724976360937186">รหัสคีย์ผู้ออกใบรับรอง</translation>
 <translation id="2462752602710430187">เพิ่ม <ph name="PRINTER_NAME" /> แล้ว</translation>
 <translation id="2467755475704469005">ไม่พบอุปกรณ์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -1802,6 +1803,7 @@
 <translation id="249113932447298600">ขออภัย อุปกรณ์ <ph name="DEVICE_LABEL" /> ไม่ได้รับการสนับสนุนในขณะนี้</translation>
 <translation id="2492461744635776704">กำลังเตรียมคำขอลงนามใบรับรอง</translation>
 <translation id="249330843868392562">เปิดการตั้งค่าการอ่านออกเสียงข้อความ</translation>
+<translation id="2494555621641843783">ติดตั้ง Steam ไม่ได้</translation>
 <translation id="2495524171012645395">สูตรอาหารที่ดูล่าสุด</translation>
 <translation id="2496180316473517155">ประวัติการเข้าชมที่เรียกดู</translation>
 <translation id="2497229222757901769">ความเร็วเมาส์</translation>
@@ -1904,7 +1906,6 @@
 <translation id="2581455244799175627">ข้อมูลเพิ่มเติมเกี่ยวกับการอนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (แพลตฟอร์ม <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">ดึงข้อมูลตั๋ว Kerberos ไม่สำเร็จ ลองอีกครั้ง หรือติดต่อผู้ดูแลระบบอุปกรณ์ขององค์กร (รหัสข้อผิดพลาด <ph name="ERROR_CODE" />)</translation>
-<translation id="2585724835339714757">แท็บนี้กำลังแชร์หน้าจอของคุณ</translation>
 <translation id="2586561813241011046">ติดตั้ง <ph name="APP_NAME" /> ไม่ได้ โปรดลองอีกครั้งหรือติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2586672484245266891">โปรดป้อน URL ที่สั้นกว่านี้</translation>
@@ -2076,6 +2077,7 @@
 <translation id="27349076983469322">พื้นหลังสีสว่าง</translation>
 <translation id="2735712963799620190">กำหนดการ</translation>
 <translation id="2737363922397526254">ยุบ...</translation>
+<translation id="2737538893171115082">ผู้ดูแลระบบบล็อก Steam สำหรับ Chromebook (เบต้า) ผู้ดูแลระบบต้องเปิดใช้นโยบายต่อไปนี้</translation>
 <translation id="2737719817922589807">บุ๊กมาร์กและรายการ</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> ต้องการแชร์เนื้อหาในหน้าจอของคุณกับ <ph name="TARGET_NAME" /></translation>
 <translation id="2738030019664645674">ไม่อนุญาตให้เว็บไซต์ใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
@@ -2133,7 +2135,6 @@
 <translation id="2777525873368474674">วางลิงก์รูปภาพ</translation>
 <translation id="2778471504622896352">เพิ่มแอประยะไกลลงใน Launcher ของ Chrome OS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">ส่วนขยายใช้ได้ในเว็บไซต์นี้</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2783024642731649028">สินค้า 1 รายการในรถเข็นของคุณ <ph name="DISCOUNT_TEXT" /> จาก <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> ดูเมื่อ <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ดาวน์โหลดแล้ว</translation>
@@ -2151,6 +2152,7 @@
 <translation id="2792465461386711506">เปิดการซิงค์ของ Chrome เพื่อดูแท็บ Chrome ล่าสุดจากโทรศัพท์ของคุณ</translation>
 <translation id="2792697226874849938">รูปภาพการจำกัด</translation>
 <translation id="2794522004398861033">เชื่อมต่อ Wi-Fi หรืออีเทอร์เน็ตเพื่อตั้งค่า eSIM</translation>
+<translation id="2794977172822818797">เพิ่มเว็บไซต์ปัจจุบัน</translation>
 <translation id="2795716239552913152">โดยปกติแล้วเว็บไซต์จะใช้ตำแหน่งของคุณเพื่อดำเนินการตามฟีเจอร์หรือข้อมูลที่เกี่ยวข้อง เช่น ข่าวท้องถิ่นหรือร้านค้าในบริเวณใกล้เคียง</translation>
 <translation id="2796740370559399562">อนุญาตการใช้คุกกี้ต่อไป</translation>
 <translation id="2798347533012571708">รับการอัปเดตต่อไป</translation>
@@ -2247,6 +2249,7 @@
 <translation id="2875698561019555027">(หน้าข้อผิดพลาดของ Chrome)</translation>
 <translation id="2876336351874743617">นิ้วที่ 2</translation>
 <translation id="2876369937070532032">ส่ง URL ของหน้าบางส่วนที่คุณเข้าชมไปให้ Google เมื่อการรักษาความปลอดภัยมีความเสี่ยง</translation>
+<translation id="2876484123356705658">เลือกช่วงเวลา</translation>
 <translation id="2876556152483133018">การค้นหาเว็บไซต์</translation>
 <translation id="2877467134191447552">คุณเพิ่มบัญชีเสริมเพื่อเข้าถึงเว็บไซต์และแอปต่างๆ ได้</translation>
 <translation id="2878782256107578644">กำลังสแกน จะเปิดเลยไหม</translation>
@@ -2486,7 +2489,6 @@
 <translation id="3080933187214341848">เครือข่ายนี้ไม่ได้ซิงค์กับบัญชีของคุณ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">แท็บนี้กำลังใช้กล้องถ่ายรูปหรือไมโครโฟนของคุณ</translation>
 <translation id="3083193146044397360">ถูกบล็อกชั่วคราวเพื่อรักษาความปลอดภัยให้คุณ</translation>
 <translation id="3083899879156272923">เลื่อนหน้าจอโดยให้เมาส์อยู่ตรงกลางหน้าจอเสมอ</translation>
 <translation id="3083998949001524405">ได้รับอนุญาตให้ใช้คุกกี้ของบุคคลที่สาม</translation>
@@ -2603,7 +2605,6 @@
 <translation id="3201237270673604992">ฮ ถึง ก</translation>
 <translation id="3201422919974259695">อุปกรณ์ USB ที่ใช้ได้จะปรากฏที่นี่</translation>
 <translation id="3202131003361292969">เส้นทาง</translation>
-<translation id="3202173864863109533">กำลังปิดเสียงของแท็บนี้อยู่</translation>
 <translation id="3202578601642193415">ใหม่ที่สุด</translation>
 <translation id="3204648577100496185">ระบบอาจนำข้อมูลที่เชื่อมโยงกับแอปดังกล่าวออกจากอุปกรณ์เครื่องนี้</translation>
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
@@ -2685,6 +2686,7 @@
 <translation id="3283148363895519428">ทำตามวิธีการในโทรศัพท์เพื่อตั้งค่าต่อ ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ และบลูทูธเปิดอยู่</translation>
 <translation id="3284050785966252943">ตัวอย่างข้อมูลเมตาที่ป้อนอัตโนมัติ</translation>
 <translation id="3285322247471302225">แ&amp;ท็บใหม่</translation>
+<translation id="3285465040399788513">มีพื้นที่เก็บข้อมูลในอุปกรณ์ไม่เพียงพอที่จะตั้งค่าให้เสร็จสมบูรณ์ โปรดเพิ่มพื้นที่ว่างแล้วลองอีกครั้ง</translation>
 <translation id="3285500645985761267">อนุญาตให้เว็บไซต์ที่เกี่ยวข้องดูกิจกรรมของคุณในกลุ่ม</translation>
 <translation id="328571385944182268">บันทึกรหัสผ่านไหม</translation>
 <translation id="3288047731229977326">ส่วนขยายที่ทำงานอยู่ในโหมดนักพัฒนาซอฟต์แวร์อาจเป็นอันตรายต่อคอมพิวเตอร์ของคุณ หากคุณไม่ใช่นักพัฒนาซอฟต์แวร์ คุณควรปิดส่วนขยายที่ทำงานอยู่ในโหมดนักพัฒนาซอฟต์แวร์เพื่อรักษาความปลอดภัย</translation>
@@ -2778,6 +2780,7 @@
 <translation id="3371351218553893534">ข้อความในบรรทัดยาวเกินไป: <ph name="ERROR_LINE" /></translation>
 <translation id="337286756654493126">อ่านโฟลเดอร์ที่คุณเปิดในแอปพลิเคชัน</translation>
 <translation id="3373059063088819384">เปิดในโหมดการอ่าน</translation>
+<translation id="3373196968211632036">Steam สําหรับ Chromebook (เบต้า) ไม่พร้อมใช้งานกับบัญชี Google ของบุตรหลาน</translation>
 <translation id="3373701465337594448">เมื่อเปิดใช้การตั้งค่านี้ รายการเว็บไซต์ที่คุณเข้าชมซึ่งคาดเดาความสนใจของคุณจะปรากฏขึ้นที่นี่</translation>
 <translation id="3374294321938930390">ย้าย '<ph name="BOOKMARK_TITLE" />' ไปยัง '<ph name="NEW_FOLDER_TITLE" />'</translation>
 <translation id="3378572629723696641">ส่วนขยายนี้อาจเสียหาย</translation>
@@ -2932,6 +2935,7 @@
 <translation id="3496213124478423963">ย่อ</translation>
 <translation id="3496238553815913323">ภาษา<ph name="LANGUAGE" /> (ไม่ได้เลือก)</translation>
 <translation id="3496689104192986836">ระดับแบตเตอรี่ <ph name="PERCENTAGE" />%</translation>
+<translation id="3496797737329654668">เริ่มเล่นเกมกันเลย</translation>
 <translation id="3496995426334945408">โดยปกติแล้วเว็บไซต์จะใช้ JavaScript เพื่อแสดงฟีเจอร์แบบอินเทอร์แอกทีฟ เช่น วิดีโอเกมหรือเว็บฟอร์ม</translation>
 <translation id="3497501929010263034">อุปกรณ์ USB จาก <ph name="VENDOR_NAME" /> (ผลิตภัณฑ์ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">แชร์ Doodle</translation>
@@ -3011,7 +3015,6 @@
 <translation id="3575121482199441727">อนุญาตสำหรับเว็บไซต์นี้</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577745545227000795">การรวบรวมข้อมูลฮาร์ดแวร์ของ <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">เนื้อหาของแท็บนี้กำลังถูกแชร์</translation>
 <translation id="3578874072190212775">ช่วยเว็บไซต์ต่อสู้กับการประพฤติมิชอบและแยกบ็อต​ออกจากมนุษย์</translation>
 <translation id="3581605050355435601">กำหนดค่าที่อยู่ IP โดยอัตโนมัติ</translation>
 <translation id="3582057310199111521">มีการป้อนรหัสผ่านนี้ในเว็บไซต์ที่หลอกลวง และพบในการละเมิดข้อมูล</translation>
@@ -3066,6 +3069,7 @@
 <translation id="3624567683873126087">ปลดล็อกอุปกรณ์และลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="3624583033347146597">เลือกค่ากำหนดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3625481642044239431">เลือกไฟล์ไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
+<translation id="3626032419324745085">เว็บไซต์ที่คุณเพิ่มจะทำงานอยู่ตลอดเวลาและระบบจะไม่เพิ่มพื้นที่ว่างในหน่วยความจำ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการยกเว้นเว็บไซต์<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">ใช้แบตเตอรี่ Dell ที่เข้ากันได้เพื่อชาร์จ Chromebook เครื่องนี้</translation>
 <translation id="3627320433825461852">เหลือเวลาน้อยกว่า 1 นาที</translation>
 <translation id="3627588569887975815">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตน (&amp;G)</translation>
@@ -3339,6 +3343,7 @@
 <translation id="383891835335927981">ไม่มีการซูมเข้าหรือซูมออกเว็บไซต์ใดๆ</translation>
 <translation id="3839509547554145593">เปิดใช้การเร่งการเลื่อนเมาส์</translation>
 <translation id="3839516600093027468">บล็อก <ph name="HOST" /> ไม่ให้ดูคลิปบอร์ดเสมอ</translation>
+<translation id="3841282988425489367">ตั้งค่า Steam สําหรับ Chromebook (เบต้า) ไม่ได้</translation>
 <translation id="3841319830220785495">เสียงตามธรรมชาติเริ่มต้น</translation>
 <translation id="3841964634449506551">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="3842552989725514455">แบบอักษร Serif</translation>
@@ -3386,6 +3391,7 @@
 <translation id="3884152383786131369">เนื้อหาเว็บที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ผู้ดูแลระบบของคุณเป็นผู้จัดการการอัปเดตต่างๆ</translation>
 <translation id="3887022758415973389">แสดงรายการอุปกรณ์</translation>
+<translation id="3888501106166145415">เครือข่าย Wi-Fi ที่เชื่อมต่ออยู่</translation>
 <translation id="3888550877729210209">จดโน้ตด้วย <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">ข้อมูลนี้ช่วยให้เราเข้าใจปัญหาที่คุณพบเกี่ยวกับ Assistant ได้ดีขึ้น ระบบจะเก็บข้อมูลไว้สูงสุด 90 วันและจำกัดให้เฉพาะทีมวิศวกรและทีมความคิดเห็นที่เกี่ยวข้องเข้าถึงเท่านั้น</translation>
 <translation id="3890064827463908288">เปิดการซิงค์ของ Chrome เพื่อใช้การซิงค์ Wi-Fi</translation>
@@ -3553,6 +3559,7 @@
 <translation id="4021941025609472374">ปิดแท็บทางด้านซ้าย</translation>
 <translation id="402211067068791756">การดำเนินการนี้จะล้างข้อมูลซึ่งจัดเก็บโดยเว็บไซต์ที่แสดงรวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">&amp;เพิ่มลงในพจนานุกรม</translation>
+<translation id="4024768890073681126">ผู้ปกครองของคุณเป็นผู้จัดการเบราว์เซอร์</translation>
 <translation id="4025039777635956441">ปิดเสียงเว็บไซต์ที่เลือก</translation>
 <translation id="402707738228916911">ได้รับคำสั่ง <ph name="AUTHORIZE_INSTRUCTION_NAME" /> รายการแล้ว</translation>
 <translation id="4027569221211770437">โฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
@@ -3772,6 +3779,7 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ไม่อนุญาตส่วนขยายนี้}other{ไม่อนุญาตส่วนขยายบางรายการ}}</translation>
 <translation id="4231095370974836764">ติดตั้งแอปและเกมจาก Google Play ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">ปิดการควบคุมเกม</translation>
+<translation id="4231231258999726714">กําลังตั้งค่า Steam สําหรับ Chromebook</translation>
 <translation id="4231542173270219144">เมื่อเริ่มการทดสอบ การลดจำนวนสแปมและการประพฤติมิชอบจะใช้โทเค็นสถานะส่วนตัวเพื่อช่วยเว็บไซต์ป้องกันการประพฤติมิชอบและแยกบ็อตออกจากมนุษย์</translation>
 <translation id="4232375817808480934">กำหนดค่า Kerberos</translation>
 <translation id="4233739489690259993">Chromebook ของคุณจะไม่ได้รับการอัปเดตความปลอดภัยและซอฟต์แวร์อีกต่อไป อัปเกรดอุปกรณ์เพื่อรับการรักษาความปลอดภัยและฟีเจอร์ใหม่ล่าสุด เป็นไปตามข้อกำหนดของข้อเสนอ</translation>
@@ -4028,7 +4036,6 @@
 <translation id="4448914100439890108">ซ่อนรหัสผ่านของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">จัดการสิทธิ์</translation>
 <translation id="4449948729197510913">ชื่อผู้ใช้ของคุณเป็นของบัญชีองค์กรของคุณ หากต้องการลงทะเบียนอุปกรณ์กับบัญชีดังกล่าว ก่อนอื่นให้ยืนยันการเป็นเจ้าของโดเมนในคอนโซลผู้ดูแลระบบ คุณจะต้องมีสิทธิ์ระดับผู้ดูแลระบบในบัญชีเพื่อยืนยัน</translation>
-<translation id="4449996769074858870">แท็บนี้กำลังเล่นเสียง</translation>
 <translation id="4450974146388585462">วินิจฉัย</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ตรวจพบ TPM ที่มีการใช้งานอยู่ซึ่งจะจัดเก็บข้อมูลของคุณได้อย่างปลอดภัยยิ่งขึ้น</translation>
 <translation id="4451479197788154834">บันทึกรหัสผ่านในอุปกรณ์นี้และในบัญชี Google ของคุณแล้ว</translation>
@@ -4052,6 +4059,7 @@
 <translation id="4472298120638043495">คุณใช้ภาษาของบัญชี Google ที่ต้องการได้ (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
 <translation id="4472575034687746823">เริ่มต้น</translation>
+<translation id="4473996011558324141">กำลังประมาณเวลา</translation>
 <translation id="4474155171896946103">บุ๊กมาร์กแท็บทั้งหมด...</translation>
 <translation id="4475552974751346499">ค้นสิ่งที่ดาวน์โหลดไว้</translation>
 <translation id="4475830133618397783">เลือกรหัสผ่านที่จะย้าย คุณจะเข้าถึงรหัสผ่านนี้ได้ทุกครั้งที่ลงชื่อเข้าใช้</translation>
@@ -4242,6 +4250,7 @@
 <translation id="4637252186848840278">{COUNT,plural, =1{ข้อความ}other{# ข้อความ}}</translation>
 <translation id="4638930039313743000">เปิดใช้การแก้ไขข้อบกพร่อง ADB</translation>
 <translation id="4641539339823703554">Chrome ไม่สามารถตั้งเวลาระบบได้ โปรดตรวจสอบเวลาด้านล่างและแก้ไขให้ถูกต้องหากจำเป็น</translation>
+<translation id="4642587497923912728">Steam สำหรับ Chromebook (เบต้า) จะใช้ได้เฉพาะกับบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรกใน Chromebook เครื่องนี้</translation>
 <translation id="4643612240819915418">เ&amp;ปิดวิดีโอในแท็บใหม่</translation>
 <translation id="4643833688073835173">Chromebook ใช้เซ็นเซอร์ในตัวเพื่อตรวจหาผู้คนที่อยู่ด้านหน้าอุปกรณ์ของคุณ อุปกรณ์จะประมวลผลข้อมูลทั้งหมดในทันที จากนั้นจะลบข้อมูลออก และจะไม่มีการส่งข้อมูลเซ็นเซอร์ให้ Google</translation>
 <translation id="4644205769234414680">อนุญาตให้ใช้ในโหมดไม่ระบุตัวตน</translation>
@@ -5027,6 +5036,7 @@
 <translation id="5353252989841766347">ส่งออกรหัสผ่านจาก Chrome</translation>
 <translation id="5355099869024327351">อนุญาตให้ Assistant แสดงการแจ้งเตือน</translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
+<translation id="5355498626146154079">คุณต้องเปิด Flag "Borealis Enabled"</translation>
 <translation id="5355501370336370394">ลงทะเบียนอุปกรณ์ขององค์กร</translation>
 <translation id="5355926466126177564">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เปลี่ยนหน้าที่จะแสดงเมื่อคุณค้นหาจากแถบอเนกประสงค์</translation>
 <translation id="5356155057455921522">การอัปเดตจากผู้ดูแลระบบจะทำให้แอปขององค์กรเปิดได้เร็วขึ้น การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
@@ -5054,6 +5064,7 @@
 <translation id="5376931455988532197">ไฟล์ใหญ่เกินไป</translation>
 <translation id="5379140238605961210">บล็อกการเข้าถึงไมโครโฟนต่อไป</translation>
 <translation id="5380424552031517043">นำสิทธิ์เข้าถึง<ph name="PERMISSION" />ออกแล้ว</translation>
+<translation id="5380526436444479273">โปรดรอสักครู่แล้วลองอีกครั้ง</translation>
 <translation id="5382591305415226340">จัดการลิงก์ที่รองรับ</translation>
 <translation id="5383377866517186886">กล้องปิดอยู่ในค่ากำหนดของระบบ Mac</translation>
 <translation id="5383740867328871413">กลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -5089,6 +5100,7 @@
 <translation id="5414198321558177633">กำลังรีเฟรชรายการโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="5414566801737831689">อ่านไอคอนของเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="5414836363063783498">กำลังยืนยัน…</translation>
+<translation id="5415328625985164836">โปรแกรมนี้เป็นเวอร์ชันเบต้า ตอนนี้คุณใช้ Steam เพื่อเล่นเกมบางเกมใน Chromebook ได้แล้ว</translation>
 <translation id="5417312524372586921">ธีมของเบราว์เซอร์</translation>
 <translation id="5417353542809767994">ใช้รหัสผ่านที่รัดกุมได้อย่างรวดเร็ว</translation>
 <translation id="541737483547792035">ขยายหน้าจอ</translation>
@@ -5121,6 +5133,7 @@
 <translation id="5439680044267106777">ข้ามและตั้งโปรไฟล์ใหม่</translation>
 <translation id="544083962418256601">สร้างทางลัด...</translation>
 <translation id="5441133529460183413">ติดตั้งเว็บแอปจากเบราว์เซอร์ Chrome แล้ว</translation>
+<translation id="5441292787273562014">โหลดหน้าเว็บซ้ำ</translation>
 <translation id="5441466871879044658">แปลเป็นภาษานี้</translation>
 <translation id="5442228125690314719">เกิดข้อผิดพลาดขณะสร้างดิสก์อิมเมจ โปรดลองอีกครั้ง</translation>
 <translation id="5442550868130618860">เปิดอัปเดตอัตโนมัติ</translation>
@@ -5152,6 +5165,7 @@
 <translation id="5467207440419968613">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">กำลังมองหาพื้นที่แชร์ไฟล์</translation>
 <translation id="5468330507528805311">สถานะการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
+<translation id="5469540749878136997">เพิ่มหน่วยความจําจากการใช้งาน</translation>
 <translation id="5469852975082458401">คุณไปยังส่วนต่างๆ ของหน้าได้ด้วยเคอร์เซอร์ข้อความ กด F7 เพื่อปิด</translation>
 <translation id="5470735824776589490">ต้องรีสตาร์ทก่อน จึงจะรีเซ็ตอุปกรณ์ของคุณด้วย Powerwash ได้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">สวัสดี นี่เป็นเสียงของระบบอ่านออกเสียงข้อความ</translation>
@@ -5260,7 +5274,6 @@
 <translation id="5559311991468302423">ลบที่อยู่</translation>
 <translation id="55601339223879446">ปรับขอบของเดสก์ท็อปให้อยู่ในหน้าจอแสดงผล</translation>
 <translation id="5561162485081632007">ตรวจหาและเตือนคุณเมื่อเกิดเหตุการณ์อันตราย</translation>
-<translation id="5562781907504170924">แท็บนี้เชื่อมต่อกับอุปกรณ์บลูทูธอยู่</translation>
 <translation id="556321030400250233">ไฟล์ในเครื่องหรือไฟล์ที่แชร์</translation>
 <translation id="5563234215388768762">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
 <translation id="5565735124758917034">ใช้งานอยู่</translation>
@@ -5436,6 +5449,7 @@
 <translation id="5724642200346111167">ระบบจะล้างข้อมูลเว็บไซต์ออกจากอุปกรณ์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="5727728807527375859">ส่วนขยาย แอปพลิเคชัน และธีมอาจเป็นอันตรายต่อคอมพิวเตอร์ของคุณได้ คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ</translation>
 <translation id="5728450728039149624">ตัวเลือกล็อกหน้าจอ Smart Lock</translation>
+<translation id="572914206753951782">ตรวจสอบว่า Chromebook เป็นเวอร์ชันล่าสุด จากนั้นรีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
 <translation id="5729712731028706266">&amp;มุมมอง</translation>
 <translation id="5731247495086897348">&amp;วางแล้วไป</translation>
 <translation id="5733109311583381874">เพิ่มคำของคุณเองลงในพจนานุกรมผู้ใช้เพื่อปรับแต่งคำที่แนะนำในการแปลง</translation>
@@ -5531,6 +5545,7 @@
 <translation id="5811614940486072060">ไฟล์นี้ไม่ได้มีการดาวน์โหลดกันอย่างแพร่หลายและอาจเป็นอันตราย</translation>
 <translation id="5812674658566766066">ขยายทั้งหมด</translation>
 <translation id="5815645614496570556">ที่อยู่ X.400</translation>
+<translation id="5816166985204777171">แอประบบแอปนี้ติดตั้งไว้ล่วงหน้าแล้วในอุปกรณ์ของคุณ</translation>
 <translation id="5816434091619127343">การเปลี่ยนแปลงเครื่องพิมพ์ที่ขอจะทำให้เครื่องพิมพ์ใช้ไม่ได้</translation>
 <translation id="581659025233126501">เปิดการซิงค์</translation>
 <translation id="5817069030404929329">ย้ายรหัสผ่านจากอุปกรณ์นี้ไปไว้ในบัญชี Google ไหม</translation>
@@ -5622,7 +5637,6 @@
 <translation id="5882919346125742463">เครือข่ายที่รู้จัก</translation>
 <translation id="5883356647197510494">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" />โดยอัตโนมัติ</translation>
 <translation id="5884447826201752041">ปรับแต่งส่วนขยายแต่ละรายการ</translation>
-<translation id="5884474295213649357">แท็บนี้เชื่อมต่อกับอุปกรณ์ USB อยู่</translation>
 <translation id="5885314688092915589">องค์กรของคุณจะจัดการโปรไฟล์นี้</translation>
 <translation id="5886009770935151472">นิ้วที่ 1</translation>
 <translation id="5886112770923972514">เชื่อมต่อและตั้งค่าอุปกรณ์จับคู่ด่วนที่อยู่ใกล้ๆ ได้อย่างรวดเร็ว</translation>
@@ -6324,6 +6338,7 @@
 <translation id="6508261954199872201">แอปพลิเคชัน: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">ใบอนุญาตสื่อ</translation>
 <translation id="6511279028091289182">กำหนดวิธีเชื่อมต่อเว็บไซต์ผ่านการเชื่อมต่อที่ปลอดภัย การดำเนินการนี้ใช้ผู้ให้บริการที่มีการจัดการที่ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
+<translation id="6511607461419653612">รีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
 <translation id="6511827214781912955">พิจารณาลบไฟล์ <ph name="FILENAME" /> เพื่อให้ผู้อื่นที่ใช้อุปกรณ์นี้ไม่เห็นรหัสผ่านของคุณ</translation>
 <translation id="6512808201725371249">ระบบบันทึกรหัสผ่านสำหรับบัญชีนี้ไว้ในเครื่องมือจัดการรหัสผ่านบน Google (<ph name="USER_EMAIL" />) อยู่แล้ว</translation>
 <translation id="6513247462497316522">Google Chrome จะใช้ข้อมูลมือถือหากคุณไม่ได้เชื่อมต่อกับเครือข่ายอื่น</translation>
@@ -6816,6 +6831,7 @@
 <translation id="6931690462168617033">ความแรงในการคลิก</translation>
 <translation id="6935286146439255109">ไม่มีถาดกระดาษ</translation>
 <translation id="6938386202199793006">คุณมีเครื่องพิมพ์ที่บันทึกไว้ 1 เครื่อง</translation>
+<translation id="6938387822292071111">แสดงรูปภาพบนการ์ดตัวอย่างเมื่อวางเมาส์เหนือแท็บ</translation>
 <translation id="6938606182859551396">หากต้องการรับการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /> โปรดทำตามวิธีการในโทรศัพท์เพื่อให้สิทธิ์เข้าถึงการแจ้งเตือนแก่บริการ Google Play</translation>
 <translation id="694168622559714949">ผู้ดูแลระบบได้ตั้งค่าภาษาเริ่มต้นซึ่งแก้ไขไม่ได้</translation>
 <translation id="6941937518557314510">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อตรวจสอบสิทธิ์กับ <ph name="HOST_NAME" /> ด้วยใบรับรองของคุณ</translation>
@@ -6849,9 +6865,11 @@
 <translation id="6964390816189577014">ฮีโร่</translation>
 <translation id="6964760285928603117">นำออกจากกลุ่ม</translation>
 <translation id="6965382102122355670">ตกลง</translation>
+<translation id="6965607054907047032">เพิ่มหน่วยความจำจากแท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="6965648386495488594">พอร์ต</translation>
 <translation id="6965978654500191972">อุปกรณ์</translation>
 <translation id="6966370001499648704">ควบคุมโทรศัพท์ที่คุณจะใช้เป็นคีย์ความปลอดภัย</translation>
+<translation id="6967112302799758487">ระบบจะนำแอปและเกมที่ติดตั้งโดยใช้ Steam สำหรับ Chromebook (เบต้า) ออกจากอุปกรณ์นี้ รวมถึงจะนำข้อมูลที่เชื่อมโยงกับแอปและเกมเหล่านี้ออกด้วย อย่าลืมสำรองข้อมูลแอปและเกมที่บันทึกไว้ก่อนถอนการติดตั้ง</translation>
 <translation id="6967430741871315905">ไม่สามารถตรวจสอบว่าอุปกรณ์ได้รับอนุญาตหรือไม่</translation>
 <translation id="696780070563539690">เว็บไซต์ใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ เช่น เพื่อปรับโฆษณาตามโปรไฟล์ของคุณไม่ได้</translation>
 <translation id="6968288415730398122">ป้อนรหัสผ่านเพื่อกำหนดค่าการล็อกหน้าจอ</translation>
@@ -6995,6 +7013,7 @@
 <translation id="7078120482318506217">ทุกเครือข่าย</translation>
 <translation id="708060913198414444">คัด&amp;ลอกที่อยู่ของเสียง</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> จัดการโดยผู้ดูแลระบบ</translation>
+<translation id="7083774521940805477">Steam สำหรับ Chromebook (เบต้า) ไม่พร้อมใช้งานใน Chromebook ของคุณ</translation>
 <translation id="7085389578340536476">อนุญาตให้ Chrome บันทึกเสียงไหม</translation>
 <translation id="708550780726587276">(ไม่ได้กำหนดค่า)</translation>
 <translation id="7086672505018440886">รวมไฟล์บันทึกของ Chrome ในที่เก็บถาวร</translation>
@@ -7053,6 +7072,7 @@
 <translation id="7141105143012495934">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถเรียกคืนรายละเอียดบัญชีของคุณได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>
 <translation id="7141844554192012199">การตรวจสอบ</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
+<translation id="7143409552554575716">ChromeOS Flag</translation>
 <translation id="7144856456372460176">ติดตั้ง <ph name="APP" />...</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7148426638542880639">เว็บไซต์อาจไม่ทำงานตามที่ต้องการ เลือกตัวเลือกนี้หากคุณไม่ต้องการให้มีข้อมูลเว็บไซต์ที่เข้าชมบนอุปกรณ์</translation>
@@ -7730,6 +7750,7 @@
 <translation id="7728668285692163452">ระบบจะนำการเปลี่ยนช่องไปใช้ในภายหลัง</translation>
 <translation id="7730449930968088409">จับภาพเนื้อหาบนหน้าจอ</translation>
 <translation id="7730683939467795481">หน้านี้มีการเปลี่ยนแปลงจากส่วนขยาย "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="7732702411411810416">ตรวจสอบว่าคุณเชื่อมต่ออินเทอร์เน็ตอยู่แล้วลองอีกครั้ง</translation>
 <translation id="773511996612364297">เครื่องหมายการลงน้ำหนักเสียง</translation>
 <translation id="7737115349420013392">กำลังจับคู่กับ "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7737203573077018777">ได้รับคำสั่ง <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> รายการแล้ว</translation>
@@ -8415,6 +8436,7 @@
 <translation id="8314381333424235892">ไม่มีส่วนขยายหรือไม่ได้ติดตั้ง</translation>
 <translation id="831440797644402910">เปิดโฟลเดอร์นี้ไม่ได้</translation>
 <translation id="8314835274931377415">เริ่มตั้งค่าการเข้าถึงด้วยสวิตช์ไหม</translation>
+<translation id="8315018673856831477">ตัวเลือกการประหยัดหน่วยความจำ</translation>
 <translation id="8317671367883557781">เพิ่มการเชื่อมต่อเครือข่าย</translation>
 <translation id="8317965619823678157">คัดลอกรหัสผ่าน</translation>
 <translation id="8318266828739827371">ใช้มุมมองแยกหน้าจอเพื่อดูบริเวณที่ขยายของหน้าจอ ใช้แป้นค้นหา + Ctrl + D เพื่อเปิดและปิดแว่นขยายหน้าจอบางส่วน</translation>
@@ -8593,7 +8615,6 @@
 <translation id="8464132254133862871">บัญชีผู้ใช้นี้ไม่ได้รับสิทธิ์สำหรับบริการนี้</translation>
 <translation id="8465252176946159372">ไม่ถูกต้อง</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ต้องได้รับอนุญาตจากคุณก่อนจึงจะทำงานได้</translation>
-<translation id="8466417995783206254">แท็บนี้กำลังเล่นวิดีโอในโหมดการแสดงภาพซ้อนภาพ</translation>
 <translation id="8467326454809944210">เลือกภาษาอื่น</translation>
 <translation id="8468087214092422866">ไม่อนุญาตให้ค้นหาอุปกรณ์บลูทูธ</translation>
 <translation id="8470513973197838199">รหัสผ่านที่บันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
@@ -8926,7 +8947,6 @@
 <translation id="8755584192133371929">เลือกแท็บที่ต้องการแชร์</translation>
 <translation id="875604634276263540">URL ของรูปภาพไม่ถูกต้อง</translation>
 <translation id="8756969031206844760">อัปเดตรหัสผ่านไหม</translation>
-<translation id="8757203080302669031">แท็บนี้กำลังสแกนหาอุปกรณ์บลูทูธ</translation>
 <translation id="8757368836647541092">นำ <ph name="USER_NAME_OR_EMAIL" /> ออกแล้ว</translation>
 <translation id="8759753423332885148">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8761945298804995673">มีผู้ใช้รายนี้แล้ว</translation>
@@ -9277,6 +9297,7 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{การแจ้งเตือนประมาณ 1 รายการต่อวัน}other{การแจ้งเตือนประมาณ {NUM_NOTIFICATION} รายการต่อวัน}}</translation>
 <translation id="9058760336383947367">ดู PPD ของเครื่องพิมพ์</translation>
 <translation id="9061383912634843744">ลงชื่อเข้าใช้เว็บไซต์และแอปโดยอัตโนมัติด้วยข้อมูลเข้าสู่ระบบที่บันทึกไว้ หากปิดการตั้งค่านี้ ระบบจะขอให้คุณยืนยันทุกครั้งก่อนลงชื่อเข้าใช้เว็บไซต์หรือแอป</translation>
+<translation id="9061694916020926968">คุณต้องลงชื่อเข้าใช้บัญชี Google เพื่อใช้ Steam สําหรับ Chromebook (เบต้า) ลงชื่อเข้าใช้แล้วลองอีกครั้ง</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">เกิดข้อผิดพลาดในบรรทัดที่ <ph name="ERROR_LINE_START" /> ถึง <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">เปิดใช้การป้อนอัตโนมัติเพื่อกรอกฟอร์มด้วยการคลิกเพียงครั้งเดียว</translation>

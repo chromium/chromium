@@ -91,7 +91,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="152234381334907219">Mai salvate</translation>
 <translation id="1523341279170789507">Accetta tutti i cookie</translation>
 <translation id="1524563461097350801">No, grazie</translation>
-<translation id="1531836666020185856">In primo piano</translation>
 <translation id="1535268707340844072">L'impostazione corrente potrebbe causare il malfunzionamento dei siti. Per gestire i cookie per tutti i siti, vedi le <ph name="BEGIN_LINK" />Impostazioni dei cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Indirizzo 1</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
@@ -219,7 +218,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2423077901494354337">Ora potrai sfruttare al meglio Chrome sul tuo dispositivo.</translation>
 <translation id="2434405374328098816">Hai già salvato una password per "<ph name="USERNAME" />" su <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostra password</translation>
-<translation id="2439425774439590">Siti più visitati</translation>
 <translation id="2451654228769116489">Blocca scheda</translation>
 <translation id="2461070143328828326">Impostazioni password</translation>
 <translation id="2469960372084740698">Vuoi disattivare Navigazione sicura?</translation>

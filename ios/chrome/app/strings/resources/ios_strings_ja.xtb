@@ -91,7 +91,6 @@
 <translation id="152234381334907219">常に保存しない</translation>
 <translation id="1523341279170789507">Cookie をすべて受け入れる</translation>
 <translation id="1524563461097350801">自動チェックアウトしない</translation>
-<translation id="1531836666020185856">おすすめ</translation>
 <translation id="1535268707340844072">現在の設定によって一部のサイトが影響を受ける可能性があります。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1540800554400757039">住所1行目</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
@@ -219,7 +218,6 @@
 <translation id="2423077901494354337">お使いのデバイスで Chrome を最大限に活用できるようになりました。</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> の「<ph name="USERNAME" />」のパスワードは保存済みです</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
-<translation id="2439425774439590">アクセス回数の最も多いサイト</translation>
 <translation id="2451654228769116489">タブを固定</translation>
 <translation id="2461070143328828326">パスワードの設定</translation>
 <translation id="2469960372084740698">セーフ ブラウジングをオフにしますか？</translation>

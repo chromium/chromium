@@ -91,7 +91,6 @@
 <translation id="152234381334907219">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1523341279170789507">બધી કૂકીઝને મંજૂરી આપો</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
-<translation id="1531836666020185856">ફીચર્ડ</translation>
 <translation id="1535268707340844072">તમારા હાલના સેટિંગને કારણે અમુક સાઇટ બ્રેક થાય તેમ બની શકે છે. બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">સરનામું 1</translation>
 <translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">ભૂલ કોડ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">એકાઉન્ટ ઉમેરો</translation>
 <translation id="2268044343513325586">સુધારો</translation>
+<translation id="2269277877025820298">વધુ જુઓ</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
 <translation id="2286505070150039482">હાઇલાઇટ કરેલી ટેક્સ્ટ</translation>
 <translation id="2287614783861766820">{count,plural, =1{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}one{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}other{આ ડિવાઇસમાંથી આ સરનામા ડિલીટ કરવામાં આવશે.}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">તમે હવે તમારા ડિવાઇસ પર Chromeનો વધુને વધુ લાભ મેળવશો.</translation>
 <translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
-<translation id="2439425774439590">સૌથી વધુ મુલાકાત લેવામાં આવેલી સાઇટ</translation>
 <translation id="2451654228769116489">ટૅબને પિન કરો</translation>
 <translation id="2461070143328828326">પાસવર્ડ સેટિંગ</translation>
 <translation id="2469960372084740698">Safe Browsing બંધ કરીએ?</translation>

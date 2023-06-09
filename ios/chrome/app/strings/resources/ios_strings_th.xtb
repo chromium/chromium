@@ -91,7 +91,6 @@
 <translation id="152234381334907219">ไม่เคยบันทึก</translation>
 <translation id="1523341279170789507">อนุญาตคุกกี้ทั้งหมด</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
-<translation id="1531836666020185856">แสดงฟีเจอร์</translation>
 <translation id="1535268707340844072">การตั้งค่าปัจจุบันอาจทำให้บางเว็บไซต์ทำงานได้ไม่ถูกต้อง ดู<ph name="BEGIN_LINK" />การตั้งค่าคุกกี้<ph name="END_LINK" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">เพิ่มบัญชี</translation>
 <translation id="2268044343513325586">ปรับแต่ง</translation>
+<translation id="2269277877025820298">ดูเพิ่มเติม</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
 <translation id="2286505070150039482">ข้อความที่ไฮไลต์</translation>
 <translation id="2287614783861766820">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากอุปกรณ์เครื่องนี้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากอุปกรณ์เครื่องนี้}}</translation>
@@ -218,7 +218,6 @@
 <translation id="2423077901494354337">ตอนนี้คุณจะได้รับประโยชน์สูงสุดจาก Chrome ในอุปกรณ์แล้ว</translation>
 <translation id="2434405374328098816">คุณบันทึกรหัสผ่านสำหรับ "<ph name="USERNAME" />" ที่ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
-<translation id="2439425774439590">เว็บไซต์ที่มีการเข้าชมสูงสุด</translation>
 <translation id="2451654228769116489">ปักหมุดแท็บ</translation>
 <translation id="2461070143328828326">การตั้งค่ารหัสผ่าน</translation>
 <translation id="2469960372084740698">ปิด Google Safe Browsing ใช่ไหม</translation>

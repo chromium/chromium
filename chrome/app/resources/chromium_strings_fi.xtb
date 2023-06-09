@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromiumiin<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium-laajennukset käyttivät HID-laitteita}=1{Chromium-laajennukset käyttävät HID-laitteita}other{Chromium-laajennukset käyttävät # HID-laitetta}}</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Järjestelmänvalvoja sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Järjestelmänvalvoja sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="1261119230216066228">Muistinsäästö nopeuttaa Chromiumia</translation>
 <translation id="1315551408014407711">Luo uusi Chromium-profiili</translation>
@@ -179,7 +178,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="4987820182225656817">Vierailijat voivat käyttää Chromiumia jälkiä jättämättä.</translation>
 <translation id="4994636714258228724">Lisää itsesi Chromiumiin</translation>
 <translation id="5114678101347489141">Chromium kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmällä datalla</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Järjestelmänvalvoja sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin.}other{Järjestelmänvalvoja sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin.}}</translation>
 <translation id="5224391634244552924">Ei tallennettuja salasanoja. Chromium voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chromium-profiiliin. Tämä luo uuden Chromium-profiilin: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Ota muutokset käyttöön käynnistämällä Chromium uudelleen</translation>
@@ -244,7 +242,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="6327105987658262776">Päivityksiä ei ole saatavilla.</translation>
 <translation id="6333502561965082103">Toinen Chromium-prosessi on jo käynnissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="6334986366598267305">Nyt voit helpommin käyttää Chromiumia Google-tililläsi ja jaetuilla tietokoneilla.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Järjestelmänvalvoja poistaa selausdatan automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Nykyiset välilehdet pysyvät auki.}other{Järjestelmänvalvoja poistaa selausdatan automaattisesti, kun sitä ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Nykyiset välilehdet pysyvät auki.}}</translation>
 <translation id="6373523479360886564">Haluatko varmasti poistaa Chromiumin asennuksen?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Chromium voi arvioida sinua kiinnostavia aiheita. Sivut, joilla käyt, voivat myöhemmin pyytää Chromiumilta tietoja kiinnostuksen kohteistasi ja personoida näkemiäsi mainoksia.</translation>
 <translation id="6403826409255603130">Chromium on selain, jolla verkkosivut ja sovellukset toimivat salamannopeasti. Se on nopea, vakaa ja helppokäyttöinen. Chromiumin sisäänrakennettu haittaohjelma- ja tietojenkalastelusuojaus tekevät verkkoselauksesta turvallisempaa.</translation>

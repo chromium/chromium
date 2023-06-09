@@ -85,7 +85,9 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2399868464369312507">Google Chrome försöker redigera betalningsmetoder.</translation>
 <translation id="2401189691232800402">Chrome OS-system</translation>
+<translation id="2424440923901031101">Det här tillägget strider mot policyn för Chrome Web Store och kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="2467438592969358367">Lösenorden exporteras från Google Chrome. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
+<translation id="2472092250898121027">Tillägget innehåller skadlig programvara och är osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
 <translation id="2534507159460261402">Google Pay (har kopierats till Chrome)</translation>
 <translation id="2556847002339236023">Organisationen avslutar Chrome när det inte har använts på <ph name="TIMEOUT_DURATION" />. Webbinformation har raderats. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
@@ -227,7 +229,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4970947549776831107">Den här filen blockerades av Chrome eftersom den här typen av filer är farliga</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Ett Google Chrome-tillägg hade åtkomst till styrdon}=1{Ett Google Chrome-tillägg har åtkomst till 1 styrdon}other{Ett Google Chrome-tillägg har åtkomst till # styrdon}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Administratören avslutar Chrome automatiskt när det inte använts på en minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Administratören avslutar Chrome automatiskt när det inte använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="5098668839038261629">När inställningen är aktiverad loggas du också ut från Chrome</translation>
 <translation id="5132929315877954718">Upptäck fantastiska program, spel, tillägg och teman för Google Chrome.</translation>
 <translation id="5139423532931106058">Anpassa din Chrome-profil</translation>
@@ -289,7 +290,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6291549208091401781">Google Chrome har redan installerats för alla användare på datorn.</translation>
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
 <translation id="6327105987658262776">Det finns ingen tillgänglig uppdatering.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Administratören raderar automatiskt webbinformation när Chromium inte använts på en minut. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}other{Administratören raderar automatiskt webbinformation när Chromium inte använts på # minuter. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}}</translation>
+<translation id="6360449101159168105">När den här fliken var inaktiv frigjordes minne för att hålla Chrome snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>
 <translation id="648319183876919572">Förbättrad säker webbsökning gör mer för att skydda dig mot farliga webbplatser och nedladdningar</translation>
@@ -372,6 +373,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8005666035647241369">I Google Lösenordshantering på den här enheten</translation>
 <translation id="8008534537613507642">Installera om Chrome</translation>
 <translation id="8013993649590906847">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
+<translation id="8019103195866286235">Det här tillägget har tagits bort av utvecklaren och kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="80471789339884597">Tack för att du installerat programmet. Du måste starta om alla webbläsare innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
@@ -383,7 +385,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8290100596633877290">Hoppsan! Google Chrome har kraschat. Vill du starta om nu?</translation>
 <translation id="8342675569599923794">Filen är farlig och har blockerats av Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen med Chrome. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Administratören avslutar Chrome automatiskt när det inte använts på en minut.}other{Administratören avslutar Chrome automatiskt när det inte använts på # minuter.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Chrome kan göra en uppskattning av dina intressen. Senare kan en webbplats fråga efter dina intressen i Chrome för att anpassa vilka annonser som visas.</translation>
 <translation id="8387459386171870978">Fortsätt att använda Chrome</translation>

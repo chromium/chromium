@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">現在不要</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{為保護你的資料，系統已從你 2 個月以來未曾造訪的一個網站移除相關權限}other{為保護你的資料，系統已從你 2 個月以來未曾造訪的多個網站移除相關權限}}</translation>
 <translation id="1009663062402466586">現已提供遊戲控制項</translation>
-<translation id="1010498023906173788">這個分頁已連線至序列埠。</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{一個網頁無回應}other{多個網頁無回應}}</translation>
 <translation id="1011003645819296594">已儲存的裝置</translation>
 <translation id="1011355516189274711">文字轉語音的音量</translation>
@@ -632,7 +631,6 @@
 <translation id="1541346352678737112">找不到網路</translation>
 <translation id="154198613844929213">{0,plural, =0{立即刪除。}=1{刪除時間：1 秒後}other{刪除時間：# 秒後}}</translation>
 <translation id="1542137295869176367">無法更新你的登入資料</translation>
-<translation id="1542514202066550870">這個分頁正在對頭戴式裝置展示 VR 內容。</translation>
 <translation id="1543284117603151572">從 Edge 匯入的書籤</translation>
 <translation id="1543538514740974167">更快開啟這個頁面</translation>
 <translation id="1544588554445317666">請嘗試使用較短的檔案名稱，或將檔案儲存至其他資料夾</translation>
@@ -1048,7 +1046,6 @@
 <translation id="1873920700418191231">重新授權給 <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">可以顯示任何廣告</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{將分頁移到其他視窗}other{將分頁移到其他視窗}}</translation>
-<translation id="1875386316419689002">這個分頁已連線至 HID 裝置。</translation>
 <translation id="1875387611427697908">只能從 <ph name="CHROME_WEB_STORE" /> 新增</translation>
 <translation id="1877377290348678128">標籤 (選填)</translation>
 <translation id="1877520246462554164">無法取得驗證憑證。請先登出，然後重新登入再試一次。</translation>
@@ -1904,7 +1901,6 @@
 <translation id="2581455244799175627">進一步瞭解允許第三方 Cookie</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">無法取得 Kerberos 票證。請再試一次，或與貴機構的裝置管理員聯絡。(錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
-<translation id="2585724835339714757">這個分頁正在共用你的畫面。</translation>
 <translation id="2586561813241011046">無法安裝「<ph name="APP_NAME" />」。請再試一次，或是與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2586672484245266891">請輸入較短的網址</translation>
@@ -2133,7 +2129,6 @@
 <translation id="2777525873368474674">貼上圖片連結</translation>
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">已允許執行這個網站的擴充功能</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2783024642731649028">購物車中 1 項商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">已下載</translation>
@@ -2486,7 +2481,6 @@
 <translation id="3080933187214341848">這個網路並未同步到你的帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">這個分頁正在使用你的相機和/或麥克風。</translation>
 <translation id="3083193146044397360">已暫時封鎖權限，保護你的安全</translation>
 <translation id="3083899879156272923">以滑鼠游標為中心移動畫面</translation>
 <translation id="3083998949001524405">允許使用第三方 Cookie</translation>
@@ -2603,7 +2597,6 @@
 <translation id="3201237270673604992">Z 到 A</translation>
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
-<translation id="3202173864863109533">分頁音訊已關閉。</translation>
 <translation id="3202578601642193415">最新記錄</translation>
 <translation id="3204648577100496185">系統可能會從這部裝置中移除與這個應用程式相關聯的資料</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
@@ -3011,7 +3004,6 @@
 <translation id="3575121482199441727">允許這個網站的通知</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬體資料收集聲明</translation>
-<translation id="3578594933904494462">正在分享這個分頁的內容。</translation>
 <translation id="3578874072190212775">協助網站防範詐欺及辨別機器人和真人</translation>
 <translation id="3581605050355435601">自動設定 IP 位址</translation>
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
@@ -3552,6 +3544,7 @@
 <translation id="4021941025609472374">關閉左側的分頁</translation>
 <translation id="402211067068791756">這會清除目前顯示的網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
+<translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4025039777635956441">關閉所選網站的音訊</translation>
 <translation id="402707738228916911">已收到<ph name="AUTHORIZE_INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="4027569221211770437">「<ph name="FOLDER_TITLE" />」資料夾</translation>
@@ -4027,7 +4020,6 @@
 <translation id="4448914100439890108">在 <ph name="DOMAIN" /> 上隱藏 <ph name="USERNAME" /> 的密碼</translation>
 <translation id="4449247303975391730">管理權限</translation>
 <translation id="4449948729197510913">你的使用者名稱屬於貴機構的公司帳戶。如要將裝置註冊到這個帳戶，請先在管理控制台中驗證網域擁有權。你必須擁有帳戶的管理員權限才能進行驗證。</translation>
-<translation id="4449996769074858870">這個分頁正在播放音訊。</translation>
 <translation id="4450974146388585462">診斷</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，這可安全儲存你的資料。</translation>
 <translation id="4451479197788154834">你已將密碼儲存在這部裝置上和 Google 帳戶中</translation>
@@ -5120,6 +5112,7 @@
 <translation id="5439680044267106777">略過並設定新的設定檔</translation>
 <translation id="544083962418256601">建立捷徑...</translation>
 <translation id="5441133529460183413">從 Chrome 瀏覽器安裝的網頁應用程式</translation>
+<translation id="5441292787273562014">重新載入網頁</translation>
 <translation id="5441466871879044658">翻譯成這種語言</translation>
 <translation id="5442228125690314719">建立磁碟映像檔時發生錯誤，請再試一次。</translation>
 <translation id="5442550868130618860">開啟自動更新功能</translation>
@@ -5259,7 +5252,6 @@
 <translation id="5559311991468302423">刪除地址</translation>
 <translation id="55601339223879446">調整顯示畫面中的桌面邊界</translation>
 <translation id="5561162485081632007">可偵測不安全事件，並在這類事件發生時顯示警告訊息</translation>
-<translation id="5562781907504170924">這個分頁已連線至藍牙裝置。</translation>
 <translation id="556321030400250233">本機檔案或共用檔案</translation>
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
 <translation id="5565735124758917034">管理中</translation>
@@ -5619,7 +5611,6 @@
 <translation id="5882919346125742463">已知網路</translation>
 <translation id="5883356647197510494">已自動封鎖：<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">自訂各個擴充功能</translation>
-<translation id="5884474295213649357">這個分頁已連上 USB 裝置。</translation>
 <translation id="5885314688092915589">貴機構將管理這個設定檔</translation>
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">連線並快速設定附近的快速配對裝置</translation>
@@ -8590,7 +8581,6 @@
 <translation id="8464132254133862871">這個使用者帳戶不符合使用服務的資格。</translation>
 <translation id="8465252176946159372">無效</translation>
 <translation id="8465444703385715657">需要你的授權才能執行「<ph name="PLUGIN_NAME" />」</translation>
-<translation id="8466417995783206254">這個分頁正在使用子母畫面模式播放影片。</translation>
 <translation id="8467326454809944210">選擇其他語言</translation>
 <translation id="8468087214092422866">不得尋找藍牙裝置</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
@@ -8923,7 +8913,6 @@
 <translation id="8755584192133371929">選取要分享的分頁</translation>
 <translation id="875604634276263540">映像檔網址無效</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
-<translation id="8757203080302669031">這個分頁正在主動掃描藍牙裝置。</translation>
 <translation id="8757368836647541092">已移除「<ph name="USER_NAME_OR_EMAIL" />」</translation>
 <translation id="8759753423332885148">瞭解詳情</translation>
 <translation id="8761945298804995673">這名使用者已經存在。</translation>

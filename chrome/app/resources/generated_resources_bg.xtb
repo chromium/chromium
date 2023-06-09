@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{За да защитим данните ви, премахнахме разрешенията за сайт, който не сте посещавали от 2 месеца}other{За да защитим данните ви, премахнахме разрешенията за сайтовете, които не сте посещавали от 2 месеца}}</translation>
 <translation id="1009663062402466586">Вече се предлагат контроли за игри</translation>
-<translation id="1010498023906173788">Този раздел е свързан със сериен порт.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Блокирала страница}other{Блокирали страници}}</translation>
 <translation id="1011003645819296594">Запазени устройства</translation>
 <translation id="1011355516189274711">Сила на звука на синтезирания говор</translation>
@@ -632,7 +631,6 @@
 <translation id="1541346352678737112">Няма намерена мрежа</translation>
 <translation id="154198613844929213">{0,plural, =0{Изтрива се сега.}=1{Изтрива се след 1 секунда}other{Изтрива се след # секунди}}</translation>
 <translation id="1542137295869176367">Данните ви за вход не бяха актуализирани</translation>
-<translation id="1542514202066550870">Този раздел предава съдържание във VR към очила.</translation>
 <translation id="1543284117603151572">Импортирани от Edge</translation>
 <translation id="1543538514740974167">Стигайте дотук по-бързо</translation>
 <translation id="1544588554445317666">Запазете файла с по-кратко име или в друга папка</translation>
@@ -1056,7 +1054,6 @@
 <translation id="1873920700418191231">Повторно предоставяне на разрешенията за <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Сайтове с разрешение за показване на всякакви реклами</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Преместване на раздела в друг прозорец}other{Преместване на разделите в друг прозорец}}</translation>
-<translation id="1875386316419689002">Този раздел е свързан с HID устройство.</translation>
 <translation id="1875387611427697908">Това може да бъде добавено само от <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Етикет (незадължителен)</translation>
 <translation id="1877520246462554164">Получаването на означение за удостоверяване не бе успешно. Моля, излезте от профила си и влезте отново в него, за да опитате пак.</translation>
@@ -1915,7 +1912,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2581455244799175627">Още за разрешаването на „бисквитки“ на трети страни</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Пропускът за Kerberos не можа да бъде получен. Опитайте отново или се обърнете към администратора на устройства за организацията си. (Код на грешката: <ph name="ERROR_CODE" />)</translation>
-<translation id="2585724835339714757">Чрез този раздел се споделя екранът ви.</translation>
 <translation id="2586561813241011046">Инсталирането на <ph name="APP_NAME" /> не бе успешно. Моля, опитайте отново или се обърнете към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
 <translation id="2586672484245266891">Моля, въведете по-кратък URL адрес</translation>
@@ -2144,7 +2140,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2777525873368474674">Поставете връзка към изображение</translation>
 <translation id="2778471504622896352">Добавяйте отдалечени приложения към стартовия панел на ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Разширенията са разрешени на този сайт</translation>
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
 <translation id="2783024642731649028">В кошницата ви има 1 артикул: <ph name="DISCOUNT_TEXT" /> от <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледан <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Изтеглено</translation>
@@ -2497,7 +2492,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3080933187214341848">Тази мрежа не е синхронизирана с профила ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI адрес</translation>
-<translation id="3082780749197361769">Този раздел използва камерата или микрофона ви.</translation>
 <translation id="3083193146044397360">Временно блокирано от съображения за сигурност</translation>
 <translation id="3083899879156272923">Преместване на екрана и задържане на мишката в центъра му</translation>
 <translation id="3083998949001524405">Разрешено е използването на „бисквитки“ на трети страни</translation>
@@ -2614,7 +2608,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3201237270673604992">Я – A</translation>
 <translation id="3201422919974259695">Наличните USB устройства ще се показват тук.</translation>
 <translation id="3202131003361292969">Път</translation>
-<translation id="3202173864863109533">Звукът на този раздел е спрян.</translation>
 <translation id="3202578601642193415">Най-нова</translation>
 <translation id="3204648577100496185">Данните, свързани с това приложение, може да бъдат премахнати от устройството</translation>
 <translation id="3207960819495026254">С отметка</translation>
@@ -3022,7 +3015,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3577745545227000795">Събиране на данни за хардуера от <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Съдържанието на този раздел се споделя.</translation>
 <translation id="3578874072190212775">Помага на сайтовете да се борят с измамите и да различават роботи от хора</translation>
 <translation id="3581605050355435601">Автоматично конфигуриране на IP адреса</translation>
 <translation id="3582057310199111521">Въведена в измамнически сайт и разкрита при нарушение на сигурността на данните</translation>
@@ -3565,6 +3557,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4021941025609472374">Затваряне на разделите отляво</translation>
 <translation id="402211067068791756">Съхраняваните от показаните сайтове данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изчистени</translation>
 <translation id="4022426551683927403">&amp;Добавяне в речника</translation>
+<translation id="4024768890073681126">Браузърът се управлява от родител</translation>
 <translation id="4025039777635956441">Спиране на звука на избрания сайт</translation>
 <translation id="402707738228916911">Получена е инструкция за <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Папка <ph name="FOLDER_TITLE" /></translation>
@@ -4040,7 +4033,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4448914100439890108">Скриване на паролата за <ph name="USERNAME" /> в домейна <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Управление на разрешенията</translation>
 <translation id="4449948729197510913">Потребителското ви име е част от корпоративния профил на организацията ви. Ако искате да регистрирате устройства с профила, първо трябва да потвърдите собствеността върху домейна от администраторската конзола. За целта ще са ви необходими администраторски права за профила.</translation>
-<translation id="4449996769074858870">В този раздел се възпроизвежда звук.</translation>
 <translation id="4450974146388585462">Диагностициране</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> откри активен TPM, който може да съхранява данните ви по-сигурно.</translation>
 <translation id="4451479197788154834">Паролата ви е запазена на това устройство и в профила ви в Google</translation>
@@ -5134,6 +5126,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5439680044267106777">Пропускане и настройване на нов потребителски профил</translation>
 <translation id="544083962418256601">Създаване на преки пътища...</translation>
 <translation id="5441133529460183413">Уеб приложение, инсталирано от браузъра Chrome</translation>
+<translation id="5441292787273562014">Презареждане на страницата</translation>
 <translation id="5441466871879044658">Превеждане на този език</translation>
 <translation id="5442228125690314719">Грешка при създаването на образ на диска. Моля, опитайте отново.</translation>
 <translation id="5442550868130618860">Включване на автоматичното актуализиране</translation>
@@ -5273,7 +5266,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5559311991468302423">Изтриване на адреса</translation>
 <translation id="55601339223879446">Коригиране на границите на работния плот в рамките на екрана</translation>
 <translation id="5561162485081632007">Открива опасни събития, когато се случват, и ви предупреждава за тях</translation>
-<translation id="5562781907504170924">Този раздел е свързан с устройство с Bluetooth.</translation>
 <translation id="556321030400250233">локален или споделен файл</translation>
 <translation id="5563234215388768762">Търсете с Google или въведете URL адрес</translation>
 <translation id="5565735124758917034">Активно</translation>
@@ -5638,7 +5630,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5882919346125742463">Известни мрежи</translation>
 <translation id="5883356647197510494">Автоматично са блокирани „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“</translation>
 <translation id="5884447826201752041">Персонализиране за всяко разширение</translation>
-<translation id="5884474295213649357">Този раздел е свързан с USB устройство.</translation>
 <translation id="5885314688092915589">Този потребителски профил ще се управлява от организацията ви</translation>
 <translation id="5886009770935151472">Пръст 1</translation>
 <translation id="5886112770923972514">Свързване и бързо настройване на устройствата наблизо с функцията за бързо сдвояване</translation>
@@ -8611,7 +8602,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8464132254133862871">Този профил на потребител не отговаря на условията за услугата.</translation>
 <translation id="8465252176946159372">Не е валидно</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> се нуждае от разрешението ви, за да стартира</translation>
-<translation id="8466417995783206254">В този раздел се възпроизвежда видеоклип в режим „Картина в картината“.</translation>
 <translation id="8467326454809944210">Избор на друг език</translation>
 <translation id="8468087214092422866">Сайтове без разрешение за търсене на устройства с Bluetooth</translation>
 <translation id="8470513973197838199">Запазени пароли за <ph name="ORIGIN" /></translation>
@@ -8944,7 +8934,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8755584192133371929">Изберете раздел за споделяне</translation>
 <translation id="875604634276263540">URL адресът на изображението е невалиден</translation>
 <translation id="8756969031206844760">Да се актуализира ли паролата?</translation>
-<translation id="8757203080302669031">Този раздел активно сканира за устройства с Bluetooth.</translation>
 <translation id="8757368836647541092">Премахнахте <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Научете повече.</translation>
 <translation id="8761945298804995673">Този потребител вече съществува</translation>

@@ -223,7 +223,6 @@
 <translation id="4970947549776831107">Chrome bloqueó este archivo porque este tipo de archivo es peligroso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Una extensión de Google Chrome tenía acceso a dispositivos HID}=1{Una extensión de Google Chrome tiene acceso a 1 dispositivo HID}other{Una extensión de Google Chrome tiene acceso a # dispositivos HID}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{El administrador cierra Chrome automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{El administrador cierra Chrome automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="5098668839038261629">Si activas esta opción, saldrás de Chrome</translation>
 <translation id="5132929315877954718">Descubre aplicaciones, juegos, extensiones y temas geniales para Google Chrome.</translation>
 <translation id="5139423532931106058">Personaliza tu perfil de Chrome</translation>
@@ -281,7 +280,6 @@
 <translation id="6291549208091401781">Google Chrome ya está instalado para todos los usuarios en tu computadora.</translation>
 <translation id="6326175484149238433">Quitar de Chrome</translation>
 <translation id="6327105987658262776">No hay actualizaciones disponibles.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{El administrador borra los datos de navegación automáticamente si no los usas durante 1 minuto. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}other{El administrador borra los datos de navegación automáticamente si no los usas durante # minutos. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}}</translation>
 <translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="6418662306461808273">¿Deseas cambiar a un perfil existente de Chrome?</translation>
 <translation id="648319183876919572">La Navegación segura mejorada realiza más acciones para protegerte de descargas y sitios web peligrosos</translation>
@@ -375,7 +373,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8290100596633877290">¡Vaya! Se ha producido un bloqueo en Google Chrome. ¿Quieres reiniciar el navegador ahora?</translation>
 <translation id="8342675569599923794">Chrome bloqueó este archivo porque es peligroso.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cómo usamos esta información:<ph name="END_BOLD" /> Los sitios pueden almacenar información sobre tus intereses con Chrome. Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio defina que te interesa correr maratones. Luego, si visitas otro sitio para registrarte en una carrera, ese sitio podrá mostrarte un anuncio sobre calzado para correr en función de tus intereses.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{El administrador cierra Chrome automáticamente si no lo usas durante 1 minuto.}other{El administrador cierra Chrome automáticamente si no lo usas durante # minutos.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cómo usamos esta información:<ph name="END_BOLD" /> Chrome puede estimar tus intereses. Luego, los sitios que visites pueden consultar tus intereses con Chrome para personalizar los anuncios que te muestran.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>

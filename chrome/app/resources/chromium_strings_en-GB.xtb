@@ -12,7 +12,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1131805035311359397">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium extensions were accessing HID devices}=1{Chromium extensions are accessing 1 HID device}other{Chromium extensions are accessing # HID devices}}</translation>
 <translation id="1185134272377778587">About Chromium</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Your administrator automatically closes Chromium when it isn't used for 1 minute. Browsing data is deleted. This could include history, auto-fill and downloads.}other{Your administrator automatically closes Chromium when it isn't used for # minutes. Browsing data is deleted. This could include history, auto-fill and downloads.}}</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Memory Saver Made Chromium Faster</translation>
 <translation id="1262876892872089030">While this tab was inactive, memory was freed up to keep Chromium fast. You can choose to always exclude this site from being inactive.</translation>
@@ -187,7 +186,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
 <translation id="5114678101347489141">Chromium is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Your administrator automatically closes Chromium when it isn't used for 1 minute.}other{Your administrator automatically closes Chromium when it isn't used for # minutes.}}</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> is already signed in to this Chromium profile. This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">To apply your changes, relaunch Chromium</translation>
@@ -252,7 +250,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6327105987658262776">No update is available.</translation>
 <translation id="6333502561965082103">Another operation on Chromium is in progress. Please try again later.</translation>
 <translation id="6334986366598267305">Now it's easier to use Chromium with your Google Account and on shared computers.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Your administrator automatically deletes browsing data when it isn't used for one minute. This could include history, auto-fill and downloads. Your existing tabs will remain open.}other{Your administrator automatically deletes browsing data when it isn't used for # minutes. This could include history, auto-fill and downloads. Your existing tabs will remain open.}}</translation>
 <translation id="6373523479360886564">Are you sure you want to uninstall Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chromium can estimate your interests. Later, a site that you visit can ask Chromium to see your interests in order to personalise the ads that you see.</translation>
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>

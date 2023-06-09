@@ -1076,6 +1076,11 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2006530844219044261">Gestione dell'alimentazione</translation>
 <translation id="2006954055163088863">Considera l'utente inattivo quando viene riprodotto il video</translation>
 <translation id="2008514891623783266">Criteri di gestione dell'IP di WebRTC</translation>
+<translation id="201153120366509312">Se questo criterio viene consentito o se non viene configurato, la raccolta di metriche con chiave URL è consentita.
+Se il criterio viene consentito e la raccolta di metriche con chiave URL viene attivata dall'utente, la raccolta di metriche con chiave URL invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, nonché le statistiche sull'utilizzo di ogni singola pagina.
+Le metriche con chiave URL includono anche gli identificatori e le statistiche sull'utilizzo di altri componenti del browser che possono modificare o fornire contenuti, come le estensioni.
+
+Se questo criterio non viene consentito, gli utenti non possono attivare la raccolta di metriche con chiave URL.</translation>
 <translation id="2012296492055302633">Attiva sempre la Schermata privata</translation>
 <translation id="2014757022750736514">Consente di stabilire il comportamento della schermata di accesso, da cui gli utenti possono accedere ai propri account. Le impostazioni consentono di decidere chi può accedere, che tipi di account sono consentiti, quali metodi di autenticazione devono essere usati. Sono disponibili anche impostazioni generali relative ad accessibilità, metodo di immissione e lingue.</translation>
 <translation id="201557587962247231">Frequenza dei caricamenti del rapporto sullo stato del dispositivo</translation>
@@ -1318,6 +1323,15 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="2223393221350938149">Non consentire ad alcun sito di eseguire JIT di JavaScript</translation>
 <translation id="2223598546285729819">Impostazione di notifica predefinita</translation>
 <translation id="222673035924187991">Attiva TLS Encrypted ClientHello</translation>
+<translation id="222944823539535006">Questo criterio è deprecato e verrà rimosso nella versione 130. Utilizza il criterio <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
+
+Se il criterio viene attivato, la raccolta di dati anonimizzati con chiave URL, che invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, è sempre attiva.
+
+Se viene disattivato, la raccolta di dati anonimizzati con chiave URL non viene attivata.
+
+Se questo criterio non viene configurato, l'utente potrà modificare manualmente questa impostazione.
+
+Nel kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio non offre l'opzione per consentire all'utente di decidere. Se questo criterio non viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, la raccolta di dati anonimizzati con chiave URL è sempre attiva.</translation>
 <translation id="2231817271680715693">Importa cronologia di navigazione dal browser predefinito alla prima esecuzione</translation>
 <translation id="2231962946025538735">Questo criterio è stato ritirato. Usa il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e il criterio <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per scegliere se utilizzare il visualizzatore PDF integrato per aprire i file PDF.
 
@@ -4323,6 +4337,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5025239932007658691">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> invia query occasionali a un server di Google per recuperare un timestamp accurato.
 
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> smette di inviare queste query.</translation>
+<translation id="5030415914668947893">Consenti la raccolta di metriche con chiave URL</translation>
 <translation id="5033070732967197381">Consenti le richieste API WebAuthn su siti con certificati TLS inaccessibili.</translation>
 <translation id="5034504101537897433">Attiva i report relativi alle informazioni sul report sugli arresti anomali del dispositivo</translation>
 <translation id="5036013147560568855">Versione del protocollo di provisioning del certificato. Il valore predefinito è 1. 1 significa che il protocollo è "statico". 2 significa che il protocollo è "dinamico".</translation>
@@ -5328,6 +5343,7 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 <translation id="603768430528561926">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti dei dispositivi aziendali possono riscattare le offerte tramite la registrazione a <ph name="PRODUCT_OS_NAME" />.
 
       Se viene impostato su Disattivato, gli utenti non possono riscattare tali offerte.</translation>
+<translation id="6042629184389251062">La raccolta di metriche con chiave URL non è consentita</translation>
 <translation id="6046615715547751255">Non consentire i controlli di reporting granulare</translation>
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
 <translation id="6048690591359317353">Non consentire all'utente di disconnettere o modificare manualmente una VPN</translation>
@@ -5836,6 +5852,7 @@ Vedi anche il criterio <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6462604655173570082">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare e usare il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda. Se il criterio viene impostato su Disattivato, gli utenti non vedranno il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="6464074037294098618">Attiva la Compilazione automatica per gli indirizzi</translation>
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>
+<translation id="6471018476824827813">La raccolta di metriche con chiave URL è consentita</translation>
 <translation id="6473623140202114570">Configura l'elenco di domini sui quali Navigazione sicura non attiverà avvisi.</translation>
 <translation id="6474194795370862403">Verrà utilizzato il comportamento offsetParent precedente.</translation>
 <translation id="647645276885673708">Attiva <ph name="LACROS_NAME" /> e impostalo come browser principale</translation>

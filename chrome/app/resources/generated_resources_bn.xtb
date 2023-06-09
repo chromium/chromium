@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">এখনই নয়</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{আপনার ডেটা সুরক্ষিত রাখতে, সাইট থেকে অনুমতি সরিয়ে নেওয়া হয়েছে, যা ২ মাস ধরে দেখেননি}one{আপনার ডেটা সুরক্ষিত রাখতে, সাইট থেকে অনুমতি সরিয়ে নেওয়া হয়েছে, যা ২ মাস ধরে দেখেননি}other{আপনার ডেটা সুরক্ষিত রাখতে, সাইট থেকে অনুমতি সরিয়ে নেওয়া হয়েছে, যা ২ মাস ধরে দেখেননি}}</translation>
 <translation id="1009663062402466586">গেম কন্ট্রোল এখন উপলভ্য</translation>
-<translation id="1010498023906173788">এই ট্যাব একটি সিরিয়াল পোর্টে কানেক্ট করা আছে।</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{পৃষ্ঠা প্রতিক্রিয়াবিহীন}one{পৃষ্ঠাগুলি প্রতিক্রিয়াবিহীন}other{পৃষ্ঠাগুলি প্রতিক্রিয়াবিহীন}}</translation>
 <translation id="1011003645819296594">সেভ করা ডিভাইস</translation>
 <translation id="1011355516189274711">টেক্সট-টু-স্পিচ ভলিউম</translation>
@@ -636,7 +635,6 @@
 <translation id="1541346352678737112">কোনও নেটওয়ার্ক পাওয়া যায়নি</translation>
 <translation id="154198613844929213">{0,plural, =0{এখন মুছে ফেলা হচ্ছে।}=1{মুছে ফেলা হচ্ছে: ১ সেকেন্ডের মধ্যে}one{মুছে ফেলা হচ্ছে: # সেকেন্ডের মধ্যে}other{মুছে ফেলা হচ্ছে: # সেকেন্ডের মধ্যে}}</translation>
 <translation id="1542137295869176367">আপনার সাইন-ইন ডেটা আপডেট করা যায়নি</translation>
-<translation id="1542514202066550870">এই ট্যাবটি কোনও একটি হেডসেটে ভিআর (VR) কন্টেন্ট দেখাচ্ছে।</translation>
 <translation id="1543284117603151572">Edge থেকে আমদানি করা</translation>
 <translation id="1543538514740974167">এখান থেকে দ্রুত অ্যাক্সেস করুন</translation>
 <translation id="1544588554445317666">একটি ছোট ফাইলের নাম ব্যবহার করার চেষ্টা করুন বা অন্য ফোল্ডারে সেভ করুন</translation>
@@ -1061,7 +1059,6 @@
 <translation id="1873920700418191231"><ph name="WEBSITE" />-এর জন্য অনুমতি দিন</translation>
 <translation id="1874248162548993294">যেকোনও বিজ্ঞাপন দেখানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{অন্য উইন্ডোতে ট্যাব সরিয়ে নিয়ে যান}one{অন্য উইন্ডোতে ট্যাবগুলি সরিয়ে নিয়ে যান}other{অন্য উইন্ডোতে ট্যাবগুলি সরিয়ে নিয়ে যান}}</translation>
-<translation id="1875386316419689002">এই ট্যাবটি একটি এইচআইডি ডিভাইসে কানেক্ট করা আছে।</translation>
 <translation id="1875387611427697908">এটি কেবলমাত্র <ph name="CHROME_WEB_STORE" /> থেকেই যোগ করা যেতে পারে</translation>
 <translation id="1877377290348678128">লেবেল (ঐচ্ছিক)</translation>
 <translation id="1877520246462554164">যাচাইকরণ টোকেন পাওয়া যায়নি। অনুগ্রহ করে সাইন-আউট-এর পরে সাইন-ইন করে আবার চেষ্টা করুন।</translation>
@@ -1920,7 +1917,6 @@
 <translation id="2581455244799175627">থার্ড-পার্টি কুকি অনুমতি দেওয়ার বিষয়ে আরও অনেক কিছু</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (প্ল্যাটফর্ম <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos টিকিট পাওয়া যায়নি। আবার চেষ্টা করুন অথবা আপনার সংস্থার ডিভাইস অ্যাডমিনের সাথে যোগাযোগ করুন। (সমস্যার কোড <ph name="ERROR_CODE" />)।</translation>
-<translation id="2585724835339714757">এই ট্যাবটি আপনার স্ক্রিন শেয়ার করছে।</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> ইনস্টল করা যায়নি। আবার চেষ্টা করুন অথবা আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="2586657967955657006">ক্লিপবোর্ড</translation>
 <translation id="2586672484245266891">এর থেকে ছোট URL লিখুন</translation>
@@ -2149,7 +2145,6 @@
 <translation id="2777525873368474674">ছবির লিঙ্ক পেস্ট করুন</translation>
 <translation id="2778471504622896352">ChromeOS লঞ্চারে রিমোট অ্যাপ যোগ করুন</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">এই সাইটে এক্সটেনশনের অনুমতি দেওয়া আছে</translation>
 <translation id="2782104745158847185">Linux অ্যাপ ইনস্টল করার সময় সমস্যা</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" /> থেকে আপনার কার্টে থাকা ১টি আইটেমে <ph name="DISCOUNT_TEXT" /> আছে, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> দেখা হয়েছে</translation>
 <translation id="2783298271312924866">ডাউনলোড হয়েছে</translation>
@@ -2502,7 +2497,6 @@
 <translation id="3080933187214341848">এই নেটওয়ার্কটি আপনার অ্যাকাউন্টে সিঙ্ক করা নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">এই ট্যাব আপনার ক্যামেরা বা মাইক্রোফোন ব্যবহার করছে৷</translation>
 <translation id="3083193146044397360">আপনার নিরাপত্তা রক্ষা করতে অস্থায়ীভাবে ব্লক করুন</translation>
 <translation id="3083899879156272923">মাউসকে স্ক্রিনের মাঝখানে রেখে স্ক্রিন সরান</translation>
 <translation id="3083998949001524405">থার্ড-পার্টি কুকি ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
@@ -2619,7 +2613,6 @@
 <translation id="3201237270673604992">Z থেকে A</translation>
 <translation id="3201422919974259695">উপলভ্য ইউএসবি ডিভাইসগুলি এখানে দেখা যাবে।</translation>
 <translation id="3202131003361292969">পাথ</translation>
-<translation id="3202173864863109533">এই ট্যাবের অডিও মিউট করা হচ্ছে৷</translation>
 <translation id="3202578601642193415">নবীনতম</translation>
 <translation id="3204648577100496185">এই অ্যাপের ডেটাও হয়ত ডিভাইস থেকে মুছে যাবে</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
@@ -3027,7 +3020,6 @@
 <translation id="3575121482199441727">এই সাইটের জন্য অনুমতি দিন</translation>
 <translation id="3577473026931028326">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />-এর হার্ডওয়্যার সংক্রান্ত ডেটা সংগ্রহ</translation>
-<translation id="3578594933904494462">এই ট্যাবের কন্টেন্ট শেয়ার করা হচ্ছে৷</translation>
 <translation id="3578874072190212775">সাইটগুলিকে জালিয়াতির বিরুদ্ধে লড়াই করতে এবং বটকে ব্যক্তিদের থেকে আলাদা করতে সাহায্য করে</translation>
 <translation id="3581605050355435601">IP অ্যাড্রেস অটোমেটিক কনফিগার করুন</translation>
 <translation id="3582057310199111521">এই পাসওয়ার্ড কোনও প্রতারণামূলক সাইটে ব্যবহার করা হয়েছিল এবং হ্যাক হওয়া ডেটাবেসেও এটা পাওয়া গেছে</translation>
@@ -3568,6 +3560,7 @@
 <translation id="4021941025609472374">বাঁদিকের ট্যাব বন্ধ করুন</translation>
 <translation id="402211067068791756">এর ফলে সাইটগুলির সেভ করা <ph name="TOTAL_USAGE" /> ডেটা মুছে যাবে</translation>
 <translation id="4022426551683927403">&amp;অভিধানে যুক্ত করুন</translation>
+<translation id="4024768890073681126">আপনার অভিভাবক ব্রাউজার ম্যানেজ করছেন</translation>
 <translation id="4025039777635956441">বেছে নেওয়া সাইট মিউট করুন</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> নির্দেশ রিসিভ করা হয়েছে</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ফোল্ডার</translation>
@@ -4044,7 +4037,6 @@
 <translation id="4448914100439890108"><ph name="DOMAIN" />-এ <ph name="USERNAME" />-এর পাসওয়ার্ড লুকান</translation>
 <translation id="4449247303975391730">অনুমতি ম্যানেজ করুন</translation>
 <translation id="4449948729197510913">আপনার ইউজারনেম আপনার সংস্থার এন্টারপ্রাইজ অ্যাকাউন্টের সাথে যুক্ত আছে। এই অ্যাকাউন্টে ডিভাইস এনরোল করতে, প্রথমে অ্যাডমিন কনসোলে ডোমেনের মালিকানা যাচাই করে নিন। যাচাই করার জন্য আপনাকে এই অ্যাকাউন্টে অ্যাডমিনিস্ট্রেটর সম্বন্ধীয় বিশেষাধিকার অর্জন করতে হবে।</translation>
-<translation id="4449996769074858870">এই ট্যাবটি অডিও প্লে করছে৷</translation>
 <translation id="4450974146388585462">নির্ণয় করুন</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> একটি চালু থাকা TPM শনাক্ত করেছে যেটি আপনার ডেটা আরও সুরক্ষিতভাবে সেভ করতে পারবে।</translation>
 <translation id="4451479197788154834">এই ডিভাইসে এবং আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করা আছে</translation>
@@ -5139,6 +5131,7 @@
 <translation id="5439680044267106777">এড়িয়ে যান ও নতুন প্রোফাইল সেট আপ করুন</translation>
 <translation id="544083962418256601">শর্টকাটগুলি তৈরি করুন...</translation>
 <translation id="5441133529460183413">Chrome ব্রাউজার থেকে ওয়েব অ্যাপ ইনস্টল করা হয়েছে</translation>
+<translation id="5441292787273562014">পৃষ্ঠা আবার লোড করুন</translation>
 <translation id="5441466871879044658">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="5442228125690314719">ডিস্ক ছবি তৈরি করতে সমস্যা হচ্ছে। আবার চেষ্টা করুন।</translation>
 <translation id="5442550868130618860">অটো-আপডেট চালু করুন</translation>
@@ -5278,7 +5271,6 @@
 <translation id="5559311991468302423">ঠিকানা মুছুন</translation>
 <translation id="55601339223879446">প্রদর্শনের মধ্যে আপনার ডেস্কটপ সীমানার সামঞ্জস্যবিধান করুন</translation>
 <translation id="5561162485081632007">ব্রাউজ করার সময় কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়</translation>
-<translation id="5562781907504170924">এই ট্যাবটি একটি ব্লুটুথ ডিভাইসে সংযুক্ত হয়ে আছে।</translation>
 <translation id="556321030400250233">স্থানীয় বা শেয়ার করা ফাইল</translation>
 <translation id="5563234215388768762">Google-এ সার্চ করুন অথবা URL টাইপ করুন</translation>
 <translation id="5565735124758917034">সক্রিয়</translation>
@@ -5643,7 +5635,6 @@
 <translation id="5882919346125742463">পরিচিত নেটওয়ার্কগুলি</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> অটোমেটিক ব্লক করা হয়েছে</translation>
 <translation id="5884447826201752041">প্রতিটি এক্সটেনশনের জন্য কাস্টমাইজ করুন</translation>
-<translation id="5884474295213649357">এই ট্যাব একটি USB ডিভাইসের সাথে সংযুক্ত করা আছে।</translation>
 <translation id="5885314688092915589">আপনার প্রতিষ্ঠান এই প্রোফাইল ম্যানেজ করবে</translation>
 <translation id="5886009770935151472">আঙুল ১</translation>
 <translation id="5886112770923972514">আশেপাশের ডিভাইসে কানেক্ট করে দ্রুত পেয়ার সেট-আপ করুন</translation>
@@ -8618,7 +8609,6 @@
 <translation id="8464132254133862871">এই ব্যবহারকারীর অ্যাকাউন্ট এই পরিষেবার জন্য উপযুক্ত নয়৷</translation>
 <translation id="8465252176946159372">বৈধ না</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> চালানোর জন্য আপনার অনুমতি প্রয়োজন</translation>
-<translation id="8466417995783206254">এই ট্যাবটি ছবির-মধ্যে-ছবি মোডে ভিডিওটি চালাচ্ছে।</translation>
 <translation id="8467326454809944210">অন্য ভাষা বেছে নিন</translation>
 <translation id="8468087214092422866">ব্লুটুথ ডিভাইস খোঁজার অনুমতি নেই</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> এর জন্য সেভ করা পাসওয়ার্ডগুলি</translation>
@@ -8951,7 +8941,6 @@
 <translation id="8755584192133371929">শেয়ার করার জন্য ট্যাব বেছে নিন</translation>
 <translation id="875604634276263540">ছবির url ভুল</translation>
 <translation id="8756969031206844760">পাসওয়ার্ড আপডেট করবেন?</translation>
-<translation id="8757203080302669031">এই ট্যাবটি কোথায় ব্লুটুথ ডিভাইস আছে তা খুঁজে বার করতে অনবরত স্ক্যান করে যাচ্ছে।</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> সরানো হয়েছে</translation>
 <translation id="8759753423332885148">আরও জানুন৷</translation>
 <translation id="8761945298804995673">এই ব্যবহারকারী আগে থেকেই আছেন</translation>

@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Aby chronić Twoje dane, usunęliśmy uprawnienia witryny, której od 2 miesięcy nie odwiedzasz}few{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których od 2 miesięcy nie odwiedzasz}many{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których od 2 miesięcy nie odwiedzasz}other{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których od 2 miesięcy nie odwiedzasz}}</translation>
 <translation id="1009663062402466586">Opcje gry są już dostępne</translation>
-<translation id="1010498023906173788">Ta karta jest podłączona do portu szeregowego.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Strona nie odpowiada}few{Strony nie odpowiadają}many{Strony nie odpowiadają}other{Strony nie odpowiadają}}</translation>
 <translation id="1011003645819296594">Zapisane urządzenia</translation>
 <translation id="1011355516189274711">Głośność zamiany tekstu na mowę</translation>
@@ -635,7 +634,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1541346352678737112">Nie znaleziono sieci</translation>
 <translation id="154198613844929213">{0,plural, =0{Usuwam.}=1{Usuwam za: 1 sekundę}few{Usuwam za: # sekundy}many{Usuwam za: # sekund}other{Usuwam za: # sekundy}}</translation>
 <translation id="1542137295869176367">Nie udało się zaktualizować Twoich danych logowania</translation>
-<translation id="1542514202066550870">Ta karta prezentuje treści VR na goglach.</translation>
 <translation id="1543284117603151572">Zaimportowane z Edge</translation>
 <translation id="1543538514740974167">Szybciej do celu</translation>
 <translation id="1544588554445317666">Skróć nazwę pliku lub zapisz go w innym folderze</translation>
@@ -1047,7 +1045,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1873920700418191231">Przyznaj ponownie uprawnienia witrynie <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Zezwolono na wyświetlanie dowolnych reklam</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Przenieś kartę do innego okna}few{Przenieś karty do innego okna}many{Przenieś karty do innego okna}other{Przenieś karty do innego okna}}</translation>
-<translation id="1875386316419689002">Ta karta jest połączona z urządzeniem HID.</translation>
 <translation id="1875387611427697908">Możesz to pobrać tylko z <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etykieta (opcjonalna)</translation>
 <translation id="1877520246462554164">Nie udało się uzyskać tokena uwierzytelnienia. Wyloguj się, a potem zaloguj się jeszcze raz, by ponowić próbę.</translation>
@@ -1896,7 +1893,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2581455244799175627">Więcej informacji o zezwalaniu na pliki cookie innych firm</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Nie udało się pobrać zgłoszenia Kerberos. Spróbuj jeszcze raz lub skontaktuj się z administratorem urządzeń w Twojej organizacji. Kod błędu: <ph name="ERROR_CODE" />.</translation>
-<translation id="2585724835339714757">Ta karta udostępnia Twój ekran.</translation>
 <translation id="2586561813241011046">Nie udało się zainstalować <ph name="APP_NAME" />. Spróbuj jeszcze raz lub skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Schowek</translation>
 <translation id="2586672484245266891">Podaj krótszy adres URL</translation>
@@ -2126,7 +2122,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2777525873368474674">Wklej link do obrazu</translation>
 <translation id="2778471504622896352">Dodaj aplikacje zdalne do Menu z aplikacjami w ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Rozszerzenia są dozwolone w tej witrynie</translation>
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
 <translation id="2783024642731649028">1 produkt w koszyku ze zniżką <ph name="DISCOUNT_TEXT" /> od sprzedawcy <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, wyświetlony <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Pobrane</translation>
@@ -2481,7 +2476,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3080933187214341848">Ta sieć nie jest zsynchronizowana z Twoim kontem. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">Identyfikator URI</translation>
-<translation id="3082780749197361769">Ta karta używa Twojej kamery lub mikrofonu.</translation>
 <translation id="3083193146044397360">Tymczasowo zablokowano, by chronić Twoje bezpieczeństwo</translation>
 <translation id="3083899879156272923">Przesuwaj ekran, pozostawiając mysz na środku</translation>
 <translation id="3083998949001524405">Zezwolono na używanie plików cookie innych firm</translation>
@@ -2598,7 +2592,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3201237270673604992">Z–A</translation>
 <translation id="3201422919974259695">Tutaj będą widoczne dostępne urządzenia USB.</translation>
 <translation id="3202131003361292969">Ścieżka</translation>
-<translation id="3202173864863109533">Dźwięk z karty został wyciszony.</translation>
 <translation id="3202578601642193415">Najnowsze</translation>
 <translation id="3204648577100496185">Dane powiązane z tą aplikacją mogą zostać usunięte z urządzenia</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
@@ -3009,7 +3002,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3575121482199441727">Zezwalaj tej stronie</translation>
 <translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="3577745545227000795">Zbieranie danych sprzętowych przez <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Treść tej karty jest udostępniana.</translation>
 <translation id="3578874072190212775">Pomóż witrynom w walce z oszustwami i w odróżnianiu botów od ludzi</translation>
 <translation id="3581605050355435601">Automatycznie skonfiguruj adres IP</translation>
 <translation id="3582057310199111521">Wpisano na stronie wprowadzającej w błąd i doszło do naruszenia bezpieczeństwa danych</translation>
@@ -3554,6 +3546,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4021941025609472374">Zamknij karty po lewej</translation>
 <translation id="402211067068791756">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez wyświetlone witryny</translation>
 <translation id="4022426551683927403">&amp;Dodaj do słownika</translation>
+<translation id="4024768890073681126">Przeglądarką zarządza Twój rodzic</translation>
 <translation id="4025039777635956441">Wycisz wybraną stronę</translation>
 <translation id="402707738228916911">Otrzymano instrukcję <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Folder <ph name="FOLDER_TITLE" /></translation>
@@ -4030,7 +4023,6 @@ Jeśli nie zdecydujesz się udostępniać sygnałów, ten profil zostanie zamkni
 <translation id="4448914100439890108">Ukryj hasło użytkownika <ph name="USERNAME" /> w domenie <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Zarządzaj uprawnieniami</translation>
 <translation id="4449948729197510913">Twoja nazwa użytkownika jest połączona z kontem służbowym Twojej organizacji. Aby zarejestrować urządzenie na koncie, potwierdź w konsoli administracyjnej, że jesteś właścicielem domeny. Aby to zrobić, musisz mieć uprawnienia administratora konta.</translation>
-<translation id="4449996769074858870">Ta karta odtwarza dźwięk.</translation>
 <translation id="4450974146388585462">Diagnozuj</translation>
 <translation id="445099924538929605">System operacyjny <ph name="DEVICE_OS" /> wykrył aktywny moduł TPM, który umożliwia bezpieczniejsze przechowywanie Twoich danych.</translation>
 <translation id="4451479197788154834">Hasło zostało zapisane na urządzeniu i na koncie Google</translation>
@@ -5127,6 +5119,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5439680044267106777">Pomiń i utwórz nowy profil</translation>
 <translation id="544083962418256601">Utwórz skróty...</translation>
 <translation id="5441133529460183413">Aplikacja internetowa zainstalowana z przeglądarki Chrome</translation>
+<translation id="5441292787273562014">Załaduj stronę ponownie</translation>
 <translation id="5441466871879044658">Tłumacz na ten język</translation>
 <translation id="5442228125690314719">Błąd podczas tworzenia obrazu dysku. Spróbuj ponownie.</translation>
 <translation id="5442550868130618860">Włącz automatyczne aktualizowanie</translation>
@@ -5267,7 +5260,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5559311991468302423">Usuń adres</translation>
 <translation id="55601339223879446">Przesuń krawędzie pulpitu na ekranie</translation>
 <translation id="5561162485081632007">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega</translation>
-<translation id="5562781907504170924">Ta karta jest połączona z urządzeniem Bluetooth.</translation>
 <translation id="556321030400250233">plik lokalny lub udostępniony</translation>
 <translation id="5563234215388768762">Wyszukaj w Google lub wpisz URL</translation>
 <translation id="5565735124758917034">Aktywny</translation>
@@ -5633,7 +5625,6 @@ Możesz go wysłać do Google, aby sprawdzić, czy jest bezpieczny. Skanowanie z
 <translation id="5882919346125742463">Znane sieci</translation>
 <translation id="5883356647197510494">Automatycznie zablokowano uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Dostosuj dla każdego rozszerzenia</translation>
-<translation id="5884474295213649357">Ta karta jest połączona z urządzeniem USB.</translation>
 <translation id="5885314688092915589">Tym profilem będzie zarządzać Twoja organizacja</translation>
 <translation id="5886009770935151472">Palec 1</translation>
 <translation id="5886112770923972514">Podłącz i szybko skonfiguruj urządzenia w pobliżu, używając funkcji Szybkie parowanie</translation>
@@ -8251,7 +8242,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8154790740888707867">Brak pliku</translation>
 <translation id="8154912474061769055">Funkcje w wielu witrynach mogą nie działać</translation>
 <translation id="815491593104042026">Ups, uwierzytelnianie nie powiodło się, bo zostało skonfigurowane do używania niezabezpieczonego URL-a (<ph name="BLOCKED_URL" />). Skontaktuj się z administratorem.</translation>
-<translation id="8155003161114963960">Tłumacz…</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nie znaleziono przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="8157248655669507702">Aby zainstalować profil eSIM, włącz mobilną transmisję danych</translation>
 <translation id="8157704005178149728">Konfiguruję nadzorowanie…</translation>
@@ -8616,7 +8606,6 @@ Jeśli nie zdecydujesz się udostępniać sygnałów, ten profil zostanie zamkni
 <translation id="8464132254133862871">To konto użytkownika nie kwalifikuje się do korzystania z tej usługi.</translation>
 <translation id="8465252176946159372">Nieważne</translation>
 <translation id="8465444703385715657">Uruchomienie wtyczki <ph name="PLUGIN_NAME" /> wymaga Twojej zgody</translation>
-<translation id="8466417995783206254">Na tej karcie jest odtwarzany film w trybie obrazu w obrazie.</translation>
 <translation id="8467326454809944210">Wybierz inny język</translation>
 <translation id="8468087214092422866">Nie zezwolono na wyszukiwanie urządzeń Bluetooth</translation>
 <translation id="8470513973197838199">Zapisane hasła do <ph name="ORIGIN" /></translation>
@@ -8947,7 +8936,6 @@ Jeśli nie zdecydujesz się udostępniać sygnałów, ten profil zostanie zamkni
 <translation id="8755584192133371929">Wybierz kartę do udostępnienia</translation>
 <translation id="875604634276263540">URL obrazu jest nieprawidłowy</translation>
 <translation id="8756969031206844760">Zaktualizować hasło?</translation>
-<translation id="8757203080302669031">Tak karta wykonuje teraz skanowanie w poszukiwaniu urządzeń Bluetooth.</translation>
 <translation id="8757368836647541092">Usunięto użytkownika <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Więcej informacji.</translation>
 <translation id="8761945298804995673">Ten użytkownik już istnieje</translation>

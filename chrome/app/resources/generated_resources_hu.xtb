@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Ne most</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Az Ön adatainak védelme érdekében a rendszer eltávolította az engedélyeket egy olyan a webhelyről, amelyet nem keresett fel az elmúlt két hónapban}other{Az Ön adatainak védelme érdekében a rendszer eltávolította az engedélyeket azokról a webhelyekről, amelyeket nem keresett fel az elmúlt két hónapban}}</translation>
 <translation id="1009663062402466586">Mostantól használhatók a játékvezérlők</translation>
-<translation id="1010498023906173788">Ez a lap soros porthoz van csatlakoztatva.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Az oldal nem válaszol}other{Több oldal nem válaszol}}</translation>
 <translation id="1011003645819296594">Mentett eszközök</translation>
 <translation id="1011355516189274711">Szövegfelolvasó hangereje</translation>
@@ -635,7 +634,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1541346352678737112">Nem található hálózat</translation>
 <translation id="154198613844929213">{0,plural, =0{Törlés most.}=1{Törlés 1 másodperc múlva}other{Törlés # másodperc múlva}}</translation>
 <translation id="1542137295869176367">Nem sikerült a bejelentkezési adatok frissítése</translation>
-<translation id="1542514202066550870">Ez a lap VR-tartalmat jelenít meg egy headseten.</translation>
 <translation id="1543284117603151572">Az Edge böngészőből importálva</translation>
 <translation id="1543538514740974167">Gyorsabban idejuthat</translation>
 <translation id="1544588554445317666">Próbáljon rövidebb fájlnevet használni, vagy próbálja másik mappába menteni</translation>
@@ -1059,7 +1057,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1873920700418191231">Engedélyek újbóli megadása a következő számára: <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Megjeleníthetnek bármilyen hirdetést</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Lap áthelyezése másik ablakba}other{Lapok áthelyezése másik ablakba}}</translation>
-<translation id="1875386316419689002">Ez a lap HID-eszközhöz csatlakozik.</translation>
 <translation id="1875387611427697908">Ez csak a következő helyről adható hozzá: <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Címke (nem kötelező)</translation>
 <translation id="1877520246462554164">Nem sikerült lekérni a hitelesítési tokent. Jelentkezzen ki, majd jelentkezzen be újra.</translation>
@@ -1918,7 +1915,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2581455244799175627">További információ a harmadik féltől származó cookie-k engedélyezéséről</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> platform) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Nem sikerült a Kerberos-jegy lekérése. Próbálja újra, vagy forduljon a szervezet eszközadminisztrátorához. (Hibakód: <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Ez a lap megosztja a képernyőt.</translation>
 <translation id="2586561813241011046">A(z) <ph name="APP_NAME" /> telepítése nem sikerült. Próbálja újra, vagy forduljon rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
 <translation id="2586672484245266891">Rövidebb URL-t adjon meg</translation>
@@ -2147,7 +2143,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2777525873368474674">Kép linkjének beillesztése</translation>
 <translation id="2778471504622896352">Távoli alkalmazások hozzáadása a ChromeOS indítójához</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">A bővítmények engedélyezve vannak ezen a webhelyen</translation>
 <translation id="2782104745158847185">Hiba történt a Linux-alkalmazás telepítése során</translation>
 <translation id="2783024642731649028">A kosárban lévő 1 tételre a kereskedő (<ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />) <ph name="DISCOUNT_TEXT" /> kedvezményt adott; megtekintve: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Letöltött</translation>
@@ -2500,7 +2495,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3080933187214341848">Ez a hálózat nincs szinkronizálva az Ön fiókjával. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Ez a lap használja a kamerát vagy a mikrofont.</translation>
 <translation id="3083193146044397360">Biztonsága érdekében a rendszer ideiglenesen letiltotta</translation>
 <translation id="3083899879156272923">Képernyő mozgatása úgy, hogy az egér a képernyő közepén maradjon</translation>
 <translation id="3083998949001524405">Használhatnak harmadik féltől származó cookie-t</translation>
@@ -2617,7 +2611,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3201237270673604992">Z–A</translation>
 <translation id="3201422919974259695">A rendelkezésre álló USB-eszközök itt jelennek meg.</translation>
 <translation id="3202131003361292969">Útvonal</translation>
-<translation id="3202173864863109533">A lap hangja némítva van.</translation>
 <translation id="3202578601642193415">Legújabb</translation>
 <translation id="3204648577100496185">Az alkalmazáshoz kapcsolódó adatok törlődhetnek erről az eszközről.</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
@@ -3025,7 +3018,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3575121482199441727">Engedélyezés ezen a webhelyen</translation>
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> hardveradatainak gyűjtése</translation>
-<translation id="3578594933904494462">A lap tartalma meg lesz osztva.</translation>
 <translation id="3578874072190212775">Segíthet a webhelyeknek a csalás elleni küzdelemben, valamint abban, hogy megkülönböztethessék a robotokat az emberektől</translation>
 <translation id="3581605050355435601">IP-cím automatikus konfigurálása</translation>
 <translation id="3582057310199111521">Csaló webhelyen lett megadva, és nyilvánosságra került egy adatvédelmi incidens során</translation>
@@ -3566,6 +3558,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4021941025609472374">Balra lévő lapok bezárása</translation>
 <translation id="402211067068791756">Ezzel törli a megjelenített webhelyek által tárolt, összesen <ph name="TOTAL_USAGE" />-nyi adatot</translation>
 <translation id="4022426551683927403">&amp;Hozzáadás a szótárhoz</translation>
+<translation id="4024768890073681126">Böngésződet a szülőd kezeli</translation>
 <translation id="4025039777635956441">Kiválasztott webhely némítása</translation>
 <translation id="402707738228916911">Utasítás érkezett: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> mappa</translation>
@@ -4041,7 +4034,6 @@ Ha úgy dönt, hogy nem osztja meg a jeleket, akkor ezt a profilt lezárjuk.</tr
 <translation id="4448914100439890108"><ph name="USERNAME" /> jelszavának elrejtése a következőhöz: <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Engedélyek kezelése</translation>
 <translation id="4449948729197510913">Felhasználóneve a szervezet vállalati fiókjához tartozik. Először igazolnia kell a domain tulajdonjogát a Felügyeleti Konzolban, csak ezután regisztrálhat eszközt. Az igazolás végrehajtásához rendszergazdajogokkal kell rendelkeznie a fiókban.</translation>
-<translation id="4449996769074858870">Ez a lap hangot játszik le.</translation>
 <translation id="4450974146388585462">Elemzés</translation>
 <translation id="445099924538929605">A(z) <ph name="DEVICE_OS" /> olyan aktív TPM-et észlelt, amely biztonságosabban tárolhatja az Ön adatait.</translation>
 <translation id="4451479197788154834">A jelszó mentve van ezen az eszközön és a Google-fiókjában</translation>
@@ -5136,6 +5128,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5439680044267106777">Kihagyás és új profil beállítása</translation>
 <translation id="544083962418256601">Parancsikonok létrehozása...</translation>
 <translation id="5441133529460183413">A Chrome böngészőből letöltött internetes alkalmazás</translation>
+<translation id="5441292787273562014">Oldal újratöltése</translation>
 <translation id="5441466871879044658">Fordítás erre a nyelvre</translation>
 <translation id="5442228125690314719">Nem sikerült létrehozni a lemezképet. Próbálja újra.</translation>
 <translation id="5442550868130618860">Automatikus frissítés bekapcsolása</translation>
@@ -5275,7 +5268,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5559311991468302423">Cím törlése</translation>
 <translation id="55601339223879446">Beállíthatja az asztal határait a kijelzőn</translation>
 <translation id="5561162485081632007">Már a bekövetkezésük idején észleli a veszélyes eseményeket, és figyelmezteti Önt rájuk.</translation>
-<translation id="5562781907504170924">Ez a lap Bluetooth-eszközhöz csatlakozik.</translation>
 <translation id="556321030400250233">helyi vagy megosztott fájl</translation>
 <translation id="5563234215388768762">Keressen a Google-on, vagy írjon be egy URL-t</translation>
 <translation id="5565735124758917034">Aktív</translation>
@@ -5640,7 +5632,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5882919346125742463">Ismert hálózatok</translation>
 <translation id="5883356647197510494">Automatikusan letiltva: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Személyre szabás az egyes bővítményeknél</translation>
-<translation id="5884474295213649357">Ez a lap USB-eszközhöz csatlakozik.</translation>
 <translation id="5885314688092915589">Az Ön szervezete kezeli majd ezt a profilt</translation>
 <translation id="5886009770935151472">1. ujj</translation>
 <translation id="5886112770923972514">Csatlakoztathatja és gyorsan beállíthatja a közeli, gyors párosítású eszközöket</translation>
@@ -8612,7 +8603,6 @@ Ha úgy dönt, hogy nem osztja meg a jeleket, akkor ezt a profilt lezárjuk.</tr
 <translation id="8464132254133862871">Ez a felhasználói fiók nem jogosult a szolgáltatásra.</translation>
 <translation id="8465252176946159372">Érvénytelen</translation>
 <translation id="8465444703385715657">A(z) <ph name="PLUGIN_NAME" /> futtatásához az Ön engedélyére van szükség</translation>
-<translation id="8466417995783206254">A videó lejátszása a lapon kép a képben módban történik.</translation>
 <translation id="8467326454809944210">Másik nyelv választása</translation>
 <translation id="8468087214092422866">Nem kereshetnek Bluetooth-eszközöket</translation>
 <translation id="8470513973197838199">A(z) <ph name="ORIGIN" /> mentett jelszavai</translation>
@@ -8945,7 +8935,6 @@ Ha úgy dönt, hogy nem osztja meg a jeleket, akkor ezt a profilt lezárjuk.</tr
 <translation id="8755584192133371929">Válassza ki a megosztani kívánt lapot</translation>
 <translation id="875604634276263540">A kép URL-címe érvénytelen</translation>
 <translation id="8756969031206844760">Szeretné frissíteni a jelszót?</translation>
-<translation id="8757203080302669031">Ez a lap aktívan keresi a Bluetooth-eszközöket.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> eltávolítva</translation>
 <translation id="8759753423332885148">További információ.</translation>
 <translation id="8761945298804995673">Már van ilyen felhasználó</translation>

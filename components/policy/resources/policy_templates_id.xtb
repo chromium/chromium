@@ -3587,7 +3587,7 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
 <translation id="4228745249339680042">Menyetel kebijakan ini akan menentukan URL dan domain yang tidak menampilkan perintah saat sertifikat pengesahan dari Kunci Keamanan diminta. Sinyal juga dikirimkan ke Kunci Keamanan yang menunjukkan bahwa pengesahan individu dapat digunakan. Jika tidak disetel, pengguna akan dimintai pengesahan Kunci Keamanan di <ph name="PRODUCT_NAME" /> versi 65 dan yang lebih baru saat situs memintanya.
 
       URL hanya akan cocok sebagai appID U2F. Domain hanya cocok sebagai ID webauthn RP. Oleh karena itu, untuk mencakup API U2F dan webauthn, cantumkan domain dan URL appID untuk situs tertentu.</translation>
-<translation id="4239720644496144453">Cache tidak digunakan untuk aplikasi Android. Jika beberapa pengguna memasang aplikasi Android yang sama, aplikasi akan didownload lagi untuk setiap pengguna.</translation>
+<translation id="4239720644496144453">Cache tidak digunakan untuk aplikasi Android. Jika beberapa pengguna menginstal aplikasi Android yang sama, aplikasi akan didownload lagi untuk setiap pengguna.</translation>
 <translation id="424318624725112807">Aktifkan sorotan tanda sisipan di layar login</translation>
 <translation id="4247914291127524388">Jika kebijakan disetel ke Aktif, sinkronisasi <ph name="GOOGLE_DRIVE_NAME" /> di aplikasi File <ph name="PRODUCT_OS_NAME" /> akan dinonaktifkan saat terhubung melalui koneksi seluler. Data hanya disinkronkan ke Drive saat terhubung melalui Wi-Fi atau Ethernet.
 

@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Untuk memeriksa apakah sandi Anda aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Ekstensi Chromium telah mengakses perangkat HID}=1{Ekstensi Chromium sedang mengakses perangkat HID}other{Ekstensi Chromium sedang mengakses # perangkat HID}}</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Administrator akan otomatis menutup Chromium jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Administrator akan otomatis menutup Chromium jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Penghemat Memori Membuat Chromium Lebih Cepat</translation>
 <translation id="1315551408014407711">Siapkan profil Chromium baru Anda</translation>
@@ -179,7 +178,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4987820182225656817">Tamu dapat menggunakan Chromium tanpa meninggalkan apa pun.</translation>
 <translation id="4994636714258228724">Tambahkan diri Anda ke Chromium</translation>
 <translation id="5114678101347489141">Chromium sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Administrator akan otomatis menutup Chromium jika tidak digunakan selama 1 menit.}other{Administrator akan otomatis menutup Chromium jika tidak digunakan selama # menit.}}</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> telah login ke profil Chromium ini. Ini akan membuat profil Chromium baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Untuk menerapkan perubahan Anda, luncurkan ulang Chromium</translation>
@@ -244,7 +242,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6327105987658262776">Tidak ada update yang tersedia.</translation>
 <translation id="6333502561965082103">Operasi lain di Chromium sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="6334986366598267305">Kini, menggunakan Chromium dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}other{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}}</translation>
 <translation id="6373523479360886564">Anda yakin ingin meng-uninstal Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chromium dapat memperkirakan minat Anda. Kemudian, situs yang Anda buka dapat meminta Chromium untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="6403826409255603130">Chromium adalah browser web yang menjalankan halaman web dan aplikasi dengan kecepatan kilat. Browser ini cepat, stabil, dan mudah digunakan. Jelajahi web lebih aman dengan perlindungan dari software perusak dan phishing yang tertanam di dalam Chromium.</translation>

@@ -226,7 +226,6 @@
 <translation id="4970947549776831107">Chrome bloqueou este ficheiro porque os elementos deste tipo son perigosos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Unha extensión de Google Chrome tiña acceso a dispositivos de interface humana}=1{Unha extensión de Google Chrome ten acceso a 1 dispositivo de interface humana}other{Unha extensión de Google Chrome ten acceso a # dispositivos de interface humana}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{O teu administrador pecha Chrome automaticamente cando non se usa durante 1 minuto. Os datos de navegación elimínanse. Poden incluír o historial, os datos da función de autocompletar e as descargas.}other{O teu administrador pecha Chrome automaticamente cando non se usa durante # minutos. Os datos de navegación elimínanse. Poden incluír o historial, os datos da función de autocompletar e as descargas.}}</translation>
 <translation id="5098668839038261629">Se activas esta opción, tamén se pechará a túa sesión en Chrome</translation>
 <translation id="5132929315877954718">Descubre aplicacións, xogos, extensións e temas fantásticos para Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizar o teu perfil de Chrome</translation>
@@ -288,7 +287,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6291549208091401781">Google Chrome xa está instalado para todos os usuarios no teu ordenador.</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6327105987658262776">Non hai ningunha actualización dispoñible.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{O teu administrador elimina os datos de navegación automaticamente cando non se usa durante 1 minuto. Poden incluír o historial, os datos da función de autocompletar e as descargas. As pestanas seguirán abertas.}other{O teu administrador elimina os datos de navegación automaticamente cando non se usa durante # minutos. Poden incluír o historial, os datos da función de autocompletar e as descargas. As pestanas seguirán abertas.}}</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
 <translation id="648319183876919572">Navegación segura mellorada é máis eficaz á hora de protexerte de descargas e sitios web perigosos</translation>
@@ -382,7 +380,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8290100596633877290">Google Chrome deixou de funcionar. Queres reinicialo agora?</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso, así que Chrome bloqueouno.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Os sitios poden almacenar con Chrome información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{O teu administrador pecha Chrome automaticamente cando non se usa durante 1 minuto.}other{O teu administrador pecha Chrome automaticamente cando non se usa durante # minutos.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Chrome pode facer unha estimación dos teus intereses. Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>

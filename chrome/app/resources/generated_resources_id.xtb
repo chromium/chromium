@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka dalam 2 bulan}other{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka dalam 2 bulan}}</translation>
 <translation id="1009663062402466586">Kontrol game kini tersedia</translation>
-<translation id="1010498023906173788">Tab ini terhubung ke sebuah port serial.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Halaman Tidak Merespons}other{Halaman Tidak Merespons}}</translation>
 <translation id="1011003645819296594">Perangkat yang disimpan</translation>
 <translation id="1011355516189274711">Volume text-to-speech</translation>
@@ -636,7 +635,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1541346352678737112">Jaringan tidak ditemukan</translation>
 <translation id="154198613844929213">{0,plural, =0{Menghapus sekarang.}=1{Menghapus dalam: 1 detik}other{Menghapus dalam: # detik}}</translation>
 <translation id="1542137295869176367">Data login Anda tidak dapat diperbarui</translation>
-<translation id="1542514202066550870">Tab ini menyajikan konten VR ke headset.</translation>
 <translation id="1543284117603151572">Diimpor Dari Edge</translation>
 <translation id="1543538514740974167">Buka halaman ini lebih cepat</translation>
 <translation id="1544588554445317666">Coba gunakan nama file yang lebih pendek atau simpan ke folder lain</translation>
@@ -1061,7 +1059,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1873920700418191231">Berikan izin lagi untuk <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Diizinkan menampilkan iklan apa pun</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Pindahkan tab ke jendela lain}other{Pindahkan beberapa tab ke jendela lain}}</translation>
-<translation id="1875386316419689002">Tab ini terhubung dengan perangkat HID.</translation>
 <translation id="1875387611427697908">Ini hanya dapat ditambahkan dari <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Label (opsional)</translation>
 <translation id="1877520246462554164">Gagal mendapatkan token autentikasi. Harap logout, lalu login kembali untuk mencoba lagi.</translation>
@@ -1924,7 +1921,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2581455244799175627">Selengkapnya tentang mengizinkan cookie pihak ketiga</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Tidak dapat mengambil tiket Kerberos. Coba lagi atau hubungi admin perangkat organisasi Anda. (Kode error <ph name="ERROR_CODE" />).</translation>
-<translation id="2585724835339714757">Tab ini membagikan layar Anda.</translation>
 <translation id="2586561813241011046">Tidak dapat menginstal <ph name="APP_NAME" />. Coba lagi atau hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Papan klip</translation>
 <translation id="2586672484245266891">Masukkan URL yang lebih pendek</translation>
@@ -2154,7 +2150,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2777525873368474674">Tempelkan link gambar</translation>
 <translation id="2778471504622896352">Menambahkan aplikasi jarak jauh ke peluncur ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Ekstensi diizinkan di situs ini</translation>
 <translation id="2782104745158847185">Error saat menginstal aplikasi Linux</translation>
 <translation id="2783024642731649028">1 item di keranjang <ph name="DISCOUNT_TEXT" /> dari <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, dilihat <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Telah Didownload</translation>
@@ -2509,7 +2504,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3080933187214341848">Jaringan ini tidak disinkronkan ke akun Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">Tab ini menggunakan kamera atau mikrofon Anda.</translation>
 <translation id="3083193146044397360">Diblokir sementara untuk melindungi keamanan Anda</translation>
 <translation id="3083899879156272923">Pindahkan layar sambil mempertahankan mouse di tengah layar</translation>
 <translation id="3083998949001524405">Diizinkan menggunakan cookie pihak ketiga</translation>
@@ -2626,7 +2620,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3201237270673604992">Z ke A</translation>
 <translation id="3201422919974259695">Perangkat USB yang tersedia akan ditampilkan di sini.</translation>
 <translation id="3202131003361292969">Jalur</translation>
-<translation id="3202173864863109533">Audio tab ini dibisukan.</translation>
 <translation id="3202578601642193415">Terbaru</translation>
 <translation id="3204648577100496185">Data yang terkait dengan aplikasi ini dapat dihapus dari perangkat ini</translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
@@ -3037,7 +3030,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3577745545227000795">Pengumpulan data hardware <ph name="DEVICE_OS" /></translation>
-<translation id="3578594933904494462">Konten tab ini sedang dibagikan.</translation>
 <translation id="3578874072190212775">Bantu situs melawan penipuan dan membedakan bot dari manusia</translation>
 <translation id="3581605050355435601">Konfigurasi otomatis alamat IP</translation>
 <translation id="3582057310199111521">Dimasukkan pada situs penipuan dan ditemukan dalam pelanggaran data</translation>
@@ -3582,6 +3574,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4021941025609472374">Tutup tab di sisi kiri</translation>
 <translation id="402211067068791756">Tindakan ini akan menghapus <ph name="TOTAL_USAGE" /> data yang disimpan oleh situs yang ditampilkan</translation>
 <translation id="4022426551683927403">T&amp;ambahkan ke Kamus</translation>
+<translation id="4024768890073681126">Browser dikelola oleh orang tuamu</translation>
 <translation id="4025039777635956441">Bisukan Situs Terpilih</translation>
 <translation id="402707738228916911">Petunjuk <ph name="AUTHORIZE_INSTRUCTION_NAME" /> diterima</translation>
 <translation id="4027569221211770437">Folder <ph name="FOLDER_TITLE" /></translation>
@@ -4058,7 +4051,6 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="4448914100439890108">Sembunyikan sandi untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
 <translation id="4449247303975391730">Kelola izin</translation>
 <translation id="4449948729197510913">Nama pengguna Anda tercakup dalam akun perusahaan organisasi Anda. Untuk mendaftarkan perangkat ke akun tersebut, verifikasi kepemilikan domain di konsol Admin terlebih dulu. Anda akan memerlukan hak istimewa administrator pada akun untuk melakukan verifikasi.</translation>
-<translation id="4449996769074858870">Tab ini memutar audio.</translation>
 <translation id="4450974146388585462">Diagnosis</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> mendeteksi TPM aktif yang dapat menyimpan data Anda dengan lebih aman.</translation>
 <translation id="4451479197788154834">Sandi disimpan di perangkat ini dan Akun Google Anda</translation>
@@ -4371,7 +4363,7 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710355753484204">Gunakan Ctrl + Alt + Tingkatkan kecerahan untuk memperbesar.
 Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
-<translation id="4726710629007580002">Ada peringatan saat mencoba untuk memasang ekstensi ini:</translation>
+<translation id="4726710629007580002">Ada peringatan saat mencoba untuk menginstal ekstensi ini:</translation>
 <translation id="4727847987444062305">Sesi tamu terkelola</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4730492586225682674">Catatan terakhir stilus di layar kunci</translation>
@@ -5157,6 +5149,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5439680044267106777">Lewati &amp; Siapkan profil baru</translation>
 <translation id="544083962418256601">Buat pintasan...</translation>
 <translation id="5441133529460183413">Aplikasi Web diinstal dari browser Chrome</translation>
+<translation id="5441292787273562014">Muat ulang halaman</translation>
 <translation id="5441466871879044658">Terjemahkan ke bahasa ini</translation>
 <translation id="5442228125690314719">Error saat membuat disk image. Harap coba lagi.</translation>
 <translation id="5442550868130618860">Aktifkan update otomatis</translation>
@@ -5297,7 +5290,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5559311991468302423">Hapus alamat</translation>
 <translation id="55601339223879446">Menyesuaikan batas desktop Anda dalam tampilan</translation>
 <translation id="5561162485081632007">Mendeteksi dan memberikan peringatan terkait peristiwa berbahaya ketika terjadi</translation>
-<translation id="5562781907504170924">Tab ini terhubung ke Perangkat Bluetooth.</translation>
 <translation id="556321030400250233">file lokal atau bersama</translation>
 <translation id="5563234215388768762">Telusuri Google atau ketik URL</translation>
 <translation id="5565735124758917034">Aktif</translation>
@@ -5663,7 +5655,6 @@ Anda dapat mengirimkannya ke Google untuk memeriksa apakah file tersebut tidak a
 <translation id="5882919346125742463">Jaringan yang Dikenal</translation>
 <translation id="5883356647197510494">Otomatis memblokir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Sesuaikan untuk setiap ekstensi</translation>
-<translation id="5884474295213649357">Tab ini terhubung dengan perangkat USB.</translation>
 <translation id="5885314688092915589">Organisasi Anda akan mengelola profil ini</translation>
 <translation id="5886009770935151472">Jari 1</translation>
 <translation id="5886112770923972514">Hubungkan dan siapkan perangkat Sambungan Cepat di dekat Anda dengan cepat</translation>
@@ -6137,7 +6128,7 @@ Anda dapat mengirimkannya ke Google untuk memeriksa apakah file tersebut tidak a
 <translation id="6294759976468837022">Kecepatan pemindaian otomatis</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
-<translation id="6298962879096096191">Menggunakan Google Play untuk memasang aplikasi Android</translation>
+<translation id="6298962879096096191">Menggunakan Google Play untuk menginstal aplikasi Android</translation>
 <translation id="6300177430812514606">Tidak diizinkan menyelesaikan pengiriman atau penerimaan data</translation>
 <translation id="630065524203833229">K&amp;eluar</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> tidak dapat dikonfigurasi secara otomatis. Harap tentukan detail printer lanjutan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -8279,7 +8270,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8154790740888707867">Tidak ada file</translation>
 <translation id="8154912474061769055">Fitur tertentu di banyak situs mungkin tidak berfungsi</translation>
 <translation id="815491593104042026">Ups!  Autentikasi gagal karena telah dikonfigurasi untuk menggunakan URL yang tidak aman (<ph name="BLOCKED_URL" />).  Hubungi administrator Anda.</translation>
-<translation id="8155003161114963960">Terjemahkan...</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Tidak ditemukan sandi yang telah dibobol}=1{{COUNT} sandi yang telah dibobol}other{{COUNT} sandi yang telah dibobol}}</translation>
 <translation id="8157248655669507702">Aktifkan data seluler untuk menginstal profil eSIM</translation>
 <translation id="8157704005178149728">Menyiapkan pengawasan</translation>
@@ -8644,7 +8634,6 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="8464132254133862871">Akun pengguna ini tidak layak mendapatkan layanan.</translation>
 <translation id="8465252176946159372">Tidak valid</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> memerlukan izin Anda untuk dijalankan</translation>
-<translation id="8466417995783206254">Tab ini diputar dalam mode picture-in-picture.</translation>
 <translation id="8467326454809944210">Pilih bahasa lain</translation>
 <translation id="8468087214092422866">Tidak diizinkan mencari perangkat Bluetooth</translation>
 <translation id="8470513973197838199">Sandi yang tersimpan untuk <ph name="ORIGIN" /></translation>
@@ -8977,7 +8966,6 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="8755584192133371929">Pilih tab untuk dibagikan</translation>
 <translation id="875604634276263540">URL gambar tidak valid</translation>
 <translation id="8756969031206844760">Perbarui sandi?</translation>
-<translation id="8757203080302669031">Tab ini memindai perangkat Bluetooth secara aktif.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> dihapus</translation>
 <translation id="8759753423332885148">Pelajari lebih lanjut.</translation>
 <translation id="8761945298804995673">Pengguna ini sudah ada</translation>

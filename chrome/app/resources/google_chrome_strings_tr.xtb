@@ -222,7 +222,6 @@
 <translation id="4970947549776831107">Dosya türünün tehlikeli olması nedeniyle bu dosya Chrome tarafından engellendi</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Bir Google Chrome uzantısı, HID cihazlarına erişiyordu}=1{Bir Google Chrome uzantısı, 1 HID cihazına erişiyor}other{Bir Google Chrome uzantısı, # HID cihazına erişiyor}}</translation>
-<translation id="5064155331105009416">{COUNT,plural, =1{Yöneticiniz, 1 dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Yöneticiniz, # dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="5098668839038261629">Etkin durumdayken Chrome oturumunuz da kapatılır</translation>
 <translation id="5132929315877954718">Google Chrome'a özgü harika uygulamaları, oyunları, uzantıları ve temaları keşfedin.</translation>
 <translation id="5139423532931106058">Chrome profilinizi özelleştirin</translation>
@@ -282,7 +281,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6291549208091401781">Google Chrome zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="6326175484149238433">Chrome'dan kaldır</translation>
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Yöneticiniz, 1 dakika kullanılmadığında tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}other{Yöneticiniz, # dakika kullanılmadığında tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}}</translation>
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
 <translation id="648319183876919572">Gelişmiş Güvenli Tarama sizi tehlikeli web sitelerinden ve indirmelerden korumak için daha fazlasını yapar</translation>
@@ -376,7 +374,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8290100596633877290">Of! Google Chrome kilitlendi. Şimdi yeniden başlatılsın mı?</translation>
 <translation id="8342675569599923794">Bu dosya tehlikeli olduğu için Chrome tarafından engellendi.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
-<translation id="8353032963013852497">{COUNT,plural, =1{Yöneticiniz, 1 dakika kullanılmadığında Chrome'u otomatik olarak kapatır.}other{Yöneticiniz, # dakika kullanılmadığında Chrome'u otomatik olarak kapatır.}}</translation>
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Chrome, ilgi alanlarınızı tahmin edebilir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
 <translation id="8387459386171870978">Chrome'u kullanmaya devam et</translation>

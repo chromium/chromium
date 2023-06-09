@@ -91,7 +91,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="152234381334907219">Contraseñas que nunca se guardan</translation>
 <translation id="1523341279170789507">Permitir todas las cookies</translation>
 <translation id="1524563461097350801">No, gracias</translation>
-<translation id="1531836666020185856">Destacados</translation>
 <translation id="1535268707340844072">Tu configuración actual puede provocar que algunos sitios fallen. Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
@@ -218,7 +217,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2423077901494354337">Ahora podrás sacar el máximo partido a Chrome en tu dispositivo.</translation>
 <translation id="2434405374328098816">Ya has guardado una contraseña para <ph name="USERNAME" /> en <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
-<translation id="2439425774439590">Sitios más visitados</translation>
 <translation id="2451654228769116489">Fijar pestaña</translation>
 <translation id="2461070143328828326">Ajustes de contraseña</translation>
 <translation id="2469960372084740698">¿Desactivar Navegación segura?</translation>

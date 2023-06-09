@@ -91,7 +91,6 @@
 <translation id="152234381334907219">Nooit gestoor nie</translation>
 <translation id="1523341279170789507">Laat alle webkoekies toe</translation>
 <translation id="1524563461097350801">Nee, dankie</translation>
-<translation id="1531836666020185856">Uitgestal</translation>
 <translation id="1535268707340844072">Jou huidige instelling kan veroorsaak dat sommige werwe breek. Sien <ph name="BEGIN_LINK" />Webkoekie-instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="1545749641540134597">Skandeer QR-kode</translation>
@@ -193,6 +192,7 @@
 <translation id="225943865679747347">Foutkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Voeg rekening by</translation>
 <translation id="2268044343513325586">Verfyn</translation>
+<translation id="2269277877025820298">Sien meer</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
 <translation id="2286505070150039482">Gemerkte teks</translation>
 <translation id="2287614783861766820">{count,plural, =1{Hierdie adres sal op hierdie toestel uitgevee word.}other{Hierdie adresse sal op hierdie toestel uitgevee word.}}</translation>
@@ -218,7 +218,6 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2423077901494354337">Jy sal Chrome nou ten beste op jou toestel benut.</translation>
 <translation id="2434405374328098816">Jy het reeds 'n wagwoord vir "<ph name="USERNAME" />" op <ph name="WEBSITE" /> gestoor</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
-<translation id="2439425774439590">Werwe wat die meeste besoek word</translation>
 <translation id="2451654228769116489">Speld oortjie vas</translation>
 <translation id="2461070143328828326">Wagwoordinstellings</translation>
 <translation id="2469960372084740698">Skakel Veiligblaai af?</translation>

@@ -16,7 +16,6 @@
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{为了保护您的数据，对于这个您在 2 个月内未访问过的网站，系统已将其权限撤消}other{为了保护您的数据，对于这些您在 2 个月内未访问过的网站，系统已将其权限撤消}}</translation>
 <translation id="1009663062402466586">游戏控件现已可供使用</translation>
-<translation id="1010498023906173788">此标签页已连接到一个串行端口。</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{1 个页面无响应}other{多个页面无响应}}</translation>
 <translation id="1011003645819296594">已保存的设备</translation>
 <translation id="1011355516189274711">文字转语音的音量</translation>
@@ -627,7 +626,6 @@
 <translation id="1541346352678737112">找不到网络</translation>
 <translation id="154198613844929213">{0,plural, =0{正在删除。}=1{将在 1 秒后删除}other{将在 # 秒后删除}}</translation>
 <translation id="1542137295869176367">无法更新您的登录数据</translation>
-<translation id="1542514202066550870">此标签页正在向头戴设备显示 VR 内容。</translation>
 <translation id="1543284117603151572">从 Edge 导入的书签</translation>
 <translation id="1543538514740974167">更快速地转到此处</translation>
 <translation id="1544588554445317666">请尝试使用一个更短的文件名或保存到另一个文件夹中</translation>
@@ -1041,7 +1039,6 @@
 <translation id="1873920700418191231">重新为 <ph name="WEBSITE" /> 授予权限</translation>
 <translation id="1874248162548993294">允许展示任何广告</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{将标签页移至另一个窗口}other{将标签页移至另一个窗口}}</translation>
-<translation id="1875386316419689002">此标签页已连接到 HID 设备。</translation>
 <translation id="1875387611427697908">只能通过<ph name="CHROME_WEB_STORE" />添加此项内容</translation>
 <translation id="1877377290348678128">标签（可选）</translation>
 <translation id="1877520246462554164">未能获取身份验证令牌。请退出并重新登录，然后重试。</translation>
@@ -1896,7 +1893,6 @@
 <translation id="2581455244799175627">详细了解如何允许第三方 Cookie</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（平台：<ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">无法获取 Kerberos 票据。请重试或与贵单位的设备管理员联系。（错误代码：<ph name="ERROR_CODE" />）。</translation>
-<translation id="2585724835339714757">此标签页正在共享您的屏幕。</translation>
 <translation id="2586561813241011046">无法安装 <ph name="APP_NAME" />。请重试，或与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2586672484245266891">请输入一个较短的网址</translation>
@@ -2031,7 +2027,7 @@
 <translation id="270921614578699633"> </translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
-<translation id="271033894570825754">新建</translation>
+<translation id="271033894570825754">新</translation>
 <translation id="2711073837061989559">试用版</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2713444072780614174">白色</translation>
@@ -2125,7 +2121,6 @@
 <translation id="2777525873368474674">粘贴图片链接</translation>
 <translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">已允许在此网站上使用扩展程序</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
 <translation id="2783024642731649028">您的购物车中有 1 件商品享受了由 <ph name="MERCHANT_DOMAIN" /> 的 <ph name="MERCHANT_NAME" /> 提供的 <ph name="DISCOUNT_TEXT" />，距离上次查看已有 <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">已下载</translation>
@@ -2478,7 +2473,6 @@
 <translation id="3080933187214341848">此网络未同步到您的帐号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="308268297242056490">URI</translation>
-<translation id="3082780749197361769">此标签页正在使用您的摄像头或麦克风。</translation>
 <translation id="3083193146044397360">已暂时屏蔽相应权限以保护您的安全</translation>
 <translation id="3083899879156272923">移动屏幕时鼠标指针始终位于屏幕中央</translation>
 <translation id="3083998949001524405">已允许使用第三方 Cookie</translation>
@@ -2595,7 +2589,6 @@
 <translation id="3201237270673604992">由 Z 到 A</translation>
 <translation id="3201422919974259695">可用的 USB 设备会显示在此处。</translation>
 <translation id="3202131003361292969">路径</translation>
-<translation id="3202173864863109533">此标签页已静音。</translation>
 <translation id="3202578601642193415">最后</translation>
 <translation id="3204648577100496185">系统可能会从此设备上移除与该应用相关的数据</translation>
 <translation id="3207960819495026254">已加书签</translation>
@@ -3003,7 +2996,6 @@
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件数据收集</translation>
-<translation id="3578594933904494462">此标签页的内容正在共享中。</translation>
 <translation id="3578874072190212775">协助网站打击欺诈行为以及区分机器人和真人</translation>
 <translation id="3581605050355435601">自动配置 IP 地址</translation>
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
@@ -3544,6 +3536,7 @@
 <translation id="4021941025609472374">关闭左侧标签页</translation>
 <translation id="402211067068791756">此操作会清除显示的网站所存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="4022426551683927403">添加到字典中(&amp;A)</translation>
+<translation id="4024768890073681126">您的浏览器由您的家长管理</translation>
 <translation id="4025039777635956441">将所选网站静音</translation>
 <translation id="402707738228916911">已收到<ph name="AUTHORIZE_INSTRUCTION_NAME" />说明</translation>
 <translation id="4027569221211770437">“<ph name="FOLDER_TITLE" />”文件夹</translation>
@@ -4017,7 +4010,6 @@
 <translation id="4448914100439890108">隐藏 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
 <translation id="4449247303975391730">管理权限</translation>
 <translation id="4449948729197510913">您的用户名属于贵单位的企业帐号。如需将设备注册到该帐号，请先在管理控制台中验证域名所有权。您需要拥有该帐号的管理员权限才能进行验证。</translation>
-<translation id="4449996769074858870">该标签页正在播放音频。</translation>
 <translation id="4450974146388585462">诊断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 检测到一个处于活动状态的 TPM，它可以更安全地存储您的数据。</translation>
 <translation id="4451479197788154834">您的密码已保存到此设备上和您的 Google 帐号中</translation>
@@ -5110,6 +5102,7 @@
 <translation id="5439680044267106777">跳过此步骤并设置新的个人资料</translation>
 <translation id="544083962418256601">创建快捷方式...</translation>
 <translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
+<translation id="5441292787273562014">重新加载网页</translation>
 <translation id="5441466871879044658">翻译成该语言</translation>
 <translation id="5442228125690314719">创建磁盘映像时出错。请重试。</translation>
 <translation id="5442550868130618860">开启自动更新</translation>
@@ -5249,7 +5242,6 @@
 <translation id="5559311991468302423">删除此地址</translation>
 <translation id="55601339223879446">调整您的桌面在显示屏内的边界</translation>
 <translation id="5561162485081632007">检测危险事件并在此类事件发生时向您发出警告</translation>
-<translation id="5562781907504170924">此标签页已连接到蓝牙设备。</translation>
 <translation id="556321030400250233">本地文件或分享的文件</translation>
 <translation id="5563234215388768762">在 Google 中搜索，或输入网址</translation>
 <translation id="5565735124758917034">主动</translation>
@@ -5611,7 +5603,6 @@
 <translation id="5882919346125742463">已知网络</translation>
 <translation id="5883356647197510494">已自动禁用“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5884447826201752041">针对每款扩展程序进行自定义</translation>
-<translation id="5884474295213649357">此标签页已连接到 USB 设备。</translation>
 <translation id="5885314688092915589">贵组织将管理这份资料</translation>
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">连接并快速设置附近的快速配对设备</translation>
@@ -8583,7 +8574,6 @@
 <translation id="8464132254133862871">此用户帐号不能使用该服务。</translation>
 <translation id="8465252176946159372">无效</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> 需要获得您的许可才能运行</translation>
-<translation id="8466417995783206254">此标签页正在“画中画”模式中播放视频。</translation>
 <translation id="8467326454809944210">选择另一种语言</translation>
 <translation id="8468087214092422866">不得寻找蓝牙设备</translation>
 <translation id="8470513973197838199">已保存用于登录 <ph name="ORIGIN" /> 的密码</translation>
@@ -8916,7 +8906,6 @@
 <translation id="8755584192133371929">选择要分享的标签页</translation>
 <translation id="875604634276263540">图片网址无效</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
-<translation id="8757203080302669031">此标签页正在主动搜寻蓝牙设备。</translation>
 <translation id="8757368836647541092">已移除<ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">了解详情。</translation>
 <translation id="8761945298804995673">该用户已存在</translation>

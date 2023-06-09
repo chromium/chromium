@@ -91,7 +91,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="152234381334907219">Niekada neišsaugota</translation>
 <translation id="1523341279170789507">Leisti visus slapukus</translation>
 <translation id="1524563461097350801">Ačiū, ne</translation>
-<translation id="1531836666020185856">Ypatybės</translation>
 <translation id="1535268707340844072">Dėl esamo nustatymo kai kurios svetainės gali neveikti tinkamai. Jei norite tvarkyti visų svetainių slapukus, žr. <ph name="BEGIN_LINK" />„Slapukų nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">1 adreso eil.</translation>
 <translation id="1545749641540134597">Nuskaitykite QR kodą</translation>
@@ -193,6 +192,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="225943865679747347">Klaidos kodas: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Pridėti paskyrą</translation>
 <translation id="2268044343513325586">Patikslinti</translation>
+<translation id="2269277877025820298">Žr. daugiau</translation>
 <translation id="2273327106802955778">Daugiau meniu</translation>
 <translation id="2286505070150039482">Paryškintas tekstas</translation>
 <translation id="2287614783861766820">{count,plural, =1{Šis adresas bus ištrintas iš šio įrenginio.}one{Šie adresai bus ištrinti iš šio įrenginio.}few{Šie adresai bus ištrinti iš šio įrenginio.}many{Šie adresai bus ištrinti iš šio įrenginio.}other{Šie adresai bus ištrinti iš šio įrenginio.}}</translation>
@@ -218,7 +218,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2423077901494354337">Dabar galite išnaudoti visas „Chrome“ galimybes įrenginyje.</translation>
 <translation id="2434405374328098816">Jau išsaugojote <ph name="USERNAME" /> slaptažodį svetainėje <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
-<translation id="2439425774439590">Žiūrimiausios svetainės</translation>
 <translation id="2451654228769116489">Prisegti skirtuką</translation>
 <translation id="2461070143328828326">Slaptažodžio nustatymai</translation>
 <translation id="2469960372084740698">Išjungti Saugaus naršymo funkciją?</translation>

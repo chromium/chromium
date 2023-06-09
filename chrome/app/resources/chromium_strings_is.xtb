@@ -12,7 +12,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Skráðu þig inn á Chromium<ph name="END_LINK" /> til að athuga hvort aðgangsorðin þín séu óhult fyrir öryggisbrotum og öðrum öryggisvandamálum.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium-viðbætur voru með aðgang að HID-tækjum}=1{Chromium-viðbætur eru með aðgang að HID-tækjum}one{Chromium-viðbætur eru með aðgang að # HID-tæki}other{Chromium-viðbætur eru með aðgang að # HID-tækjum}}</translation>
 <translation id="1185134272377778587">Um Chromium</translation>
-<translation id="1202417120496358351">{COUNT,plural, =1{Stjórnandinn lokar Chromium sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Stjórnandinn lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Stjórnandinn lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
 <translation id="1203500561924088507">Takk fyrir að setja upp. Þú þarft að endurræsa vafrann áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Minnissparnaður gerði Chromium hraðari</translation>
 <translation id="1315551408014407711">Settu upp nýja Chromium prófílinn þinn</translation>
@@ -181,7 +180,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="4987820182225656817">Gestir geta notað Chromium án þess að skilja eftir sig nokkur spor.</translation>
 <translation id="4994636714258228724">Bættu þér við Chromium</translation>
 <translation id="5114678101347489141">Chromium er að kanna nýja eiginleika sem gera vefsvæðum kleift að skila sömu vafraupplifun án þess að nota jafnmikið af upplýsingum frá þér</translation>
-<translation id="51579499820286700">{COUNT,plural, =1{Stjórnandinn lokar Chromium sjálfkrafa eftir aðgerðaleysi í 1 mínútu.}one{Stjórnandinn lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútu.}other{Stjórnandinn lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútur.}}</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chromium prófíl. Þetta mun búa til nýjan Chromium prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Endurræstu Chromium til að breytingarnar taki gildi</translation>
@@ -246,7 +244,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6327105987658262776">Uppfærsla er ekki tiltæk.</translation>
 <translation id="6333502561965082103">Önnur aðgerð er í gangi í Chromium. Reyndu aftur síðar.</translation>
 <translation id="6334986366598267305">Nú er auðveldara að nota Chromium með Google reikningnum þínum og í samnýttum tölvum.</translation>
-<translation id="6365489425007284765">{COUNT,plural, =1{Stjórnandinn eyðir vefskoðunargögnum sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}one{Stjórnandinn eyðir vefskoðunargögnum sjálfkrafa eftir aðgerðaleysi í # mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}other{Stjórnandinn eyðir vefskoðunargögnum sjálfkrafa eftir aðgerðaleysi í # mínútur. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}}</translation>
 <translation id="6373523479360886564">Viltu örugglega fjarlægja Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Svona notum við þessi gögn:<ph name="END_BOLD" /> Chromium getur áætlað áhugasvið þín. Seinna getur vefsvæði sem þú opnar beðið Chromium um að sýna áhugasvið þín til að hægt sé að sérsníða auglýsingarnar sem þú sérð.</translation>
 <translation id="6403826409255603130">Chromium er vafri sem keyrir vefsíður og forrit með ótrúlegum hraða. Hann er hraðvirkur, stöðugur og einfaldur í notkun. Notaðu vefinn á öruggari hátt með innbyggðri vernd Chromium gegn spilliforritum og vefveiðum.</translation>

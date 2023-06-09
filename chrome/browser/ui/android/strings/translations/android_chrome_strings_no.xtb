@@ -276,6 +276,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2567545343356994513">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="2569733278091928697">Med Chrome-varsler kan du enkelt administrere mediekontroller, inkognitoøkter, nedlastinger med mer</translation>
 <translation id="2571711316400087311">Tilby å sende sider på andre språk til Google Oversetter</translation>
+<translation id="2571834852878229351">Lag mitt eget</translation>
 <translation id="2573452357057307036">Finn ut hvordan du angir Chrome som standard</translation>
 <translation id="257470231920177468">Når dette vises, vises en liste her over nettsteder du besøker som gjetter interessene dine.</translation>
 <translation id="2580436639406015883">Mengden nettsøppel og svindel blir redusert ved bruk av private tilstandstokener, som hjelper nettsteder med å bekjempe svindel og skille mellom roboter og mennesker.
@@ -567,6 +568,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4108998448622696017">Oppdager og advarer deg om farlige hendelser idet de inntreffer.</translation>
 <translation id="4116038641877404294">Last ned sidene for å bruke dem uten nett</translation>
+<translation id="4121654769234887259">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flyt for varslingstillatelser er åpnet i full høyde</translation>
 <translation id="4135200667068010335">Listen over enheter du kan dele faner med, er lukket.</translation>
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>
@@ -779,6 +781,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
 <translation id="5174700554036517242">Fanen er tilbake i opprinnelig høyde</translation>
 <translation id="5184329579814168207">Åpne i Chrome</translation>
+<translation id="5186634140793586141">Administrer emnene og søkene du er interessert i</translation>
 <translation id="5191251636205085390">Finn ut om og kontroller nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="5193988420012215838">Kopiert til utklippstavlen</translation>
 <translation id="5204967432542742771">Skriv inn passordet</translation>
@@ -1362,6 +1365,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8127542551745560481">Endre startsiden</translation>
 <translation id="8130309322784422030">Den lagrede påloggingsinformasjonen din er kanskje utdatert</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
+<translation id="8137562778192957619">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring.</translation>
 <translation id="8156139159503939589">Hvilke språk kan du lese?</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer gjenstår</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
