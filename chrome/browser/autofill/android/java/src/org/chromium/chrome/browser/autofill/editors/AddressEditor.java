@@ -57,17 +57,9 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.Source;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -85,19 +77,16 @@ import java.util.UUID;
  * An address editor. Can be used for either shipping or billing address editing.
  */
 public class AddressEditor {
+    private final AddressEditorMediator mMediator;
     private final Handler mHandler = new Handler();
     private final Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private final Set<String> mPhoneNumbers = new HashSet<>();
     private final EditorDialog mEditorDialog;
     private final Delegate mDelegate;
-    private final Profile mProfile;
     private final Context mContext;
     private final AutofillProfile mProfileToEdit;
     private final AutofillAddress mAddressToEdit;
-    private final boolean mIsProfileNew;
     private final boolean mSaveToDisk;
-    private final boolean mIsUpdate;
-    private final boolean mIsMigrationToAccount;
 
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
     private final CountryAwarePhoneNumberValidator mPhoneValidator;
@@ -178,19 +167,6 @@ public class AddressEditor {
         return addressFields;
     }
 
-    // TODO(crbug.com/1432505): remove temporary unsupported countries filtering.
-    private static List<DropdownKeyValue> getSupportedCountries(
-            boolean filterOutUnsupportedCountries) {
-        List<DropdownKeyValue> supportedCountries = AutofillProfileBridge.getSupportedCountries();
-        if (filterOutUnsupportedCountries) {
-            PersonalDataManager personalDataManager = PersonalDataManager.getInstance();
-            supportedCountries.removeIf(entry
-                    -> !personalDataManager.isCountryEligibleForAccountStorage(entry.getKey()));
-        }
-
-        return supportedCountries;
-    }
-
     /**
      * Builds an address editor for a new address profile.
      *
@@ -244,16 +220,15 @@ public class AddressEditor {
     private AddressEditor(EditorDialog editorDialog, Delegate delegate, Profile profile,
             AutofillAddress addressToEdit, boolean saveToDisk, boolean isUpdate,
             boolean isMigrationToAccount, boolean isProfileNew) {
+        mMediator = new AddressEditorMediator();
+        mMediator.initialize(
+                editorDialog.getContext(), profile, isUpdate, isMigrationToAccount, isProfileNew);
         mEditorDialog = editorDialog;
         mDelegate = delegate;
-        mProfile = profile;
         mContext = editorDialog.getContext();
         mProfileToEdit = addressToEdit.getProfile();
         mAddressToEdit = addressToEdit;
-        mIsProfileNew = isProfileNew;
         mSaveToDisk = saveToDisk;
-        mIsUpdate = isUpdate;
-        mIsMigrationToAccount = isMigrationToAccount;
 
         mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
         mPhoneValidator = new CountryAwarePhoneNumberValidator(true);
@@ -264,7 +239,10 @@ public class AddressEditor {
                 new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
                         .with(LABEL, mContext.getString(R.string.autofill_profile_editor_country))
                         .with(DROPDOWN_KEY_VALUE_LIST,
-                                getSupportedCountries(isAccountAddressProfile() && !mIsProfileNew))
+                                AddressEditorMediator.getSupportedCountries(
+                                        mMediator.isAccountAddressProfile(
+                                                mProfileToEdit.getSource())
+                                        && !isProfileNew))
                         .with(IS_FULL_LINE, true)
                         .build();
         // Country dropdown is cached, so the selected item needs to be updated for the new profile
@@ -425,7 +403,7 @@ public class AddressEditor {
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
         String country = mCountryField.get(VALUE);
-        if (willBeSavedInAccount() && mIsProfileNew
+        if (mMediator.willBeSavedInAccount(mProfileToEdit.getSource()) && mMediator.isProfileNew()
                 && PersonalDataManager.getInstance().isCountryEligibleForAccountStorage(country)) {
             profile.setSource(Source.ACCOUNT);
         }
@@ -516,87 +494,8 @@ public class AddressEditor {
         return value == null ? "" : value;
     }
 
-    private String getEditorTitle() {
-        return mIsProfileNew ? mContext.getString(R.string.autofill_create_profile)
-                             : mContext.getString(R.string.autofill_edit_address_dialog_title);
-    }
-
-    @Nullable
-    private String getUserEmail() {
-        final IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        return CoreAccountInfo.getEmailFrom(accountInfo);
-    }
-
-    @Nullable
-    private String getSourceNoticeText() {
-        if (!isAccountAddressProfile()) return null;
-        @Nullable
-        String email = getUserEmail();
-        if (email == null) return null;
-
-        if (isAlreadySavedInAccount()) {
-            return mContext
-                    .getString(R.string.autofill_address_already_saved_in_account_source_notice)
-                    .replace("$1", email);
-        }
-
-        return mContext.getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
-                .replace("$1", email);
-    }
-
-    @Nullable
-    private String getDeleteConfirmationText() {
-        if (isAccountAddressProfile()) {
-            @Nullable
-            String email = getUserEmail();
-            if (email == null) return null;
-            return mContext.getString(R.string.autofill_delete_account_address_source_notice)
-                    .replace("$1", email);
-        }
-        if (isAddressSyncOn()) {
-            return mContext.getString(R.string.autofill_delete_sync_address_source_notice);
-        }
-        return mContext.getString(R.string.autofill_delete_local_address_source_notice);
-    }
-
-    private String getDeleteConfirmationTitle() {
-        return mContext.getString(R.string.autofill_delete_address_confirmation_dialog_title);
-    }
-
-    private boolean willBeSavedInAccount() {
-        if (mIsMigrationToAccount) {
-            return true;
-        }
-
-        if (mProfileToEdit.getSource() == Source.ACCOUNT && !mIsUpdate) {
-            return true; // Only already saved address can be updated.
-        }
-
-        // User creates a new address profile, which is going to be stored in their Google account
-        // according to the storage eligibility.
-        return mIsProfileNew
-                && PersonalDataManager.getInstance().isEligibleForAddressAccountStorage();
-    }
-
-    private boolean isAlreadySavedInAccount() {
-        return mProfileToEdit.getSource() == Source.ACCOUNT && mIsUpdate;
-    }
-
-    private boolean isAccountAddressProfile() {
-        return willBeSavedInAccount() || isAlreadySavedInAccount();
-    }
-
-    private boolean isAddressSyncOn() {
-        SyncService service = SyncServiceFactory.get();
-        if (service == null) return false;
-        return service.isSyncFeatureEnabled()
-                && service.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
-    }
-
     private boolean shouldDisplayRequiredErrorIfFieldEmpty(AddressUiComponent component) {
-        if (!isAccountAddressProfile()) {
+        if (!mMediator.isAccountAddressProfile(mProfileToEdit.getSource())) {
             return false; // Required fields shouldn't be enforced for non-account address profiles.
         }
 
@@ -607,7 +506,7 @@ public class AddressEditor {
         // Already empty fields in existing address profiles are made optional even if they
         // are required by account storage rules. This allows users to save address profiles
         // as is without making them more complete during the process.
-        return mIsProfileNew || !isContentEmpty;
+        return mMediator.isProfileNew() || !isContentEmpty;
     }
 
     /**
@@ -669,11 +568,12 @@ public class AddressEditor {
 
     private PropertyModel buildEditorModel() {
         return new PropertyModel.Builder(ALL_KEYS)
-                .with(EDITOR_TITLE, getEditorTitle())
+                .with(EDITOR_TITLE, mMediator.getEditorTitle())
                 .with(CUSTOM_DONE_BUTTON_TEXT, mCustomDoneButtonText)
-                .with(FOOTER_MESSAGE, getSourceNoticeText())
-                .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
-                .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
+                .with(FOOTER_MESSAGE, mMediator.getSourceNoticeText(mProfileToEdit.getSource()))
+                .with(DELETE_CONFIRMATION_TITLE, mMediator.getDeleteConfirmationTitle())
+                .with(DELETE_CONFIRMATION_TEXT,
+                        mMediator.getDeleteConfirmationText(mProfileToEdit.getSource()))
                 .with(SHOW_REQUIRED_INDICATOR, false)
                 .with(EDITOR_FIELDS,
                         buildEditorFieldList(AutofillAddress.getCountryCode(mProfileToEdit),
