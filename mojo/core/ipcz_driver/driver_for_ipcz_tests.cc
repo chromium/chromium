@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -77,9 +78,9 @@ class MojoIpczInProcessTestNodeController
   ipcz::test::TransportPair CreateNewTransports() override {
     ipcz::test::TransportPair transports;
     if (is_broker_) {
-      transports = source_.CreateBrokerToBrokerTransports();
+      transports = source_->CreateBrokerToBrokerTransports();
     } else {
-      transports = source_.CreateTransports();
+      transports = source_->CreateTransports();
     }
 
     Transport::FromHandle(transports.ours)
@@ -94,7 +95,7 @@ class MojoIpczInProcessTestNodeController
     CHECK(node_thread_.HasBeenJoined());
   }
 
-  ipcz::test::TestNode& source_;
+  const raw_ref<ipcz::test::TestNode> source_;
   const bool is_broker_;
   NodeThreadDelegate node_thread_delegate_;
   base::DelegateSimpleThread node_thread_;
@@ -129,9 +130,9 @@ class MojoIpczChildTestNodeController
   ipcz::test::TransportPair CreateNewTransports() override {
     ipcz::test::TransportPair transports;
     if (is_broker_) {
-      transports = source_.CreateBrokerToBrokerTransports();
+      transports = source_->CreateBrokerToBrokerTransports();
     } else {
-      transports = source_.CreateTransports();
+      transports = source_->CreateTransports();
     }
 
     Transport::FromHandle(transports.ours)
@@ -142,7 +143,7 @@ class MojoIpczChildTestNodeController
  private:
   ~MojoIpczChildTestNodeController() override { DCHECK(result_.has_value()); }
 
-  ipcz::test::TestNode& source_;
+  const raw_ref<ipcz::test::TestNode> source_;
   const bool is_broker_;
   base::Process process_;
   absl::optional<bool> result_;
