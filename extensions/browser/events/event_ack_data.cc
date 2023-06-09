@@ -41,14 +41,10 @@ void EventAckData::IncrementInflightEvent(
     start_ok = false;
   }
 
-  // TODO(https://crbug.com/1451961): Store base::Uuids instead of
-  // std::strings for the request UUIDs.
-
   // TODO(lazyboy): Clean up |unacked_events_| if RenderProcessHost died before
   // it got a chance to ack |event_id|. This shouldn't happen in common cases.
-  auto insert_result = unacked_events_.insert(
-      std::make_pair(event_id, EventInfo{request_uuid.AsLowercaseString(),
-                                         render_process_id, start_ok}));
+  auto insert_result = unacked_events_.insert(std::make_pair(
+      event_id, EventInfo{request_uuid, render_process_id, start_ok}));
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
 }
 
@@ -68,11 +64,7 @@ void EventAckData::DecrementInflightEvent(
     return;
   }
 
-  // TODO(https://crbug.com/1451961): Store base::Uuids instead of
-  // std::strings for the request UUIDs.
-  std::string request_uuid_str =
-      std::move(request_info_iter->second.request_uuid);
-  base::Uuid request_uuid = base::Uuid::ParseLowercase(request_uuid_str);
+  base::Uuid request_uuid = std::move(request_info_iter->second.request_uuid);
   bool start_ok = request_info_iter->second.start_ok;
   unacked_events_.erase(request_info_iter);
 

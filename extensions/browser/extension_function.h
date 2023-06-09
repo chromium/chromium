@@ -305,8 +305,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   void set_request_id(int request_id) { request_id_ = request_id; }
   int request_id() { return request_id_; }
 
-  void set_request_uuid(std::string uuid) { request_uuid_ = std::move(uuid); }
-  const std::string& request_uuid() const { return request_uuid_; }
+  void set_request_uuid(base::Uuid uuid) { request_uuid_ = std::move(uuid); }
+  const base::Uuid& request_uuid() const { return request_uuid_; }
 
   void set_source_url(const GURL& source_url) { source_url_ = source_url; }
   const GURL& source_url() const { return source_url_; }
@@ -598,9 +598,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   int request_id_ = -1;
 
   // UUID for this request. Currently only set for worker calls.
-  // TODO(crbug.com/1444561): Make this a base::Uuid and replace
-  // `request_id_` with this.
-  std::string request_uuid_;
+  // TODO(crbug.com/1444561): Replace `request_id_` with this.
+  base::Uuid request_uuid_;
 
   // The name of this function.
   const char* name_ = nullptr;

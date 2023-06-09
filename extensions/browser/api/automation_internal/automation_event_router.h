@@ -12,6 +12,7 @@
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/uuid.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -166,7 +167,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   content::NotificationRegistrar registrar_;
   std::vector<std::unique_ptr<AutomationListener>> listeners_;
 
-  std::map<WorkerId, std::string> keepalive_request_uuid_for_worker_;
+  std::map<WorkerId, base::Uuid> keepalive_request_uuid_for_worker_;
 
   raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> active_context_;
 

@@ -79,7 +79,7 @@ void AutomationEventRouter::UnregisterListenerWithDesktopPermission(
 void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
   for (const auto& request_pair : keepalive_request_uuid_for_worker_) {
     const WorkerId& worker_id = request_pair.first;
-    const std::string& request_uuid = request_pair.second;
+    const base::Uuid& request_uuid = request_pair.second;
     content::RenderProcessHost* host =
         content::RenderProcessHost::FromID(worker_id.render_process_id);
 
@@ -384,7 +384,7 @@ void AutomationEventRouter::RemoveAutomationListener(
     if (request_uuid_iter == keepalive_request_uuid_for_worker_.end())
       continue;
 
-    const std::string& request_uuid = request_uuid_iter->second;
+    base::Uuid request_uuid = std::move(request_uuid_iter->second);
     keepalive_request_uuid_for_worker_.erase(worker_id);
 
     process_manager->DecrementServiceWorkerKeepaliveCount(

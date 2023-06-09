@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "base/uuid.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
@@ -175,7 +176,7 @@ class ExtensionMessagePort : public MessagePort {
   std::set<WorkerId> service_workers_;
 
   // GUIDs of Service Workers that have pending keepalive requests inflight.
-  std::map<WorkerId, std::vector<std::string>> pending_keepalive_uuids_;
+  std::map<WorkerId, std::vector<base::Uuid>> pending_keepalive_uuids_;
 
   // Whether the renderer acknowledged creation of the port. This is used to
   // distinguish abnormal port closure (e.g. no receivers) from explicit port

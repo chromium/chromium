@@ -349,14 +349,13 @@ void ExtensionMessagePort::IncrementLazyKeepaliveCount(
   // context.
   for (const auto& worker_id :
        pm->GetServiceWorkersForExtension(extension_id_)) {
-    std::string request_uuid = pm->IncrementServiceWorkerKeepaliveCount(
+    base::Uuid request_uuid = pm->IncrementServiceWorkerKeepaliveCount(
         worker_id,
         should_have_strong_keepalive()
             ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
             : content::ServiceWorkerExternalRequestTimeoutType::kDefault,
         activity_type, PortIdToString(port_id_));
-    if (!request_uuid.empty())
-      pending_keepalive_uuids_[worker_id].push_back(request_uuid);
+    pending_keepalive_uuids_[worker_id].push_back(std::move(request_uuid));
   }
 }
 
@@ -386,7 +385,7 @@ void ExtensionMessagePort::DecrementLazyKeepaliveCount(
       // the time the message channel opened.
       continue;
     }
-    std::string request_uuid = std::move(iter->second.back());
+    base::Uuid request_uuid = std::move(iter->second.back());
     iter->second.pop_back();
     if (iter->second.empty()) {
       pending_keepalive_uuids_.erase(iter);

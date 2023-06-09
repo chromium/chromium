@@ -6,10 +6,10 @@
 #define EXTENSIONS_BROWSER_EVENTS_EVENT_ACK_DATA_H_
 
 #include <map>
-#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 
 namespace content {
 class ServiceWorkerContext;
@@ -47,8 +47,8 @@ class EventAckData {
  private:
   // Information about an unacked event.
   struct EventInfo {
-    // GUID of the Service Worker's external request for the event.
-    std::string request_uuid;
+    // Uuid of the Service Worker's external request for the event.
+    base::Uuid request_uuid;
     // RenderProcessHost id.
     int render_process_id;
     // Whether or not StartExternalRequest succeeded.

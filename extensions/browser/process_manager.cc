@@ -748,7 +748,7 @@ void ProcessManager::ReleaseLazyKeepaliveCountForFrame(
   }
 }
 
-std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
+base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
     const WorkerId& worker_id,
     content::ServiceWorkerExternalRequestTimeoutType timeout_type,
     Activity::Type activity_type,
@@ -769,9 +769,7 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
 
   service_worker_context->StartingExternalRequest(service_worker_version_id,
                                                   timeout_type, request_uuid);
-  // TODO(https://crbug.com/1451961): Update this signature to just return the
-  // base::Uuid directly.
-  return request_uuid.AsLowercaseString();
+  return request_uuid;
 }
 
 void ProcessManager::DecrementLazyKeepaliveCount(
@@ -810,7 +808,7 @@ void ProcessManager::DecrementLazyKeepaliveCount(
 
 void ProcessManager::DecrementServiceWorkerKeepaliveCount(
     const WorkerId& worker_id,
-    const std::string& request_uuid,
+    const base::Uuid& request_uuid,
     Activity::Type activity_type,
     const std::string& extra_data) {
   DCHECK(!worker_id.extension_id.empty());
@@ -826,11 +824,9 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
 
-  // TODO(crbug.com/1451961): Pass a base::Uuid into this function directly.
-  base::Uuid request_as_uuid = base::Uuid::ParseLowercase(request_uuid);
   content::ServiceWorkerExternalRequestResult result =
       service_worker_context->FinishedExternalRequest(service_worker_version_id,
-                                                      request_as_uuid);
+                                                      request_uuid);
 
   // Example of when kWorkerNotRunning can happen is when the renderer process
   // is killed while handling a service worker request (e.g. because of a bad

@@ -642,7 +642,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
         function->ShouldKeepWorkerAliveIndefinitely()
             ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
             : content::ServiceWorkerExternalRequestTimeoutType::kDefault;
-    std::string uuid = process_manager->IncrementServiceWorkerKeepaliveCount(
+    base::Uuid uuid = process_manager->IncrementServiceWorkerKeepaliveCount(
         *function->worker_id(), timeout_type, Activity::API_FUNCTION,
         function->name());
     function->set_request_uuid(std::move(uuid));
@@ -689,7 +689,7 @@ void ExtensionFunctionDispatcher::OnExtensionFunctionCompleted(
 
   ProcessManager* process_manager = ProcessManager::Get(browser_context_);
   if (extension_function.is_from_service_worker()) {
-    CHECK(!extension_function.request_uuid().empty());
+    CHECK(extension_function.request_uuid().is_valid());
     CHECK(extension_function.worker_id());
     process_manager->DecrementServiceWorkerKeepaliveCount(
         *extension_function.worker_id(), extension_function.request_uuid(),

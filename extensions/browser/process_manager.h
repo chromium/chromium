@@ -163,7 +163,7 @@ class ProcessManager : public KeyedService,
   // The increment method returns the guid that needs to be passed to the
   // decrement method.
   // |timeout_type| is the SW's timeout behavior.
-  std::string IncrementServiceWorkerKeepaliveCount(
+  base::Uuid IncrementServiceWorkerKeepaliveCount(
       const WorkerId& worker_id,
       content::ServiceWorkerExternalRequestTimeoutType timeout_type,
       Activity::Type activity_type,
@@ -171,7 +171,7 @@ class ProcessManager : public KeyedService,
   // Decrements the ref-count of the specified worker with |worker_id| that
   // had its ref-count incremented with |request_uuid|.
   void DecrementServiceWorkerKeepaliveCount(const WorkerId& worker_id,
-                                            const std::string& request_uuid,
+                                            const base::Uuid& request_uuid,
                                             Activity::Type activity_type,
                                             const std::string& extra_data);
 
