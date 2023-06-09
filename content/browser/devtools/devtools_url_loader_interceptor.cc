@@ -537,6 +537,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // In case headers are overridden, keep the original and restore them
   // upon a redirect, so that overrides don't stick across redirects.
   std::unique_ptr<HeadersOverride> headers_override_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 void DevToolsURLLoaderInterceptor::CreateJob(
@@ -1458,6 +1460,7 @@ void InterceptionJob::FetchCookies(
 
 void InterceptionJob::NotifyClient(
     std::unique_ptr<InterceptedRequestInfo> request_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!waiting_for_resolution_);
   FetchCookies(base::BindOnce(&InterceptionJob::NotifyClientWithCookies,
                               base::UnsafeDanglingUntriaged(this),
@@ -1468,6 +1471,7 @@ void InterceptionJob::NotifyClientWithCookies(
     std::unique_ptr<InterceptedRequestInfo> request_info,
     const net::CookieAccessResultList& cookies_with_access_result,
     const net::CookieAccessResultList& excluded_cookies) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!interceptor_)
     return;
   std::string cookie_line;
