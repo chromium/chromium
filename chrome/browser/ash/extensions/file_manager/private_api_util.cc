@@ -295,12 +295,10 @@ bool IsPinManagerAvailableAndSyncingForProfile(Profile* profile) {
   return true;
 }
 
-bool IsDirectoryUnderMyDrive(drivefs::mojom::FileMetadataPtr& metadata,
-                             const base::FilePath& relative_path) {
-  return metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
-         base::FilePath("/")
-             .Append(drive::util::kDriveMyDriveRootDirName)
-             .IsParent(relative_path);
+bool IsPathUnderMyDrive(const base::FilePath& relative_path) {
+  return base::FilePath("/")
+      .Append(drive::util::kDriveMyDriveRootDirName)
+      .IsParent(relative_path);
 }
 
 }  // namespace
@@ -431,19 +429,35 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
       metadata->available_offline || *properties_->hosted;
   properties_->pinned = metadata->pinned;
 
-  // When the bulk pinning feature is enabled, folders can't be pinned
-  // automatically to provide a way to intercept items being added to these
-  // folders. However items in the folders will be pinned, so to ensure the UI
-  // shows these folders as available offline, return these items as pinned and
-  // available offline. This should not include shortcuts and only cover
-  // directories that are parented at "My drive" (e.g. no Shared drives).
-  if (drive::util::IsDriveFsBulkPinningEnabled(running_profile_) &&
-      IsPinManagerAvailableAndSyncingForProfile(running_profile_) &&
-      IsDirectoryUnderMyDrive(metadata, relative_path_) &&
-      !metadata->shortcut_details) {
-    properties_->pinned = true;
-    properties_->available_offline = true;
-    properties_->available_when_metered = true;
+  if (drive::util::IsDriveFsBulkPinningEnabled(running_profile_)) {
+    properties_->available_offline =
+        (drivefs::IsHosted(metadata->type) &&
+         !drive::util::IsPinnableGDocMimeType(metadata->content_mime_type))
+            ? false
+            : metadata->available_offline;
+    properties_->available_when_metered = properties_->available_offline;
+    properties_->pinned = metadata->pinned;
+
+    if (IsPinManagerAvailableAndSyncingForProfile(running_profile_) &&
+        IsPathUnderMyDrive(relative_path_)) {
+      if (metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
+          !metadata->shortcut_details) {
+        // Folders can't be pinned automatically to provide a way to intercept
+        // items being added to these folders. However items in the folders will
+        // be pinned, so to ensure the UI shows these folders as available
+        // offline, return these items as pinned and available offline. This
+        // should not include shortcuts and only cover directories that are
+        // parented at "My drive" (e.g. no Shared drives).
+        properties_->available_when_metered = true;
+        properties_->available_offline = true;
+        properties_->pinned = true;
+      } else if (drive::util::IsPinnableGDocMimeType(
+                     metadata->content_mime_type)) {
+        // When bulk pinning is enabled, hosted files should reflect the pinned
+        // state as their available offline state.
+        properties_->pinned = properties_->available_offline;
+      }
+    }
   }
 
   properties_->shared = metadata->shared;

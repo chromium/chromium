@@ -789,7 +789,11 @@ export class DirectoryModel extends EventTarget {
     const currentEntry = this.currentDirContents_.getDirectoryEntry();
     if (currentEntry) {
       const locationInfo = this.volumeManager_.getLocationInfo(currentEntry);
-      if (locationInfo && locationInfo.isDriveBased) {
+      // When bulk pinning is enabled, this call is made with more frequency in
+      // the UI delegate as hosted documents receive the available offline tick
+      // when they are both explicitly pinned and heuristically cached.
+      if (locationInfo && locationInfo.isDriveBased &&
+          !util.isDriveFsBulkPinningEnabled()) {
         chrome.fileManagerPrivate.pollDriveHostedFilePinStates();
       }
       if (!util.isFakeEntry(currentEntry)) {

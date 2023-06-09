@@ -161,4 +161,15 @@ ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
   return DRIVE_CONNECTED;
 }
 
+bool IsPinnableGDocMimeType(const std::string& mime_type) {
+  static const char* const kPinnableGDocMimeTypes[] = {
+      "application/vnd.google-apps.document",
+      "application/vnd.google-apps.drawing",
+      "application/vnd.google-apps.presentation",
+      "application/vnd.google-apps.spreadsheet",
+  };
+
+  return base::Contains(kPinnableGDocMimeTypes, mime_type);
+}
+
 }  // namespace drive::util

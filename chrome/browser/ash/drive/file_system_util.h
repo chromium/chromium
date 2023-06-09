@@ -56,6 +56,10 @@ enum ConnectionStatusType {
 // Returns the Drive connection status for the |profile|.
 ConnectionStatusType GetDriveConnectionStatus(Profile* profile);
 
+// Returns true if the supplied mime type is of a pinnable type. This indicates
+// the file can be made available offline.
+bool IsPinnableGDocMimeType(const std::string& mime_type);
+
 }  // namespace util
 }  // namespace drive
 

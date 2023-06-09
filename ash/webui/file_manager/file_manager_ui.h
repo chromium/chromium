@@ -57,8 +57,6 @@ class FileManagerUI : public ui::MojoWebDialogUI,
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
-  const FileManagerUIDelegate* delegate() { return delegate_.get(); }
-
   // Get the number of open File Manager windows.
   // Should be called on UI thread.
   static int GetNumInstances();

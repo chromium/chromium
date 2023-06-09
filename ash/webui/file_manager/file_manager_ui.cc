@@ -26,9 +26,7 @@
 #include "ui/file_manager/grit/file_manager_resources_map.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
-namespace ash {
-namespace file_manager {
-
+namespace ash::file_manager {
 namespace {
 
 bool IsKioskSession() {
@@ -81,6 +79,8 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   // Increment the counter each time a window is opened. This is to give a
   // unique ID to each window.
   ++window_counter_;
+
+  delegate_->ShouldPollDriveHostedPinStates(true);
 
   CreateAndAddTrustedAppDataSource(web_ui, window_counter_);
   // Add ability to request chrome-untrusted: URLs
@@ -146,7 +146,8 @@ FileManagerUI::~FileManagerUI() {
   DLOG(WARNING) << "Stopping FileManagerUI. Open windows: " << instance_count_;
 
   if (!instance_count_) {
-    delegate()->ProgressPausedTasks();
+    delegate_->ProgressPausedTasks();
+    delegate_->ShouldPollDriveHostedPinStates(false);
   }
 }
 
@@ -174,5 +175,4 @@ void FileManagerUI::CreatePageHandler(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FileManagerUI)
 
-}  // namespace file_manager
-}  // namespace ash
+}  // namespace ash::file_manager

@@ -20,6 +20,9 @@ class FileManagerUIDelegate {
   // Calls volume manager io_task_controller ProgressPausedTasks API to make
   // I/O state::PAUSED tasks emit their IOTask progress status.
   virtual void ProgressPausedTasks() const = 0;
+
+  // Toggle on or off the centralised polling of hosted document pin states.
+  virtual void ShouldPollDriveHostedPinStates(bool enabled) = 0;
 };
 
 }  // namespace ash
