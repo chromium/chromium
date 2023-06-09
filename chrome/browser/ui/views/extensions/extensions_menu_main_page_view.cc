@@ -138,6 +138,10 @@ class MessageSection : public views::BoxLayoutView {
   // Removes all extension entries.
   void ClearExtensions();
 
+  // Updates the visibility of the view based on `state_` and
+  // `extension_entries_`.
+  void UpdateVisibility();
+
   // The current state of the section.
   ExtensionsMenuMainPageView::MessageSectionState state_;
 
@@ -292,6 +296,7 @@ void MessageSection::Update(
               IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
       break;
   }
+  UpdateVisibility();
 }
 
 void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
@@ -343,8 +348,8 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
     extension_entries_.insert({id, item.get()});
     requests_access_container_->children()[1]->AddChildViewAt(std::move(item),
                                                               index);
-
     requests_access_container_->SetVisible(!extension_entries_.empty());
+    UpdateVisibility();
   } else {
     // Update extension entry.
     std::vector<View*> extension_items = extension_iter->second->children();
@@ -372,12 +377,23 @@ void MessageSection::RemoveExtension(const extensions::ExtensionId& id) {
   extension_entries_.erase(extension_iter);
 
   requests_access_container_->SetVisible(!extension_entries_.empty());
+  UpdateVisibility();
 }
 
 void MessageSection::ClearExtensions() {
   requests_access_container_->children()[kExtensionItemsContainerIndex]
       ->RemoveAllChildViews();
   extension_entries_.clear();
+}
+
+void MessageSection::UpdateVisibility() {
+  // Section is always visible unless state is "user customized access" and no
+  // extension is requesting site access.
+  bool is_visible = state_ == ExtensionsMenuMainPageView::MessageSectionState::
+                                  kUserCustomizedAccess
+                        ? !extension_entries_.empty()
+                        : true;
+  SetVisible(is_visible);
 }
 
 std::vector<extensions::ExtensionId> MessageSection::GetExtensionsForTesting() {
