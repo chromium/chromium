@@ -4,6 +4,7 @@
 
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -19,6 +20,21 @@ std::string ConvertToRegex(const blink::UrlPattern& url_pattern) {
   liburlpattern::Pattern pattern(url_pattern.pathname, options, "[^/]+?");
   VLOG(3) << "regex string:" << pattern.GenerateRegexString();
   return pattern.GenerateRegexString();
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ServiceWorkerRouterEvaluatorErrorEnums {
+  kNoError = 0,
+  kInvalidType = 1,
+  kParseError = 2,
+  kCompileError = 3,
+
+  kMaxValue = kCompileError,
+};
+
+void RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums e) {
+  base::UmaHistogramEnumeration("ServiceWorker.RouterEvaluator.Error", e);
 }
 
 }  // namespace
@@ -46,22 +62,29 @@ void ServiceWorkerRouterEvaluator::Compile() {
   for (const auto& r : rules_.rules) {
     std::unique_ptr<RouterRule> rule = absl::make_unique<RouterRule>();
     for (const auto& condition : r.conditions) {
-      CHECK_EQ(condition.type,
-               blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern);
+      if (condition.type !=
+          blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern) {
+        // Unexpected condition type.
+        RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kInvalidType);
+        return;
+      }
       if (rule->url_patterns.Add(ConvertToRegex(*condition.url_pattern),
                                  nullptr) == -1) {
         // Failed to parse the regex.
+        RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError);
         return;
       }
     }
     rule->url_pattern_length = r.conditions.size();
     if (!rule->url_patterns.Compile()) {
       // Failed to compile the regex.
+      RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kCompileError);
       return;
     }
     rule->sources = r.sources;
     compiled_rules_.emplace_back(std::move(rule));
   }
+  RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
   is_valid_ = true;
 }
 

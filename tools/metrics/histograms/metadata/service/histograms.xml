@@ -1078,6 +1078,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.RouterEvaluator.Error"
+    enum="ServiceWorkerRouterEvaluatorErrorEnums" expires_after="2023-12-31">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    An error that happens in ServiceWorkerRouterEvaluator setup. For calculating
+    an error ratio, no error case is also recorded. This metrics will be
+    recorded per ServiceWorkerRouterEvaluator instance.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SkipCallingFindRegistrationForClientUrl"
     enum="BooleanSkipped" expires_after="2023-12-04">
   <owner>chikamune@chromium.org</owner>

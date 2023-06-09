@@ -94889,6 +94889,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="17" label="CouldNotCheckIsBodyUsed"/>
 </enum>
 
+<enum name="ServiceWorkerRouterEvaluatorErrorEnums">
+  <int value="0" label="kNoError"/>
+  <int value="1" label="kInvalidType"/>
+  <int value="2" label="kParseError"/>
+  <int value="3" label="kCompileError"/>
+</enum>
+
 <enum name="ServiceWorkerSite">
   <obsolete>
     Removed in November 2021.
