@@ -1836,6 +1836,8 @@
   },
   'content_browsertests': {
     'remove_from': [
+      # TODO(crbug.com/1431581): Temporarily remove it from android-12L builder due to infra flakiness.
+      'android-12l-x64-dbg-tests',
       'CrWinAsan(dll)', # https://crbug.com/935598
       # TODO(crbug.com/1371630): Enable on Fuchsia dbg/asan/clang builders.
       'fuchsia-fyi-arm64-dbg',
