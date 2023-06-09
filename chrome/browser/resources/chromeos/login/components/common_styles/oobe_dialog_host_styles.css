@@ -32,6 +32,11 @@
           object-fit: contain;
         }
 
+        .illustration-jelly {
+          width: 100%;
+          height: 100%;
+        }
+
         .oobe-tos-webview {
           /* TODO(https://crbug.com/1320715) Revise the colors */
           border: 1px solid var(--cros-app-shield-color);
