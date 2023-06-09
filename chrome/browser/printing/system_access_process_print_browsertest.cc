@@ -2251,12 +2251,6 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
   void RunScriptedPrintTest(const std::string& script) {
     AddPrinter("printer_name");
 
-    if (UseService() && content_analysis_allows_print()) {
-      // TODO(crbug.com/1450620):  Remove skipping of test once system print
-      // no longer crashes with OOPPD printing after content analysis.
-      GTEST_SKIP();
-    }
-
     ASSERT_TRUE(embedded_test_server()->Started());
     GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2269,9 +2263,36 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 
     if (content_analysis_allows_print()) {
       if (UseService()) {
-        // TODO(crbug.com/1450620):  Update expectations once skipping of test
-        // is removed, when system print no longer crashes with OOPPD printing
-        // after content analysis.
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+        // The expected events are:
+        // 1.  The print job used for scanning is destroyed.
+        // 2.  Get the default settings.
+        // 3.  Ask the user for settings.
+        // 4.  A print job is started.
+        // 5.  The one page of the document is rendered.
+        // 6.  Receive document done notification.
+        // 7.  Wait until all processing for DidPrintDocument is known to have
+        //     completed, to ensure printing finished cleanly before completing
+        //     the test.
+        // 8.  Wait for the one print job to be destroyed, to ensure printing
+        //     finished cleanly before completing the test.
+        SetNumExpectedMessages(/*num=*/8);
+#else
+        // The expected events are:
+        // 1.  The print job used for scanning is destroyed.
+        // 2.  Getting the default settings and asking user for settings are
+        // done
+        //     in-browser, where there is no override to notice the events.  A
+        //     print job is then started.
+        // 3.  The one page of the document is rendered.
+        // 4.  Receive document done notification.
+        // 5.  Wait until all processing for DidPrintDocument is known to have
+        //     completed, to ensure printing finished cleanly before completing
+        //     the test.
+        // 6.  Wait for the one print job to be destroyed, to ensure printing
+        //     finished cleanly before completing the test.
+        SetNumExpectedMessages(/*num=*/6);
+#endif
       } else {
         // The expected events for this are:
         // 1.  The print job used for scanning is destroyed.
@@ -2313,9 +2334,10 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
     }
 
     content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(), script);
-    WaitUntilCallbackReceived();
 
     print_view_manager->WaitOnScanning();
+    WaitUntilCallbackReceived();
+
     ASSERT_EQ(print_view_manager->scripted_print_called(),
               content_analysis_allows_print());
 
@@ -2332,16 +2354,11 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
   AddPrinter("printer_name");
 
-  if (UseService()) {
-    if (content_analysis_allows_print()) {
-      // TODO(crbug.com/1450620):  Remove skipping of test once system print no
-      // longer crashes with OOPPD printing after content analysis.
-      GTEST_SKIP();
-    } else {
-      // Test does not do extra cleanup beyond the check for analysis
-      // permission.
-      SkipPersistentContextsCheckOnShutdown();
-    }
+  if (UseService() && !content_analysis_allows_print()) {
+    // This results in a stranded context left in the Print Backend service.
+    // It will persist harmlessly until the service terminates after a short
+    // period of no printing activity.
+    SkipPersistentContextsCheckOnShutdown();
   }
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -2356,9 +2373,31 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
 
   if (content_analysis_allows_print()) {
     if (UseService()) {
-      // TODO(crbug.com/1450620):  Update expectations once skipping of test
-      // is removed, when system print no longer crashes with OOPPD printing
-      // after content analysis.
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+      // The expected events after having successfully passed the scan are:
+      // 1.  The print job used for scanning is destroyed.
+      // 2.  Get the default settings.
+      // 3.  Ask the user for settings.
+      // 4.  A print job is started.
+      // 5.  The print compositor will complete generating the document.
+      // 6.  The one page of the document is rendered.
+      // 7.  Receive document done notification.
+      // 8.  Wait for the one print job to be destroyed, to ensure printing
+      //     finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/8);
+#else
+      // The expected events after having successfully passed the scan are:
+      // 1.  The print job used for scanning is destroyed.
+      // 2.  Getting the default settings and asking user for settings are done
+      //     in-browser, where there is no override to notice the events.  A
+      //     print job is then started.
+      // 3.  The print compositor will complete generating the document.
+      // 4.  The one page of the document is rendered.
+      // 5.  Receive document done notification.
+      // 6.  Wait for the one print job to be destroyed, to ensure printing
+      //     finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/6);
+#endif
     } else {
       // The expected events for this are:
       // 1.  The print job used for scanning is destroyed.
@@ -2478,9 +2517,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
 #else
       // TODO(http://b/285243428):  Update expectation once a second analysis
       // scan isn't done for system print from Print Preview.
-      // TODO(crbug.com/1450620):  Remove skipping of test once system print no
-      // longer crashes with OOPPD printing after content analysis.
-      GTEST_SKIP();
+      // The expected events for this are:
+      // 1.  The print job used for scanning before Print Preview is destroyed.
+      // 2.  The print job used for scanning before system print is destroyed.
+      // 3.  A print job is started for actual printing.
+      // 4.  The print compositor will complete generating the document.
+      // 5.  Rendering for 1 page of document of content.
+      // 6.  Completes with document done.
+      // 7.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/7);
 #endif
     } else {
 #if BUILDFLAG(IS_WIN)
