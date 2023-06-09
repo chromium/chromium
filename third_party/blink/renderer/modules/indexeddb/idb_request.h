@@ -35,6 +35,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -270,9 +271,9 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                       std::unique_ptr<IDBKey>,
                       std::unique_ptr<IDBKey> primary_key,
                       std::unique_ptr<IDBValue>);
-  void HandleResponse(std::unique_ptr<IDBKey>,
-                      std::unique_ptr<IDBKey> primary_key,
-                      std::unique_ptr<IDBValue>);
+  virtual void HandleResponse(std::unique_ptr<IDBKey>,
+                              std::unique_ptr<IDBKey> primary_key,
+                              absl::optional<std::unique_ptr<IDBValue>>);
   void HandleResponse(std::unique_ptr<IDBValue>);
   void HandleResponse(Vector<std::unique_ptr<IDBValue>>);
   void HandleResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
@@ -286,6 +287,7 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   void OnDelete(bool success);
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
+  void OnAdvanceCursor(mojom::blink::IDBCursorResultPtr result);
 
   // Only IDBOpenDBRequest instances should receive these:
   virtual void EnqueueBlocked(int64_t old_version) { NOTREACHED(); }

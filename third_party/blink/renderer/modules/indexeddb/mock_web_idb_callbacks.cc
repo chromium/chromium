@@ -13,15 +13,7 @@ MockWebIDBCallbacks::MockWebIDBCallbacks() {}
 
 MockWebIDBCallbacks::~MockWebIDBCallbacks() {}
 
-void MockWebIDBCallbacks::SetState(base::WeakPtr<WebIDBCursor> cursor,
-                                   int64_t transaction_id) {}
-
-void MockWebIDBCallbacks::SuccessCursorContinue(
-    std::unique_ptr<IDBKey> key,
-    std::unique_ptr<IDBKey> primary_key,
-    absl::optional<std::unique_ptr<IDBValue>> value) {
-  DoSuccessCursorContinue(key, primary_key, value);
-}
+void MockWebIDBCallbacks::SetState(int64_t transaction_id) {}
 
 void MockWebIDBCallbacks::SuccessKey(std::unique_ptr<IDBKey> key) {
   DoSuccessKey(key);

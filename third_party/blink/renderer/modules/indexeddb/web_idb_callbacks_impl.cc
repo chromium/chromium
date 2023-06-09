@@ -80,9 +80,7 @@ void WebIDBCallbacksImpl::DetachRequestFromCallback() {
   request_.Clear();
 }
 
-void WebIDBCallbacksImpl::SetState(base::WeakPtr<WebIDBCursor> cursor,
-                                   int64_t transaction_id) {
-  cursor_ = cursor;
+void WebIDBCallbacksImpl::SetState(int64_t transaction_id) {
   transaction_id_ = transaction_id;
 }
 
@@ -106,18 +104,6 @@ void WebIDBCallbacksImpl::Error(mojom::blink::IDBException code,
   Detach();
   request->HandleResponse(MakeGarbageCollected<DOMException>(
       static_cast<DOMExceptionCode>(code), message));
-}
-
-void WebIDBCallbacksImpl::SuccessCursorPrefetch(
-    Vector<std::unique_ptr<IDBKey>> keys,
-    Vector<std::unique_ptr<IDBKey>> primary_keys,
-    Vector<std::unique_ptr<IDBValue>> values) {
-  if (cursor_) {
-    cursor_->SetPrefetchData(std::move(keys), std::move(primary_keys),
-                             std::move(values));
-    cursor_->CachedContinue(this);
-  }
-  Detach();
 }
 
 void WebIDBCallbacksImpl::SuccessDatabase(
@@ -218,30 +204,6 @@ void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
   IDBRequest* request = request_.Get();
   Detach();
   request->HandleResponse(value);
-}
-
-void WebIDBCallbacksImpl::SuccessCursorContinue(
-    std::unique_ptr<IDBKey> key,
-    std::unique_ptr<IDBKey> primary_key,
-    absl::optional<std::unique_ptr<IDBValue>> optional_value) {
-  if (!request_)
-    return;
-
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  std::unique_ptr<IDBValue> value;
-  if (optional_value.has_value()) {
-    value = std::move(optional_value.value());
-  } else {
-    value = std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
-                                       Vector<WebBlobInfo>());
-  }
-  DCHECK(value);
-  value->SetIsolate(request_->GetIsolate());
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse(std::move(key), std::move(primary_key),
-                          std::move(value));
 }
 
 void WebIDBCallbacksImpl::ReceiveGetAllResults(

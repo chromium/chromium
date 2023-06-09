@@ -327,7 +327,7 @@ void IDBFactory::OpenInternalImpl(
   }
 
   auto callbacks = request->CreateWebCallbacks();
-  callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
+  callbacks->SetState(WebIDBCallbacksImpl::kNoTransaction);
   factory->Open(GetCallbacksProxy(std::move(callbacks)),
                 std::move(callbacks_remote), name, version,
                 std::move(transaction_receiver), transaction_id);
@@ -409,7 +409,7 @@ void IDBFactory::DeleteDatabaseInternalImpl(
   }
 
   auto callbacks = request->CreateWebCallbacks();
-  callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
+  callbacks->SetState(WebIDBCallbacksImpl::kNoTransaction);
   factory->DeleteDatabase(GetCallbacksProxy(std::move(callbacks)), name,
                           force_close);
 }

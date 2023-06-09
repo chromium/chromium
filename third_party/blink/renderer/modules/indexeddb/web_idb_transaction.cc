@@ -73,7 +73,7 @@ void WebIDBTransaction::Put(int64_t object_store_id,
     return;
   }
 
-  callbacks->SetState(nullptr, transaction_id_);
+  callbacks->SetState(transaction_id_);
   transaction_->Put(object_store_id, std::move(value), std::move(primary_key),
                     put_mode, std::move(index_keys),
                     WTF::BindOnce(&WebIDBTransaction::PutCallback,

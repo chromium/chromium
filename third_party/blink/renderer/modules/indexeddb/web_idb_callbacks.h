@@ -36,21 +36,10 @@
 
 namespace blink {
 
-class WebIDBCursor;
-
 class WebIDBCallbacks : public mojom::blink::IDBCallbacks {
  public:
-  virtual void SuccessCursorPrefetch(
-      Vector<std::unique_ptr<IDBKey>> keys,
-      Vector<std::unique_ptr<IDBKey>> primary_keys,
-      Vector<std::unique_ptr<IDBValue>> values) = 0;
   virtual void DetachRequestFromCallback() = 0;
-  virtual void SetState(base::WeakPtr<WebIDBCursor> cursor,
-                        int64_t transaction_id) = 0;
-  virtual void SuccessCursorContinue(
-      std::unique_ptr<IDBKey>,
-      std::unique_ptr<IDBKey> primary_key,
-      absl::optional<std::unique_ptr<IDBValue>>) = 0;
+  virtual void SetState(int64_t transaction_id) = 0;
   virtual void SuccessArray(Vector<mojom::blink::IDBReturnValuePtr> values) = 0;
   virtual void SuccessArrayArray(
       Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) = 0;

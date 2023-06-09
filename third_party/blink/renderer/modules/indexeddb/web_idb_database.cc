@@ -83,7 +83,7 @@ void WebIDBDatabase::BatchGetAll(
   std::unique_ptr<WebIDBCallbacks> callbacks(callbacks_ptr);
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
-  callbacks->SetState(nullptr, transaction_id);
+  callbacks->SetState(transaction_id);
   database_->BatchGetAll(
       transaction_id, object_store_id, index_id, std::move(key_range_ptrs),
       max_count,
@@ -120,7 +120,7 @@ void WebIDBDatabase::GetAll(int64_t transaction_id,
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-  callbacks->SetState(nullptr, transaction_id);
+  callbacks->SetState(transaction_id);
   database_->GetAll(
       transaction_id, object_store_id, index_id, std::move(key_range_ptr),
       key_only, max_count,
@@ -177,7 +177,7 @@ void WebIDBDatabase::Count(int64_t transaction_id,
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-  callbacks->SetState(nullptr, transaction_id);
+  callbacks->SetState(transaction_id);
   database_->Count(transaction_id, object_store_id, index_id,
                    std::move(key_range_ptr),
                    GetCallbacksProxy(base::WrapUnique(callbacks)));
@@ -211,7 +211,7 @@ void WebIDBDatabase::DeleteRange(
 void WebIDBDatabase::GetKeyGeneratorCurrentNumber(int64_t transaction_id,
                                                   int64_t object_store_id,
                                                   WebIDBCallbacks* callbacks) {
-  callbacks->SetState(nullptr, transaction_id);
+  callbacks->SetState(transaction_id);
   database_->GetKeyGeneratorCurrentNumber(
       transaction_id, object_store_id,
       GetCallbacksProxy(base::WrapUnique(callbacks)));

@@ -30,7 +30,6 @@ std::unique_ptr<IDBValue> CreateNullIDBValueForTesting(v8::Isolate* isolate) {
                                               Vector<WebBlobInfo>());
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));
-  idb_value->SetIsolate(isolate);
   return idb_value;
 }
 
@@ -58,7 +57,6 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
                                               std::move(blob_infos));
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));
-  idb_value->SetIsolate(isolate);
 
   DCHECK_EQ(create_wrapped_value,
             IDBValueUnwrapper::IsWrapped(idb_value.get()));

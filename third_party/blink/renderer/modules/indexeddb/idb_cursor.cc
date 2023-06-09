@@ -160,7 +160,7 @@ void IDBCursor::advance(unsigned count, ExceptionState& exception_state) {
   request_->SetPendingCursor(this);
   request_->AssignNewMetrics(std::move(metrics));
   got_value_ = false;
-  backend_->Advance(count, request_->CreateWebCallbacks());
+  backend_->Advance(count, request_);
 }
 
 void IDBCursor::Continue(ScriptState* script_state,
@@ -318,8 +318,7 @@ void IDBCursor::Continue(std::unique_ptr<IDBKey> key,
   request_->SetPendingCursor(this);
   request_->AssignNewMetrics(std::move(metrics));
   got_value_ = false;
-  backend_->CursorContinue(key.get(), primary_key.get(),
-                           request_->CreateWebCallbacks());
+  backend_->CursorContinue(key.get(), primary_key.get(), request_);
 }
 
 IDBRequest* IDBCursor::Delete(ScriptState* script_state,

@@ -20,6 +20,8 @@
 
 namespace blink {
 
+class IDBRequest;
+
 class MODULES_EXPORT WebIDBCursor final {
  public:
   WebIDBCursor(mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor,
@@ -32,7 +34,7 @@ class MODULES_EXPORT WebIDBCursor final {
   WebIDBCursor& operator=(const WebIDBCursor&) = delete;
 
   // Used to implement IDBCursor.advance().
-  void Advance(uint32_t count, std::unique_ptr<WebIDBCallbacks> callback);
+  void Advance(uint32_t count, IDBRequest* request);
 
   // Used to implement IDBCursor.continue() and IDBCursor.continuePrimaryKey().
   //
@@ -44,11 +46,9 @@ class MODULES_EXPORT WebIDBCursor final {
   // the duration of the call.
   void CursorContinue(const IDBKey* key,
                       const IDBKey* primary_key,
-                      std::unique_ptr<WebIDBCallbacks> callback);
-  void CursorContinueCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
-                              mojom::blink::IDBCursorResultPtr result);
+                      IDBRequest* request);
 
-  void PrefetchCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+  void PrefetchCallback(IDBRequest* request,
                         mojom::blink::IDBCursorResultPtr result);
 
   // Called after a cursor request's success handler is executed.
@@ -61,16 +61,17 @@ class MODULES_EXPORT WebIDBCursor final {
                        Vector<std::unique_ptr<IDBKey>> primary_keys,
                        Vector<std::unique_ptr<IDBValue>> values);
 
-  void CachedAdvance(uint32_t count, WebIDBCallbacks* callbacks);
-  void CachedContinue(WebIDBCallbacks* callbacks);
+  void CachedAdvance(uint32_t count, IDBRequest* request);
+  void CachedContinue(IDBRequest* request);
 
   void ResetPrefetchCache();
 
   int64_t transaction_id() const { return transaction_id_; }
 
  private:
-  void AdvanceCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+  void AdvanceCallback(IDBRequest* request,
                        mojom::blink::IDBCursorResultPtr result);
+
   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
       std::unique_ptr<WebIDBCallbacks> callbacks);
 
