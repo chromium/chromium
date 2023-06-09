@@ -5153,9 +5153,15 @@ const char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vcpu on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
 
+const char kArcSwitchToKeyMintDaemonName[] = "Switch to KeyMint Daemon.";
+const char kArcSwitchToKeyMintDaemonDesc[] =
+    "Switch from Keymaster Daemon to KeyMint Daemon. Must be switched on/off "
+    "at the same time with \"Switch To KeyMint on ARC-T\"";
+
 const char kArcSwitchToKeyMintOnTName[] = "Switch to KeyMint on ARC-T.";
 const char kArcSwitchToKeyMintOnTDesc[] =
-    "Switch from Keymaster to KeyMint on ARC-T.";
+    "Switch from Keymaster to KeyMint on ARC-T. Must be switched on/off at the "
+    "same time with \"Switch to KeyMint Daemon\"";
 
 const char kArcSyncInstallPriorityName[] =
     "Enable supporting install priority for synced ARC apps.";

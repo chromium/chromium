@@ -321,9 +321,14 @@
     "expiry_milestone": 100
   },
   {
+    "name": "arc-switch-to-keymint-daemon",
+    "owners": [ "yaohuali" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "arc-switch-to-keymint-on-t",
     "owners": [ "yaohuali" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "arc-sync-install-priority",
