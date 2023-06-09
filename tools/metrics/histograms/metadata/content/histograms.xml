@@ -805,17 +805,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.CommitMutationCount"
-    units="operations" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Tracks the number of operations in a Feed mutation when database receive the
-    commit request.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh"
     units="ms" expires_after="2023-11-12">
   <owner>carlosk@chromium.org</owner>
@@ -1211,60 +1200,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Offline.GetStatusCount" units="count"
-    expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The number of urls that have offline status requested per call.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Offline.GetStatusDuration" units="ms"
-    expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The number of milliseconds to round trip offline status for a set of URLs
-    from Offline Pages component.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.OperationCommitTime" units="ms"
-    expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The time it takes for the Feed to commit operations from the storage.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.PagePopulatingTime" units="ms"
-    expires_after="2020-12-06">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The number of milliseconds it takes for Feed content to be visible in the
-    UI. If content is not immediately available, this is conceptually the amount
-    of time a loading spinner is shown to the user.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Piet.FrameRenderingErrorCode"
-    enum="PietErrorCode" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The integer error code when Piet wants to report events that
-    occurred during Frame rendering.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
     enum="FeedRefreshTrigger" expires_after="2023-09-24">
   <owner>edchin@google.com</owner>
@@ -1276,99 +1211,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Scheduler.ContentAgeDifference"
-    units="ms" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Difference in age of content between feed and host. Recorded when the Feed
-    asks the scheduler how to behave when a NTP is opened.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Scheduler.HasContent"
-    enum="FeedHostMismatch" expires_after="2020-12-06">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The match status between Feed and the host when the scheduler's
-    ShouldSessionRequestData method is called. This occurs whenever the NTP is
-    opened, and tries to track if the Feed and host state agrees or disagrees.
-    If the device already has content, new requests are not necessarily required
-    for a reasonable user experience.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Scheduler.OutstandingRequest"
-    enum="FeedHostMismatch" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The match status between Feed and the host when the scheduler's
-    ShouldSessionRequestData method is called. This occurs whenever the NTP is
-    opened, and tries to track if the Feed and host state agrees or disagrees.
-    The type of request that could be outstanding is to fetch new or more news
-    articles, and when requests are outstanding new requests should not be
-    started.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Scheduler.RefreshTrigger"
-    enum="RefreshTrigger" expires_after="2021-05-23">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The scheduler watches for various triggers, which cause it to decide if a
-    refresh is currently warranted or not. This histogram is emitted when a
-    trigger causes a refresh.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Scheduler.RequestBehavior"
-    enum="RequestBehavior" expires_after="2020-12-06">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    When NTP is opened, the scheduler host tells the Feed library how to act, if
-    the existing content should be shown, immediately or with timeout, and if a
-    refresh request should be started.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Scheduler.ShouldRefreshResult"
-    enum="FeedSchedulerRefreshStatus" expires_after="2020-12-06">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    When the Feed scheduler receives a refresh request, the scheduler will
-    decide to refresh or not depending on the scheduler status. Recorded when
-    the Feed scheduler receives the request.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.SendFeedback"
     enum="FeedSendFeedbackType" expires_after="2023-07-23">
   <owner>carlosk@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>Number of each type of feedback sent about the feed.</summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ServerRequest.Reason"
-    enum="FeedRequestReason" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The reason for a server request from the Feed's prespective, when the
-    request is started.
-  </summary>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.SessionDuration" units="ms"
@@ -1398,26 +1246,6 @@ chromium-metrics-reviews@google.com.
     track the status of the sign in as a boolean (successful=true, unsuccessful=
     false). This provides a measure of how many users are signing in via the
     Feed and features like Back of Card sign in promo vs other sign in avenues.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Task.DelayTime" units="ms"
-    expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How long it took from enqueuing the task to when it was run.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Task.TaskTime" units="ms"
-    expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How long it took from the task starting to when it finished executing.
   </summary>
 </histogram>
 
@@ -1455,39 +1283,6 @@ chromium-metrics-reviews@google.com.
     calculated starting with the first Feed interaction, until the Feed surface
     is closed, or the user is idle (no scrolling or other actions) for 30
     seconds.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.TokenCompleted.ContentCount2"
-    units="count" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How many top level features were in the continuation response, typically
-    clusters. Recorded when the fetch completes successfully.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.TokenCompleted.TokenCount"
-    units="count" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How many tokens were in the continuation response, typically ways to fetch
-    more articles. Recorded when the fetch completes successfully.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.TokenFailedToCompleted" units="count"
-    expires_after="2020-12-06">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    When a token fails to complete, how many failures this token has seen.
-    Record when the fetch fails.
   </summary>
 </histogram>
 

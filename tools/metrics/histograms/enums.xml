@@ -43197,13 +43197,6 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
-<enum name="FeedHostMismatch">
-  <int value="0" label="Agree neither are set"/>
-  <int value="1" label="Feed is set only"/>
-  <int value="2" label="Host is set only"/>
-  <int value="3" label="Agree both are set"/>
-</enum>
-
 <enum name="FeedImageFetchResult">
   <int value="0" label="Fetch cache success"/>
   <int value="1" label="Fetch network success"/>
@@ -43333,29 +43326,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="Background warm start app close">
     Refresh is triggered in a background warm start with app close enabled.
   </int>
-</enum>
-
-<enum name="FeedRequestReason">
-  <int value="0" label="UNKNOWN"/>
-  <int value="1" label="ZERO_STATE"/>
-  <int value="2" label="HOST_REQUESTED"/>
-  <int value="3" label="OPEN_WITH_CONTENT"/>
-  <int value="4" label="MANUAL_CONTINUATION"/>
-  <int value="5" label="AUTOMATIC_CONTINUATION"/>
-  <int value="6" label="OPEN_WITHOUT_CONTENT"/>
-  <int value="7" label="CLEAR_ALL"/>
-</enum>
-
-<enum name="FeedSchedulerRefreshStatus">
-  <int value="0" label="Should refresh"/>
-  <int value="1" label="Outstanding request"/>
-  <int value="2" label="Trigger disabled"/>
-  <int value="3" label="Network offline"/>
-  <int value="4" label="Eula not accepted"/>
-  <int value="5" label="Articles Hidden"/>
-  <int value="6" label="Refresh suppressed"/>
-  <int value="7" label="Not stale"/>
-  <int value="8" label="Refresh throttled"/>
 </enum>
 
 <enum name="FeedSendFeedbackType">
@@ -89958,12 +89928,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Used on Search Suggestion in both contexts"/>
 </enum>
 
-<enum name="RefreshTrigger">
-  <int value="0" label="NTP shown"/>
-  <int value="1" label="Foregrounded"/>
-  <int value="2" label="Fixed timer"/>
-</enum>
-
 <enum name="RegexRuleStatus">
   <int value="0" label="Normal regex (indexed)"/>
   <int value="1" label="Large Regex (ignored)"/>
@@ -91394,16 +91358,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="MODIFY_REQUEST_HEADERS"/>
   <int value="3" label="MODIFY_RESPONSE_HEADERS"/>
   <int value="4" label="SET_AUTH_CREDENTIALS"/>
-</enum>
-
-<enum name="RequestBehavior">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Request with wait"/>
-  <int value="2" label="Request with content"/>
-  <int value="3" label="Request with timeout"/>
-  <int value="4" label="No request with wait"/>
-  <int value="5" label="No request with content"/>
-  <int value="6" label="No request with timeout"/>
 </enum>
 
 <enum name="RequestDestination">
