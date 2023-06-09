@@ -212,8 +212,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
       mojom::PrintCompositor::Status status,
       base::ReadOnlySharedMemoryRegion page_region);
 
-  // Helper method to set `analyzing_content_` in child classes.
-  void set_analyzing_content(bool analyzing);
+  // Helper method to set `snapshotting_for_content_analysis_` in child classes.
+  void set_snapshotting_for_content_analysis();
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // Manages the low-level talk to the printer.
@@ -381,8 +381,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Indicates that the page/document is currently undergoing content analysis.
-  bool analyzing_content_ = false;
+  // Indicates that a snapshot of the page/document is currently being made.
+  bool snapshotting_for_content_analysis_ = false;
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   const scoped_refptr<PrintQueriesQueue> queue_;

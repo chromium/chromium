@@ -614,7 +614,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-      !analyzing_content_ &&
+      !snapshotting_for_content_analysis_ &&
 #endif
       !query_with_ui_client_id_.has_value()) {
     // Script initiated print, this is first signal of start of printing.
@@ -642,7 +642,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
   // Sometimes it is desired to get the PDF settings as opposed to the settings
   // of the default system print driver.
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  bool want_pdf_settings = analyzing_content_;
+  bool want_pdf_settings = snapshotting_for_content_analysis_;
 #else
   bool want_pdf_settings = false;
 #endif
@@ -778,7 +778,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
     auto scanning_done_callback = base::BindOnce(
         &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
         weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(callback));
-    set_analyzing_content(/*analyzing=*/true);
+    set_snapshotting_for_content_analysis();
     GetPrintRenderFrame(render_frame_host)
         ->SnapshotForContentAnalysis(base::BindOnce(
             &PrintViewManagerBase::OnGotSnapshotCallback,
@@ -1030,9 +1030,7 @@ void PrintViewManagerBase::ReleasePrintJob() {
     // Ensure that any residual registration of printing client is released.
     // This might be necessary in some abnormal cases, such as the associated
     // render process having terminated.
-    if (!analyzing_content_) {
-      UnregisterSystemPrintClient();
-    }
+    UnregisterSystemPrintClient();
   }
 #endif
 
@@ -1110,9 +1108,8 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   // Don't start printing if the print job was created only for snapshotting.
-  if (analyzing_content_) {
+  if (snapshotting_for_content_analysis_)
     return true;
-  }
 #endif
 
   // Settings are already loaded. Go ahead. This will set
@@ -1240,7 +1237,6 @@ void PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis(
     mojom::ScriptedPrintParamsPtr params,
     ScriptedPrintCallback callback,
     bool allowed) {
-  set_analyzing_content(/*analyzing*/ false);
   if (!allowed || !printing_rfh_ || IsCrashed() ||
       !printing_rfh_->IsRenderFrameLive()) {
     std::move(callback).Run(nullptr);
@@ -1254,6 +1250,7 @@ void PrintViewManagerBase::OnGotSnapshotCallback(
     enterprise_connectors::ContentAnalysisDelegate::Data data,
     content::GlobalRenderFrameHostId rfh_id,
     mojom::DidPrintDocumentParamsPtr params) {
+  snapshotting_for_content_analysis_ = false;
   auto* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (!params || !rfh || !PrintJobHasDocument(params->document_cookie) ||
       !params->content->metafile_data_region.IsValid()) {
@@ -1309,9 +1306,8 @@ void PrintViewManagerBase::OnCompositedForContentAnalysis(
       safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
-void PrintViewManagerBase::set_analyzing_content(bool analyzing) {
-  DVLOG(1) << (analyzing ? "Starting" : "Completed") << " content analysis";
-  analyzing_content_ = analyzing;
+void PrintViewManagerBase::set_snapshotting_for_content_analysis() {
+  snapshotting_for_content_analysis_ = true;
 }
 
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
