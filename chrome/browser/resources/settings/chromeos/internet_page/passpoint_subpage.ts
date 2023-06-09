@@ -222,9 +222,12 @@ export class SettingsPasspointSubpageElement extends PasspointListenerMixin
     event.stopPropagation();
   }
 
-  private getRemovalDialogDescription_(): string {
-    return this.i18n(
-        'passpointRemovalDescription', this.subscription_!.friendlyName);
+  private getRemovalDialogDescription_(): TrustedHTML {
+    return this.i18nAdvanced('passpointRemovalDescription', {
+      substitutions: [
+        this.subscription_!.friendlyName,
+      ],
+    });
   }
 
   private getRemovalDialog_(): HTMLDialogElement {

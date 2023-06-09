@@ -247,6 +247,17 @@ suite('PasspointSubpage', () => {
     let dialog = getRemovalDialog();
     assertTrue(!!dialog);
 
+    // Check the dialog message contains the subscription name.
+    const link = dialog!.querySelector('localized-link');
+    assertTrue(!!link);
+    const span = link!.shadowRoot!.querySelector('span');
+    assertTrue(!!span);
+    assertEquals(
+        span.textContent,
+        sub.friendlyName +
+            ' will be removed from this device only. To make changes to your ' +
+            'subscription, contact the subscription provider. ');
+
     // Cancel the dialog.
     const cancelButton = getButton('removalCancelButton');
     cancelButton.click();
