@@ -81,7 +81,6 @@ const FIRST_PAGE_ROUTE: Route = routes.INTERNET;
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   containsRoute(route: Route|undefined): boolean;
-  querySection(section: string): HTMLElement|null;
   loadAdvancedPage(): Promise<Element>;
 }
 
@@ -169,9 +168,10 @@ export const MainPageMixin = dedupingMixin(
 
           const section = await this.ensureSectionForRoute_(route);
           section.classList.add('expanded');
+          this.dispatchCustomEvent_('show-container');
+
           // Fire event used by a11y tests only.
           this.dispatchCustomEvent_('settings-section-expanded');
-          this.dispatchCustomEvent_('show-container');
         }
 
         private enterMainPage_(oldRoute: Route): Promise<void> {
@@ -428,10 +428,7 @@ export const MainPageMixin = dedupingMixin(
         /**
          * Helper function to get a section from the local DOM.
          */
-        querySection(section: string): HTMLElement|null {
-          if (!section) {
-            return null;
-          }
+        private querySection(section: string): HTMLElement|null {
           return this.shadowRoot!.querySelector(
               `os-settings-section[section="${section}"]`);
         }

@@ -32,10 +32,10 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_settings_page/settings_idle_load.js';
-import '../main_page_container/main_page_container_styles.css.js';
 import '../os_about_page/eol_offer_section.js';
 import '../os_settings_icons.html.js';
 import '../os_settings_page/os_settings_section.js';
+import './main_page_container_styles.css.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -149,7 +149,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   private hasExpandedSection_: boolean;
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;
-  private currentRoute_?: Route;
+  private currentRoute_: Route;
   /**
    * Used to avoid handling a new toggle while currently toggling.
    */
@@ -311,28 +311,17 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     }
   }
 
-  /**
-   * @return Whether to show the basic page, taking into account
-   *     both routing and search state.
-   */
-  private showBasicPage_(currentRoute: Route, hasExpandedSection: boolean):
-      boolean {
-    return !hasExpandedSection || isBasicRoute(currentRoute);
+  private showBasicPage_(): boolean {
+    return !this.hasExpandedSection_ || isBasicRoute(this.currentRoute_);
   }
 
-  /**
-   * @return Whether to show the advanced page, taking into account
-   *     both routing and search state.
-   */
-  private showAdvancedPage_(
-      currentRoute: Route, hasExpandedSection: boolean,
-      advancedToggleExpanded: boolean): boolean {
-    return hasExpandedSection ? isAdvancedRoute(currentRoute) :
-                                advancedToggleExpanded;
-  }
-
-  private showAdvancedSettings_(visibility?: boolean): boolean {
-    return visibility !== false;
+  private showAdvancedPage_(): boolean {
+    if (this.hasExpandedSection_) {
+      // Show the Advanced page only if the current route is an Advanced
+      // subpage.
+      return isAdvancedRoute(this.currentRoute_);
+    }
+    return this.advancedToggleExpanded;
   }
 
   /**

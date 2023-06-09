@@ -18,6 +18,14 @@
     padding-top: 8px;
   }
 
+  :host(:not(.expanded)) {
+    /* The margin and padding here are doing two things: make the total
+    * separation 24px; and make scrollIntoView align the section header
+    * with the top item in the side nav menu. Both things are desired
+    * by Alan (bettes@). */
+    margin-bottom: 3px;
+  }
+
   :host(:not(.expanded)) #card {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
@@ -28,6 +36,10 @@
 
   :host-context(body.jelly-enabled):host(:not(.expanded)) #card {
     background-color: var(--cros-sys-app_base);
+  }
+
+  :host(.expanded) {
+    min-height: 100%;
   }
 
   :host(.expanded) #header {

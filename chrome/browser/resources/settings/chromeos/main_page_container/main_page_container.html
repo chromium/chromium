@@ -98,6 +98,10 @@
     margin-top: 20px;
   }
 
+  /* When infinite scroll is removed, only active pages should be visible
+   * This style should only apply for main-page-container and not os-about-page.
+   * The os-about-page is a special case where all sections should be visible.
+   */
   :host-context(.revamp-wayfinding-enabled) os-settings-section:not([active]) {
     display: none;
   }
