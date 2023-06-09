@@ -180,7 +180,7 @@ template("clang_lib") {
           assert(false)  # Unhandled cpu type
         }
       } else {
-        assert(!toolchain_has_rust)  # Unhandled target platform
+        assert(false)  # Unhandled target platform
       }
 
       _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
