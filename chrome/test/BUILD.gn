@@ -5072,6 +5072,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/file_manager_lacros_browsertest.cc",
       "../browser/lacros/idle_service_lacros_browsertest.cc",
       "../browser/lacros/multitask_menu_nudge_delegate_lacros_browsertest.cc",
+      "../browser/lacros/parent_access_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
       "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
@@ -9393,9 +9394,6 @@ test("unit_tests") {
         "../browser/supervised_user/supervised_user_extensions_manager_unittest.cc",
         "../browser/supervised_user/supervised_user_url_filter_extensions_unittest.cc",
       ]
-      if (is_chromeos_ash) {
-        sources += [ "../browser/supervised_user/chromeos/parent_access_extension_approvals_manager_unittest.cc" ]
-      }
     }
     if (is_chromeos) {
       sources += [ "../browser/supervised_user/chromeos/supervised_user_favicon_request_handler_unittest.cc" ]

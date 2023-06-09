@@ -13,7 +13,7 @@
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
 #endif
 
@@ -108,7 +108,7 @@ class SupervisedUserExtensionsDelegateImpl
 
   const raw_ptr<content::BrowserContext> context_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Manages the platform specific V2 approval flow.
   // The extension approvals manager is destroyed when a new ParentAccessDialog
   // is created or this delegate is destroyed.

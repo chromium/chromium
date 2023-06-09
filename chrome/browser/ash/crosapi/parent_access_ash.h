@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
@@ -41,6 +42,14 @@ class ParentAccessAsh : public mojom::ParentAccess {
       const std::u16string& child_display_name,
       const gfx::ImageSkia& favicon,
       GetWebsiteParentApprovalCallback callback) override;
+
+  void GetExtensionParentApproval(
+      const std::u16string& extension_name,
+      const std::u16string& child_display_name,
+      const gfx::ImageSkia& icon,
+      const std::vector<crosapi::mojom::ExtensionPermissionPtr> permissions,
+      bool requests_disabled,
+      GetExtensionParentApprovalCallback callback) override;
 
   using ParentAccessCallback =
       base::OnceCallback<void(crosapi::mojom::ParentAccessResultPtr)>;

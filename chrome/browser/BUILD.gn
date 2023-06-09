@@ -7575,7 +7575,7 @@ static_library("browser") {
       "supervised_user/supervised_user_extensions_metrics_recorder.cc",
       "supervised_user/supervised_user_extensions_metrics_recorder.h",
     ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "supervised_user/chromeos/parent_access_extension_approvals_manager.cc",
         "supervised_user/chromeos/parent_access_extension_approvals_manager.h",

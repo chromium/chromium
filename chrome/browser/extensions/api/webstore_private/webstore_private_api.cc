@@ -71,11 +71,16 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
 // flag to #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "extensions/browser/api/management/management_api.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
+#endif
 
 using safe_browsing::SafeBrowsingNavigationObserverManager;
 
@@ -905,10 +910,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
       prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
       // Bypass the install prompt dialog if V2 is enabled. The
       // ParentAccessDialog handles both the blocked and install use case.
-      if (supervised_user::IsLocalExtensionApprovalsV2Enabled()) {
+#if BUILDFLAG(IS_CHROMEOS)
+      if (ParentAccessExtensionApprovalsManager::
+              ShouldShowExtensionApprovalsV2()) {
         RequestExtensionApproval(contents);
         return;
       }
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
