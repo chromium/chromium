@@ -77270,7 +77270,7 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OmniboxSearchEngineType">
-  <int value="0" label="Unknown"/>
+  <int value="0" label="Other"/>
   <int value="1" label="AOL"/>
   <int value="2" label="Ask"/>
   <int value="3" label="Atlas"/>
