@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
@@ -307,9 +308,12 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
     return;
   }
 
+  auto* gained_active_widget =
+      views::Widget::GetWidgetForNativeView(gained_active);
+
   // Don't close the bubble if a transient child is gaining or losing
   // activation.
-  if (bubble_widget_ == views::Widget::GetWidgetForNativeView(gained_active) ||
+  if (bubble_widget_ == gained_active_widget ||
       ::wm::HasTransientAncestor(gained_active,
                                  bubble_widget_->GetNativeWindow()) ||
       (lost_active && ::wm::HasTransientAncestor(
@@ -321,8 +325,7 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
   if (tray_->IsMessageCenterBubbleShown()) {
     views::Widget* message_center_widget =
         tray_->message_center_bubble()->GetBubbleWidget();
-    if (message_center_widget ==
-        views::Widget::GetWidgetForNativeView(gained_active)) {
+    if (message_center_widget == gained_active_widget) {
       return;
     }
 
@@ -332,6 +335,14 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
     if (!message_center_widget->IsVisible()) {
       return;
     }
+  }
+
+  // If the activated window is a popup notification, interacting with it should
+  // not close the bubble.
+  if (features::IsQsRevampEnabled() &&
+      tray_->GetMessagePopupCollection()->IsWidgetAPopupNotification(
+          gained_active_widget)) {
+    return;
   }
 
   tray_->CloseBubble();

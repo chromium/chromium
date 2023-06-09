@@ -30,7 +30,7 @@ class MockMessagePopupView;
 class MockMessagePopupCollection : public DesktopMessagePopupCollection {
  public:
   explicit MockMessagePopupCollection(gfx::NativeWindow context)
-      : DesktopMessagePopupCollection(), context_(context) {}
+      : context_(context) {}
 
   MockMessagePopupCollection(const MockMessagePopupCollection&) = delete;
   MockMessagePopupCollection& operator=(const MockMessagePopupCollection&) =
@@ -836,6 +836,45 @@ TEST_F(MessagePopupCollectionTest, NotDismissedOnClick) {
   EXPECT_EQ(2u, GetPopupCounts());
   EXPECT_TRUE(GetPopup(id1));
   EXPECT_TRUE(GetPopup(id2));
+}
+
+TEST_F(MessagePopupCollectionTest, PopupCollectionBounds) {
+  EXPECT_EQ(gfx::Rect(), popup_collection()->popup_collection_bounds());
+
+  std::string id0 = AddNotification();
+  AnimateUntilIdle();
+
+  gfx::Rect r0 = GetPopup(id0)->GetBoundsInScreen();
+
+  // The popup collection bounds should be the bounds of the only popup.
+  EXPECT_EQ(r0, popup_collection()->popup_collection_bounds());
+
+  std::string id1 = AddNotification();
+  std::string id2 = AddNotification();
+
+  AnimateUntilIdle();
+
+  r0 = GetPopup(id0)->GetBoundsInScreen();
+  gfx::Rect r1 = GetPopup(id1)->GetBoundsInScreen();
+  gfx::Rect r2 = GetPopup(id2)->GetBoundsInScreen();
+
+  // The height of the entire popup collection bounds should be the total
+  // heights of all popups, plus all the margins between them.
+  int expected_height = r0.height() + kMarginBetweenPopups + r1.height() +
+                        kMarginBetweenPopups + r2.height();
+
+  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), kNotificationWidth, expected_height),
+            popup_collection()->popup_collection_bounds());
+
+  MessageCenter::Get()->RemoveNotification(id0, true);
+  AnimateUntilIdle();
+
+  r1 = GetPopup(id1)->GetBoundsInScreen();
+  r2 = GetPopup(id2)->GetBoundsInScreen();
+
+  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), kNotificationWidth,
+                      r1.height() + kMarginBetweenPopups + r2.height()),
+            popup_collection()->popup_collection_bounds());
 }
 
 TEST_F(MessagePopupCollectionTest, DefaultPositioning) {

@@ -4,7 +4,10 @@
 
 #include "ash/system/message_center/ash_message_popup_collection.h"
 
+#include <cstdint>
+
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -17,6 +20,8 @@
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/message_center/metrics_utils.h"
+#include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -27,8 +32,10 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -42,6 +49,10 @@ void ReportPopupAnimationSmoothness(int smoothness) {
                                smoothness);
 }
 
+int64_t GetDisplayIdForWindow(gfx::NativeWindow window) {
+  return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+}
+
 }  // namespace
 
 const char AshMessagePopupCollection::kMessagePopupWidgetName[] =
@@ -51,9 +62,11 @@ AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
     : screen_(nullptr), shelf_(shelf) {
   shelf_->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {
+  Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   shelf_->RemoveObserver(this);
   for (views::Widget* widget : tracked_widgets_)
@@ -238,6 +251,40 @@ void AshMessagePopupCollection::OnTabletModeEnded() {
   ResetBounds();
 }
 
+void AshMessagePopupCollection::OnStatusAreaAnchoredBubbleVisibilityChanged(
+    TrayBubbleView* tray_bubble,
+    bool visible) {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
+  if (!visible) {
+    SetBaselineOffset(0);
+    return;
+  }
+
+  AdjustBaselineBasedOnTrayBubble(tray_bubble);
+}
+
+void AshMessagePopupCollection::OnTrayBubbleBoundsChanged(
+    TrayBubbleView* tray_bubble) {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
+  AdjustBaselineBasedOnTrayBubble(tray_bubble);
+}
+
+bool AshMessagePopupCollection::IsWidgetAPopupNotification(
+    views::Widget* widget) {
+  for (auto* popup_widget : tracked_widgets_) {
+    if (widget == popup_widget) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void AshMessagePopupCollection::SetAnimationIdleClosureForTest(
     base::OnceClosure closure) {
   DCHECK(closure);
@@ -286,6 +333,29 @@ void AshMessagePopupCollection::UpdateWorkArea() {
 
   work_area_ = new_work_area;
   ResetBounds();
+}
+
+void AshMessagePopupCollection::AdjustBaselineBasedOnTrayBubble(
+    TrayBubbleView* tray_bubble) {
+  CHECK(features::IsQsRevampEnabled());
+
+  // The tray bubble might already be closed/deleted. We also only put the popup
+  // on top of tray bubble that is anchored to the shelf corner.
+  if (!tray_bubble || !tray_bubble->IsAnchoredToShelfCorner()) {
+    SetBaselineOffset(0);
+    return;
+  }
+
+  // Also reset baseline if the tray bubble is in a different display. Note that
+  // we assume if a tray bubble is open on a different display, then no tray
+  // bubble should be open on this display.
+  if (GetDisplayIdForWindow(shelf_->GetWindow()) !=
+      GetDisplayIdForWindow(tray_bubble->GetWidget()->GetNativeWindow())) {
+    SetBaselineOffset(0);
+    return;
+  }
+
+  SetBaselineOffset(tray_bubble->height());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

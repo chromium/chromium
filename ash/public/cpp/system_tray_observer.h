@@ -9,6 +9,8 @@
 
 namespace ash {
 
+class TrayBubbleView;
+
 // A class that observes system tray related focus events.
 class ASH_PUBLIC_EXPORT SystemTrayObserver {
  public:
@@ -18,8 +20,14 @@ class ASH_PUBLIC_EXPORT SystemTrayObserver {
   // Called when the UnifiedSystemTrayBubble is shown.
   virtual void OnSystemTrayBubbleShown() {}
 
-  // Called when a status area anchored bubble is shown.
-  virtual void OnStatusAreaAnchoredBubbleShown() {}
+  // Called when a status area anchored bubble change its visibility.
+  virtual void OnStatusAreaAnchoredBubbleVisibilityChanged(
+      TrayBubbleView* tray_bubble,
+      bool visible) {}
+
+  // Called when a tray bubble changes its bounds. Note that this is also called
+  // when the bubble shows/hides.
+  virtual void OnTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble) {}
 
  protected:
   virtual ~SystemTrayObserver() = default;

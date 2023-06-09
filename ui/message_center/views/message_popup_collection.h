@@ -100,6 +100,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
       views::Widget* widget,
       views::Widget::InitParams* init_params) = 0;
 
+  gfx::Rect popup_collection_bounds() { return popup_collection_bounds_; }
+
  protected:
   // Returns the x-origin for the given popup bounds in the current work area.
   virtual int GetPopupOriginX(const gfx::Rect& popup_bounds) const = 0;
@@ -205,8 +207,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Pause or restart popup timers depending on |state_|.
   void UpdatePopupTimers();
 
-  // Calculate |bounds| of all popups and moves old |bounds| to |start_bounds|.
-  void CalculateBounds();
+  // Calculate and update the bounds for all popups, including moving old
+  // `bounds` to `start_bounds` and updating `popup_collection_bounds_`.
+  void CalculateAndUpdateBounds();
 
   // Update bounds and opacity of popups during animation.
   void UpdateByAnimation();
@@ -283,6 +286,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // If true, popup sizes are resized on the next time Update() is called with
   // IDLE state.
   bool resize_requested_ = false;
+
+  // The bounds of the entire popup collection.
+  gfx::Rect popup_collection_bounds_;
 
   base::ScopedObservation<MessageCenter, MessageCenterObserver>
       message_center_observation_{this};

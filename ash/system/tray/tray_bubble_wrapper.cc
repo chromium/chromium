@@ -5,10 +5,14 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_event_filter.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -100,13 +104,28 @@ void TrayBubbleWrapper::OnWindowActivated(ActivationReason reason,
     return;
 
   views::Widget* bubble_widget = bubble_view()->GetWidget();
+  auto* gained_active_widget =
+      views::Widget::GetWidgetForNativeView(gained_active);
+
   // Don't close the bubble if a transient child is gaining or losing
   // activation.
-  if (bubble_widget == views::Widget::GetWidgetForNativeView(gained_active) ||
+  if (bubble_widget == gained_active_widget ||
       ::wm::HasTransientAncestor(gained_active,
                                  bubble_widget->GetNativeWindow()) ||
       (lost_active && ::wm::HasTransientAncestor(
                           lost_active, bubble_widget->GetNativeWindow()))) {
+    return;
+  }
+
+  // If the activated window is a popup notification, interacting with it should
+  // not close the bubble.
+  if (features::IsQsRevampEnabled() &&
+      RootWindowController::ForWindow(gained_active)
+          ->shelf()
+          ->GetStatusAreaWidget()
+          ->unified_system_tray()
+          ->GetMessagePopupCollection()
+          ->IsWidgetAPopupNotification(gained_active_widget)) {
     return;
   }
 

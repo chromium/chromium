@@ -743,8 +743,12 @@ void CaptureModeCameraController::OnSystemTrayBubbleShown() {
   MaybeUpdatePreviewWidget(/*animate=*/true);
 }
 
-void CaptureModeCameraController::OnStatusAreaAnchoredBubbleShown() {
-  MaybeUpdatePreviewWidget(/*animate=*/true);
+void CaptureModeCameraController::OnStatusAreaAnchoredBubbleVisibilityChanged(
+    TrayBubbleView* tray_bubble,
+    bool visible) {
+  if (visible) {
+    MaybeUpdatePreviewWidget(/*animate=*/true);
+  }
 }
 
 void CaptureModeCameraController::ReconnectToVideoSourceProvider() {

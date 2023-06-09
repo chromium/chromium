@@ -344,6 +344,13 @@ TrayBubbleView::~TrayBubbleView() {
     // Inform host items (models) that their views are being destroyed.
     delegate_->BubbleViewDestroyed();
   }
+
+  if (IsAnchoredToStatusArea()) {
+    Shell::Get()
+        ->system_tray_notifier()
+        ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/this,
+                                                          /*visible=*/false);
+  }
 }
 
 void TrayBubbleView::InitializeAndShowBubble() {
@@ -369,7 +376,10 @@ void TrayBubbleView::InitializeAndShowBubble() {
   }
 
   if (IsAnchoredToStatusArea()) {
-    Shell::Get()->system_tray_notifier()->NotifyStatusAreaAnchoredBubbleShown();
+    Shell::Get()
+        ->system_tray_notifier()
+        ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/this,
+                                                          /*visible=*/true);
   }
 }
 
@@ -434,6 +444,10 @@ bool TrayBubbleView::IsAnchoredToStatusArea() const {
   return params_.is_anchored_to_status_area;
 }
 
+bool TrayBubbleView::IsAnchoredToShelfCorner() const {
+  return params_.anchor_to_shelf_corner;
+}
+
 void TrayBubbleView::StopReroutingEvents() {
   reroute_event_handler_.reset();
 }
@@ -456,6 +470,11 @@ void TrayBubbleView::OnWidgetActivationChanged(Widget* widget, bool active) {
   reroute_event_handler_.reset();
 
   BubbleDialogDelegateView::OnWidgetActivationChanged(widget, active);
+}
+
+void TrayBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
+                                           const gfx::Rect& bounds) {
+  Shell::Get()->system_tray_notifier()->NotifyTrayBubbleBoundsChanged(this);
 }
 
 ui::LayerType TrayBubbleView::GetLayerType() const {

@@ -253,7 +253,8 @@ class ASH_EXPORT CaptureModeCameraController
   // SystemTrayObserver:
   void OnSystemTrayBubbleShown() override;
   void OnFocusLeavingSystemTray(bool reverse) override {}
-  void OnStatusAreaAnchoredBubbleShown() override;
+  void OnStatusAreaAnchoredBubbleVisibilityChanged(TrayBubbleView* tray_bubble,
+                                                   bool visible) override;
 
   void SetOnCameraListReceivedForTesting(base::OnceClosure callback) {
     on_camera_list_received_for_test_ = std::move(callback);

@@ -5,6 +5,7 @@
 #include "ash/system/tray/tray_event_filter.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -127,9 +128,6 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       bounds.Intersect(bubble_widget->GetWorkAreaBoundsInScreen());
     }
 
-    // The system tray and message center are separate bubbles but they need
-    // to stay open together. We need to make sure to check if a click falls
-    // with in both their bounds and not close them both in this case.
     if (bubble_container_id == kShellWindowId_SettingBubbleContainer) {
       int64_t display_id = display::Screen::GetScreen()
                                ->GetDisplayNearestPoint(screen_location)
@@ -147,6 +145,9 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
         continue;
       }
 
+      // The system tray and message center are separate bubbles but they need
+      // to stay open together. We need to make sure to check if a click falls
+      // with in both their bounds and not close them both in this case.
       TrayBubbleBase* system_tray_bubble = tray->bubble();
       if (tray->IsBubbleShown() && system_tray_bubble != bubble) {
         bounds.Union(
@@ -155,6 +156,16 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
         TrayBubbleBase* message_center_bubble = tray->message_center_bubble();
         bounds.Union(message_center_bubble->GetBubbleWidget()
                          ->GetWindowBoundsInScreen());
+      }
+
+      // If the bubble is anchored to the shelf corner, the notification popup
+      // will be shown on top of that bubble. In that case, we should not filter
+      // out the events happening on the popup notification.
+      if (features::IsQsRevampEnabled() &&
+          bubble->GetBubbleView()->IsAnchoredToShelfCorner() &&
+          tray->GetMessagePopupCollection()->popup_collection_bounds().Contains(
+              screen_location)) {
+        continue;
       }
     }
 

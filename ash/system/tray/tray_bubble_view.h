@@ -114,6 +114,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // Only used if anchor_mode == AnchorMode::kRect.
     gfx::Rect anchor_rect;
     bool is_anchored_to_status_area = true;
+    // If true, the bubble will be anchored to the corner of the shelf, near the
+    // status area button.
+    bool anchor_to_shelf_corner = false;
     ShelfAlignment shelf_alignment = ShelfAlignment::kBottom;
     int preferred_width = 0;
     int max_height = 0;
@@ -185,6 +188,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // area.
   virtual bool IsAnchoredToStatusArea() const;
 
+  // True if the bubble is anchored to the corner of the shelf, near the status
+  // area button.
+  bool IsAnchoredToShelfCorner() const;
+
   // Stops rerouting key events to this view. If this view is not currently
   // rerouting events, then this function will be idempotent.
   void StopReroutingEvents();
@@ -204,6 +211,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& bounds) override;
   ui::LayerType GetLayerType() const override;
 
   // views::View:

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -16,9 +17,11 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/message_center/message_center_test_util.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -133,6 +136,11 @@ class AshMessagePopupCollectionTest : public AshTestBase,
 
   message_center::MessagePopupView* GetLastPopUpAdded() {
     return popup_collection()->last_pop_up_added_;
+  }
+
+  message_center::MessagePopupView* GetLastPopUpAddedForCollection(
+      AshMessagePopupCollection* collection) {
+    return collection->last_pop_up_added_;
   }
 
   Position GetPositionInDisplay(const gfx::Point& point) {
@@ -532,18 +540,6 @@ TEST_P(AshMessagePopupCollectionTest, BaselineInTabletMode) {
             popup_collection()->GetBaseline());
 }
 
-// Tests that notification popups match other `TrayBubbleView` baselines.
-TEST_P(AshMessagePopupCollectionTest, BaselineMatchesTrayBubbleViews) {
-  UpdateDisplay("800x600");
-  ASSERT_TRUE(GetPrimaryShelf()->IsHorizontalAlignment());
-
-  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
-  unified_system_tray->ShowBubble();
-
-  EXPECT_EQ(unified_system_tray->bubble()->GetBoundsInScreen().bottom(),
-            popup_collection()->GetBaseline());
-}
-
 // Tests that `TrayBubbleView` elements (e.g. Quick Settings) and popups
 // are placed on top of each other based on which was shown most recently.
 TEST_P(AshMessagePopupCollectionTest, PopupsAndTrayBubbleViewsZOrdering) {
@@ -571,6 +567,140 @@ TEST_P(AshMessagePopupCollectionTest, PopupsAndTrayBubbleViewsZOrdering) {
   // Wait until the notification popup shows.
   MessagePopupAnimationWaiter(popup_collection()).Wait();
   EXPECT_TRUE(popup->GetWidget()->IsStackedAbove(bubble_native_view));
+}
+
+TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
+  AddNotification();
+  auto* popup = GetLastPopUpAdded();
+
+  if (!IsQsRevampEnabled()) {
+    // When QsRevamp is not enabled, the popup will not be shown when Quick
+    // Settings is open.
+    EXPECT_FALSE(popup);
+    return;
+  }
+
+  ASSERT_TRUE(popup);
+
+  auto* bubble_widget = unified_system_tray->bubble()->GetBubbleWidget();
+  auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
+
+  // The added popup should appears on top of the tray bubble, separated by a
+  // padding of `kMarginBetweenPopups`.
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            unified_system_tray->GetBubbleBoundsInScreen().y());
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection()->baseline_offset_for_test());
+
+  // Change the bubble height.
+  auto bubble_bounds = bubble_widget->GetWindowBoundsInScreen();
+  bubble_widget->SetBounds(gfx::Rect(bubble_bounds.x(), bubble_bounds.y() + 20,
+                                     bubble_bounds.width(),
+                                     bubble_bounds.height() - 20));
+
+  // The baseline for the popup should be adjusted based on the new bubble
+  // height.
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection()->baseline_offset_for_test());
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            unified_system_tray->GetBubbleBoundsInScreen().y());
+
+  // When bubble is closed, no offset should be set.
+  // NOTE: We use `CloseNow()` here instead of calling `CloseBubble()` on
+  // `unified_system_tray` to avoid the delay in the message loop happen in
+  // `Widget::Close()`.
+  bubble_widget->CloseNow();
+  EXPECT_EQ(0, popup_collection()->baseline_offset_for_test());
+
+  // The popup is adjusted to be at the baseline without the offset.
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
+            popup_collection()->GetBaseline());
+}
+
+// Tests that the baseline will not be adjusted when a tray bubble that is not
+// anchored to the shelf corner opens (i.e. the IME tray bubble).
+TEST_P(AshMessagePopupCollectionTest,
+       NotAdjustBaselineForNonAnchoredTrayBubble) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+
+  auto* ime_tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->ime_menu_tray();
+  ASSERT_TRUE(ime_tray->GetVisible());
+
+  ime_tray->ShowBubble();
+  EXPECT_EQ(0, popup_collection()->baseline_offset_for_test());
+
+  ime_tray->GetBubbleWidget()->CloseNow();
+  EXPECT_EQ(0, popup_collection()->baseline_offset_for_test());
+}
+
+TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  UpdateDisplay("801x800,801x800");
+  SetPopupCollection(
+      std::make_unique<AshMessagePopupCollection>(GetPrimaryShelf()));
+
+  display::Display second_display = GetSecondaryDisplay();
+  Shelf* second_shelf =
+      Shell::GetRootWindowControllerWithDisplayId(second_display.id())->shelf();
+  AshMessagePopupCollection secondary_popup_collection(second_shelf);
+  UpdateWorkArea(&secondary_popup_collection, second_display);
+
+  EXPECT_EQ(0, popup_collection()->baseline_offset_for_test());
+  EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+
+  // Add a notification popup.
+  AddNotification();
+  auto* primary_popup = GetLastPopUpAdded();
+  auto* secondary_popup =
+      GetLastPopUpAddedForCollection(&secondary_popup_collection);
+  EXPECT_TRUE(primary_popup);
+  EXPECT_TRUE(secondary_popup);
+
+  // Open primary system tray bubble. The primary popup collection should update
+  // the baseline and the secondary one should reset.
+  auto* primary_system_tray = GetPrimaryUnifiedSystemTray();
+  primary_system_tray->ShowBubble();
+  auto* primary_bubble_view = primary_system_tray->bubble()->GetBubbleView();
+
+  EXPECT_EQ(
+      primary_bubble_view->height() + message_center::kMarginBetweenPopups,
+      popup_collection()->baseline_offset_for_test());
+  EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            primary_system_tray->GetBubbleBoundsInScreen().y());
+  EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+  EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
+            secondary_popup_collection.GetBaseline());
+
+  // Open secondary system tray bubble. The secondary popup collection should
+  // update the baseline and the primary one should reset.
+  auto* secondary_system_tray =
+      second_shelf->GetStatusAreaWidget()->unified_system_tray();
+  secondary_system_tray->ShowBubble();
+  auto* secondary_bubble_view =
+      secondary_system_tray->bubble()->GetBubbleView();
+
+  EXPECT_EQ(0, popup_collection()->baseline_offset_for_test());
+  EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
+            popup_collection()->GetBaseline());
+  EXPECT_EQ(
+      secondary_bubble_view->height() + message_center::kMarginBetweenPopups,
+      secondary_popup_collection.baseline_offset_for_test());
+  EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            secondary_system_tray->GetBubbleBoundsInScreen().y());
 }
 
 }  // namespace ash

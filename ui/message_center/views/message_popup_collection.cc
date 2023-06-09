@@ -4,6 +4,8 @@
 
 #include "ui/message_center/views/message_popup_collection.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
@@ -102,7 +104,7 @@ void MessagePopupCollection::ResetBounds() {
     state_ = State::IDLE;
     animation_->End();
 
-    CalculateBounds();
+    CalculateAndUpdateBounds();
 
     // Remove popups that are no longer in work area.
     ClosePopupsOutsideWorkArea();
@@ -131,7 +133,7 @@ void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
 }
 
 void MessagePopupCollection::AnimateResize() {
-  CalculateBounds();
+  CalculateAndUpdateBounds();
 
   views::AnimationBuilder animation_builder;
   for (auto popup : popup_items_) {
@@ -388,14 +390,24 @@ void MessagePopupCollection::UpdatePopupTimers() {
   }
 }
 
-void MessagePopupCollection::CalculateBounds() {
+void MessagePopupCollection::CalculateAndUpdateBounds() {
   int base = GetBaseline();
+
+  int popup_bounds_origin_x = 0;
+  int popup_bounds_origin_y = 0;
+  int popup_bounds_height = 0;
+  if (IsTopDown()) {
+    popup_bounds_origin_y = base;
+  }
+
   for (size_t i = 0; i < popup_items_.size(); ++i) {
     gfx::Size preferred_size(
         kNotificationWidth,
         GetPopupItem(i)->popup->GetHeightForWidth(kNotificationWidth));
 
     int origin_x = GetPopupOriginX(gfx::Rect(preferred_size));
+
+    popup_bounds_origin_x = origin_x;
 
     int origin_y = base;
     if (!IsTopDown())
@@ -410,7 +422,17 @@ void MessagePopupCollection::CalculateBounds() {
       base += delta;
     else
       base -= delta;
+
+    popup_bounds_height += delta;
   }
+
+  if (!IsTopDown()) {
+    popup_bounds_origin_y = base + kMarginBetweenPopups;
+  }
+
+  popup_collection_bounds_ =
+      gfx::Rect(popup_bounds_origin_x, popup_bounds_origin_y,
+                kNotificationWidth, popup_bounds_height - kMarginBetweenPopups);
 }
 
 void MessagePopupCollection::UpdateByAnimation() {
@@ -507,7 +529,7 @@ bool MessagePopupCollection::AddPopup() {
   MessageCenter::Get()->DisplayedNotification(new_notification->id(),
                                               DISPLAY_SOURCE_POPUP);
 
-  CalculateBounds();
+  CalculateAndUpdateBounds();
 
   auto& item = popup_items_.back();
   item.start_bounds = item.bounds;
@@ -531,7 +553,7 @@ void MessagePopupCollection::MarkRemovedPopup() {
 }
 
 void MessagePopupCollection::MoveDownPopups() {
-  CalculateBounds();
+  CalculateAndUpdateBounds();
   for (auto& item : popup_items_)
     item.is_animating = true;
 }

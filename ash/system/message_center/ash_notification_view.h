@@ -140,6 +140,10 @@ class ASH_EXPORT AshNotificationView
   void set_is_animating(bool is_animating) { is_animating_ = is_animating; }
   bool is_animating() { return is_animating_; }
 
+  AshNotificationExpandButton* expand_button_for_test() {
+    return expand_button_;
+  }
+
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
   class GroupedNotificationsContainer : public views::BoxLayoutView {

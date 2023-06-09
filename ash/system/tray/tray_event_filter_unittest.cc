@@ -9,6 +9,8 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/ash_notification_expand_button.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -23,8 +25,6 @@ using message_center::MessageCenter;
 using message_center::Notification;
 
 namespace ash {
-
-namespace {
 
 class TrayEventFilterTest : public AshTestBase,
                             public testing::WithParamInterface<bool> {
@@ -107,6 +107,16 @@ class TrayEventFilterTest : public AshTestBase,
     return GetMessageCenterBubble()->GetBubbleView()->GetBoundsInScreen();
   }
 
+  void AnimatePopupAnimationUntilIdle() {
+    AshMessagePopupCollection* popup_collection =
+        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection();
+
+    while (popup_collection->animation()->is_animating()) {
+      popup_collection->animation()->SetCurrentValue(1.0);
+      popup_collection->animation()->End();
+    }
+  }
+
  private:
   int notification_id_ = 0;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -174,32 +184,35 @@ TEST_P(TrayEventFilterTest, ClickingOnMenuContainerDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_P(TrayEventFilterTest, ClickingOnPopupClosesBubble) {
-  // Set up a popup window.
-  auto popup_widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams popup_params;
-  popup_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  auto ash_message_center_popup_collection =
-      std::make_unique<AshMessagePopupCollection>(GetPrimaryShelf());
-  ash_message_center_popup_collection->ConfigureWidgetInitParamsForContainer(
-      popup_widget.get(), &popup_params);
-  popup_widget->Init(std::move(popup_params));
-
-  std::unique_ptr<aura::Window> popup_window =
-      CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_POPUP);
-  popup_window->set_owned_by_parent(false);
-  popup_widget->GetNativeView()->AddChild(popup_window.get());
-  popup_widget->GetNativeView()->SetProperty(aura::client::kZOrderingKey,
-                                             ui::ZOrderLevel::kFloatingWindow);
-
+TEST_P(TrayEventFilterTest, ClickingOnPopupWhenBubbleOpen) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 
-  // Clicking on the popup should close the bubble.
-  ui::MouseEvent event = outside_event();
-  ui::Event::DispatcherApi(&event).set_target(popup_window.get());
-  GetTrayEventFilter()->OnMouseEvent(&event);
-  EXPECT_FALSE(IsBubbleShown());
+  auto notification_id = AddNotification();
+  auto* popup_view = GetPrimaryUnifiedSystemTray()
+                         ->GetMessagePopupCollection()
+                         ->GetMessageViewForNotificationId(notification_id);
+
+  if (!IsQsRevampEnabed()) {
+    // When QsRevamp is not enabled, the popup will not be shown when Quick
+    // Settings is open.
+    EXPECT_FALSE(popup_view);
+    return;
+  }
+
+  auto* ash_notification_popup = static_cast<AshNotificationView*>(popup_view);
+
+  AnimatePopupAnimationUntilIdle();
+
+  // Collapsing the popup should not close the bubble.
+  LeftClickOn(ash_notification_popup->expand_button_for_test());
+  EXPECT_FALSE(ash_notification_popup->IsExpanded());
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Expanding the popup should not close the bubble.
+  LeftClickOn(ash_notification_popup->expand_button_for_test());
+  EXPECT_TRUE(ash_notification_popup->IsExpanded());
+  EXPECT_TRUE(IsBubbleShown());
 }
 
 TEST_P(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {
@@ -278,5 +291,4 @@ TEST_P(TrayEventFilterQsRevampDisabledTest,
   EXPECT_FALSE(IsBubbleShown());
 }
 
-}  // namespace
 }  // namespace ash

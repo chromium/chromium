@@ -705,6 +705,7 @@ void EcheTray::InitBubble(
   init_params.translucent = true;
   init_params.reroute_event_handler = false;
   init_params.corner_radius = kTrayItemCornerRadius;
+  init_params.anchor_to_shelf_corner = true;
   phone_name_ = phone_name;
 
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
