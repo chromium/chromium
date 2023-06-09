@@ -3217,6 +3217,10 @@
       public: true,
     },
     {
+      name: "ServiceWorkerRouter",
+      base_feature: "none",
+    },
+    {
       name: "SharedArrayBuffer",
       base_feature: "none",
       public: true,

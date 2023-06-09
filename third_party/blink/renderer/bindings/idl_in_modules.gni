@@ -710,6 +710,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/service_worker/service_worker_container.idl",
           "//third_party/blink/renderer/modules/service_worker/service_worker_global_scope.idl",
           "//third_party/blink/renderer/modules/service_worker/service_worker_registration.idl",
+          "//third_party/blink/renderer/modules/service_worker/router_rule.idl",
+          "//third_party/blink/renderer/modules/service_worker/router_condition.idl",
           "//third_party/blink/renderer/modules/service_worker/window_client.idl",
           "//third_party/blink/renderer/modules/shapedetection/barcode_detector.idl",
           "//third_party/blink/renderer/modules/shapedetection/barcode_detector_options.idl",

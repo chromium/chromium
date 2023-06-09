@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/modules/service_worker/install_event.h"
 
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_routerrule_routerrulesequence.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
 
@@ -38,5 +41,13 @@ InstallEvent::InstallEvent(const AtomicString& type,
                            int event_id,
                            WaitUntilObserver* observer)
     : ExtendableEvent(type, initializer, observer), event_id_(event_id) {}
+
+ScriptPromise InstallEvent::registerRouter(
+    ScriptState* script_state,
+    const V8UnionRouterRuleOrRouterRuleSequence* v8_rules) {
+  return ScriptPromise::Reject(
+      script_state, V8ThrowException::CreateTypeError(
+                        script_state->GetIsolate(), "Not implemented yet"));
+}
 
 }  // namespace blink

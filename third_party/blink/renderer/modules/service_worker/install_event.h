@@ -11,6 +11,10 @@
 
 namespace blink {
 
+class ScriptPromise;
+class ScriptState;
+class V8UnionRouterRuleOrRouterRuleSequence;
+
 class MODULES_EXPORT InstallEvent : public ExtendableEvent {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -30,6 +34,9 @@ class MODULES_EXPORT InstallEvent : public ExtendableEvent {
   ~InstallEvent() override;
 
   const AtomicString& InterfaceName() const override;
+
+  ScriptPromise registerRouter(ScriptState*,
+                               const V8UnionRouterRuleOrRouterRuleSequence*);
 
  protected:
   const int event_id_;
