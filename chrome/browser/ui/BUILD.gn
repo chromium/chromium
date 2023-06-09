@@ -1725,10 +1725,6 @@ static_library("ui") {
       "webui/page_not_available_for_guest/page_not_available_for_guest_ui.h",
       "webui/password_manager/password_manager_ui.cc",
       "webui/password_manager/password_manager_ui.h",
-      "webui/password_manager/promo_card.cc",
-      "webui/password_manager/promo_card.h",
-      "webui/password_manager/promo_cards_handler.cc",
-      "webui/password_manager/promo_cards_handler.h",
       "webui/password_manager/sync_handler.cc",
       "webui/password_manager/sync_handler.h",
       "webui/plural_string_handler.cc",
@@ -1912,6 +1908,10 @@ static_library("ui") {
       sources += [
         "webui/media_router/cast_feedback_ui.cc",
         "webui/media_router/cast_feedback_ui.h",
+        "webui/password_manager/promo_card.cc",
+        "webui/password_manager/promo_card.h",
+        "webui/password_manager/promo_cards_handler.cc",
+        "webui/password_manager/promo_cards_handler.h",
       ]
     }
 
