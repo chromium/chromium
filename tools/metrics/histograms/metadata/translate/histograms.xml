@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Translate.AlwaysTranslateLang" units="units"
-    expires_after="2023-10-08">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the always translate option was selected in the
-    translate infobar.
-  </summary>
-</histogram>
-
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
     enum="LocaleCodeISO639" expires_after="2023-10-08">
   <owner>megjablon@google.com</owner>
@@ -269,26 +259,6 @@ chromium-metrics-reviews@google.com.
     the menu is shown. More than one bucket may be logged per menu open. This
     allows us to investigate the primary reasons the user isn't seeing the menu
     item and make the manual translate UI more visible to users.
-  </summary>
-</histogram>
-
-<histogram name="Translate.NeverTranslateLang" units="units"
-    expires_after="2023-10-08">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the never translate option was selected in the translate
-    infobar.
-  </summary>
-</histogram>
-
-<histogram name="Translate.NeverTranslateSite" units="units"
-    expires_after="2023-10-22">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the never translate site was selected in the translate
-    infobar.
   </summary>
 </histogram>
 

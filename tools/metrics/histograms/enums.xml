@@ -105524,14 +105524,20 @@ Full version information for the fingerprint enum values:
   <int value="0" label="Uninitialized"/>
   <int value="1" label="Translate page"/>
   <int value="2" label="Revert translation"/>
-  <int value="3" label="Always translate language"/>
+  <int value="3" label="Deprecated 06/2023. Always translate language"/>
   <int value="4" label="Change source language"/>
   <int value="5" label="Change target language"/>
-  <int value="6" label="Never translate language"/>
-  <int value="7" label="Never translate site"/>
+  <int value="6" label="Deprecated 06/2023. Never translate language"/>
+  <int value="7" label="Deprecated 06/2023. Never translate site"/>
   <int value="8" label="Close UI explicitly"/>
   <int value="9" label="Close UI by lost focus"/>
   <int value="10" label="Close UI by auto-dismiss timer firing"/>
+  <int value="11" label="Add always translate language"/>
+  <int value="12" label="Remove always translate language"/>
+  <int value="13" label="Add never translate language"/>
+  <int value="14" label="Remove never translate language"/>
+  <int value="15" label="Add never translate site"/>
+  <int value="16" label="Remove never translate site"/>
 </enum>
 
 <enum name="TranslationStatus">

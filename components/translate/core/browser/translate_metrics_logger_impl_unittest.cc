@@ -1514,16 +1514,19 @@ TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {
   const UIInteraction kUIInteractions[] = {
       UIInteraction::kTranslate,
       UIInteraction::kRevert,
-      UIInteraction::kAlwaysTranslateLanguage,
       UIInteraction::kChangeSourceLanguage,
       UIInteraction::kChangeTargetLanguage,
-      UIInteraction::kNeverTranslateLanguage,
-      UIInteraction::kNeverTranslateSite,
       UIInteraction::kCloseUIExplicitly,
       UIInteraction::kCloseUILostFocus,
       UIInteraction::kTranslate,
       UIInteraction::kChangeSourceLanguage,
-      UIInteraction::kCloseUIExplicitly};
+      UIInteraction::kCloseUIExplicitly,
+      UIInteraction::kAddAlwaysTranslateLanguage,
+      UIInteraction::kRemoveAlwaysTranslateLanguage,
+      UIInteraction::kAddNeverTranslateLanguage,
+      UIInteraction::kRemoveNeverTranslateLanguage,
+      UIInteraction::kAddNeverTranslateSite,
+      UIInteraction::kRemoveNeverTranslateSite};
   for (auto ui_interaction : kUIInteractions) {
     translate_metrics_logger()->LogUIInteraction(ui_interaction);
   }
@@ -1531,29 +1534,40 @@ TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {
   translate_metrics_logger()->RecordMetrics(true);
 
   // Checks internal state that track UI interactions over the page load.
-  CheckUIInteractions(kUIInteractions[0], 12);
+  CheckUIInteractions(kUIInteractions[0], 15);
 
   // Check that the expected values are recorded to
   // Translate.UiInteraction.Event.
-  histogram_tester()->ExpectTotalCount(kTranslateUiInteractionEvent, 12);
+  histogram_tester()->ExpectTotalCount(kTranslateUiInteractionEvent, 15);
   histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
                                         UIInteraction::kTranslate, 2);
   histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
                                         UIInteraction::kRevert, 1);
   histogram_tester()->ExpectBucketCount(
-      kTranslateUiInteractionEvent, UIInteraction::kAlwaysTranslateLanguage, 1);
-  histogram_tester()->ExpectBucketCount(
       kTranslateUiInteractionEvent, UIInteraction::kChangeSourceLanguage, 2);
   histogram_tester()->ExpectBucketCount(
       kTranslateUiInteractionEvent, UIInteraction::kChangeTargetLanguage, 1);
-  histogram_tester()->ExpectBucketCount(
-      kTranslateUiInteractionEvent, UIInteraction::kNeverTranslateLanguage, 1);
-  histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
-                                        UIInteraction::kNeverTranslateSite, 1);
   histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
                                         UIInteraction::kCloseUIExplicitly, 2);
   histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
                                         UIInteraction::kCloseUILostFocus, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kAddAlwaysTranslateLanguage,
+      1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent,
+      UIInteraction::kRemoveAlwaysTranslateLanguage, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kAddNeverTranslateLanguage,
+      1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent,
+      UIInteraction::kRemoveNeverTranslateLanguage, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kAddNeverTranslateSite, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kRemoveNeverTranslateSite,
+      1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogApplicationStartMetrics) {
