@@ -197,17 +197,18 @@ ScriptPromise GPUBuffer::mapAsync(ScriptState* script_state,
   return MapAsyncImpl(script_state, mode, offset, size, exception_state);
 }
 
-DOMArrayBuffer* GPUBuffer::getMappedRange(v8::Isolate* isolate,
+DOMArrayBuffer* GPUBuffer::getMappedRange(ScriptState* script_state,
                                           uint64_t offset,
                                           ExceptionState& exception_state) {
-  return GetMappedRangeImpl(isolate, offset, absl::nullopt, exception_state);
+  return GetMappedRangeImpl(script_state, offset, absl::nullopt,
+                            exception_state);
 }
 
-DOMArrayBuffer* GPUBuffer::getMappedRange(v8::Isolate* isolate,
+DOMArrayBuffer* GPUBuffer::getMappedRange(ScriptState* script_state,
                                           uint64_t offset,
                                           uint64_t size,
                                           ExceptionState& exception_state) {
-  return GetMappedRangeImpl(isolate, offset, size, exception_state);
+  return GetMappedRangeImpl(script_state, offset, size, exception_state);
 }
 
 void GPUBuffer::unmap(v8::Isolate* isolate) {
@@ -280,7 +281,7 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
   return promise;
 }
 
-DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(v8::Isolate* isolate,
+DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
                                               uint64_t offset,
                                               absl::optional<uint64_t> size,
                                               ExceptionState& exception_state) {
@@ -333,8 +334,8 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(v8::Isolate* isolate,
       GetHandle(), range_offset, range_size);
 
   if (!map_data_const) {
-    // TODO: have explanatory error messages here (or just leave them to the
-    // asynchronous error reporting).
+    // Ensure that GPU process error messages are bubbled back to the renderer process.
+    EnsureFlush(ToEventLoop(script_state));
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "getMappedRange failed");
     return nullptr;
@@ -362,7 +363,8 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(v8::Isolate* isolate,
       const_cast<uint8_t*>(static_cast<const uint8_t*>(map_data_const));
 
   mapped_ranges_.push_back(std::make_pair(range_offset, range_end));
-  return CreateArrayBufferForMappedData(isolate, map_data, range_size);
+  return CreateArrayBufferForMappedData(script_state->GetIsolate(), map_data,
+                                        range_size);
 }
 
 void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
