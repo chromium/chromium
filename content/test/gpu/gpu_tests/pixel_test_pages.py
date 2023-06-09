@@ -1267,6 +1267,20 @@ class PixelTestPages():
             browser_args=['--force-color-profile=hdr10']),
     ]
 
+  # Check that the root swap chain claims to be opaque. A root swap chain with a
+  # premultiplied alpha mode has a large negative battery impact (even if all
+  # the pixels are opaque).
+  @staticmethod
+  def RootSwapChainPages(base_name: str) -> List[PixelTestPage]:
+    return [
+        PixelTestPage('wait_for_compositing.html',
+                      base_name + '_IsOpaque',
+                      test_rect=[0, 0, 0, 0],
+                      other_args={
+                          'has_alpha': False,
+                      }),
+    ]
+
   # This should only be used with the cast_streaming suite.
   @staticmethod
   def CastStreamingReceiverPages(base_name):
