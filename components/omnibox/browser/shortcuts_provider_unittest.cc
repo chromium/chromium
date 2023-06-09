@@ -32,6 +32,7 @@
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
@@ -903,7 +904,11 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
 
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kShortcutBoost, {{"ShortcutBoostUrlScore", "1300"}});
+      omnibox_feature_configs::kShortcutBoost,
+      {{"ShortcutBoostUrlScore", "1300"}});
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ShortcutBoostingConfig>
+      scoped_config;
 
   {
     // Searches shouldn't be boosted since the appropriate param is not set.
@@ -974,15 +979,14 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
   }
 
   {
+    // Should not boost when counterfactual is enabled.
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox::kShortcutBoost, {{
-                                      "ShortcutBoostUrlScore",
-                                      "1300",
-                                  },
-                                  {"ShortcutBoostCounterfactual", "true"}});
+        omnibox_feature_configs::kShortcutBoost,
+        {{"ShortcutBoostUrlScore", "1300"},
+         {"ShortcutBoostCounterfactual", "true"}});
+    scoped_config.Reset();
 
-    // Should not boost when counterfactual is enabled.
     trigger_service->ResetSession();
     AutocompleteInput input(u"urls-before-searches",
                             metrics::OmniboxEventProto::OTHER,

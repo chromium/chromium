@@ -506,14 +506,6 @@ bool IsZeroSuggestPrefetchingEnabled();
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
 
-// Shortcut boost
-// The scores to use for boosting search and URL suggestions respectively.
-// Default to 1414 (`kScoreForBestInlineableResult` + 1). Setting to 0 will
-// prevent boosting.
-extern const base::FeatureParam<int> kShortcutBoostSearchScore;
-extern const base::FeatureParam<int> kShortcutBoostUrlScore;
-extern const base::FeatureParam<bool> kShortcutBoostCounterfactual;
-
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
 bool RichAutocompletionShowAdditionalText();

@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_prefix.h"
@@ -289,7 +290,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   }
 
   if (!shortcut_matches.empty() &&
-      base::FeatureList::IsEnabled(omnibox::kShortcutBoost)) {
+      omnibox_feature_configs::ShortcutBoostingConfig::Get().enabled) {
     // Promote the shortcut with most hits to compete for the default slot.
     // Won't necessarily be the highest scoring shortcut, as scoring also
     // depends on visit times and input length. Therefore, has to be done before
@@ -302,13 +303,16 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         shortcut_matches, {}, [](const auto& shortcut_match) {
           return shortcut_match.aggregate_number_of_hits;
         });
-    int boost_score = AutocompleteMatch::IsSearchType(best_match->type)
-                          ? OmniboxFieldTrial::kShortcutBoostSearchScore.Get()
-                          : OmniboxFieldTrial::kShortcutBoostUrlScore.Get();
+    int boost_score =
+        AutocompleteMatch::IsSearchType(best_match->type)
+            ? omnibox_feature_configs::ShortcutBoostingConfig::Get()
+                  .search_score
+            : omnibox_feature_configs::ShortcutBoostingConfig::Get().url_score;
     if (boost_score > best_match->relevance) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
           metrics::OmniboxEventProto_Feature_SHORTCUT_BOOST);
-      if (!OmniboxFieldTrial::kShortcutBoostCounterfactual.Get()) {
+      if (!omnibox_feature_configs::ShortcutBoostingConfig::Get()
+               .counterfactual) {
         max_relevance = boost_score;
         best_match->relevance = max_relevance;
       }
