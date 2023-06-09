@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/process_priority_aggregator.h"
+#include "components/performance_manager/decorators/process_priority_aggregator.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
