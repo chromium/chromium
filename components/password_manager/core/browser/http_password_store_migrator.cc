@@ -116,9 +116,10 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
 }
 
 void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
-  // Android and PSL matches are ignored.
+  // Ignore PSL, affiliated and other matches.
   base::EraseIf(results_, [](const std::unique_ptr<PasswordForm>& form) {
-    return form->is_affiliation_based_match || form->is_public_suffix_match;
+    return password_manager_util::GetMatchType(*form) !=
+           password_manager_util::GetLoginMatchType::kExact;
   });
 
   // Add the new credentials to the password store. The HTTP forms are
