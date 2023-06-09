@@ -54,9 +54,14 @@ class EiEventWatcherGlib {
   static gboolean WatchSourceDispatch(GSource* source,
                                       GSourceFunc unused_func,
                                       gpointer data);
+  static void WatchSourceFinalize(GSource* source);
 
   static constexpr GSourceFuncs kWatchSourceFuncs = {
-      WatchSourcePrepare, WatchSourceCheck, WatchSourceDispatch, nullptr};
+      WatchSourcePrepare,
+      WatchSourceCheck,
+      WatchSourceDispatch,
+      WatchSourceFinalize,
+  };
 
   bool Prepare();
   void Dispatch();
