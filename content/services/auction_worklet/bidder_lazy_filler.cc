@@ -21,6 +21,7 @@ namespace {
 // wins is only used for a single bid in a single auction, and its order is
 // unspecified, anyways.
 v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
+    PrevWinsType prev_wins_type,
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Context> context,
     base::Time auction_start_time,
@@ -33,12 +34,24 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
   std::vector<v8::Local<v8::Value>> prev_wins_v8;
   v8::Isolate* isolate = v8_helper->isolate();
   for (const auto& prev_win : prev_wins) {
-    int64_t time_delta = (auction_start_time - prev_win->time).InSeconds();
+    base::TimeDelta time_delta = auction_start_time - prev_win->time;
+    int time_delta_int;
+    switch (prev_wins_type) {
+      case PrevWinsType::kSeconds:
+        time_delta_int = time_delta.InSeconds();
+        break;
+      case PrevWinsType::kMilliseconds:
+        // Truncate to the nearest second, rather than providing the result in
+        // millisecond granularity.
+        time_delta_int = time_delta.InSeconds() * 1000;
+        break;
+    }
     // Don't give negative times if clock has changed since last auction win.
-    if (time_delta < 0)
-      time_delta = 0;
+    if (time_delta_int < 0) {
+      time_delta_int = 0;
+    }
     v8::Local<v8::Value> win_values[2];
-    win_values[0] = v8::Number::New(isolate, time_delta);
+    win_values[0] = v8::Number::New(isolate, time_delta_int);
     if (!v8_helper->CreateValueFromJson(context, prev_win->ad_json)
              .ToLocal(&win_values[1])) {
       return v8::MaybeLocal<v8::Value>();
@@ -169,8 +182,12 @@ void BiddingBrowserSignalsLazyFiller::ReInitialize(
 
 bool BiddingBrowserSignalsLazyFiller::FillInObject(
     v8::Local<v8::Object> object) {
-  if (!DefineLazyAttribute(object, "prevWins", &HandlePrevWins))
+  if (!DefineLazyAttribute(object, "prevWins", &HandlePrevWins)) {
     return false;
+  }
+  if (!DefineLazyAttribute(object, "prevWinsMs", &HandlePrevWinsMs)) {
+    return false;
+  }
   return true;
 }
 
@@ -182,15 +199,32 @@ void BiddingBrowserSignalsLazyFiller::Reset() {
 void BiddingBrowserSignalsLazyFiller::HandlePrevWins(
     v8::Local<v8::Name> name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
+  HandlePrevWinsInternal(name, info, PrevWinsType::kSeconds);
+}
+
+// static
+void BiddingBrowserSignalsLazyFiller::HandlePrevWinsMs(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  HandlePrevWinsInternal(name, info, PrevWinsType::kMilliseconds);
+}
+
+// TODO(crbug.com/1451034): Clean up support for deprecated seconds-based
+// version after API users migrate, and remove this indirection function.
+// static
+void BiddingBrowserSignalsLazyFiller::HandlePrevWinsInternal(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info,
+    PrevWinsType prev_wins_type) {
   BiddingBrowserSignalsLazyFiller* self =
       GetSelf<BiddingBrowserSignalsLazyFiller>(info);
   AuctionV8Helper* v8_helper = self->v8_helper();
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Value> value;
   if (self->bidder_browser_signals_ &&
-      CreatePrevWinsArray(v8_helper, isolate->GetCurrentContext(),
-                          self->auction_start_time_,
-                          self->bidder_browser_signals_->prev_wins)
+      CreatePrevWinsArray(
+          prev_wins_type, v8_helper, isolate->GetCurrentContext(),
+          self->auction_start_time_, self->bidder_browser_signals_->prev_wins)
           .ToLocal(&value)) {
     SetResult(info, value);
   } else {

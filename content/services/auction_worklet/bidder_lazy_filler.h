@@ -40,6 +40,10 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public LazyFiller {
       bidder_worklet_non_shared_params_ = nullptr;
 };
 
+// TODO(crbug.com/1451034): Clean up support for deprecated seconds-based
+// version after API users migrate.
+enum class PrevWinsType { kSeconds, kMilliseconds };
+
 class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller : public LazyFiller {
  public:
   explicit BiddingBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper);
@@ -53,6 +57,12 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller : public LazyFiller {
  private:
   static void HandlePrevWins(v8::Local<v8::Name> name,
                              const v8::PropertyCallbackInfo<v8::Value>& info);
+  static void HandlePrevWinsMs(v8::Local<v8::Name> name,
+                               const v8::PropertyCallbackInfo<v8::Value>& info);
+  static void HandlePrevWinsInternal(
+      v8::Local<v8::Name> name,
+      const v8::PropertyCallbackInfo<v8::Value>& info,
+      PrevWinsType prev_wins_type);
 
   raw_ptr<mojom::BiddingBrowserSignals> bidder_browser_signals_ = nullptr;
   base::Time auction_start_time_;

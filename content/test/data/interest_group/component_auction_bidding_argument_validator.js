@@ -180,7 +180,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
 
   if (isGenerateBid) {
-    if (Object.keys(browserSignals).length !== 6) {
+    if (Object.keys(browserSignals).length !== 7) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -190,6 +190,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
       throw 'Wrong bidCount ' + browserSignals.bidCount;
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
+    if (browserSignals.prevWinsMs.length !== 0)
+      throw 'Wrong prevWinsMs ' + JSON.stringify(browserSignals.prevWinsMs);
   } else {
     if (Object.keys(browserSignals).length !== 16) {
       throw 'Wrong number of browser signals fields ' +

@@ -3751,6 +3751,48 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
           "browserSignals.prevWins",
           R"([[200,"ad1"],[100,["ad2"]],[0,"future_ad"]])",
       },
+      // Same as above, but for prevWinsMs.
+      {
+          {},
+          "browserSignals.prevWinsMs",
+          "[]",
+      },
+      {
+          CreateWinList(win1),
+          "browserSignals.prevWinsMs",
+          R"([[200000,"ad1"]])",
+      },
+      // Make sure it's passed on as an object and not a string.
+      {
+          CreateWinList(win1),
+          "browserSignals.prevWinsMs[0]",
+          R"([200000,"ad1"])",
+      },
+      // Test rounding.
+      {
+          CreateWinList(win2),
+          "browserSignals.prevWinsMs",
+          R"([[100000,["ad2"]]])",
+      },
+      // Multiple previous wins.
+      {
+          CreateWinList(win1, win2),
+          "browserSignals.prevWinsMs",
+          R"([[200000,"ad1"],[100000,["ad2"]]])",
+      },
+      // Times are trimmed at 0.
+      {
+          CreateWinList(future_win),
+          "browserSignals.prevWinsMs",
+          R"([[0,"future_ad"]])",
+      },
+      // Out of order wins should be sorted.
+      {
+          CreateWinList(win2, future_win, win1),
+          "browserSignals.prevWinsMs",
+          R"([[200000,"ad1"],[100000,["ad2"]],[0,"future_ad"]])",
+      },
+
   };
 
   for (auto& test_case : test_cases) {
