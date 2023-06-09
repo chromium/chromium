@@ -1,4 +1,4 @@
 HTTP/1.1 {{STATUS}}
 Access-Control-Allow-Origin: *
-{{AD_AUCTION_RESULT_HEADER}}
+{{AD_AUCTION_HEADERS}}
 {{REDIRECT_HEADER}}

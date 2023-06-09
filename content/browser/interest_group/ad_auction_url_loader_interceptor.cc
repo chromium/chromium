@@ -19,6 +19,8 @@ namespace {
 
 constexpr char kAdAuctionRequestHeaderKey[] = "Sec-Ad-Auction-Fetch";
 
+constexpr char kAdAuctionSignalsResponseHeaderKey[] = "Ad-Auction-Signals";
+
 }  // namespace
 
 AdAuctionURLLoaderInterceptor::AdAuctionURLLoaderInterceptor(
@@ -108,12 +110,24 @@ void AdAuctionURLLoaderInterceptor::WillFollowRedirect(
 
 void AdAuctionURLLoaderInterceptor::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::mojom::URLResponseHeadPtr& head) {
+    network::mojom::URLResponseHeadPtr& head) {
   has_redirect_ = true;
+
+  head->headers.get()->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
 }
 
 void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
-    const network::mojom::URLResponseHeadPtr& head) {
+    network::mojom::URLResponseHeadPtr& head) {
+  net::HttpResponseHeaders* headers = head->headers.get();
+
+  std::string ad_auction_signals;
+  bool found_ad_auction_signals_header = headers->GetNormalizedHeader(
+      kAdAuctionSignalsResponseHeaderKey, &ad_auction_signals);
+
+  if (found_ad_auction_signals_header) {
+    headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
+  }
+
   if (has_redirect_ || !ad_auction_headers_eligible_) {
     return;
   }
@@ -123,21 +137,24 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
     return;
   }
 
-  const net::HttpResponseHeaders* headers = head->headers.get();
-
-  std::string ad_auction_result;
-  if (!headers->GetNormalizedHeader("Ad-Auction-Result", &ad_auction_result) ||
-      ad_auction_result.size() != 64) {
-    return;
-  }
-
   Page& page = rfh->GetPage();
-
   AdAuctionPageData* ad_auction_page_data =
       PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
 
-  ad_auction_page_data->AddAuctionResponseWitnessForOrigin(request_origin_,
-                                                           ad_auction_result);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeBiddingAndAuctionServer)) {
+    std::string ad_auction_result;
+    if (headers->GetNormalizedHeader("Ad-Auction-Result", &ad_auction_result) &&
+        ad_auction_result.size() == 64) {
+      ad_auction_page_data->AddAuctionResultWitnessForOrigin(request_origin_,
+                                                             ad_auction_result);
+    }
+  }
+
+  if (found_ad_auction_signals_header && ad_auction_signals.size() <= 1000) {
+    ad_auction_page_data->AddAuctionSignalsWitnessForOrigin(request_origin_,
+                                                            ad_auction_signals);
+  }
 }
 
 }  // namespace content

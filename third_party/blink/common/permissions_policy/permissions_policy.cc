@@ -187,9 +187,7 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
 
   if (request.ad_auction_headers) {
     DCHECK(
-        base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage) &&
-        base::FeatureList::IsEnabled(
-            blink::features::kFledgeBiddingAndAuctionServer));
+        base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage));
 
     opt_in_features.insert(mojom::PermissionsPolicyFeature::kRunAdAuction);
   }

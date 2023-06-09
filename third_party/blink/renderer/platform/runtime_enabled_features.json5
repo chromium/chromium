@@ -290,6 +290,7 @@
       name: "AdInterestGroupAPI",
       origin_trial_feature_name: "AdInterestGroupAPI",
       implied_by: ["Fledge", "Parakeet"],
+      public: true,
     },
     {
       name: "AdTagging",

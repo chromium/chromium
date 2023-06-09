@@ -39,15 +39,24 @@ class CONTENT_EXPORT SubresourceProxyingURLLoader
   class Interceptor {
    public:
     virtual void WillStartRequest(net::HttpRequestHeaders& headers) = 0;
+
+    // `removed_headers` and `modified_headers` can be modified by other
+    // interceptors, and registration order would matter.
     virtual void WillFollowRedirect(
         const absl::optional<GURL>& new_url,
         std::vector<std::string>& removed_headers,
         net::HttpRequestHeaders& modified_headers) = 0;
+
+    // `head` can be modified by other interceptors, and registration order
+    // would matter.
     virtual void OnReceiveRedirect(
         const net::RedirectInfo& redirect_info,
-        const network::mojom::URLResponseHeadPtr& head) = 0;
+        network::mojom::URLResponseHeadPtr& head) = 0;
+
+    // `head` can be modified by other interceptors, and registration order
+    // would matter.
     virtual void OnReceiveResponse(
-        const network::mojom::URLResponseHeadPtr& head) = 0;
+        network::mojom::URLResponseHeadPtr& head) = 0;
 
     virtual ~Interceptor() = default;
   };

@@ -21,11 +21,17 @@ class CONTENT_EXPORT AdAuctionPageData
  public:
   ~AdAuctionPageData() override;
 
-  void AddAuctionResponseWitnessForOrigin(const url::Origin& origin,
-                                          const std::string& response);
+  void AddAuctionResultWitnessForOrigin(const url::Origin& origin,
+                                        const std::string& response);
 
-  bool WitnessedAuctionResponseForOrigin(const url::Origin& origin,
-                                         const std::string& response) const;
+  bool WitnessedAuctionResultForOrigin(const url::Origin& origin,
+                                       const std::string& response) const;
+
+  void AddAuctionSignalsWitnessForOrigin(const url::Origin& origin,
+                                         const std::string& response);
+
+  const std::set<std::string>& GetAuctionSignalsForOrigin(
+      const url::Origin& origin) const;
 
  private:
   explicit AdAuctionPageData(Page& page);
@@ -33,7 +39,8 @@ class CONTENT_EXPORT AdAuctionPageData
   friend class PageUserData<AdAuctionPageData>;
   PAGE_USER_DATA_KEY_DECL();
 
-  std::map<url::Origin, std::set<std::string>> origin_auction_responses_map_;
+  std::map<url::Origin, std::set<std::string>> origin_auction_result_map_;
+  std::map<url::Origin, std::set<std::string>> origin_auction_signals_map_;
 };
 
 }  // namespace content

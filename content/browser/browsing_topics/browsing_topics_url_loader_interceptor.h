@@ -42,11 +42,9 @@ class CONTENT_EXPORT BrowsingTopicsURLLoaderInterceptor
   void WillFollowRedirect(const absl::optional<GURL>& new_url,
                           std::vector<std::string>& removed_headers,
                           net::HttpRequestHeaders& modified_headers) override;
-  void OnReceiveRedirect(
-      const net::RedirectInfo& redirect_info,
-      const network::mojom::URLResponseHeadPtr& head) override;
-  void OnReceiveResponse(
-      const network::mojom::URLResponseHeadPtr& head) override;
+  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                         network::mojom::URLResponseHeadPtr& head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr& head) override;
 
  private:
   // Determines whether the ongoing request or redirect is eligible for topics,

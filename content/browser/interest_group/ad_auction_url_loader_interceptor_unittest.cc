@@ -20,6 +20,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 
@@ -48,14 +49,83 @@ class InterceptingContentBrowserClient : public ContentBrowserClient {
   bool interest_group_allowed_by_settings_ = false;
 };
 
+class TestURLLoaderClient : public network::mojom::URLLoaderClient {
+ public:
+  TestURLLoaderClient() = default;
+  ~TestURLLoaderClient() override = default;
+
+  TestURLLoaderClient(const TestURLLoaderClient&) = delete;
+  TestURLLoaderClient& operator=(const TestURLLoaderClient&) = delete;
+
+  mojo::PendingRemote<network::mojom::URLLoaderClient>
+  BindURLLoaderClientAndGetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+    if (head->headers.get()->HasHeader("Ad-Auction-Signals")) {
+      received_ad_auction_signals_header_ = true;
+    }
+
+    if (head->headers.get()->HasHeader("Ad-Auction-Result")) {
+      received_ad_auction_result_header_ = true;
+    }
+
+    received_response_ = true;
+  }
+
+  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                         network::mojom::URLResponseHeadPtr head) override {
+    if (head->headers.get()->HasHeader("Ad-Auction-Signals")) {
+      received_ad_auction_signals_header_ = true;
+    }
+
+    if (head->headers.get()->HasHeader("Ad-Auction-Result")) {
+      received_ad_auction_result_header_ = true;
+    }
+  }
+
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+  }
+  void OnUploadProgress(int64_t current_position,
+                        int64_t total_size,
+                        base::OnceCallback<void()> callback) override {}
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {}
+
+  bool received_response() const { return received_response_; }
+
+  bool received_ad_auction_signals_header() const {
+    return received_ad_auction_signals_header_;
+  }
+
+  bool received_ad_auction_result_header() const {
+    return received_ad_auction_result_header_;
+  }
+
+ private:
+  bool received_response_ = false;
+  bool received_ad_auction_result_header_ = false;
+  bool received_ad_auction_signals_header_ = false;
+
+  mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
+};
+
 }  // namespace
 
 class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
  public:
   AdAuctionURLLoaderInterceptorTest() {
+    // The `kBrowsingTopics` feature is needed to create a request eligible to
+    // be handled via `SubresourceProxyingURLLoaderService` (i.e. sets
+    // browsing_topics but not ad_auction_headers).
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kInterestGroupStorage,
-                              blink::features::kFledgeBiddingAndAuctionServer},
+                              blink::features::kFledgeBiddingAndAuctionServer,
+                              blink::features::kBrowsingTopics},
         /*disabled_features=*/{});
   }
 
@@ -91,7 +161,8 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
   }
 
   network::mojom::URLResponseHeadPtr CreateResponseHead(
-      const absl::optional<std::string>& ad_auction_result_header_value) {
+      const absl::optional<std::string>& ad_auction_result_header_value,
+      const absl::optional<std::string>& ad_auction_signals_header_value) {
     auto head = network::mojom::URLResponseHead::New();
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
@@ -100,15 +171,21 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
                                ad_auction_result_header_value.value());
     }
 
+    if (ad_auction_signals_header_value) {
+      head->headers->AddHeader("Ad-Auction-Signals",
+                               ad_auction_signals_header_value.value());
+    }
+
     return head;
   }
 
-  network::ResourceRequest CreateResourceRequest(
-      const GURL& url,
-      bool ad_auction_headers = true) {
+  network::ResourceRequest CreateResourceRequest(const GURL& url,
+                                                 bool ad_auction_headers = true,
+                                                 bool browsing_topics = false) {
     network::ResourceRequest request;
     request.url = url;
     request.ad_auction_headers = ad_auction_headers;
+    request.browsing_topics = browsing_topics;
     return request;
   }
 
@@ -133,15 +210,25 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     simulator->Commit();
   }
 
-  bool WitnessedAuctionResponseForOrigin(const url::Origin& origin,
-                                         const std::string& response) {
+  bool WitnessedAuctionResultForOrigin(const url::Origin& origin,
+                                       const std::string& response) {
     Page& page = web_contents()->GetPrimaryPage();
 
     AdAuctionPageData* ad_auction_page_data =
         PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
 
-    return ad_auction_page_data->WitnessedAuctionResponseForOrigin(origin,
-                                                                   response);
+    return ad_auction_page_data->WitnessedAuctionResultForOrigin(origin,
+                                                                 response);
+  }
+
+  const std::set<std::string>& GetAuctionSignalsForOrigin(
+      const url::Origin& origin) {
+    Page& page = web_contents()->GetPrimaryPage();
+
+    AdAuctionPageData* ad_auction_page_data =
+        PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
+
+    return ad_auction_page_data->GetAuctionSignalsForOrigin(origin);
   }
 
  protected:
@@ -186,11 +273,12 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedBeforeCommit) {
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
 }
@@ -232,11 +320,12 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedAfterCommit) {
   // The ad auction result from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(WitnessedAuctionResponseForOrigin(
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
 }
@@ -282,11 +371,12 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
 }
@@ -328,11 +418,12 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromMainFrame) {
   // The ad auction result from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(WitnessedAuctionResponseForOrigin(
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
 }
@@ -385,13 +476,67 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromSubframe) {
   // The ad auction result from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(WitnessedAuctionResponseForOrigin(
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
+}
+
+TEST_F(AdAuctionURLLoaderInterceptorTest,
+       RequestNotEligibleForAdAuctionHeadersDueToMissingFetchParam) {
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // Make request to `foo1.com` that sets the `browsing_topics` but not the
+  // `ad_auction_headers` param, so that it's a valid request type to be proxied
+  // but is not eligible for ad auction headers processing.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com"),
+                            /*ad_auction_headers=*/false,
+                            /*browsing_topics=*/true),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string ad_auction_request_header_value;
+  bool has_ad_auction_request_header =
+      pending_request->request.headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
+  EXPECT_FALSE(has_ad_auction_request_header);
+
+  pending_request->client->OnReceiveResponse(
+      CreateResponseHead(
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/"{}"),
+      /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(GURL("https://foo1.com")),
+      kLegitimateAdAuctionResponse));
+
+  const std::set<std::string>& signals =
+      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
+  EXPECT_THAT(signals, ::testing::IsEmpty());
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -431,13 +576,18 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/"{}"),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
+
+  const std::set<std::string>& signals =
+      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
+  EXPECT_THAT(signals, ::testing::IsEmpty());
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -477,11 +627,12 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   // false.
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/"invalid-response-header"),
+          /*ad_auction_result_header_value=*/"invalid-response-header",
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       "invalid-response-header"));
 }
@@ -526,11 +677,12 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromInactiveFrame) {
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
 }
@@ -571,11 +723,12 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo2.com")),
       kLegitimateAdAuctionResponse));
 }
@@ -616,19 +769,20 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   EXPECT_TRUE(has_ad_auction_request_header);
   EXPECT_EQ(ad_auction_request_header_value, "?1");
 
-  // Redirect to `foo2.com`. The ad auction result in response for the initial
+  // Redirect to `foo2.com`. The ad auction result response for the initial
   // request to `foo1.com` will be ignored, and the redirect request to
-  // `foo2.com` is eligible for the ad auction headers either.
+  // `foo2.com` is not eligible for the ad auction headers.
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("https://foo2.com");
 
   pending_request->client->OnReceiveRedirect(
       redirect_info,
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse));
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
       kLegitimateAdAuctionResponse));
 
@@ -653,13 +807,262 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
-          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse),
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo2.com")),
       kLegitimateAdAuctionResponse));
+}
+
+TEST_F(AdAuctionURLLoaderInterceptorTest, AdAuctionSignalsResponseHeader) {
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  TestURLLoaderClient test_client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // The request to `foo1.com` will cause an empty ad auction header value to be
+  // added.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      test_client.BindURLLoaderClientAndGetRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string ad_auction_request_header_value;
+  bool has_ad_auction_request_header =
+      pending_request->request.headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
+  EXPECT_TRUE(has_ad_auction_request_header);
+  EXPECT_EQ(ad_auction_request_header_value, "?1");
+
+  // The ad auction signals from the response header will be stored in the page.
+  pending_request->client->OnReceiveResponse(
+      CreateResponseHead(
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/"{}"),
+      /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  // The `Ad-Auction-Signals` header was intercepted and stored in the browser.
+  // It was not exposed to the original loader client. In contrast, the
+  //  `Ad-Auction-Result` header was exposed to the original loader client.
+  EXPECT_TRUE(test_client.received_response());
+  EXPECT_TRUE(test_client.received_ad_auction_result_header());
+  EXPECT_FALSE(test_client.received_ad_auction_signals_header());
+
+  const std::set<std::string>& signals =
+      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
+  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
+}
+
+// Tests that the Ad-Auction-Signals header will be removed from the final
+// response regardless of whether it's an auction eligible request.
+TEST_F(AdAuctionURLLoaderInterceptorTest,
+       AdAuctionSignalsResponseHeaderRemoved) {
+  browser_client_.set_interest_group_allowed_by_settings(false);
+
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  TestURLLoaderClient test_client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // The request to `foo1.com` won't be eligible for ad auction.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      test_client.BindURLLoaderClientAndGetRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string ad_auction_request_header_value;
+  bool has_ad_auction_request_header =
+      pending_request->request.headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
+  EXPECT_FALSE(has_ad_auction_request_header);
+
+  // The ad auction signals from the response header won't be stored in the
+  // page.
+  pending_request->client->OnReceiveResponse(
+      CreateResponseHead(
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/"{}"),
+      /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_client.received_response());
+  EXPECT_TRUE(test_client.received_ad_auction_result_header());
+  EXPECT_FALSE(test_client.received_ad_auction_signals_header());
+
+  const std::set<std::string>& signals =
+      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
+  EXPECT_THAT(signals, ::testing::IsEmpty());
+}
+
+TEST_F(AdAuctionURLLoaderInterceptorTest,
+       AdAuctionSignalsResponseHeaderTooLong) {
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  TestURLLoaderClient test_client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // The request to `foo1.com` will cause an empty ad auction header value to be
+  // added.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      test_client.BindURLLoaderClientAndGetRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string ad_auction_request_header_value;
+  bool has_ad_auction_request_header =
+      pending_request->request.headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
+  EXPECT_TRUE(has_ad_auction_request_header);
+  EXPECT_EQ(ad_auction_request_header_value, "?1");
+
+  // The ad auction signals from the response header won't be stored in the
+  // page.
+  pending_request->client->OnReceiveResponse(
+      CreateResponseHead(
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/std::string(1001, '0')),
+      /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  const std::set<std::string>& signals =
+      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
+  EXPECT_THAT(signals, ::testing::IsEmpty());
+}
+
+TEST_F(AdAuctionURLLoaderInterceptorTest,
+       HasRedirect_AdAuctionSignalsResponseIgnored) {
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory(
+      /*observe_loader_requests=*/true);
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  TestURLLoaderClient test_client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // The request to `foo1.com` will cause the ad auction header value "?1" to be
+  // added.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      test_client.BindURLLoaderClientAndGetRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string ad_auction_request_header_value;
+  bool has_ad_auction_request_header =
+      pending_request->request.headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
+  EXPECT_TRUE(has_ad_auction_request_header);
+  EXPECT_EQ(ad_auction_request_header_value, "?1");
+
+  // Redirect to `foo2.com`. The ad auction signals response for the initial
+  // request to `foo1.com` will be ignored, and the redirect request to
+  // `foo2.com` is not eligible for the ad auction headers.
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL("https://foo2.com");
+
+  pending_request->client->OnReceiveRedirect(
+      redirect_info,
+      CreateResponseHead(
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/"{}"));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(GURL("https://foo1.com")),
+      kLegitimateAdAuctionResponse));
+
+  remote_loader->FollowRedirect(/*removed_headers=*/{},
+                                /*modified_headers=*/{},
+                                /*modified_cors_exempt_headers=*/{},
+                                /*new_url=*/absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  const std::vector<FollowRedirectParams>& follow_redirect_params =
+      pending_request->test_url_loader->follow_redirect_params();
+  EXPECT_EQ(follow_redirect_params.size(), 1u);
+  EXPECT_EQ(follow_redirect_params[0].removed_headers.size(), 1u);
+  EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
+            "Sec-Ad-Auction-Fetch");
+
+  std::string redirect_ad_auction_request_header_value;
+  bool redirect_has_ad_auction_request_header =
+      follow_redirect_params[0].modified_headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &redirect_ad_auction_request_header_value);
+  EXPECT_FALSE(redirect_has_ad_auction_request_header);
+
+  pending_request->client->OnReceiveResponse(
+      CreateResponseHead(
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/"{}"),
+      /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  // The `Ad-Auction-Signals` header was ignored and not exposed to the original
+  // loader client.
+  EXPECT_TRUE(test_client.received_response());
+  EXPECT_TRUE(test_client.received_ad_auction_result_header());
+  EXPECT_FALSE(test_client.received_ad_auction_signals_header());
+
+  const std::set<std::string>& signals =
+      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
+  EXPECT_THAT(signals, ::testing::IsEmpty());
 }
 
 }  // namespace content
