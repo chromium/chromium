@@ -47,6 +47,7 @@ export class BluetoothBrailleDisplayManager {
     'Active Braille AB',
     'Active Star AS',
     'ALVA BC',
+    'APEX',
     'APH Chameleon',
     'APH Mantis',
     'Basic Braille BB',
