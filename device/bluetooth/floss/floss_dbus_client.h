@@ -801,7 +801,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
     object_proxy->CallMethodWithErrorResponse(
         &method_call, kDBusTimeoutMs,
         base::BindOnce(&FlossDBusClient::DefaultResponseWithCallback<R>,
-                       base::Unretained(this), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   FlossDBusClient(const FlossDBusClient&) = delete;
@@ -857,6 +857,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   void DefaultResponse(const std::string& caller,
                        dbus::Response* response,
                        dbus::ErrorResponse* error_response);
+
+ private:
+  base::WeakPtrFactory<FlossDBusClient> weak_ptr_factory_{this};
 };
 
 // Utility to keep a property that takes care of getting the initial value,
