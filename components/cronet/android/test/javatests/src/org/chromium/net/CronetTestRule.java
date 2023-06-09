@@ -31,8 +31,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.net.URL;
-import java.net.URLStreamHandlerFactory;
 
 /**
  * Custom TestRule for Cronet instrumentation tests.
@@ -42,7 +40,6 @@ public class CronetTestRule implements TestRule {
     private static final String TAG = "CronetTestRule";
 
     private CronetTestFramework mCronetTestFramework;
-    private boolean mTestingSystemHttpURLConnection;
     private CronetImplementation mImplementation;
     private StrictMode.VmPolicy mOldVmPolicy;
 
@@ -99,23 +96,6 @@ public class CronetTestRule implements TestRule {
     }
 
     /**
-     * Sets the {@link URLStreamHandlerFactory} from {@code cronetEngine}.  This should be called
-     * during setUp() and is installed by {@link runTest()} as the default when Cronet is tested.
-     */
-    public void setStreamHandlerFactory(CronetEngine cronetEngine) {
-        if (!testingSystemHttpURLConnection()) {
-            URL.setURLStreamHandlerFactory(cronetEngine.createURLStreamHandlerFactory());
-        }
-    }
-
-    /**
-     * Returns {@code true} when test is being run against system HttpURLConnection implementation.
-     */
-    public boolean testingSystemHttpURLConnection() {
-        return mTestingSystemHttpURLConnection;
-    }
-
-    /**
      * Returns {@code true} when test is being run against the java implementation of CronetEngine.
      *
      * @deprecated use the implementation enum
@@ -142,11 +122,11 @@ public class CronetTestRule implements TestRule {
 
     // TODO(yolandyan): refactor this using parameterize framework
     private void runBase(Statement base, Description desc) throws Throwable {
-        setTestingSystemHttpURLConnection(false);
         setImplementationUnderTest(CronetImplementation.STATICALLY_LINKED);
         String packageName = desc.getTestClass().getPackage().getName();
 
-        boolean onlyRunTestForNative = desc.getAnnotation(OnlyRunNativeCronet.class) != null;
+        boolean onlyRunTestForNative = desc.getAnnotation(OnlyRunNativeCronet.class) != null
+                || desc.getTestClass().getAnnotation(OnlyRunNativeCronet.class) != null;
         boolean onlyRunTestForJava = desc.getAnnotation(OnlyRunJavaCronet.class) != null;
         if (onlyRunTestForNative && onlyRunTestForJava) {
             throw new IllegalArgumentException(desc.getMethodName()
@@ -185,25 +165,7 @@ public class CronetTestRule implements TestRule {
                         + Build.VERSION.SDK_INT,
                 Build.VERSION.SDK_INT >= requiredAndroidApiVersion);
 
-        if (packageName.equals("org.chromium.net.urlconnection")) {
-            if (desc.getAnnotation(CompareDefaultWithCronet.class) != null) {
-                try {
-                    // Run with the default HttpURLConnection implementation first.
-                    setTestingSystemHttpURLConnection(true);
-                    evaluateWithFramework(base);
-                    // Use Cronet's implementation, and run the same test.
-                    setTestingSystemHttpURLConnection(false);
-                    evaluateWithFramework(base);
-                } catch (Throwable e) {
-                    Log.e(TAG, "CronetTestBase#runTest failed for %s implementation.",
-                            testingSystemHttpURLConnection() ? "System" : "Cronet");
-                    throw e;
-                }
-            } else {
-                // For all other tests.
-                evaluateWithFramework(base);
-            }
-        } else if (packageName.startsWith("org.chromium.net")) {
+        if (packageName.startsWith("org.chromium.net")) {
             try {
                 if (doRunTestForNative) {
                     Log.i(TAG, "Running test against Native implementation.");
@@ -277,29 +239,11 @@ public class CronetTestRule implements TestRule {
     }
 
     /**
-     * Annotation for test methods in org.chromium.net.urlconnection pacakage that runs them
-     * against both Cronet's HttpURLConnection implementation, and against the system's
-     * HttpURLConnection implementation.
+     * Annotation for test classes or methods in org.chromium.net package that disables rerunning
+     * the test against the Java-only implementation. When this annotation is present the test is
+     * only run against the native implementation.
      */
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface CompareDefaultWithCronet {}
-
-    /**
-     * Annotation for test methods in org.chromium.net.urlconnection pacakage that runs them
-     * only against Cronet's HttpURLConnection implementation, and not against the system's
-     * HttpURLConnection implementation.
-     */
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface OnlyRunCronetHttpURLConnection {}
-
-    /**
-     * Annotation for test methods in org.chromium.net package that disables rerunning the test
-     * against the Java-only implementation. When this annotation is present the test is only run
-     * against the native implementation.
-     */
-    @Target(ElementType.METHOD)
+    @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     public @interface OnlyRunNativeCronet {}
 
@@ -385,10 +329,6 @@ public class CronetTestRule implements TestRule {
             }
         }
         return path.delete();
-    }
-
-    private void setTestingSystemHttpURLConnection(boolean value) {
-        mTestingSystemHttpURLConnection = value;
     }
 
     private void setImplementationUnderTest(CronetImplementation implementation) {
