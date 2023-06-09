@@ -15,7 +15,9 @@ namespace updater {
 bool AppServerPosix::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
-  // TODO(crbug.com/1250524): This must not run concurrently with Keystone.
+  // This is potentially a race condition because the Keystone might be
+  // modifying its data when the new updater is trying to read and migrate.
+  // See crbug.com/1453460.
   return MigrateKeystoneApps(GetKeystoneFolderPath(updater_scope()).value(),
                              register_callback);
 }
