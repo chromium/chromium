@@ -7,13 +7,21 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
+#include "third_party/blink/public/common/features.h"
 
 constexpr base::TimeDelta kTimerPeriod = base::Days(1);
 
 StorageAccessAPIServiceImpl::StorageAccessAPIServiceImpl(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context)
+    : grant_refreshes_enabled_(
+          blink::features::kStorageAccessAPIRefreshGrantsOnUserInteraction
+              .Get()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(browser_context);
+
+  if (!grant_refreshes_enabled_) {
+    return;
+  }
 
   base::Time now = base::Time::Now();
   // We do our best to update the profile's state starting at the next midnight.
@@ -39,7 +47,8 @@ bool StorageAccessAPIServiceImpl::RenewPermissionGrant(
     const url::Origin& top_frame_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!updated_grants_.Insert(embedded_origin, top_frame_origin)) {
+  if (!grant_refreshes_enabled_ ||
+      !updated_grants_.Insert(embedded_origin, top_frame_origin)) {
     return false;
   }
 
@@ -54,6 +63,7 @@ void StorageAccessAPIServiceImpl::Shutdown() {
 
 void StorageAccessAPIServiceImpl::StartPeriodicTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(grant_refreshes_enabled_);
   OnPeriodicTimerFired();
   periodic_timer_.Start(
       FROM_HERE, kTimerPeriod,
@@ -63,5 +73,11 @@ void StorageAccessAPIServiceImpl::StartPeriodicTimer() {
 
 void StorageAccessAPIServiceImpl::OnPeriodicTimerFired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(grant_refreshes_enabled_);
   updated_grants_.Clear();
+}
+
+bool StorageAccessAPIServiceImpl::IsTimerRunningForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return periodic_timer_.IsRunning();
 }

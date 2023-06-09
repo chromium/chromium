@@ -41,6 +41,10 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
   // KeyedService:
   void Shutdown() override;
 
+  // Returns whether or not the repeating timer is running, for the purpose of
+  // testing.
+  bool IsTimerRunningForTesting() const;
+
  private:
   // Starts the periodic timer. This includes an invocation of
   // `OnPeriodicTimerFired`, for the 0th time interval.
@@ -54,6 +58,9 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
 
   // Timer to periodically update state for the associated profile.
   base::RepeatingTimer periodic_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Whether grant refreshes are enabled.
+  const bool grant_refreshes_enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

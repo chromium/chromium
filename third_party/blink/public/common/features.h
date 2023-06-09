@@ -1091,6 +1091,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // the requesting origin are not in the same First-Party Set.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kStorageAccessAPIAutoDenyOutsideFPS;
+// Whether to renew Storage Access API permission grants after user interaction
+// in the relevant contexts.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIRefreshGrantsOnUserInteraction;
 
 // Kill-switch for a deprecation trial that unpartitions storage in third-party
 // contexts under the registered top-level site. If

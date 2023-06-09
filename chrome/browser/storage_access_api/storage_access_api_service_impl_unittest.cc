@@ -13,6 +13,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace {
 const char* kHostA = "a.test";
@@ -90,5 +92,53 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant_DailyCache) {
   env().FastForwardBy(base::Days(1));
 
   EXPECT_TRUE(service->RenewPermissionGrant(origin_a, origin_b));
+  EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
+}
+
+class StorageAccessAPIServiceImplWithoutRefreshTest
+    : public StorageAccessAPIServiceImplTest {
+ public:
+  StorageAccessAPIServiceImplWithoutRefreshTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        blink::features::kStorageAccessAPI,
+        {
+            {blink::features::kStorageAccessAPIRefreshGrantsOnUserInteraction
+                 .name,
+             "false"},
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(StorageAccessAPIServiceImplWithoutRefreshTest, NoPeriodicTasks) {
+  StorageAccessAPIServiceImpl* service =
+      StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
+  ASSERT_NE(nullptr, service);
+
+  EXPECT_FALSE(service->IsTimerRunningForTesting());
+
+  env().FastForwardBy(base::Hours(48));
+
+  EXPECT_FALSE(service->IsTimerRunningForTesting());
+}
+
+TEST_F(StorageAccessAPIServiceImplWithoutRefreshTest,
+       RenewPermissionGrant_AlwaysNoop) {
+  StorageAccessAPIServiceImpl* service =
+      StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
+  ASSERT_NE(nullptr, service);
+
+  url::Origin origin_a(
+      url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
+  url::Origin origin_b(
+      url::Origin::Create(GURL(base::StrCat({"https://", kHostB}))));
+
+  EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
+
+  // The daily cache shouldn't make any difference here.
+  env().FastForwardBy(base::Hours(25));
+
   EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
 }
