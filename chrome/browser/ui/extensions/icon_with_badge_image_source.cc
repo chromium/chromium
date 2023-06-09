@@ -96,10 +96,10 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
                 badge_.get(), get_color_provider_callback_.Run()))
           : badge_->text_color;
 
-  constexpr int kBadgeHeight = 12;
+  const int badge_height = features::IsChromeRefresh2023() ? 14 : 12;
   ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
   gfx::FontList base_font = rb->GetFontList(ui::ResourceBundle::BaseFont)
-                                .DeriveWithHeightUpperBound(kBadgeHeight);
+                                .DeriveWithHeightUpperBound(badge_height);
   std::u16string utf16_text = base::UTF8ToUTF16(badge_->text);
 
   // See if we can squeeze a slightly larger font into the badge given the
@@ -111,8 +111,9 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
     gfx::FontList bigger_font = base_font.Derive(1, 0, gfx::Font::Weight::BOLD);
     gfx::Canvas::SizeStringInt(utf16_text, bigger_font, &w, &h, 0,
                                gfx::Canvas::NO_ELLIPSIS);
-    if (h > kBadgeHeight)
+    if (h > badge_height) {
       break;
+    }
     base_font = bigger_font;
   }
 
@@ -130,7 +131,7 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   // or even otherwise. If there is a mismatch you get http://crbug.com/26400.
   if (icon_area.width() != 0 && (badge_width % 2 != icon_area.width() % 2))
     badge_width += 1;
-  badge_width = std::max(kBadgeHeight, badge_width);
+  badge_width = std::max(badge_height, badge_width);
 
   // The minimum width for center-aligning the badge.
   constexpr int kCenterAlignThreshold = 20;
@@ -139,13 +140,13 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   const int badge_offset_x = badge_width >= kCenterAlignThreshold
                                  ? (icon_area.width() - badge_width) / 2
                                  : icon_area.width() - badge_width;
-  const int badge_offset_y = icon_area.height() - kBadgeHeight;
+  const int badge_offset_y = icon_area.height() - badge_height;
   badge_background_rect_ =
       gfx::Rect(icon_area.x() + badge_offset_x, icon_area.y() + badge_offset_y,
-                badge_width, kBadgeHeight);
+                badge_width, badge_height);
   gfx::Rect badge_rect = badge_background_rect_;
   badge_rect.Inset(gfx::Insets::TLBR(
-      kBadgeHeight - base_font.GetHeight(),
+      badge_height - base_font.GetHeight(),
       std::max(kPadding, (badge_rect.width() - text_width) / 2), 0, kPadding));
   badge_text_ = gfx::RenderText::CreateRenderText();
   badge_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);

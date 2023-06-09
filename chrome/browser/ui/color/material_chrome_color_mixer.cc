@@ -100,9 +100,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadToolbarButtonAnimationForeground] =
       AdjustHighlightColorForContrast(ui::kColorSysPrimary,
                                       kColorDownloadShelfBackground);
-  mixer[kColorExtensionIconBadgeBackgroundDefault] =
-      ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,
-                          color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorExtensionIconBadgeBackgroundDefault] = {
+      ui::kColorSysNeutralContainer};
   mixer[kColorFeaturePromoBubbleBackground] = {ui::kColorSysPrimary};
   mixer[kColorFeaturePromoBubbleButtonBorder] = {
       kColorFeaturePromoBubbleForeground};
