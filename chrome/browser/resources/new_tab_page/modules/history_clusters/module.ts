@@ -39,6 +39,7 @@ export enum HistoryClusterElementType {
   SUGGEST = 1,
   SHOW_ALL = 2,
   CART = 3,
+  OPEN_ALL = 4,
 }
 
 /**
@@ -173,6 +174,8 @@ export class HistoryClustersModuleElement extends I18nMixin
         `NewTabPage.HistoryClusters.Layout${this.layoutType}.Click`, type,
         Object.keys(HistoryClusterElementType).length);
     HistoryClustersProxyImpl.getInstance().handler.recordClick(this.cluster.id);
+
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
   private recordTileClickIndex_(tile: HTMLElement, tileType: string) {
@@ -188,8 +191,6 @@ export class HistoryClustersModuleElement extends I18nMixin
           buckets: 10,
         },
         index);
-
-    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
   private onDisableButtonClick_() {
@@ -233,6 +234,7 @@ export class HistoryClustersModuleElement extends I18nMixin
         visit => visit.normalizedUrl);
     HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(
         urls, this.cluster.tabGroupName ?? null);
+    this.recordClick_(HistoryClusterElementType.OPEN_ALL);
   }
 
   private shouldShowCartTile_(cart: Object): boolean {
