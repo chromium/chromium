@@ -846,10 +846,12 @@ source_set("presence") {
     "src/presence/presence_client_impl.cc",
     "src/presence/presence_service_impl.cc",
   ]
+
   public = [
     "src/presence/presence_client.h",
     "src/presence/presence_client_impl.h",
     "src/presence/presence_service.h",
+    "src/presence/presence_service_impl.h",
   ]
   public_deps = [
     ":connections_metadata_proto",
@@ -867,8 +869,14 @@ source_set("presence_test") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/presence/fake_presence_client.cc" ]
-  public = [ "src/presence/fake_presence_client.h" ]
+  sources = [
+    "src/presence/fake_presence_client.cc",
+    "src/presence/fake_presence_service.cc",
+  ]
+  public = [
+    "src/presence/fake_presence_client.h",
+    "src/presence/fake_presence_service.h",
+  ]
   deps = [ ":presence" ]
 }
 source_set("presence_types") {

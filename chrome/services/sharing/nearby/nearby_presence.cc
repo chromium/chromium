@@ -5,12 +5,17 @@
 #include "chrome/services/sharing/nearby/nearby_presence.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/services/sharing/nearby/nearby_presence_conversions.h"
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/nearby/src/presence/presence_service_impl.h"
 
 namespace {
+
+constexpr char kChromeOSManagerAppName[] = "CHROMEOS";
+constexpr int kCredentialLifeCycleDays = 5;
+constexpr int kNumCredentials = 6;
 
 void PostStartScanCallbackOnSequence(
     ash::nearby::presence::NearbyPresence::StartScanCallback callback,
@@ -38,8 +43,16 @@ namespace ash::nearby::presence {
 NearbyPresence::NearbyPresence(
     mojo::PendingReceiver<mojom::NearbyPresence> nearby_presence,
     base::OnceClosure on_disconnect)
-    : presence_service_(
-          std::make_unique<::nearby::presence::PresenceServiceImpl>()),
+    : NearbyPresence(
+          std::make_unique<::nearby::presence::PresenceServiceImpl>(),
+          std::move(nearby_presence),
+          std::move(on_disconnect)) {}
+
+NearbyPresence::NearbyPresence(
+    std::unique_ptr<::nearby::presence::PresenceService> presence_service,
+    mojo::PendingReceiver<mojom::NearbyPresence> nearby_presence,
+    base::OnceClosure on_disconnect)
+    : presence_service_(std::move(presence_service)),
       presence_client_(presence_service_->CreatePresenceClient()),
       nearby_presence_(this, std::move(nearby_presence)) {
   nearby_presence_.set_disconnect_handler(std::move(on_disconnect));
@@ -149,6 +162,66 @@ void NearbyPresence::StartScan(mojom::ScanRequestPtr scan_request,
                      base::SequencedTaskRunner::GetCurrentDefault()));
 
   id_to_session_id_map_.insert_or_assign(id, session_id);
+}
+
+void NearbyPresence::UpdateLocalDeviceMetadata(mojom::MetadataPtr metadata) {
+  // PresenceService exposes the same API to set local device metadata and
+  // an optional field to generate credentials.
+  // NearbyPresence::UpdateLocalDeviceMetadata only sets the local device
+  // metadata, which is why `regen_credentials` is false. Similarly, since
+  // there is no credentials being regenerated, an empty callback is passed to
+  // `credentials_generated_cb`. The NP library requires calls on every
+  // start up of CrOS Nearby Presence Service to set the device metadata, since
+  // it is only stored in memory, and thus `UpdateLocalDeviceMetadata` is called
+  // to only set metadata, and not to generate credentials. Generating
+  // credentials is only called during the first time flow or when device
+  // metadata changes (e.g. the user's name).
+  presence_service_->UpdateLocalDeviceMetadata(
+      MetadataFromMojom(metadata.get()), /*regen_credentials=*/false,
+      /*manager_app_id=*/kChromeOSManagerAppName,
+      /*identity_types=*/
+      {::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE},
+      /*credential_life_cycle_days=*/kCredentialLifeCycleDays,
+      /*contiguous_copy_of_credentials=*/kNumCredentials,
+      /*credentials_generated_cb=*/{});
+}
+
+void NearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
+    mojom::MetadataPtr metadata,
+    UpdateLocalDeviceMetadataAndGenerateCredentialsCallback callback) {
+  presence_service_->UpdateLocalDeviceMetadata(
+      MetadataFromMojom(metadata.get()), /*regen_credentials=*/true,
+      /*manager_app_id=*/kChromeOSManagerAppName,
+      /*identity_types=*/
+      {::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE},
+      /*credential_life_cycle_days=*/kCredentialLifeCycleDays,
+      /*contiguous_copy_of_credentials=*/kNumCredentials,
+      {.credentials_generated_cb = [cb = base::BindOnce(std::move(callback)),
+                                    task_runner = base::SequencedTaskRunner::
+                                        GetCurrentDefault()](
+                                       auto status_or_shared_credentials) {
+        std::vector<mojom::SharedCredentialPtr> mojo_credentials;
+
+        if (status_or_shared_credentials.ok()) {
+          for (auto credential : status_or_shared_credentials.value()) {
+            mojo_credentials.push_back(SharedCredentialToMojom(credential));
+          }
+        }
+
+        // absl::AnyInvocable marks its bound parameters as const&, but
+        // base::BindOnce() expects a non-const rvalue. Cast it as non-const to
+        // allow the bind.
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                std::move(
+                    const_cast<
+                        UpdateLocalDeviceMetadataAndGenerateCredentialsCallback&>(
+                        cb)),
+                /*credentials=*/std::move(mojo_credentials), /*status=*/
+                CovertStatusToMojomStatus(
+                    status_or_shared_credentials.status())));
+      }});
 }
 
 void NearbyPresence::OnScanSessionDisconnect(uint64_t scan_session_id) {

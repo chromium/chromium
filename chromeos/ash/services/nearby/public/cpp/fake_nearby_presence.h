@@ -41,6 +41,12 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
       mojo::PendingRemote<mojom::ScanObserver> scan_observer) override;
   void StartScan(mojom::ScanRequestPtr scan_request,
                  FakeNearbyPresence::StartScanCallback callback) override;
+  void UpdateLocalDeviceMetadata(mojom::MetadataPtr metadata) override;
+  void UpdateLocalDeviceMetadataAndGenerateCredentials(
+      mojom::MetadataPtr metadata,
+      FakeNearbyPresence::
+          UpdateLocalDeviceMetadataAndGenerateCredentialsCallback callback)
+      override;
 
   // ScanSession:
   void OnDisconnect();

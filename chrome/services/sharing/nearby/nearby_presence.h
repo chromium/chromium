@@ -35,6 +35,12 @@ class NearbyPresence : public mojom::NearbyPresence {
   NearbyPresence& operator=(const NearbyPresence&) = delete;
   ~NearbyPresence() override;
 
+ protected:
+  NearbyPresence(
+      std::unique_ptr<::nearby::presence::PresenceService> presence_service,
+      mojo::PendingReceiver<mojom::NearbyPresence> nearby_presence,
+      base::OnceClosure on_disconnect);
+
  private:
   class ScanSessionImpl : public mojom::ScanSession {
    public:
@@ -51,12 +57,23 @@ class NearbyPresence : public mojom::NearbyPresence {
   FRIEND_TEST_ALL_PREFIXES(NearbyPresenceTest,
                            RunStartScan_DeviceChangedCallback);
   FRIEND_TEST_ALL_PREFIXES(NearbyPresenceTest, RunStartScan_DeviceLostCallback);
+  FRIEND_TEST_ALL_PREFIXES(
+      NearbyPresenceTest,
+      UpdateLocalDeviceMetadataAndGenerateCredentials_Success);
+  FRIEND_TEST_ALL_PREFIXES(
+      NearbyPresenceTest,
+      UpdateLocalDeviceMetadataAndGenerateCredentials_Fail);
 
   // mojom::NearbyPresence:
   void SetScanObserver(
       mojo::PendingRemote<mojom::ScanObserver> scan_observer) override;
   void StartScan(mojom::ScanRequestPtr scan_request,
                  StartScanCallback callback) override;
+  void UpdateLocalDeviceMetadata(mojom::MetadataPtr metadata) override;
+  void UpdateLocalDeviceMetadataAndGenerateCredentials(
+      mojom::MetadataPtr metadata,
+      UpdateLocalDeviceMetadataAndGenerateCredentialsCallback callback)
+      override;
 
   // This is used as the disconnect handler for ScanSession.
   void OnScanSessionDisconnect(uint64_t scan_session_id);

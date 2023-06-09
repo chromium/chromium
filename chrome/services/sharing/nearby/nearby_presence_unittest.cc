@@ -4,60 +4,69 @@
 
 #include "chrome/services/sharing/nearby/nearby_presence.h"
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/nearby/src/presence/fake_presence_client.h"
+#include "third_party/nearby/src/presence/fake_presence_service.h"
 #include "third_party/nearby/src/presence/presence_client_impl.h"
-#include "third_party/nearby/src/presence/presence_service.h"
+#include "third_party/nearby/src/presence/presence_service_impl.h"
 
 namespace {
 
 const char kRequestName[] = "Pepper's Request";
 
-class FakePresenceClientImplFactory
-    : public nearby::presence::PresenceClientImpl::Factory {
-  using BorrowablePresenceService =
-      ::nearby::Borrowable<::nearby::presence::PresenceService*>;
+const char kDeviceName[] = "Test's Chromebook";
+const char kAccountName[] = "Test Tester";
+const char kProfileUrl[] = "https://example.com";
+const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
+const std::vector<uint8_t> kSecretId2 = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
+const std::vector<uint8_t> kSecretId3 = {0x33, 0x33, 0x33, 0x33, 0x33, 0x33};
 
- public:
-  ~FakePresenceClientImplFactory() override = default;
-
-  nearby::presence::FakePresenceClient*
-  get_last_created_fake_presence_client() {
-    return last_created_fake_presence_client_;
-  }
-
- private:
-  // PresenceClientImpl::Factory:
-  std::unique_ptr<nearby::presence::PresenceClient> CreateInstance(
-      BorrowablePresenceService service) override {
-    auto fake_presence_client =
-        std::make_unique<nearby::presence::FakePresenceClient>();
-    last_created_fake_presence_client_ = fake_presence_client.get();
-    return fake_presence_client;
-  }
-
-  raw_ptr<nearby::presence::FakePresenceClient>
-      last_created_fake_presence_client_ = nullptr;
-};
+ash::nearby::presence::mojom::MetadataPtr BuildTestMetadata() {
+  ash::nearby::presence::mojom::MetadataPtr metadata =
+      ash::nearby::presence::mojom::Metadata::New();
+  metadata->account_name = kAccountName;
+  metadata->device_name = kDeviceName;
+  metadata->device_profile_url = kProfileUrl;
+  return metadata;
+}
 
 }  // namespace
 
 namespace ash::nearby::presence {
+
+// Derived class allows access to the protected constructor of NearbyPresence
+// for unit tests.
+class TestNearbyPresence : public NearbyPresence {
+ public:
+  TestNearbyPresence(
+      std::unique_ptr<::nearby::presence::PresenceService> presence_service,
+      mojo::PendingReceiver<mojom::NearbyPresence> nearby_presence,
+      base::OnceClosure on_disconnect)
+      : NearbyPresence(std::move(presence_service),
+                       std::move(nearby_presence),
+                       std::move(on_disconnect)) {}
+};
+
 class NearbyPresenceTest : public testing::Test,
                            public ::ash::nearby::presence::mojom::ScanObserver {
  public:
   NearbyPresenceTest() {
-    ::nearby::presence::PresenceClientImpl::Factory::SetFactoryForTesting(
-        &fake_presence_client_factory_);
+    auto fake_presence_service =
+        std::make_unique<::nearby::presence::FakePresenceService>();
+    fake_presence_service_ = fake_presence_service.get();
 
-    nearby_presence_ = std::make_unique<NearbyPresence>(
-        remote_.BindNewPipeAndPassReceiver(),
+    nearby_presence_ = std::make_unique<TestNearbyPresence>(
+        std::move(fake_presence_service), remote_.BindNewPipeAndPassReceiver(),
         base::BindOnce(&NearbyPresenceTest::OnDisconnect,
                        base::Unretained(this)));
 
@@ -125,7 +134,9 @@ class NearbyPresenceTest : public testing::Test,
 
   mojo::Receiver<::ash::nearby::presence::mojom::ScanObserver> scan_observer_{
       this};
-  FakePresenceClientImplFactory fake_presence_client_factory_;
+  raw_ptr<::nearby::presence::FakePresenceService> fake_presence_service_ =
+      nullptr;
+  std::unique_ptr<NearbyPresence> nearby_presence_;
 
   int num_devices_found_ = 0;
   int num_devices_changed_ = 0;
@@ -133,7 +144,6 @@ class NearbyPresenceTest : public testing::Test,
   mojo::Remote<::ash::nearby::presence::mojom::ScanSession> scan_session_;
 
  private:
-  std::unique_ptr<NearbyPresence> nearby_presence_;
   base::WeakPtrFactory<NearbyPresenceTest> weak_ptr_factory_{this};
 };
 
@@ -145,7 +155,7 @@ TEST_F(NearbyPresenceTest, RunStartScan_StatusOk) {
   // RunUntilIdle is used here to make sure StartScan() is able to pass
   // FakePresenceClient the callback before it is called on the next line.
   base::RunLoop().RunUntilIdle();
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
+  fake_presence_service_->GetMostRecentFakePresenceClient()
       ->CallStartScanCallback(absl::OkStatus());
   run_loop.Run();
 
@@ -162,7 +172,7 @@ TEST_F(NearbyPresenceTest, RunStartScan_StatusNotOk) {
   base::RunLoop().RunUntilIdle();
 
   absl::Status status(absl::StatusCode::kCancelled, "");
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
+  fake_presence_service_->GetMostRecentFakePresenceClient()
       ->CallStartScanCallback(status);
   run_loop.Run();
 
@@ -176,11 +186,10 @@ TEST_F(NearbyPresenceTest, RunStartScan_DeviceFoundCallback) {
   auto run_loop = base::RunLoop();
   CallStartScan(run_loop.QuitClosure());
   base::RunLoop().RunUntilIdle();
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
+  fake_presence_service_->GetMostRecentFakePresenceClient()
       ->CallStartScanCallback(absl::OkStatus());
   run_loop.Run();
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
-      ->CallOnDiscovered();
+  fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnDiscovered();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(was_on_scan_started_called);
@@ -193,11 +202,10 @@ TEST_F(NearbyPresenceTest, RunStartScan_DeviceChangedCallback) {
   CallStartScan(run_loop.QuitClosure());
   base::RunLoop().RunUntilIdle();
 
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
+  fake_presence_service_->GetMostRecentFakePresenceClient()
       ->CallStartScanCallback(absl::OkStatus());
   run_loop.Run();
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
-      ->CallOnUpdated();
+  fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnUpdated();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(was_on_scan_started_called);
@@ -209,15 +217,67 @@ TEST_F(NearbyPresenceTest, RunStartScan_DeviceLostCallback) {
 
   CallStartScan(run_loop.QuitClosure());
   base::RunLoop().RunUntilIdle();
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
+  fake_presence_service_->GetMostRecentFakePresenceClient()
       ->CallStartScanCallback(absl::OkStatus());
   run_loop.Run();
-  fake_presence_client_factory_.get_last_created_fake_presence_client()
-      ->CallOnLost();
+  fake_presence_service_->GetMostRecentFakePresenceClient()->CallOnLost();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(was_on_scan_started_called);
   EXPECT_EQ(1, num_devices_lost_);
+}
+
+TEST_F(NearbyPresenceTest,
+       UpdateLocalDeviceMetadataAndGenerateCredentials_Success) {
+  ::nearby::internal::SharedCredential shared_credential1;
+  shared_credential1.set_secret_id(
+      std::string(kSecretId1.begin(), kSecretId1.end()));
+  ::nearby::internal::SharedCredential shared_credential2;
+  shared_credential2.set_secret_id(
+      std::string(kSecretId2.begin(), kSecretId2.end()));
+  ::nearby::internal::SharedCredential shared_credential3;
+  shared_credential3.set_secret_id(
+      std::string(kSecretId3.begin(), kSecretId3.end()));
+  fake_presence_service_->SetUpdateLocalDeviceMetadataResponse(
+      absl::Status(/*response_code=*/absl::StatusCode::kOk,
+                   /*msg=*/std::string()),
+      /*shared_credentials=*/{shared_credential1, shared_credential2,
+                              shared_credential3});
+
+  base::RunLoop run_loop;
+  nearby_presence_->UpdateLocalDeviceMetadataAndGenerateCredentials(
+      BuildTestMetadata(),
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::SharedCredentialPtr> shared_credentials,
+              mojom::StatusCode status) {
+            EXPECT_EQ(3u, shared_credentials.size());
+            EXPECT_EQ(kSecretId1, shared_credentials[0]->secret_id);
+            EXPECT_EQ(kSecretId2, shared_credentials[1]->secret_id);
+            EXPECT_EQ(kSecretId3, shared_credentials[2]->secret_id);
+            EXPECT_EQ(mojom::StatusCode::kOk, status);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NearbyPresenceTest,
+       UpdateLocalDeviceMetadataAndGenerateCredentials_Fail) {
+  fake_presence_service_->SetUpdateLocalDeviceMetadataResponse(
+      absl::Status(/*response_code=*/absl::StatusCode::kCancelled,
+                   /*msg=*/std::string()),
+      /*shared_credentials=*/{});
+
+  base::RunLoop run_loop;
+  nearby_presence_->UpdateLocalDeviceMetadataAndGenerateCredentials(
+      BuildTestMetadata(),
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::SharedCredentialPtr> shared_credentials,
+              mojom::StatusCode status) {
+            EXPECT_TRUE(shared_credentials.empty());
+            EXPECT_EQ(mojom::StatusCode::kFailure, status);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 }  // namespace ash::nearby::presence
