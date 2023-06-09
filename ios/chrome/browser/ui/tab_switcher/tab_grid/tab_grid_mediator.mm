@@ -448,18 +448,29 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
     didUpdateSnapshotForIdentifier:(NSString*)identifier {
-  web::WebState* webState = GetWebState(
-      self.webStateList, WebStateSearchCriteria{
-                             .identifier = identifier,
-                             .pinned_state = PinnedState::kNonPinned,
-                         });
+  // The given identifier is a snapshot identifier, not to be confused with a
+  // web state stable identifier (being phased out), nor a web state unique
+  // identifier.
+  web::WebState* webState = nullptr;
+  for (int i = self.webStateList->GetIndexOfFirstNonPinnedWebState();
+       i < self.webStateList->count(); i++) {
+    SnapshotTabHelper* snapshotTabHelper =
+        SnapshotTabHelper::FromWebState(self.webStateList->GetWebStateAt(i));
+    NSString* snapshotIdentifier = snapshotTabHelper->GetSnapshotIdentifier();
+    if ([identifier isEqualToString:snapshotIdentifier]) {
+      webState = self.webStateList->GetWebStateAt(i);
+      break;
+    }
+  }
   if (webState) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
     TabSwitcherItem* item =
         [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    [self.consumer replaceItemID:identifier withItem:item];
+    // Items are indexed with the stable identifier. Don't pass a snapshot
+    // identifier here.
+    [self.consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
   }
 }
 
