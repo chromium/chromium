@@ -6691,3 +6691,6 @@ crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross
 fast/js/array-foreach.html [ Pass Failure ]
 fast/js/array-some.html [ Pass Failure ]
 fast/js/iterable-object.html [ Pass Failure ]
+
+# Sherrif 2023-06-09
+crbug.com/1358175 [ Mac12 ] media/controls/closed-captions-single-track.html [ Pass Failure ]
