@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
@@ -346,6 +347,18 @@ public class OmniboxResourceProvider {
             return context.getColor(R.color.locationbar_status_offline_color_incognito);
         }
         return context.getColor(R.color.default_text_color_secondary_list);
+    }
+
+    /**
+     * Returns the background color for suggestions in a "standard" (non-incognito) TabModel with
+     * the given context.
+     */
+    @ColorInt
+    public static int getStandardSuggestionBackgroundColor(Context context) {
+        return OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                ? ChromeColors.getSurfaceColor(
+                        context, R.dimen.omnibox_suggestion_bg_elevation_modern)
+                : ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
     }
 
     /**
