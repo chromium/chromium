@@ -571,6 +571,8 @@ public abstract class ChromeFeatureList {
             SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
             ChromePreferenceKeys.FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
             true);
+    public static final CachedFlag sTabDragDropAndroid =
+            new CachedFlag(TAB_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabGridLayoutAndroid = new CachedFlag(TAB_GRID_LAYOUT_ANDROID,
             ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED, true);
     public static final CachedFlag sTabGroupsAndroid = new CachedFlag(
@@ -651,6 +653,7 @@ public abstract class ChromeFeatureList {
         sStoreHoursAndroid,
         sSurfacePolish,
         sSwapPixelFormatToFixConvertFromTranslucent,
+        sTabDragDropAndroid,
         sTabGridLayoutAndroid,
         sTabGroupsAndroid,
         sTabGroupsContinuationAndroid,

@@ -1660,7 +1660,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return tab;
     }
 
-    private StripLayoutTab createStripTab(int id) {
+    @VisibleForTesting
+    StripLayoutTab createStripTab(int id) {
         // TODO: Cache these
         StripLayoutTab tab = new StripLayoutTab(
                 mContext, id, this, mTabLoadTrackerHost, mRenderHost, mUpdateHost, mIncognito);
@@ -2716,7 +2717,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
-    private Tab getTabById(int tabId) {
+    @VisibleForTesting
+    Tab getTabById(int tabId) {
         return TabModelUtils.getTabById(mModel, tabId);
     }
 
@@ -3048,7 +3050,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param isHidden  Current visibility state of the Tab.
      */
     private void setAccessibilityDescription(
-                StripLayoutTab stripTab, String title, boolean isHidden) {
+            StripLayoutTab stripTab, String title, boolean isHidden) {
         if (stripTab == null) return;
 
         // Separator used to separate the different parts of the content description.
@@ -3065,9 +3067,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             resId = isHidden ? R.string.accessibility_tabstrip_incognito_identifier
                              : R.string.accessibility_tabstrip_incognito_identifier_selected;
         } else {
-            resId = isHidden
-                        ? R.string.accessibility_tabstrip_identifier
-                        : R.string.accessibility_tabstrip_identifier_selected;
+            resId = isHidden ? R.string.accessibility_tabstrip_identifier
+                             : R.string.accessibility_tabstrip_identifier_selected;
         }
         builder.append(mContext.getResources().getString(resId));
 
