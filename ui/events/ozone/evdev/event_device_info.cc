@@ -83,7 +83,6 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
     {0x046d, 0xc08b},  // Logitech G502 Hero
     {0x046d, 0xc093},  // Logitech M500s
-    {0x046d, 0xc534},  // Logitech M170
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
     {0x04b4, 0x121f},  // SteelSeries Ikari
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
