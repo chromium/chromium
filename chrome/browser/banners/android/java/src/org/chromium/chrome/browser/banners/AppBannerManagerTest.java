@@ -58,15 +58,16 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -80,6 +81,7 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -130,6 +132,7 @@ import java.util.List;
  * Tests the app banners.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
 public class AppBannerManagerTest {
@@ -181,6 +184,7 @@ public class AppBannerManagerTest {
 
     private static final String INSTALL_ACTION = "INSTALL_ACTION";
 
+    private static final String INSTALL_EVENT_HISTOGRAM_NAME = "Webapp.Install.InstallEvent";
     private static final String INSTALL_PATH_HISTOGRAM_NAME = "WebApk.Install.PathToInstall";
 
     private class MockAppDetailsDelegate extends AppDetailsDelegate {
@@ -232,6 +236,7 @@ public class AppBannerManagerTest {
     private UiDevice mUiDevice;
     private CppWrappedTestTracker mTracker;
     private BottomSheetController mBottomSheetController;
+    private HistogramWatcher mNoInstalledCountHistogram;
 
     @Before
     public void setUp() throws Exception {
@@ -273,6 +278,9 @@ public class AppBannerManagerTest {
         mBottomSheetController = mTabbedActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
+
+        mNoInstalledCountHistogram =
+                HistogramWatcher.newBuilder().expectNoRecords(INSTALL_PATH_HISTOGRAM_NAME).build();
     }
 
     @After
@@ -526,6 +534,12 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     @CommandLineFlags.Add({"disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE})
     public void testAppInstalledEventModalWebAppBannerBrowserTab() throws Exception {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(INSTALL_EVENT_HISTOGRAM_NAME, 4 /* API_BROWSER_TAB */)
+                        .expectIntRecord(INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateInfobar= */ 3)
+                        .build();
+
         triggerModalWebAppBanner(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithAction(
                         mTestServer, "call_stashed_prompt_on_click_verify_appinstalled"),
@@ -535,22 +549,19 @@ public class AppBannerManagerTest {
         new TabTitleObserver(mTabbedActivityTestRule.getActivity().getActivityTab(),
                 "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
-
-        ThreadUtils.runOnUiThread(() -> {
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            "Webapp.Install.InstallEvent", 4 /* API_BROWSER_TAB */));
-
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateInfobar= */ 3));
-        });
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @SmallTest
     @Feature({"AppBanners"})
     public void testAppInstalledEventModalWebAppBannerCustomTab() throws Exception {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(INSTALL_EVENT_HISTOGRAM_NAME, 5 /* API_CUSTOM_TAB */)
+                        .expectIntRecord(INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInfobar= */ 3)
+                        .build();
+
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(),
@@ -565,15 +576,7 @@ public class AppBannerManagerTest {
                 "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
-        ThreadUtils.runOnUiThread(() -> {
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            "Webapp.Install.InstallEvent", 5 /* API_CUSTOM_TAB */));
-
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInfobar= */ 3));
-        });
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -592,8 +595,7 @@ public class AppBannerManagerTest {
                 mTabbedActivityTestRule.getActivity().getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -612,8 +614,7 @@ public class AppBannerManagerTest {
                 mTabbedActivityTestRule.getActivity().getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -636,8 +637,7 @@ public class AppBannerManagerTest {
                 "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -657,8 +657,7 @@ public class AppBannerManagerTest {
         new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -679,8 +678,7 @@ public class AppBannerManagerTest {
         new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -692,8 +690,7 @@ public class AppBannerManagerTest {
                         mTestServer, NATIVE_APP_MANIFEST_WITH_ID, "call_stashed_prompt_on_click"),
                 true);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -710,8 +707,7 @@ public class AppBannerManagerTest {
                         mTestServer, NATIVE_APP_MANIFEST_WITH_ID, "call_stashed_prompt_on_click"),
                 true);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -723,8 +719,7 @@ public class AppBannerManagerTest {
                         mTestServer, "call_stashed_prompt_on_click"),
                 false);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -741,8 +736,7 @@ public class AppBannerManagerTest {
                         mTestServer, "call_stashed_prompt_on_click"),
                 false);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -789,8 +783,7 @@ public class AppBannerManagerTest {
         waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -858,8 +851,7 @@ public class AppBannerManagerTest {
                         -> Criteria.checkThat(
                                 MessagesTestHelper.getMessageCount(windowAndroid), Matchers.is(1)));
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -896,13 +888,13 @@ public class AppBannerManagerTest {
     public void testModalWebAppBannerTriggeredWithUnsupportedNativeApp() throws Exception {
         // The web app banner should show if preferred_related_applications is true but there is no
         // supported application platform specified in the related applications list.
+
         triggerModalWebAppBanner(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                         WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM, "call_stashed_prompt_on_click"),
                 false);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -955,8 +947,7 @@ public class AppBannerManagerTest {
         waitUntilBottomSheetStatus(
                 mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -964,6 +955,13 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     @CommandLineFlags.Add("disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE)
     public void testAppInstalledEventBottomSheet() throws Exception {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(INSTALL_EVENT_HISTOGRAM_NAME, 4 /* API_BROWSER_TAB */)
+                        .expectIntRecord(
+                                INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateBottomSheet= */ 6)
+                        .build();
+
         triggerBottomSheet(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
@@ -987,15 +985,7 @@ public class AppBannerManagerTest {
                 "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
-        ThreadUtils.runOnUiThread(() -> {
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            "Webapp.Install.InstallEvent", 4 /* API_BROWSER_TAB */));
-
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateBottomSheet= */ 6));
-        });
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -1021,8 +1011,7 @@ public class AppBannerManagerTest {
                 mTabbedActivityTestRule.getActivity().getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -1062,18 +1051,24 @@ public class AppBannerManagerTest {
     @MediumTest
     @Feature({"AppBanners"})
     public void testBottomSheetSkipsHiddenWebContents() throws Exception {
+        TabModel tabModel = mTabbedActivityTestRule.getActivity().getCurrentTabModel();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Close all existing tabs to make sure we have the expected background tab.
+            tabModel.closeAllTabs(false);
+        });
+
         String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                 WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click");
 
         resetEngagementForUrl(url, 10);
-        mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         // Create an extra tab so that there is a background tab.
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
                 mTabbedActivityTestRule.getActivity(),
                 /* isIncognito= */ false, /* waitForNtpLoad= */ true);
 
-        Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
+        Tab backgroundTab = tabModel.getTabAt(0);
         Assert.assertTrue(backgroundTab != null);
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1124,8 +1119,7 @@ public class AppBannerManagerTest {
 
         assertThat(mTracker.getLastEvent(), is(EventConstants.PWA_INSTALL_MENU_SELECTED));
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     @Test
@@ -1162,8 +1156,7 @@ public class AppBannerManagerTest {
 
         assertThat(mTracker.getLastEvent(), is(EventConstants.PWA_INSTALL_MENU_SELECTED));
 
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+        mNoInstalledCountHistogram.assertExpected();
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
@@ -1184,18 +1177,24 @@ public class AppBannerManagerTest {
     @MediumTest
     @Feature({"AppBanners"})
     public void testInProductHelpSkipsHiddenWebContents() throws Exception {
+        TabModel tabModel = mTabbedActivityTestRule.getActivity().getCurrentTabModel();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Close all existing tabs to make sure we have the expected background tab.
+            tabModel.closeAllTabs(false);
+        });
+
         String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                 WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click");
 
         resetEngagementForUrl(url, 10);
-        mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         // Create an extra tab so that there is a background tab.
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
                 mTabbedActivityTestRule.getActivity(),
                 /* isIncognito= */ false, /* waitForNtpLoad= */ true);
 
-        Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
+        Tab backgroundTab = tabModel.getTabAt(0);
         Assert.assertTrue(backgroundTab != null);
 
         TestThreadUtils.runOnUiThreadBlocking(
