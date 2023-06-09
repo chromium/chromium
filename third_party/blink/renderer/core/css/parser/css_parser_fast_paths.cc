@@ -4,6 +4,12 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 
+#ifdef __SSE2__
+#include <immintrin.h>
+#elif defined(__ARM_NEON__)
+#include <arm_neon.h>
+#endif
+
 #include "build/build_config.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -270,11 +276,68 @@ static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
   }
 
   bool decimal_mark_seen = false;
-  int processed_length = 0;
+  int valid_length = 0;
+#if defined(__SSE2__) || defined(__ARM_NEON__)
+  if (length >= 16) {
+    uint8_t b __attribute__((vector_size(16)));
+    memcpy(&b, string, sizeof(b));
+    auto is_decimal_mask = (b >= '0' && b <= '9');
+    auto is_mark_mask = (b == '.');
+#ifdef __SSE2__
+    uint16_t is_decimal_bits = _mm_movemask_epi8(is_decimal_mask);
+    uint16_t is_mark_bits = _mm_movemask_epi8(is_mark_mask);
 
-  for (int i = 0; i < length; ++i, ++processed_length) {
-    if (!IsASCIIDigit(string[i])) {
-      if (!decimal_mark_seen && string[i] == '.') {
+    // Only count the first decimal mark.
+    is_mark_bits &= -is_mark_bits;
+
+    if ((is_decimal_bits | is_mark_bits) == 0xffff) {
+      decimal_mark_seen = (is_mark_bits != 0);
+      valid_length = 16;
+      // Do the rest of the parsing using the scalar loop below.
+      // It's unlikely that numbers will be much more than 16 bytes,
+      // so we don't bother with a loop (which would also need logic
+      // for checking for two decimal marks in separate 16-byte chunks).
+    } else {
+      // Get rid of any stray final period; i.e., one that is not
+      // followed by a decimal.
+      is_mark_bits &= (is_decimal_bits >> 1);
+      uint16_t accept_bits = is_decimal_bits | is_mark_bits;
+      return __builtin_ctz(~accept_bits);
+    }
+#else  // __ARM_NEON__
+
+    // https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/porting-x86-vector-bitmask-optimizations-to-arm-neon
+    uint64_t is_decimal_bits =
+        vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(is_decimal_mask, 4)), 0);
+    uint64_t is_mark_bits =
+        vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(is_mark_mask, 4)), 0);
+
+    // Only count the first decimal mark.
+    is_mark_bits &= -is_mark_bits;
+    is_mark_bits |= (is_mark_bits << 1);
+    is_mark_bits |= (is_mark_bits << 2);
+
+    if ((is_decimal_bits | is_mark_bits) == 0xffffffffffffffffULL) {
+      decimal_mark_seen = (is_mark_bits != 0);
+      valid_length = 16;
+      // Do the rest of the parsing using the scalar loop below.
+      // It's unlikely that numbers will be much more than 16 bytes,
+      // so we don't bother with a loop (which would also need logic
+      // for checking for two decimal marks in separate 16-byte chunks).
+    } else {
+      // Get rid of any stray final period; i.e., one that is not
+      // followed by a decimal.
+      is_mark_bits &= (is_decimal_bits >> 4);
+      uint64_t accept_bits = is_decimal_bits | is_mark_bits;
+      return __builtin_ctzll(~accept_bits) >> 2;
+    }
+#endif
+  }
+#endif  // defined(__SSE2__) || defined(__ARM_NEON__)
+
+  for (; valid_length < length; ++valid_length) {
+    if (!IsASCIIDigit(string[valid_length])) {
+      if (!decimal_mark_seen && string[valid_length] == '.') {
         decimal_mark_seen = true;
       } else {
         break;
@@ -282,11 +345,11 @@ static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
     }
   }
 
-  if (processed_length > 0 && string[processed_length - 1] == '.') {
+  if (valid_length > 0 && string[valid_length - 1] == '.') {
     return 0;
   }
 
-  return processed_length;
+  return valid_length;
 }
 
 // If also_accept_whitespace is true: Checks whether string[pos] is the given
