@@ -40,6 +40,10 @@ const char kClassContainsInvalidFields[] =
 const char kClassContainsGCRoot[] =
     "[blink-gc] Class %0 contains GC root in field %1.";
 
+const char kClassContainsGCRootRef[] =
+    "[blink-gc] Class %0 contains a reference to a GC root in field %1. Avoid "
+    "holding references to GC roots. This should generally not be needed.";
+
 const char kFinalizerAccessesFinalizedField[] =
     "[blink-gc] Finalizer %0 accesses potentially finalized field %1.";
 
@@ -102,8 +106,15 @@ const char kPartObjectToGCDerivedClassNote[] =
 const char kPartObjectContainsGCRootNote[] =
     "[blink-gc] Field %0 with embedded GC root in %1 declared here:";
 
+const char kPartObjectContainsGCRootRefNote[] =
+    "[blink-gc] Field %0 with embedded reference to a GC root in %1 declared "
+    "here:";
+
 const char kFieldContainsGCRootNote[] =
     "[blink-gc] Field %0 defining a GC root declared here:";
+
+const char kFieldContainsGCRootRefNote[] =
+    "[blink-gc] Field %0 defining reference to a GC root declared here:";
 
 const char kOverriddenNonVirtualTrace[] =
     "[blink-gc] Class %0 overrides non-virtual trace of base class %1.";
@@ -221,6 +232,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       getErrorLevel(), kClassContainsInvalidFields);
   diag_class_contains_gc_root_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kClassContainsGCRoot);
+  diag_class_contains_gc_root_ref_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kClassContainsGCRootRef);
   diag_finalizer_accesses_finalized_field_ = diagnostic_.getCustomDiagID(
       getErrorLevel(), kFinalizerAccessesFinalizedField);
   diag_overridden_non_virtual_trace_ = diagnostic_.getCustomDiagID(
@@ -294,8 +307,12 @@ DiagnosticsReporter::DiagnosticsReporter(
       DiagnosticsEngine::Note, kPartObjectToGCDerivedClassNote);
   diag_part_object_contains_gc_root_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kPartObjectContainsGCRootNote);
+  diag_part_object_contains_gc_root_ref_note_ = diagnostic_.getCustomDiagID(
+      DiagnosticsEngine::Note, kPartObjectContainsGCRootRefNote);
   diag_field_contains_gc_root_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kFieldContainsGCRootNote);
+  diag_field_contains_gc_root_ref_note_ = diagnostic_.getCustomDiagID(
+      DiagnosticsEngine::Note, kFieldContainsGCRootRefNote);
   diag_finalized_field_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kFinalizedFieldNote);
   diag_overridden_non_virtual_trace_note_ = diagnostic_.getCustomDiagID(
@@ -427,6 +444,26 @@ void DiagnosticsReporter::ClassContainsGCRoots(
       point = path;
     }
     NoteFieldContainsGCRoot(point);
+  }
+}
+
+void DiagnosticsReporter::ClassContainsGCRootRefs(
+    RecordInfo* info,
+    const CheckGCRootsVisitor::Errors& errors) {
+  for (auto& error : errors) {
+    FieldPoint* point = nullptr;
+    for (FieldPoint* path : error) {
+      if (!point) {
+        point = path;
+        ReportDiagnostic(info->record()->getBeginLoc(),
+                         diag_class_contains_gc_root_ref_)
+            << info->record() << point->field();
+        continue;
+      }
+      NotePartObjectContainsGCRootRef(point);
+      point = path;
+    }
+    NoteFieldContainsGCRootRef(point);
   }
 }
 
@@ -608,8 +645,19 @@ void DiagnosticsReporter::NotePartObjectContainsGCRoot(FieldPoint* point) {
       << field << field->getParent();
 }
 
+void DiagnosticsReporter::NotePartObjectContainsGCRootRef(FieldPoint* point) {
+  FieldDecl* field = point->field();
+  ReportDiagnostic(field->getBeginLoc(),
+                   diag_part_object_contains_gc_root_ref_note_)
+      << field << field->getParent();
+}
+
 void DiagnosticsReporter::NoteFieldContainsGCRoot(FieldPoint* point) {
   NoteField(point, diag_field_contains_gc_root_note_);
+}
+
+void DiagnosticsReporter::NoteFieldContainsGCRootRef(FieldPoint* point) {
+  NoteField(point, diag_field_contains_gc_root_ref_note_);
 }
 
 void DiagnosticsReporter::NoteField(FieldPoint* point, unsigned note) {

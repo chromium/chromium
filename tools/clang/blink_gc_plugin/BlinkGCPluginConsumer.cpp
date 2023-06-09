@@ -272,6 +272,7 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
       CheckGCRootsVisitor visitor(options_);
       if (visitor.ContainsGCRoots(info))
         reporter_.ClassContainsGCRoots(info, visitor.gc_roots());
+      reporter_.ClassContainsGCRootRefs(info, visitor.gc_root_refs());
     }
 
     CheckForbiddenFieldsVisitor visitor(options_);
