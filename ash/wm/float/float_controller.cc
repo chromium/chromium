@@ -229,9 +229,8 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
     if (!animate) {
       scoped_window_tucker_.reset();
-      TabletModeWindowState::UpdateWindowPosition(
-          WindowState::Get(floated_window_),
-          WindowState::BoundsChangeAnimationType::kNone);
+      UpdateWindowBoundsForTablet(
+          floated_window_, WindowState::BoundsChangeAnimationType::kNone);
       return;
     }
 
@@ -680,8 +679,9 @@ void FloatController::OnTabletModeStarted() {
 }
 
 void FloatController::OnTabletModeEnding() {
-  for (auto& [window, info] : floated_window_info_map_)
-    info->MaybeUntuckWindow(/*animate=*/true);
+  for (auto& [window, info] : floated_window_info_map_) {
+    info->MaybeUntuckWindow(/*animate=*/false);
+  }
 }
 
 void FloatController::OnTabletControllerDestroyed() {

@@ -217,6 +217,10 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
 
 ScopedWindowTucker::~ScopedWindowTucker() {
   Shell::Get()->activation_client()->RemoveObserver(this);
+  if (!window_->IsVisible()) {
+    window_->Show();
+    return;
+  }
   wm::ActivateWindow(window_);
 }
 
