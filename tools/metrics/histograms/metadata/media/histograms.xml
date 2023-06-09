@@ -5228,22 +5228,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2023-03-19">
+    enum="VideoPixelFormatUnion" expires_after="2024-06-08">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
+  <owner>atadres@chromium.org</owner>
   <summary>
     Counts each pixel format an enumerated video capture device supports. This
     is recorded during the first device enumeration per Capture process launch.
     (This is usually once per launch of Chrome unless the Capture process
-    crashes.)
+    crashes.) NOTE: This metric originally expired on 2023-03-19.
   </summary>
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedResolution"
-    enum="VideoResolutionDesignation" expires_after="M120">
+    enum="VideoResolutionDesignation" expires_after="2024-06-08">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
+  <owner>atadres@chromium.org</owner>
   <summary>
     Counts each resolution supported by an enumerated video capture device.
     These are categorized by designation (eg. QVGA, HD, 4KUHD, etc) instead of
