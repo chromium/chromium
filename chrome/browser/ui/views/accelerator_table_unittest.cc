@@ -17,7 +17,13 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/accelerators/accelerator_table.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 namespace chrome {
@@ -149,6 +155,95 @@ TEST(AcceleratorTableTest, DontUseKeysWithUnstablePositions) {
     }
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// A test fixture for testing GetAcceleratorList().
+class GetAcceleratorListTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    // Make sure that previous tests don't affect this test.
+    ClearAcceleratorListForTesting();
+  }
+
+  void TearDown() override {
+    // Make sure that this test doesn't affect following tests.
+    ClearAcceleratorListForTesting();
+  }
+};
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Verify that the shortcuts for DevTools are disabled in LacrosOnly by default.
+TEST_F(GetAcceleratorListTest, DevToolsAreDisabledInLacrosOnlyByDefault) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff},
+      {});
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
+
+  ASSERT_FALSE(crosapi::browser_util::IsAshDevToolEnabled());
+
+  std::vector<AcceleratorMapping> list = GetAcceleratorList();
+
+  // Verify there is no mapping that is associated to IDC_DEV_TOOLS_TOGGLE.
+  auto iter = std::find_if(list.begin(), list.end(), [](auto mapping) {
+    return mapping.command_id == IDC_DEV_TOOLS_TOGGLE;
+  });
+  EXPECT_EQ(iter, list.end());
+}
+
+// Verify that the shortcuts for DevTools are enabled in LacrosOnly if the flag
+// is enabled.
+TEST_F(GetAcceleratorListTest, DevToolsAreEnebledInLacrosOnlyIfFlagIsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff,
+       ash::features::kAllowDevtoolsInSystemUI},
+      {});
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
+
+  ASSERT_TRUE(crosapi::browser_util::IsAshDevToolEnabled());
+
+  // Verify there is a mapping that is associated to IDC_DEV_TOOLS_TOGGLE.
+  std::vector<AcceleratorMapping> list = GetAcceleratorList();
+  auto iter = std::find_if(list.begin(), list.end(), [](auto mapping) {
+    return mapping.command_id == IDC_DEV_TOOLS_TOGGLE;
+  });
+  EXPECT_NE(iter, list.end());
+}
+
+#else
+
+// Verify that the shortcuts for DevTools are enabled.
+TEST_F(GetAcceleratorListTest, DevToolsAreEnabled) {
+  // Verify there is a mapping that is associated to IDC_DEV_TOOLS_TOGGLE.
+  std::vector<AcceleratorMapping> list = GetAcceleratorList();
+  auto iter = std::find_if(list.begin(), list.end(), [](auto mapping) {
+    return mapping.command_id == IDC_DEV_TOOLS_TOGGLE;
+  });
+  EXPECT_NE(iter, list.end());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace chrome

@@ -304,16 +304,20 @@ const int kRepeatableCommandIds[] = {
     IDC_SELECT_NEXT_TAB,     IDC_SELECT_PREVIOUS_TAB,
 };
 
-} // namespace
+std::vector<AcceleratorMapping>* GetAcceleratorsPointer() {
+  static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators;
+  return accelerators.get();
+}
+
+}  // namespace
 
 std::vector<AcceleratorMapping> GetAcceleratorList() {
-  static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators;
+  std::vector<AcceleratorMapping>* accelerators = GetAcceleratorsPointer();
 
   if (accelerators->empty()) {
     accelerators->insert(accelerators->begin(), std::begin(kAcceleratorMap),
                          std::end(kAcceleratorMap));
 
-    // TODO(junis): Add unit tests for DevTools accelerators
     bool enable_devtools = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // In Ash, DevTools is disabled by default if lacros is the only browser, in
@@ -364,6 +368,11 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
   }
 
   return *accelerators;
+}
+
+void ClearAcceleratorListForTesting() {
+  std::vector<AcceleratorMapping>* accelerators = GetAcceleratorsPointer();
+  accelerators->clear();
 }
 
 bool GetStandardAcceleratorForCommandId(int command_id,

@@ -33,6 +33,9 @@ struct AcceleratorMapping {
 // modifier key (e.g. escape).
 std::vector<AcceleratorMapping> GetAcceleratorList();
 
+// This function should be used only for testing. Clears the accelerator list.
+void ClearAcceleratorListForTesting();
+
 // Returns true on Ash and if the command id has an associated accelerator which
 // is handled by Ash. If the return is true the accelerator is returned via the
 // second argument.
