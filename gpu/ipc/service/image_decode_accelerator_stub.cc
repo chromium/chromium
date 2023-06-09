@@ -288,8 +288,9 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     const bool is_nv12_chroma_plane = completed_decode->buffer_format ==
                                           gfx::BufferFormat::YUV_420_BIPLANAR &&
                                       plane == 1u;
-    const auto plane_format = is_nv12_chroma_plane ? gfx::BufferFormat::RG_88
-                                                   : gfx::BufferFormat::R_8;
+    const auto plane_format = is_nv12_chroma_plane
+                                  ? viz::SinglePlaneFormat::kRG_88
+                                  : viz::SinglePlaneFormat::kR_8;
 
     // NOTE: The SurfaceHandle would typically be used to know what gpu adapter
     // the buffer belongs to, but here we already have the buffer handle, so it
@@ -297,9 +298,8 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     // SurfaceHandle was used to create the original buffers).
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
     if (!channel_->shared_image_stub()->CreateSharedImage(
-            mailbox, std::move(plane_handle), plane_format,
-            gfx::BufferPlane::DEFAULT, plane_size, gfx::ColorSpace(),
-            kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+            mailbox, std::move(plane_handle), plane_format, plane_size,
+            gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
             SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
             "ImageDecodeAccelerator")) {
       DLOG(ERROR) << "Could not create SharedImage";
