@@ -21,6 +21,19 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   GameDashboardMainMenuView& operator=(const GameDashboardMainMenuView) =
       delete;
   ~GameDashboardMainMenuView() override;
+
+ private:
+  // Callbacks for the tiles and buttons in the main menu view.
+  // Handles showing and hiding the toolbar.
+  void OnToolbarTilePressed();
+  // Handles toggling the game recording.
+  void OnRecordGameTilePressed();
+  // Handles taking a screenshot of the game window when pressed.
+  void OnScreenshotTilePressed();
+
+  // Adds a row of shortcut tiles to the main menu view for users to quickly
+  // access common functionality.
+  void AddShortcutTilesRow();
 };
 
 }  // namespace ash

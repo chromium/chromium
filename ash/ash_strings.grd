@@ -6743,9 +6743,22 @@ To shut down the device, press and hold the power button on the device again.
         [i18n] Frequently used controls like Wi-Fi, Bluetooth and volume controls are in Quick Settings. You can also go here to take screenshots.
       </message>
 
+      <!-- TODO(b/286455407): Update strings once finalized with UX Writing -->
       <!-- Game Dashboard strings -->
+      <message name="IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard game controls tile.">
+        Controls
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_MAIN_MENU_BUTTON_TITLE" desc="The title of the Game Dashboard main menu button.">
         Game Dashboard
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard record game tile.">
+        Record game
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard screenshot tile.">
+        Take screenshot
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard toolbar tile.">
+        Toolbar
       </message>
      </messages>
     </release>

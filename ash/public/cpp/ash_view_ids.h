@@ -34,6 +34,13 @@ enum ViewID {
   VIEW_ID_CAST_CAST_VIEW_LABEL,
   VIEW_ID_CAST_MAIN_VIEW,
   VIEW_ID_CAST_SELECT_VIEW,
+
+  // Game Dashboard elements
+  VIEW_ID_GD_CONTROLS_TILE,
+  VIEW_ID_GD_RECORD_TILE,
+  VIEW_ID_GD_SCREENSHOT_TILE,
+  VIEW_ID_GD_TOOLBAR_TILE,
+
   // The entry to add wifi network in the quick settings network subpage.
   VIEW_ID_JOIN_NETWORK_ENTRY,
 
