@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -109,7 +110,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
-
 namespace blink {
 
 namespace {
@@ -962,6 +962,14 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   cursor_update_timer_.Stop();
 
   mouse_event_manager_->HandleSvgPanIfNeeded(false);
+
+  if (mouse_event.GetType() == WebInputEvent::Type::kMouseMove) {
+    AnchorElementInteractionTracker* tracker =
+        frame_->GetDocument()->GetAnchorElementInteractionTracker();
+    if (tracker) {
+      tracker->OnMouseMoveEvent(mouse_event);
+    }
+  }
 
   // Mouse states need to be reset when mouse move with no button down.
   // This is for popup/context_menu opened at mouse_down event and

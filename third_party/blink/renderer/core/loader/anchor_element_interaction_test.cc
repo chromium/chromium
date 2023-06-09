@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
+
 #include <cstddef>
+#include <tuple>
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,10 +20,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+
 namespace blink {
 
 namespace {
@@ -396,6 +400,125 @@ TEST_F(AnchorElementInteractionTest, MousePointerEnterAndLeave) {
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
   EXPECT_EQ(PointerEventType::kNone, hosts_[0]->event_type_);
+}
+
+TEST_F(AnchorElementInteractionTest, MouseMotionEstimatorUnitTest) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* motion_estimator = MakeGarbageCollected<
+      AnchorElementInteractionTracker::MouseMotionEstimator>(task_runner);
+  motion_estimator->SetTaskRunnerForTesting(task_runner,
+                                            task_runner->GetMockTickClock());
+
+  double t = 0.0;
+  double x0 = 100.0, y0 = 100.0;
+  double vx0 = -5.0, vy0 = 4.0;
+  double ax = 100, ay = -200;
+  int i = 0;
+  // Estimation error tolerance is set to 1%.
+  constexpr double eps = 1e-2;
+  for (double dt : {0.0, 1.0, 5.0, 15.0, 30.0, 7.0, 200.0, 50.0, 100.0, 27.0}) {
+    i++;
+    t += 0.001 * dt;  // `dt` is in milliseconds and `t` is in seconds.
+    double x = 0.5 * ax * t * t + vx0 * t + x0;
+    double y = 0.5 * ay * t * t + vy0 * t + y0;
+    double vx = ax * t + vx0;
+    double vy = ay * t + vy0;
+
+    task_runner->AdvanceTimeAndRun(base::Milliseconds(dt));
+    motion_estimator->OnMouseMoveEvent(
+        gfx::PointF{static_cast<float>(x), static_cast<float>(y)});
+    if (i == 1) {
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().x());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().y());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseVelocity().x());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseVelocity().y());
+    } else if (i == 2) {
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().x());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().y());
+      EXPECT_NEAR(1.0,
+                  motion_estimator->GetMouseVelocity().x() /
+                      /*vx0+0.5*ax*t=-5.0+0.5*0.1=*/-4.95,
+                  eps);
+      EXPECT_NEAR(1.0,
+                  motion_estimator->GetMouseVelocity().y() /
+                      /*vy0+0.5*ay*t=4.0+0.5*(-0.2)=*/3.9,
+                  eps);
+    } else {
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseAcceleration().x() / ax, eps);
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseAcceleration().y() / ay, eps);
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseVelocity().x() / vx, eps);
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseVelocity().y() / vy, eps);
+    }
+  }
+
+  // Waiting a long time should empty the dequeue.
+  EXPECT_FALSE(motion_estimator->IsEmpty());
+  task_runner->AdvanceTimeAndRun(base::Seconds(10));
+  EXPECT_TRUE(motion_estimator->IsEmpty());
+
+  // Testing `GetMouseTangentialAcceleration` method.
+  motion_estimator->SetMouseAccelerationForTesting(gfx::Vector2dF(1.0, 0.0));
+  motion_estimator->SetMouseVelocityForTesting(gfx::Vector2dF(0.0, 1.0));
+  EXPECT_NEAR(1.0, motion_estimator->GetMouseVelocity().Length(), 1e-6);
+  EXPECT_NEAR(0.0, motion_estimator->GetMouseTangentialAcceleration(), 1e-6);
+
+  motion_estimator->SetMouseAccelerationForTesting(gfx::Vector2dF(1.0, -1.0));
+  motion_estimator->SetMouseVelocityForTesting(gfx::Vector2dF(-1.0, 1.0));
+  EXPECT_NEAR(std::sqrt(2.0), motion_estimator->GetMouseVelocity().Length(),
+              1e-6);
+  EXPECT_NEAR(-std::sqrt(2.0),
+              motion_estimator->GetMouseTangentialAcceleration(), 1e-6);
+}
+
+TEST_F(AnchorElementInteractionTest,
+       MouseMotionEstimatorWithVariableAcceleration) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* motion_estimator = MakeGarbageCollected<
+      AnchorElementInteractionTracker::MouseMotionEstimator>(task_runner);
+  motion_estimator->SetTaskRunnerForTesting(task_runner,
+                                            task_runner->GetMockTickClock());
+
+  double t = 0.0;
+  double x0 = 100.0, y0 = 100.0;
+  double vx0 = 0.0, vy0 = 0.0;
+  double ax, ay;
+  const double dt = 5.0;
+  // Estimation error tolerance is set to 1%.
+  constexpr double eps = 1e-2;
+  for (int i = 1; i <= 10; i++, t += 0.001 * dt) {
+    ax = 100 * std::cos(t);
+    ay = -200 * std::cos(t);
+    double x = 0.5 * ax * t * t + vx0 * t + x0;
+    double y = 0.5 * ay * t * t + vy0 * t + y0;
+    double vx = ax * t + vx0;
+    double vy = ay * t + vy0;
+
+    task_runner->AdvanceTimeAndRun(base::Milliseconds(dt));
+    motion_estimator->OnMouseMoveEvent(
+        gfx::PointF{static_cast<float>(x), static_cast<float>(y)});
+    if (i == 1) {
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().x());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().y());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseVelocity().x());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseVelocity().y());
+    } else if (i == 2) {
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().x());
+      EXPECT_DOUBLE_EQ(0.0, motion_estimator->GetMouseAcceleration().y());
+      EXPECT_NEAR(1.0,
+                  motion_estimator->GetMouseVelocity().x() /
+                      /*vx0+0.5*ax*t=0+0.5*100*0.005=*/0.25,
+                  eps);
+      EXPECT_NEAR(1.0,
+                  motion_estimator->GetMouseVelocity().y() /
+                      /*vy0+0.5*ay*t=0+0.5*-200*0.005=*/-0.5,
+                  eps);
+    } else {
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseAcceleration().x() / ax, eps);
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseAcceleration().y() / ay, eps);
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseVelocity().x() / vx, eps);
+      EXPECT_NEAR(1.0, motion_estimator->GetMouseVelocity().y() / vy, eps);
+    }
+  }
 }
 
 }  // namespace
