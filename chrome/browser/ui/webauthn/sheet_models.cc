@@ -281,13 +281,13 @@ AuthenticatorNoAvailableTransportsErrorModel::GetCancelButtonLabel() const {
 
 std::u16string AuthenticatorNoAvailableTransportsErrorModel::GetStepTitle()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_NO_TRANSPORTS_TITLE);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_MISSING_CAPABILITY_TITLE);
 }
 
 std::u16string
 AuthenticatorNoAvailableTransportsErrorModel::GetStepDescription() const {
-  return l10n_util::GetStringUTF16(
-      IDS_WEBAUTHN_ERROR_NO_TRANSPORTS_DESCRIPTION);
+  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_ERROR_MISSING_CAPABILITY_DESC,
+                                    GetRelyingPartyIdString(dialog_model()));
 }
 
 // AuthenticatorNoPasskeysErrorModel ------------------------------------------
