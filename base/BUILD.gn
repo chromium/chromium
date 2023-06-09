@@ -1181,6 +1181,7 @@ component("base") {
         "allocator/early_zone_registration_mac.h",
         "allocator/partition_allocator/shim/allocator_shim_override_mac_default_zone.h",
         "allocator/partition_allocator/shim/allocator_shim_override_mac_symbols.h",
+        "allocator/partition_allocator/shim/early_zone_registration_constants.h",
       ]
       configs += [ "//base/allocator:mac_no_default_new_delete_symbols" ]
     }

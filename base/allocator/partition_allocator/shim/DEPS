@@ -7,7 +7,6 @@
 # migration gets done.
 
 include_rules = [
-    "+base/allocator/early_zone_registration_mac.h",
     "+base/base_export.h",
 ]
 

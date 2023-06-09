@@ -18,13 +18,13 @@
 #include <atomic>
 #include <tuple>
 
-#include "base/allocator/early_zone_registration_mac.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mach_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/shim/early_zone_registration_constants.h"
 
 namespace partition_alloc {
 
@@ -261,8 +261,7 @@ bool IsAlreadyRegistered() {
     // strcmp() and not a pointer comparison, as the zone was registered from
     // another library, the pointers don't match.
     if (zone->zone_name &&
-        (strcmp(zone->zone_name, partition_alloc::kPartitionAllocZoneName) ==
-         0)) {
+        (strcmp(zone->zone_name, kPartitionAllocZoneName) == 0)) {
       // This zone is provided by PartitionAlloc, so this function has been
       // called from another library (or the main executable), nothing to do.
       //
@@ -309,8 +308,8 @@ void InitializeZone() {
   //   version >= 11: introspect.print_task is supported
   //   version >= 12: introspect.task_statistics is supported
   //   version >= 13: try_free_default is supported
-  g_mac_malloc_zone.version = partition_alloc::kZoneVersion;
-  g_mac_malloc_zone.zone_name = partition_alloc::kPartitionAllocZoneName;
+  g_mac_malloc_zone.version = kZoneVersion;
+  g_mac_malloc_zone.zone_name = kPartitionAllocZoneName;
   g_mac_malloc_zone.introspect = &g_mac_malloc_introspection;
   g_mac_malloc_zone.size = MallocZoneSize;
   g_mac_malloc_zone.malloc = MallocZoneMalloc;
@@ -365,8 +364,7 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   InitializeZone();
 
   malloc_zone_t* system_default_zone = GetDefaultMallocZone();
-  if (strcmp(system_default_zone->zone_name,
-             partition_alloc::kDelegatingZoneName) == 0) {
+  if (strcmp(system_default_zone->zone_name, kDelegatingZoneName) == 0) {
     // The first zone is our zone, we can unregister it, replacing it with the
     // new one. This relies on a precise zone setup, done in
     // |EarlyMallocZoneRegistration()|.

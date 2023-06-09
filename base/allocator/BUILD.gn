@@ -26,6 +26,7 @@ if (is_apple) {
     sources = [
       "early_zone_registration_mac.cc",
       "early_zone_registration_mac.h",
+      "partition_allocator/shim/early_zone_registration_constants.h",
     ]
 
     deps = [
