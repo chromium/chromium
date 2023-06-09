@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "jobs.cc": [
+    "+base",
+  ],
+  "pthreadpool_unittests.cc": [
+    "+base/test",
+    "+testing/gtest",
+  ]
+}
