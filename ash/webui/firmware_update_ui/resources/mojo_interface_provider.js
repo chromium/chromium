@@ -52,7 +52,6 @@ export function setUpdateControllerForTesting(testUpdateController) {
 
 /**
  * Sets up a FakeUpdateProvider to be used at runtime.
- * TODO(michaelcheco): Remove once mojo bindings are implemented.
  */
 function setupFakeUpdateProvider() {
   const provider = new FakeUpdateProvider();
@@ -63,7 +62,6 @@ function setupFakeUpdateProvider() {
 
 /**
  * Sets up a FakeUpdateController to be used at runtime.
- * TODO(michaelcheco): Remove once mojo bindings are implemented.
  */
 function setupFakeUpdateController() {
   setUpdateControllerForTesting(new FakeUpdateController());
