@@ -833,23 +833,22 @@ class ChromeContentBrowserClientCaptivePortalBrowserTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  bool invoked_url_factory_ = false;
   CaptivePortalCheckRenderProcessHostFactory cp_rph_factory_;
 };
 
 TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
        NotCaptivePortalWindow) {
-  bool invoked_url_factory = false;
-  cp_rph_factory_.SetupForTracking(&invoked_url_factory,
+  cp_rph_factory_.SetupForTracking(&invoked_url_factory_,
                                    false /* expected_disable_secure_dns */);
   NavigateAndCommit(GURL("https://www.google.com"), ui::PAGE_TRANSITION_LINK);
-  EXPECT_TRUE(invoked_url_factory);
+  EXPECT_TRUE(invoked_url_factory_);
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
        CaptivePortalWindow) {
-  bool invoked_url_factory = false;
-  cp_rph_factory_.SetupForTracking(&invoked_url_factory,
+  cp_rph_factory_.SetupForTracking(&invoked_url_factory_,
                                    true /* expected_disable_secure_dns */);
   captive_portal::CaptivePortalTabHelper::CreateForWebContents(
       web_contents(), CaptivePortalServiceFactory::GetForProfile(profile()),
@@ -857,7 +856,7 @@ TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
   captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents())
       ->set_is_captive_portal_window();
   NavigateAndCommit(GURL("https://www.google.com"), ui::PAGE_TRANSITION_LINK);
-  EXPECT_TRUE(invoked_url_factory);
+  EXPECT_TRUE(invoked_url_factory_);
 }
 #endif
 
