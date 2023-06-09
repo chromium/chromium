@@ -30,11 +30,12 @@ CSSAnchorValue PhysicalAnchorValueUsing(CSSAnchorValue x,
 // The logical <anchor-side> keywords map to one of the physical keywords
 // depending on the property the function is being used in and the writing mode.
 // https://drafts.csswg.org/css-anchor-1/#anchor-pos
-CSSAnchorValue PhysicalAnchorValueFromLogical(
+CSSAnchorValue PhysicalAnchorValueFromLogicalOrAuto(
     CSSAnchorValue anchor_value,
     WritingDirectionMode writing_direction,
     WritingDirectionMode self_writing_direction,
-    bool is_y_axis) {
+    bool is_y_axis,
+    bool is_right_or_bottom) {
   switch (anchor_value) {
     case CSSAnchorValue::kSelfStart:
       writing_direction = self_writing_direction;
@@ -51,6 +52,17 @@ CSSAnchorValue PhysicalAnchorValueFromLogical(
           CSSAnchorValue::kRight, CSSAnchorValue::kLeft,
           CSSAnchorValue::kBottom, CSSAnchorValue::kTop, writing_direction,
           is_y_axis);
+    case CSSAnchorValue::kAuto:
+    case CSSAnchorValue::kAutoSame: {
+      bool use_right_or_bottom =
+          is_right_or_bottom == (anchor_value == CSSAnchorValue::kAutoSame);
+      if (is_y_axis) {
+        return use_right_or_bottom ? CSSAnchorValue::kBottom
+                                   : CSSAnchorValue::kTop;
+      }
+      return use_right_or_bottom ? CSSAnchorValue::kRight
+                                 : CSSAnchorValue::kLeft;
+    }
     default:
       return anchor_value;
   }
@@ -280,9 +292,9 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     bool is_y_axis,
     bool is_right_or_bottom) const {
   const PhysicalRect anchor = container_converter.ToPhysical(reference.rect);
-  anchor_value = PhysicalAnchorValueFromLogical(
+  anchor_value = PhysicalAnchorValueFromLogicalOrAuto(
       anchor_value, container_converter.GetWritingDirection(),
-      self_writing_direction, is_y_axis);
+      self_writing_direction, is_y_axis, is_right_or_bottom);
   LayoutUnit value;
   switch (anchor_value) {
     case CSSAnchorValue::kCenter: {
@@ -345,8 +357,10 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     case CSSAnchorValue::kEnd:
     case CSSAnchorValue::kSelfStart:
     case CSSAnchorValue::kSelfEnd:
+    case CSSAnchorValue::kAuto:
+    case CSSAnchorValue::kAutoSame:
       // These logical values should have been converted to corresponding
-      // physical values in `PhysicalAnchorValueFromLogical`.
+      // physical values in `PhysicalAnchorValueFromLogicalOrAuto`.
       NOTREACHED();
       return absl::nullopt;
   }
