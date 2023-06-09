@@ -27,6 +27,11 @@ class SigninClient;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class TokenWebData;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+namespace unexportable_keys {
+class UnexportableKeyService;
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -71,6 +76,10 @@ struct IdentityManagerBuildParams {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   scoped_refptr<TokenWebData> token_web_data;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  raw_ptr<unexportable_keys::UnexportableKeyService> unexportable_key_service =
+      nullptr;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

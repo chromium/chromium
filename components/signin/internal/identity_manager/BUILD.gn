@@ -107,6 +107,14 @@ source_set("identity_manager") {
     deps += [ "//components/account_manager_core" ]
   }
 
+  if (enable_bound_session_credentials) {
+    sources += [
+      "token_binding_helper.cc",
+      "token_binding_helper.h",
+    ]
+    deps += [ "//components/unexportable_keys" ]
+  }
+
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]
   }
@@ -207,6 +215,16 @@ source_set("unit_tests") {
 
   if (enable_dice_support) {
     sources += [ "mutable_profile_oauth2_token_service_delegate_unittest.cc" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [ "token_binding_helper_unittest.cc" ]
+
+    deps += [
+      "//components/unexportable_keys",
+      "//components/unexportable_keys:test_support",
+      "//crypto:test_support",
+    ]
   }
 }
 

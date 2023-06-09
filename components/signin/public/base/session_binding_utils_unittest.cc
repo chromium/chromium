@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
+#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -62,6 +63,35 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
                                "accounts.google.com/.well-known/kty/"
                                "SubjectPublicKeyInfo")
                           .Set("SubjectPublicKeyInfo", "AQID"));
+
+  EXPECT_EQ(actual_header, expected_header);
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
+  absl::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
+      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
+      GURL("https://accounts.google.com/VerifyKey"));
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_header =
+      Base64UrlEncodedJsonToValue(header_and_payload[0]);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::Value::Dict expected_header =
+      base::Value::Dict().Set("alg", "ES256").Set("typ", "jwt");
+  base::Value::Dict expected_payload =
+      base::Value::Dict()
+          .Set("sub", "test_client_id")
+          .Set("aud", "https://accounts.google.com/VerifyKey")
+          .Set("jti", "test_challenge")
+          // Base64UrlEncode(SHA256(public_key));
+          .Set("iss", "A5BYxvLAy0ksUzsKTRTvd8wPeKvMztUofYShogEc-4E");
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
