@@ -324,8 +324,6 @@ class StyleBuilderConverter {
 
   static bool ConvertInternalAlignContentBlock(StyleResolverState& state,
                                                const CSSValue& value);
-  static bool ConvertInternalAlignSelfBlock(StyleResolverState& state,
-                                            const CSSValue& value);
   static bool ConvertInternalEmptyLineHeight(StyleResolverState& state,
                                              const CSSValue& value);
 

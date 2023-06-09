@@ -468,7 +468,6 @@ input::-webkit-textfield-decoration-container {
     -webkit-user-modify: read-only !important;
     content: none !important;
     writing-mode: inherit !important;
-    -internal-align-self-block: center;
 }
 
 input::-webkit-clear-button {
