@@ -210,9 +210,6 @@ void LocalWindowProxy::CreateContext() {
                GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());
 
-  // TODO(yukishiino): Remove this CHECK once crbug.com/713699 gets fixed.
-  CHECK(IsMainThread());
-
   v8::ExtensionConfiguration extension_configuration =
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
 
@@ -519,9 +516,10 @@ void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Object> document_wrapper =
       world_->DomDataStore().Get(document, GetIsolate());
-  // Squash the exception and ignore a Nothing result, as a failure to
-  // (re)define a non-configurable property based on name attribute should
-  // not be fatal.
+  // When a non-configurable own property (e.g. unforgeable attribute) already
+  // exists, `SetAccessor` fails and throws. Ignore the exception because own
+  // properties have priority over named properties.
+  // https://webidl.spec.whatwg.org/#dfn-named-property-visibility
   v8::TryCatch try_block(GetIsolate());
   std::ignore = document_wrapper->SetAccessor(
       GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name), Getter);
