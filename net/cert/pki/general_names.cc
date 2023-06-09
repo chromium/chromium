@@ -4,6 +4,7 @@
 
 #include "net/cert/pki/general_names.h"
 
+#include <climits>
 #include <cstring>
 
 #include "net/cert/pki/cert_error_params.h"
