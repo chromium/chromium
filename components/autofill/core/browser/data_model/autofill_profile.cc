@@ -1065,6 +1065,7 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
       ADDRESS_HOME_COUNTRY,
       ADDRESS_HOME_LANDMARK,
       ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_ADMIN_LEVEL2,
       PHONE_HOME_WHOLE_NUMBER};
 
   base::ranges::for_each(field_types_to_print, print_values_lambda);
