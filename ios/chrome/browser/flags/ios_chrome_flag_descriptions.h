@@ -447,10 +447,6 @@ extern const char kFollowingFeedDefaultSortTypeDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-// Title and description for the flag to show signed-out avatar on NTP.
-extern const char kIdentityStatusConsistencyName[];
-extern const char kIdentityStatusConsistencyDescription[];
-
 // Title and description for the flag to enable skipping the internal impression
 // limits of the Fullscreen Promos Manager.
 extern const char kFullscreenPromosManagerSkipInternalLimitsName[];

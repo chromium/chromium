@@ -191,19 +191,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 @implementation SigninCoordinatorTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self
-          isRunningTest:@selector
-          (testOpenManageSyncSettingsFromNTPWhenSigninIsNotAllowedByPolicy)] ||
-      [self isRunningTest:@selector
-            (testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy)] ||
-      [self isRunningTest:@selector(testOpenSignInFromNTP)]) {
-    config.features_enabled.push_back(switches::kIdentityStatusConsistency);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Remove closed tab history to make sure the sign-in promo is always visible

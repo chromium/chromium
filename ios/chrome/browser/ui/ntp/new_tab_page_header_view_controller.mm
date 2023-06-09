@@ -294,11 +294,9 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
   [super viewDidAppear:animated];
   // Check if the identity disc button was properly set before the view appears.
   DCHECK(self.identityDiscButton);
-  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
-    DCHECK(self.identityDiscImage);
-    DCHECK(self.identityDiscButton.accessibilityLabel);
-    DCHECK([self.identityDiscButton imageForState:UIControlStateNormal]);
-  }
+  DCHECK(self.identityDiscImage);
+  DCHECK(self.identityDiscButton.accessibilityLabel);
+  DCHECK([self.identityDiscButton imageForState:UIControlStateNormal]);
 }
 
 - (CGFloat)offsetToBeginFakeOmniboxExpansionForSplitMode {
@@ -408,13 +406,9 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
     return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
   };
 
-  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
-    // `self.identityDiscButton` should not be updated if
-    // `self.identityDiscImage` is not available yet.
-    if (self.identityDiscImage) {
-      [self updateIdentityDiscState];
-    }
-  } else {
+  // `self.identityDiscButton` should not be updated if `self.identityDiscImage`
+  // is not available yet.
+  if (self.identityDiscImage) {
     [self updateIdentityDiscState];
   }
   [self.headerView setIdentityDiscView:self.identityDiscButton];
@@ -423,12 +417,8 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 // Configures `identityDiscButton` with the current state of
 // `identityDiscImage`.
 - (void)updateIdentityDiscState {
-  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
-    DCHECK(self.identityDiscImage);
-    DCHECK(self.identityDiscAccessibilityLabel);
-  } else {
-    self.identityDiscButton.hidden = !self.identityDiscImage;
-  }
+  DCHECK(self.identityDiscImage);
+  DCHECK(self.identityDiscAccessibilityLabel);
   self.identityDiscButton.accessibilityLabel =
       self.identityDiscAccessibilityLabel;
   [self.identityDiscButton setImage:self.identityDiscImage
@@ -675,15 +665,11 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)setSignedOutAccountImage {
-  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
-    self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
-        kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
+  self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
+      kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
 
-    self.identityDiscAccessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT);
-  } else {
-    self.identityDiscImage = nil;
-  }
+  self.identityDiscAccessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT);
   // `self.identityDiscButton` should not be updated if the view has not been
   // created yet.
   if (self.identityDiscButton) {

@@ -7460,21 +7460,6 @@
             ]
         }
     ],
-    "IdentityStatusConsistencyIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230328",
-                    "enable_features": [
-                        "IdentityStatusConsistency"
-                    ]
-                }
-            ]
-        }
-    ],
     "IgnoreSyncEncryptionKeysLongMissing": [
         {
             "platforms": [

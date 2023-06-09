@@ -15,6 +15,10 @@ namespace switches {
 BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
              "GaiaIdCacheInAccountManagerFacade",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Feature to add a signed-out avatar on the NTP.
+BASE_FEATURE(kIdentityStatusConsistency,
+             "IdentityStatusConsistency",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Clears the token service before using it. This allows simulating the
@@ -52,10 +56,6 @@ BASE_FEATURE(kForceDisableExtendedSyncPromos,
 BASE_FEATURE(kForceStartupSigninPromo,
              "ForceStartupSigninPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Feature to add a signed-out avatar on the NTP.
-BASE_FEATURE(kIdentityStatusConsistency,
-             "IdentityStatusConsistency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables a new version of the sync confirmation UI.

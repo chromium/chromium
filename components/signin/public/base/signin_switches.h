@@ -21,6 +21,7 @@ namespace switches {
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kGaiaIdCacheInAccountManagerFacade);
+BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
 #endif
 
 extern const char kClearTokenService[];
@@ -38,7 +39,6 @@ BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
-BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
 #endif
 
 BASE_DECLARE_FEATURE(kTangibleSync);
