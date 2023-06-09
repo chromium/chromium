@@ -107111,16 +107111,16 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Not Found"/>
   <int value="3" label="Invalid state: Connected"/>
   <int value="4" label="Invalid state: Connecting"/>
-  <int value="5" label="Invalid state: Not Connected"/>
-  <int value="6" label="Passphrase Required"/>
-  <int value="7" label="Bad Passphrase"/>
-  <int value="8" label="Certificate Required"/>
-  <int value="9" label="Authentication Required"/>
-  <int value="10" label="Configuration Required"/>
-  <int value="11" label="Configure Failed"/>
-  <int value="12" label="Connect Failed"/>
-  <int value="13" label="Disconnect Failed"/>
-  <int value="14" label="Connect Canceled"/>
+  <int value="5" label="Passphrase Required"/>
+  <int value="6" label="Bad Passphrase"/>
+  <int value="7" label="Certificate Required"/>
+  <int value="8" label="Authentication Required"/>
+  <int value="9" label="Configuration Required"/>
+  <int value="10" label="Configure Failed"/>
+  <int value="11" label="Connect Failed"/>
+  <int value="12" label="Disconnect Failed"/>
+  <int value="13" label="Connect Canceled"/>
+  <int value="14" label="Invalid state: Not Connected"/>
   <int value="15" label="Cert Load Timeout"/>
   <int value="16" label="Blocked By Policy"/>
   <int value="17" label="Hex Ssid Required"/>
