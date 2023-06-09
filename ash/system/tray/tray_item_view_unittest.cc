@@ -7,6 +7,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 
@@ -109,6 +110,37 @@ TEST_F(TrayItemViewTest, HideInterruptsShow) {
   // The tray item should be animating to its hide state.
   EXPECT_TRUE(tray_item()->IsAnimating());
   EXPECT_FALSE(tray_item()->target_visible_for_testing());
+}
+
+// Regression test for http://b/283494045
+TEST_F(TrayItemViewTest, ShowDuringZeroDurationAnimation) {
+  ui::ScopedAnimationDurationScaleMode duration_scale1(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Hide the tray item and wait for animation to complete.
+  base::RunLoop run_loop1;
+  tray_item()->SetAnimationIdleClosureForTest(run_loop1.QuitClosure());
+  tray_item()->SetVisible(false);
+  run_loop1.Run();
+  ASSERT_FALSE(tray_item()->IsAnimating());
+  ASSERT_FALSE(tray_item()->GetVisible());
+  ASSERT_EQ(tray_item()->layer()->opacity(), 0.0f);
+  {
+    // Set animation duration to zero. The screen rotation animation does this,
+    // but it's hard to get that animation into the correct state in a test.
+    ui::ScopedAnimationDurationScaleMode duration_scale2(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+    // While animations are zero duration, show the item.
+    base::RunLoop run_loop2;
+    tray_item()->SetAnimationIdleClosureForTest(run_loop2.QuitClosure());
+    tray_item()->SetVisible(true);
+    run_loop2.Run();
+  }
+
+  // The item should be visible and opaque.
+  EXPECT_TRUE(tray_item()->GetVisible());
+  EXPECT_EQ(tray_item()->layer()->opacity(), 1.0f);
 }
 
 }  // namespace ash

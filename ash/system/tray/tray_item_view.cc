@@ -154,9 +154,9 @@ void TrayItemView::SetVisible(bool visible) {
     observer.OnTrayItemVisibilityAboutToChange(target_visible_);
   }
   views::View::SetVisible(visible);
-  if (!GetWidget() ||
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+  // During startup TrayItemViews are often SetVisible(false) before they are
+  // attached to a widget. Don't bother constructing animations for them.
+  if (!GetWidget()) {
     return;
   }
   PerformVisibilityAnimation(visible);
@@ -177,7 +177,10 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
   }
 
   // Immediately progress to the end of the animation if animation is disabled.
-  if (!ShouldVisibilityChangeBeAnimated()) {
+  // NOTE: `ScreenRotationAnimator` can set animations to ZERO_DURATION.
+  if (!ShouldVisibilityChangeBeAnimated() ||
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     // Tray items need to stay visible if the notification center tray's hide
     // animation is going to run, so don't hide the tray item here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`
