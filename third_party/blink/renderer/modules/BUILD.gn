@@ -525,6 +525,7 @@ source_set("unit_tests") {
     "mediastream/media_stream_set_test.cc",
     "mediastream/media_stream_track_impl_test.cc",
     "mediastream/media_stream_track_transfer_test.cc",
+    "mediastream/media_stream_utils_test.cc",
     "mediastream/media_stream_video_capturer_source_test.cc",
     "mediastream/media_stream_video_renderer_sink_test.cc",
     "mediastream/media_stream_video_source_test.cc",

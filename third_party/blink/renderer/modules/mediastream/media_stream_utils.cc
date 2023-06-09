@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/mediastream/webaudio_media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 
 namespace blink {
 
@@ -45,13 +46,23 @@ gfx::Size MediaStreamUtils::GetScreenSize(LocalFrame* frame) {
   if (!frame) {
     return kDefaultScreenSize;
   }
-  const display::ScreenInfo& info =
-      frame->GetChromeClient().GetScreenInfo(*frame);
-  // If no screen size info, use the default.
-  if (info.rect.size().IsEmpty()) {
+  int max_width = 0;
+  int max_height = 0;
+  const auto& infos = frame->GetChromeClient().GetScreenInfos(*frame);
+  for (const display::ScreenInfo& info : infos.screen_infos) {
+    int width = info.rect.width();
+    int height = info.rect.height();
+    if (width > max_width) {
+      max_width = width;
+    }
+    if (height > max_height) {
+      max_height = height;
+    }
+  }
+  if (max_width == 0 || max_height == 0) {
     return kDefaultScreenSize;
   }
-  return info.rect.size();
+  return gfx::Size(max_width, max_height);
 }
 
 }  // namespace blink
