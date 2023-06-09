@@ -94900,6 +94900,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="kInvalidType"/>
   <int value="2" label="kParseError"/>
   <int value="3" label="kCompileError"/>
+  <int value="4" label="kEmptyCondition"/>
+  <int value="5" label="kEmptySource"/>
+  <int value="6" label="kInvalidSource"/>
 </enum>
 
 <enum name="ServiceWorkerSite">

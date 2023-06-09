@@ -46,7 +46,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleMatch) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-      source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+      source.network_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -84,7 +84,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactMatch) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-      source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+      source.network_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -122,7 +122,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingCondition) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-      source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+      source.network_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -173,7 +173,7 @@ TEST(ServiceWorkerRouterEvaluator, OneConditionMisMatch) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-      source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+      source.network_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -223,7 +223,7 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-      source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+      source.network_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -242,6 +242,9 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
 }
 
 TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
+  // Since we currently only support Network source type, and we cannot
+  // make the returned value difference by the source type, we use the number
+  // of sources to allow the test to distinguish one rule to the other.
   blink::ServiceWorkerRouterRules rules;
   {
     blink::ServiceWorkerRouterRule rule;
@@ -260,7 +263,10 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-      source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+      source.network_source.emplace();
+      // This is two sources rule.
+      // As mentioned above, this is used as a marker that tells the rule
+      // matches.
       rule.sources.push_back(source);
       rule.sources.push_back(source);
     }
@@ -283,7 +289,10 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-      source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+      source.network_source.emplace();
+      // This is four sources rule.
+      // As mentioned above, this is used as a marker that tells the rule
+      // matches.
       rule.sources.push_back(source);
       rule.sources.push_back(source);
       rule.sources.push_back(source);
@@ -301,9 +310,88 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
   request.method = "GET";
   request.url = GURL("https://example.com/top/test.css");
   const auto sources = evaluator.Evaluate(request);
+  // Four sources rule should match because of *.css URLPattern.
   EXPECT_EQ(4U, sources.size());
 }
 
+TEST(ServiceWorkerRouterEvaluator, EmptyCondition) {
+  blink::ServiceWorkerRouterRules rules;
+  {
+    blink::ServiceWorkerRouterRule rule;
+    // No condition is set.
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.network_source.emplace();
+      rule.sources.push_back(source);
+    }
+    rules.rules.push_back(rule);
+  }
+  ASSERT_EQ(1U, rules.rules.size());
+
+  ServiceWorkerRouterEvaluator evaluator(rules);
+  ASSERT_EQ(1U, evaluator.rules().rules.size());
+  EXPECT_FALSE(evaluator.IsValid());
+}
+
+TEST(ServiceWorkerRouterEvaluator, EmptySource) {
+  blink::ServiceWorkerRouterRules rules;
+  {
+    blink::ServiceWorkerRouterRule rule;
+    {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+      blink::UrlPattern url_pattern;
+      auto parse_result = liburlpattern::Parse(
+          "/test/*",
+          [](base::StringPiece input) { return std::string(input); });
+      ASSERT_TRUE(parse_result.ok());
+      url_pattern.pathname = parse_result.value().PartList();
+      condition.url_pattern = url_pattern;
+      rule.conditions.push_back(condition);
+    }
+    // No source is set.
+    rules.rules.push_back(rule);
+  }
+  ASSERT_EQ(1U, rules.rules.size());
+
+  ServiceWorkerRouterEvaluator evaluator(rules);
+  ASSERT_EQ(1U, evaluator.rules().rules.size());
+  EXPECT_FALSE(evaluator.IsValid());
+}
+
+TEST(ServiceWorkerRouterEvaluator, InvalidSource) {
+  blink::ServiceWorkerRouterRules rules;
+  {
+    blink::ServiceWorkerRouterRule rule;
+    {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+      blink::UrlPattern url_pattern;
+      auto parse_result = liburlpattern::Parse(
+          "/test/*",
+          [](base::StringPiece input) { return std::string(input); });
+      ASSERT_TRUE(parse_result.ok());
+      url_pattern.pathname = parse_result.value().PartList();
+      condition.url_pattern = url_pattern;
+      rule.conditions.push_back(condition);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      // source.network_source is not set.
+      rule.sources.push_back(source);
+    }
+    rules.rules.push_back(rule);
+  }
+  ASSERT_EQ(1U, rules.rules.size());
+
+  ServiceWorkerRouterEvaluator evaluator(rules);
+  ASSERT_EQ(1U, evaluator.rules().rules.size());
+  EXPECT_FALSE(evaluator.IsValid());
+}
 }  // namespace
 
 }  // namespace content
