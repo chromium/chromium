@@ -229,14 +229,22 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
+            'extra_args': [
+                '--output-format=histograms', '--experimental-tbmv3-metrics',
+                '--extra-path=/b/s/w/ir/bin/'
+            ] + bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia-wes',
+        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
+        # or codify as long-term solution.
+        'cipd': {
+            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
+            "location": ".",
+            "revision": "build_id:8787350426829126785"
+        },
         'dimension': {
             'cpu': None,
             'device_type': 'Astro',
@@ -286,14 +294,22 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
+            'extra_args': [
+                '--output-format=histograms', '--experimental-tbmv3-metrics',
+                '--extra-path=/b/s/w/ir/bin/'
+            ] + bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia-wes',
+        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
+        # or codify as long-term solution.
+        'cipd': {
+            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
+            "location": ".",
+            "revision": "build_id:8787350426829126785"
+        },
         'dimension': {
             'cpu': None,
             'device_type': 'Sherlock',
@@ -305,14 +321,22 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
+            'extra_args': [
+                '--output-format=histograms', '--experimental-tbmv3-metrics',
+                '--extra-path=/b/s/w/ir/bin/'
+            ] + bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia-wes',
+        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
+        # or codify as long-term solution.
+        'cipd': {
+            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
+            "location": ".",
+            "revision": "build_id:8787350426829126785"
+        },
         'dimension': {
             'cpu': None,
             'device_type': 'Astro',
@@ -324,14 +348,22 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
+            'extra_args': [
+                '--output-format=histograms', '--experimental-tbmv3-metrics',
+                '--extra-path=/b/s/w/ir/bin/'
+            ] + bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia-wes',
+        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
+        # or codify as long-term solution.
+        'cipd': {
+            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
+            "location": ".",
+            "revision": "build_id:8787350426829126785"
+        },
         'dimension': {
             'cpu': None,
             'device_type': 'Nelson',
@@ -343,14 +375,22 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
+            'extra_args': [
+                '--output-format=histograms', '--experimental-tbmv3-metrics',
+                '--extra-path=/b/s/w/ir/bin/'
+            ] + bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia-wes',
+        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
+        # or codify as long-term solution.
+        'cipd': {
+            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
+            "location": ".",
+            "revision": "build_id:8787350426829126785"
+        },
         'dimension': {
             'cpu': None,
             'device_type': 'Sherlock',
@@ -2023,6 +2063,8 @@ def generate_performance_test(tester_config, test, builder_name):
   }
   if shards:
     result['swarming']['shards'] = shards
+  if tester_config.get('cipd'):
+    result['swarming']['cipd_packages'] = [tester_config['cipd']]
   return result
 
 
