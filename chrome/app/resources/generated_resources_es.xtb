@@ -295,7 +295,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos los marcadores</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restablecer la configuración.</translation>
-<translation id="1243002225871118300">Cambiar el tamaño de la pantalla y del texto</translation>
+<translation id="1243002225871118300">Cambiar el tamaño de visualización y del texto</translation>
 <translation id="1243314992276662751">Subir</translation>
 <translation id="1243436884219965846">Revisar contraseñas</translation>
 <translation id="1244265436519979884">Hay una restauración de Linux en curso</translation>
@@ -8439,7 +8439,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo se guardará durante 1 hora y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {HOURS} horas y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
 <translation id="8338952601723052325">Sitio web para desarrolladores</translation>
-<translation id="8339288417038613756">Tamaño de la pantalla y del texto</translation>
+<translation id="8339288417038613756">Tamaño de visualización y del texto</translation>
 <translation id="833986336429795709">Para abrir este enlace, elige una aplicación</translation>
 <translation id="8340547030807793004">Más acciones de <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que ha enviado muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que han enviado muchas notificaciones recientemente}}</translation>

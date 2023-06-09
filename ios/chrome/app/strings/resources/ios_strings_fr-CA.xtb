@@ -315,6 +315,9 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2975121486251958312">Seul le mode de navigation privée est proposé</translation>
 <translation id="2982481275546140226">Effacer les données</translation>
 <translation id="298306318844797842">Ajouter un mode de paiement…</translation>
+<translation id="2988274366244053197">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
+
+Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google, ni stockée par Google. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="3020183492814296499">Raccourcis</translation>
 <translation id="3037605927509011580">Aïe aïe aïe!</translation>
@@ -381,6 +384,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3471148582064653480">Synchronisez vos mots de passe, votre historique et plus encore.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou application}one{pour {COUNT} sites ou applications}other{pour {COUNT} sites et applications}}</translation>
 <translation id="3474624961160222204">Contin. comme <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Accédez à vos mots de passe sur d'autres applications.</translation>
 <translation id="3478058380795961209">Mois d'expir.</translation>
 <translation id="3482959374254649722">Synchronisation de vos onglets en cours…</translation>
 <translation id="3484946776651937681">Ouvrir dans le dossier Téléchargement</translation>
@@ -652,6 +656,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
+<translation id="5325595483440111327">Afficher l'historique de navigation</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
