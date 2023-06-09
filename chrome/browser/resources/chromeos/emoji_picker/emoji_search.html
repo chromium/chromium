@@ -86,9 +86,18 @@
     line-height: 24px;
     position: absolute;
     text-align: center;
-    top: 50%;
+    /*
+     * The no result / error illustration should be centered over the main
+     * content area (search header should be excluded). Thus the value here
+     * is 50% + half of the search bar's height.
+     */
+    --emoji-header-height: calc(
+      var(--emoji-picker-top-padding) +
+      var(--emoji-picker-search-height) +
+      var(--emoji-picker-top-bar-bottom-padding));
+    top: calc(50% + var(--emoji-header-height) / 2);
     transform: translate(-50%, -50%);
-    width: 340px;
+    width: 100vw;
   }
 
   #searchShadow {
