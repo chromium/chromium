@@ -27,6 +27,7 @@
 #include "chrome/browser/startup_data.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/file_access/scoped_file_access.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -550,6 +551,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
       int frame_tree_node_id) override;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottlesForKeepAlive(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      int frame_tree_node_id) override;
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
       ukm::SourceIdObj ukm_source_id,
@@ -974,6 +981,16 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       WillCreateWebTransportCallback callback);
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  std::unique_ptr<blink::URLLoaderThrottle>
+  MaybeCreateSafeBrowsingURLLoaderThrottle(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      int frame_tree_node_id,
+      Profile* profile);
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   void OnKeepaliveTimerFired(

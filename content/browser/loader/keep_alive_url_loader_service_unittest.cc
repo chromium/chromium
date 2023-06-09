@@ -27,6 +27,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
 namespace {
@@ -123,6 +124,70 @@ class FakeRemoteURLLoaderFactory {
   mojo::Remote<network::mojom::URLLoader> remote_url_loader;
 };
 
+class ConfigurableURLLoaderThrottle final : public blink::URLLoaderThrottle {
+ public:
+  explicit ConfigurableURLLoaderThrottle(bool deferring = false,
+                                         bool canceling_before_start = false,
+                                         bool canceling_before_redirect = false)
+      : deferring_(deferring),
+        canceling_before_start_(canceling_before_start),
+        canceling_before_redirect_(canceling_before_redirect) {}
+
+  ~ConfigurableURLLoaderThrottle() override = default;
+  // Not copyable.
+  ConfigurableURLLoaderThrottle(const ConfigurableURLLoaderThrottle&) = delete;
+  ConfigurableURLLoaderThrottle& operator=(
+      const ConfigurableURLLoaderThrottle&) = delete;
+
+  // blink::URLLoaderThrottle overrides:
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    will_start_request_called_ = true;
+    *defer = deferring_;
+    if (canceling_before_start_) {
+      delegate()->CancelWithError(net::ERR_ABORTED);
+    }
+  }
+  void WillRedirectRequest(
+      net::RedirectInfo* redirect_info,
+      const network::mojom::URLResponseHead& /* response_head */,
+      bool* defer,
+      std::vector<std::string>* /* to_be_removed_headers */,
+      net::HttpRequestHeaders* /* modified_headers */,
+      net::HttpRequestHeaders* /* modified_cors_exempt_headers */) override {
+    will_redirect_request_called_ = true;
+    *defer = deferring_;
+    if (canceling_before_redirect_) {
+      delegate()->CancelWithError(net::ERR_ABORTED);
+    }
+  }
+  void WillProcessResponse(const GURL& response_url_,
+                           network::mojom::URLResponseHead* response_head,
+                           bool* defer) override {
+    will_process_response_called_ = true;
+    *defer = deferring_;
+  }
+
+  bool will_start_request_called() const { return will_start_request_called_; }
+  bool will_redirect_request_called() const {
+    return will_redirect_request_called_;
+  }
+  bool will_process_response_called() const {
+    return will_process_response_called_;
+  }
+
+  Delegate* delegate() { return delegate_; }
+
+ private:
+  bool will_start_request_called_ = false;
+  bool will_redirect_request_called_ = false;
+  bool will_process_response_called_ = false;
+
+  const bool deferring_;
+  const bool canceling_before_start_;
+  const bool canceling_before_redirect_;
+};
+
 // Returns true if `arg` has a header of the given `name` and `value`.
 // `arg` is an `network::mojom::URLResponseHeadPtr`.
 MATCHER_P2(ResponseHasHeader,
@@ -172,7 +237,8 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
   void BindKeepAliveURLLoaderFactory(
       FakeRemoteURLLoaderFactory& remote_url_loader_factory) {
     if (!loader_service_) {
-      loader_service_ = std::make_unique<KeepAliveURLLoaderService>();
+      loader_service_ = std::make_unique<KeepAliveURLLoaderService>(
+          main_rfh()->GetBrowserContext());
     }
 
     mojo::Remote<network::mojom::URLLoaderFactory> factory;
@@ -783,12 +849,130 @@ TEST_F(KeepAliveURLLoaderServiceTest, RendererDisconnectedBeforeOnComplete) {
       CreateResponseHead({{kTestResponseHeaderName, kTestResponseHeaderValue}}),
       /*body=*/{}, absl::nullopt);
 
-  // Disconnects and unbinds the receiver client & remote loader.
+  // Disconnects and unbinds the receiver client & remote loader before
+  // OnComplete is triggered.
   renderer_loader_client.ResetReceiver();
   renderer_loader_factory.reset_remote_url_loader();
   base::RunLoop().RunUntilIdle();
 
-  // The KeepAliveURLLoader should have been deleted.
+  // The KeepAliveURLLoader should have been deleted, even if OnComplete is not
+  // triggered.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       RendererConnectedAndThrottleCancelLoaderBeforeStartRequest) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  loader_service().SetURLLoaderThrottlesGetterForTesting(
+      base::BindRepeating([]() {
+        std::vector<std::unique_ptr<blink::URLLoaderThrottle>> ret;
+        ret.emplace_back(std::make_unique<ConfigurableURLLoaderThrottle>(
+            /*deferring=*/false, /*canceling_before_start=*/true,
+            /*canceling_before_redirect=*/false));
+        return ret;
+      }));
+
+  // Loads keepalive request:
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // The KeepAliveURLLoader should NOT be cancelled by the in-browser throttle,
+  // as the loader is still connected to the renderer and thus should respect
+  // in-renderer throttles.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       RendererDisconnectedAndThrottleCancelLoaderBeforeStartRedirect) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  loader_service().SetURLLoaderThrottlesGetterForTesting(
+      base::BindRepeating([]() {
+        std::vector<std::unique_ptr<blink::URLLoaderThrottle>> ret;
+        ret.emplace_back(std::make_unique<ConfigurableURLLoaderThrottle>(
+            /*deferring=*/false, /*canceling_before_start=*/false,
+            /*canceling_before_redirect=*/true));
+        return ret;
+      }));
+
+  // Loads keepalive request:
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  // Disconnects and unbinds the receiver client & remote loader to simulate
+  // the renderer gets disconnected before redirect.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
+
+  // OnReceiveRedirect:
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
+  EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
+  // Simluates receiving redirect in the network service.
+  GetLastPendingRequest()->client->OnReceiveRedirect(
+      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
+  base::RunLoop().RunUntilIdle();
+
+  // The KeepAliveURLLoader should be cancelled by the in-browser throttle.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       RendererDisconnectedAndThrottleDeferLoaderBeforeStartRedirect) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  loader_service().SetURLLoaderThrottlesGetterForTesting(
+      base::BindRepeating([]() {
+        std::vector<std::unique_ptr<blink::URLLoaderThrottle>> ret;
+        ret.emplace_back(std::make_unique<ConfigurableURLLoaderThrottle>(
+            /*deferring=*/true, /*canceling_before_start=*/false,
+            /*canceling_before_redirect=*/false));
+        return ret;
+      }));
+
+  // Loads keepalive request:
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  // Disconnects and unbinds the receiver client & remote loader to simulate
+  // the renderer gets disconnected before redirect.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
+
+  // OnReceiveRedirect:
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
+  EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
+  // Simluates receiving redirect in the network service.
+  GetLastPendingRequest()->client->OnReceiveRedirect(
+      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
+  base::RunLoop().RunUntilIdle();
+
+  // The KeepAliveURLLoader should be cancelled due to the fact that in-browser
+  // throttle requests to defer.
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
 }
 

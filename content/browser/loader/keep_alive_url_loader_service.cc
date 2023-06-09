@@ -10,6 +10,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/url_loader_factory_getter.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -195,8 +196,10 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateLoaderAndStart(
       // `context` can be destroyed right at the end of this method if the
       // caller renderer is already unloaded, meaning `loader` also needs to
       // hold another refptr to ensure `PolicyContainerHost` alive.
-      context->policy_container_host,
-      base::PassKey<KeepAliveURLLoaderService>());
+      context->policy_container_host, service_->browser_context_,
+      base::PassKey<KeepAliveURLLoaderService>(),
+      service_->url_loader_throttles_getter_for_testing_  // IN-TEST
+  );
   // Adds a new loader receiver to the set, binding the pending `receiver` from
   // a renderer to `raw_loader` with `loader` as its context. The set will keep
   // `loader` alive.
@@ -222,8 +225,11 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::Clone(
       std::make_unique<FactoryContext>(current_context()));
 }
 
-KeepAliveURLLoaderService::KeepAliveURLLoaderService() {
+KeepAliveURLLoaderService::KeepAliveURLLoaderService(
+    BrowserContext* browser_context)
+    : browser_context_(browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(browser_context_);
 
   factory_ =
       std::make_unique<KeepAliveURLLoaderService::KeepAliveURLLoaderFactory>(
@@ -283,6 +289,13 @@ size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
 void KeepAliveURLLoaderService::SetLoaderObserverForTesting(
     scoped_refptr<KeepAliveURLLoader::TestObserver> observer) {
   loader_test_observer_ = observer;
+}
+
+void KeepAliveURLLoaderService::SetURLLoaderThrottlesGetterForTesting(
+    KeepAliveURLLoader::URLLoaderThrottlesGetter
+        url_loader_throttles_getter_for_testing) {
+  url_loader_throttles_getter_for_testing_ =
+      std::move(url_loader_throttles_getter_for_testing);
 }
 
 }  // namespace content

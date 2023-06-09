@@ -1416,7 +1416,7 @@ void StoragePartitionImpl::Initialize(
   if (base::FeatureList::IsEnabled(
           blink::features::kKeepAliveInBrowserMigration)) {
     keep_alive_url_loader_service_ =
-        std::make_unique<KeepAliveURLLoaderService>();
+        std::make_unique<KeepAliveURLLoaderService>(browser_context_);
   }
 
   cookie_store_manager_ =

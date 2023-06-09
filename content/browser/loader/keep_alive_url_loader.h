@@ -6,8 +6,11 @@
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_H_
 
 #include <stdint.h>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,8 +27,13 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+namespace blink {
+class URLLoaderThrottle;
+}
+
 namespace content {
 
+class BrowserContext;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
 
@@ -48,9 +56,9 @@ class PolicyContainerHost;
 //          connected, ask it to process the results instead.
 //       b. If the renderer is dead, drop the results.
 //
-// Instances of this class must only be constructed and run within the browser
-// process, such that the lifetime of the corresponding requests can be
-// maintained by the browser instead of by a renderer.
+// Instances of this class must only be constructed via calling
+// `KeepAliveURLLoaderService`, such that the lifetime of the instances match
+// the lifetime of the keepalive requests.
 //
 // Design Doc:
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
@@ -60,6 +68,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
  public:
   // A callback type to delete this loader immediately on triggered.
   using OnDeleteCallback = base::OnceCallback<void(void)>;
+  // A callback type to return URLLoaderThrottles to be used by this loader.
+  using URLLoaderThrottlesGetter = base::RepeatingCallback<
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(void)>;
 
   // Must only be constructed by a `KeepAliveURLLoaderService`.
   // `resource_request` must be a keepalive request from a renderer.
@@ -75,7 +86,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host,
-      base::PassKey<KeepAliveURLLoaderService>);
+      BrowserContext* browser_context,
+      base::PassKey<KeepAliveURLLoaderService>,
+      URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing =
+          base::NullCallback());
   ~KeepAliveURLLoader() override;
 
   // Not copyable.
@@ -89,6 +103,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // bound to the callback, but can only be obtained after creating `this`.
   // Must be called immediately after creating a KeepAliveLoader.
   void set_on_delete_callback(OnDeleteCallback on_delete_callback);
+
+  base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
 
   // For testing only:
   // TODO(crbug.com/1427366): Figure out alt to not rely on this in test.
@@ -104,6 +120,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
     virtual void OnCompleteProcessed(
         KeepAliveURLLoader* loader,
         const network::URLLoaderCompletionStatus& completion_status) = 0;
+    virtual void PauseReadingBodyFromNetProcessed(
+        KeepAliveURLLoader* loader) = 0;
+    virtual void ResumeReadingBodyFromNetProcessed(
+        KeepAliveURLLoader* loader) = 0;
 
    protected:
     virtual ~TestObserver() = default;
@@ -140,6 +160,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override;
 
+  // Tells if this loader is still able to forward actions to the
+  // URLLoaderClient in renderer.
+  bool IsRendererConnected() const;
   // Returns net::OK to allow following the redirect. Otherwise, returns
   // corresponding error code.
   net::Error WillFollowRedirect(const net::RedirectInfo& redirect_info) const;
@@ -187,9 +210,23 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Records the latest URL to help veryfing redirect request.
   GURL last_url_;
 
+  class ThrottleEntry;
+  class ThrottleDelegate;
+  // Maintains a list of `blink::URLLoaderThrottle` created by content and
+  // content embedder, which will be prepared to run in case this loader has to
+  // handle redirects in-browser.
+  std::vector<std::unique_ptr<ThrottleEntry>> throttle_entries_;
+
+  // Counts the total number when this loader is requested by throttle to pause
+  // reading body.
+  size_t paused_reading_body_from_net_count_ = 0;
+
   // For testing only:
   // Not owned.
   scoped_refptr<TestObserver> observer_for_testing_ = nullptr;
+
+  // Must be the last field.
+  base::WeakPtrFactory<KeepAliveURLLoader> weak_ptr_factory_{this};
 };
 
 }  // namespace content

@@ -1497,6 +1497,45 @@ class CONTENT_EXPORT ContentBrowserClient {
       NavigationUIData* navigation_ui_data,
       int frame_tree_node_id);
 
+  // Allows the embedder to register one or more URLLoaderThrottles for handling
+  // a user-initiated `fetch(url, {keepalive: true})` request from documents or
+  // from worker scripts in the renderer. Note this is different from
+  // `CreateURLLoaderThrottles` and `CreateThrottlesForNavigation` that are
+  // created for requests initiated in the browser.
+  //
+  // Keepalive requests are initiated in the renderer, and have throttles
+  // created by `ContentRendererClient::CreateURLLoaderThrottleProvider`.
+  // However, these requests may live longer than the renderer process itself.
+  // Therefore, this method is used to create browser-side throttles in addition
+  // to renderer-side throttles.
+  //
+  // All the `URLLoaderThrottle` methods up to `WillProcessResponse` are called
+  // on the browser-side throttles for keepalive requests, but are effectively
+  // ignored while the renderer is still alive. However, if the renderer
+  // terminates before the request has finished, subsequent calls to
+  // browser-side throttle take effect, for example any throttling applied to
+  // redirects. Response on the browser side is ignored, so response-related
+  // throttle methods, e.g. `WillProcessResponse` itself, will not be called.
+  //
+  // See this section for the difference between the renderer-side throttles and
+  // browser-side throttles for keepalive requests:
+  // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit#heading=h.eu8mlvut479
+  //
+  // |wc_getter| returns the WebContents of the context of the |request| when
+  // available. It can return nullptr for requests for which it there are no
+  // WebContents (e.g., requests for web workers).
+  //
+  // |frame_tree_node_id| is also invalid (kNoFrameTreeNodeId) in some cases
+  // (e.g., requests for web workers).
+  //
+  // This is called on the UI thread.
+  virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottlesForKeepAlive(
+      const network::ResourceRequest& request,
+      BrowserContext* browser_context,
+      const base::RepeatingCallback<WebContents*()>& wc_getter,
+      int frame_tree_node_id);
+
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
   // to handle navigation URL requests for schemes not handled by the Network
   // Service.

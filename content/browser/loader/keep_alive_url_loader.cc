@@ -8,10 +8,14 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/url_loader_throttles.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -24,9 +28,33 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_request.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
 namespace {
+
+// A convenient holder to aggregate modified header fields for redirect.
+struct ModifiedHeaders {
+  ModifiedHeaders() = default;
+  ~ModifiedHeaders() = default;
+  // Not copyable.
+  ModifiedHeaders(const ModifiedHeaders&) = delete;
+  ModifiedHeaders& operator=(const ModifiedHeaders&) = delete;
+
+  void MergeFrom(const ModifiedHeaders& other) {
+    for (auto& other_removed_header : other.removed_headers) {
+      if (!base::Contains(removed_headers, other_removed_header)) {
+        removed_headers.emplace_back(std::move(other_removed_header));
+      }
+    }
+    modified_headers.MergeFrom(other.modified_headers);
+    modified_cors_exempt_headers.MergeFrom(other.modified_cors_exempt_headers);
+  }
+
+  std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
+};
 
 // A ContentSecurityPolicy context for KeepAliveURLLoader.
 class KeepAliveURLLoaderCSPContext final : public network::CSPContext {
@@ -71,6 +99,125 @@ bool IsRedirectAllowedByCSP(
 
 }  // namespace
 
+// A custom `blink::URLLoaderThrottle` delegate that only handles relevant
+// actions.
+//
+// Note that a delegate may be called from a throttle asynchronously in a
+// different thread, e.g. `safe_browsing::BrowserURLLoaderThrottle` runs in IO
+// thread http://crbug.com/1057253.
+//
+// Throttles calling these methods must not be destroyed synchronously.
+class KeepAliveURLLoader::ThrottleDelegate final
+    : public blink::URLLoaderThrottle::Delegate {
+ public:
+  explicit ThrottleDelegate(base::WeakPtr<KeepAliveURLLoader> loader)
+      : loader_(std::move(loader)),
+        loader_weak_ptr_factory_(
+            std::make_unique<base::WeakPtrFactory<KeepAliveURLLoader>>(
+                loader_.get())) {}
+  // Not copyable.
+  ThrottleDelegate(const ThrottleDelegate&) = delete;
+  ThrottleDelegate& operator=(const ThrottleDelegate&) = delete;
+
+  // blink::URLLoaderThrottle::Delegate overrides:
+  // Asks `loader_` to abort itself asynchronously.
+  void CancelWithError(int error, base::StringPiece custom_reason) override {
+    if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&KeepAliveURLLoader::OnComplete,
+                                    loader_weak_ptr_factory_->GetWeakPtr(),
+                                    network::URLLoaderCompletionStatus(error)));
+      return;
+    }
+    if (IsLoaderAliveOnUI()) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&KeepAliveURLLoader::OnComplete, loader_->GetWeakPtr(),
+                         network::URLLoaderCompletionStatus(error)));
+    }
+  }
+  void Resume() override {
+    if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&KeepAliveURLLoader::ResumeReadingBodyFromNet,
+                         loader_weak_ptr_factory_->GetWeakPtr()));
+      return;
+    }
+    if (IsLoaderAliveOnUI()) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&KeepAliveURLLoader::ResumeReadingBodyFromNet,
+                         loader_->GetWeakPtr()));
+    }
+  }
+  void PauseReadingBodyFromNet() override {
+    if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&KeepAliveURLLoader::PauseReadingBodyFromNet,
+                         loader_weak_ptr_factory_->GetWeakPtr()));
+      return;
+    }
+    if (IsLoaderAliveOnUI()) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&KeepAliveURLLoader::PauseReadingBodyFromNet,
+                         loader_->GetWeakPtr()));
+    }
+  }
+  void RestartWithFlags(int additional_load_flags) override { NOTREACHED(); }
+  void RestartWithURLResetAndFlags(int additional_load_flags) override {
+    NOTREACHED();
+  }
+
+ private:
+  // `loader_` is alive and ready to take actions triggered from in-browser
+  // throttle, i.e. `loader_` is disconnected from renderer. Otherwise, returns
+  // false to avoid early termination when a copy of the same throttle will also
+  // be executed in renderer.
+  // Must be called on UI thread.
+  bool IsLoaderAliveOnUI() const {
+    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    return loader_ && !loader_->IsRendererConnected();
+  }
+
+  base::WeakPtr<KeepAliveURLLoader> loader_;
+  // `loader_` lives in UI thread. This factory helps verify if `loader_` is
+  // still available from other threads.
+  std::unique_ptr<base::WeakPtrFactory<KeepAliveURLLoader>>
+      loader_weak_ptr_factory_;
+};
+
+// Maintains a `blink::URLLoaderThrottle` and its delegate's lifetime.
+class KeepAliveURLLoader::ThrottleEntry {
+ public:
+  ThrottleEntry(base::WeakPtr<KeepAliveURLLoader> loader,
+                std::unique_ptr<blink::URLLoaderThrottle> loader_throttle)
+      : delegate_(std::make_unique<ThrottleDelegate>(std::move(loader))),
+        throttle_(std::move(loader_throttle)) {
+    CHECK(delegate_);
+    CHECK(throttle_);
+    throttle_->set_delegate(delegate_.get());
+  }
+  ~ThrottleEntry() {
+    // Both `delegate_` and `throttle_` are about to be destroyed, but
+    // `throttle_` may refer to `delegate_` in its dtor. Hence, clear the
+    // pointer from `throttle_` to avoid any UAF.
+    throttle_->set_delegate(nullptr);
+  }
+  // Not copyable.
+  ThrottleEntry(const ThrottleEntry&) = delete;
+  ThrottleEntry& operator=(const ThrottleEntry&) = delete;
+
+  blink::URLLoaderThrottle& throttle() { return *throttle_; }
+
+ private:
+  // `delegate_` must live longer than `throttle_`.
+  std::unique_ptr<ThrottleDelegate> delegate_;
+  std::unique_ptr<blink::URLLoaderThrottle> throttle_;
+};
+
 KeepAliveURLLoader::KeepAliveURLLoader(
     int32_t request_id,
     uint32_t options,
@@ -79,7 +226,9 @@ KeepAliveURLLoader::KeepAliveURLLoader(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     scoped_refptr<PolicyContainerHost> policy_container_host,
-    base::PassKey<KeepAliveURLLoaderService>)
+    BrowserContext* browser_context,
+    base::PassKey<KeepAliveURLLoaderService>,
+    URLLoaderThrottlesGetter url_loader_throttles_getter_for_testing)
     : request_id_(request_id),
       resource_request_(resource_request),
       forwarding_client_(std::move(forwarding_client)),
@@ -90,6 +239,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
   CHECK(network_loader_factory);
   CHECK(policy_container_host_);
   CHECK(!resource_request.trusted_params);
+  CHECK(browser_context);
   TRACE_EVENT("loading", "KeepAliveURLLoader::KeepAliveURLLoader", "request_id",
               request_id_, "url", last_url_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading", "KeepAliveURLLoader",
@@ -104,6 +254,51 @@ KeepAliveURLLoader::KeepAliveURLLoader(
       &KeepAliveURLLoader::OnNetworkConnectionError, base::Unretained(this)));
   forwarding_client_.set_disconnect_handler(base::BindOnce(
       &KeepAliveURLLoader::OnRendererConnectionError, base::Unretained(this)));
+
+  {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> content_throttles =
+        url_loader_throttles_getter_for_testing
+            ? url_loader_throttles_getter_for_testing.Run()
+            : CreateContentBrowserURLLoaderThrottlesForKeepAlive(
+                  resource_request_, browser_context,
+                  // When `throttles_` need to be run by this loader, the
+                  // renderer should have be gone.
+                  /*wc_getter=*/base::BindRepeating([]() -> WebContents* {
+                    return nullptr;
+                  }),
+                  FrameTreeNode::kFrameTreeNodeInvalidId);
+    for (auto& content_throttle : content_throttles) {
+      throttle_entries_.emplace_back(std::make_unique<ThrottleEntry>(
+          GetWeakPtr(), std::move(content_throttle)));
+    }
+  }
+
+  // These throttles are also run by `blink::ThrottlingURLLoader`. However, they
+  // have to be re-run here in case of handling in-browser redirects.
+  // There is already a similar use case that also runs throttles in browser in
+  // `SearchPrefetchRequest::StartPrefetchRequest()`. The review discussion in
+  // https://crrev.com/c/2552723/3 suggests that running them again in browser
+  // is fine.
+  for (auto& throttle_entry : throttle_entries_) {
+    TRACE_EVENT("loading",
+                "KeepAliveURLLoader::KeepAliveURLLoader.WillStartRequest");
+    bool throttle_deferred = false;
+    auto weak_ptr = GetWeakPtr();
+    // Marks delegate to ignore abort requests if this is connected to renderer.
+    throttle_entry->throttle().WillStartRequest(&resource_request_,
+                                                &throttle_deferred);
+    if (!weak_ptr) {
+      // `this` is already destroyed by throttle.
+      return;
+    }
+    if (!IsRendererConnected() && throttle_deferred) {
+      // Only processes a throttle result if this loader is already disconnected
+      // from renderer. We treat deferring as canceling the request.
+      // See also `ThrottleDelegate` which may cancel request asynchronously.
+      OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+      return;
+    }
+  }
 }
 
 KeepAliveURLLoader::~KeepAliveURLLoader() {
@@ -115,6 +310,10 @@ KeepAliveURLLoader::~KeepAliveURLLoader() {
 void KeepAliveURLLoader::set_on_delete_callback(
     OnDeleteCallback on_delete_callback) {
   on_delete_callback_ = std::move(on_delete_callback);
+}
+
+base::WeakPtr<KeepAliveURLLoader> KeepAliveURLLoader::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void KeepAliveURLLoader::FollowRedirect(
@@ -145,18 +344,48 @@ void KeepAliveURLLoader::PauseReadingBodyFromNet() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::FollowRedirect", "request_id",
               request_id_);
+  if (IsRendererConnected()) {
+    // If the renderer is alive, simply forwards the action to the network
+    // service as the checks are already handled in the renderer.
+    loader_->PauseReadingBodyFromNet();
+    return;
+  }
 
-  // Forwards the action to `loader_` in the network service.
-  loader_->PauseReadingBodyFromNet();
+  if (paused_reading_body_from_net_count_ == 0) {
+    // Only sends the action to `loader_` in the network service once before
+    // resuming.
+    loader_->PauseReadingBodyFromNet();
+  }
+  paused_reading_body_from_net_count_++;
+
+  if (observer_for_testing_) {
+    CHECK_IS_TEST();
+    observer_for_testing_->PauseReadingBodyFromNetProcessed(this);
+  }
 }
 
+// TODO(crbug.com/1356128): Add test coverage.
 void KeepAliveURLLoader::ResumeReadingBodyFromNet() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::ResumeReadingBodyFromNet",
               "request_id", request_id_);
+  if (IsRendererConnected()) {
+    // If the renderer is alive, simply forwards the action to the network
+    // service as the checks are already handled in the renderer.
+    loader_->ResumeReadingBodyFromNet();
+    return;
+  }
 
-  // Forwards the action to `loader_` in the network service.
-  loader_->ResumeReadingBodyFromNet();
+  if (paused_reading_body_from_net_count_ == 1) {
+    // Sends the action to `loader_` in the network service.
+    loader_->ResumeReadingBodyFromNet();
+  }
+  paused_reading_body_from_net_count_--;
+
+  if (observer_for_testing_) {
+    CHECK_IS_TEST();
+    observer_for_testing_->ResumeReadingBodyFromNetProcessed(this);
+  }
 }
 
 void KeepAliveURLLoader::OnReceiveEarlyHints(
@@ -165,7 +394,7 @@ void KeepAliveURLLoader::OnReceiveEarlyHints(
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveEarlyHints",
               "request_id", request_id_);
 
-  if (forwarding_client_) {
+  if (IsRendererConnected()) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
     return;
@@ -188,7 +417,7 @@ void KeepAliveURLLoader::OnReceiveResponse(
   // `forwarding_client_` can't finish response handling. Figure out a way to
   // negotiate shutdown timing via RenderFrameHostImpl::OnUnloadAck() and
   // invalidate `forwarding_client_`.
-  if (forwarding_client_) {
+  if (IsRendererConnected()) {
     // The renderer is alive, forwards the action.
 
     // The receiver may fail to finish reading `response`, so response caching
@@ -229,7 +458,7 @@ void KeepAliveURLLoader::OnReceiveRedirect(
   // `forwarding_client_` can't finish response handling. Figure out a way to
   // negotiate shutdown timing via RenderFrameHostImpl::OnUnloadAck() and
   // invalidate `forwarding_client_`.
-  if (forwarding_client_) {
+  if (IsRendererConnected()) {
     // The renderer is alive, forwards the action.
     // Redirects must be handled by the renderer so that it know what URL the
     // response come from when parsing responses.
@@ -245,10 +474,34 @@ void KeepAliveURLLoader::OnReceiveRedirect(
   // Handles redirect in browser. See also the call sequence from renderer:
   // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit#heading=h.6uwqtijf7dvd
 
-  // TODO(crbug.com/1356128): Replicates existing behaviors from renderer's
-  // list of `blink::URLLoaderThrottles`: A renderer would run some
-  // `blink::URLLoaderThrottles` added by `URLLoader::Context::Start()`, mainly
-  // from `VariationsRenderThreadObserver::AppendThrottleIfNeeded()`.
+  // Runs throttles from content embedder.
+  ModifiedHeaders modified;
+  for (auto& throttle_entry : throttle_entries_) {
+    TRACE_EVENT("loading",
+                "KeepAliveURLLoader::OnReceiveRedirect.WillRedirectRequest");
+    bool throttle_deferred = false;
+    ModifiedHeaders throttle_modified;
+    net::RedirectInfo redirect_info_copy = redirect_info;
+    auto weak_ptr = GetWeakPtr();
+    throttle_entry->throttle().WillRedirectRequest(
+        &redirect_info_copy, *head, &throttle_deferred,
+        &throttle_modified.removed_headers, &throttle_modified.modified_headers,
+        &throttle_modified.modified_cors_exempt_headers);
+    if (!weak_ptr) {
+      // `this` is already destroyed by throttle.
+      return;
+    }
+    CHECK_EQ(redirect_info_copy.new_url, redirect_info.new_url)
+        << "KeepAliveURLLoader doesn't support throttles changing the URL.";
+
+    if (throttle_deferred) {
+      // We treat deferring as canceling the request.
+      // See also `ThrottleDelegate` which may cancel request asynchronously.
+      OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+      return;
+    }
+    modified.MergeFrom(throttle_modified);
+  }
 
   if (net::Error err = WillFollowRedirect(redirect_info); err != net::OK) {
     OnComplete(network::URLLoaderCompletionStatus(err));
@@ -273,8 +526,13 @@ void KeepAliveURLLoader::OnReceiveRedirect(
     CHECK_IS_TEST();
     observer_for_testing_->OnReceiveRedirectProcessed(this);
   }
-  FollowRedirect(/*removed_headers=*/{}, /*modified_headers=*/{},
-                 /*modified_cors_exempt_headers=*/{},
+
+  // Follows redirect only after all current throttle UI tasks are executed.
+  // Note: there may be throttles running in IO thread, which may send signals
+  // in between `FollowRedirect()` and the next `OnReceiveRedirect()` or
+  // `OnReceiveResponse()`.
+  FollowRedirect(modified.removed_headers, modified.modified_headers,
+                 modified.modified_cors_exempt_headers,
                  /*new_url=*/absl::nullopt);
 }
 
@@ -285,7 +543,7 @@ void KeepAliveURLLoader::OnUploadProgress(int64_t current_position,
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnUploadProgress", "request_id",
               request_id_);
 
-  if (forwarding_client_) {
+  if (IsRendererConnected()) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnUploadProgress(current_position, total_size,
                                          std::move(callback));
@@ -300,7 +558,7 @@ void KeepAliveURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnTransferSizeUpdated",
               "request_id", request_id_);
 
-  if (forwarding_client_) {
+  if (IsRendererConnected()) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
     return;
@@ -315,7 +573,7 @@ void KeepAliveURLLoader::OnComplete(
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnComplete", "request_id",
               request_id_);
 
-  if (forwarding_client_) {
+  if (IsRendererConnected()) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnComplete(completion_status);
 
@@ -337,6 +595,10 @@ void KeepAliveURLLoader::OnComplete(
 
   DeleteSelf();
   // DO NOT touch any members after this line. `this` is already deleted.
+}
+
+bool KeepAliveURLLoader::IsRendererConnected() const {
+  return !!forwarding_client_;
 }
 
 net::Error KeepAliveURLLoader::WillFollowRedirect(
@@ -367,12 +629,6 @@ net::Error KeepAliveURLLoader::WillFollowRedirect(
     // `blink::MixedContentChecker::ShouldBlockFetch()` to support checking
     // without a frame.
   }
-
-  // TODO(crbug.com/1356128): Run SafeBrowsing check from
-  // `safe_browsing::RendererURLLoaderThrottle`, which is registered by
-  // `URLLoaderThrottleProviderImpl::CreateThrottles() and
-  // `RenderFrameImpl::WillSendRequestInternal()`, and called by
-  // `FetchContext::PrepareRequest()`.
 
   return net::OK;
 }

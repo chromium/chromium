@@ -495,15 +495,11 @@ void ContentBrowserClientImpl::OnNetworkServiceCreated(
       network_service);
 }
 
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-ContentBrowserClientImpl::CreateURLLoaderThrottles(
-    const network::ResourceRequest& request,
+std::unique_ptr<blink::URLLoaderThrottle>
+ContentBrowserClientImpl::MaybeCreateSafeBrowsingURLLoaderThrottle(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    content::NavigationUIData* navigation_ui_data,
     int frame_tree_node_id) {
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
-
   if (base::FeatureList::IsEnabled(features::kWebLayerSafeBrowsing) &&
       IsSafebrowsingSupported()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -525,10 +521,27 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
               ? RealTimeUrlLookupServiceFactory::GetForBrowserContext(
                     browser_context)
               : nullptr;
-      result.push_back(GetSafeBrowsingService()->CreateURLLoaderThrottle(
-          wc_getter, frame_tree_node_id, url_lookup_service));
+      return GetSafeBrowsingService()->CreateURLLoaderThrottle(
+          wc_getter, frame_tree_node_id, url_lookup_service);
     }
 #endif
+  }
+  return nullptr;
+}
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+ContentBrowserClientImpl::CreateURLLoaderThrottles(
+    const network::ResourceRequest& request,
+    content::BrowserContext* browser_context,
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    content::NavigationUIData* navigation_ui_data,
+    int frame_tree_node_id) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
+
+  if (auto safe_browsing_throttle = MaybeCreateSafeBrowsingURLLoaderThrottle(
+          browser_context, wc_getter, frame_tree_node_id);
+      safe_browsing_throttle) {
+    result.push_back(std::move(safe_browsing_throttle));
   }
 
   auto signin_throttle =
@@ -545,6 +558,23 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
         prerender::PrerenderHistograms::GetHistogramPrefix(
             no_state_prefetch_contents->origin()),
         GetPrerenderCanceler(web_contents)));
+  }
+
+  return result;
+}
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+ContentBrowserClientImpl::CreateURLLoaderThrottlesForKeepAlive(
+    const network::ResourceRequest& request,
+    content::BrowserContext* browser_context,
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    int frame_tree_node_id) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
+
+  if (auto safe_browsing_throttle = MaybeCreateSafeBrowsingURLLoaderThrottle(
+          browser_context, wc_getter, frame_tree_node_id);
+      safe_browsing_throttle) {
+    result.push_back(std::move(safe_browsing_throttle));
   }
 
   return result;
