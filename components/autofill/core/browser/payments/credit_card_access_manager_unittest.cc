@@ -2568,13 +2568,13 @@ TEST_F(CreditCardAccessManagerTest,
       /*fido_authenticator_is_user_opted_in=*/false,
       /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0);
 
-  CreditCardOtpAuthenticator::OtpAuthenticationResponse otp_response;
-  otp_response.result =
-      CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::kSuccess;
   CreditCard card = test::GetCreditCard();
-  otp_response.card = &card;
-  otp_response.cvc = u"123";
-  credit_card_access_manager_->OnOtpAuthenticationComplete(otp_response);
+  credit_card_access_manager_->OnOtpAuthenticationComplete(
+      CreditCardOtpAuthenticator::OtpAuthenticationResponse()
+          .with_result(CreditCardOtpAuthenticator::OtpAuthenticationResponse::
+                           Result::kSuccess)
+          .with_card(&card)
+          .with_cvc(u"123"));
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(autofill_client_.GetFormDataImporter()
@@ -2639,13 +2639,13 @@ TEST_F(CreditCardAccessManagerTest,
 
     switch (challenge_options[selected_index].type) {
       case CardUnmaskChallengeOptionType::kSmsOtp: {
-        CreditCardOtpAuthenticator::OtpAuthenticationResponse otp_response;
-        otp_response.result = CreditCardOtpAuthenticator::
-            OtpAuthenticationResponse::Result::kSuccess;
         CreditCard card = test::GetCreditCard();
-        otp_response.card = &card;
-        otp_response.cvc = u"123";
-        credit_card_access_manager_->OnOtpAuthenticationComplete(otp_response);
+        credit_card_access_manager_->OnOtpAuthenticationComplete(
+            CreditCardOtpAuthenticator::OtpAuthenticationResponse()
+                .with_result(CreditCardOtpAuthenticator::
+                                 OtpAuthenticationResponse::Result::kSuccess)
+                .with_card(&card)
+                .with_cvc(u"123"));
         break;
       }
       case CardUnmaskChallengeOptionType::kCvc: {

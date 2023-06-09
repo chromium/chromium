@@ -1141,6 +1141,7 @@ void CreditCardAccessManager::OnDidGetUnmaskRiskData(
 void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+  selected_challenge_option_ = nullptr;
   virtual_card_unmask_response_details_ = response_details;
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
@@ -1373,6 +1374,7 @@ void CreditCardAccessManager::Reset() {
   unmask_details_ = payments::PaymentsClient::UnmaskDetails();
   virtual_card_unmask_request_details_ =
       payments::PaymentsClient::UnmaskRequestDetails();
+  selected_challenge_option_ = nullptr;
   virtual_card_unmask_response_details_ =
       payments::PaymentsClient::UnmaskResponseDetails();
   ready_to_start_authentication_.Reset();
