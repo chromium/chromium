@@ -1550,21 +1550,6 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (overflow_controls_only)
     return nullptr;
 
-  // See if the hit test pos is inside the overflow controls of the child
-  // layers that have reordered the painting of the overlay overflow controls.
-  if (stacking_node_) {
-    for (auto& layer : base::Reversed(
-             stacking_node_->OverlayOverflowControlsReorderedList())) {
-      if (layer->HitTestLayer(transform_container, container_fragment, result,
-                              recursion_data, /*applied_transform*/ false,
-                              container_transform_state,
-                              z_offset_for_descendants_ptr,
-                              /*overflow_controls_only*/ true)) {
-        return layer;
-      }
-    }
-  }
-
   // This variable tracks which layer the mouse ends up being inside.
   PaintLayer* candidate_layer = nullptr;
 
@@ -1902,36 +1887,67 @@ PaintLayer* PaintLayer::HitTestChildren(
 
   PaintLayer* result_layer = nullptr;
   PaintLayerPaintOrderReverseIterator iterator(this, children_to_visit);
-  while (PaintLayer* child_layer = iterator.Next()) {
-    if (child_layer->IsReplacedNormalFlowStacking())
-      continue;
 
-    // Avoid the call to child_layer->HitTestLayer() if possible.
+  // Returns true if the caller should break the loop.
+  auto hit_test_child = [&](PaintLayer* child_layer,
+                            bool overflow_controls_only) -> bool {
+    if (child_layer->IsReplacedNormalFlowStacking())
+      return false;
+
+    // Avoid the call to child_layer.HitTestLayer() if possible.
     if (stop_layer == this &&
         !IsHitCandidateForStopNode(child_layer->GetLayoutObject(), stop_node)) {
-      continue;
+      return false;
     }
 
-    PaintLayer* hit_layer = nullptr;
     STACK_UNINITIALIZED HitTestResult temp_result(
         result.GetHitTestRequest(), recursion_data.original_location);
-    hit_layer = child_layer->HitTestLayer(
+    PaintLayer* hit_layer = child_layer->HitTestLayer(
         transform_container, container_fragment, temp_result, recursion_data,
         /*applied_transform*/ false, container_transform_state,
-        z_offset_for_descendants);
+        z_offset_for_descendants, overflow_controls_only);
 
     // If it is a list-based test, we can safely append the temporary result
-    // since it might had hit nodes but not necesserily had hitLayer set.
-    if (result.GetHitTestRequest().ListBased())
+    // since it might had hit nodes but not necessarily had hit_layer set.
+    if (result.GetHitTestRequest().ListBased()) {
       result.Append(temp_result);
+    }
 
     if (IsHitCandidateForDepthOrder(hit_layer, depth_sort_descendants, z_offset,
                                     local_transform_state)) {
       result_layer = hit_layer;
       if (!result.GetHitTestRequest().ListBased())
         result = temp_result;
-      if (!depth_sort_descendants)
-        break;
+      if (!depth_sort_descendants) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  while (PaintLayer* child_layer = iterator.Next()) {
+    if (stacking_node_) {
+      if (const auto* layers_painting_overlay_overflow_controls_after =
+              stacking_node_->LayersPaintingOverlayOverflowControlsAfter(
+                  child_layer)) {
+        bool break_loop = false;
+        for (auto& reparent_overflow_controls_layer :
+             base::Reversed(*layers_painting_overlay_overflow_controls_after)) {
+          DCHECK(reparent_overflow_controls_layer
+                     ->NeedsReorderOverlayOverflowControls());
+          if (hit_test_child(reparent_overflow_controls_layer, true)) {
+            break_loop = true;
+            break;
+          }
+        }
+        if (break_loop) {
+          break;
+        }
+      }
+    }
+
+    if (hit_test_child(child_layer, false)) {
+      break;
     }
   }
 

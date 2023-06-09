@@ -78,7 +78,6 @@ void PaintLayerStackingNode::DirtyZOrderLists() {
       layer->SetNeedsReorderOverlayOverflowControls(false);
   }
   layer_to_overlay_overflow_controls_painting_after_.clear();
-  overlay_overflow_controls_reordered_list_.clear();
 
   z_order_lists_dirty_ = true;
 }
@@ -272,7 +271,6 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
           .insert(layer_to_paint_overlay_overflow_controls_after,
                   MakeGarbageCollected<PaintLayers>())
           .stored_value->value->push_back(paint_layer);
-      overlay_overflow_controls_reordered_list_.push_back(paint_layer);
     }
     paint_layer.SetNeedsReorderOverlayOverflowControls(
         !!layer_to_paint_overlay_overflow_controls_after);
@@ -321,7 +319,6 @@ void PaintLayerStackingNode::Trace(Visitor* visitor) const {
   visitor->Trace(pos_z_order_list_);
   visitor->Trace(neg_z_order_list_);
   visitor->Trace(layer_to_overlay_overflow_controls_painting_after_);
-  visitor->Trace(overlay_overflow_controls_reordered_list_);
 }
 
 }  // namespace blink
