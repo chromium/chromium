@@ -265,12 +265,21 @@ const AXPosition AXPosition::FromPosition(
     // subtract the text offset of our |container| from the beginning of the
     // same formatting context.
     int container_offset = container->TextOffsetInFormattingContext(0);
-    int text_offset =
-        static_cast<int>(
-            container_offset_mapping
-                ->GetTextContentOffset(parent_anchored_position)
-                .value_or(static_cast<unsigned int>(container_offset))) -
-        container_offset;
+    absl::optional<unsigned> content_offset =
+        container_offset_mapping->GetTextContentOffset(
+            parent_anchored_position);
+    int text_offset = 0;
+    if (content_offset.has_value()) {
+      text_offset = content_offset.value() - container_offset;
+      // Adjust the offset for characters that are not in the accessible text.
+      // These can include zero-width breaking opportunities inserted after
+      // preserved preliminary whitespace and isolate characters inserted when
+      // positioning SVG text at a specific x coordinate.
+      int adjustment = ax_position.GetLeadingIgnoredCharacterCount(
+          container_offset_mapping, container->GetNode(), container_offset,
+          content_offset.value());
+      text_offset -= adjustment;
+    }
     DCHECK_GE(text_offset, 0);
     ax_position.text_offset_or_child_index_ = text_offset;
     ax_position.affinity_ = affinity;
@@ -1002,6 +1011,47 @@ String AXPosition::ToString() const {
   builder.Append(container_object_->ToString());
   builder.AppendFormat(", %d", ChildIndex());
   return builder.ToString();
+}
+
+// static
+bool AXPosition::IsIgnoredCharacter(UChar character) {
+  switch (character) {
+    case kZeroWidthSpaceCharacter:
+    case kLeftToRightIsolateCharacter:
+    case kRightToLeftIsolateCharacter:
+    case kPopDirectionalIsolateCharacter:
+      return true;
+    default:
+      return false;
+  }
+}
+
+int AXPosition::GetLeadingIgnoredCharacterCount(const NGOffsetMapping* mapping,
+                                                const Node* node,
+                                                int container_offset,
+                                                int content_offset) const {
+  if (!mapping) {
+    return content_offset;
+  }
+
+  String text = mapping->GetText();
+  int count = 0;
+  unsigned previous_content_end = container_offset;
+  for (auto unit : mapping->GetMappingUnitsForNode(*node)) {
+    if (unit.TextContentStart() > static_cast<unsigned>(content_offset)) {
+      break;
+    }
+
+    if (unit.TextContentStart() != previous_content_end) {
+      String substring = text.Substring(
+          previous_content_end, unit.TextContentStart() - previous_content_end);
+      String unignored = substring.RemoveCharacters(IsIgnoredCharacter);
+      count += substring.length() - unignored.length();
+    }
+    previous_content_end = unit.TextContentEnd();
+  }
+
+  return count;
 }
 
 // static
