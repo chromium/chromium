@@ -207,6 +207,7 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // Fetches and validates stored devices from the pref service. Then adds the
   // validated devices to the Media Router and sets the expiration timers.
+  // No-op if `pref_updater_` hasn't been instantiated.
   void InitAllStoredDevices();
   void OnStoredDevicesValidated(
       const std::vector<MediaSinkInternal>& validated_sinks);
@@ -279,6 +280,16 @@ class AccessCodeCastSinkService : public KeyedService,
   cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
       const MediaSinkInternal& sink);
 
+  // Instantiate `pref_updater_` and call `InitAllStoredDevices()`.
+  void InitializePrefUpdater();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Due to version skewing, kAccessCodeCastDevices might not be registered for
+  // crosapi. In that case, we should use AccessCodeCastPrefUpdaterImpl for
+  // Lacros.
+  void MaybeCreateAccessCodePrefUpdaterLacros(bool is_pref_registered);
+#endif
+
   void LogInfo(const std::string& log_message, const std::string& sink_id);
   void LogWarning(const std::string& log_message, const std::string& sink_id);
   void LogError(const std::string& log_message, const std::string& sink_id);
@@ -335,6 +346,10 @@ class AccessCodeCastSinkService : public KeyedService,
 
   raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
+  // On Lacros, `pref_updater_` is not initialized until it's confirmed whether
+  // kAccessCodeCastDevicesDict pref has been registered for sync through the
+  // Prefs crosapi. So its value might be nullptr during the time when the sink
+  // service is waiting for the response from Prefs crosapi.
   std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =

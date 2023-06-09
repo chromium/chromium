@@ -100,6 +100,18 @@ void RemoveFromPref(crosapi::mojom::PrefPath path,
 AccessCodeCastPrefUpdaterLacros::AccessCodeCastPrefUpdaterLacros() = default;
 AccessCodeCastPrefUpdaterLacros::~AccessCodeCastPrefUpdaterLacros() = default;
 
+// static
+void AccessCodeCastPrefUpdaterLacros::IsAccessCodeCastDevicePrefAvailable(
+    base::OnceCallback<void(bool)> availability_callback) {
+  GetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
+          base::BindOnce(
+              [](base::OnceCallback<void(bool)> availability_callback,
+                 absl::optional<base::Value> pref_value) {
+                std::move(availability_callback).Run(pref_value.has_value());
+              },
+              std::move(availability_callback)));
+}
+
 void AccessCodeCastPrefUpdaterLacros::UpdateDevicesDict(
     const MediaSinkInternal& sink,
     base::OnceClosure on_updated_callback) {

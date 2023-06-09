@@ -26,6 +26,9 @@ class AccessCodeCastPrefUpdaterLacros : public AccessCodeCastPrefUpdater {
       const AccessCodeCastPrefUpdaterLacros&) = delete;
   ~AccessCodeCastPrefUpdaterLacros() override;
 
+  static void IsAccessCodeCastDevicePrefAvailable(
+      base::OnceCallback<void(bool)> availability_callback);
+
   // AccessCodeCastPrefUpdater implementation.
   void UpdateDevicesDict(const MediaSinkInternal& sink,
                          base::OnceClosure on_updated_callback) override;

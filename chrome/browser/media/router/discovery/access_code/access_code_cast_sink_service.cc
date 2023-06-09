@@ -34,8 +34,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros.h"
-#else
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #endif
 
 namespace media_router {
@@ -94,7 +92,6 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
   DCHECK(profile_) << "The profile does not exist.";
   DCHECK(prefs_)
       << "Prefs could not be fetched from the profile for some reason.";
-  DCHECK(pref_updater_) << "The PrefUpdater is not properly instantiated.";
   DCHECK(media_router_) << "The media router does not exist.";
   backoff_policy_ = {
       // Number of initial errors (in sequence) to ignore before going into
@@ -125,11 +122,12 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       false,
   };
 
+  InitializePrefUpdater();
+
   // We don't need to post this task per the DiscoveryNetworkMonitor's
   // promise: "All observers will be notified of network changes on the thread
   // from which they registered."
   network_monitor_->AddObserver(this);
-  InitAllStoredDevices();
   user_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
   user_prefs_registrar_->Init(prefs_);
   user_prefs_registrar_->Add(
@@ -150,13 +148,7 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
               ->GetCastMediaSinkServiceImpl(),
           DiscoveryNetworkMonitor::GetInstance(),
           profile->GetPrefs(),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          std::make_unique<AccessCodeCastPrefUpdaterLacros>()
-#else
-          std::make_unique<AccessCodeCastPrefUpdaterImpl>(profile->GetPrefs())
-#endif
-      ) {
-}
+          /* pref_updater */ nullptr) {}
 
 AccessCodeCastSinkService::~AccessCodeCastSinkService() = default;
 
@@ -595,6 +587,14 @@ void AccessCodeCastSinkService::OnStoredDevicesValidated(
 void AccessCodeCastSinkService::FetchAndValidateStoredDevices(
     base::OnceCallback<void(const std::vector<MediaSinkInternal>&)>
         on_device_validated_callback) {
+  if (!pref_updater_) {
+    LogError(
+        "Failed to fetch stored devices: pref_updater_ hasn't been "
+        "instantiated.",
+        "");
+    std::move(on_device_validated_callback).Run({});
+    return;
+  }
   pref_updater_->GetDevicesDict(base::BindOnce(
       &AccessCodeCastSinkService::ValidateStoredDevices,
       weak_ptr_factory_.GetWeakPtr(), std::move(on_device_validated_callback)));
@@ -696,6 +696,14 @@ void AccessCodeCastSinkService::ResetExpirationTimers() {
 void AccessCodeCastSinkService::CalculateDurationTillExpiration(
     const MediaSink::Id& sink_id,
     base::OnceCallback<void(base::TimeDelta)> on_duration_calculated_callback) {
+  if (!pref_updater_) {
+    LogError(
+        "Failed to calculate duration till expiration: pref_updater_ hasn't "
+        "been instantiated.",
+        sink_id);
+    std::move(on_duration_calculated_callback).Run(base::Seconds(0));
+    return;
+  }
   pref_updater_->GetDeviceAddedTime(
       sink_id,
       base::BindOnce(
@@ -788,6 +796,13 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
         "");
     return;
   }
+  if (!pref_updater_) {
+    LogError(
+        "Failed to store the sink in prefs: pref_updater_ hasn't been "
+        "instantiated.",
+        sink->id());
+    return;
+  }
   // `on_sink_stored_callback` will be invoked after `barrier_callback` is
   // invoked twice, after `UpdateDevicesDict()` and
   // `UpdateDeviceAddedTimeDict()` have finished.
@@ -838,6 +853,13 @@ void AccessCodeCastSinkService::UpdateExistingSink(
 
 void AccessCodeCastSinkService::RemoveSinkIdFromAllEntries(
     const MediaSink::Id& sink_id) {
+  if (!pref_updater_) {
+    LogError(
+        "Failed to remove the sink from prefs: pref_updater_ hasn't been "
+        "instantiated.",
+        sink_id);
+    return;
+  }
   pref_updater_->RemoveSinkIdFromDevicesDict(sink_id, base::DoNothing());
   pref_updater_->RemoveSinkIdFromDeviceAddedTimeDict(sink_id,
                                                      base::DoNothing());
@@ -936,8 +958,10 @@ void AccessCodeCastSinkService::OnEnabledPrefChange() {
   if (!GetAccessCodeCastEnabledPref(profile_)) {
     RemoveAndDisconnectExistingSinksOnNetwork();
     ResetExpirationTimers();
-    pref_updater_->ClearDevicesDict(base::DoNothing());
-    pref_updater_->ClearDeviceAddedTimeDict(base::DoNothing());
+    if (pref_updater_) {
+      pref_updater_->ClearDevicesDict(base::DoNothing());
+      pref_updater_->ClearDeviceAddedTimeDict(base::DoNothing());
+    }
   }
 }
 
@@ -960,5 +984,45 @@ void AccessCodeCastSinkService::SetIdentityManagerForTesting(
   DCHECK(identity_manager);
   identity_manager_ = identity_manager;
 }
+
+void AccessCodeCastSinkService::InitializePrefUpdater() {
+  // If `pref_updater_` has been instantiated (i.e. for testing), do not
+  // overwrite its value.
+  if (pref_updater_) {
+    InitAllStoredDevices();
+    return;
+  }
+
+// On Lacros, we should check if kAccessCodeCastDevices pref is synced from Ash
+// and then instantiate `pref_updater_` with the corresponding proper
+// implementation. Since querying the prefs stored in Ash is asynchronous,
+// `InitAllStoredDevices()` has to be called in
+// `MaybeCreateAccessCodePrefUpdaterLacros()`.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AccessCodeCastPrefUpdaterLacros::IsAccessCodeCastDevicePrefAvailable(
+      base::BindOnce(
+          &AccessCodeCastSinkService::MaybeCreateAccessCodePrefUpdaterLacros,
+          GetWeakPtr()));
+#else
+  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
+  InitAllStoredDevices();
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void AccessCodeCastSinkService::MaybeCreateAccessCodePrefUpdaterLacros(
+    bool is_pref_registered) {
+  // If the access code prefs are registered for crosapi, replace the current
+  // `pref_updater_` with the AccessCodeCastPrefUpdaterLacros and run the
+  // callback to continue validating stored devices.
+  if (is_pref_registered) {
+    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterLacros>();
+  } else {
+    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
+  }
+
+  InitAllStoredDevices();
+}
+#endif
 
 }  // namespace media_router
