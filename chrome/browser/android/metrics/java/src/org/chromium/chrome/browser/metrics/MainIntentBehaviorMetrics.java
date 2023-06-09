@@ -25,18 +25,13 @@ public class MainIntentBehaviorMetrics {
     private static boolean sLoggedLaunchBehavior;
     private static boolean sHasRegisteredApplicationStateListener;
 
-    // Constants used to log UMA "enum" histogram about launch type.
-    private static final int LAUNCH_FROM_ICON = 0;
-    private static final int LAUNCH_NOT_FROM_ICON = 1;
-    private static final int LAUNCH_BOUNDARY = 2;
-
     private final Runnable mLogLaunchRunnable;
 
     /**
      * Constructs a metrics handler for ACTION_MAIN intents received for an activity.
      */
     public MainIntentBehaviorMetrics() {
-        mLogLaunchRunnable = () -> logLaunchBehavior(false);
+        mLogLaunchRunnable = () -> logLaunchBehaviorInternal();
     }
 
     private void ensureApplicationStateListenerRegistered() {
@@ -67,7 +62,7 @@ public class MainIntentBehaviorMetrics {
             RecordUserAction.record("MobileStartup.MainIntentReceived.After1Hour");
         }
 
-        logLaunchBehavior(true);
+        logLaunchBehaviorInternal();
     }
 
     /**
@@ -87,7 +82,7 @@ public class MainIntentBehaviorMetrics {
         ThreadUtils.getUiThreadHandler().postDelayed(mLogLaunchRunnable, sTimeoutDurationMs);
     }
 
-    private void logLaunchBehavior(boolean isLaunchFromIcon) {
+    private void logLaunchBehaviorInternal() {
         ensureApplicationStateListenerRegistered();
         if (sLoggedLaunchBehavior) return;
         sLoggedLaunchBehavior = true;
@@ -109,8 +104,6 @@ public class MainIntentBehaviorMetrics {
 
         count++;
         prefs.writeInt(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, count);
-        RecordHistogram.recordEnumeratedHistogram("MobileStartup.LaunchType",
-                isLaunchFromIcon ? LAUNCH_FROM_ICON : LAUNCH_NOT_FROM_ICON, LAUNCH_BOUNDARY);
 
         DefaultBrowserPromoUtils.incrementSessionCount();
 

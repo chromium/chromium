@@ -57444,11 +57444,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="36" label="Launch from system tray Calendar"/>
 </enum>
 
-<enum name="LaunchType">
-  <int value="0" label="From icon"/>
-  <int value="1" label="Not from icon"/>
-</enum>
-
 <enum name="LaunchWebAuthFlowResult">
   <int value="0" label="Success"/>
   <int value="1" label="kOffTheRecord"/>

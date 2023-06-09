@@ -1299,18 +1299,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileStartup.LaunchType" enum="LaunchType"
-    expires_after="2023-10-22">
-  <owner>tedchoc@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The type of launching Chrome mobile app, e.g launch by hitting icon.
-
-    Only recorded for tabbed mode launches of Chrome. Recall that custom tabs is
-    not considered tabbed mode.
-  </summary>
-</histogram>
-
 <histogram base="true" name="MobileStartup.ToolbarInflationTime" units="ms"
     expires_after="M82">
   <owner>pasko@chromium.org</owner>
