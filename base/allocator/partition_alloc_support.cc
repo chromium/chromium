@@ -1187,11 +1187,19 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  auto use_alternate_bucket_distribution =
+      allocator_shim::AlternateBucketDistribution::kDefault;
   // No specified type means we are in the browser.
-  auto bucket_distribution =
-      process_type == ""
-          ? base::features::kPartitionAllocBucketDistributionParam.Get()
-          : base::features::BucketDistributionMode::kDefault;
+  switch (process_type == ""
+              ? base::features::kPartitionAllocBucketDistributionParam.Get()
+              : base::features::BucketDistributionMode::kDefault) {
+    case base::features::BucketDistributionMode::kDefault:
+      break;
+    case base::features::BucketDistributionMode::kDenser:
+      use_alternate_bucket_distribution =
+          allocator_shim::AlternateBucketDistribution::kDenser;
+      break;
+  }
 
   bool enable_memory_tagging = false;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
@@ -1246,8 +1254,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                                          enable_memory_tagging),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
-      brp_config.ref_count_size,
-      allocator_shim::AlternateBucketDistribution(bucket_distribution));
+      brp_config.ref_count_size, use_alternate_bucket_distribution);
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to

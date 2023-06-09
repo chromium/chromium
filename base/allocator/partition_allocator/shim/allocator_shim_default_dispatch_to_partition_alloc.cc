@@ -10,7 +10,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/chromecast_buildflags.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
@@ -490,7 +489,7 @@ void PartitionTryFreeDefault(const AllocatorDispatch*,
                              void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 
-  if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
+  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
           reinterpret_cast<uintptr_t>(address)))) {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc. Call find_zone_and_free.

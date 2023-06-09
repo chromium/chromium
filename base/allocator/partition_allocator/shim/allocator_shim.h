@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/types/strong_alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/base_export.h"
@@ -191,7 +190,7 @@ using SplitMainPartition =
                                                  bool>;
 using UseDedicatedAlignedPartition = partition_alloc::internal::base::
     StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
-using AlternateBucketDistribution = base::features::BucketDistributionMode;
+enum class AlternateBucketDistribution : uint8_t { kDefault, kDenser };
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
