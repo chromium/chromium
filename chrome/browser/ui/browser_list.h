@@ -173,6 +173,9 @@ class BrowserList {
   // well.
   static bool IsOffTheRecordBrowserInUse(Profile* profile);
 
+  // Returns the number of browser windows for |profile|.
+  static size_t GetNumberProfileBrowser(Profile* profile);
+
  private:
   BrowserList();
   ~BrowserList();

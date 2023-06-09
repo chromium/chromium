@@ -14808,10 +14808,12 @@ regressions. -->
     <variant name="ChromeOSRestart"/>
     <variant name="ChromeTips"/>
     <variant name="ClearBrowsingData"/>
+    <variant name="CloseProfile"/>
     <variant name="Copy"/>
     <variant name="CopyUrl"/>
     <variant name="CreateHostedApp"/>
     <variant name="CreateQrCode"/>
+    <variant name="CustomizeChrome"/>
     <variant name="Cut"/>
     <variant name="DevTools"/>
     <variant name="DevToolsConsole"/>
@@ -14826,6 +14828,7 @@ regressions. -->
     <variant name="InstallPwa"/>
     <variant name="LoginForDeviceTabs"/>
     <variant name="ManageExtensions"/>
+    <variant name="ManageGoogleAccount"/>
     <variant name="NewIncognitoWindow"/>
     <variant name="NewTab"/>
     <variant name="NewWindow"/>

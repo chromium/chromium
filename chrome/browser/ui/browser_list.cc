@@ -375,6 +375,15 @@ bool BrowserList::IsOffTheRecordBrowserInUse(Profile* profile) {
   });
 }
 
+// static
+size_t BrowserList::GetNumberProfileBrowser(Profile* profile) {
+  BrowserList* list = BrowserList::GetInstance();
+  return base::ranges::count_if(*list, [profile](Browser* browser) {
+    return browser->profile()->GetOriginalProfile() ==
+           profile->GetOriginalProfile();
+  });
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserList, private:
 

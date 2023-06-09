@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/global_error/global_error.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/profile_view_utils.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
@@ -236,7 +238,7 @@ AccountInfo GetAccountInfoFromProfile(const Profile* profile) {
 class ProfileSubMenuModel : public ui::SimpleMenuModel {
  public:
   ProfileSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                      const Profile* profile);
+                      Profile* profile);
   ProfileSubMenuModel(const ProfileSubMenuModel&) = delete;
   ProfileSubMenuModel& operator=(const ProfileSubMenuModel&) = delete;
   ~ProfileSubMenuModel() override = default;
@@ -254,7 +256,7 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel {
 
 ProfileSubMenuModel::ProfileSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    const Profile* profile)
+    Profile* profile)
     : SimpleMenuModel(delegate) {
   const int avatar_icon_size =
       GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
@@ -294,6 +296,31 @@ ProfileSubMenuModel::ProfileSubMenuModel(
           profile_name_, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
           gfx::CHARACTER_BREAK));
     }
+  }
+
+  AddItemWithStringIdAndIcon(
+      IDC_CUSTOMIZE_CHROME, IDS_CUSTOMIZE_CHROME,
+      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+  AddItemWithIcon(
+      IDC_CLOSE_PROFILE,
+      l10n_util::GetPluralStringFUTF16(
+          IDS_CLOSE_PROFILE, BrowserList::GetNumberProfileBrowser(profile)),
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+
+  if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile)) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    const gfx::VectorIcon& manage_account_icon =
+        vector_icons::kGoogleGLogoMonochromeIcon;
+#else
+    const gfx::VectorIcon& manage_account_icon =
+        kAccountManageChromeRefreshIcon;
+#endif
+    AddItemWithStringIdAndIcon(
+        IDC_MANAGE_GOOGLE_ACCOUNT, IDS_MANAGE_GOOGLE_ACCOUNT,
+        ui::ImageModel::FromVectorIcon(manage_account_icon, ui::kColorMenuIcon,
+                                       kDefaultIconSize));
   }
 }
 
@@ -1054,6 +1081,29 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                    delta);
       }
       LogMenuAction(MENU_ACTION_PASSWORD_MANAGER);
+      break;
+
+    // Profile submenu.
+    case IDC_CUSTOMIZE_CHROME:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CustomizeChrome",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_CUSTOMIZE_CHROME);
+      break;
+    case IDC_CLOSE_PROFILE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CloseProfile",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_CLOSE_PROFILE);
+      break;
+    case IDC_MANAGE_GOOGLE_ACCOUNT:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ManageGoogleAccount", delta);
+      }
+      LogMenuAction(MENU_ACTION_MANAGE_GOOGLE_ACCOUNT);
       break;
   }
 
