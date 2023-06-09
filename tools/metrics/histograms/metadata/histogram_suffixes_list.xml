@@ -1944,12 +1944,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Signin.Extensions.GetAuthTokenResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GLApisWithErrorReporting" separator="_">
-  <suffix name="TexImage2D" label="All GL APIs that allocate a 2D texture."/>
-  <suffix name="TexImage3D" label="All GL APIs that allocate a 3D texture."/>
-  <affected-histogram name="GPU.Error"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GPU_ProtectedVideoType" separator=".">
   <suffix name="Clear" label="Clear"/>
   <suffix name="HardwareProtected" label="HardwareProtected"/>
