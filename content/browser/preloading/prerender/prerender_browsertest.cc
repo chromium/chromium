@@ -1169,7 +1169,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResourceLoadIsBlocked) {
   AddPrerenderAsync(prerendering_url);
   host_observer.WaitForDestroyed();
 
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kBlockedByClient);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kResourceLoadBlockedByClient);
 
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.ResourceLoadingBlockedByClientByType."

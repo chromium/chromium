@@ -1026,6 +1026,7 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kMemoryPressureOnTrigger:
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
+    case PrerenderFinalStatus::kResourceLoadBlockedByClient:
       if (attempt_) {
         attempt_->SetFailureReason(ToPreloadingFailureReason(status));
         // We reset the attempt to ensure we don't update once we have reported

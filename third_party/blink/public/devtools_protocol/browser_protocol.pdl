@@ -11086,6 +11086,7 @@ experimental domain Preload
       MemoryPressureOnTrigger
       MemoryPressureAfterTriggered
       PrerenderingDisabledByDevTools
+      ResourceLoadBlockedByClient
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

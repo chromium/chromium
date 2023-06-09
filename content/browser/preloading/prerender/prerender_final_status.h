@@ -121,7 +121,12 @@ enum class PrerenderFinalStatus {
 
   kPrerenderingDisabledByDevTools = 69,
 
-  kMaxValue = kPrerenderingDisabledByDevTools,
+  // Different from kBlockedByClient, which tracks the failure caused by main
+  // frame navigation, this status indicates that clients block some resource
+  // loading.
+  kResourceLoadBlockedByClient = 70,
+
+  kMaxValue = kResourceLoadBlockedByClient,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

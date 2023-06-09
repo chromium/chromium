@@ -287,6 +287,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       NOTREACHED_NORETURN();
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
+    case PrerenderFinalStatus::kResourceLoadBlockedByClient:
+      return PreloadingEligibility::kPreloadingDisabledByDevTools;
   }
 
   NOTREACHED_NORETURN();
@@ -1378,7 +1380,7 @@ void PrerenderHostRegistry::ResourceLoadComplete(
     RecordBlockedByClientResourceType(resource_load_info.request_destination,
                                       host->trigger_type(),
                                       host->embedder_histogram_suffix());
-    CancelHost(host_id, PrerenderFinalStatus::kBlockedByClient);
+    CancelHost(host_id, PrerenderFinalStatus::kResourceLoadBlockedByClient);
     break;
   }
 }
