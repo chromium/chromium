@@ -773,7 +773,9 @@ void HTMLVideoElement::AttributeChanged(
 }
 
 void HTMLVideoElement::OnRequestVideoFrameCallback() {
-  VideoFrameCallbackRequester::From(*this)->OnRequestVideoFrameCallback();
+  if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this)) {
+    vfc_requester->OnRequestVideoFrameCallback();
+  }
 }
 
 }  // namespace blink

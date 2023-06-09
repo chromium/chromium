@@ -271,6 +271,13 @@ GPUExternalTexture* GPUExternalTexture::FromHTMLVideoElement(
   if (!source.valid)
     return nullptr;
 
+  // Ensure that video playback remains unaffected by preventing any
+  // throttling when the video is not visible on the screen.
+  DCHECK(video);
+  if (auto* wmp = video->GetWebMediaPlayer()) {
+    wmp->RequestVideoFrameCallback();
+  }
+
   GPUExternalTexture* external_texture = GPUExternalTexture::CreateImpl(
       cache, webgpu_desc, source.media_video_frame, source.video_renderer,
       source.media_video_frame_unique_id, exception_state);
