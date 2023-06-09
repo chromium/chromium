@@ -24,6 +24,9 @@ struct SkHighContrastConfig;
 struct SkRect;
 struct SkIRect;
 class SkRRect;
+namespace sktext::gpu {
+class Slug;
+}
 
 namespace gfx {
 struct HDRMetadata;
@@ -203,7 +206,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const SkColorSpace* data);
   void Write(const SkGainmapInfo& gainmap_info);
   void Write(const SkSamplingOptions&);
-  void Write(const sk_sp<GrSlug>& slug);
+  void Write(const sk_sp<sktext::gpu::Slug>& slug);
   void Write(SkYUVColorSpace yuv_color_space);
   void Write(SkYUVAInfo::PlaneConfig plane_config);
   void Write(SkYUVAInfo::Subsampling subsampling);

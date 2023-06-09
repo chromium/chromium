@@ -398,7 +398,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
                               base::bits::Log2Floor(sample_count), 0, 7, 7);
   // With Raw Draw, the framebuffer will be the rasterization target. It cannot
   // support LCD text, so disable LCD text for Raw Draw backings.
-  // TODO(penghuang): remove it when GrSlug can be serialized.
+  // TODO(penghuang): remove it when sktext::gpu::Slug can be serialized.
   bool is_raw_draw_backing =
       client_->is_using_raw_draw_ && !backing_->overlay_candidate;
   bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;

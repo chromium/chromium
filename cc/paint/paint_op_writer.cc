@@ -39,8 +39,8 @@
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
-#include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
+#include "third_party/skia/include/private/chromium/Slug.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
@@ -524,7 +524,7 @@ void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
   Write(base_image_type);
 }
 
-void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
+void PaintOpWriter::Write(const sk_sp<sktext::gpu::Slug>& slug) {
   if (!valid_)
     return;
 

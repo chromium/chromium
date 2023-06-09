@@ -30,7 +30,7 @@
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/private/chromium/GrSlug.h"
+#include "third_party/skia/include/private/chromium/Slug.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -633,11 +633,12 @@ void DrawSkottieOp::Serialize(PaintOpWriter& writer,
       });
 }
 
-void DrawSlugOp::SerializeSlugs(const sk_sp<GrSlug>& slug,
-                                const std::vector<sk_sp<GrSlug>>& extra_slugs,
-                                PaintOpWriter& writer,
-                                const PaintFlags* flags_to_serialize,
-                                const SkM44& current_ctm) {
+void DrawSlugOp::SerializeSlugs(
+    const sk_sp<sktext::gpu::Slug>& slug,
+    const std::vector<sk_sp<sktext::gpu::Slug>>& extra_slugs,
+    PaintOpWriter& writer,
+    const PaintFlags* flags_to_serialize,
+    const SkM44& current_ctm) {
   writer.Write(*flags_to_serialize, current_ctm);
   unsigned int count = extra_slugs.size() + 1;
   writer.Write(count);
@@ -1389,7 +1390,7 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
     DCHECK(op->blob);
     c->drawTextBlob(op->blob.get(), op->x, op->y, p);
     if (params.is_analyzing) {
-      auto s = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+      auto s = sktext::gpu::Slug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
       if (i == 0) {
         op->slug = std::move(s);
       } else {
@@ -2130,7 +2131,7 @@ DrawTextBlobOp::~DrawTextBlobOp() = default;
 
 DrawSlugOp::DrawSlugOp() : PaintOpWithFlags(kType) {}
 
-DrawSlugOp::DrawSlugOp(sk_sp<GrSlug> slug, const PaintFlags& flags)
+DrawSlugOp::DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags)
     : PaintOpWithFlags(kType, flags), slug(std::move(slug)) {}
 
 DrawSlugOp::~DrawSlugOp() = default;
