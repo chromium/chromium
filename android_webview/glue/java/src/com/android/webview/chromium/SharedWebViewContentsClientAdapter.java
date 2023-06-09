@@ -88,8 +88,8 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
      */
     @Override
     public final boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.shouldOverrideUrlLoading");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.shouldOverrideUrlLoading")) {
             if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading=" + request.url);
             boolean result;
             if (mSupportLibClient.isFeatureAvailable(Features.SHOULD_OVERRIDE_WITH_REDIRECTS)) {
@@ -106,8 +106,6 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                     AwHistogramRecorder.WebViewCallbackType.SHOULD_OVERRIDE_URL_LOADING);
 
             return result;
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.shouldOverrideUrlLoading");
         }
     }
 
@@ -116,8 +114,8 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
      */
     @Override
     public final void onPageCommitVisible(String url) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onPageCommitVisible");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onPageCommitVisible")) {
             if (TRACE) Log.i(TAG, "onPageCommitVisible=" + url);
             if (mSupportLibClient.isFeatureAvailable(Features.VISUAL_STATE_CALLBACK)) {
                 mSupportLibClient.onPageCommitVisible(mWebView, url);
@@ -130,8 +128,6 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                     AwHistogramRecorder.WebViewCallbackType.ON_PAGE_COMMIT_VISIBLE);
 
             // Otherwise, the API does not exist, so do nothing.
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onPageCommitVisible");
         }
     }
 
@@ -140,8 +136,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
      */
     @Override
     public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedError");
+        try (TraceEvent event = TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedError")) {
             if (error.description == null || error.description.isEmpty()) {
                 // ErrorStrings is @hidden, so we can't do this in AwContents.  Normally the net/
                 // layer will set a valid description, but for synthesized callbacks (like in the
@@ -156,16 +151,14 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 mWebViewClient.onReceivedError(mWebView, new WebResourceRequestAdapter(request),
                         new WebResourceErrorAdapter(error));
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedError");
         }
     }
 
     @Override
     public void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
             final Callback<AwSafeBrowsingResponse> callback) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onSafeBrowsingHit");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebViewContentsClientAdapter.onSafeBrowsingHit")) {
             if (mSupportLibClient.isFeatureAvailable(Features.SAFE_BROWSING_HIT)) {
                 mSupportLibClient.onSafeBrowsingHit(
                         mWebView, new WebResourceRequestAdapter(request), threatType, callback);
@@ -177,16 +170,14 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 callback.onResult(new AwSafeBrowsingResponse(SafeBrowsingAction.SHOW_INTERSTITIAL,
                         /* reporting */ true));
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onSafeBrowsingHit");
         }
     }
 
     @Override
     public void onReceivedHttpError(
             AwWebResourceRequest request, WebResourceResponseInfo response) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedHttpError");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedHttpError")) {
             if (TRACE) Log.i(TAG, "onReceivedHttpError=" + request.url);
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_HTTP_ERROR)) {
                 // Note: we use the @SystemApi constructor here because it relaxes several
@@ -213,8 +204,6 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                                 response.getData()));
             }
             // Otherwise, the API does not exist, so do nothing.
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedHttpError");
         }
     }
 

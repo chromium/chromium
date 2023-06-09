@@ -9,6 +9,7 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.ProxyControllerBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
@@ -37,40 +38,46 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
     @Override
     public void setProxyOverride(String[][] proxyRules, String[] bypassRules, Runnable listener,
             Executor executor, boolean reverseBypass) {
-        recordApiCall(reverseBypass ? ApiCall.SET_PROXY_OVERRIDE
-                                    : ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS);
-        if (checkNeedsPost()) {
-            RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
-                try {
-                    mProxyController.setProxyOverride(
-                            proxyRules, bypassRules, listener, executor, reverseBypass);
-                } catch (RuntimeException e) {
-                    return e;
-                }
-                return null;
-            });
-            maybeThrowUnwrappedException(exception);
-        } else {
-            mProxyController.setProxyOverride(
-                    proxyRules, bypassRules, listener, executor, reverseBypass);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.SET_PROXY_OVERRIDE_OR_REVERSE_BYPASS")) {
+            recordApiCall(reverseBypass ? ApiCall.SET_PROXY_OVERRIDE
+                                        : ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS);
+            if (checkNeedsPost()) {
+                RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
+                    try {
+                        mProxyController.setProxyOverride(
+                                proxyRules, bypassRules, listener, executor, reverseBypass);
+                    } catch (RuntimeException e) {
+                        return e;
+                    }
+                    return null;
+                });
+                maybeThrowUnwrappedException(exception);
+            } else {
+                mProxyController.setProxyOverride(
+                        proxyRules, bypassRules, listener, executor, reverseBypass);
+            }
         }
     }
 
     @Override
     public void clearProxyOverride(Runnable listener, Executor executor) {
-        recordApiCall(ApiCall.CLEAR_PROXY_OVERRIDE);
-        if (checkNeedsPost()) {
-            RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
-                try {
-                    mProxyController.clearProxyOverride(listener, executor);
-                } catch (RuntimeException e) {
-                    return e;
-                }
-                return null;
-            });
-            maybeThrowUnwrappedException(exception);
-        } else {
-            mProxyController.clearProxyOverride(listener, executor);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.CLEAR_PROXY_OVERRIDE")) {
+            recordApiCall(ApiCall.CLEAR_PROXY_OVERRIDE);
+            if (checkNeedsPost()) {
+                RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
+                    try {
+                        mProxyController.clearProxyOverride(listener, executor);
+                    } catch (RuntimeException e) {
+                        return e;
+                    }
+                    return null;
+                });
+                maybeThrowUnwrappedException(exception);
+            } else {
+                mProxyController.clearProxyOverride(listener, executor);
+            }
         }
     }
 

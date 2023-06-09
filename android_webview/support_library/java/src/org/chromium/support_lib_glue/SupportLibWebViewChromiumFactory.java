@@ -17,6 +17,7 @@ import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
@@ -299,40 +300,59 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
         @Override
         public void initSafeBrowsing(Context context, ValueCallback<Boolean> callback) {
-            recordApiCall(ApiCall.INIT_SAFE_BROWSING);
-            mSharedStatics.initSafeBrowsing(context, CallbackConverter.fromValueCallback(callback));
+            try (TraceEvent event =
+                            TraceEvent.scoped("WebView.APICall.AndroidX.INIT_SAFE_BROWSING")) {
+                recordApiCall(ApiCall.INIT_SAFE_BROWSING);
+                mSharedStatics.initSafeBrowsing(
+                        context, CallbackConverter.fromValueCallback(callback));
+            }
         }
 
         @Override
         public void setSafeBrowsingAllowlist(Set<String> hosts, ValueCallback<Boolean> callback) {
-            recordApiCall(ApiCall.SET_SAFE_BROWSING_ALLOWLIST);
-            mSharedStatics.setSafeBrowsingAllowlist(
-                    new ArrayList<>(hosts), CallbackConverter.fromValueCallback(callback));
+            try (TraceEvent event = TraceEvent.scoped(
+                         "WebView.APICall.AndroidX.SET_SAFE_BROWSING_ALLOWLIST")) {
+                recordApiCall(ApiCall.SET_SAFE_BROWSING_ALLOWLIST);
+                mSharedStatics.setSafeBrowsingAllowlist(
+                        new ArrayList<>(hosts), CallbackConverter.fromValueCallback(callback));
+            }
         }
 
         @Override
         public void setSafeBrowsingWhitelist(List<String> hosts, ValueCallback<Boolean> callback) {
-            recordApiCall(ApiCall.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME);
-            mSharedStatics.setSafeBrowsingAllowlist(
-                    hosts, CallbackConverter.fromValueCallback(callback));
+            try (TraceEvent event = TraceEvent.scoped(
+                         "WebView.APICall.AndroidX.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME")) {
+                recordApiCall(ApiCall.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME);
+                mSharedStatics.setSafeBrowsingAllowlist(
+                        hosts, CallbackConverter.fromValueCallback(callback));
+            }
         }
 
         @Override
         public Uri getSafeBrowsingPrivacyPolicyUrl() {
-            recordApiCall(ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL);
-            return mSharedStatics.getSafeBrowsingPrivacyPolicyUrl();
+            try (TraceEvent event = TraceEvent.scoped(
+                         "WebView.APICall.AndroidX.GET_SAFE_BROWSING_PRIVACY_POLICY_URL")) {
+                recordApiCall(ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL);
+                return mSharedStatics.getSafeBrowsingPrivacyPolicyUrl();
+            }
         }
 
         @Override
         public boolean isMultiProcessEnabled() {
-            recordApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
-            return mSharedStatics.isMultiProcessEnabled();
+            try (TraceEvent event = TraceEvent.scoped(
+                         "WebView.APICall.AndroidX.IS_MULTI_PROCESS_ENABLED")) {
+                recordApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
+                return mSharedStatics.isMultiProcessEnabled();
+            }
         }
 
         @Override
         public String getVariationsHeader() {
-            recordApiCall(ApiCall.GET_VARIATIONS_HEADER);
-            return mSharedStatics.getVariationsHeader();
+            try (TraceEvent event =
+                            TraceEvent.scoped("WebView.APICall.AndroidX.GET_VARIATIONS_HEADER")) {
+                recordApiCall(ApiCall.GET_VARIATIONS_HEADER);
+                return mSharedStatics.getVariationsHeader();
+            }
         }
     }
 
@@ -355,53 +375,66 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
     @Override
     public InvocationHandler getServiceWorkerController() {
-        recordApiCall(ApiCall.GET_SERVICE_WORKER_CONTROLLER);
-        synchronized (mAwInit.getLock()) {
-            if (mServiceWorkerController == null) {
-                mServiceWorkerController =
-                        BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                new SupportLibServiceWorkerControllerAdapter(
-                                        mAwInit.getServiceWorkerController()));
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.GET_SERVICE_WORKER_CONTROLLER")) {
+            recordApiCall(ApiCall.GET_SERVICE_WORKER_CONTROLLER);
+            synchronized (mAwInit.getLock()) {
+                if (mServiceWorkerController == null) {
+                    mServiceWorkerController =
+                            BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                    new SupportLibServiceWorkerControllerAdapter(
+                                            mAwInit.getServiceWorkerController()));
+                }
             }
+            return mServiceWorkerController;
         }
-        return mServiceWorkerController;
     }
 
     @Override
     public InvocationHandler getTracingController() {
-        recordApiCall(ApiCall.GET_TRACING_CONTROLLER);
-        synchronized (mAwInit.getLock()) {
-            if (mTracingController == null) {
-                mTracingController = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibTracingControllerAdapter(new SharedTracingControllerAdapter(
-                                mAwInit.getRunQueue(), mAwInit.getAwTracingController())));
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_TRACING_CONTROLLER")) {
+            recordApiCall(ApiCall.GET_TRACING_CONTROLLER);
+            synchronized (mAwInit.getLock()) {
+                if (mTracingController == null) {
+                    mTracingController = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                            new SupportLibTracingControllerAdapter(
+                                    new SharedTracingControllerAdapter(mAwInit.getRunQueue(),
+                                            mAwInit.getAwTracingController())));
+                }
             }
+            return mTracingController;
         }
-        return mTracingController;
     }
 
     @Override
     public InvocationHandler getProxyController() {
-        recordApiCall(ApiCall.GET_PROXY_CONTROLLER);
-        synchronized (mAwInit.getLock()) {
-            if (mProxyController == null) {
-                mProxyController = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibProxyControllerAdapter(
-                                mAwInit.getRunQueue(), mAwInit.getAwProxyController()));
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROXY_CONTROLLER")) {
+            recordApiCall(ApiCall.GET_PROXY_CONTROLLER);
+            synchronized (mAwInit.getLock()) {
+                if (mProxyController == null) {
+                    mProxyController = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                            new SupportLibProxyControllerAdapter(
+                                    mAwInit.getRunQueue(), mAwInit.getAwProxyController()));
+                }
             }
+            return mProxyController;
         }
-        return mProxyController;
     }
 
     @Override
     public InvocationHandler getDropDataProvider() {
-        recordApiCall(ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION);
-        synchronized (mAwInit.getLock()) {
-            if (mDropDataProvider == null) {
-                mDropDataProvider = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibDropDataContentProviderAdapter());
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.GET_IMAGE_DRAG_DROP_IMPLEMENTATION")) {
+            recordApiCall(ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION);
+            synchronized (mAwInit.getLock()) {
+                if (mDropDataProvider == null) {
+                    mDropDataProvider = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                            new SupportLibDropDataContentProviderAdapter());
+                }
             }
+            return mDropDataProvider;
         }
-        return mDropDataProvider;
     }
 }

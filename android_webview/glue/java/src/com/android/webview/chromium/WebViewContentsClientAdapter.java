@@ -110,8 +110,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
     WebViewContentsClientAdapter(
             WebView webView, Context context, WebViewDelegate webViewDelegate) {
         super(webView, webViewDelegate, context);
-        try (ScopedSysTraceEvent event =
-                        ScopedSysTraceEvent.scoped("WebViewContentsClientAdapter.constructor")) {
+        try (ScopedSysTraceEvent event = ScopedSysTraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.constructor")) {
             // See //android_webview/docs/how-does-on-create-window-work.md for more details.
             mUiThreadHandler = new Handler() {
                 @Override
@@ -173,15 +173,13 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void getVisitedHistory(Callback<String[]> callback) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.getVisitedHistory");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.getVisitedHistory")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "getVisitedHistory");
                 mWebChromeClient.getVisitedHistory(
                         callback == null ? null : value -> callback.onResult(value));
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.getVisitedHistory");
         }
     }
 
@@ -190,12 +188,10 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void doUpdateVisitedHistory(String url, boolean isReload) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.doUpdateVisitedHistory");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.doUpdateVisitedHistory")) {
             if (TRACE) Log.i(TAG, "doUpdateVisitedHistory=" + url + " reload=" + isReload);
             mWebViewClient.doUpdateVisitedHistory(mWebView, url, isReload);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.doUpdateVisitedHistory");
         }
     }
 
@@ -204,14 +200,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onProgressChanged(int progress) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onProgressChanged");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onProgressChanged")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onProgressChanged=" + progress);
                 mWebChromeClient.onProgressChanged(mWebView, progress);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onProgressChanged");
         }
     }
 
@@ -220,8 +214,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.shouldInterceptRequest");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.shouldInterceptRequest")) {
             if (TRACE) Log.i(TAG, "shouldInterceptRequest=" + request.url);
             WebResourceResponse response = mWebViewClient.shouldInterceptRequest(
                     mWebView, new WebResourceRequestAdapter(request));
@@ -230,8 +224,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             return new WebResourceResponseInfo(response.getMimeType(), response.getEncoding(),
                     response.getData(), response.getStatusCode(), response.getReasonPhrase(),
                     response.getResponseHeaders());
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.shouldInterceptRequest");
         }
     }
 
@@ -240,12 +232,10 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onUnhandledKeyEvent(KeyEvent event) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onUnhandledKeyEvent");
+        try (TraceEvent traceEvent = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onUnhandledKeyEvent")) {
             if (TRACE) Log.i(TAG, "onUnhandledKeyEvent");
             mWebViewClient.onUnhandledKeyEvent(mWebView, event);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onUnhandledKeyEvent");
         }
     }
 
@@ -254,8 +244,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public boolean onConsoleMessage(AwConsoleMessage consoleMessage) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onConsoleMessage");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onConsoleMessage")) {
             boolean result;
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onConsoleMessage: " + consoleMessage.message());
@@ -264,8 +254,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 result = false;
             }
             return result;
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onConsoleMessage");
         }
     }
 
@@ -275,13 +263,11 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
     @Override
     public void onFindResultReceived(int activeMatchOrdinal, int numberOfMatches,
             boolean isDoneCounting) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onFindResultReceived");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onFindResultReceived")) {
             if (mFindListener == null) return;
             if (TRACE) Log.i(TAG, "onFindResultReceived");
             mFindListener.onFindResultReceived(activeMatchOrdinal, numberOfMatches, isDoneCounting);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onFindResultReceived");
         }
     }
 
@@ -290,35 +276,31 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onNewPicture(Picture picture) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onNewPicture");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onNewPicture")) {
             if (mPictureListener == null) return;
             if (TRACE) Log.i(TAG, "onNewPicture");
             mPictureListener.onNewPicture(mWebView, picture);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onNewPicture");
         }
     }
 
     @Override
     public void onLoadResource(String url) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onLoadResource");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onLoadResource")) {
             if (TRACE) Log.i(TAG, "onLoadResource=" + url);
             mWebViewClient.onLoadResource(mWebView, url);
 
             // Record UMA for onLoadResource.
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.ON_LOAD_RESOURCE);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onLoadResource");
         }
     }
 
     @Override
     public boolean onCreateWindow(boolean isDialog, boolean isUserGesture) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onCreateWindow");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onCreateWindow")) {
             Message m = mUiThreadHandler.obtainMessage(
                     NEW_WEBVIEW_CREATED, mWebView.new WebViewTransport());
             boolean result;
@@ -329,8 +311,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 result = false;
             }
             return result;
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onCreateWindow");
         }
     }
 
@@ -339,14 +319,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onCloseWindow() {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onCloseWindow");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onCloseWindow")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onCloseWindow");
                 mWebChromeClient.onCloseWindow(mWebView);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onCloseWindow");
         }
     }
 
@@ -355,14 +333,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onRequestFocus() {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onRequestFocus");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onRequestFocus")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onRequestFocus");
                 mWebChromeClient.onRequestFocus(mWebView);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onRequestFocus");
         }
     }
 
@@ -371,14 +347,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onReceivedTouchIconUrl(String url, boolean precomposed) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedTouchIconUrl");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onReceivedTouchIconUrl")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onReceivedTouchIconUrl=" + url);
                 mWebChromeClient.onReceivedTouchIconUrl(mWebView, url, precomposed);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedTouchIconUrl");
         }
     }
 
@@ -387,14 +361,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onReceivedIcon(Bitmap bitmap) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedIcon");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onReceivedIcon")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onReceivedIcon");
                 mWebChromeClient.onReceivedIcon(mWebView, bitmap);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedIcon");
         }
     }
 
@@ -403,17 +375,14 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onPageStarted(String url) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onPageStarted");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onPageStarted")) {
             if (TRACE) Log.i(TAG, "onPageStarted=" + url);
             mWebViewClient.onPageStarted(mWebView, url, mWebView.getFavicon());
 
             // Record UMA for onPageStarted.
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.ON_PAGE_STARTED);
-
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onPageStarted");
         }
     }
 
@@ -422,8 +391,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onPageFinished(String url) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onPageFinished");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onPageFinished")) {
             if (TRACE) Log.i(TAG, "onPageFinished=" + url);
             mWebViewClient.onPageFinished(mWebView, url);
 
@@ -450,8 +419,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                     }
                 }, 100);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onPageFinished");
         }
     }
 
@@ -460,14 +427,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public void onReceivedTitle(String title) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedTitle");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onReceivedTitle")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onReceivedTitle=\"" + title + "\"");
                 mWebChromeClient.onReceivedTitle(mWebView, title);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedTitle");
         }
     }
 
@@ -476,12 +441,10 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      */
     @Override
     public boolean shouldOverrideKeyEvent(KeyEvent event) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.shouldOverrideKeyEvent");
+        try (TraceEvent traceEvent = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.shouldOverrideKeyEvent")) {
             if (TRACE) Log.i(TAG, "shouldOverrideKeyEvent");
             return mWebViewClient.shouldOverrideKeyEvent(mWebView, event);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.shouldOverrideKeyEvent");
         }
     }
 
@@ -503,8 +466,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
     @Override
     public void onGeolocationPermissionsShowPrompt(
             String origin, AwGeolocationPermissions.Callback callback) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onGeolocationPermissionsShowPrompt");
+        try (TraceEvent traceEvent = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onGeolocationPermissionsShowPrompt")) {
             if (mWebChromeClient == null) {
                 callback.invoke(origin, false, false);
                 return;
@@ -524,28 +487,24 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             mWebChromeClient.onGeolocationPermissionsShowPrompt(origin,
                     callback == null ? null : (callbackOrigin, allow, retain)
                             -> callback.invoke(callbackOrigin, allow, retain));
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onGeolocationPermissionsShowPrompt");
         }
     }
 
     @Override
     public void onGeolocationPermissionsHidePrompt() {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onGeolocationPermissionsHidePrompt");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onGeolocationPermissionsHidePrompt")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onGeolocationPermissionsHidePrompt");
                 mWebChromeClient.onGeolocationPermissionsHidePrompt();
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onGeolocationPermissionsHidePrompt");
         }
     }
 
     @Override
     public void onPermissionRequest(AwPermissionRequest permissionRequest) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onPermissionRequest");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onPermissionRequest")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onPermissionRequest");
                 if (mOngoingPermissionRequests == null) {
@@ -560,15 +519,13 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 // By default, we deny the permission.
                 permissionRequest.deny();
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onPermissionRequest");
         }
     }
 
     @Override
     public void onPermissionRequestCanceled(AwPermissionRequest permissionRequest) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onPermissionRequestCanceled");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onPermissionRequestCanceled")) {
             if (mWebChromeClient != null && mOngoingPermissionRequests != null) {
                 if (TRACE) Log.i(TAG, "onPermissionRequestCanceled");
                 WeakReference<PermissionRequestAdapter> weakRef =
@@ -581,8 +538,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                     if (adapter != null) mWebChromeClient.onPermissionRequestCanceled(adapter);
                 }
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onPermissionRequestCanceled");
         }
     }
 
@@ -625,8 +580,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
 
     @Override
     public void handleJsAlert(String url, String message, JsResultReceiver receiver) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.handleJsAlert");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.handleJsAlert")) {
             if (mWebChromeClient != null) {
                 final JsPromptResult res =
                         new JsPromptResultReceiverAdapter(receiver).getPromptResult();
@@ -639,15 +594,13 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             } else {
                 receiver.cancel();
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.handleJsAlert");
         }
     }
 
     @Override
     public void handleJsBeforeUnload(String url, String message, JsResultReceiver receiver) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.handleJsBeforeUnload");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.handleJsBeforeUnload")) {
             if (mWebChromeClient != null) {
                 final JsPromptResult res =
                         new JsPromptResultReceiverAdapter(receiver).getPromptResult();
@@ -660,15 +613,13 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             } else {
                 receiver.cancel();
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.handleJsBeforeUnload");
         }
     }
 
     @Override
     public void handleJsConfirm(String url, String message, JsResultReceiver receiver) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.handleJsConfirm");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.handleJsConfirm")) {
             if (mWebChromeClient != null) {
                 final JsPromptResult res =
                         new JsPromptResultReceiverAdapter(receiver).getPromptResult();
@@ -681,16 +632,14 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             } else {
                 receiver.cancel();
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.handleJsConfirm");
         }
     }
 
     @Override
     public void handleJsPrompt(String url, String message, String defaultValue,
             JsPromptResultReceiver receiver) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.handleJsPrompt");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.handleJsPrompt")) {
             if (mWebChromeClient != null) {
                 final JsPromptResult res =
                         new JsPromptResultReceiverAdapter(receiver).getPromptResult();
@@ -704,8 +653,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             } else {
                 receiver.cancel();
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.handleJsPrompt");
         }
     }
 
@@ -734,21 +681,19 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
 
     @Override
     public void onReceivedHttpAuthRequest(AwHttpAuthHandler handler, String host, String realm) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedHttpAuthRequest");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onReceivedHttpAuthRequest")) {
             if (TRACE) Log.i(TAG, "onReceivedHttpAuthRequest=" + host);
             mWebViewClient.onReceivedHttpAuthRequest(
                     mWebView, new AwHttpAuthHandlerAdapter(handler), host, realm);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedHttpAuthRequest");
         }
     }
 
     @Override
     @SuppressWarnings("HandlerLeak")
     public void onReceivedSslError(final Callback<Boolean> callback, SslError error) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedSslError");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onReceivedSslError")) {
             SslErrorHandler handler = new SslErrorHandler() {
                 @Override
                 public void proceed() {
@@ -761,8 +706,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             };
             if (TRACE) Log.i(TAG, "onReceivedSslError");
             mWebViewClient.onReceivedSslError(mWebView, handler, error);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedSslError");
         }
     }
 
@@ -826,35 +769,29 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             AwContentsClientBridge.ClientCertificateRequestCallback callback, String[] keyTypes,
             Principal[] principals, String host, int port) {
         if (TRACE) Log.i(TAG, "onReceivedClientCertRequest");
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedClientCertRequest");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onReceivedClientCertRequest")) {
             final ClientCertRequestImpl request =
                     new ClientCertRequestImpl(callback, keyTypes, principals, host, port);
             mWebViewClient.onReceivedClientCertRequest(mWebView, request);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedClientCertRequest");
         }
     }
 
     @Override
     public void onReceivedLoginRequest(String realm, String account, String args) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedLoginRequest");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onReceivedLoginRequest")) {
             if (TRACE) Log.i(TAG, "onReceivedLoginRequest=" + realm);
             mWebViewClient.onReceivedLoginRequest(mWebView, realm, account, args);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedLoginRequest");
         }
     }
 
     @Override
     public void onFormResubmission(Message dontResend, Message resend) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onFormResubmission");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onFormResubmission")) {
             if (TRACE) Log.i(TAG, "onFormResubmission");
             mWebViewClient.onFormResubmission(mWebView, dontResend, resend);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onFormResubmission");
         }
     }
 
@@ -865,23 +802,21 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             String contentDisposition,
             String mimeType,
             long contentLength) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onDownloadStart");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onDownloadStart")) {
             if (mDownloadListener != null) {
                 if (TRACE) Log.i(TAG, "onDownloadStart");
                 mDownloadListener.onDownloadStart(
                         url, userAgent, contentDisposition, mimeType, contentLength);
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onDownloadStart");
         }
     }
 
     @Override
     public void showFileChooser(final Callback<String[]> uploadFileCallback,
             final AwContentsClient.FileChooserParamsImpl fileChooserParams) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.showFileChooser");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.showFileChooser")) {
             if (mWebChromeClient == null) {
                 uploadFileCallback.onResult(null);
                 return;
@@ -936,57 +871,48 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 }
             };
             if (TRACE) Log.i(TAG, "openFileChooser");
-            mWebChromeClient.openFileChooser(
-                    innerCallback,
+            mWebChromeClient.openFileChooser(innerCallback,
                     fileChooserParams.getAcceptTypesString(),
                     fileChooserParams.isCaptureEnabled() ? "*" : "");
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.showFileChooser");
         }
     }
 
     @Override
     public void onScaleChangedScaled(float oldScale, float newScale) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onScaleChangedScaled");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onScaleChangedScaled")) {
             if (TRACE) Log.i(TAG, " onScaleChangedScaled");
             mWebViewClient.onScaleChanged(mWebView, oldScale, newScale);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onScaleChangedScaled");
         }
     }
 
     @Override
     public void onShowCustomView(View view, final CustomViewCallback cb) {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onShowCustomView");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onShowCustomView")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onShowCustomView");
                 mWebChromeClient.onShowCustomView(
                         view, cb == null ? null : () -> cb.onCustomViewHidden());
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onShowCustomView");
         }
     }
 
     @Override
     public void onHideCustomView() {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onHideCustomView");
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.WebViewClient.onHideCustomView")) {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onHideCustomView");
                 mWebChromeClient.onHideCustomView();
             }
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onHideCustomView");
         }
     }
 
     @Override
     protected View getVideoLoadingProgressView() {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.getVideoLoadingProgressView");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.getVideoLoadingProgressView")) {
             View result;
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "getVideoLoadingProgressView");
@@ -995,15 +921,13 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 result = null;
             }
             return result;
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.getVideoLoadingProgressView");
         }
     }
 
     @Override
     public Bitmap getDefaultVideoPoster() {
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.getDefaultVideoPoster");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.getDefaultVideoPoster")) {
             Bitmap result = null;
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "getDefaultVideoPoster");
@@ -1021,8 +945,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 canvas.drawBitmap(poster, 0f, 0f, null);
             }
             return result;
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.getDefaultVideoPoster");
         }
     }
 
@@ -1031,11 +953,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         // WebViewClient.onRenderProcessGone was added in O.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
 
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onRenderProcessGone");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICallback.WebViewClient.onRenderProcessGone")) {
             return GlueApiHelperForO.onRenderProcessGone(mWebViewClient, mWebView, detail);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onRenderProcessGone");
         }
     }
 

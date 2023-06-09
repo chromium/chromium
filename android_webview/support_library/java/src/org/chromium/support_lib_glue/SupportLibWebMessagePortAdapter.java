@@ -8,6 +8,7 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 
 import android.os.Handler;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
@@ -34,43 +35,56 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
 
     @Override
     public void postMessage(InvocationHandler message) {
-        recordApiCall(ApiCall.WEB_MESSAGE_PORT_POST_MESSAGE);
-        WebMessageBoundaryInterface messageBoundaryInterface =
-                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                        WebMessageBoundaryInterface.class, message);
-        mPort.postMessage(SupportLibWebMessagePayloadAdapter.fromWebMessageBoundaryInterface(
-                                  messageBoundaryInterface),
-                toMessagePorts(messageBoundaryInterface.getPorts()));
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_MESSAGE_PORT_POST_MESSAGE")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PORT_POST_MESSAGE);
+            WebMessageBoundaryInterface messageBoundaryInterface =
+                    BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                            WebMessageBoundaryInterface.class, message);
+            mPort.postMessage(SupportLibWebMessagePayloadAdapter.fromWebMessageBoundaryInterface(
+                                      messageBoundaryInterface),
+                    toMessagePorts(messageBoundaryInterface.getPorts()));
+        }
     }
 
     @Override
     public void close() {
-        recordApiCall(ApiCall.WEB_MESSAGE_PORT_CLOSE);
-        mPort.close();
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.WEB_MESSAGE_PORT_CLOSE")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PORT_CLOSE);
+            mPort.close();
+        }
     }
 
     @Override
     public void setWebMessageCallback(InvocationHandler callback) {
-        recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK);
-        setWebMessageCallback(callback, null);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_MESSAGE_PORT_SET_CALLBACK")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK);
+            setWebMessageCallback(callback, null);
+        }
     }
 
     @Override
     public void setWebMessageCallback(InvocationHandler callback, Handler handler) {
         if (handler != null) {
-            recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER);
-        }
-        SupportLibWebMessageCallbackAdapter callbackAdapter =
-                new SupportLibWebMessageCallbackAdapter(
-                        BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                                WebMessageCallbackBoundaryInterface.class, callback));
-        mPort.setMessageCallback(new MessagePort.MessageCallback() {
-            @Override
-            public void onMessage(MessagePayload messagePayload, MessagePort[] ports) {
-                callbackAdapter.onMessage(SupportLibWebMessagePortAdapter.this,
-                        new SupportLibWebMessageAdapter(messagePayload, ports));
+            try (TraceEvent event = TraceEvent.scoped(
+                         "WebView.APICall.AndroidX.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER")) {
+                recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER);
+
+                SupportLibWebMessageCallbackAdapter callbackAdapter =
+                        new SupportLibWebMessageCallbackAdapter(
+                                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                                        WebMessageCallbackBoundaryInterface.class, callback));
+                mPort.setMessageCallback(new MessagePort.MessageCallback() {
+                    @Override
+                    public void onMessage(MessagePayload messagePayload, MessagePort[] ports) {
+                        callbackAdapter.onMessage(SupportLibWebMessagePortAdapter.this,
+                                new SupportLibWebMessageAdapter(messagePayload, ports));
+                    }
+                }, handler);
             }
-        }, handler);
+        }
     }
 
     public static /* WebMessagePort */ InvocationHandler[] fromMessagePorts(
