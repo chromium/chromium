@@ -56,8 +56,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::internal::kSyncRequested, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncKeepEverythingSynced,
                                 true);
+#if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, false);
+#endif  // BUILDFLAG(IS_IOS)
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     RegisterTypeSelectedPref(registry, type);
   }
