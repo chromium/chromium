@@ -5663,12 +5663,8 @@ external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-re
 # Sheriff 2022-06-29
 
 crbug.com/1340716 [ Linux ] accessibility/notification-listeners.html [ Crash Failure Pass Timeout ]
-crbug.com/1340716 [ Mac10.15 Release ] accessibility/notification-listeners.html [ Failure ]
-crbug.com/1340716 [ Mac11 Release ] accessibility/notification-listeners.html [ Failure ]
-crbug.com/1340716 [ Mac11-arm64 Release ] accessibility/notification-listeners.html [ Failure ]
-crbug.com/1340716 [ Mac12 ] accessibility/notification-listeners.html [ Failure ]
-crbug.com/1340716 [ Mac12-arm64 Release ] accessibility/notification-listeners.html [ Failure ]
 crbug.com/1340716 [ Win ] accessibility/notification-listeners.html [ Failure ]
+crbug.com/1452191 [ Mac ] accessibility/notification-listeners.html [ Failure ]
 
 # Sheriff 2022-06-30
 crbug.com/1340781 fullscreen/full-screen-table-section.html [ Crash Failure Pass Timeout ]
