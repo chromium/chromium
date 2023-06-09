@@ -319,7 +319,9 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                           gfx::Insets::TLBR(0, 0,
                                             dialog_insets.bottom() -
                                                 hover_button_vertical_spacing,
-                                            0))))
+                                            0))
+                      .SetTooltipText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON_TOOLTIP))))
 
       .BuildChildren();
 }

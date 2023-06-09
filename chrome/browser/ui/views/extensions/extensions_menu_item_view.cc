@@ -76,6 +76,14 @@ std::u16string GetPinButtonTooltip(bool is_force_pinned, bool is_pinned) {
   return l10n_util::GetStringUTF16(tooltip_id);
 }
 
+std::u16string GetContextMenuAccessibleName(bool is_pinned) {
+  int tooltip_id =
+      is_pinned
+          ? IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_PINNED_ACCESSIBLE_NAME
+          : IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME;
+  return l10n_util::GetStringUTF16(tooltip_id);
+}
+
 std::u16string GetPinButtonPressedAccText(bool is_pinned) {
   return l10n_util::GetStringUTF16(is_pinned ? IDS_EXTENSION_PINNED
                                              : IDS_EXTENSION_UNPINNED);
@@ -230,6 +238,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
+                      .SetAccessibleName(l10n_util::GetStringFUTF16(
+                          IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_ACCESSIBLE_NAME,
+                          controller_->GetActionName()))
                       .SetCallback(base::BindRepeating(
                           [](views::ToggleButton* toggle_button,
                              base::RepeatingCallback<void(bool)>
@@ -251,11 +262,10 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                           ChromeLayoutProvider::Get()->GetDistanceMetric(
                               DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
                       .SetTooltipText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP))),
+                          IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_TOOLTIP))),
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
               // Site permissions button.
-              // TODO(crbug.com/998298): Add tooltip after UX provides it.
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
                       site_permissions_button_callback,
@@ -274,7 +284,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   // Border should be the same as the space between icon and
                   // label in the primary action button.
                   .SetBorder(views::CreateEmptyBorder(
-                      gfx::Insets::VH(0, icon_label_spacing)))))
+                      gfx::Insets::VH(0, icon_label_spacing)))
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP))))
       .BuildChildren();
 
   SetupContextMenuButton();
@@ -312,19 +324,22 @@ void ExtensionMenuItemView::Update(
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     bool is_toggle_on = site_access_toggle_state == SiteAccessToggleState::kOn;
-    std::u16string toggle_tooltip = GetSiteAccessToggleTooltip(is_toggle_on);
     site_access_toggle_->SetVisible(site_access_toggle_state !=
                                     SiteAccessToggleState::kHidden);
     site_access_toggle_->SetIsOn(is_toggle_on);
-    site_access_toggle_->SetTooltipText(toggle_tooltip);
-    site_access_toggle_->SetAccessibleName(toggle_tooltip);
+    site_access_toggle_->SetTooltipText(
+        GetSiteAccessToggleTooltip(is_toggle_on));
 
     site_permissions_button_->SetVisible(site_permissions_button_state !=
                                          SitePermissionsButtonState::kHidden);
     site_permissions_button_->SetEnabled(site_permissions_button_state ==
                                          SitePermissionsButtonState::kEnabled);
-    site_permissions_button_->SetText(
-        GetSitePermissionsButtonText(site_permissions_button_access));
+    std::u16string site_permissions_text =
+        GetSitePermissionsButtonText(site_permissions_button_access);
+    site_permissions_button_->SetText(site_permissions_text);
+    site_permissions_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
+        site_permissions_text));
     site_permissions_button_icon_->SetVisible(
         site_permissions_button_state == SitePermissionsButtonState::kEnabled);
   }
@@ -380,6 +395,8 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
                                       three_dot_icon);
+  context_menu_button_->SetAccessibleName(
+      GetContextMenuAccessibleName(is_action_pinned));
 }
 
 void ExtensionMenuItemView::SetupContextMenuButton() {
