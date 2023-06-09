@@ -117,7 +117,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "AXTreeUpdate: root id -2\n"
         "id=-2 region child_ids=-3,-4,-6 (0, 0)-(800, 900) "
         "is_page_breaking_object=true\n"
-        "  id=-3 status name=Start of extracted text name_from=attribute"
+        "  id=-3 status name=Start of converted text name_from=attribute"
         " (0, 0)-(1, 1)\n"
         "  id=-4 staticText name=Hello world child_ids=-5 "
         "offset_container_id=-2 (100, 100)-(500, 20) "
@@ -125,7 +125,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "    id=-5 inlineTextBox name=Hello world (100, 100)-(500, 20) "
         "background_color=&C350 color=&61A8 text_direction=rtl language=en "
         "word_starts=0,6 word_ends=6,11\n"
-        "  id=-6 status name=End of extracted text name_from=attribute"
+        "  id=-6 status name=End of converted text name_from=attribute"
         " (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
