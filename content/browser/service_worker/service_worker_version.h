@@ -272,8 +272,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Otherwise, setup error, and subsequent `router_evaluator()` will return
   // `absl::nullopt`.
   bool SetupRouterEvaluator(const blink::ServiceWorkerRouterRules& rules);
-  const absl::optional<ServiceWorkerRouterEvaluator>& router_evaluator() const {
-    return router_evaluator_;
+  const ServiceWorkerRouterEvaluator* router_evaluator() const {
+    return router_evaluator_.get();
   }
 
   base::TimeDelta TimeSinceNoControllees() const {
@@ -1265,7 +1265,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // version is created.
   absl::optional<std::string> sha256_script_checksum_;
 
-  absl::optional<content::ServiceWorkerRouterEvaluator> router_evaluator_;
+  std::unique_ptr<content::ServiceWorkerRouterEvaluator> router_evaluator_;
 
   base::WeakPtrFactory<ServiceWorkerVersion> weak_factory_{this};
 };

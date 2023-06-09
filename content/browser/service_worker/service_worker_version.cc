@@ -2863,7 +2863,7 @@ void ServiceWorkerVersion::SetResources(
 bool ServiceWorkerVersion::SetupRouterEvaluator(
     const blink::ServiceWorkerRouterRules& rules) {
   CHECK(!router_evaluator_);
-  router_evaluator_.emplace(rules);
+  router_evaluator_ = std::make_unique<ServiceWorkerRouterEvaluator>(rules);
   if (!router_evaluator_->IsValid()) {
     router_evaluator_.reset();
     return false;

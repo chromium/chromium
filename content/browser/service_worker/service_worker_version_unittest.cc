@@ -1946,17 +1946,23 @@ TEST_F(ServiceWorkerVersionTest, SetRouterEvaluator) {
       blink::mojom::ScriptType::kClassic);
 
   // The router_evaluator should be unset on setup.
-  EXPECT_FALSE(version->router_evaluator().has_value());
+  EXPECT_FALSE(version->router_evaluator());
 
-  // TODO(crbug.com/1371756): test to ensure the broken rule is not set.
-  // It is easier to implement this after ServiceWorkerRouterEvaluator's
-  // initial check become more strict.
+  // Leave the router_evaluator unset for invalid rules.
+  {
+    // No condition & source rule is invalid.
+    blink::ServiceWorkerRouterRules rules;
+    blink::ServiceWorkerRouterRule rule;
+    rules.rules.emplace_back(rule);
+    EXPECT_FALSE(version->SetupRouterEvaluator(rules));
+    EXPECT_FALSE(version->router_evaluator());
+  }
 
   // Set correct rules will make the router_evaluator() return non-null.
   {
     blink::ServiceWorkerRouterRules rules;
     EXPECT_TRUE(version->SetupRouterEvaluator(rules));
-    EXPECT_TRUE(version->router_evaluator().has_value());
+    EXPECT_TRUE(version->router_evaluator());
   }
 }
 }  // namespace service_worker_version_unittest
