@@ -45,7 +45,7 @@ template("fuchsia_package_tool") {
     }
 
     # tool path
-    _ffx_package_tool_path = "${fuchsia_tool_dir}/ffx"
+    _ffx_package_tool_path = "${fuchsia_tool_dir}/ffx_tools/ffx-package"
     script = "${fuchsia_sdk}/build/gn_run_binary.py"
 
     # output files
@@ -71,7 +71,6 @@ template("fuchsia_package_tool") {
 
       outputs = [
         _meta_far_file,
-        "${_meta_far_file}.merkle",
         _pkg_output_manifest,
       ]
       depfile = "${_meta_far_file}.d"
@@ -83,7 +82,6 @@ template("fuchsia_package_tool") {
         "--published-name",
         package_name,
         "--depfile",
-        "--meta-far-merkle",
       ]
 
       if (fuchsia_target_api_level != -1) {

@@ -7,6 +7,7 @@ License File: LICENSE
 Description:
 This directory contains the files that complement the Fuchsia SDK
 for projects that use the GN build tool. The files in src/ were originally
-copied from https://fuchsia.googlesource.com/fuchsia/+/a1d52817323cccc0a393b232363e0f2278dec14c/scripts/sdk/gn/base/build/.
-Note that the file `enable_coverage_data.cml` is not included in the copy
-since this file will be replaced by a file in the core SDK.
+copied from
+https://fuchsia.googlesource.com/fuchsia/+/8b4353f141b256fe4cc984f2bc0daa3eaaed3a41/scripts/sdk/gn/base/build/
+with https://fuchsia-review.git.corp.google.com/c/fuchsia/+/857716 reverted.
+
