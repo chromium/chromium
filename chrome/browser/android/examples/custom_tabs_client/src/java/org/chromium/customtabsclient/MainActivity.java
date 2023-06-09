@@ -92,6 +92,10 @@ public class MainActivity
     private static final String SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS = "ForceEngagementSignals";
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
+    private static final String SHARED_PREF_CONNECT_BUTTON = "ConnectButton";
+    private static final String SHARED_PREF_DISCONNECT_BUTTON = "DisconnectButton";
+    private static final String SHARED_PREF_WARMUP_BUTTON = "WarmupButton";
+    private static final String SHARED_PREF_MAY_LAUNCH_BUTTON = "MayLaunchButton";
     private static final int CLOSE_ICON_X = 0;
     private static final int CLOSE_ICON_BACK = 1;
     private static final int CLOSE_ICON_CHECK = 2;
@@ -113,9 +117,9 @@ public class MainActivity
      */
     private static final float MINIMAL_WIDTH_RATIO = 0.33f;
     private static final int DEFAULT_BREAKPOINT = 840;
+    private static CustomTabsClient sClient;
     private AutoCompleteTextView mEditUrl;
     private CustomTabsSession mCustomTabsSession;
-    private CustomTabsClient mClient;
     private CustomTabsServiceConnection mConnection;
     private String mPackageNameToBind;
     private String mPackageTitle;
@@ -297,7 +301,7 @@ public class MainActivity
         initializeBreakpointSlider();
         initializeCheckBoxes();
         initializeCctSpinner();
-        initializeButtons();
+        initializeButtons(savedInstanceState != null);
         mLogImportance.run();
     }
 
@@ -632,9 +636,6 @@ public class MainActivity
                     return;
                 }
                 mCctType = item;
-                if (mDisconnectButton.isEnabled()) {
-                    unbindCustomTabsService();
-                }
             }
 
             @Override
@@ -642,7 +643,7 @@ public class MainActivity
         });
     }
 
-    private void initializeButtons() {
+    private void initializeButtons(boolean configChange) {
         mConnectButton = (Button) findViewById(R.id.connect_button);
         mDisconnectButton = (Button) findViewById(R.id.disconnect_button);
         mWarmupButton = (Button) findViewById(R.id.warmup_button);
@@ -653,6 +654,14 @@ public class MainActivity
         mWarmupButton.setOnClickListener(this);
         mMayLaunchButton.setOnClickListener(this);
         mLaunchButton.setOnClickListener(this);
+        if (configChange) {
+            mConnectButton.setEnabled(mSharedPref.getBoolean(SHARED_PREF_CONNECT_BUTTON, true));
+            mDisconnectButton.setEnabled(
+                    mSharedPref.getBoolean(SHARED_PREF_DISCONNECT_BUTTON, false));
+            mWarmupButton.setEnabled(mSharedPref.getBoolean(SHARED_PREF_WARMUP_BUTTON, false));
+            mMayLaunchButton.setEnabled(
+                    mSharedPref.getBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, false));
+        }
         findViewById(R.id.test_asm_button).setOnClickListener(this);
     }
 
@@ -732,23 +741,32 @@ public class MainActivity
 
     @Override
     protected void onDestroy() {
-        mMediaPlayer.release();
-        unbindCustomTabsService();
+        if (!isChangingConfigurations()) {
+            mMediaPlayer.release();
+            unbindCustomTabsService();
+        } else {
+            SharedPreferences.Editor editor = mSharedPref.edit();
+            editor.putBoolean(SHARED_PREF_CONNECT_BUTTON, mConnectButton.isEnabled());
+            editor.putBoolean(SHARED_PREF_DISCONNECT_BUTTON, mDisconnectButton.isEnabled());
+            editor.putBoolean(SHARED_PREF_WARMUP_BUTTON, mWarmupButton.isEnabled());
+            editor.putBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, mMayLaunchButton.isEnabled());
+            editor.apply();
+        }
         super.onDestroy();
     }
 
     private CustomTabsSession getSession() {
-        if (mClient == null) {
+        if (sClient == null) {
             mCustomTabsSession = null;
         } else if (mCustomTabsSession == null) {
-            mCustomTabsSession = mClient.newSession(new NavigationCallback());
+            mCustomTabsSession = sClient.newSession(new NavigationCallback());
             SessionHelper.setCurrentSession(mCustomTabsSession);
         }
         return mCustomTabsSession;
     }
 
     private void bindCustomTabsService() {
-        if (mClient != null) return;
+        if (sClient != null) return;
 
         if (TextUtils.isEmpty(mPackageNameToBind)) {
             mPackageNameToBind = CustomTabsHelper.getPackageNameToUse(this);
@@ -767,14 +785,14 @@ public class MainActivity
     }
 
     private void unbindCustomTabsService() {
-        if (mConnection == null) return;
-
-        unbindService(mConnection);
-        mClient = null;
+        sClient = null;
         mCustomTabsSession = null;
         mConnectButton.setEnabled(true);
         mDisconnectButton.setEnabled(false);
         mWarmupButton.setEnabled(false);
+
+        if (mConnection == null) return;
+        unbindService(mConnection);
     }
 
     @Override
@@ -791,12 +809,12 @@ public class MainActivity
             unbindCustomTabsService();
         } else if (viewId == R.id.warmup_button) {
             boolean success = false;
-            if (mClient != null) success = mClient.warmup(0);
+            if (sClient != null) success = sClient.warmup(0);
             if (!success) mWarmupButton.setEnabled(false);
         } else if (viewId == R.id.may_launch_button) {
             CustomTabsSession session = getSession();
             boolean success = false;
-            if (mClient != null) success = session.mayLaunchUrl(Uri.parse(url), null, null);
+            if (sClient != null) success = session.mayLaunchUrl(Uri.parse(url), null, null);
             if (!success) mMayLaunchButton.setEnabled(false);
         } else if (viewId == R.id.test_asm_button) {
             launchCct(url, editor);
@@ -1038,7 +1056,7 @@ public class MainActivity
 
     @Override
     public void onServiceConnected(CustomTabsClient client) {
-        mClient = client;
+        sClient = client;
         mConnectButton.setEnabled(false);
         mWarmupButton.setEnabled(true);
         mDisconnectButton.setEnabled(true);
@@ -1059,7 +1077,7 @@ public class MainActivity
         mConnectButton.setEnabled(true);
         mWarmupButton.setEnabled(false);
         mMayLaunchButton.setEnabled(false);
-        mClient = null;
+        sClient = null;
     }
 
     private @Px int getMaximumPossibleSizePx() {
