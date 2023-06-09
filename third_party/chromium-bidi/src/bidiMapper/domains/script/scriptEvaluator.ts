@@ -20,6 +20,7 @@ import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 
 import {Realm} from './realm.js';
+import {ChannelProxy} from './channelProxy.js';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.
@@ -426,75 +427,13 @@ export class ScriptEvaluator {
       }
 
       case 'channel': {
-        const createChannelHandleResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(() => {
-              const queue: unknown[] = [];
-              let queueNonEmptyResolver: null | (() => void) = null;
-
-              return {
-                /**
-                 * Gets a promise, which is resolved as soon as a message occurs
-                 * in the queue.
-                 */
-                async getMessage(): Promise<unknown> {
-                  const onMessage =
-                    queue.length > 0
-                      ? Promise.resolve()
-                      : new Promise<void>((resolve) => {
-                          queueNonEmptyResolver = resolve;
-                        });
-                  await onMessage;
-                  return queue.shift();
-                },
-
-                /**
-                 * Adds a message to the queue.
-                 * Resolves the pending promise if needed.
-                 */
-                sendMessage(message: string) {
-                  queue.push(message);
-                  if (queueNonEmptyResolver !== null) {
-                    queueNonEmptyResolver();
-                    queueNonEmptyResolver = null;
-                  }
-                },
-              };
-            }),
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-            serializationOptions: {
-              serialization: 'deep',
-            },
-          }
+        const channel = await ChannelProxy.init(
+          argumentValue.value,
+          this.#eventManager,
+          realm
         );
-        const channelHandle = createChannelHandleResult.result.objectId;
 
-        // Long-poll the message queue asynchronously.
-        void this.#initChannelListener(argumentValue, channelHandle, realm);
-
-        const sendMessageArgResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(
-              (channelHandle: {sendMessage: (message: string) => void}) => {
-                return channelHandle.sendMessage;
-              }
-            ),
-            arguments: [
-              {
-                objectId: channelHandle,
-              },
-            ],
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-            serializationOptions: {
-              serialization: 'deep',
-            },
-          }
-        );
-        return {objectId: sendMessageArgResult.result.objectId};
+        return {objectId: channel.sendMessageHandle};
       }
 
       // TODO(#375): Dispose of nested objects.
@@ -537,57 +476,6 @@ export class ScriptEvaluator {
       list.map((value) => this.#deserializeToCdpArg(value, realm))
     );
   }
-
-  async #initChannelListener(
-    channel: Script.ChannelValue,
-    channelHandle: string | undefined,
-    realm: Realm
-  ) {
-    const channelId = channel.value.channel;
-
-    // TODO(#294): Remove this loop after the realm is destroyed.
-    // Rely on the CDP throwing exception in such a case.
-    for (;;) {
-      const message = await realm.cdpClient.sendCommand(
-        'Runtime.callFunctionOn',
-        {
-          functionDeclaration: String(
-            async (channelHandle: {getMessage: () => Promise<unknown>}) =>
-              channelHandle.getMessage()
-          ),
-          arguments: [
-            {
-              objectId: channelHandle,
-            },
-          ],
-          awaitPromise: true,
-          executionContextId: realm.executionContextId,
-          serializationOptions: {
-            serialization: 'deep',
-          },
-        }
-      );
-
-      this.#eventManager.registerEvent(
-        {
-          method: Script.EventNames.MessageEvent,
-          params: {
-            channel: channelId,
-            data: realm.cdpToBidiValue(
-              message,
-              channel.value.ownership ?? 'none'
-            ),
-            source: {
-              realm: realm.realmId,
-              context: realm.browsingContextId,
-            },
-          },
-        },
-        realm.browsingContextId
-      );
-    }
-  }
-
   async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
