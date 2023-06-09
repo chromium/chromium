@@ -1546,6 +1546,55 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   capture_toast_controller_.MaybeRepositionCaptureToast();
 }
 
+void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+  DCHECK(new_root->IsRootWindow());
+
+  if (new_root == current_root_) {
+    return;
+  }
+
+  auto* new_parent = GetParentContainer(new_root);
+  parent_container_observer_ =
+      std::make_unique<ParentContainerObserver>(new_parent, this);
+
+  new_parent->layer()->Add(layer());
+  layer()->SetBounds(new_parent->bounds());
+
+  current_root_ = new_root;
+  // TODO(conniekxu): Observe the new color provider source from the `new_root`
+  // when we support wallpaper per display.
+
+  // Update the bounds of the widgets after setting the new root. For region
+  // capture, the capture bar will move at a later time, when the mouse is
+  // released.
+  if (controller_->source() != CaptureModeSource::kRegion) {
+    RefreshBarWidgetBounds();
+  }
+
+  // Because we use custom cursors for region and full screen capture, we need
+  // to update the cursor in case the display DSF changes.
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
+
+  // The following call to UpdateCaptureRegion will update the capture label
+  // bounds, moving it onto the correct display, but will early return if the
+  // region is already empty.
+  if (controller_->user_capture_region().IsEmpty()) {
+    UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kNone);
+  }
+
+  // Start with a new region when we switch displays.
+  is_selecting_region_ = true;
+  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
+
+  UpdateRootWindowDimmers();
+  MaybeReparentCameraPreviewWidget();
+
+  // Changing the root window may require updating the stacking order on the new
+  // display.
+  RefreshStackingOrder();
+}
+
 std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   std::vector<views::Widget*> result;
   DCHECK(capture_mode_bar_widget_);
@@ -2613,52 +2662,6 @@ bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
 
   DCHECK(capture_label_view_);
   return capture_label_view_->ShouldHandleEvent();
-}
-
-void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
-  DCHECK(new_root->IsRootWindow());
-
-  if (new_root == current_root_)
-    return;
-
-  auto* new_parent = GetParentContainer(new_root);
-  parent_container_observer_ =
-      std::make_unique<ParentContainerObserver>(new_parent, this);
-
-  new_parent->layer()->Add(layer());
-  layer()->SetBounds(new_parent->bounds());
-
-  current_root_ = new_root;
-  // TODO(conniekxu): Observe the new color provider source from the `new_root`
-  // when we support wallpaper per display.
-
-  // Update the bounds of the widgets after setting the new root. For region
-  // capture, the capture bar will move at a later time, when the mouse is
-  // released.
-  if (controller_->source() != CaptureModeSource::kRegion)
-    RefreshBarWidgetBounds();
-
-  // Because we use custom cursors for region and full screen capture, we need
-  // to update the cursor in case the display DSF changes.
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
-               /*is_touch=*/false);
-
-  // The following call to UpdateCaptureRegion will update the capture label
-  // bounds, moving it onto the correct display, but will early return if the
-  // region is already empty.
-  if (controller_->user_capture_region().IsEmpty())
-    UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kNone);
-
-  // Start with a new region when we switch displays.
-  is_selecting_region_ = true;
-  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
-
-  UpdateRootWindowDimmers();
-  MaybeReparentCameraPreviewWidget();
-
-  // Changing the root window may require updating the stacking order on the new
-  // display.
-  RefreshStackingOrder();
 }
 
 void CaptureModeSession::UpdateRootWindowDimmers() {

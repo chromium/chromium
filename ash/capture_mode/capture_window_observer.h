@@ -50,6 +50,8 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 

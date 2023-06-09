@@ -102,6 +102,19 @@ void CaptureWindowObserver::OnWindowBoundsChanged(
   }
 }
 
+void CaptureWindowObserver::OnWindowParentChanged(aura::Window* window,
+                                                  aura::Window* parent) {
+  if (!parent || !bar_anchored_to_window_) {
+    return;
+  }
+  CHECK_EQ(window, window_);
+  // Move the capture mode widgets to the new root and repaint the capture
+  // region when the window parent changes. E.g, `window_` is moved to another
+  // display.
+  capture_mode_session_->MaybeChangeRoot(window_->GetRootWindow());
+  RepaintCaptureRegion();
+}
+
 void CaptureWindowObserver::OnWindowVisibilityChanging(aura::Window* window,
                                                        bool visible) {
   CHECK_EQ(window, window_);

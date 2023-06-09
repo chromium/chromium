@@ -273,6 +273,13 @@ class ASH_EXPORT CaptureModeSession
   // `current_root_` is different`.
   void RefreshBarWidgetBounds();
 
+  // Handles changing `root_window_`. For example, moving the mouse cursor to
+  // another display, a display was removed or the game window of the
+  // `kGameDashboard` session was moved to another display. Moves the capture
+  // mode widgets to `new_root` depending on the capture mode source and whether
+  // it was a display removal.
+  void MaybeChangeRoot(aura::Window* new_root);
+
  private:
   friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
@@ -399,12 +406,6 @@ class ASH_EXPORT CaptureModeSession
   // the event if its associated window is |event_target| and its capture button
   // child is visible.
   bool ShouldCaptureLabelHandleEvent(aura::Window* event_target);
-
-  // Handles changing |root_window_| when the mouse cursor changes to another
-  // display, or if a display was removed. Moves the capture mode widgets to
-  // |new_root| depending on the capture mode source an whether it was a display
-  // removal.
-  void MaybeChangeRoot(aura::Window* new_root);
 
   // Updates |root_window_dimmers_| to dim the correct root windows.
   void UpdateRootWindowDimmers();

@@ -408,6 +408,45 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeSessionConfigs) {
   controller->Stop();
 }
 
+TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
+  UpdateDisplay("800x700,801+0-900x800");
+  const auto& displays = display_manager()->active_display_list();
+  ASSERT_EQ(2u, displays.size());
+  EXPECT_EQ(displays[0].size(), gfx::Size(800, 700));
+  EXPECT_EQ(displays[1].size(), gfx::Size(900, 800));
+
+  display::Screen* screen = display::Screen::GetScreen();
+  auto* controller = StartGameCaptureModeSession();
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  EXPECT_EQ(displays[0].id(),
+            screen->GetDisplayNearestWindow(game_window()).id());
+  EXPECT_EQ(Shell::GetAllRootWindows()[0],
+            capture_mode_session->current_root());
+  VerifyCaptureBarPosition();
+
+  // Using the shortcut ALT+SEARCH+M to move the window to another display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  // Verifies that the capture bar and the current root window of the capture
+  // mode session are updated correctly after moving the game window to another
+  // display.
+  EXPECT_EQ(displays[1].id(),
+            screen->GetDisplayNearestWindow(game_window()).id());
+  EXPECT_EQ(Shell::GetAllRootWindows()[1],
+            capture_mode_session->current_root());
+  VerifyCaptureBarPosition();
+
+  // Using the shortcut ALT+SEARCH+M to move the window back to the previous
+  // display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  // Verifies the capture bar and the current root window after moving the game
+  // window back to the previous display.
+  EXPECT_EQ(displays[0].id(),
+            screen->GetDisplayNearestWindow(game_window()).id());
+  EXPECT_EQ(Shell::GetAllRootWindows()[0],
+            capture_mode_session->current_root());
+  VerifyCaptureBarPosition();
+}
+
 // -----------------------------------------------------------------------------
 // GameDashboardCaptureModeHistogramTest:
 // Test fixture to verify game dashboard initiated screen capture histograms
