@@ -38,6 +38,8 @@ namespace internal {
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
+extern const char kInteractiveTestFailedMessagePrefix[];
+
 // Class that implements functionality for InteractiveTest* that should be
 // hidden from tests that inherit the API.
 class InteractiveTestPrivate {

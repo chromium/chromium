@@ -502,6 +502,44 @@ const TrackedElement* InteractionSequence::GetNamedElement(
   return const_cast<InteractionSequence*>(this)->GetNamedElement(name);
 }
 
+InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
+    AbortedReason reason) const {
+  AbortedData aborted_data;
+  aborted_data.step_index = active_step_index_;
+  aborted_data.aborted_reason = reason;
+  if (reason == AbortedReason::kElementNotVisibleAtStartOfStep ||
+      reason == AbortedReason::kElementHiddenBeforeSequenceStart ||
+      reason == AbortedReason::kSequenceDestroyed ||
+      reason == AbortedReason::kNoSubsequenceRun ||
+      reason == AbortedReason::kSubsequenceFailed ||
+      (reason == AbortedReason::kSequenceTimedOut &&
+       !running_start_callback_)) {
+    ++aborted_data.step_index;
+    if (next_step()) {
+      aborted_data.step_type = next_step()->type;
+      aborted_data.element_id = next_step()->id;
+      aborted_data.step_description = next_step()->description;
+      if (reason == AbortedReason::kSubsequenceFailed) {
+        for (const auto& data : next_step()->subsequence_data) {
+          aborted_data.subsequence_failures.emplace_back(
+              data.result == false ? absl::make_optional(data.aborted_data)
+                                   : absl::nullopt);
+        }
+      }
+    }
+  } else if (current_step_) {
+    aborted_data.step_type = current_step_->type;
+    aborted_data.element_id = current_step_->id;
+    aborted_data.element = SafeElementReference(current_step_->element);
+    aborted_data.step_description = current_step_->description;
+  }
+  return aborted_data;
+}
+
+base::WeakPtr<InteractionSequence> InteractionSequence::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void InteractionSequence::OnElementShown(TrackedElement* element) {
   // If the element was destroyed before we got our callback, this could be
   // null.
@@ -743,9 +781,8 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
   {
     // This block is non-re-entrant.
     DCHECK(!processing_step_);
-    base::WeakAutoReset processing(weak_factory_.GetWeakPtr(),
-                                   &InteractionSequence::processing_step_,
-                                   true);
+    base::WeakAutoReset processing(
+        delete_guard, &InteractionSequence::processing_step_, true);
 
     // End the current step.
     if (current_step_) {
@@ -797,6 +834,8 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     // cause `element` to become invalid. Because of this we use the element
     // field of the current step from here forward, because we've installed a
     // callback above that will null it out if it becomes invalid.
+    base::WeakAutoReset running_start_callback(
+        delete_guard, &InteractionSequence::running_start_callback_, true);
     RunIfValid(std::move(current_step_->start_callback), this,
                current_step_->element.get());
     if (!delete_guard || AbortedDuringCallback())
@@ -1023,41 +1062,17 @@ void InteractionSequence::StageNextStep() {
 void InteractionSequence::Abort(AbortedReason reason) {
   DCHECK(started_);
   next_step_hidden_subscription_ = ElementTracker::Subscription();
+
+  AbortedData aborted_data = BuildAbortedData(reason);
+
   // The entire InteractionSequence could also go away during a callback, so
   // save anything we need locally so that we don't have to access any class
   // members as we finish terminating the sequence.
   base::OnceClosure quit_closure =
       std::move(quit_run_loop_closure_for_testing_);
-  std::unique_ptr<Step> current_step = std::move(current_step_);
   AbortedCallback aborted_callback =
       std::move(configuration_->aborted_callback);
-  AbortedData aborted_data;
-  aborted_data.step_index = active_step_index_;
-  aborted_data.aborted_reason = reason;
-  if (reason == AbortedReason::kElementNotVisibleAtStartOfStep ||
-      reason == AbortedReason::kElementHiddenBeforeSequenceStart ||
-      reason == AbortedReason::kSequenceDestroyed ||
-      reason == AbortedReason::kNoSubsequenceRun ||
-      reason == AbortedReason::kSubsequenceFailed) {
-    ++aborted_data.step_index;
-    if (next_step()) {
-      aborted_data.step_type = next_step()->type;
-      aborted_data.element_id = next_step()->id;
-      aborted_data.step_description = next_step()->description;
-      if (reason == AbortedReason::kSubsequenceFailed) {
-        for (const auto& data : next_step()->subsequence_data) {
-          aborted_data.subsequence_failures.emplace_back(
-              data.result == false ? absl::make_optional(data.aborted_data)
-                                   : absl::nullopt);
-        }
-      }
-    }
-  } else if (current_step) {
-    aborted_data.step_type = current_step->type;
-    aborted_data.element_id = current_step->id;
-    aborted_data.element = SafeElementReference(current_step->element);
-    aborted_data.step_description = current_step->description;
-  }
+  std::unique_ptr<Step> current_step = std::move(current_step_);
   configuration_->steps.clear();
 
   // Note that if the sequence has already been aborted, this is a no-op, the
@@ -1233,6 +1248,11 @@ InteractionSequence::Step* InteractionSequence::next_step() {
                                        : configuration_->steps.front().get();
 }
 
+const InteractionSequence::Step* InteractionSequence::next_step() const {
+  return configuration_->steps.empty() ? nullptr
+                                       : configuration_->steps.front().get();
+}
+
 ElementContext InteractionSequence::context() const {
   return configuration_->context;
 }
@@ -1256,7 +1276,8 @@ void PrintTo(InteractionSequence::AbortedReason reason, std::ostream* os) {
       "kElementHiddenDuringStep",
       "kNoSubsequenceRun",
       "kSubsequenceFailed",
-      "kFailedForTesting"};
+      "kFailedForTesting",
+      "kSequenceTimedOut"};
   constexpr int kCount =
       sizeof(kAbortedReasonNames) / sizeof(kAbortedReasonNames[0]);
   static_assert(

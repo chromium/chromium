@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -342,7 +343,28 @@ bool InteractiveTestApi::RunTestSequenceImpl(
       base::BindOnce(&internal::InteractiveTestPrivate::OnSequenceAborted,
                      base::Unretained(private_test_impl_.get())));
   auto sequence = builder.Build();
-  sequence->RunSynchronouslyForTesting();
+
+  {
+    base::test::ScopedRunLoopTimeout timeout(
+        FROM_HERE, absl::nullopt,
+        base::BindRepeating(
+            [](base::WeakPtr<InteractionSequence> sequence) {
+              std::ostringstream oss;
+              if (sequence) {
+                oss << internal::kInteractiveTestFailedMessagePrefix
+                    << sequence->BuildAbortedData(
+                           InteractionSequence::AbortedReason::
+                               kSequenceTimedOut);
+              } else {
+                oss << "Interactive test: timeout after test sequence "
+                       "destroyed; a failure message may already have been "
+                       "logged.";
+              }
+              return oss.str();
+            },
+            sequence->AsWeakPtr()));
+    sequence->RunSynchronouslyForTesting();
+  }
 
   private_test_impl_->Cleanup();
 

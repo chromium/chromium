@@ -19,6 +19,8 @@ namespace ui::test::internal {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
+const char kInteractiveTestFailedMessagePrefix[] = "Interactive test failed ";
+
 InteractiveTestPrivate::InteractiveTestPrivate(
     std::unique_ptr<InteractionTestUtil> test_util)
     : test_util_(std::move(test_util)) {}
@@ -124,7 +126,7 @@ void InteractiveTestPrivate::OnSequenceAborted(
     return;
   }
   if (sequence_skipped_) {
-    LOG(WARNING) << "Interactive test halted " << data;
+    LOG(WARNING) << kInteractiveTestFailedMessagePrefix << data;
     if (on_incompatible_action_ == OnIncompatibleAction::kSkipTest) {
       GTEST_SKIP();
     } else {

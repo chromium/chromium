@@ -30,6 +30,7 @@ namespace {
 constexpr char kElementName1[] = "Element1";
 constexpr char kElementName2[] = "Element2";
 constexpr char kStepDescription[] = "Step description.";
+constexpr char kStepDescription2[] = "Step description 2.";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
@@ -4717,6 +4718,70 @@ TEST(InteractionSequenceTest, AnyContext_TransitionOnEventDuringCallback) {
 
   sequence->Start();
   EXPECT_CALL_IN_SCOPE(completed, Run, element2.Activate());
+}
+
+// AbortData tests.
+
+TEST(InteractionSequenceTest, BuildAbortDataForTimeout) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element.Show();
+
+  // The same values should be returned if the sequence times out waiting for
+  // the first step vs. during the first step start callback. Note that
+  // `element` will only be set if the step is currently in progress.
+  auto check_aborted_data =
+      [](const InteractionSequence* seq, int step_index, ElementIdentifier id,
+         const TrackedElement* element, const char* description) {
+        const auto data = seq->BuildAbortedData(
+            InteractionSequence::AbortedReason::kSequenceTimedOut);
+        EXPECT_EQ(InteractionSequence::AbortedReason::kSequenceTimedOut,
+                  data.aborted_reason);
+        EXPECT_EQ(step_index, data.step_index);
+        EXPECT_EQ(InteractionSequence::StepType::kShown, data.step_type);
+        EXPECT_EQ(description, data.step_description);
+        EXPECT_EQ(id, data.element_id);
+        EXPECT_EQ(element, data.element.get());
+      };
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetContext(element.context())
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetDescription(kStepDescription)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&check_aborted_data](InteractionSequence* seq,
+                                                 TrackedElement* el) {
+                             // Verify that the correct values are returned if a
+                             // timeout happens during a step start callback.
+                             // Note how the element is set in this case, as a
+                             // step is currently executing.
+                             check_aborted_data(seq, 1, el->identifier(), el,
+                                                kStepDescription);
+                           })))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetDescription(kStepDescription2))
+          .Build();
+
+  // Verify that the correct values are returned if a timeout happens before the
+  // first step.
+  check_aborted_data(sequence.get(), 1, element.identifier(), nullptr,
+                     kStepDescription);
+
+  // Verify that the correct values are returned if a timeout hasppens between
+  // steps.
+  sequence->Start();
+  check_aborted_data(sequence.get(), 2, element2.identifier(), nullptr,
+                     kStepDescription2);
+
+  // Complete the sequence.
+  EXPECT_CALL_IN_SCOPE(completed, Run, element2.Show());
 }
 
 // Subsequence tests.
