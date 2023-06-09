@@ -317,6 +317,13 @@ void TapMoreButtonIfVisible() {
 // Tests that the SetUpList can be expanded and unexpanded by touching the
 // "expand" button at the bottom of the list.
 - (void)testSetUpListExpands {
+// TODO(crbug.com/1453585): Test is flaky on iPhone simulator.
+#if TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPhone simulator.");
+  }
+#endif  // TARGET_IPHONE_SIMULATOR
+
   [self prepareToTestSetUpList];
 
   id<GREYMatcher> signinItem = grey_accessibilityID(set_up_list::kSignInItemID);
