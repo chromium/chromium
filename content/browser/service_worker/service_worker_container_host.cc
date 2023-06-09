@@ -615,6 +615,9 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
       controller()->fetch_handler_bypass_option();
   controller_info->sha256_script_checksum =
       controller()->sha256_script_checksum();
+  if (controller()->router_evaluator()) {
+    controller_info->router_rules = controller()->router_evaluator()->rules();
+  }
 
   // Pass an endpoint for the client to talk to this controller.
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
