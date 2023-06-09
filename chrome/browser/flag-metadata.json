@@ -97,6 +97,12 @@
     "expiry_milestone": -1
   },
   {
+    "name": "allow-devtools-in-system-ui",
+    "owners": [ "lacros-team@google.com" ],
+    // This flag is needed as debugging tool for ChromeOS developers.
+    "expiry_milestone": -1
+  },
+  {
     "name": "allow-dsp-based-aec",
     "owners": [ "peah" ],
     "expiry_milestone": 118

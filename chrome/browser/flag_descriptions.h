@@ -2881,6 +2881,9 @@ extern const char kAdaptiveChargingDescription[];
 extern const char kAdaptiveChargingForTestingName[];
 extern const char kAdaptiveChargingForTestingDescription[];
 
+extern const char kAllowDevtoolsInSystemUIName[];
+extern const char kAllowDevtoolsInSystemUIDescription[];
+
 extern const char kAllowEapDefaultCasWithoutSubjectVerificationName[];
 extern const char kAllowEapDefaultCasWithoutSubjectVerificationDescription[];
 
