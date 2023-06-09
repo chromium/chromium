@@ -3353,4 +3353,57 @@ TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
   EXPECT_FALSE(c->ComputedStyleRef().CanAffectAnimations());
 }
 
+TEST_F(StyleResolverTest, HasAutoAnchorPositioning) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #target {
+        position: absolute;
+        position-fallback: --pf;
+        left: anchor(auto);
+      }
+      @position-fallback --pf {
+        @try { width: 100px; }
+        @try { top: anchor(auto); }
+        @try { left: anchor(auto); }
+        @try { left: anchor(auto); top: anchor(auto); }
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById("target");
+
+  const ComputedStyle& base_style = target->ComputedStyleRef();
+  EXPECT_TRUE(base_style.HasAutoAnchorPositioning());
+  EXPECT_FALSE(base_style.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_FALSE(base_style.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // First @try block doesn't have any auto anchor positioning in it.
+  const ComputedStyle& fallback1 = *target->StyleForPositionFallback(0);
+  EXPECT_TRUE(fallback1.HasAutoAnchorPositioning());
+  EXPECT_FALSE(fallback1.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_FALSE(fallback1.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // Second @try block has auto anchor positioning only in y axis.
+  const ComputedStyle& fallback2 = *target->StyleForPositionFallback(1);
+  EXPECT_TRUE(fallback2.HasAutoAnchorPositioning());
+  EXPECT_FALSE(fallback2.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_TRUE(fallback2.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // Third @try block has auto anchor positioning only in x axis, even if the
+  // resolved computed style is equal to the base style.
+  const ComputedStyle& fallback3 = *target->StyleForPositionFallback(2);
+  EXPECT_TRUE(fallback3.HasAutoAnchorPositioning());
+  EXPECT_TRUE(fallback3.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_FALSE(fallback3.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // Fourth @try block has auto anchor positioning in both axes.
+  const ComputedStyle& fallback4 = *target->StyleForPositionFallback(3);
+  EXPECT_TRUE(fallback4.HasAutoAnchorPositioning());
+  EXPECT_TRUE(fallback4.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_TRUE(fallback4.HasAutoAnchorPositioningInYAxisFromTryBlock());
+}
+
 }  // namespace blink

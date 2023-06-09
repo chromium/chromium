@@ -275,6 +275,7 @@ class PLATFORM_EXPORT Length {
   bool IsDeviceWidth() const { return GetType() == kDeviceWidth; }
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
   bool HasAnchorQueries() const;
+  bool HasAutoAnchorPositioning() const;
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
     DCHECK(IsSpecified());

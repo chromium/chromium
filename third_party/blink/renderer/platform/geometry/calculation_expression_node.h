@@ -47,6 +47,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   }
 
   bool HasAnchorQueries() const { return has_anchor_queries_; }
+  bool HasAutoAnchorPositioning() const { return has_auto_anchor_positioning_; }
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
@@ -71,6 +72,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool Equals(const CalculationExpressionNode& other) const = 0;
 
   bool has_anchor_queries_ = false;
+  bool has_auto_anchor_positioning_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final
@@ -173,6 +175,7 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
 
  private:
   bool ComputeHasAnchorQueries() const;
+  bool ComputeHasAutoAnchorPositioning() const;
 
   Children children_;
   CalculationOperator operator_;

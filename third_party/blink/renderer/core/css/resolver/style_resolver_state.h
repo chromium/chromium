@@ -225,6 +225,13 @@ class CORE_EXPORT StyleResolverState {
 
   void UpdateLengthConversionData();
 
+  void SetIsResolvingPositionFallbackStyle() {
+    is_resolving_position_fallback_style_ = true;
+  }
+  bool IsResolvingPositionFallbackStyle() const {
+    return is_resolving_position_fallback_style_;
+  }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
 
@@ -292,6 +299,10 @@ class CORE_EXPORT StyleResolverState {
   // True if the cascade rejected any properties with the kLegacyOverlapping
   // flag.
   bool rejected_legacy_overlapping_ = false;
+
+  // True if we are currently resolving a position fallback style by applying
+  // rules in a `@try` block.
+  bool is_resolving_position_fallback_style_ = false;
 };
 
 }  // namespace blink

@@ -1197,6 +1197,12 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& UsedBottom() const {
     return AdjustLengthForAnchorQueries(Bottom(), Length::Auto());
   }
+  bool HasAutoAnchorPositioning() const {
+    return UsedLeft().HasAutoAnchorPositioning() ||
+           UsedRight().HasAutoAnchorPositioning() ||
+           UsedTop().HasAutoAnchorPositioning() ||
+           UsedBottom().HasAutoAnchorPositioning();
+  }
 
   // Width/height utility functions.
   const Length& UsedWidth() const {

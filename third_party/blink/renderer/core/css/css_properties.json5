@@ -2305,7 +2305,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "bottom",
@@ -3170,7 +3170,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "left",
@@ -4096,7 +4096,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "right",
@@ -5189,7 +5189,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "top",

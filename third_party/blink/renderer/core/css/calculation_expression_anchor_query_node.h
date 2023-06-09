@@ -84,6 +84,9 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
         side_percentage_(side_percentage),
         fallback_(fallback) {
     has_anchor_queries_ = true;
+    has_auto_anchor_positioning_ = type == CSSAnchorQueryType::kAnchor &&
+                                   (AnchorSide() == CSSAnchorValue::kAuto ||
+                                    AnchorSide() == CSSAnchorValue::kAutoSame);
   }
 
  private:

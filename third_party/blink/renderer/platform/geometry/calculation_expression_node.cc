@@ -243,6 +243,16 @@ bool CalculationExpressionOperationNode::ComputeHasAnchorQueries() const {
   return false;
 }
 
+bool CalculationExpressionOperationNode::ComputeHasAutoAnchorPositioning()
+    const {
+  for (const auto& child : children_) {
+    if (child->HasAutoAnchorPositioning()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 CalculationExpressionOperationNode::CalculationExpressionOperationNode(
     Children&& children,
     CalculationOperator op)
@@ -252,6 +262,7 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
   DCHECK_NE(result_type_, ResultType::kInvalid);
 #endif
   has_anchor_queries_ = ComputeHasAnchorQueries();
+  has_auto_anchor_positioning_ = ComputeHasAutoAnchorPositioning();
 }
 
 float CalculationExpressionOperationNode::Evaluate(
