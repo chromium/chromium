@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/statistics_recorder.h"
@@ -39,7 +38,6 @@
 #include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/file_metrics_provider.h"
-#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -332,13 +330,6 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
 
 void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
   CHECK(metrics::SubprocessMetricsProvider::GetInstance());
-  if (!base::FeatureList::IsEnabled(
-          metrics::features::kSubprocessMetricsProviderLeaky)) {
-    // Hacky way to make MetricsService own the subprocess provider.
-    // TODO(crbug/1293026): Remove this.
-    metrics_service_->RegisterMetricsProvider(
-        base::WrapUnique(metrics::SubprocessMetricsProvider::GetInstance()));
-  }
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<NetworkMetricsProvider>(

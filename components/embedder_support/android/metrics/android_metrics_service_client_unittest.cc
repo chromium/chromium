@@ -541,11 +541,6 @@ TEST_F(AndroidMetricsServiceClientTest,
   for (const auto& test : test_cases) {
     auto prefs = CreateTestPrefs();
     prefs->SetString(metrics::prefs::kMetricsClientID, test.client_uuid);
-    // Needed because RegisterMetricsProvidersAndInitState() checks for this.
-    // TODO(crbug/1293026): Remove this and only keep the one in ctor/SetUp.
-    // This is currently needed because |client| will own the provider and
-    // destroy it when it goes out of scope, so need to re-create the provider.
-    metrics::SubprocessMetricsProvider::CreateInstance();
     auto client = std::make_unique<SampleBucketValueTestClient>();
     client->SetHaveMetricsConsent(/*user_consent=*/true, /*app_consent=*/true);
     client->Initialize(prefs.get());

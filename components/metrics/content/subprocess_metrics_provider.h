@@ -41,12 +41,6 @@ class SubprocessMetricsProvider
   SubprocessMetricsProvider& operator=(const SubprocessMetricsProvider&) =
       delete;
 
-  // This should never be deleted, as it handles subprocess metrics for the
-  // whole lifetime of the browser process. However, it may be deleted in tests.
-  // Also temporarily while testing the effects of making this leaky.
-  // TODO(crbug/1293026): Make this private.
-  ~SubprocessMetricsProvider() override;
-
   // Creates the global instance. Returns false if the instance already exists.
   static bool CreateInstance();
 
@@ -63,6 +57,10 @@ class SubprocessMetricsProvider
 
   // The global instance should be accessed through Get().
   SubprocessMetricsProvider();
+
+  // This should never be deleted, as it handles subprocess metrics for the
+  // whole lifetime of the browser process.
+  ~SubprocessMetricsProvider() override;
 
   // Indicates subprocess to be monitored with unique id for later reference.
   // Metrics reporting will read histograms from it and upload them to UMA.
@@ -107,6 +105,9 @@ class SubprocessMetricsProvider
   AllocatorByIdMap allocators_by_id_;
 
   // Track all observed render processes to un-observe them on exit.
+  // TODO(crbug/1293026): Since this class should be leaky, it is not
+  // semantically correct to have a "scoped" member field here. Replace this
+  // with something like a set.
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       scoped_observations_{this};

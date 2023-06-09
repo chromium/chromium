@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "components/metrics/metrics_features.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/child_process_data.h"
@@ -78,15 +77,8 @@ SubprocessMetricsProvider::SubprocessMetricsProvider() {
 }
 
 SubprocessMetricsProvider::~SubprocessMetricsProvider() {
-  // This should only be called in tests. However, temporarily, this is also
-  // called for testing the effects of making this leaky.
-  // TODO(crbug/1293026): Eventually ensure this is not called in prod.
-  CHECK(
-      !base::FeatureList::IsEnabled(features::kSubprocessMetricsProviderLeaky));
-
-  // Safe even if this object has never been added as an observer.
-  content::BrowserChildProcessObserver::Remove(this);
-  g_subprocess_metrics_provider = nullptr;
+  // This object should never be deleted since it is leaky.
+  NOTREACHED();
 }
 
 void SubprocessMetricsProvider::RegisterSubprocessAllocator(

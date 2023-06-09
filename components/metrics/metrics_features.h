@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 
 namespace metrics::features {
+
 // Determines at what point the metrics service is allowed to close a log when
 // Chrome is closed (and backgrounded/foregrounded for mobile platforms). When
 // this feature is disabled, the metrics service can only close a log if it has
@@ -25,10 +26,6 @@ BASE_DECLARE_FEATURE(kMetricsClearLogsOnClonedInstall);
 // while Chrome is in the background. Only applicable for mobile platforms.
 BASE_DECLARE_FEATURE(kReportingServiceFlushPrefsOnUploadInBackground);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-// Whether SubprocessMetricsProvider should be leaky, so that it can listen to
-// subprocesses exiting even after the MetricsService has been destroyed.
-BASE_DECLARE_FEATURE(kSubprocessMetricsProviderLeaky);
 
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
