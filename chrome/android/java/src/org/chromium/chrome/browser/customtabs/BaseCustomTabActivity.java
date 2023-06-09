@@ -170,7 +170,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 () -> mToolbarCoordinator, () -> mNavigationController, () -> mIntentDataProvider,
                 () -> mDelegateFactory.getEphemeralTabCoordinator(), mBackPressManager,
-                () -> mTabController, this::isPageInsightsHubEnabled);
+                () -> mTabController);
         // clang-format on
         return mBaseCustomTabRootUiCoordinator;
     }
@@ -265,13 +265,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         final int separateTaskFlags =
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
         return (getIntent().getFlags() & separateTaskFlags) != 0;
-    }
-
-    /**
-     * Return true when PageInsights Hub is enabled on Custom Tabs. False by default.
-     */
-    protected boolean isPageInsightsHubEnabled() {
-        return false;
     }
 
     @Override
@@ -416,7 +409,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowShareMenuItem(),
                 mIntentDataProvider.shouldShowStarButton(),
                 mIntentDataProvider.shouldShowDownloadButton(), mIntentDataProvider.isIncognito(),
-                isMenuIconAtStart, this::isPageInsightsHubEnabled);
+                isMenuIconAtStart, mBaseCustomTabRootUiCoordinator::isPageInsightsHubEnabled);
     }
 
     @Override

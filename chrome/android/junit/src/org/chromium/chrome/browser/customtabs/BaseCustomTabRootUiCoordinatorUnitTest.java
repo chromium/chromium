@@ -9,15 +9,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.content.Intent;
-
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.Robolectric;
-import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
@@ -26,35 +21,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/** JUnit tests for CustomTabActivity. */
+/** JUnit tests for BaseCustomTabRootUiCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public final class CustomTabActivityUnitTest {
-    private final List<ActivityController> mActivityControllerList = new ArrayList<>();
-
-    private CustomTabActivity mCustomTabActivity;
-
-    @Before
-    public void setUp() {
-        ActivityController<CustomTabActivity> activityController =
-                Robolectric.buildActivity(CustomTabActivity.class, new Intent()).create();
-        mCustomTabActivity = activityController.get();
-        mActivityControllerList.add(activityController);
-    }
-
+public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @After
     public void tearDown() {
-        for (ActivityController activityController : mActivityControllerList) {
-            activityController.destroy();
-        }
         CustomTabsConnection.setInstanceForTesting(null);
-    }
-
-    private CustomTabActivity getActivity() {
-        return mCustomTabActivity;
     }
 
     private void enablePageInsights(FeatureList.TestValues testValues,
@@ -64,8 +37,12 @@ public final class CustomTabActivityUnitTest {
         when(syncService.isSyncingUnencryptedUrls()).thenReturn(true);
     }
 
+    private boolean isPageInsightsEnabledSync() {
+        return BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabledSync(null);
+    }
+
     @Test
-    public void testPageInsightsHubEnabled() throws Exception {
+    public void testPageInsightsEnabledSync() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, false);
         FeatureList.setTestValues(testValues);
@@ -77,19 +54,19 @@ public final class CustomTabActivityUnitTest {
         SyncServiceFactory.overrideForTests(syncService);
 
         enablePageInsights(testValues, connection, syncService);
-        assertTrue("PageInsightsHub should be enabled", getActivity().isPageInsightsHubEnabled());
+        assertTrue("PageInsightsHub should be enabled", isPageInsightsEnabledSync());
 
         // The method should return false if any one of the conditions is not met.
         enablePageInsights(testValues, connection, syncService);
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, false);
-        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
+        assertFalse("PageInsightsHub should be disabled", isPageInsightsEnabledSync());
 
         enablePageInsights(testValues, connection, syncService);
         when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(false);
-        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
+        assertFalse("PageInsightsHub should be disabled", isPageInsightsEnabledSync());
 
         enablePageInsights(testValues, connection, syncService);
         when(syncService.isSyncingUnencryptedUrls()).thenReturn(false);
-        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
+        assertFalse("PageInsightsHub should be disabled", isPageInsightsEnabledSync());
     }
 }
