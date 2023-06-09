@@ -1679,7 +1679,8 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
       // stopped. So the default match must be the desired selection.
       *match = *result().default_match();
       found_match_for_text = true;
-    } else if (GetPopupSelection().line != OmniboxPopupSelection::kNoMatch) {
+    } else if (PopupIsOpen() &&
+               GetPopupSelection().line != OmniboxPopupSelection::kNoMatch) {
       const OmniboxPopupSelection selection = GetPopupSelection();
       const AutocompleteMatch& selected_match =
           result().match_at(selection.line);
@@ -2327,7 +2328,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // cases when this happens, the user never modified the omnibox.)
   const bool popup_open = PopupIsOpen();
   if (input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
-      !popup_open || !pasted_text.empty()) {
+      !pasted_text.empty()) {
     const base::TimeDelta default_time_delta = base::Milliseconds(-1);
     elapsed_time_since_user_first_modified_omnibox = default_time_delta;
     elapsed_time_since_last_change_to_default_match = default_time_delta;

@@ -797,6 +797,10 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
     return;
   }
 
+  // This will SetInputInProgress and consequently mark the input timer so that
+  // Omnibox.TypingDuration will be logged correctly.
+  edit_model()->SetUserText(input);
+
   AutocompleteInput autocomplete_input(
       input, metrics::OmniboxEventProto::NTP_REALBOX,
       ChromeAutocompleteSchemeClassifier(profile_));
