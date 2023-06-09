@@ -422,8 +422,8 @@ void Program::Reset() {
   max_uniform_name_length_ = 0;
   max_attrib_name_length_ = 0;
   attrib_infos_.clear();
-  uniform_infos_.clear();
   uniform_locations_.clear();
+  uniform_infos_.clear();
   program_output_infos_.clear();
   sampler_indices_.clear();
   attrib_location_to_index_map_.clear();
