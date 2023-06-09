@@ -39,6 +39,7 @@
 #include "content/browser/service_worker/service_worker_script_cache_map.h"
 #include "content/browser/service_worker/service_worker_update_checker.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -265,6 +266,14 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void set_fetch_handler_bypass_option(
       FetchHandlerBypassOption fetch_handler_bypass_option) {
     fetch_handler_bypass_option_ = fetch_handler_bypass_option;
+  }
+
+  // Returns true on setup success.
+  // Otherwise, setup error, and subsequent `router_evaluator()` will return
+  // `absl::nullopt`.
+  bool SetupRouterEvaluator(const blink::ServiceWorkerRouterRules& rules);
+  const absl::optional<ServiceWorkerRouterEvaluator>& router_evaluator() const {
+    return router_evaluator_;
   }
 
   base::TimeDelta TimeSinceNoControllees() const {
@@ -1255,6 +1264,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // after the worker has started when there is a change in the script and new
   // version is created.
   absl::optional<std::string> sha256_script_checksum_;
+
+  absl::optional<content::ServiceWorkerRouterEvaluator> router_evaluator_;
 
   base::WeakPtrFactory<ServiceWorkerVersion> weak_factory_{this};
 };

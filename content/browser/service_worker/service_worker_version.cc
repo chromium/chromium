@@ -2860,6 +2860,17 @@ void ServiceWorkerVersion::SetResources(
       MergeResourceRecordSHA256ScriptChecksum(script_url_, script_cache_map_);
 }
 
+bool ServiceWorkerVersion::SetupRouterEvaluator(
+    const blink::ServiceWorkerRouterRules& rules) {
+  CHECK(!router_evaluator_);
+  router_evaluator_.emplace(rules);
+  if (!router_evaluator_->IsValid()) {
+    router_evaluator_.reset();
+    return false;
+  }
+  return true;
+}
+
 base::WeakPtr<ServiceWorkerVersion> ServiceWorkerVersion::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

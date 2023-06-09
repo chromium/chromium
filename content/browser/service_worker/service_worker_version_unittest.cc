@@ -1937,5 +1937,27 @@ TEST_F(ServiceWorkerVersionTest, SetResources) {
   EXPECT_EQ("CBE5CFDF7C2118A9C3D78EF1D684F3AFA089201352886449A06A6511CFEF74A7",
             version->sha256_script_checksum());
 }
+
+TEST_F(ServiceWorkerVersionTest, SetRouterEvaluator) {
+  // Create a new version
+  scoped_refptr<ServiceWorkerVersion> version = CreateNewServiceWorkerVersion(
+      helper_->context()->registry(), registration_.get(),
+      GURL("https://www.example.com/test/service_worker.js"),
+      blink::mojom::ScriptType::kClassic);
+
+  // The router_evaluator should be unset on setup.
+  EXPECT_FALSE(version->router_evaluator().has_value());
+
+  // TODO(crbug.com/1371756): test to ensure the broken rule is not set.
+  // It is easier to implement this after ServiceWorkerRouterEvaluator's
+  // initial check become more strict.
+
+  // Set correct rules will make the router_evaluator() return non-null.
+  {
+    blink::ServiceWorkerRouterRules rules;
+    EXPECT_TRUE(version->SetupRouterEvaluator(rules));
+    EXPECT_TRUE(version->router_evaluator().has_value());
+  }
+}
 }  // namespace service_worker_version_unittest
 }  // namespace content
