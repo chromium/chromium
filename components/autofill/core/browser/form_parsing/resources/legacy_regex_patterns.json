@@ -539,7 +539,7 @@
     ],
     "es": [
       {
-        "positive_pattern": "direccion2|colonia|adicional",
+        "positive_pattern": "direccion2|adicional",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -979,6 +979,15 @@
     "id": [
       {
         "positive_pattern": "kecamatan",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
+      }
+    ],
+    "es": [
+      {
+        "positive_pattern": "colonia",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

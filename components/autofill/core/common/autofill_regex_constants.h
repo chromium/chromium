@@ -88,7 +88,7 @@ inline constexpr char16_t kAddressLine1LabelRe[] =
 inline constexpr char16_t kAddressLine2Re[] =
     u"address[_-]?line(2|two)|address2|addr2|street|suite|unit"
     u"|adresszusatz|ergänzende.?angaben"        // de-DE
-    u"|direccion2|colonia|adicional"            // es
+    u"|direccion2|adicional"                    // es
     u"|addresssuppl|complementnom|appartement"  // fr-FR
     u"|indirizzo2"                              // it-IT
     u"|住所2"                                   // ja-JP
@@ -145,7 +145,8 @@ inline constexpr char16_t kDependentLocalityRe[] =
     u"neighbo(u)?rhood"  // en
     u"|bairro"           // pt-BR, pt-PT
     u"|mahalle|köy"      // tr
-    u"|kecamatan";       // id
+    u"|kecamatan"        // id
+    u"|colonia";         // es
 inline constexpr char16_t kCityRe[] =
     u"city|town"
     u"|\\bort\\b|stadt"                                  // de-DE
