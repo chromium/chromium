@@ -41,10 +41,14 @@
 ../../web_tests/images/resources/avif/alpha-mask-limited-range-10bpc.avif
 ../../web_tests/images/resources/avif/alpha-mask-limited-range-12bpc.avif
 ../../web_tests/images/resources/avif/alpha-mask-limited-range-8bpc.avif
+../../web_tests/images/resources/avif/blue-and-magenta-crop-invalid.avif
+../../web_tests/images/resources/avif/blue-and-magenta-crop.avif
 ../../web_tests/images/resources/avif/dice_444_10b_grid4x3.avif
 ../../web_tests/images/resources/avif/gracehopper_422_12b_grid2x4.avif
 ../../web_tests/images/resources/avif/gray1024x704.avif
 ../../web_tests/images/resources/avif/green-no-alpha-ispe.avif
+../../web_tests/images/resources/avif/red-and-purple-and-blue.avif
+../../web_tests/images/resources/avif/red-and-purple-crop.avif
 ../../web_tests/images/resources/avif/red-at-12-oclock-with-color-profile-10bpc.avif
 ../../web_tests/images/resources/avif/red-at-12-oclock-with-color-profile-12bpc.avif
 ../../web_tests/images/resources/avif/red-at-12-oclock-with-color-profile-8bpc.avif

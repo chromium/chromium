@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -83,11 +84,14 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   // Decodes the frame at index |index| and checks if the frame's size, bit
   // depth, and YUV format matches those reported by the container. The decoded
-  // frame is available in decoder_->image.
+  // frame is available in decoded_image_.
   avifResult DecodeImage(wtf_size_t index);
 
   // Updates or creates |color_transform_| for YUV-to-RGB conversion.
   void UpdateColorTransform(const gfx::ColorSpace& frame_cs, int bit_depth);
+
+  // Crops |decoded_image_|.
+  void CropDecodedImage();
 
   // Renders the rows [from_row, *to_row) of |image| to |buffer|. Returns
   // whether |image| was rendered successfully. On return, the in/out argument
@@ -103,6 +107,13 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   void ColorCorrectImage(int from_row, int to_row, ImageFrame* buffer);
 
   bool have_parsed_current_data_ = false;
+  // The image width and height (before cropping, if any) from the container.
+  //
+  // Note: container_width_, container_height_, decoder_->image->width, and
+  // decoder_->image->height are the width and height of the full image. Size()
+  // returns the size of the cropped image (the clean aperture).
+  uint32_t container_width_ = 0;
+  uint32_t container_height_ = 0;
   // The bit depth from the container.
   uint8_t bit_depth_ = 0;
   bool decode_to_half_float_ = false;
@@ -116,6 +127,21 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   wtf_size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
+  // Whether the 'clap' (clean aperture) property should be ignored, e.g.
+  // because the 'clap' property is invalid or unsupported.
+  bool ignore_clap_ = false;
+  // The origin (top left corner) of the clean aperture. Used only when the
+  // image has a valid 'clap' (clean aperture) property.
+  gfx::Point clap_origin_;
+  // A copy of decoder_->image with the width, height, and plane buffers
+  // adjusted to those of the clean aperture. Used only when the image has a
+  // 'clap' (clean aperture) property.
+  std::unique_ptr<avifImage, decltype(&avifImageDestroy)> cropped_image_{
+      nullptr, avifImageDestroy};
+  // Set by a successful DecodeImage() call to either decoder_->image or
+  // cropped_image_.get() depending on whether the image has a 'clap' (clean
+  // aperture) property.
+  const avifImage* decoded_image_ = nullptr;
   std::unique_ptr<avifDecoder, decltype(&avifDecoderDestroy)> decoder_{
       nullptr, avifDecoderDestroy};
   avifIO avif_io_ = {};

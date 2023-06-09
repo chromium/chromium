@@ -481,6 +481,23 @@ StaticColorCheckParam kTestParams[] = {
          {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
      }},
 #endif
+    {"/images/resources/avif/red-and-purple-crop.avif",
+     8,
+     ColorType::kRgbA,
+     ImageDecoder::kLosslessFormat,
+     ImageDecoder::kAlphaNotPremultiplied,
+     ColorBehavior::Tag(),
+     ImageOrientationEnum::kOriginTopLeft,
+     0,
+     {
+         // The clean aperture's size is 200x50. The left half is red and the
+         // right half is purple. Alpha values in the clean aperture are 255.
+         // (Alpha values to the right of the clean aperture are 128.)
+         {gfx::Point(0, 0), SkColorSetARGB(255, 255, 0, 0)},       // red
+         {gfx::Point(99, 24), SkColorSetARGB(255, 255, 0, 0)},     // red
+         {gfx::Point(100, 25), SkColorSetARGB(255, 127, 0, 128)},  // purple
+         {gfx::Point(199, 49), SkColorSetARGB(255, 127, 0, 128)},  // purple
+     }},
     {"/images/resources/avif/red-full-range-angle-1-420-8bpc.avif",
      8,
      ColorType::kRgb,
@@ -1087,6 +1104,92 @@ TEST(StaticAVIFTests, UnsupportedTransferFunctionInColrProperty) {
       ReadFile("/images/resources/avif/red-unsupported-transfer.avif"), true);
   EXPECT_FALSE(decoder->IsSizeAvailable());
   EXPECT_TRUE(decoder->Failed());
+}
+
+TEST(StaticAVIFTests, ClapPropertyZeroOrigin) {
+  constexpr int kClapWidth = 200;
+  constexpr int kClapHeight = 50;
+  std::unique_ptr<ImageDecoder> decoder1 = CreateAVIFDecoder();
+  decoder1->SetData(ReadFile("/images/resources/avif/red-and-purple-crop.avif"),
+                    true);
+  ASSERT_TRUE(decoder1->IsSizeAvailable());
+  gfx::Size size1 = decoder1->Size();
+  ASSERT_EQ(size1.width(), kClapWidth);
+  ASSERT_EQ(size1.height(), kClapHeight);
+  ImageFrame* frame1 = decoder1->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame1);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame1->GetStatus());
+  EXPECT_FALSE(decoder1->Failed());
+  const SkBitmap& bitmap1 = frame1->Bitmap();
+
+  // The second image is the uncropped version of the first image.
+  std::unique_ptr<ImageDecoder> decoder2 = CreateAVIFDecoder();
+  decoder2->SetData(
+      ReadFile("/images/resources/avif/red-and-purple-and-blue.avif"), true);
+  ASSERT_TRUE(decoder2->IsSizeAvailable());
+  gfx::Size size2 = decoder2->Size();
+  ASSERT_EQ(size2.width(), 300);
+  ASSERT_EQ(size2.height(), 100);
+  ImageFrame* frame2 = decoder2->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame2);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame2->GetStatus());
+  EXPECT_FALSE(decoder2->Failed());
+  const SkBitmap& bitmap2 = frame2->Bitmap();
+
+  // Compare pixel data.
+  for (int row = 0; row < kClapHeight; ++row) {
+    for (int col = 0; col < kClapWidth; ++col) {
+      EXPECT_EQ(bitmap1.getColor(/*x=*/col, /*y=*/row),
+                bitmap2.getColor(/*x=*/col, /*y=*/row));
+    }
+  }
+}
+
+// Verifies that an invalid 'clap' (clean aperture) image property is handled by
+// ignoring the 'clap' property and showing the full image.
+TEST(StaticAVIFTests, InvalidClapPropertyHandling) {
+  // The first image has a valid 'clap' property. The full image has size
+  // 320x280. The clean aperture has size 180x100, located at (40, 80) of the
+  // full image.
+  //
+  // Since the origin of the clean aperture is not located at (0, 0), we treat
+  // the 'clap' property as invalid. So the full image is shown.
+  std::unique_ptr<ImageDecoder> decoder1 = CreateAVIFDecoder();
+  decoder1->SetData(
+      ReadFile("/images/resources/avif/blue-and-magenta-crop.avif"), true);
+  ASSERT_TRUE(decoder1->IsSizeAvailable());
+  gfx::Size size1 = decoder1->Size();
+  ASSERT_EQ(size1.width(), 320);
+  ASSERT_EQ(size1.height(), 280);
+  ImageFrame* frame1 = decoder1->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame1);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame1->GetStatus());
+  EXPECT_FALSE(decoder1->Failed());
+  const SkBitmap& bitmap1 = frame1->Bitmap();
+
+  // The second image is the same as the first image except that the 'clap'
+  // property is invalid. In this case the full image is shown.
+  std::unique_ptr<ImageDecoder> decoder2 = CreateAVIFDecoder();
+  decoder2->SetData(
+      ReadFile("/images/resources/avif/blue-and-magenta-crop-invalid.avif"),
+      true);
+  ASSERT_TRUE(decoder2->IsSizeAvailable());
+  gfx::Size size2 = decoder2->Size();
+  ASSERT_EQ(size2.width(), 320);
+  ASSERT_EQ(size2.height(), 280);
+  ImageFrame* frame2 = decoder2->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame2);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame2->GetStatus());
+  EXPECT_FALSE(decoder2->Failed());
+  const SkBitmap& bitmap2 = frame2->Bitmap();
+
+  // Compare pixel data.
+  for (int row = 0; row < size1.height(); ++row) {
+    for (int col = 0; col < size1.width(); ++col) {
+      EXPECT_EQ(bitmap1.getColor(/*x=*/col, /*y=*/row),
+                bitmap2.getColor(/*x=*/col, /*y=*/row));
+    }
+  }
 }
 
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;
