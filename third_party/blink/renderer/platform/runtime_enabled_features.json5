@@ -2926,7 +2926,6 @@
     {
       name: "RemoveDataUrlInSvgUse",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "RemoveLegacySizeComputation",
