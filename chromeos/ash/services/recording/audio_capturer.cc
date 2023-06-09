@@ -4,18 +4,19 @@
 
 #include "chromeos/ash/services/recording/audio_capturer.h"
 
+#include "base/strings/string_piece_forward.h"
 #include "services/audio/public/cpp/device_factory.h"
 
 namespace recording {
 
 AudioCapturer::AudioCapturer(
-    const std::string& device_id,
+    base::StringPiece device_id,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const media::AudioParameters& audio_params,
     OnAudioCapturedCallback callback)
     : audio_capturer_(
           audio::CreateInputDevice(std::move(audio_stream_factory),
-                                   device_id,
+                                   std::string(device_id),
                                    audio::DeadStreamDetection::kEnabled)),
       on_audio_captured_callback_(std::move(callback)) {
   audio_capturer_->Initialize(audio_params, /*callback=*/this);

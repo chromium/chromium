@@ -6,9 +6,9 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_AUDIO_CAPTURER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
@@ -36,7 +36,7 @@ using OnAudioCapturedCallback =
 // capturer. `callback` will be invoked according to the rules specified above.
 class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
  public:
-  AudioCapturer(const std::string& device_id,
+  AudioCapturer(base::StringPiece device_id,
                 mojo::PendingRemote<media::mojom::AudioStreamFactory>
                     audio_stream_factory,
                 const media::AudioParameters& audio_params,

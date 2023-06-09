@@ -23,9 +23,6 @@ constexpr base::TimeDelta kMinCapturePeriod = base::Hertz(kMaxFrameRate);
 constexpr base::TimeDelta kMinPeriodForResizeThrottling =
     base::Milliseconds(500);
 
-// The requested audio sample rate of the audio capturer.
-constexpr int kAudioSampleRate = 48000;
-
 // The color space used for video capturing and encoding.
 constexpr gfx::ColorSpace kColorSpace = gfx::ColorSpace::CreateREC709();
 

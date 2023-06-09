@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/services/recording/audio_stream_mixer.h"
 
 namespace recording {
 
@@ -89,13 +90,15 @@ void RecordingServiceTestApi::RequestAndWaitForVideoFrame(
 bool RecordingServiceTestApi::IsDoingAudioRecording() const {
   DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
 
-  return !recording_service_.audio_capturers_.empty();
+  return !!recording_service_.audio_stream_mixer_;
 }
 
 int RecordingServiceTestApi::GetNumberOfAudioCapturers() const {
   DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
 
-  return recording_service_.audio_capturers_.size();
+  return recording_service_.audio_stream_mixer_
+             ? recording_service_.audio_stream_mixer_->audio_capturers_.size()
+             : 0;
 }
 
 }  // namespace recording

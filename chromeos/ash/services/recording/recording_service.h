@@ -34,7 +34,7 @@
 
 namespace recording {
 
-class AudioCapturer;
+class AudioStreamMixer;
 class RecordingServiceTestApi;
 
 // Implements the mojo interface of the recording service which handles
@@ -194,16 +194,6 @@ class RecordingService : public mojom::RecordingService,
                                              std::forward<Args>(args)...));
   }
 
-  // Similar to the above, conveniently binds repeating callbacks to weak ptrs
-  // of this class. The callbacks will only be invoked on the main thread.
-  template <typename Functor, typename... Args>
-  auto BindRepeatingToMainThread(Functor&& functor, Args&&... args) {
-    return base::BindPostTask(
-        main_task_runner_, base::BindRepeating(std::forward<Functor>(functor),
-                                               weak_ptr_factory_.GetWeakPtr(),
-                                               std::forward<Args>(args)...));
-  }
-
   THREAD_CHECKER(main_thread_checker_);
 
   // The audio parameters that will be used when recording audio.
@@ -262,11 +252,13 @@ class RecordingService : public mojom::RecordingService,
   mojo::Remote<viz::mojom::FrameSinkVideoCapturer> video_capturer_remote_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
-  // A list of audio capturers, which can be empty if no audio recording is
-  // requested, or can contain a single capturer if either microphone or system
-  // audio recording was requested, or can contain two capturers if both are
-  // desired to be recorded an mixed together in one stream.
-  std::vector<std::unique_ptr<AudioCapturer>> audio_capturers_
+  // The audio stream mixer that will be created only if we are capturing any
+  // audio stream. The mixer creates and owns the audio capturers that we
+  // require. If the mixer exists, it must contain at least a single capturer;
+  // if either microphone or system audio recording was requested, or contains
+  // two capturers if both are desired to be recorded an mixed together in one
+  // stream.
+  std::unique_ptr<AudioStreamMixer> audio_stream_mixer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // Abstracts querying the supported capabilities of the currently used encoder
