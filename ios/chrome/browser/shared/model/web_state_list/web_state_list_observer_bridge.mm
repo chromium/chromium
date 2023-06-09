@@ -18,37 +18,14 @@ void WebStateListObserverBridge::WebStateListChanged(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kReplace: {
-      const SEL selector = @selector(didChangeWebStateList:change:selection:);
-      if (![observer_ respondsToSelector:selector]) {
-        return;
-      }
-
-      [observer_ didChangeWebStateList:web_state_list
-                                change:change
-                             selection:selection];
-      break;
-    }
-    case WebStateListChange::Type::kInsert: {
-      const SEL selector = @selector(webStateList:
-                                didInsertWebState:atIndex:activating:);
-      if (![observer_ respondsToSelector:selector]) {
-        return;
-      }
-
-      // TODO(crbug.com/1442546): Replace
-      // -webStateList:didInsertWebState:atIndex:activating: with
-      // -didChangeWebStateList:change:selection:.
-      const WebStateListChangeInsert& insertChange =
-          change.As<WebStateListChangeInsert>();
-      [observer_ webStateList:web_state_list
-            didInsertWebState:insertChange.inserted_web_state()
-                      atIndex:selection.index
-                   activating:selection.activating];
-      break;
-    }
+  const SEL selector = @selector(didChangeWebStateList:change:selection:);
+  if (![observer_ respondsToSelector:selector]) {
+    return;
   }
+
+  [observer_ didChangeWebStateList:web_state_list
+                            change:change
+                         selection:selection];
 }
 
 void WebStateListObserverBridge::WebStateMoved(WebStateList* web_state_list,

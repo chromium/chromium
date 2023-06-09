@@ -281,6 +281,30 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 #pragma mark - WebStateListObserving
 
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace:
+      // Do nothing when a WebState is replaced.
+      break;
+    case WebStateListChange::Type::kInsert: {
+      // For the external link open, the opened link can open in a new webstate.
+      // Assume that is the case if a new WebState is inserted and activated
+      // when the current web state is the one that was active when the link was
+      // opened.
+      if (self.currentPromoReason == PromoReasonExternalLink &&
+          self.webStateList->GetActiveWebState() == self.webStateToListenTo &&
+          selection.activating) {
+        const WebStateListChangeInsert& insertChange =
+            change.As<WebStateListChangeInsert>();
+        self.webStateToListenTo = insertChange.inserted_web_state();
+      }
+      break;
+    }
+  }
+}
+
 - (void)webStateList:(WebStateList*)webStateList
     didChangeActiveWebState:(web::WebState*)newWebState
                 oldWebState:(web::WebState*)oldWebState
@@ -288,20 +312,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
                      reason:(ActiveWebStateChangeReason)reason {
   if (newWebState != self.webStateToListenTo) {
     [self cancelShowPromoTimer];
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  // For the external link open, the opened link can open in a new webstate.
-  // Assume that is the case if a new WebState is inserted and activated when
-  // the current web state is the one that was active when the link was opened.
-  if (self.currentPromoReason == PromoReasonExternalLink &&
-      self.webStateList->GetActiveWebState() == self.webStateToListenTo &&
-      activating) {
-    self.webStateToListenTo = webState;
   }
 }
 

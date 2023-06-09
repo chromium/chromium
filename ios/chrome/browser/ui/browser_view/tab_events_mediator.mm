@@ -148,10 +148,15 @@
       }
       break;
     }
-    case WebStateListChange::Type::kInsert:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // -webStateList:didInsertWebState:atIndex:activating: to here.
+    case WebStateListChange::Type::kInsert: {
+      // If a tab is inserted in the background (not activating), trigger an
+      // animation. (The animation for foreground tab insertion is handled in
+      // `didChangeActiveWebState`).
+      if (!selection.activating) {
+        [self.consumer initiateNewTabBackgroundAnimation];
+      }
       break;
+    }
   }
 }
 
@@ -162,18 +167,6 @@
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
   if (webState == currentWebState) {
     [self.consumer resetTab];
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  // If a tab is inserted in the background (not activating), trigger an
-  // animation. (The animation for foreground tab insertion is handled in
-  // `didChangeActiveWebState`).
-  if (!activating) {
-    [self.consumer initiateNewTabBackgroundAnimation];
   }
 }
 

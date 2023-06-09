@@ -266,35 +266,32 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
-  switch (change.type()) {
-    case WebStateListChange::Type::kReplace:
-      NOTREACHED_NORETURN();
-    case WebStateListChange::Type::kInsert:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // -webStateList:didInsertWebState:atIndex:activating: to here.
-      break;
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
   DCHECK_EQ(_webStateList, webStateList);
   if (_webStateList->IsBatchInProgress()) {
     // Updates are handled in the batch operation observer methods.
     return;
   }
-  // Insertions are only supported for iPad multiwindow support when changing
-  // the user settings for Inactive Tabs (i.e. when picking a longer inactivity
-  // threshold).
-  DCHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
 
-  TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [_consumer insertItem:item atIndex:index selectedItemID:nil];
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace:
+      NOTREACHED_NORETURN();
+    case WebStateListChange::Type::kInsert: {
+      // Insertions are only supported for iPad multiwindow support when
+      // changing the user settings for Inactive Tabs (i.e. when picking a
+      // longer inactivity threshold).
+      DCHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
 
-  _scopedWebStateObservation->AddObservation(webState);
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      web::WebState* insertedWebState = insertChange.inserted_web_state();
+      TabSwitcherItem* item =
+          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
+      [_consumer insertItem:item atIndex:selection.index selectedItemID:nil];
+
+      _scopedWebStateObservation->AddObservation(insertedWebState);
+      break;
+    }
+  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList

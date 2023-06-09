@@ -104,25 +104,15 @@ using ScopedWebStateListObservation =
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
-  switch (change.type()) {
-    case WebStateListChange::Type::kReplace:
-      NOTREACHED_NORETURN();
-    case WebStateListChange::Type::kInsert:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // -webStateList:didInsertWebState:atIndex:activating: to here.
-      break;
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
   if (_webStateList->IsBatchInProgress()) {
     // Consumer will be updated at the end of the batch.
     return;
   }
-  NOTREACHED();
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace:
+    case WebStateListChange::Type::kInsert:
+      NOTREACHED_NORETURN();
+  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList

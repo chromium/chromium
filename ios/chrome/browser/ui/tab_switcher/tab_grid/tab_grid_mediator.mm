@@ -254,12 +254,12 @@ void RecordTabGridCloseTabsCount(int count) {
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
   DCHECK_EQ(_webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
   switch (change.type()) {
     case WebStateListChange::Type::kReplace: {
-      if (webStateList->IsBatchInProgress()) {
-        return;
-      }
-
       if (IsPinnedTabsEnabled() &&
           webStateList->IsWebStatePinnedAt(selection.index)) {
         return;
@@ -278,44 +278,37 @@ void RecordTabGridCloseTabsCount(int count) {
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
     }
-    case WebStateListChange::Type::kInsert:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // -webStateList:didInsertWebState:atIndex:activating: to here.
+    case WebStateListChange::Type::kInsert: {
+      if (IsPinnedTabsEnabled() &&
+          webStateList->IsWebStatePinnedAt(selection.index)) {
+        [self.consumer
+            selectItemWithID:GetActiveWebStateIdentifier(
+                                 webStateList,
+                                 WebStateSearchCriteria{
+                                     .pinned_state = PinnedState::kNonPinned,
+                                 })];
+        return;
+      }
+
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      web::WebState* insertedWebState = insertChange.inserted_web_state();
+      TabSwitcherItem* item =
+          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
+      NSUInteger itemIndex =
+          [self itemIndexFromWebStateListIndex:selection.index];
+      [self.consumer insertItem:item
+                        atIndex:itemIndex
+                 selectedItemID:GetActiveWebStateIdentifier(
+                                    webStateList,
+                                    WebStateSearchCriteria{
+                                        .pinned_state = PinnedState::kNonPinned,
+                                    })];
+
+      _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
+    }
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer
-        selectItemWithID:GetActiveWebStateIdentifier(
-                             webStateList,
-                             WebStateSearchCriteria{
-                                 .pinned_state = PinnedState::kNonPinned,
-                             })];
-    return;
-  }
-
-  TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
-  [self.consumer insertItem:item
-                    atIndex:itemIndex
-             selectedItemID:GetActiveWebStateIdentifier(
-                                webStateList,
-                                WebStateSearchCriteria{
-                                    .pinned_state = PinnedState::kNonPinned,
-                                })];
-
-  _scopedWebStateObservation->AddObservation(webState);
 }
 
 - (void)webStateList:(WebStateList*)webStateList

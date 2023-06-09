@@ -76,18 +76,14 @@
           ->SetDelegate(self);
       break;
     }
-    case WebStateListChange::Type::kInsert:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // -webStateList:didInsertWebState:atIndex:activating: to here.
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      SafeBrowsingTabHelper::FromWebState(insertChange.inserted_web_state())
+          ->SetDelegate(self);
       break;
+    }
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  SafeBrowsingTabHelper::FromWebState(webState)->SetDelegate(self);
 }
 
 - (void)webStateList:(WebStateList*)webStateList

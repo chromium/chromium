@@ -20,14 +20,6 @@
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection;
 
-// Invoked after a new WebState has been added to the WebStateList at the
-// specified index. `activating` will be YES if the WebState will become
-// the new active WebState after the insertion.
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating;
-
 // Invoked after the WebState at the specified index is moved to another index.
 - (void)webStateList:(WebStateList*)webStateList
      didMoveWebState:(web::WebState*)webState
