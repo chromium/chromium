@@ -426,10 +426,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString("importPasswordsHelpURL",
                     chrome::kPasswordManagerImportLearnMoreURL);
 
-  source->AddBoolean(
-      "canAddShortcut",
-      web_app::WebAppProvider::GetForWebApps(profile) != nullptr &&
-          web_app::AreWebAppsUserInstallable(profile));
+  source->AddBoolean("canAddShortcut", web_app::AreWebAppsEnabled(profile));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
