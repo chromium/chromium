@@ -100,8 +100,6 @@ class may implement the required static method.
 
 Extended attributes on members of an interface mixin work as normal.
 
-* `[LegacyTreatAsPartialInterface]` is part of an ongoing change, as interface mixins used to be treated internally as partial interfaces.
-
 * `[ImplementedAs]` is only necessary for these legacy files: otherwise the class (C++) implementing (IDL) interface mixins does not need to be specified, as this is handled in Blink C++.
 
 * `[RuntimeEnabled]` behaves as for partial interfaces.
@@ -1300,10 +1298,6 @@ the [IsCodeLike] attribute to a type, its instances will be treated as
 "code like" objects, as detailed in the spec.
 
 Standard: [TC39 Dynamic Code Brand Checks](https://github.com/tc39/proposal-dynamic-code-brand-checks)
-
-### [LegacyTreatAsPartialInterface]
-
-Summary: `[LegacyTreatAsPartialInterface]` on an interface mixin means that the mixin is treated as a partial interface, meaning members are accessed via static member functions in a separate class, rather than as instance methods on the instance object `*impl` or class methods on the C++ class implementing the (main) interface. This is legacy from original implementation of mixins, and is being removed ([Bug 360435](https://crbug.com/360435), nbarth@).
 
 ## Discouraged Blink-specific IDL Extended Attributes
 

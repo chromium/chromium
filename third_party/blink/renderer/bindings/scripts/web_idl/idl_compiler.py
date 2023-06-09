@@ -152,16 +152,10 @@ class IdlCompiler(object):
             new_ir = self._maybe_make_copy(old_ir)
             self._ir_map.add(new_ir)
             is_partial = False
-            is_mixin = False
-            if 'LegacyTreatAsPartialInterface' in new_ir.extended_attributes:
+            if hasattr(new_ir, 'is_partial') and new_ir.is_partial:
                 is_partial = True
-            elif hasattr(new_ir, 'is_partial') and new_ir.is_partial:
-                is_partial = True
-            elif hasattr(new_ir, 'is_mixin') and new_ir.is_mixin:
-                is_mixin = True
             for member in new_ir.iter_all_members():
                 member.code_generator_info.set_defined_in_partial(is_partial)
-                member.code_generator_info.set_defined_in_mixin(is_mixin)
 
     def _propagate_extattrs_per_idl_fragment(self):
         def propagate_extattr(extattr_key_and_attr_name,
@@ -262,9 +256,7 @@ class IdlCompiler(object):
             new_ir = self._maybe_make_copy(old_ir)
             self._ir_map.add(new_ir)
 
-            if (new_ir.is_mixin and not new_ir.is_partial
-                    and 'LegacyTreatAsPartialInterface'
-                    not in new_ir.extended_attributes):
+            if new_ir.is_mixin and not new_ir.is_partial:
                 continue
 
             basepath, _ = posixpath.splitext(
