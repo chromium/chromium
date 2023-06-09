@@ -283,7 +283,7 @@ vars = {
   # Fetch siso CIPD package
   'checkout_siso': False,
   # siso CIPD package version.
-  'siso_version': 'latest',
+  'siso_version': 'git_revision:b14dabf6114b8b87c34f6a09945329b118e3b28a',
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
