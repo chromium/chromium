@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
@@ -38,6 +39,7 @@
 #include "url/gurl.h"
 
 namespace {
+using password_manager::metrics_util::IsDisplayNameChanged;
 using password_manager::metrics_util::IsPasswordChanged;
 using password_manager::metrics_util::IsPasswordNoteChanged;
 using password_manager::metrics_util::IsUsernameChanged;
@@ -297,85 +299,11 @@ SavedPasswordsPresenter::EditResult
 SavedPasswordsPresenter::EditSavedCredentials(
     const CredentialUIEntry& original_credential,
     const CredentialUIEntry& updated_credential) {
-  std::vector<PasswordForm> forms_to_change =
-      GetCorrespondingPasswordForms(original_credential);
-  // TODO(crbug.com/1432717): support passkeys.
-  if (forms_to_change.empty())
-    return EditResult::kNotFound;
-
-  IsUsernameChanged username_changed(updated_credential.username !=
-                                     original_credential.username);
-  IsPasswordChanged password_changed(updated_credential.password !=
-                                     original_credential.password);
-  IsPasswordNoteChanged note_changed(
-      forms_to_change[0].GetNoteWithEmptyUniqueDisplayName() !=
-      updated_credential.note);
-  bool issues_changed =
-      updated_credential.password_issues != forms_to_change[0].password_issues;
-
-  // Password can't be empty.
-  if (updated_credential.password.empty())
-    return EditResult::kEmptyPassword;
-
-  // Username can't be changed to the existing one.
-  if (username_changed &&
-      IsUsernameAlreadyUsed(sort_key_to_password_forms_, forms_to_change,
-                            updated_credential.username)) {
-    return EditResult::kAlreadyExisits;
+  if (original_credential.passkey_credential_id.empty()) {
+    return EditPassword(original_credential, updated_credential);
+  } else {
+    return EditPasskey(updated_credential);
   }
-
-  // Nothing changed.
-  if (!username_changed && !password_changed && !note_changed &&
-      !issues_changed) {
-    return EditResult::kNothingChanged;
-  }
-
-  base::RepeatingClosure completion_barrier_closure = base::DoNothing();
-  // Only change in username or password is interesting for OnEdited listeners.
-  if (username_changed || password_changed) {
-    completion_barrier_closure = base::BarrierClosure(
-        forms_to_change.size(),
-        base::BindOnce(&SavedPasswordsPresenter::NotifyEdited,
-                       weak_ptr_factory_.GetWeakPtr(), updated_credential));
-  }
-
-  for (const auto& old_form : forms_to_change) {
-    PasswordStoreInterface& store = GetStoreFor(old_form);
-    PasswordForm new_form = old_form;
-
-    if (issues_changed) {
-      new_form.password_issues = updated_credential.password_issues;
-    }
-
-    if (password_changed) {
-      new_form.password_value = updated_credential.password;
-      new_form.date_password_modified = base::Time::Now();
-      new_form.password_issues.clear();
-    }
-
-    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) &&
-        note_changed) {
-      new_form.SetNoteWithEmptyUniqueDisplayName(updated_credential.note);
-    }
-
-    // An updated username implies a change in the primary key, thus we need
-    // to make sure to call the right API.
-    if (username_changed) {
-      new_form.username_value = updated_credential.username;
-      // Phished and leaked issues are no longer relevant on username change.
-      // Weak and reused issues are still relevant.
-      new_form.password_issues.erase(InsecureType::kPhished);
-      new_form.password_issues.erase(InsecureType::kLeaked);
-      // Changing username requires deleting old form and adding new one. So
-      // the different API should be called.
-      store.UpdateLoginWithPrimaryKey(new_form, old_form,
-                                      completion_barrier_closure);
-    } else {
-      store.UpdateLogin(new_form, completion_barrier_closure);
-    }
-  }
-
-  return EditResult::kSuccess;
 }
 
 void SavedPasswordsPresenter::MoveCredentialsToAccount(
@@ -634,6 +562,120 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
       std::move(all_forms), std::move(passkeys),
       metrics_util::TimeCallback(std::move(completion),
                                  "PasswordManager.PasswordsGrouping.Time"));
+}
+
+SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
+    const CredentialUIEntry& updated_credential) {
+  CHECK(!updated_credential.passkey_credential_id.empty());
+  CHECK(passkey_store_);
+  absl::optional<PasskeyCredential> original_credential =
+      passwords_grouper_->GetPasskeyFor(updated_credential);
+  if (!original_credential) {
+    return EditResult::kNotFound;
+  }
+  std::string new_username = base::UTF16ToUTF8(updated_credential.username);
+  std::string new_display_name =
+      base::UTF16ToUTF8(updated_credential.user_display_name);
+  IsUsernameChanged username_changed(new_username !=
+                                     original_credential->username());
+  IsDisplayNameChanged display_name_changed(
+      new_display_name != original_credential->display_name());
+  if (!username_changed && !display_name_changed) {
+    return EditResult::kNothingChanged;
+  }
+  std::string credential_id(original_credential->credential_id().begin(),
+                            original_credential->credential_id().end());
+  passkey_store_->UpdatePasskey(
+      credential_id, {
+                         .user_name = std::move(new_username),
+                         .user_display_name = std::move(new_display_name),
+                     });
+  return EditResult::kSuccess;
+}
+
+SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
+    const CredentialUIEntry& original_credential,
+    const CredentialUIEntry& updated_credential) {
+  std::vector<PasswordForm> forms_to_change =
+      GetCorrespondingPasswordForms(original_credential);
+  if (forms_to_change.empty()) {
+    return EditResult::kNotFound;
+  }
+
+  IsUsernameChanged username_changed(updated_credential.username !=
+                                     original_credential.username);
+  IsPasswordChanged password_changed(updated_credential.password !=
+                                     original_credential.password);
+  IsPasswordNoteChanged note_changed(
+      forms_to_change[0].GetNoteWithEmptyUniqueDisplayName() !=
+      updated_credential.note);
+  bool issues_changed =
+      updated_credential.password_issues != forms_to_change[0].password_issues;
+
+  // Password can't be empty.
+  if (updated_credential.password.empty()) {
+    return EditResult::kEmptyPassword;
+  }
+
+  // Username can't be changed to the existing one.
+  if (username_changed &&
+      IsUsernameAlreadyUsed(sort_key_to_password_forms_, forms_to_change,
+                            updated_credential.username)) {
+    return EditResult::kAlreadyExisits;
+  }
+
+  // Nothing changed.
+  if (!username_changed && !password_changed && !note_changed &&
+      !issues_changed) {
+    return EditResult::kNothingChanged;
+  }
+
+  base::RepeatingClosure completion_barrier_closure = base::DoNothing();
+  // Only change in username or password is interesting for OnEdited listeners.
+  if (username_changed || password_changed) {
+    completion_barrier_closure = base::BarrierClosure(
+        forms_to_change.size(),
+        base::BindOnce(&SavedPasswordsPresenter::NotifyEdited,
+                       weak_ptr_factory_.GetWeakPtr(), updated_credential));
+  }
+
+  for (const auto& old_form : forms_to_change) {
+    PasswordStoreInterface& store = GetStoreFor(old_form);
+    PasswordForm new_form = old_form;
+
+    if (issues_changed) {
+      new_form.password_issues = updated_credential.password_issues;
+    }
+
+    if (password_changed) {
+      new_form.password_value = updated_credential.password;
+      new_form.date_password_modified = base::Time::Now();
+      new_form.password_issues.clear();
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) &&
+        note_changed) {
+      new_form.SetNoteWithEmptyUniqueDisplayName(updated_credential.note);
+    }
+
+    // An updated username implies a change in the primary key, thus we need
+    // to make sure to call the right API.
+    if (username_changed) {
+      new_form.username_value = updated_credential.username;
+      // Phished and leaked issues are no longer relevant on username change.
+      // Weak and reused issues are still relevant.
+      new_form.password_issues.erase(InsecureType::kPhished);
+      new_form.password_issues.erase(InsecureType::kLeaked);
+      // Changing username requires deleting old form and adding new one. So
+      // the different API should be called.
+      store.UpdateLoginWithPrimaryKey(new_form, old_form,
+                                      completion_barrier_closure);
+    } else {
+      store.UpdateLogin(new_form, completion_barrier_closure);
+    }
+  }
+
+  return EditResult::kSuccess;
 }
 
 }  // namespace password_manager

@@ -984,6 +984,82 @@ TEST_P(SavedPasswordsPresenterTest, NotifyPasskeyAdded) {
   presenter().RemoveObserver(&observer);
 }
 
+TEST_P(SavedPasswordsPresenterTest, EditPasskey) {
+  // Password grouping is required for passkey support.
+  if (!IsGroupingEnabled()) {
+    return;
+  }
+  passkey_store().AddNewPasskeyForTesting(CreateTestPasskey());
+  RunUntilIdle();
+
+  std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
+  ASSERT_EQ(passkeys.size(), 1u);
+  CredentialUIEntry& original_passkey = passkeys.at(0);
+  CredentialUIEntry updated_passkey = original_passkey;
+  updated_passkey.username = u"anya";
+  updated_passkey.user_display_name = u"Anya Forger";
+
+  MockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+  EXPECT_CALL(observer, OnSavedPasswordsChanged);
+  EXPECT_EQ(presenter().EditSavedCredentials(original_passkey, updated_passkey),
+            SavedPasswordsPresenter::EditResult::kSuccess);
+  RunUntilIdle();
+  passkeys = presenter().GetSavedCredentials();
+  ASSERT_EQ(passkeys.size(), 1u);
+  EXPECT_EQ(passkeys.at(0).username, u"anya");
+  EXPECT_EQ(passkeys.at(0).user_display_name, u"Anya Forger");
+  presenter().RemoveObserver(&observer);
+}
+
+TEST_P(SavedPasswordsPresenterTest, EditPasskeyNoChanges) {
+  // Password grouping is required for passkey support.
+  if (!IsGroupingEnabled()) {
+    return;
+  }
+  passkey_store().AddNewPasskeyForTesting(CreateTestPasskey());
+  RunUntilIdle();
+
+  std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
+  ASSERT_EQ(passkeys.size(), 1u);
+  CredentialUIEntry& original_passkey = passkeys.at(0);
+  CredentialUIEntry updated_passkey = original_passkey;
+
+  MockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+  EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
+  EXPECT_EQ(presenter().EditSavedCredentials(original_passkey, updated_passkey),
+            SavedPasswordsPresenter::EditResult::kNothingChanged);
+  RunUntilIdle();
+  presenter().RemoveObserver(&observer);
+}
+
+TEST_P(SavedPasswordsPresenterTest, EditPasskeyNotFound) {
+  // Password grouping is required for passkey support.
+  if (!IsGroupingEnabled()) {
+    return;
+  }
+  passkey_store().AddNewPasskeyForTesting(CreateTestPasskey());
+  RunUntilIdle();
+
+  std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
+  ASSERT_EQ(passkeys.size(), 1u);
+  CredentialUIEntry& original_passkey = passkeys.at(0);
+  CredentialUIEntry updated_passkey = original_passkey;
+  updated_passkey.username = u"anya";
+  updated_passkey.passkey_credential_id = {1, 2, 3, 4};
+  ASSERT_NE(original_passkey.passkey_credential_id,
+            updated_passkey.passkey_credential_id);
+
+  MockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+  EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
+  EXPECT_EQ(presenter().EditSavedCredentials(original_passkey, updated_passkey),
+            SavedPasswordsPresenter::EditResult::kNotFound);
+  RunUntilIdle();
+  presenter().RemoveObserver(&observer);
+}
+
 #endif
 
 TEST_P(SavedPasswordsPresenterTest, UndoRemoval) {

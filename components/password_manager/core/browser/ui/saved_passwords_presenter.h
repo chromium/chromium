@@ -157,8 +157,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                            base::OnceClosure completion = base::DoNothing());
 
   // Modifies all the saved credentials matching |original_credential| to
-  // |updated_credential|. Only username, password, notes and password issues
-  // are modifiable.
+  // |updated_credential|. Only username, password, notes, display names and
+  // password issues are modifiable.
   EditResult EditSavedCredentials(const CredentialUIEntry& original_credential,
                                   const CredentialUIEntry& updated_credential);
 
@@ -238,6 +238,13 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Collects credentials and groups them if there are no pending store updates.
   void MaybeGroupCredentials(base::OnceClosure completion);
+
+  // Edits an existing passkey.
+  EditResult EditPasskey(const CredentialUIEntry& updated_credential);
+
+  // Edits an existing password.
+  EditResult EditPassword(const CredentialUIEntry& original_credential,
+                          const CredentialUIEntry& updated_credential);
 
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStoreInterface> profile_store_;

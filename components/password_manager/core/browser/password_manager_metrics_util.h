@@ -21,6 +21,8 @@
 namespace password_manager::metrics_util {
 
 using IsUsernameChanged = base::StrongAlias<class IsUsernameChangedTag, bool>;
+using IsDisplayNameChanged =
+    base::StrongAlias<class IsDisplayNameChangedTag, bool>;
 using IsPasswordChanged = base::StrongAlias<class IsPasswordChangedTag, bool>;
 using IsPasswordNoteChanged =
     base::StrongAlias<class IsPasswordNoteChangedTag, bool>;

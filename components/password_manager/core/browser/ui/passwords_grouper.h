@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 
@@ -53,6 +54,11 @@ class PasswordsGrouper {
   // Returns PasswordForm corresponding to 'credential'.
   std::vector<PasswordForm> GetPasswordFormsFor(
       const CredentialUIEntry& credential) const;
+
+  // Returns the passkey corresponding to the given |credential| entry. If there
+  // is no corresponding entry, returns absl::nullopt.
+  absl::optional<PasskeyCredential> GetPasskeyFor(
+      const CredentialUIEntry& credential);
 
   void ClearCache();
 
