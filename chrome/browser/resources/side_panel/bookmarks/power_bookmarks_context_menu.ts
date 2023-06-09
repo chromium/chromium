@@ -89,6 +89,10 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     this.$.menu.showAtPosition({top: event.clientY, left: event.clientX});
   }
 
+  isOpen(): boolean {
+    return this.$.menu.open;
+  }
+
   private getMenuItemsForBookmarks_(): MenuItem[] {
     // TODO(crbug.com/1428654): Factor in URLs not available in incognito.
     let bookmarkCount = 0;
@@ -232,6 +236,19 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
   private dispatchDisabledFeatureEvent_() {
     this.dispatchEvent(new CustomEvent('disabled-feature'));
+  }
+
+  /**
+   * Close the menu on mousedown so clicks can propagate to the underlying UI.
+   * This allows the user to right click the list while a context menu is
+   * showing and get another context menu.
+   */
+  private onMousedown_(e: Event): void {
+    if ((e.composedPath()[0] as HTMLElement).tagName !== 'DIALOG') {
+      return;
+    }
+
+    this.$.menu.close();
   }
 
   private onMenuItemClicked_(event: DomRepeatEvent<MenuItem>) {

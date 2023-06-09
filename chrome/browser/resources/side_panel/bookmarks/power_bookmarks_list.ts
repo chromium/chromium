@@ -942,7 +942,12 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private onContextMenuClosed_() {
-    this.contextMenuBookmark_ = undefined;
+    // This check is needed to avoid the case where the context menu is closed
+    // via right-click a new row, and is already re-opened by the time this
+    // executes.
+    if (!this.$.contextMenu.isOpen()) {
+      this.contextMenuBookmark_ = undefined;
+    }
   }
 
   private showDeletionToastWithCount_(deletionCount: number) {
