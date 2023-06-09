@@ -19,9 +19,7 @@ namespace ash {
 //   generic wrapper SWA to render in an (Ash) app window.
 // Returns false iff the URL wasn't opened, for example because Lacros is
 // disabled or the URL is a non-SWA chrome:// URL that is not allow-listed.
-bool TryOpenUrl(const GURL& url,
-                WindowOpenDisposition disposition,
-                bool from_webui = true);
+bool TryOpenUrl(const GURL& url, WindowOpenDisposition disposition);
 
 }  // namespace ash
 

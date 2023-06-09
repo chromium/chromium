@@ -2453,8 +2453,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Handle a new-window/-tab request using an external implementation-defined
   // handler, if appropriate. Returns true iff the request was handled.
-  virtual bool OpenExternally(RenderFrameHost* opener,
-                              const GURL& url,
+  virtual bool OpenExternally(const GURL& url,
                               WindowOpenDisposition disposition);
 
   // Called when a `SharedStorageWorkletHost` is created for `rfh`.

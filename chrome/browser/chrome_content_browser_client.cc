@@ -7600,11 +7600,10 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
 }
 
 bool ChromeContentBrowserClient::OpenExternally(
-    content::RenderFrameHost* opener,
     const GURL& url,
     WindowOpenDisposition disposition) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::TryOpenUrl(url, disposition, opener->GetWebUI());
+  return ash::TryOpenUrl(url, disposition);
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

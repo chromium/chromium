@@ -1451,8 +1451,7 @@ ContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
   return nullptr;
 }
 
-bool ContentBrowserClient::OpenExternally(RenderFrameHost* opener,
-                                          const GURL& url,
+bool ContentBrowserClient::OpenExternally(const GURL& url,
                                           WindowOpenDisposition disposition) {
   return false;
 }

@@ -18,9 +18,7 @@
 
 namespace ash {
 
-bool TryOpenUrl(const GURL& url,
-                WindowOpenDisposition disposition,
-                bool from_webui) {
+bool TryOpenUrl(const GURL& url, WindowOpenDisposition disposition) {
   if (!crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     // We're running neither Lacros-Primary nor Lacros-Only, nothing to do.
     return false;
@@ -67,14 +65,11 @@ bool TryOpenUrl(const GURL& url,
   }
 
   // Forcibly open various URLs (mostly chrome://) in the OS_URL_HANDLER SWA.
-  const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
-  if (is_lacros_only &&  // Terminal's tabs must remain in the Terminal SWA.
-                         // TODO(neis): Actually limit this exception to
-                         // Terminal if possible. Also, remove Terminal from
-                         // ChromeWebUIControllerFactory's
-                         // GetListOfAcceptableURLs or at least make
-                         // TryLaunchOsUrlHandler return false for it somehow.
-      !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+  // Terminal's tabs must remain in the Terminal SWA.
+  // TODO(neis): Actually limit this exception to Terminal if possible. Also,
+  // remove Terminal from ChromeWebUIControllerFactory's GetListOfAcceptableURLs
+  // or at least make TryLaunchOsUrlHandler return false for it somehow.
+  if (!url.SchemeIs(content::kChromeUIUntrustedScheme) &&
       ash::TryLaunchOsUrlHandler(url)) {
     return true;
   }
@@ -88,7 +83,6 @@ bool TryOpenUrl(const GURL& url,
   // will have to be dealt with separately) as well as some existing links that
   // currently must remain in Ash.
   bool should_open_in_lacros =
-      (is_lacros_only || from_webui) &&
       !url.SchemeIs(content::kChromeDevToolsScheme) &&
       !url.SchemeIs(content::kChromeUIScheme) &&
       // Terminal's tabs must remain in Ash.
@@ -103,14 +97,13 @@ bool TryOpenUrl(const GURL& url,
     return true;
   }
 
-  // If Lacros is the only browser, we should get here only in exceptional
-  // cases. Some of these exceptions may not even be needed anymore. Record a
-  // crash dump for various cases so that we can better understand the
-  // situation. For now, continue as usual afterwards (i.e. don't handle the
-  // request here). We know that Terminal still needs to open Ash windows, no
-  // need to dump in that case.
-  if (is_lacros_only && !(url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-                          url.has_host() && url.host() == "terminal")) {
+  // We should get here only in exceptional cases. Some of these exceptions may
+  // not even be needed anymore. Record a crash dump for various cases so that
+  // we can better understand the situation. For now, continue as usual
+  // afterwards (i.e. don't handle the request here). We know that Terminal
+  // still needs to open Ash windows, no need to dump in that case.
+  if (!(url.SchemeIs(content::kChromeUIUntrustedScheme) && url.has_host() &&
+        url.host() == "terminal")) {
     SCOPED_CRASH_KEY_STRING32("ash", "OpenExternally",
                               url.possibly_invalid_spec());
     base::debug::DumpWithoutCrashing();
