@@ -48,6 +48,7 @@ import org.chromium.ui.base.LocalizationUtils;
  */
 public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrategy {
     private static final int WINDOW_WIDTH_EXPANDED_CUTOFF_DP = 840;
+    private static final int SIDE_SHEET_UI_DELAY = 20;
     private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;
     private static final float MINIMAL_WIDTH_RATIO_MEDIUM = 0.5f;
     private static final NoAnimator NO_ANIMATOR = new NoAnimator();
@@ -194,7 +195,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         if (visible) {
             // Set a slight delay in restoring the view to hide the visual glitch caused by
             // the resized web contents.
-            new Handler().postDelayed(() -> content.setVisibility(View.VISIBLE), 20);
+            new Handler().postDelayed(
+                    () -> content.setVisibility(View.VISIBLE), SIDE_SHEET_UI_DELAY);
         } else {
             content.setVisibility(View.INVISIBLE);
         }
@@ -219,7 +221,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
                 if (shouldDrawDividerLine()) drawDividerLine();
                 // We have a delay before showing the resized web contents so it has to be done
                 // for the shadow as well.
-                new Handler().postDelayed(this::updateShadowOffset, 20);
+                new Handler().postDelayed(this::updateShadowOffset, SIDE_SHEET_UI_DELAY);
                 maybeInvokeResizeCallback();
             });
         }
@@ -247,7 +249,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected int getHandleHeight() {
-        return mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE
+        return isFullscreen() || mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE
                 ? 0
                 : mToolbarCornerRadius;
     }
