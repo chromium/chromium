@@ -10,8 +10,13 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider_source.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
+#include "ash/user_education/user_education_types.h"
+#include "base/callback_list.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -23,14 +28,48 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
 
 // Used to ensure existence of only a single `WelcomeTourScrim` at a time.
 WelcomeTourScrim* g_instance = nullptr;
+
+// Appearance.
+constexpr float kClipCornerRadius = 24.f;
+
+// Helpers ---------------------------------------------------------------------
+
+gfx::RectF TranslateRectFromScreen(const aura::Window* root_window,
+                                   const gfx::Rect& rect_in_screen) {
+  gfx::RectF rect_in_root_window(rect_in_screen);
+  ::wm::TranslateRectFromScreen(root_window, &rect_in_root_window);
+  return rect_in_root_window;
+}
+
+std::vector<gfx::RectF> GetHelpBubbleAnchorBoundsInRootWindow(
+    const aura::Window* root_window) {
+  std::vector<gfx::RectF> bounds_in_root_window;
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    for (const auto& [_, metadata] :
+         controller->help_bubble_metadata_by_key()) {
+      if (metadata.anchor_root_window == root_window) {
+        bounds_in_root_window.emplace_back(TranslateRectFromScreen(
+            metadata.anchor_root_window, metadata.anchor_bounds_in_screen));
+      }
+    }
+  } else {
+    // NOTE: `controller` may only be `nullptr` in testing.
+    CHECK_IS_TEST();
+  }
+  return bounds_in_root_window;
+}
 
 // MaskLayerOwner --------------------------------------------------------------
 
@@ -39,8 +78,9 @@ WelcomeTourScrim* g_instance = nullptr;
 // so that they are emphasized by the scrim and not obstructed by it.
 class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
  public:
-  MaskLayerOwner()
-      : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)) {
+  explicit MaskLayerOwner(const aura::Window* root_window)
+      : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
+        root_window_(root_window) {
     Init();
   }
 
@@ -59,9 +99,17 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
     // In the absence of help bubble anchor views, the scrim should be fully
     // visible. As such, the mask layer for the scrim should be fully opaque.
     gfx::SizeF size(layer()->size());
-    SkPath path(SkPath::Rect(gfx::RectFToSkRect(gfx::RectF(size))));
+    SkPath path(SkPath::Rect(gfx::RectFToSkRect(gfx::RectF(size)),
+                             SkPathDirection::kCW));
 
-    // TODO(http://b/277091650): Clip `path` around help bubble anchor views.
+    // Clip the otherwise fully opaque mask layer around help bubble anchor
+    // views so that they are emphasized by the scrim and not obstructed by it.
+    for (const auto& bounds :
+         GetHelpBubbleAnchorBoundsInRootWindow(root_window_)) {
+      path.addRRect(
+          SkRRect(gfx::RRectF(bounds, gfx::RoundedCornersF(kClipCornerRadius))),
+          SkPathDirection::kCCW);
+    }
 
     // Configure `canvas`.
     ui::PaintRecorder recorder(context, gfx::ToFlooredSize(size));
@@ -84,11 +132,37 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
     layer()->SetName(WelcomeTourScrim::kMaskLayerName);
     layer()->set_delegate(this);
 
-    // TODO(http://b/277091650): Observe help bubble changes.
+    // Invalidate the mask layer in response to help bubble related events in
+    // order to clip the scrim around help bubble anchor views so that they are
+    // emphasized by the scrim and not obstructed by it.
+    if (auto* controller = UserEducationHelpBubbleController::Get()) {
+      base::RepeatingCallback invalidate = base::BindRepeating(
+          &MaskLayerOwner::Invalidate, base::Unretained(this));
+      help_bubble_anchor_bounds_changed_subscription_ =
+          controller->AddHelpBubbleAnchorBoundsChangedCallback(invalidate);
+      help_bubble_closed_subscription_ =
+          controller->AddHelpBubbleClosedCallback(invalidate);
+      help_bubble_shown_subscription_ =
+          controller->AddHelpBubbleShownCallback(invalidate);
+    } else {
+      // NOTE: `controller` may only be `nullptr` in testing.
+      CHECK_IS_TEST();
+    }
   }
 
   // Invoked as needed to schedule repaint of the mask layer.
   void Invalidate() { layer()->SchedulePaint(gfx::Rect(layer()->size())); }
+
+  // Pointer to the root window associated with `this` mask.
+  const raw_ptr<const aura::Window> root_window_;
+
+  // Subscriptions for help bubble related events which are held for the life of
+  // `this` object in order to clip the scrim around help bubble anchor views so
+  // that they are emphasized by the scrim and not obstructed by it.
+  base::CallbackListSubscription
+      help_bubble_anchor_bounds_changed_subscription_;
+  base::CallbackListSubscription help_bubble_closed_subscription_;
+  base::CallbackListSubscription help_bubble_shown_subscription_;
 };
 
 }  // namespace
@@ -104,7 +178,8 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
  public:
   explicit Scrim(aura::Window* root_window)
       : root_window_(root_window),
-        layer_owner_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
+        layer_owner_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)),
+        mask_layer_owner_(root_window) {
     Init();
   }
 
