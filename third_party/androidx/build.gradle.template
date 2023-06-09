@@ -53,6 +53,7 @@ dependencies {
     compile 'androidx.leanback:leanback-preference:{{androidx_dependency_version}}'
     compile 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     compile 'androidx.media:media:{{androidx_dependency_version}}'
+    compile 'androidx.media3:media3-common:1.0.2'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // This library version is hard-coded as it does not match the
