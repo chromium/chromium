@@ -232,6 +232,10 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
           &BrowserCommandController::UpdateCommandsForFullscreenMode,
           base::Unretained(this)));
 #endif
+  pref_signin_allowed_.Init(
+      prefs::kSigninAllowed, profile()->GetOriginalProfile()->GetPrefs(),
+      base::BindRepeating(&BrowserCommandController::OnSigninAllowedPrefChange,
+                          base::Unretained(this)));
 
   InitCommandState();
 
@@ -929,6 +933,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_TOGGLE_QUICK_COMMANDS:
       ToggleCommander(browser_);
       break;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case IDC_SHOW_SIGNIN:
+      ShowBrowserSigninOrSettings(
+          browser_, signin_metrics::AccessPoint::ACCESS_POINT_MENU);
+      break;
+#endif
     case IDC_DISTILL_PAGE:
       ToggleDistilledView(browser_);
       break;
@@ -1051,6 +1061,16 @@ bool BrowserCommandController::UpdateCommandEnabled(int id, bool state) {
     return false;
 
   return command_updater_.UpdateCommandEnabled(id, state);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BrowserCommandController, SigninPrefObserver implementation:
+
+void BrowserCommandController::OnSigninAllowedPrefChange() {
+  // For unit tests, we don't have a window.
+  if (!window())
+    return;
+  UpdateShowSyncState(IsShowingMainUI());
 }
 
 // BrowserCommandController, TabStripModelObserver implementation:
@@ -1243,6 +1263,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_CARET_BROWSING_TOGGLE, true);
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_QUICK_COMMANDS,
                                         commander::IsEnabled());
+  UpdateShowSyncState(true);
+
   // Navigation commands
   command_updater_.UpdateCommandEnabled(
       IDC_HOME, normal_window || browser_->is_type_app() ||
@@ -1386,6 +1408,8 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
                                         !forced_incognito && !is_guest);
   command_updater->UpdateCommandEnabled(IDC_OPTIONS,
                                         !forced_incognito || is_guest);
+  command_updater->UpdateCommandEnabled(IDC_SHOW_SIGNIN,
+                                        !forced_incognito && !is_guest);
   command_updater->UpdateCommandEnabled(IDC_PERFORMANCE,
                                         !forced_incognito && !is_guest);
 }
@@ -1611,6 +1635,7 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_.UpdateCommandEnabled(
       IDC_FEEDBACK, show_main_ui || browser_->is_type_devtools());
 #endif
+  UpdateShowSyncState(show_main_ui);
 
   command_updater_.UpdateCommandEnabled(IDC_EDIT_SEARCH_ENGINES, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_VIEW_PASSWORDS, show_main_ui);
@@ -1727,6 +1752,14 @@ void BrowserCommandController::UpdateSaveAsState() {
     return;
 
   command_updater_.UpdateCommandEnabled(IDC_SAVE_PAGE, CanSavePage(browser_));
+}
+
+void BrowserCommandController::UpdateShowSyncState(bool show_main_ui) {
+  if (is_locked_fullscreen_)
+    return;
+
+  command_updater_.UpdateCommandEnabled(
+      IDC_SHOW_SIGNIN, show_main_ui && pref_signin_allowed_.GetValue());
 }
 
 void BrowserCommandController::UpdateReloadStopState(bool is_loading,

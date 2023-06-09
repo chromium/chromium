@@ -207,6 +207,7 @@
 #define IDC_UPGRADE_DIALOG              40024
 #define IDC_PROFILING_ENABLED           40028
 #define IDC_BOOKMARKS_MENU              40029
+#define IDC_SHOW_SIGNIN                 40030
 #define IDC_EXTENSION_ERRORS            40031
 #define IDC_SHOW_SETTINGS_CHANGE_FIRST  40033
 #define IDC_SHOW_SETTINGS_CHANGE_LAST   40133
@@ -218,6 +219,7 @@
 #define IDC_RECENT_TABS_MENU            40239
 #define IDC_RECENT_TABS_NO_DEVICE_TABS  40240
 #define IDC_SHOW_SETTINGS_RESET_BUBBLE  40241
+#define IDC_SHOW_SYNC_ERROR             40242
 #define IDC_DISTILL_PAGE                40243
 #define IDC_HELP_MENU                   40244
 #define IDC_SHOW_SRT_BUBBLE             40246

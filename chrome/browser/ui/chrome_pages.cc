@@ -629,6 +629,51 @@ void ShowShortcutCustomizationApp(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// SigninViewController::ShowSignin is only available with DICE
+void ShowBrowserSignin(Browser* browser,
+                       signin_metrics::AccessPoint access_point,
+                       signin::ConsentLevel consent_level) {
+  Profile* original_profile = browser->profile()->GetOriginalProfile();
+  DCHECK(original_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+
+  // If the browser's profile is an incognito profile, make sure to use
+  // a browser window from the original profile. The user cannot sign in
+  // from an incognito window.
+  auto displayer =
+      std::make_unique<ScopedTabbedBrowserDisplayer>(original_profile);
+  browser = displayer->browser();
+
+  profiles::BubbleViewMode bubble_view_mode;
+  if (IdentityManagerFactory::GetForProfile(original_profile)
+          ->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH;
+  } else {
+    switch (consent_level) {
+      case signin::ConsentLevel::kSync:
+        bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN;
+        break;
+      case signin::ConsentLevel::kSignin:
+        bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_ADD_ACCOUNT;
+        break;
+    }
+  }
+
+  browser->signin_view_controller()->ShowSignin(bubble_view_mode, access_point);
+}
+
+void ShowBrowserSigninOrSettings(Browser* browser,
+                                 signin_metrics::AccessPoint access_point) {
+  Profile* original_profile = browser->profile()->GetOriginalProfile();
+  DCHECK(original_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+  if (IdentityManagerFactory::GetForProfile(original_profile)
+          ->HasPrimaryAccount(signin::ConsentLevel::kSync))
+    ShowSettings(browser);
+  else
+    ShowBrowserSignin(browser, access_point, signin::ConsentLevel::kSync);
+}
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 void ShowWebAppSettings(Browser* browser,
