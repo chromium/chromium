@@ -130,6 +130,6 @@ You can run the Windows binaries you built on swarming, like so:
 See the contents of run-swarmed.py for how to do this manually.
 
 The
-[linux-win_cross-rel](https://ci.chromium.org/p/chromium/builders/luci.chromium.ci/linux-win_cross-rel/)
+[linux-win_cross-rel](https://ci.chromium.org/p/chromium/builders/ci/linux-win_cross-rel)
 buildbot does 64-bit release cross builds, and also runs tests. You can look at
 it to get an idea of which tests pass in the cross build.
