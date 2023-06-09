@@ -348,14 +348,12 @@ void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
   pending_position_ = std::make_unique<Position>(PositionType::kDefault);
   pending_position_->Normalize(new_touch_center,
                                touch_injector_->content_bounds());
-}
 
-void Action::PrepareToBindPosition(std::unique_ptr<Position> position) {
-  if (pending_position_) {
-    pending_position_.reset();
+  // "Restore to default" and "Cancel" functions are removed for Beta version,
+  // so the change is applied immediately after change.
+  if (beta_) {
+    BindPending();
   }
-  // Now it only supports changing the first touch position.
-  pending_position_ = std::move(position);
 }
 
 void Action::RestoreToDefault() {
@@ -623,6 +621,15 @@ void Action::CreateTouchEvent(ui::EventType type,
       ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
   ui::Event::DispatcherApi(&(touch_events.back()))
       .set_target(touch_injector_->window());
+}
+
+void Action::PrepareToBindPositionForTesting(
+    std::unique_ptr<Position> position) {
+  if (pending_position_) {
+    pending_position_.reset();
+  }
+  // Now it only supports changing the first touch position.
+  pending_position_ = std::move(position);
 }
 
 }  // namespace arc::input_overlay

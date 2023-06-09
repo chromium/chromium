@@ -257,6 +257,11 @@ class TouchInjectorTest : public views::ViewsTestBase {
 
   int GetNextActionID() { return injector_->next_action_id_; }
 
+  void PrepareToBindPosition(Action* action,
+                             std::unique_ptr<Position> position) {
+    action->PrepareToBindPositionForTesting(std::move(position));
+  }
+
   aura::TestScreen* test_screen() {
     return aura::test::AuraTestHelper::GetInstance()->GetTestScreen();
   }
@@ -844,7 +849,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   auto new_pos = std::make_unique<Position>(PositionType::kDefault);
   new_pos->Normalize(gfx::Point(20, 20), gfx::RectF(100, 100));
   auto expected_pos = *new_pos;
-  injector_->actions()[0]->PrepareToBindPosition(std::move(new_pos));
+  PrepareToBindPosition(injector_->actions()[0].get(), std::move(new_pos));
   injector_->OnApplyPendingBinding();
   auto proto = ConvertToProto();
   // Check if the system version is serialized correctly.

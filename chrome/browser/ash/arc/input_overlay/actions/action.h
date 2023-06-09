@@ -97,7 +97,6 @@ class Action {
   void ResetPendingBind();
 
   void PrepareToBindPosition(const gfx::Point& new_touch_center);
-  void PrepareToBindPosition(std::unique_ptr<Position> position);
 
   // Restore the input binding back to the original binding.
   void RestoreToDefault();
@@ -216,6 +215,8 @@ class Action {
   raw_ptr<ActionView> action_view_ = nullptr;
 
  private:
+  friend class TouchInjectorTest;
+
   void OnTouchReleased();
   void OnTouchCancelled();
   // Create a touch event of |type| with |time_stamp| and save it
@@ -223,6 +224,8 @@ class Action {
   void CreateTouchEvent(ui::EventType type,
                         const base::TimeTicks& time_stamp,
                         std::list<ui::TouchEvent>& touch_events);
+
+  void PrepareToBindPositionForTesting(std::unique_ptr<Position> position);
 
   // Corresponds to |kArcInputOverlayBeta| flag to turn on/off the editor
   // feature of adding or removing actions.
