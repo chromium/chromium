@@ -26,6 +26,10 @@
 #import "ui/base/cocoa/find_pasteboard.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 const char kSimple[] = "simple.html";
 
 GURL GetURL(const std::string& filename) {

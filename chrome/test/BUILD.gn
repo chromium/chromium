@@ -9841,30 +9841,6 @@ if (!is_android) {
   }
 }
 
-if (is_mac) {
-  # TODO(https://crbug.com/1280317): Merge back into the `interactive_ui_tests`
-  # target once all .mm files are ARCed.
-  source_set("interactive_ui_tests_arc") {
-    testonly = true
-    sources = [ "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    deps = [
-      ":test_support",
-      ":test_support_ui",
-      "//base",
-      "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/browser/apps/app_shim",
-      "//chrome/browser/ui",
-      "//chrome/browser/web_applications/extensions",
-      "//chrome/test:test_support_ui",
-      "//content/test:test_support",
-      "//ui/base:test_support",
-      "//ui/events:test_support",
-    ]
-  }
-}
-
 if (!is_android) {
   test("interactive_ui_tests") {
     use_xvfb = use_xvfb_in_this_config
@@ -10462,6 +10438,10 @@ if (!is_android) {
       configs += [ "//build/config/win:delayloads" ]
     }
 
+    if (is_apple) {
+      configs += [ "//build/config/compiler:enable_arc" ]
+    }
+
     if (is_mac) {
       sources += [
         "../browser/focus_ring_browsertest_mac.h",
@@ -10470,6 +10450,7 @@ if (!is_android) {
         "../browser/notifications/notification_interactive_uitest_mac.mm",
         "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
         "../browser/ui/cocoa/apps/quit_with_apps_controller_mac_interactive_uitest.mm",
+        "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
         "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
         "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm",
         "../browser/webauthn/chrome_webauthn_autofill_mac_interactive_uitest.mm",
@@ -10486,7 +10467,6 @@ if (!is_android) {
       ]
 
       deps += [
-        ":interactive_ui_tests_arc",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/web_applications/extensions",
         "//components/spellcheck:buildflags",
