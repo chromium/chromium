@@ -20,6 +20,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -99,7 +100,8 @@ class PrintObserver : public printing::PrintViewManagerBase::TestObserver {
 
 }  // namespace
 
-class PDFExtensionPrintingTest : public PDFExtensionTestBase {
+class PDFExtensionPrintingTest : public PDFExtensionTestBase,
+                                 public testing::WithParamInterface<bool> {
  public:
   PDFExtensionPrintingTest() = default;
   ~PDFExtensionPrintingTest() override = default;
@@ -114,10 +116,25 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase {
     SetShowPrintErrorDialogForTest(base::NullCallback());
     PDFExtensionTestBase::TearDownOnMainThread();
   }
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    if (UseService()) {
+      return {printing::features::kEnableOopPrintDrivers};
+    }
+    return {};
+  }
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    if (UseService()) {
+      return {};
+    }
+    return {printing::features::kEnableOopPrintDrivers};
+  }
+
+ private:
+  bool UseService() const { return GetParam(); }
 };
 
 // Flaky. See http://crbug.com/1415194
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, DISABLED_BasicPrintCommand) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, DISABLED_BasicPrintCommand) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
@@ -129,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, DISABLED_BasicPrintCommand) {
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, PrintCommand) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintCommand) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
@@ -140,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, PrintCommand) {
   print_observer.WaitForPrintPreview();
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        ContextMenuPrintCommandExtensionMainFrame) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -162,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest,
 }
 
 // TODO(crbug.com/1344508): Test is flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PDFExtensionPrintingTest,
     DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
@@ -186,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(
   menu_interceptor.Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        ContextMenuPrintCommandPluginFrame) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -208,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest,
 }
 
 // TODO(crbug.com/1330032): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
@@ -229,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest,
   menu_interceptor.Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, PrintButton) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
@@ -245,3 +262,5 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, PrintButton) {
   print_observer.WaitForPrintPreview();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+INSTANTIATE_TEST_SUITE_P(All, PDFExtensionPrintingTest, testing::Bool());
