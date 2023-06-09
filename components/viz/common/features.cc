@@ -163,7 +163,7 @@ BASE_FEATURE(kDynamicSchedulerForClients,
 //   feature parameters.
 BASE_FEATURE(kCALayerNewLimit,
              "CALayerNewLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Set FeatureParam default to -1. CALayerOverlayProcessor choose the default in
 // ca_layer_overlay.cc When it's < 0.
 const base::FeatureParam<int> kCALayerNewLimitDefault{&kCALayerNewLimit,

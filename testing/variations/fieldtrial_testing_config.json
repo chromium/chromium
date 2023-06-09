@@ -2132,21 +2132,6 @@
             ]
         }
     ],
-    "CALayerNewLimit": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CALayerNewLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "CCTRealTimeEngagementSignalsAlternativeImpl": [
         {
             "platforms": [
