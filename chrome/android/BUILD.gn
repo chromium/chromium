@@ -841,8 +841,11 @@ if (current_toolchain == default_toolchain) {
     # Needed by androidx.test.core.app.ActivityScenario
     android_manifest = "//chrome/android/junit/AndroidManifest.xml"
 
-    # This target OOMs with the default 1G (also OOMS with 2G).
-    max_heap_size = "4G"
+    # This target OOMs with the default 1G, and hits CodeCache errors with
+    # default 4 shards (crbug.com/1453254).
+    # TODO(crbug.com/1383650): Remove once test runner shards by SDK.
+    max_heap_size = "3600M"
+    extra_args = [ "--shards=7" ]
 
     package_name = chrome_public_manifest_package
 

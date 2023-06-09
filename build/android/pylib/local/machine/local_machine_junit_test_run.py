@@ -45,11 +45,6 @@ _FAILURE_TYPES = (
     base_test_result.ResultType.TIMEOUT,
 )
 
-# It can actually take longer to run if you shard too much, especially on
-# smaller suites. Locally media_base_junit_tests takes 4.3 sec with 1 shard,
-# and 6 sec with 2 or more shards.
-_MIN_CLASSES_PER_SHARD = 8
-
 # Running the largest test suite with a single shard takes about 22 minutes.
 _SHARD_TIMEOUT = 30 * 60
 
@@ -287,23 +282,22 @@ def AddPropertiesJar(cmd_list, temp_dir, resource_apk):
     cmd.extend(['--classpath', properties_jar_path])
 
 
-def ChooseNumOfShards(test_classes, shards):
-  # Don't override requests to not shard.
-  if shards == 1:
-    return 1
+def ChooseNumOfShards(test_classes, shards=None):
+  if shards is None:
+    # Local tests of explicit --shard values show that max speed is achieved
+    # at cpu_count() / 2.
+    # Using -XX:TieredStopAtLevel=1 is required for this result. The flag
+    # reduces CPU time by two-thirds, making sharding more effective.
+    shards = max(1, multiprocessing.cpu_count() // 2)
 
-  # Sharding doesn't reduce runtime on just a few tests.
-  if shards > (len(test_classes) // _MIN_CLASSES_PER_SHARD) or shards < 1:
-    shards = max(1, (len(test_classes) // _MIN_CLASSES_PER_SHARD))
+    # It can actually take longer to run if you shard too much, especially on
+    # smaller suites. Locally media_base_junit_tests takes 4.3 sec with 1 shard,
+    # and 6 sec with 2 or more shards.
+    min_classes_per_shard = 8
+  else:
+    min_classes_per_shard = 1
 
-  # Local tests of explicit --shard values show that max speed is achieved
-  # at cpu_count() / 2.
-  # Using -XX:TieredStopAtLevel=1 is required for this result. The flag reduces
-  # CPU time by two-thirds, making sharding more effective.
-  shards = max(1, min(shards, multiprocessing.cpu_count() // 2))
-  # Can have at minimum one test_class per shard.
-  shards = min(len(test_classes), shards)
-
+  shards = max(1, min(shards, len(test_classes) // min_classes_per_shard))
   return shards
 
 
