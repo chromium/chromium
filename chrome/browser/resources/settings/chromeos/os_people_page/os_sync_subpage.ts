@@ -38,15 +38,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {FocusConfig} from '../focus_config.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Router} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
 import {OsSettingsSyncEncryptionOptionsElement} from './os_sync_encryption_options.js';
 import {getTemplate} from './os_sync_subpage.html.js';
-
-function getSyncRoutes() {
-  return Router.getInstance().routes;
-}
 
 export interface OsSettingsSyncSubpageElement {
   $: {
@@ -268,7 +264,7 @@ export class OsSettingsSyncSubpageElement extends
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
     const router = Router.getInstance();
-    if (router.currentRoute === getSyncRoutes().SYNC) {
+    if (router.currentRoute === routes.SYNC) {
       this.onNavigateToPage_();
     }
   }
@@ -277,7 +273,7 @@ export class OsSettingsSyncSubpageElement extends
     super.disconnectedCallback();
 
     const router = Router.getInstance();
-    if (getSyncRoutes().SYNC.contains(router.currentRoute)) {
+    if (routes.SYNC.contains(router.currentRoute)) {
       this.onNavigateAwayFromPage_();
     }
 
@@ -333,7 +329,7 @@ export class OsSettingsSyncSubpageElement extends
   }
 
   private onFocusConfigChange_() {
-    this.focusConfig.set(getSyncRoutes().OS_SYNC.path, () => {
+    this.focusConfig.set(routes.OS_SYNC.path, () => {
       const toFocus =
           this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
       assert(toFocus);
@@ -343,12 +339,12 @@ export class OsSettingsSyncSubpageElement extends
 
   override currentRouteChanged() {
     const router = Router.getInstance();
-    if (router.currentRoute === getSyncRoutes().SYNC) {
+    if (router.currentRoute === routes.SYNC) {
       this.onNavigateToPage_();
       return;
     }
 
-    if (getSyncRoutes().SYNC.contains(router.currentRoute)) {
+    if (routes.SYNC.contains(router.currentRoute)) {
       return;
     }
 
@@ -370,7 +366,7 @@ export class OsSettingsSyncSubpageElement extends
 
   private onNavigateToPage_() {
     const router = Router.getInstance();
-    assert(router.currentRoute === getSyncRoutes().SYNC);
+    assert(router.currentRoute === routes.SYNC);
     if (this.beforeunloadCallback_) {
       return;
     }
@@ -553,8 +549,8 @@ export class OsSettingsSyncSubpageElement extends
         this.pageStatus_ = pageStatus;
         return;
       case PageStatus.DONE:
-        if (router.currentRoute === getSyncRoutes().SYNC) {
-          router.navigateTo(getSyncRoutes().OS_PEOPLE);
+        if (router.currentRoute === routes.SYNC) {
+          router.navigateTo(routes.OS_PEOPLE);
         }
         return;
       case PageStatus.PASSPHRASE_FAILED:
@@ -587,7 +583,7 @@ export class OsSettingsSyncSubpageElement extends
 
   private onSyncAdvancedClick_() {
     const router = Router.getInstance();
-    router.navigateTo(getSyncRoutes().OS_SYNC);
+    router.navigateTo(routes.OS_SYNC);
   }
 
   /**
@@ -598,7 +594,7 @@ export class OsSettingsSyncSubpageElement extends
     const passphraseInput = this.shadowRoot!.querySelector<CrInputElement>(
         '#existingPassphraseInput');
     const router = Router.getInstance();
-    if (passphraseInput && router.currentRoute === getSyncRoutes().SYNC) {
+    if (passphraseInput && router.currentRoute === routes.SYNC) {
       passphraseInput.focus();
     }
   }

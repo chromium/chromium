@@ -19,9 +19,8 @@ import {DeepLinkingMixin} from '../../deep_linking_mixin.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 import {App, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {routes} from '../../os_settings_routes.js';
 import {RouteObserverMixin} from '../../route_observer_mixin.js';
-import {Route} from '../../router.js';
+import {Route, routes} from '../../router.js';
 import {isAppInstalled} from '../os_apps_page.js';
 
 import {getTemplate} from './app_notifications_subpage.html.js';

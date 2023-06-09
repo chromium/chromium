@@ -6,41 +6,10 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
-import {OsSettingsRoutes, Route, routes} from './os_settings_routes.js';
+import {createRoutes, OsSettingsRoutes, Route} from './os_settings_routes.js';
 import {RouteObserverMixinInterface} from './route_observer_mixin.js';
 
 export {Route};
-
-/**
- * @returns true if this route exists under the Advanced section.
- * Note: Use the routes contained by the Router instance to ensure the routes
- * are up-to-date (ie. in the case the routes are overriden in tests)
- */
-export function isAdvancedRoute(route: Route): boolean {
-  const routes = Router.getInstance().routes;
-  return routes.ADVANCED && routes.ADVANCED.contains(route);
-}
-
-/**
- * @returns true if this route exists under the Basic section (not advanced
- * section).
- * Note: Use the routes contained by the Router instance to ensure the routes
- * are up-to-date (ie. in the case the routes are overriden in tests)
- */
-export function isBasicRoute(route: Route): boolean {
-  const routes = Router.getInstance().routes;
-  return routes.BASIC.contains(route);
-}
-
-/**
- * @returns true if this route exists under the About page
- * Note: Use the routes contained by the Router instance to ensure the routes
- * are up-to-date (ie. in the case the routes are overriden in tests)
- */
-export function isAboutRoute(route: Route): boolean {
-  const routes = Router.getInstance().routes;
-  return routes.ABOUT.contains(route);
-}
 
 /**
  * Regular expression that captures the leading slash, the content and the
@@ -316,15 +285,8 @@ export class Router {
   }
 }
 
-/**
- * Returns a router with at least those routes common to OS
- * and browser settings. If the window is not in OS settings (based on
- * loadTimeData) then browser specific routes are added. If the window is
- * OS settings or if Chrome OS is using a consolidated settings page for
- * OS and browser settings then OS specific routes are added.
- */
 function buildRouter(): Router {
-  return new Router(routes);
+  return new Router(createRoutes());
 }
 
 Router.setInstance(buildRouter());
@@ -336,3 +298,36 @@ window.addEventListener('popstate', () => {
       router.getRouteForPath(window.location.pathname) || router.routes.BASIC,
       new URLSearchParams(window.location.search), true);
 });
+
+export const routes = Router.getInstance().routes;
+
+/**
+ * @returns true if this route exists under the Advanced section.
+ * Note: Use the routes contained by the Router instance to ensure the routes
+ * are up-to-date (ie. in the case the routes are overridden in tests)
+ */
+export function isAdvancedRoute(route: Route): boolean {
+  const routes = Router.getInstance().routes;
+  return routes.ADVANCED && routes.ADVANCED.contains(route);
+}
+
+/**
+ * @returns true if this route exists under the Basic section (not advanced
+ * section).
+ * Note: Use the routes contained by the Router instance to ensure the routes
+ * are up-to-date (ie. in the case the routes are overridden in tests)
+ */
+export function isBasicRoute(route: Route): boolean {
+  const routes = Router.getInstance().routes;
+  return routes.BASIC.contains(route);
+}
+
+/**
+ * @returns true if this route exists under the About page
+ * Note: Use the routes contained by the Router instance to ensure the routes
+ * are up-to-date (ie. in the case the routes are overridden in tests)
+ */
+export function isAboutRoute(route: Route): boolean {
+  const routes = Router.getInstance().routes;
+  return routes.ABOUT.contains(route);
+}

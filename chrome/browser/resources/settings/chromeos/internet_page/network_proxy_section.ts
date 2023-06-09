@@ -33,9 +33,8 @@ import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_confi
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Constructor} from '../common/types.js';
-import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
-import {Route} from '../router.js';
+import {Route, routes} from '../router.js';
 
 import {getTemplate} from './network_proxy_section.html.js';
 

@@ -26,7 +26,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {castExists} from '../assert_extras.js';
 import {Constructor} from '../common/types';
-import {OsSettingsRoutes, routes} from '../os_settings_routes.js';
+import {routes} from '../router.js';
 
 import {MultiDeviceFeatureMixin, MultiDeviceFeatureMixinInterface} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_tether_item.html.js';
@@ -86,7 +86,6 @@ class SettingsMultideviceTetherItemElement extends
     };
   }
 
-  routes: OsSettingsRoutes|null;
   private activeNetworkState_: OncMojo.NetworkStateProperties|undefined;
   private deviceState_: OncMojo.DeviceStateProperties|undefined;
   private networkConfig_: CrosNetworkConfigInterface;

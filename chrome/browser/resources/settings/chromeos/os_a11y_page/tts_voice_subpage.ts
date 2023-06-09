@@ -23,9 +23,8 @@ import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/poly
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
-import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Route} from '../router.js';
+import {Route, routes} from '../router.js';
 
 import {getTemplate} from './tts_voice_subpage.html.js';
 import {TtsVoiceSubpageBrowserProxy, TtsVoiceSubpageBrowserProxyImpl} from './tts_voice_subpage_browser_proxy.js';

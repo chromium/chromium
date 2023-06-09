@@ -10,8 +10,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {assertExhaustive} from '../assert_extras.js';
-import {routes} from '../os_settings_routes.js';
-import {Route} from '../router.js';
+import {Route, routes} from '../router.js';
 
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
 import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle} from './input_method_types.js';

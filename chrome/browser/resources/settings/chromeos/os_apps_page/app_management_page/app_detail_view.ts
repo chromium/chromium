@@ -17,9 +17,8 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
-import {routes} from '../../os_settings_routes.js';
 import {RouteObserverMixin} from '../../route_observer_mixin.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router, routes} from '../../router.js';
 
 import {updateSelectedAppId} from './actions.js';
 import {getTemplate} from './app_detail_view.html.js';

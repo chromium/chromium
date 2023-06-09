@@ -14,7 +14,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../common/global_scroll_target_mixin.js';
-import {routes} from '../os_settings_routes.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './os_japanese_manage_user_dictionary_page.html.js';
 

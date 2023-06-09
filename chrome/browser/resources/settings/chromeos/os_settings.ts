@@ -174,7 +174,7 @@ export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, 
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
 export {OsSettingsMenuElement} from './os_settings_menu/os_settings_menu.js';
 export {OsSettingsSectionElement} from './os_settings_page/os_settings_section.js';
-export {createRoutesForTesting, OsSettingsRoutes, routes} from './os_settings_routes.js';
+export {createRoutes as createRoutesForTesting, OsSettingsRoutes} from './os_settings_routes.js';
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';
 export {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
 export {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_settings_ui/os_settings_hats_browser_proxy.js';
@@ -183,7 +183,7 @@ export {OsToolbarElement} from './os_toolbar/os_toolbar.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.js';
 export {SettingsParentalControlsPageElement} from './parental_controls_page/parental_controls_page.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
-export {Route, Router} from './router.js';
+export {Route, Router, routes} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';
 export {SettingsSchedulerSliderElement} from './settings_scheduler_slider/settings_scheduler_slider.js';

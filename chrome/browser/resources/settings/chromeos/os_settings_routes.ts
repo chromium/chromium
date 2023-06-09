@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * Defines the class for navigable routes. Also exports a function which
+ * creates the set of routes available, based on loadTimeData, and is meant to
+ * be used when initializing the Router instance. Routes should be derived from
+ * the Router singleton instance, rather than imported from here.
+ */
+
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -220,7 +228,7 @@ function createSubpage(
 /**
  * Creates Route objects for each path corresponding to CrOS settings content.
  */
-function createRoutes(): OsSettingsRoutes {
+export function createRoutes(): OsSettingsRoutes {
   const r: Partial<OsSettingsRoutes> = {};
   const {Section, Subpage} = routesMojom;
 
@@ -583,6 +591,3 @@ function createRoutes(): OsSettingsRoutes {
 
   return r as OsSettingsRoutes;
 }
-
-export const createRoutesForTesting = createRoutes;
-export const routes = createRoutes();

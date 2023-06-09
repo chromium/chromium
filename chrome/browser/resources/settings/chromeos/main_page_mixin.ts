@@ -11,7 +11,7 @@ import {Constructor} from './common/types.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {isAdvancedRoute, Route, Router} from './router.js';
+import {isAdvancedRoute, Route, Router, routes} from './router.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing
@@ -77,7 +77,7 @@ const VALID_TRANSITIONS = new Map([
 /**
  * The route for the first page listed in the Settings menu.
  */
-const FIRST_PAGE_ROUTE: Route = Router.getInstance().routes.INTERNET;
+const FIRST_PAGE_ROUTE: Route = routes.INTERNET;
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   containsRoute(route: Route|undefined): boolean;

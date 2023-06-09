@@ -22,7 +22,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {GlobalScrollTargetMixin} from '../common/global_scroll_target_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
-import {routes} from '../os_settings_routes.js';
+import {routes} from '../router.js';
 
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 import {getTemplate} from './os_edit_dictionary_page.html.js';
