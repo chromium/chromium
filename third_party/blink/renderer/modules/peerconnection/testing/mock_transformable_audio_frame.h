@@ -15,7 +15,8 @@ class MockTransformableAudioFrame
     : public webrtc::TransformableAudioFrameInterface {
  public:
   MOCK_METHOD(rtc::ArrayView<const uint8_t>, GetData, (), (const override));
-  MOCK_METHOD(void, SetData, (rtc::ArrayView<const uint8_t> data), (override));
+  MOCK_METHOD(void, SetData, (rtc::ArrayView<const uint8_t>), (override));
+  MOCK_METHOD(void, SetRTPTimestamp, (uint32_t), (override));
   MOCK_METHOD(uint8_t, GetPayloadType, (), (const, override));
   MOCK_METHOD(uint32_t, GetSsrc, (), (const, override));
   MOCK_METHOD(uint32_t, GetTimestamp, (), (const override));
