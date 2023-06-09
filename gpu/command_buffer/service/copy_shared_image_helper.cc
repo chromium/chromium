@@ -732,13 +732,18 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       SkYUVAInfo yuva_info(gfx::SizeToSkISize(dest_shared_image->size()),
                            ToSkYUVAPlaneConfig(dest_format),
                            ToSkYUVASubsampling(dest_format), yuv_color_space);
-      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image,
-      // having it clear the destination image if necessary and then populate
-      // |dest_rect|.
-      skia::BlitRGBAToYUVA(
-          source_image.get(), yuva_sk_surfaces, yuva_info,
-          gfx::RectToSkRect(dest_rect),
-          /*clear_destination=*/!dest_shared_image->IsCleared());
+      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image.
+      // TODO(crbug.com/1451025): This will scale the image if the source image
+      // is smaller than the destination image. What we should actually do
+      // instead is just blit the destination rect and clear out the rest.
+      // However, doing that resulted in resulted in pixeltest failures due to
+      // images having pixel bleeding at their borders when this codepath is
+      // used by RenderableGMBVideoFramePool (see the bug for details). The
+      // current behavior of scaling the image matches the legacy
+      // (non-multiplanar SI) behavior in RenderableGMBVideoFramePool, so it is
+      // not a regression. Nonetheless, this behavior should
+      // ideally be changed to that described above for correctness.
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
       dest_shared_image->SetCleared();
     }
 
