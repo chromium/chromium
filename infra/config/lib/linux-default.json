@@ -242,6 +242,9 @@
     "win10-wpt-content-shell-fyi-rel": "Ubuntu-22.04",
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
+  "reclient": {
+    "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04"
+  },
   "try": {
     "android-11-x86-rel": "Ubuntu-22.04",
     "android-12-x64-dbg": "Ubuntu-22.04",
