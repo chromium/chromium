@@ -9,7 +9,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeNetworkGuidInfoList, fakeSystemInfo, fakeSystemInfoWithoutBattery, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeMemoryUsageHighAvailableMemory, fakeNetworkGuidInfoList, fakeSystemInfo, fakeSystemInfoWithoutBattery, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
@@ -141,42 +141,6 @@ suite('systemPageTestSuite', function() {
   }
 
   /**
-   * Get the session log button.
-   * @return {!CrButtonElement}
-   */
-  function getSessionLogButton() {
-    return /** @type {!CrButtonElement} */ (
-        page.shadowRoot.querySelector('.session-log-button'));
-  }
-
-  /**
-   * Clicks the session log button.
-   * @return {!Promise}
-   */
-  function clickSessionLogButton() {
-    getSessionLogButton().click();
-    return flushTasks();
-  }
-
-  /**
-   * Returns whether the toast is visible or not.
-   * @return {boolean}
-   */
-  function isToastVisible() {
-    return page.shadowRoot.querySelector('cr-toast').open;
-  }
-
-  /**
-   * @param {boolean} isLoggedIn
-   * @suppress {visibility} // access private member
-   * @return {!Promise}
-   */
-  function changeLoggedInState(isLoggedIn) {
-    page.isLoggedIn_ = isLoggedIn;
-    return flushTasks();
-  }
-
-  /**
    * Get the caution banner.
    * @return {!HTMLElement}
    */
@@ -206,11 +170,6 @@ suite('systemPageTestSuite', function() {
           const batteryStatus =
               page.shadowRoot.querySelector('#batteryStatusCard');
           assertTrue(!!batteryStatus);
-
-          // Verify the session log button is in the page.
-          const sessionLog =
-              page.shadowRoot.querySelector('.session-log-button');
-          assertTrue(!!sessionLog);
         });
   });
 
@@ -232,87 +191,27 @@ suite('systemPageTestSuite', function() {
     let memoryRoutinesSection = null;
     return initializeSystemPage(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+               fakeBatteryInfo, fakeCpuUsage,
+               fakeMemoryUsageHighAvailableMemory)
         .then(() => {
           const batteryStatusCard =
               page.shadowRoot.querySelector('battery-status-card');
           const cpuCard = page.shadowRoot.querySelector('cpu-card');
           const memoryCard = page.shadowRoot.querySelector('memory-card');
           cards = [batteryStatusCard, cpuCard, memoryCard];
+          assertRunTestButtonsEnabled(cards);
 
           memoryRoutinesSection = dx_utils.getRoutineSection(memoryCard);
           memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.RUNNING;
           return flushTasks();
         })
         .then(() => {
+          assertEquals(TestSuiteStatus.RUNNING, page.testSuiteStatus);
           assertRunTestButtonsDisabled(cards);
           memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.NOT_RUNNING;
           return flushTasks();
         })
         .then(() => assertRunTestButtonsEnabled(cards));
-  });
-
-  test('SaveSessionLogDisabledWhenPendingResult', () => {
-    return initializeSystemPage(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          assertFalse(getSessionLogButton().disabled);
-          DiagnosticsBrowserProxy.setSuccess(true);
-
-          getSessionLogButton().click();
-          assertTrue(getSessionLogButton().disabled);
-          return flushTasks();
-        })
-        .then(() => {
-          assertFalse(getSessionLogButton().disabled);
-        });
-  });
-
-  test('SaveSessionLogSuccessShowsToast', () => {
-    return initializeSystemPage(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          DiagnosticsBrowserProxy.setSuccess(true);
-          clickSessionLogButton().then(() => {
-            assertTrue(isToastVisible());
-            dx_utils.assertElementContainsText(
-                page.shadowRoot.querySelector('#toast'),
-                loadTimeData.getString('sessionLogToastTextSuccess'));
-          });
-        });
-  });
-
-  test('SaveSessionLogFailure', () => {
-    return initializeSystemPage(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          DiagnosticsBrowserProxy.setSuccess(false);
-          clickSessionLogButton().then(() => {
-            assertTrue(isToastVisible());
-            dx_utils.assertElementContainsText(
-                page.shadowRoot.querySelector('#toast'),
-                loadTimeData.getString('sessionLogToastTextFailure'));
-          });
-        });
-  });
-
-  test('SessionLogHiddenWhenNotLoggedIn', () => {
-    return initializeSystemPage(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => changeLoggedInState(/* isLoggedIn */ (false)))
-        .then(() => assertFalse(isVisible(getSessionLogButton())));
-  });
-
-  test('SessionLogShownWhenLoggedIn', () => {
-    return initializeSystemPage(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => changeLoggedInState(/* isLoggedIn */ (true)))
-        .then(() => assertTrue(isVisible(getSessionLogButton())));
   });
 
   test('RecordNavigationCalled', () => {

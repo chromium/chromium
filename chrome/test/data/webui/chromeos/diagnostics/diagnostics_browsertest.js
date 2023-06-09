@@ -77,7 +77,7 @@ const tests = [
   ['RoutineResultEntry', 'routine_result_entry_test.js'],
   ['RoutineResultList', 'routine_result_list_test.js'],
   ['RoutineSection', 'routine_section_test.js'],
-  ['SystemPage', 'system_page_test.js', undefined, 'DISABLED_All'],
+  ['SystemPage', 'system_page_test.js'],
   ['TextBadge', 'text_badge_test.js'],
   ['TouchscreenTester', 'touchscreen_tester_test.js', 'Input'],
   ['TouchpadTester', 'touchpad_tester_test.js', 'Input'],

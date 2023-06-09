@@ -70,6 +70,28 @@ suite('appTestSuite', function() {
     networkHealthProvider.reset();
   });
 
+  /**
+   * @param {boolean} isLoggedIn
+   * @suppress {visibility} // access private member
+   * @return {!Promise}
+   */
+  function changeLoggedInState(isLoggedIn) {
+    page.isLoggedIn = isLoggedIn;
+    return flushTasks();
+  }
+
+  /**
+   * Simulate clicking session log button.
+   * @return {!Promise}
+   */
+  function clickSessionLogButton() {
+    const sessionLogButton = getSessionLogButton();
+    assertTrue(!!sessionLogButton);
+    sessionLogButton.click();
+
+    return flushTasks();
+  }
+
   /** @return {!HTMLElement} */
   function getCautionBanner() {
     assertTrue(!!page);
@@ -112,6 +134,14 @@ suite('appTestSuite', function() {
 
     return /** @type {!HTMLElement} */ (
         page.shadowRoot.querySelector('[slot=bottom-nav-content-panel]'));
+  }
+
+  /**
+   * Returns whether the toast is visible or not.
+   * @return {boolean}
+   */
+  function isToastVisible() {
+    return page.shadowRoot.querySelector('cr-toast').open;
   }
 
   /**
@@ -248,5 +278,68 @@ suite('appTestSuite', function() {
 
     // Clean up test specific element.
     document.head.removeChild(link);
+  });
+
+  test('SaveSessionLogDisabledWhenPendingResult', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          assertFalse(getSessionLogButton().disabled);
+          DiagnosticsBrowserProxy.setSuccess(true);
+
+          getSessionLogButton().click();
+          assertTrue(getSessionLogButton().disabled);
+          return flushTasks();
+        })
+        .then(() => {
+          assertFalse(getSessionLogButton().disabled);
+        });
+  });
+
+  test('SaveSessionLogSuccessShowsToast', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          DiagnosticsBrowserProxy.setSuccess(true);
+          clickSessionLogButton().then(() => {
+            assertTrue(isToastVisible());
+            dx_utils.assertElementContainsText(
+                page.shadowRoot.querySelector('#toast'),
+                loadTimeData.getString('sessionLogToastTextSuccess'));
+          });
+        });
+  });
+
+  test('SaveSessionLogFailure', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          DiagnosticsBrowserProxy.setSuccess(false);
+          clickSessionLogButton().then(() => {
+            assertTrue(isToastVisible());
+            dx_utils.assertElementContainsText(
+                page.shadowRoot.querySelector('#toast'),
+                loadTimeData.getString('sessionLogToastTextFailure'));
+          });
+        });
+  });
+
+  test('SessionLogHiddenWhenNotLoggedIn', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => changeLoggedInState(/* isLoggedIn */ (false)))
+        .then(() => assertFalse(isVisible(getSessionLogButton())));
+  });
+
+  test('SessionLogShownWhenLoggedIn', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => changeLoggedInState(/* isLoggedIn */ (true)))
+        .then(() => assertTrue(isVisible(getSessionLogButton())));
   });
 });

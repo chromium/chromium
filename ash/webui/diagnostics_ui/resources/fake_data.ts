@@ -204,6 +204,14 @@ export const fakeMemoryUsageLowAvailableMemory: MemoryUsage[] = [
   },
 ];
 
+export const fakeMemoryUsageHighAvailableMemory: MemoryUsage[] = [
+  {
+    availableMemoryKib: 650000,
+    freeMemoryKib: 150000,
+    totalMemoryKib: 1280000,
+  },
+];
+
 export const fakeSystemInfo: SystemInfo = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
