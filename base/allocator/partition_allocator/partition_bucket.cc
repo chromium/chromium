@@ -575,7 +575,7 @@ uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
 // it exists to avoid a race (crbug.com/1445816).
 PA_ALWAYS_INLINE size_t TagSizeForSlot(PartitionRoot* root, size_t slot_size) {
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-  return slot_size - root->flags.ref_count_size;
+  return slot_size - root->settings.ref_count_size;
 #else
   return slot_size;
 #endif

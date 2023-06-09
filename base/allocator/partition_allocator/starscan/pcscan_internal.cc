@@ -1077,7 +1077,7 @@ void PCScanTask::SweepQuarantine() {
         SweepSuperPageWithBatchedFree(root, super_page, pcscan_epoch_, stat);
         (void)should_discard;
 #else
-        if (PA_UNLIKELY(should_discard && !root->flags.allow_cookie))
+        if (PA_UNLIKELY(should_discard && !root->settings.allow_cookie))
           SweepSuperPageAndDiscardMarkedQuarantine(root, super_page,
                                                    pcscan_epoch_, stat);
         else
@@ -1454,8 +1454,8 @@ void PCScanInternal::RegisterScannableRoot(Root* root) {
     }
     PA_CHECK(!root->IsQuarantineEnabled());
     super_pages = GetSuperPagesAndCommitStateBitmaps(*root);
-    root->flags.scan_mode = Root::ScanMode::kEnabled;
-    root->flags.quarantine_mode = Root::QuarantineMode::kEnabled;
+    root->settings.scan_mode = Root::ScanMode::kEnabled;
+    root->settings.quarantine_mode = Root::QuarantineMode::kEnabled;
   }
   std::lock_guard<std::mutex> lock(roots_mutex_);
   PA_DCHECK(!scannable_roots_.count(root));
@@ -1478,7 +1478,7 @@ void PCScanInternal::RegisterNonScannableRoot(Root* root) {
       return;
     }
     super_pages = GetSuperPagesAndCommitStateBitmaps(*root);
-    root->flags.quarantine_mode = Root::QuarantineMode::kEnabled;
+    root->settings.quarantine_mode = Root::QuarantineMode::kEnabled;
   }
   std::lock_guard<std::mutex> lock(roots_mutex_);
   PA_DCHECK(!nonscannable_roots_.count(root));
@@ -1598,12 +1598,12 @@ void PCScanInternal::ClearRootsForTesting() {
   // Set all roots as non-scannable and non-quarantinable.
   for (auto& pair : scannable_roots_) {
     Root* root = pair.first;
-    root->flags.scan_mode = Root::ScanMode::kDisabled;
-    root->flags.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+    root->settings.scan_mode = Root::ScanMode::kDisabled;
+    root->settings.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
   for (auto& pair : nonscannable_roots_) {
     Root* root = pair.first;
-    root->flags.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+    root->settings.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
   // Make sure to destroy maps so that on the following ReinitForTesting() call
   // the maps don't attempt to destroy the backing.

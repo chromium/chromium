@@ -582,7 +582,7 @@ void ConfigurePartitions(
     }
     PA_DCHECK(!enable_brp);
     PA_DCHECK(!use_dedicated_aligned_partition);
-    PA_DCHECK(!current_root->flags.with_thread_cache);
+    PA_DCHECK(!current_root->settings.with_thread_cache);
     return;
   }
 
@@ -679,7 +679,7 @@ void ConfigurePartitions(
 // to in `PartitionRoot::Init()`.
 uint32_t GetMainPartitionRootExtrasSize() {
 #if PA_CONFIG(EXTRAS_REQUIRED)
-  return g_root.Get()->flags.extras_size;
+  return g_root.Get()->settings.extras_size;
 #else
   return 0;
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)

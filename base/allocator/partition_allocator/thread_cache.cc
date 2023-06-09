@@ -61,8 +61,8 @@ void OnDllProcessDetach() {
   // mitigated inside the thread cache (since getting to it requires querying
   // TLS), but the PartitionRoot associated wih the thread cache can be made to
   // not use the thread cache anymore.
-  g_thread_cache_root.load(std::memory_order_relaxed)->flags.with_thread_cache =
-      false;
+  g_thread_cache_root.load(std::memory_order_relaxed)
+      ->settings.with_thread_cache = false;
 }
 #endif
 

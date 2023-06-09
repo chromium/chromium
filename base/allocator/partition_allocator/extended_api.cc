@@ -18,12 +18,12 @@ namespace {
 void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
   // Some platforms don't have a thread cache, or it could already have been
   // disabled.
-  if (!root || !root->flags.with_thread_cache) {
+  if (!root || !root->settings.with_thread_cache) {
     return;
   }
 
   ThreadCacheRegistry::Instance().PurgeAll();
-  root->flags.with_thread_cache = false;
+  root->settings.with_thread_cache = false;
   // Doesn't destroy the thread cache object(s). For background threads, they
   // will be collected (and free cached memory) at thread destruction
   // time. For the main thread, we leak it.
@@ -34,7 +34,7 @@ void EnablePartitionAllocThreadCacheForRootIfDisabled(
   if (!root) {
     return;
   }
-  root->flags.with_thread_cache = true;
+  root->settings.with_thread_cache = true;
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -72,7 +72,7 @@ ThreadCacheProcessScopeForTesting::ThreadCacheProcessScopeForTesting(
   auto* regular_allocator =
       allocator_shim::internal::PartitionAllocMalloc::Allocator();
   regular_was_enabled_ =
-      regular_allocator && regular_allocator->flags.with_thread_cache;
+      regular_allocator && regular_allocator->settings.with_thread_cache;
 
   if (root_ != regular_allocator) {
     // Another |root| is ThreadCache's PartitionRoot. Need to disable
@@ -101,7 +101,7 @@ ThreadCacheProcessScopeForTesting::~ThreadCacheProcessScopeForTesting() {
   auto* regular_allocator =
       allocator_shim::internal::PartitionAllocMalloc::Allocator();
   bool regular_enabled =
-      regular_allocator && regular_allocator->flags.with_thread_cache;
+      regular_allocator && regular_allocator->settings.with_thread_cache;
 
   if (regular_was_enabled_) {
     if (!regular_enabled) {

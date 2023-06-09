@@ -3812,7 +3812,7 @@ TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
   size_t usable_size_with_hack =
       PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(ptr);
   EXPECT_EQ(usable_size,
-            allocator.root()->flags.mac11_malloc_size_hack_usable_size_);
+            allocator.root()->settings.mac11_malloc_size_hack_usable_size_);
   EXPECT_EQ(usable_size_with_hack, size);
 
   allocator.root()->Free(ptr);

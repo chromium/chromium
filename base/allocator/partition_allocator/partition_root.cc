@@ -752,7 +752,7 @@ void PartitionRoot::DestructForTesting() {
   // We need to destruct the thread cache before we unreserve any of the super
   // pages below, which we currently are not doing. So, we should only call
   // this function on PartitionRoots without a thread cache.
-  PA_CHECK(!flags.with_thread_cache);
+  PA_CHECK(!settings.with_thread_cache);
   auto pool_handle = ChoosePool();
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // The pages managed by thread isolated pool will be free-ed at
@@ -783,7 +783,7 @@ void PartitionRoot::DestructForTesting() {
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 void PartitionRoot::InitMac11MallocSizeHackUsableSize(size_t ref_count_size) {
-  flags.mac11_malloc_size_hack_enabled_ = true;
+  settings.mac11_malloc_size_hack_enabled_ = true;
 
   // 0 means reserve just enough extras to fit PartitionRefCount.
   if (!ref_count_size) {
@@ -791,18 +791,18 @@ void PartitionRoot::InitMac11MallocSizeHackUsableSize(size_t ref_count_size) {
   }
   // Request of 32B will fall into a 48B bucket in the presence of BRP
   // ref-count, yielding |48 - ref_count_size| of actual usable space.
-  flags.mac11_malloc_size_hack_usable_size_ = 48 - ref_count_size;
+  settings.mac11_malloc_size_hack_usable_size_ = 48 - ref_count_size;
 }
 
 void PartitionRoot::EnableMac11MallocSizeHackForTesting(size_t ref_count_size) {
-  flags.mac11_malloc_size_hack_enabled_ = true;
+  settings.mac11_malloc_size_hack_enabled_ = true;
   InitMac11MallocSizeHackUsableSize(ref_count_size);
 }
 
 void PartitionRoot::EnableMac11MallocSizeHackIfNeeded(size_t ref_count_size) {
-  flags.mac11_malloc_size_hack_enabled_ =
-      flags.brp_enabled_ && internal::base::mac::IsOS11();
-  if (flags.mac11_malloc_size_hack_enabled_) {
+  settings.mac11_malloc_size_hack_enabled_ =
+      settings.brp_enabled_ && internal::base::mac::IsOS11();
+  if (settings.mac11_malloc_size_hack_enabled_) {
     InitMac11MallocSizeHackUsableSize(ref_count_size);
   }
 }
@@ -877,11 +877,11 @@ void PartitionRoot::Init(PartitionOptions opts) {
     ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 
-    flags.allow_aligned_alloc =
+    settings.allow_aligned_alloc =
         opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
-    flags.allow_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
+    settings.allow_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    flags.brp_enabled_ =
+    settings.brp_enabled_ =
         opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kEnabled;
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
     EnableMac11MallocSizeHackIfNeeded(opts.ref_count_size);
@@ -889,48 +889,49 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    flags.use_configurable_pool =
+    settings.use_configurable_pool =
         (opts.use_configurable_pool ==
          PartitionOptions::UseConfigurablePool::kIfAvailable) &&
         IsConfigurablePoolAvailable();
-    PA_DCHECK(!flags.use_configurable_pool || IsConfigurablePoolAvailable());
+    PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-    flags.memory_tagging_enabled_ =
+    settings.memory_tagging_enabled_ =
         opts.memory_tagging == PartitionOptions::MemoryTagging::kEnabled;
     // Memory tagging is not supported in the configurable pool because MTE
     // stores tagging information in the high bits of the pointer, it causes
     // issues with components like V8's ArrayBuffers which use custom pointer
     // representations. All custom representations encountered so far rely on an
     // "is in configurable pool?" check, so we use that as a proxy.
-    PA_CHECK(!flags.memory_tagging_enabled_ || !flags.use_configurable_pool);
-#endif
+    PA_CHECK(!settings.memory_tagging_enabled_ ||
+             !settings.use_configurable_pool);
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.
-    PA_CHECK(!(flags.use_configurable_pool && brp_enabled()));
+    PA_CHECK(!(settings.use_configurable_pool && brp_enabled()));
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     // BRP and thread isolated mode use different pools, so they can't be
     // enabled at the same time.
     PA_CHECK(!opts.thread_isolation.enabled ||
              opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
-    flags.thread_isolation = opts.thread_isolation;
-#endif
+    settings.thread_isolation = opts.thread_isolation;
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
     // Ref-count messes up alignment needed for AlignedAlloc, making this
     // option incompatible. However, except in the
     // PUT_REF_COUNT_IN_PREVIOUS_SLOT case.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    PA_CHECK(!flags.allow_aligned_alloc || !flags.brp_enabled_);
+    PA_CHECK(!settings.allow_aligned_alloc || !settings.brp_enabled_);
 #endif
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
-    flags.extras_size = 0;
-    flags.extras_offset = 0;
+    settings.extras_size = 0;
+    settings.extras_offset = 0;
 
-    if (flags.allow_cookie) {
-      flags.extras_size += internal::kPartitionCookieSizeAdjustment;
+    if (settings.allow_cookie) {
+      settings.extras_size += internal::kPartitionCookieSizeAdjustment;
     }
 
     if (brp_enabled()) {
@@ -946,20 +947,20 @@ void PartitionRoot::Init(PartitionOptions opts) {
         ref_count_size = internal::base::bits::AlignUp(
             ref_count_size, internal::kMemTagGranuleSize);
       }
-      flags.ref_count_size = ref_count_size;
+      settings.ref_count_size = ref_count_size;
 #endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
-      flags.extras_size += ref_count_size;
-      flags.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
+      settings.extras_size += ref_count_size;
+      settings.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
     // Re-confirm the above PA_CHECKs, by making sure there are no
     // pre-allocation extras when AlignedAlloc is allowed. Post-allocation
     // extras are ok.
-    PA_CHECK(!flags.allow_aligned_alloc || !flags.extras_offset);
+    PA_CHECK(!settings.allow_aligned_alloc || !settings.extras_offset);
 
-    flags.quarantine_mode =
+    settings.quarantine_mode =
 #if BUILDFLAG(USE_STARSCAN)
         (opts.quarantine == PartitionOptions::Quarantine::kDisallowed
              ? QuarantineMode::kAlwaysDisabled
@@ -998,13 +999,13 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if !PA_CONFIG(THREAD_CACHE_SUPPORTED)
     // TLS in ThreadCache not supported on other OSes.
-    flags.with_thread_cache = false;
+    settings.with_thread_cache = false;
 #else
     ThreadCache::EnsureThreadSpecificDataInitialized();
-    flags.with_thread_cache =
+    settings.with_thread_cache =
         (opts.thread_cache == PartitionOptions::ThreadCache::kEnabled);
 
-    if (flags.with_thread_cache) {
+    if (settings.with_thread_cache) {
       ThreadCache::Init(this);
     }
 #endif  // !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -1022,23 +1023,23 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #endif
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-  if (flags.thread_isolation.enabled) {
-    internal::PartitionAllocThreadIsolationInit(flags.thread_isolation);
+  if (settings.thread_isolation.enabled) {
+    internal::PartitionAllocThreadIsolationInit(settings.thread_isolation);
   }
 #endif
 }
 
-PartitionRoot::Flags::Flags() = default;
+PartitionRoot::Settings::Settings() = default;
 
-PartitionRoot::PartitionRoot() : flags() {}
+PartitionRoot::PartitionRoot() : settings() {}
 
-PartitionRoot::PartitionRoot(PartitionOptions opts) : flags() {
+PartitionRoot::PartitionRoot(PartitionOptions opts) : settings() {
   Init(opts);
 }
 
 PartitionRoot::~PartitionRoot() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  PA_CHECK(!flags.with_thread_cache)
+  PA_CHECK(!settings.with_thread_cache)
       << "Must not destroy a partition with a thread cache";
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -1052,7 +1053,7 @@ PartitionRoot::~PartitionRoot() {
 void PartitionRoot::EnableThreadCacheIfSupported() {
 #if PA_CONFIG(THREAD_CACHE_SUPPORTED)
   ::partition_alloc::internal::ScopedGuard guard{lock_};
-  PA_CHECK(!flags.with_thread_cache);
+  PA_CHECK(!settings.with_thread_cache);
   // By the time we get there, there may be multiple threads created in the
   // process. Since `with_thread_cache` is accessed without a lock, it can
   // become visible to another thread before the effects of
@@ -1067,7 +1068,7 @@ void PartitionRoot::EnableThreadCacheIfSupported() {
   PA_CHECK(before == 0);
   ThreadCache::Init(this);
   thread_caches_being_constructed_.fetch_sub(1, std::memory_order_release);
-  flags.with_thread_cache = true;
+  settings.with_thread_cache = true;
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
@@ -1184,7 +1185,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // Write a new trailing cookie.
-  if (flags.allow_cookie) {
+  if (settings.allow_cookie) {
     auto* object = static_cast<unsigned char*>(SlotStartToObject(slot_start));
     internal::PartitionCookieWriteValue(object + GetSlotUsableSize(slot_span));
   }
@@ -1232,7 +1233,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(void* object,
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).
-    if (flags.allow_cookie) {
+    if (settings.allow_cookie) {
       internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
                                           GetSlotUsableSize(slot_span));
     }
@@ -1502,7 +1503,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
     stats.total_active_bytes += direct_mapped_allocations_total_size;
     stats.total_active_count += num_direct_mapped_allocations;
 
-    stats.has_thread_cache = flags.with_thread_cache;
+    stats.has_thread_cache = settings.with_thread_cache;
     if (stats.has_thread_cache) {
       ThreadCacheRegistry::Instance().DumpStats(
           true, &stats.current_thread_cache_stats);
@@ -1539,9 +1540,9 @@ void PartitionRoot::DumpStats(const char* partition_name,
 
 // static
 void PartitionRoot::DeleteForTesting(PartitionRoot* partition_root) {
-  if (partition_root->flags.with_thread_cache) {
+  if (partition_root->settings.with_thread_cache) {
     ThreadCache::SwapForTesting(nullptr);
-    partition_root->flags.with_thread_cache = false;
+    partition_root->settings.with_thread_cache = false;
   }
 
   partition_root->DestructForTesting();  // IN-TEST
@@ -1550,9 +1551,9 @@ void PartitionRoot::DeleteForTesting(PartitionRoot* partition_root) {
 }
 
 void PartitionRoot::ResetForTesting(bool allow_leaks) {
-  if (flags.with_thread_cache) {
+  if (settings.with_thread_cache) {
     ThreadCache::SwapForTesting(nullptr);
-    flags.with_thread_cache = false;
+    settings.with_thread_cache = false;
   }
 
   ::partition_alloc::internal::ScopedGuard guard{
