@@ -42,6 +42,10 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "device/fido/win/webauthn_api.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -139,6 +143,15 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
       return password_manager::PasskeyCredential::Source::kOther;
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+bool WebAuthnApiSupportsHybrid() {
+  device::WinWebAuthnApi* const webauthn_api =
+      device::WinWebAuthnApi::GetDefault();
+  return webauthn_api && webauthn_api->IsAvailable() &&
+         webauthn_api->Version() >= 6;
+}
+#endif
 
 }  // namespace
 
@@ -578,8 +591,9 @@ bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
 
   // If the native Windows API was triggered immediately (i.e. before any Chrome
   // dialog) then start the request over (once) if the user cancels the Windows
-  // UI and there are other options in Chrome's UI.
-  if (!have_restarted_due_to_windows_cancel_) {
+  // UI and there are other options in Chrome's UI. But if Windows supports
+  // hybrid then we've nothing more to offer in practice.
+  if (!have_restarted_due_to_windows_cancel_ && !WebAuthnApiSupportsHybrid()) {
     bool have_other_option =
         base::ranges::any_of(mechanisms_, [](const Mechanism& m) -> bool {
           return absl::holds_alternative<Mechanism::Phone>(m.type) ||
