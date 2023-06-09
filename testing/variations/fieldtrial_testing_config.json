@@ -6915,22 +6915,6 @@
             ]
         }
     ],
-    "IOSFeedAttentionLog": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221020",
-                    "enable_features": [
-                        "EnableCheckVisibilityOnAttentionLogStart",
-                        "EnableRefineDataSourceReloadReporting"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFeedBackOfCardP13nPromo": [
         {
             "platforms": [
