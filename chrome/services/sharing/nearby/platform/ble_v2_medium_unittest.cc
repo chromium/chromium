@@ -78,6 +78,9 @@ class BleV2MediumTest : public testing::Test {
     device_info->address = address;
     device_info->name_for_display = address;
     device_info->service_data_map = service_data_map;
+
+    // TODO(b/285637726): Once the bug is resolved, test whether the
+    // service_uuids are being populated correctly.
     for (auto pair : service_data_map) {
       device_info->service_uuids.push_back(pair.first);
     }
