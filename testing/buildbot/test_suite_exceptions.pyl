@@ -1530,6 +1530,10 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
         ],
+        # TODO(crbug.com/1439624): Remove experiment and ci_only
+        # once the test suite is stable.
+        'ci_only': True,
+        'experiment_percentage': 100,
       },
       'android-12l-x64-fyi-dbg': {
         'args': [
@@ -1948,6 +1952,10 @@
         },
       },
       'android-12l-x64-dbg-tests': {
+        # TODO(crbug.com/1439624): Remove experiment and ci_only
+        # once the test suite is stable.
+        'ci_only': True,
+        'experiment_percentage': 100,
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
         ],
