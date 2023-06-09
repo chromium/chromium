@@ -63269,6 +63269,7 @@ from previous Chrome versions.
   <int value="149336730" label="UseMojoVideoDecoderForPepper:enabled"/>
   <int value="149914698" label="SearchReadyOmnibox:disabled"/>
   <int value="150193246" label="OmniboxShortcutBoost:disabled"/>
+  <int value="150540447" label="ProcessPerSiteUpToMainFrameThreshold:enabled"/>
   <int value="150820177"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:enabled"/>
   <int value="151022756" label="ArcAvailableForChildAccount:disabled"/>
@@ -64400,6 +64401,7 @@ from previous Chrome versions.
   <int value="745850072" label="FastCheckout:disabled"/>
   <int value="745868416" label="disable-system-timezone-automatic-detection"/>
   <int value="746294842" label="NotificationsViaHelperApp:disabled"/>
+  <int value="746699704" label="ProcessPerSiteUpToMainFrameThreshold:disabled"/>
   <int value="746765012" label="AutofillEnableToolbarStatusChip:disabled"/>
   <int value="746944193" label="enable-automatic-password-saving:disabled"/>
   <int value="747076955" label="MobileIdentityConsistency:enabled"/>

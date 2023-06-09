@@ -749,6 +749,9 @@ extern const char kEnablePeripheralCustomizationDescription[];
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 
+extern const char kEnableProcessPerSiteUpToMainFrameThresholdName[];
+extern const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[];
+
 extern const char kEnableShortcutCustomizationAppName[];
 extern const char kEnableShortcutCustomizationAppDescription[];
 

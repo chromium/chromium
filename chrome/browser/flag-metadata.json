@@ -3132,6 +3132,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "enable-process-per-site-up-to-main-frame-threshold",
+    "owners": [ "bashi", "blink-network-stack@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-projector",
     "owners": [ "llin", "cros-projector@google.com" ],
     "expiry_milestone": 105
