@@ -68,6 +68,25 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
   }
 
   void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                         const viz::SharedImageFormat& si_format,
+                         const gfx::ColorSpace& color_space,
+                         GrSurfaceOrigin surface_origin,
+                         SkAlphaType alpha_type,
+                         uint32_t usage,
+                         gpu::Mailbox& mailbox,
+                         gpu::SyncToken& sync_token) override {
+    auto* sii = SharedImageInterface();
+    if (!sii) {
+      return;
+    }
+    mailbox = sii->CreateSharedImage(si_format, gpu_memory_buffer->GetSize(),
+                                     color_space, surface_origin, alpha_type,
+                                     usage, "WebRTCVideoFramePool",
+                                     gpu_memory_buffer->CloneHandle());
+    sync_token = sii->GenVerifiedSyncToken();
+  }
+
+  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
                          gfx::BufferPlane plane,
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,
