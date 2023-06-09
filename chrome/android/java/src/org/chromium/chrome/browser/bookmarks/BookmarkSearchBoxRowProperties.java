@@ -13,5 +13,6 @@ class BookmarkSearchBoxRowProperties {
     public static final ReadableObjectPropertyKey<Callback<String>> QUERY_CALLBACK =
             new ReadableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {QUERY_CALLBACK};
+    static final PropertyKey[] ALL_KEYS = {
+            BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, QUERY_CALLBACK};
 }

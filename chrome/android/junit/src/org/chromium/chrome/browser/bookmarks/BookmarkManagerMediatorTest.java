@@ -1002,4 +1002,28 @@ public class BookmarkManagerMediatorTest {
         verify(mListObserver, never()).onItemRangeInserted(any(), eq(0), anyInt());
         verify(mListObserver).onItemRangeChanged(any(), eq(1), anyInt(), any());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testDeleteDuringSelection() {
+        // Inspired by https://crbug.com/1449447 where the search row didn't have a property and
+        // we crashed when trying to handle deletion during selection.
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertEquals(3, mModelList.size());
+
+        // Setup selection mock to make it seem like folder 2 is selected.
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        doReturn(Arrays.asList(mFolderId2)).when(mSelectionDelegate).getSelectedItemsAsList();
+
+        // Pretend to delete folder 2.
+        doReturn(Arrays.asList(mFolderId3)).when(mBookmarkModel).getChildIds(mFolderId1);
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
+                mFolderItem1, 0, mFolderItem2, /*isDoingExtensiveChanges*/ false);
+
+        // Mostly just verifying that #syncAdapterAndSelectionDelegate() doesn't crash.
+        assertEquals(2, mModelList.size());
+    }
 }
