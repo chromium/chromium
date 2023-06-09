@@ -273,6 +273,7 @@ constexpr auto kDNRRequestHeaderAppendAllowList =
          {"trailer", ""},
          {"transfer-encoding", ", "},
          {"upgrade", ", "},
+         {"user-agent", " "},
          {"via", ", "},
          {"want-digest", ", "},
          {"x-forwarded-for", ", "}});
