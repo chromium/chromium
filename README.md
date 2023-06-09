@@ -22,8 +22,6 @@ gclient sync
 
 
 # 指定编译参数
-# gn args out/* 会影响是否开启strick_mode，BUILD.gn中有一段这样的判断：
-# if (is_java_debug || android_channel == "default" || android_channel == "dev") { defines = [ "STRICT_MODE_CHECKING" ] }
 gn args out/Release
 
 # Build arguments go here.
@@ -42,16 +40,19 @@ symbol_level = 0
 ffmpeg_branding = "Chrome"
 proprietary_codecs = true
 is_java_debug = false
-
 # android package name
 chrome_public_manifest_package = "com.baidu.duer.chromium"
-
 # override android apk version
 android_override_version_code = "548111316"
 android_override_version_name = "110.0.5481.114"
-
 # android v2 sign
 use_android_unwinder_v2 = true
+# 如果不指定android_channel，会默认开启StrictMode
+# 因为chrome/android/BUILD.gn中有这样的判断：
+# if (is_java_debug || android_channel == "default" ||  android_channel == "dev") {
+#      defines = [ "STRICT_MODE_CHECKING" ]
+#    } 
+android_channel = "stable"
 
 
 # 编译apk
