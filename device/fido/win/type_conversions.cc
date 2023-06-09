@@ -91,6 +91,9 @@ ToAuthenticatorMakeCredentialResponse(
       case WEBAUTHN_CTAP_TRANSPORT_INTERNAL:
         transport_used = FidoTransportProtocol::kInternal;
         break;
+      case WEBAUTHN_CTAP_TRANSPORT_HYBRID:
+        transport_used = FidoTransportProtocol::kHybrid;
+        break;
       default:
         // Ignore _TEST and possibly future others.
         break;
@@ -203,12 +206,14 @@ static uint32_t ToWinTransportsMask(
       case FidoTransportProtocol::kBluetoothLowEnergy:
         result |= WEBAUTHN_CTAP_TRANSPORT_BLE;
         break;
-      case FidoTransportProtocol::kHybrid:
-      case FidoTransportProtocol::kAndroidAccessory:
-        // caBLE is unsupported by the Windows API.
-        break;
       case FidoTransportProtocol::kInternal:
         result |= WEBAUTHN_CTAP_TRANSPORT_INTERNAL;
+        break;
+      case FidoTransportProtocol::kHybrid:
+        result |= WEBAUTHN_CTAP_TRANSPORT_HYBRID;
+        break;
+      case FidoTransportProtocol::kAndroidAccessory:
+        // caBLE is unsupported by the Windows API.
         break;
     }
   }
