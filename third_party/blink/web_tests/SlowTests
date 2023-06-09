@@ -1332,7 +1332,6 @@ crbug.com/1046784 [ Release Win ] http/tests/devtools/forced-layout-in-microtask
 crbug.com/1046784 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 [ Mac10.13 Release ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
-crbug.com/1046784 [ Mac10.14 Release ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 [ Mac10.15 Release ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 [ Mac11 Release ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 [ Mac12 ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
