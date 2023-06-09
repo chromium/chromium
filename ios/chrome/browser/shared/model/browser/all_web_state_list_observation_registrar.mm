@@ -4,20 +4,18 @@
 
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-
 AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     std::unique_ptr<WebStateListObserver> web_state_list_observer,
     Mode mode)
-    : browser_list_(BrowserListFactory::GetForBrowserState(browser_state)),
+    : browser_list_(browser_list),
       web_state_list_observer_(std::move(web_state_list_observer)),
       scoped_observations_(web_state_list_observer_.get()),
       mode_(mode) {
@@ -40,15 +38,15 @@ AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
 }
 
 AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     std::unique_ptr<WebStateListObserver> web_state_list_observer)
-    : AllWebStateListObservationRegistrar(browser_state,
+    : AllWebStateListObservationRegistrar(browser_list,
                                           std::move(web_state_list_observer),
                                           Mode::ALL) {}
 
 AllWebStateListObservationRegistrar::~AllWebStateListObservationRegistrar() {
-  // If the browser state has already shut down, `browser_list_` should be
-  // nullptr; otherwise, stop observing it.
+  // If the owning browser state has already shut down, `browser_list_` should
+  // be nullptr; otherwise, stop observing it.
   if (browser_list_) {
     browser_list_->RemoveObserver(this);
   }

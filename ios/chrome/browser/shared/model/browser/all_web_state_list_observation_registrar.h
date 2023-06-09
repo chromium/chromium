@@ -13,10 +13,9 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class BrowserList;
-class ChromeBrowserState;
 
 // AllWebStateListObservationRegistrar tracks when Browsers are created and
-// destroyed for a given ChromeBrowserState. Whenever the BrowserList changes,
+// destroyed for a given BrowserList. Whenever the BrowserList changes,
 // AllWebStateListObservationRegistrar registers (or unregisters) a provided
 // observer as a WebStateListObserver.
 class AllWebStateListObservationRegistrar : public BrowserListObserver {
@@ -27,20 +26,20 @@ class AllWebStateListObservationRegistrar : public BrowserListObserver {
     INCOGNITO = 1 << 1,        // Only register incognito web states.
     ALL = REGULAR | INCOGNITO  // Register all web states.
   };
-  // Constructs an object that registers the given `web_state_list_observer` as
-  // a WebStateListObserver for any Browsers associated with `browser_state` or
-  // `browser_state`'s OTR browser state, according to the value of `mode`.
-  // Keeps observer registration up to date as Browsers are added and
-  // removed from `browser_state`'s BrowserList.
+  // Constructs an object that register the given `web_state_list_observer` as
+  // WebStateListObserver for any regular or OTR Browsers associated with
+  // `browser_list` according to `mode`.
+  // Keeps observer registration up to date as Browsers are added and removed
+  // from `browser_list`.
   AllWebStateListObservationRegistrar(
-      ChromeBrowserState* browser_state,
+      BrowserList* browser_list,
       std::unique_ptr<WebStateListObserver> web_state_list_observer,
       Mode mode);
 
   // Convenience constructor; creates a registrar as described above, with a
   // `mode` of ALL.
   AllWebStateListObservationRegistrar(
-      ChromeBrowserState* browser_state,
+      BrowserList* browser_list,
       std::unique_ptr<WebStateListObserver> web_state_list_observer);
 
   // Not copyable or moveable

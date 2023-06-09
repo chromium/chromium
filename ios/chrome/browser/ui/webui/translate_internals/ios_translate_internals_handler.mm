@@ -68,7 +68,7 @@ void IOSTranslateInternalsHandler::RegisterMessages() {
           ? AllWebStateListObservationRegistrar::Mode::INCOGNITO
           : AllWebStateListObservationRegistrar::Mode::REGULAR;
   registrar_ = std::make_unique<AllWebStateListObservationRegistrar>(
-      chrome_browser_state, std::make_unique<Observer>(this), mode);
+      browser_list, std::make_unique<Observer>(this), mode);
 
   RegisterMessageCallbacks();
 }
