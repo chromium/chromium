@@ -5483,14 +5483,7 @@ crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Failu
 crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Failure Skip ]
 
 # Sheriff 2022-03-21: More flaky tests.
-crbug.com/1272376 [ Debug Mac13-arm64 ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272376 [ Mac10.13 Release ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272376 [ Mac10.14 Release ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272376 [ Mac10.15 Release ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272376 [ Mac11 Release ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272376 [ Mac11-arm64 Release ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272376 [ Mac12 ] plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272376 [ Mac12-arm64 Release ] plugins/plugin-document-back-forward.html [ Failure Pass ]
+crbug.com/1450306 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
 
 # Tests that need updates due to rounding math in layout
 crbug.com/1309975 http/tests/devtools/console/console-viewport-indices.js [ Failure ]
