@@ -1562,6 +1562,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM"
       }

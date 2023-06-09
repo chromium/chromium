@@ -1174,6 +1174,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "BRYA_RELEASE_LKGM"
       },
@@ -1189,6 +1190,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && informational && \"group:criticalstaging\")",
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 7200,
         "variant_id": "BRYA_RELEASE_LKGM"
       }
@@ -1212,6 +1214,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       }
@@ -1235,6 +1238,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM"
       }
@@ -1258,6 +1262,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM"
       }
@@ -1281,6 +1286,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "TROGDOR_RELEASE_LKGM"
       }
@@ -1304,6 +1310,7 @@
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 21600,
         "variant_id": "VOLTEER_RELEASE_LKGM"
       }

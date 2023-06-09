@@ -649,6 +649,7 @@
     'chromeos_chrome_all_tast_tests': {
       'chrome_all_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:chrome" && !informational)',
+        'test_level_retries': 2,
         'timeout_sec': 21600,
       },
     },
@@ -657,6 +658,7 @@
     'chromeos_chrome_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:chrome" && informational && "group:criticalstaging")',
+        'test_level_retries': 2,
         'timeout_sec': 7200,
         'experiment_percentage': 100,
       },
