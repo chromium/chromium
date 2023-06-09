@@ -141,6 +141,8 @@ template("clang_lib") {
           _suffix = "-x86_64"
         } else if (current_cpu == "x86") {
           _suffix = "-i386"
+        } else if (current_cpu == "arm64") {
+          _suffix = "-arm64"
         } else {
           assert(false)  # Unhandled cpu type
         }
@@ -205,6 +207,10 @@ clang_lib("compiler_builtins") {
     } else {
       libname = "ios"
     }
+  } else if (is_win && current_cpu == "arm64") {
+    # Do nothing
+    # Except we get the wrong builtins then!
+    # TODO(https://crbug.com/1453618)
   } else {
     libname = "builtins"
   }
