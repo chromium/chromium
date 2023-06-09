@@ -1272,6 +1272,18 @@ void InvokeBadMojoMessageCallbackForTesting(int render_process_id,
     callback.Run(render_process_id, error);
 }
 
+void LogDelayReasonForFastShutdown(
+    const RenderProcessHostImpl::DelayShutdownReason& reason) {
+  base::UmaHistogramEnumeration(
+      "BrowserRenderProcessHost.FastShutdownIfPossible.DelayReason", reason);
+}
+
+void LogDelayReasonForCleanup(
+    const RenderProcessHostImpl::DelayShutdownReason& reason) {
+  base::UmaHistogramEnumeration("BrowserRenderProcessHost.Cleanup.DelayReason",
+                                reason);
+}
+
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 RenderProcessHostImpl::StableVideoDecoderFactoryCreationCB&
 GetStableVideoDecoderFactoryCreationCB() {
@@ -3816,44 +3828,56 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
       "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
   // Do not shut down the process if there are active or pending views other
   // than the ones we're shutting down.
-  if (page_count && page_count != (GetActiveViewCount() + pending_views_))
+  if (page_count && page_count != (GetActiveViewCount() + pending_views_)) {
+    LogDelayReasonForFastShutdown(
+        DelayShutdownReason::kOtherActiveOrPendingViews);
     return false;
+  }
 
-  if (run_renderer_in_process())
+  if (run_renderer_in_process()) {
+    LogDelayReasonForFastShutdown(DelayShutdownReason::kSingleProcess);
     return false;  // Single process mode never shuts down the renderer.
+  }
 
-  if (!child_process_launcher_.get())
+  if (!child_process_launcher_.get()) {
+    LogDelayReasonForFastShutdown(DelayShutdownReason::kNoProcess);
     return false;  // Render process hasn't started or is probably crashed.
+  }
 
   // Test if there's an unload listener.
   // NOTE: It's possible that an onunload listener may be installed
   // while we're shutting down, so there's a small race here.  Given that
   // the window is small, it's unlikely that the web page has much
   // state that will be lost by not calling its unload handlers properly.
-  if (!skip_unload_handlers && !SuddenTerminationAllowed())
+  if (!skip_unload_handlers && !SuddenTerminationAllowed()) {
+    LogDelayReasonForFastShutdown(DelayShutdownReason::kUnload);
     return false;
+  }
 
   // TODO(crbug.com/1356128): Remove this block once the migration is launched.
   if (keep_alive_ref_count_ != 0) {
     CHECK(!base::FeatureList::IsEnabled(
         blink::features::kKeepAliveInBrowserMigration));
-    base::UmaHistogramBoolean(
-        "BrowserRenderProcessHost.FastShutdownIfPossible.FetchKeepAliveExist",
-        true);
+    LogDelayReasonForFastShutdown(DelayShutdownReason::kFetchKeepAlive);
     return false;
   }
 
-  if (worker_ref_count_ != 0)
+  if (worker_ref_count_ != 0) {
+    LogDelayReasonForFastShutdown(DelayShutdownReason::kWorker);
     return false;
+  }
 
   if (pending_reuse_ref_count_ != 0) {
+    LogDelayReasonForFastShutdown(DelayShutdownReason::kPendingReuse);
     return false;
   }
 
   // TODO(wjmaclean): This is probably unnecessary, but let's remove it in a
   // separate CL to be safe.
-  if (shutdown_delay_ref_count_ != 0)
+  if (shutdown_delay_ref_count_ != 0) {
+    LogDelayReasonForFastShutdown(DelayShutdownReason::kShutdownDelay);
     return false;
+  }
 
   // Set this before ProcessDied() so observers can tell if the render process
   // died due to fast shutdown versus another cause.
@@ -3862,6 +3886,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   ChildProcessTerminationInfo info =
       GetChildTerminationInfo(false /* already_dead */);
   ProcessDied(info);
+  LogDelayReasonForFastShutdown(DelayShutdownReason::kNoDelay);
   return true;
 }
 
@@ -4077,8 +4102,10 @@ void RenderProcessHostImpl::Cleanup() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::UmaHistogramBoolean("BrowserRenderProcessHost.Cleanup.Total", true);
   // Keep the one renderer thread around forever in single process mode.
-  if (run_renderer_in_process())
+  if (run_renderer_in_process()) {
+    LogDelayReasonForCleanup(DelayShutdownReason::kSingleProcess);
     return;
+  }
 
   // If within_process_died_observer_ is true, one of our observers performed
   // an action that caused us to die (e.g. http://crbug.com/339504).
@@ -4090,6 +4117,7 @@ void RenderProcessHostImpl::Cleanup() {
                 "RenderProcessHostImpl::Cleanup : within_process_died_observer",
                 ChromeTrackEvent::kRenderProcessHost, *this);
     delayed_cleanup_needed_ = true;
+    LogDelayReasonForCleanup(DelayShutdownReason::kObserver);
     return;
   }
   delayed_cleanup_needed_ = false;
@@ -4118,6 +4146,7 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_listener_count(listeners_.size());
         });
+    LogDelayReasonForCleanup(DelayShutdownReason::kListener);
     return;
   } else if (keep_alive_ref_count_ != 0) {
     CHECK(!base::FeatureList::IsEnabled(
@@ -4130,8 +4159,7 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_keep_alive_ref_count(keep_alive_ref_count_);
         });
-    base::UmaHistogramBoolean(
-        "BrowserRenderProcessHost.Cleanup.FetchKeepAliveExist", true);
+    LogDelayReasonForCleanup(DelayShutdownReason::kFetchKeepAlive);
     return;
   } else if (shutdown_delay_ref_count_ != 0) {
     TRACE_EVENT(
@@ -4142,6 +4170,7 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_shutdown_delay_ref_count(shutdown_delay_ref_count_);
         });
+    LogDelayReasonForCleanup(DelayShutdownReason::kShutdownDelay);
     return;
   } else if (worker_ref_count_ != 0) {
     TRACE_EVENT(
@@ -4152,6 +4181,7 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_worker_ref_count(worker_ref_count_);
         });
+    LogDelayReasonForCleanup(DelayShutdownReason::kWorker);
     return;
   } else if (pending_reuse_ref_count_ != 0) {
     TRACE_EVENT(
@@ -4162,8 +4192,11 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_pending_reuse_ref_count(pending_reuse_ref_count_);
         });
+    LogDelayReasonForCleanup(DelayShutdownReason::kPendingReuse);
     return;
   }
+
+  LogDelayReasonForCleanup(DelayShutdownReason::kNoDelay);
 
   // If there are listeners but they do not include any live RenderFrameHosts
   // (and there aren't other reasons to keep the process around), then it is

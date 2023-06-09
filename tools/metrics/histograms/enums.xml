@@ -91099,6 +91099,32 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Software Rendering"/>
 </enum>
 
+<enum name="RenderProcessHostDelayShutdownReason">
+  <int value="0" label="No Delay"/>
+  <int value="1" label="Other Active Or Pending Views">
+    There are active or pending views other than the ones shutting down.
+  </int>
+  <int value="2" label="Single Process Mode">
+    Single process mode never shuts down the renderer.
+  </int>
+  <int value="3" label="No Process">
+    Render process hasn't started or is probably crashed.
+  </int>
+  <int value="4" label="Unload Handler Exists"/>
+  <int value="5" label="Fetch Keepalive Request">
+    There is pending fetch keepalive request.
+  </int>
+  <int value="6" label="Worker Exists"/>
+  <int value="7" label="Pending Reuse">The process is pending to reuse.</int>
+  <int value="8" label="Process Requested Delay">
+    The process is requested to delay shutdown.
+  </int>
+  <int value="9" label="Listener Exists"/>
+  <int value="10" label="In Observer Callback">
+    Delays until all observer callbacks completed.
+  </int>
+</enum>
+
 <enum name="RenderViewContextMenuItem">
   <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
   <int value="1" label="IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST"/>

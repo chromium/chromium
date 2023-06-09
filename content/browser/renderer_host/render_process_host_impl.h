@@ -471,6 +471,34 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kMaxValue = kRefusedForPdfContent
   };
 
+  // Please keep in sync with "RenderProcessHostDelayShutdownReason" in
+  // tools/metrics/histograms/enums.xml. These values should not be renumbered.
+  enum class DelayShutdownReason {
+    kNoDelay = 0,
+    // There are active or pending views other than the ones shutting down.
+    kOtherActiveOrPendingViews = 1,
+    // Single process mode never shuts down the renderer.
+    kSingleProcess = 2,
+    // Render process hasn't started or is probably crashed.
+    kNoProcess = 3,
+    // There is unload handler.
+    kUnload = 4,
+    // There is pending fetch keepalive request.
+    kFetchKeepAlive = 5,
+    // There is worker.
+    kWorker = 6,
+    // The process is pending to reuse.
+    kPendingReuse = 7,
+    // The process is requested to delay shutdown.
+    kShutdownDelay = 8,
+    // Has listeners.
+    kListener = 9,
+    // Delays until all observer callbacks completed.
+    kObserver = 10,
+
+    kMaxValue = kObserver,
+  };
+
   static scoped_refptr<base::SingleThreadTaskRunner>
   GetInProcessRendererThreadTaskRunnerForTesting();
 

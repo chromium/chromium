@@ -771,14 +771,15 @@ chromium-metrics-reviews@google.com.
   <summary>Count of renderer process launch failures grouped by type.</summary>
 </histogram>
 
-<histogram name="BrowserRenderProcessHost.Cleanup.FetchKeepAliveExist"
-    enum="Boolean" expires_after="2023-12-15">
+<histogram name="BrowserRenderProcessHost.Cleanup.DelayReason"
+    enum="RenderProcessHostDelayShutdownReason" expires_after="2023-12-15">
   <owner>mych@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
-    Records true when a failed attempt is made to clean up a RenderProcessHost
-    due to the ref count of fetch keepalive is non-zero. This can be compared to
-    the total attempted cleanups recorded by
+    Recorded whenever a RenderProcessHost is cleaned up, with the reason the
+    cleanup fails or is delayed, or kNoDelay if it succeeded quickly.
+
+    The total count of this histogram should be equal to
     BrowserRenderProcessHost.Cleanup.Total.
   </summary>
 </histogram>
@@ -804,15 +805,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BrowserRenderProcessHost.FastShutdownIfPossible.FetchKeepAliveExist"
-    enum="Boolean" expires_after="2023-12-15">
+<histogram name="BrowserRenderProcessHost.FastShutdownIfPossible.DelayReason"
+    enum="RenderProcessHostDelayShutdownReason" expires_after="2023-12-15">
   <owner>mych@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
-    Records true when a failed attempt is made to fast shutdown a
-    RenderProcessHost due to the ref count of fetch keepalive is non-zero. This
-    can be compared to the total attempted fast shutdowns recorded by
+    Recorded whenever a RenderProcessHost is fast shutting down, with the reason
+    the shutdown fails or is delayed, or kNoDelay if it succeeded quickly.
+
+    The total count of this histogram should be equal to
     BrowserRenderProcessHost.FastShutdownIfPossible.Total.
   </summary>
 </histogram>
