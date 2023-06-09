@@ -840,14 +840,12 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   // Default framebuffer emulation
   struct EmulatedDefaultFramebufferFormat {
-    GLenum color_renderbuffer_internal_format = GL_NONE;
     GLenum color_texture_internal_format = GL_NONE;
     GLenum color_texture_format = GL_NONE;
     GLenum color_texture_type = GL_NONE;
     GLenum depth_stencil_internal_format = GL_NONE;
     GLenum depth_internal_format = GL_NONE;
     GLenum stencil_internal_format = GL_NONE;
-    GLint samples = 0;
   };
 
   struct EmulatedColorBuffer {
@@ -895,9 +893,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     // Service ID of the framebuffer
     GLuint framebuffer_service_id = 0;
-
-    // Service ID of the color renderbuffer (if multisampled)
-    GLuint color_buffer_service_id = 0;
 
     // Color buffer texture (if not multisampled)
     std::unique_ptr<EmulatedColorBuffer> color_texture;

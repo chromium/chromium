@@ -213,7 +213,6 @@ bool GetClientID(const ClientServiceMap<ClientType, ServiceType>* map,
 void ResizeRenderbuffer(const GLES2DecoderPassthroughImpl* impl,
                         GLuint renderbuffer,
                         const gfx::Size& size,
-                        GLsizei samples,
                         GLenum internal_format) {
   gl::GLApi* api = impl->api();
   GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt
@@ -221,14 +220,8 @@ void ResizeRenderbuffer(const GLES2DecoderPassthroughImpl* impl,
   ScopedRenderbufferBindingReset scoped_renderbuffer_reset(api);
 
   api->glBindRenderbufferEXTFn(GL_RENDERBUFFER, renderbuffer);
-  if (samples > 0) {
-    DCHECK(impl->features().chromium_framebuffer_multisample);
-    api->glRenderbufferStorageMultisampleFn(
-        GL_RENDERBUFFER, samples, internal_format, size.width(), size.height());
-  } else {
-    api->glRenderbufferStorageEXTFn(GL_RENDERBUFFER, internal_format,
-                                    size.width(), size.height());
-  }
+  api->glRenderbufferStorageEXTFn(GL_RENDERBUFFER, internal_format,
+                                  size.width(), size.height());
 }
 
 void RequestExtensions(gl::GLApi* api,
@@ -688,18 +681,10 @@ GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
 
   const EmulatedDefaultFramebufferFormat& format =
       impl_->emulated_default_framebuffer_format_;
-  if (format.samples > 0) {
-    api()->glGenRenderbuffersEXTFn(1, &color_buffer_service_id);
-    api()->glBindRenderbufferEXTFn(GL_RENDERBUFFER, color_buffer_service_id);
-    api()->glFramebufferRenderbufferEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                          GL_RENDERBUFFER,
-                                          color_buffer_service_id);
-  } else {
-    color_texture = std::make_unique<EmulatedColorBuffer>(impl_);
-    api()->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                       GL_TEXTURE_2D,
-                                       color_texture->texture->service_id(), 0);
-  }
+  color_texture = std::make_unique<EmulatedColorBuffer>(impl_);
+  api()->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                     GL_TEXTURE_2D,
+                                     color_texture->texture->service_id(), 0);
 
   if (format.depth_stencil_internal_format != GL_NONE) {
     DCHECK(format.depth_internal_format == GL_NONE &&
@@ -799,23 +784,19 @@ bool GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Resize(
 
   const EmulatedDefaultFramebufferFormat& format =
       impl_->emulated_default_framebuffer_format_;
-  if (color_buffer_service_id != 0) {
-    ResizeRenderbuffer(impl_, color_buffer_service_id, size, format.samples,
-                       format.color_renderbuffer_internal_format);
-  }
   if (color_texture) {
     color_texture->Resize(size);
   }
   if (depth_stencil_buffer_service_id != 0) {
     ResizeRenderbuffer(impl_, depth_stencil_buffer_service_id, size,
-                       format.samples, format.depth_stencil_internal_format);
+                       format.depth_stencil_internal_format);
   }
   if (depth_buffer_service_id != 0) {
-    ResizeRenderbuffer(impl_, depth_buffer_service_id, size, format.samples,
+    ResizeRenderbuffer(impl_, depth_buffer_service_id, size,
                        format.depth_internal_format);
   }
   if (stencil_buffer_service_id != 0) {
-    ResizeRenderbuffer(impl_, stencil_buffer_service_id, size, format.samples,
+    ResizeRenderbuffer(impl_, stencil_buffer_service_id, size,
                        format.stencil_internal_format);
   }
 
@@ -845,11 +826,8 @@ void GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Destroy(
     api()->glDeleteFramebuffersEXTFn(1, &framebuffer_service_id);
     framebuffer_service_id = 0;
 
-    api()->glDeleteRenderbuffersEXTFn(1, &color_buffer_service_id);
-    color_buffer_service_id = 0;
-
     api()->glDeleteRenderbuffersEXTFn(1, &depth_stencil_buffer_service_id);
-    color_buffer_service_id = 0;
+    depth_stencil_buffer_service_id = 0;
 
     api()->glDeleteRenderbuffersEXTFn(1, &depth_buffer_service_id);
     depth_buffer_service_id = 0;
@@ -1245,22 +1223,11 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       std::min(max_2d_texture_size, max_renderbuffer_size_);
 
   if (offscreen_) {
-    const bool rgb8_supported = feature_info_->feature_flags().oes_rgb8_rgba8;
 #if BUILDFLAG(IS_ANDROID)
     const bool alpha_channel_requested = attrib_helper.alpha_size > 0;
 #else
     const bool alpha_channel_requested = false;
 #endif
-    // The only available default render buffer formats in GLES2 have very
-    // little precision.  Don't enable multisampling unless 8-bit render
-    // buffer formats are available--instead fall back to 8-bit textures.
-    if (rgb8_supported && emulated_default_framebuffer_format_.samples > 0) {
-      emulated_default_framebuffer_format_.color_renderbuffer_internal_format =
-          alpha_channel_requested ? GL_RGBA8 : GL_RGB8;
-    } else {
-      emulated_default_framebuffer_format_.samples = 0;
-    }
-
     emulated_default_framebuffer_format_.color_texture_internal_format =
         alpha_channel_requested ? GL_RGBA : GL_RGB;
     emulated_default_framebuffer_format_.color_texture_format =
