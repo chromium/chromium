@@ -17,7 +17,6 @@ import android.view.WindowManager;
 
 import androidx.test.filters.MediumTest;
 
-import org.chromium.ui.display.DisplayUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,7 +77,8 @@ public class ChromeBaseAppCompatActivityUnitTest {
         config.smallestScreenWidthDp = 0;
         ChromeBaseAppCompatActivity.applyOverridesForAutomotive(mContext, config);
 
-        float automotiveScaleUpFactor = DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO;
+        float automotiveScaleUpFactor =
+                ChromeBaseAppCompatActivity.getDensityOverrideFactorForAutomotiveDevices();
         assertEquals("Density dpi should be scaled up from the real display metric "
                         + "on automotive.",
                 (int) (MOCK_REAL_DISPLAY_DENSITY_DPI * automotiveScaleUpFactor), config.densityDpi);
