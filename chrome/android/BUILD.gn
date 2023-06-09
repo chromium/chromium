@@ -1608,6 +1608,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
+      "//components/autofill/android:autofill_features_java",
       "//components/autofill/android:autofill_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",

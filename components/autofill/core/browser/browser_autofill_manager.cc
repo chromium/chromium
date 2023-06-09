@@ -2416,10 +2416,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // Only notify autofilling of empty fields and the field that initiated the
     // filling (note that "select-one" controls may not be empty but will still
     // be autofilled).
-    bool should_notify = !is_credit_card &&
-                         (result.fields[i].SameFieldAs(field) ||
-                          result.fields[i].form_control_type == "select-one" ||
-                          result.fields[i].value.empty());
+    bool should_notify =
+        !is_credit_card && (result.fields[i].SameFieldAs(field) ||
+                            result.fields[i].IsSelectOrSelectMenuElement() ||
+                            result.fields[i].value.empty());
 
     has_value_before = !result.fields[i].value.empty();
     bool is_autofilled_before = result.fields[i].is_autofilled;

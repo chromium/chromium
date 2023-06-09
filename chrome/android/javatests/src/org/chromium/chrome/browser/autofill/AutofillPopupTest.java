@@ -45,12 +45,14 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.DropdownPopupWindowInterface;
 
@@ -67,9 +69,11 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.PER_CLASS)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.PORTALS, ChromeFeatureList.PORTALS_CROSS_ORIGIN})
+@EnableFeatures({ChromeFeatureList.PORTALS, ChromeFeatureList.PORTALS_CROSS_ORIGIN,
+        AutofillFeatures.AUTOFILL_ENABLE_SELECT_MENU})
 @DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES})
 public class AutofillPopupTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -362,6 +366,25 @@ public class AutofillPopupTest {
         assertLogged(LAST_NAME, profileFullName);
         assertLogged(EMAIL, profileFullName);
         // Country will not be logged since "US" is not a valid <option>.
+    }
+
+    /**
+     * Tests that autofilling a form with a <selectmenu> logs an entry for the <selectmenu> field.
+     */
+    @Test
+    @MediumTest
+    @Feature({"autofill"})
+    public void testLogForSelectMenu() throws TimeoutException {
+        loadAndFillForm("autofill_selectmenu.html", "J");
+        final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
+
+        final String profileFullName = FIRST_NAME + " " + LAST_NAME;
+        Assert.assertEquals(
+                "Mismatched number of logged entries", 4, mAutofillLoggedEntries.size());
+        assertLogged(FIRST_NAME, profileFullName);
+        assertLogged(LAST_NAME, profileFullName);
+        assertLogged(COUNTRY, profileFullName);
+        assertLogged(EMAIL, profileFullName);
     }
 
     // Wait and assert helper methods -------------------------------------------------------------
