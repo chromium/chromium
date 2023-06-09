@@ -23,6 +23,18 @@
         font_weight: 500,
         line_height: 22,
       },
+      headline_2: {
+        font_family: '$font_family_roboto',
+        font_size: 15,
+        font_weight: 500,
+        line_height: 22,
+      },
+      body_0: {
+        font_family: '$font_family_roboto',
+        font_size: 16,
+        font_weight: 400,
+        line_height: 24,
+      },
       body_1: {
         font_family: '$font_family_roboto',
         font_size: 14,
@@ -34,6 +46,36 @@
         font_size: 13,
         font_weight: 400,
         line_height: 20,
+      },
+      display_1: {
+        font_family: '$font_family_google_sans',
+        font_size: 44,
+        font_weight: 500,
+        line_height: 52,
+      },
+      display_2: {
+        font_family: '$font_family_google_sans',
+        font_size: 36,
+        font_weight: 500,
+        line_height: 44,
+      },
+      display_3: {
+        font_family: '$font_family_google_sans',
+        font_size: 32,
+        font_weight: 500,
+        line_height: 40,
+      },
+      display_4: {
+        font_family: '$font_family_google_sans',
+        font_size: 28,
+        font_weight: 500,
+        line_height: 36,
+      },
+      display_5: {
+        font_family: '$font_family_google_sans',
+        font_size: 24,
+        font_weight: 500,
+        line_height: 32,
       },
       display_6: {
         font_family: '$font_family_google_sans',
@@ -47,14 +89,26 @@
         font_weight: 500,
         line_height: 24,
       },
+      annotation_1: {
+        font_family: '$font_family_roboto',
+        font_size: 12,
+        font_weight: 400,
+        line_height: 18,
+      },
       annotation_2: {
         font_family: '$font_family_google_sans',
         font_size: 11,
         font_weight: 400,
         line_height: 16,
       },
+      button_1: {
+        font_family: '$font_family_roboto',
+        font_size: 14,
+        font_weight: 500,
+        line_height: 20,
+      },
       button_2: {
-        font_family: '$font_family_google_sans',
+        font_family: '$font_family_roboto',
         font_size: 13,
         font_weight: 500,
         line_height: 20,
@@ -64,6 +118,24 @@
         font_size: 16,
         font_weight: 500,
         line_height: 24,
+      },
+      title_2: {
+        font_family: '$font_family_roboto',
+        font_size: 16,
+        font_weight: 500,
+        line_height: 24,
+      },
+      label: {
+        font_family: '$font_family_roboto',
+        font_size: 10,
+        font_weight: 500,
+        line_height: 10,
+      },
+      label_2: {
+        font_family: '$font_family_roboto',
+        font_size: 10,
+        font_weight: 400,
+        line_height: 10,
       }
     }
   },
