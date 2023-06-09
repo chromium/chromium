@@ -189,9 +189,6 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
     &::features::kBackForwardCache,
     // TODO(crbug.com/1247836): Enable TFLite/Optimization Guide on WebLayer.
     &translate::kTFLiteLanguageDetectionEnabled,
-    // TODO(crbug.com/1338402): Add support for WebLayer. Disabling autofill is
-    // not yet supported.
-    &blink::features::kAnonymousIframeOriginTrial,
 
 #if BUILDFLAG(IS_ANDROID)
     &::features::kDynamicColorGamut,

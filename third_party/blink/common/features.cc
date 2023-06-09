@@ -17,15 +17,6 @@
 namespace blink {
 namespace features {
 
-// Gate access to the AnonymousIframe origin trial. This is useful on its own,
-// because the OT infrastructure doesn't check Chrome's version. It means token
-// generated for the OT applies immediately to every Chrome versions. The
-// feature flag allows Chrome developers to restrict the access to the first
-// fully supported version.
-BASE_FEATURE(kAnonymousIframeOriginTrial,
-             "AnonymousIframeOriginTrial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
 // is informed about this. This enables Autofill to trigger a reparsing of
 // forms.

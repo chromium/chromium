@@ -24,7 +24,6 @@ constexpr int kBrowsingTopicsConfigVersionDefault = 1;
 
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 1;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnonymousIframeOriginTrial);
 BLINK_COMMON_EXPORT
 BASE_DECLARE_FEATURE(kAutofillDetectRemovedFormControls);
 BLINK_COMMON_EXPORT
