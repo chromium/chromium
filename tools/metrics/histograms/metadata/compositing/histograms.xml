@@ -199,9 +199,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.ExtraDamage" units="%"
-    expires_after="2022-10-16">
+    expires_after="2024-03-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The area of the display damage that was added to current frame damage after
     all adjustments, including FrameBufferDamage from buffer queue and render
@@ -209,14 +210,17 @@ chromium-metrics-reviews@google.com.
 
     This metric is reported once per frame only on platforms/devices that
     support partial swap and does not include &quot;empty swap&quot; (no frame
-    damage) case.
+    damage) case
+
+    Note: this metric was expired from 2022-10-16 to 2023-06-09.
   </summary>
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.FrameBufferDamage"
-    units="%" expires_after="2022-10-23">
+    units="%" expires_after="2024-03-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The area of the display that was damaged since previous draw to this frame
     buffer.
@@ -224,13 +228,16 @@ chromium-metrics-reviews@google.com.
     This metric is reported once per frame only on platforms/devices that
     support partial swap and does not include &quot;empty swap&quot; (no frame
     damage) case.
+
+    Note: this metric was expired from 2022-10-23 to 2023-06-09.
   </summary>
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.RootDamage" units="%"
-    expires_after="2023-07-02">
+    expires_after="2024-03-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The area of the display that was damaged in current frame.
 
@@ -240,14 +247,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.TotalDamage" units="%"
-    expires_after="2023-04-30">
+    expires_after="2024-03-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The total area of the display that will be redrawn this frame.
 
     This metric is reported only on platforms/devices that support partial swap
-    and does not include &quot;empty swap&quot; (no frame damage) case.
+    and does not include &quot;empty swap&quot; (no frame damage) case
+
+    Note: this metric was expired from 2023-04-30 to 2023-06-09.
   </summary>
 </histogram>
 
