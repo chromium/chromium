@@ -23,6 +23,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeProfileOAuth2TokenService;
+class IdentityTestEnvironmentBrowserStateAdaptor;
 class IdentityTestEnvironmentProfileAdaptor;
 class PrefService;
 class TestSigninClient;
@@ -354,6 +355,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
 
  private:
   friend class ::IdentityTestEnvironmentProfileAdaptor;
+  friend class ::IdentityTestEnvironmentBrowserStateAdaptor;
 
   struct AccessTokenRequestState {
     AccessTokenRequestState();

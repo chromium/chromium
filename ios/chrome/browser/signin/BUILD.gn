@@ -311,6 +311,8 @@ source_set("test_support") {
   sources = [
     "fake_authentication_service_delegate.h",
     "fake_authentication_service_delegate.mm",
+    "identity_test_environment_browser_state_adaptor.h",
+    "identity_test_environment_browser_state_adaptor.mm",
   ]
   deps = [
     ":signin",
