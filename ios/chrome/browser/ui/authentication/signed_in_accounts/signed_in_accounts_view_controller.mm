@@ -117,6 +117,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                 forControlEvents:UIControlEventTouchDown];
 }
 
+- (void)teardownUI {
+  [_accountTableView teardownUI];
+  _browserState = nullptr;
+}
+
 #pragma mark UIViewController
 
 - (CGSize)preferredContentSize {

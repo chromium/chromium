@@ -58,6 +58,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self;
 }
 
+- (void)teardownUI {
+  _accountManagerServiceObserver.reset();
+  _accountManagerService = nullptr;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
