@@ -178,8 +178,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isOSSettings", true);
 
   // Add app-wide feature flags
-  html_source->AddBoolean("searchFeedbackEnabled",
-                          ash::features::IsOsSettingsSearchFeedbackEnabled());
   html_source->AddBoolean("isRevampWayfindingEnabled",
                           ash::features::IsOsSettingsRevampWayfindingEnabled());
 

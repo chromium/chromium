@@ -6225,12 +6225,6 @@ const char kOsSettingsRevampWayfindingName[] =
 const char kOsSettingsRevampWayfindingDescription[] =
     "Enables wayfinding improvements in the ChromeOS Settings UI.";
 
-const char kOsSettingsSearchFeedbackName[] =
-    "ChromeOS Settings Search Feedback";
-const char kOsSettingsSearchFeedbackDescription[] =
-    "Enables search result feedback in ChromeOS Settings when no search "
-    "results are returned.";
-
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =
     "Enable Pcie peripheral billboard notification.";

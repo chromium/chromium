@@ -1730,12 +1730,6 @@ BASE_FEATURE(kOsSettingsRevampWayfinding,
              "OsSettingsRevampWayfinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables search result feedback in ChromeOS Settings when no search results
-// are returned.
-BASE_FEATURE(kOsSettingsSearchFeedback,
-             "OsSettingsSearchFeedback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOverviewButton,
              "OverviewButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3301,10 +3295,6 @@ bool IsOsSettingsDeprecateSyncMetricsToggleEnabled() {
 
 bool IsOsSettingsRevampWayfindingEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsRevampWayfinding);
-}
-
-bool IsOsSettingsSearchFeedbackEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsSearchFeedback);
 }
 
 bool IsOsSyncConsentRevampEnabled() {

@@ -5985,11 +5985,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "os-settings-search-feedback",
-    "owners": [ "wesokuhara", "cros-settings@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "overflow-menu-customization",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 115

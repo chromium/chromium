@@ -189,22 +189,20 @@
         $i18n{searchNoResults}
     </div>
     <if expr="_google_chrome">
-        <template is="dom-if" if="[[showFeedbackButton_]]">
-          <div id="reportSearchResult">
-            <cr-button
-                id="reportSearchResultButton"
-                class="pill-button-with-icon"
-                hidden="[[shouldHideFeedbackButton_]]"
-                on-click="onSendFeedbackClick_">
-                <iron-icon
-                    class="search-feedback-icon"
-                    icon="os-settings:feedback"
-                    slot="prefix-icon">
-                </iron-icon>
-                <span>$i18n{searchFeedbackButton}</span>
-            </cr-button>
-          </div>
-        </template>
+      <div id="reportSearchResult">
+        <cr-button
+            id="reportSearchResultButton"
+            class="pill-button-with-icon"
+            hidden="[[shouldHideFeedbackButton_]]"
+            on-click="onSendFeedbackClick_">
+            <iron-icon
+                class="search-feedback-icon"
+                icon="os-settings:feedback"
+                slot="prefix-icon">
+            </iron-icon>
+            <span>$i18n{searchFeedbackButton}</span>
+        </cr-button>
+      </div>
     </if>
   </div>
 </iron-dropdown>

@@ -3563,9 +3563,6 @@ extern const char kOsSettingsAppBadgingToggleDescription[];
 extern const char kOsSettingsRevampWayfindingName[];
 extern const char kOsSettingsRevampWayfindingDescription[];
 
-extern const char kOsSettingsSearchFeedbackName[];
-extern const char kOsSettingsSearchFeedbackDescription[];
-
 extern const char kPcieBillboardNotificationName[];
 extern const char kPcieBillboardNotificationDescription[];
 
