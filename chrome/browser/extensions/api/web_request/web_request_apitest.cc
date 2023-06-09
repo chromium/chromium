@@ -959,14 +959,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Slower and flaky tests should be isolated in the "slow" group of tests in
 // the JS file. This prevents losing test coverage for those tests that are
 // not causing timeouts and flakes.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || !defined(NDEBUG) || \
-    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_WebRequestBlockingSlow DISABLED_WebRequestBlockingSlow
-#else
-#define MAYBE_WebRequestBlockingSlow WebRequestBlockingSlow
-#endif
+// TODO(https://crbug.com/1453477): Investigate the flakiness across all
+// platforms and re-enable.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       MAYBE_WebRequestBlockingSlow) {
+                       DISABLED_WebRequestBlockingSlow) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking",
                                {.custom_arg = R"({"testSuite": "slow"})"}))
