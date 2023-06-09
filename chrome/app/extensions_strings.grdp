@@ -538,6 +538,23 @@
   <message name="IDS_EXTENSIONS_SUBPAGE_BUTTON" is_accessibility_with_no_ui="true" desc="Accessibility description for a button navigating the user from an extension's settings page to its settings subpage.">
     Subpage button
   </message>
+  <message name="IDS_EXTENSIONS_SC_TITLE" desc="Header text displayed in the Safety Check title.">
+    {NUM_EXTENSIONS, plural,
+     =1 {Review 1 extension that was taken down from the Chrome Web Store}
+     other {Review {NUM_EXTENSIONS} extensions that were taken down from the Chrome Web Store}}
+  </message>
+  <message name="IDS_EXTENSIONS_SC_DESCRIPTION" desc="Detailed message displayed in the Safety Check description section.">
+    {NUM_EXTENSIONS, plural,
+     =1 {This extension might be unsafe. Chrome recommends that you remove it.}
+     other {These extensions might be unsafe. Chrome recommends that you remove them.}}
+  </message>
+  <!-- Extension Safety Check review panel labels and texts for icons -->
+  <message name="IDS_EXTENSIONS_SC_KEEP_EXT" desc="The label on the overflow menu to keep an extension.">
+    Keep this extension
+  </message>
+  <message name="IDS_EXTENSIONS_SC_REMOVE_ALL" desc="The generic label for a button to remove all extensions.">
+    Remove All
+  </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
     Include Ctrl, Alt, or ⌘

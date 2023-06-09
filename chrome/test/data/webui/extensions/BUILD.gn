@@ -36,6 +36,7 @@ build_webui_tests("build") {
     "navigation_helper_test.ts",
     "options_dialog_test.ts",
     "pack_dialog_test.ts",
+    "review_panel_test.ts",
     "runtime_host_permissions_test.ts",
     "runtime_hosts_dialog_test.ts",
     "shortcut_input_test.ts",

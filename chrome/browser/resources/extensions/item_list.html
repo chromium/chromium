@@ -78,6 +78,10 @@
   }
 </style>
 <div id="container">
+  <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]">
+    <extensions-review-panel extensions="[[extensions]]">
+    </extensions-review-panel>
+  </template>
   <managed-footnote hidden="[[filter]]"></managed-footnote>
   <div id="content-wrapper" style="--max-columns: [[maxColumns_]];">
     <div id="no-items" class="empty-list-message"

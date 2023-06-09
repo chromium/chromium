@@ -1,0 +1,101 @@
+<style include="cr-shared-style shared-style">
+  .header-group-wrapper {
+    flex: 1;
+    margin-inline-start: 15px;
+  }
+
+  .header-with-icon {
+    align-items: center;
+    display: flex;
+    padding: 15px 30px 15px 20px;
+  }
+
+  .header-with-icon h3 {
+    margin: 5px 0 5px 0;
+  }
+
+  /** TODO(crbug.com/1432194): Clean up the CSS with the shared styles added
+   * in https://crrev.com/c/4579629 once its in. */
+  .header-with-icon iron-icon {
+    border-radius: 50%;
+    height: var(--cr-icon-size);
+    padding: 6px;
+    width: var(--cr-icon-size);
+  }
+
+  .text-container {
+    padding-left: 20px;
+  }
+
+  .header-icon {
+    background-color: var(--google-blue-50);
+    fill: var(--google-blue-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .header-icon {
+      background-color: var(--google-blue-300);
+    }
+  }
+
+  #extension-icon {
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  .extension-row {
+    padding-inline-end: 10px;
+    padding-inline-start: 50px;
+  }
+
+  .extension-row > .cr-row {
+    border: none;
+  }
+
+  .display-name {
+    flex: 1;
+    margin: 8px 16px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bulk-action-button {
+    margin-inline-start: auto;
+  }
+</style>
+<cr-expand-button class="cr-row first" no-hover
+    id="expandButton"
+    expanded="{{unsafeExtensionsReviewListExpanded_}}">
+  <div class="header-with-icon" id="reviewPanelContainer">
+    <iron-icon aria-hidden="true" icon="cr:extension" class="header-icon">
+      <!-- TODO(crbug.com/1432194):Will replace this
+        info icon with the correct header icon -->
+    </iron-icon>
+    <div class="text-container">
+      <h3 id="headingText">[[headerString_]]</h3>
+      <div
+        class="cr-secondary-text"
+        id="secondaryText">
+          [[subtitleString_]]
+      </div>
+    </div>
+  </div>
+</cr-expand-button>
+<iron-collapse class="extension-list"
+    opened="[[unsafeExtensionsReviewListExpanded_]]">
+  <template is="dom-repeat" items="[[unsafeExtensions_]]">
+    <div class="extension-row">
+      <!-- TODO(crbug.com/1432194): Implement extension row element in the next CL. -->
+    </div>
+  </template>
+  <div class="cr-row first">
+    <cr-button
+        class="action-button bulk-action-button"
+        id="removeAllButton"
+        on-click="onRemoveAllClick_">
+          $i18n{safetyCheckRemoveAll}
+    </cr-button>
+  </div>
+</iron-collapse>

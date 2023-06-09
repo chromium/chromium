@@ -345,6 +345,10 @@ TEST_F('CrExtensionsItemListTest', 'LoadTimeData', function() {
   this.runMochaTest(extension_item_list_tests.TestNames.LoadTimeData);
 });
 
+TEST_F('CrExtensionsItemListTest', 'SafetyCheckPanel', function() {
+  this.runMochaTest(extension_item_list_tests.TestNames.SafetyCheckPanel);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Load Error Tests
 
@@ -882,6 +886,21 @@ var CrExtensionsHostPermissionsToggleListTest =
 };
 
 TEST_F('CrExtensionsHostPermissionsToggleListTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// ExtensionReviewPanel tests
+
+var CrExtensionsSafetyCheckReviewPanelTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/review_panel_test.js';
+  }
+};
+
+TEST_F('CrExtensionsSafetyCheckReviewPanelTest', 'All', () => {
   mocha.run();
 });
 
