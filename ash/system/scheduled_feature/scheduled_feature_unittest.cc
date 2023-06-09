@@ -769,6 +769,29 @@ TEST_F(ScheduledFeatureTest, MAYBE_SunsetSunriseGeoposition) {
   EXPECT_TRUE(feature()->GetEnabled());
 }
 
+// Tests that the feature is disabled and there are no crashes/unpredictable
+// behavior if there is 24 hours of daylight.
+TEST_F(ScheduledFeatureTest, SunsetSunriseAllDaylight) {
+  // 24 hours of daylight (Kiruna, Sweden)
+  constexpr double kTestLatitude = 67.855800;
+  constexpr double kTestLongitude = 20.225282;
+
+  base::Time now;
+  EXPECT_TRUE(base::Time::FromUTCString("07 Jun 2023 20:30:00.000", &now));
+  test_clock()->SetNow(now);
+  const Geoposition position =
+      CreateGeoposition(kTestLatitude, kTestLongitude, now);
+
+  // Set and fetch position update.
+  SetServerPosition(position);
+  FireTimerToFetchGeoposition();
+
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
+  EXPECT_FALSE(feature()->GetEnabled());
+  FastForwardBy(base::Days(1));
+  EXPECT_FALSE(feature()->GetEnabled());
+}
+
 // Tests that on device resume from sleep, the feature status is updated
 // correctly if the time has changed meanwhile.
 TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {

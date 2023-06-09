@@ -249,7 +249,11 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
       TimeOfDay(12 * 60).SetClock(clock_).ToTimeToday().ToDoubleT();
   astro.setTime(midday_today_sec * 1000.0);
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
-  return base::Time::FromDoubleT(sun_rise_set_ms / 1000.0);
+  // If there is 24 hours of daylight or darkness, `CalendarAstronomer` returns
+  // a very large negative value. Any timestamp before or at the epoch
+  // definitely does not make sense, so assume `kNoSunRiseSet`.
+  return sun_rise_set_ms > 0 ? base::Time::FromDoubleT(sun_rise_set_ms / 1000.0)
+                             : kNoSunRiseSet;
 }
 
 void GeolocationController::LoadCachedGeopositionIfNeeded() {
