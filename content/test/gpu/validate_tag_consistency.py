@@ -78,6 +78,8 @@ TAG_HEADER = """\
 # tags: [ dawn-backend-validation dawn-no-backend-validation ]
 # WebGPU Adapter
 # tags: [ webgpu-adapter-default webgpu-adapter-swiftshader ]
+# WebGPU Compat Mode
+# tags: [ webgpu-compat webgpu-not-compat ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # results: [ Failure RetryOnFailure Skip Slow ]

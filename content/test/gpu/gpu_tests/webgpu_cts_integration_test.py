@@ -77,6 +77,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _use_webgpu_adapter = None  # use the default
   _original_environ = None
   _use_webgpu_power_preference = None
+  _use_webgpu_compat_mode = False
   _os_name = None
 
   _build_dir = None
@@ -223,6 +224,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         type=str,
         default=None,
         help=('Runs the browser with a particular WebGPU power preference'))
+    parser.add_option(
+        '--use-webgpu-compat-mode',
+        action='store_true',
+        default=False,
+        help=('Passes compatibility=true to the tests via URL parameters'))
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -286,6 +292,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
+    cls._use_webgpu_compat_mode = options.use_webgpu_compat_mode
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -357,6 +364,9 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       del self.additionalTags[JAVASCRIPT_DURATION]
     if MAY_EXONERATE in self.additionalTags:
       del self.additionalTags[MAY_EXONERATE]
+
+    if self._use_webgpu_compat_mode:
+      self._query += '&compatibility=1'
 
     try:
       first_load = self._NavigateIfNecessary(test_path)
@@ -567,6 +577,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-adapter-' + cls._use_webgpu_adapter)
     else:
       tags.append('webgpu-adapter-default')
+    if cls._use_webgpu_compat_mode:
+      tags.append('webgpu-compat')
+    else:
+      tags.append('webgpu-not-compat')
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID
 
