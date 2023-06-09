@@ -2366,6 +2366,8 @@ class FlexFractionParts {
     }
   }
 
+  float ChosenFlexFraction() const { return chosen_flex_fraction_; }
+
  private:
   float chosen_flex_fraction_ = std::numeric_limits<float>::lowest();
 
@@ -2441,12 +2443,14 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
 
   // First pass: look for the most restrictive items that will influence the
   // sizing of the rest.
+  Deque<LayoutUnit> min_contributions;
   for (const FlexItem& item : algorithm_.all_items_) {
     const NGBlockNode& child = item.ng_input_node_;
 
     const NGConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     const MinMaxSizesResult min_max_content_contributions =
         ComputeItemContributions(space, item);
+    min_contributions.push_back(min_max_content_contributions.sizes.min_size);
     depends_on_block_constraints |=
         min_max_content_contributions.depends_on_block_constraints;
 
@@ -2473,12 +2477,36 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
     const ComputedStyle& child_style = item.style_;
     const LayoutUnit flex_base_size_border_box =
         item.flex_base_content_size_ + item.main_axis_border_padding_;
-    MinMaxSizes item_final_contribution{flex_base_size_border_box,
+    MinMaxSizes item_final_contribution{LayoutUnit(),
                                         flex_base_size_border_box};
     if (!algorithm_.IsMultiline()) {
-      item_final_contribution.min_size +=
-          min_content_largest_fraction.ApplyLargestFlexFractionToItem(
-              child_style, item.flex_base_content_size_);
+      const LayoutUnit min_contribution = min_contributions.TakeFirst();
+      if (RuntimeEnabledFeatures::LayoutFlexNewRowAlgorithmV2Enabled() &&
+          min_content_largest_fraction.ChosenFlexFraction() <= 0.f) {
+        // If chosen fraction <= 0, no one is going to grow to meet their
+        // min contribution. That means everyone is going to be exactly at
+        // their flex-basis or is going to shrink from flex-basis to get to
+        // their min contribution.
+        const bool cant_move = (min_contribution > flex_base_size_border_box &&
+                                child_style.ResolvedFlexGrow(Style()) == 0.f) ||
+                               (min_contribution < flex_base_size_border_box &&
+                                child_style.ResolvedFlexShrink(Style()) == 0.f);
+        if (cant_move) {
+          item_final_contribution.min_size = flex_base_size_border_box;
+        } else {
+          // Note: |min_contribution| is not the traditional min content
+          // contribution defined by CSS. This one is max(specified width,
+          // min-content size). The currently shipping behavior uses traditional
+          // min content contribution here. Changing this to traditional would
+          // be a simple small step toward increased compatibility, if need be.
+          item_final_contribution.min_size = min_contribution;
+        }
+      } else {
+        item_final_contribution.min_size =
+            min_content_largest_fraction.ApplyLargestFlexFractionToItem(
+                child_style, item.flex_base_content_size_) +
+            flex_base_size_border_box;
+      }
     }
     item_final_contribution.max_size +=
         max_content_largest_fraction.ApplyLargestFlexFractionToItem(

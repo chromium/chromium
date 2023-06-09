@@ -2090,6 +2090,11 @@
     {
       name: "LayoutFlexNewRowAlgorithm",
       status: "test",
+      implied_by: ["LayoutFlexNewRowAlgorithmV2",],
+    },
+    {
+      name: "LayoutFlexNewRowAlgorithmV2",
+      status: "stable",
     },
     {
       name: "LayoutFlexSafeAlignment",
