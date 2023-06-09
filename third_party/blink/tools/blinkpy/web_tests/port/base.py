@@ -414,7 +414,7 @@ class Port(object):
 
     @memoized
     def _build_args_gn_content(self):
-        args_gn_file = self._build_path('args.gn')
+        args_gn_file = self.build_path('args.gn')
         if not self._filesystem.exists(args_gn_file):
             _log.error('Unable to find %s', args_gn_file)
             return ''
@@ -1614,7 +1614,7 @@ class Port(object):
         # an exception is raised when merging the bot times json files. This happens  whenever they
         # are outputted into the results directory. Temporarily we will return the bot times json
         # file relative to the target directory.
-        return self._build_path('webkit_test_times', 'bot_times_ms.json')
+        return self.build_path('webkit_test_times', 'bot_times_ms.json')
 
     def results_directory(self):
         """Returns the absolute path directory which will store all web tests outputted
@@ -1640,21 +1640,21 @@ class Port(object):
 
     def inspector_build_directory(self):
         if self._build_is_chrome_branded():
-            return self._build_path('gen', 'third_party',
-                                    'devtools-frontend-internal',
-                                    'devtools-frontend', 'front_end')
-        return self._build_path('gen', 'third_party', 'devtools-frontend',
-                                'src', 'front_end')
+            return self.build_path('gen', 'third_party',
+                                   'devtools-frontend-internal',
+                                   'devtools-frontend', 'front_end')
+        return self.build_path('gen', 'third_party', 'devtools-frontend',
+                               'src', 'front_end')
 
     def generated_sources_directory(self):
-        return self._build_path('gen')
+        return self.build_path('gen')
 
     def apache_config_directory(self):
         return self._path_finder.path_from_blink_tools('apache_config')
 
     def default_results_directory(self):
         """Returns the absolute path to the build directory."""
-        return self._build_path()
+        return self.build_path()
 
     @memoized
     def typ_host(self):
@@ -2209,14 +2209,14 @@ class Port(object):
 
     def _path_to_driver(self, target=None):
         """Returns the full path to the test driver."""
-        return self._build_path(target, self.driver_name())
+        return self.build_path(target, self.driver_name())
 
     def _path_to_image_diff(self):
         """Returns the full path to the image_diff binary, or None if it is not available.
 
         This is likely used only by diff_image()
         """
-        return self._build_path('image_diff')
+        return self.build_path('image_diff')
 
     def _absolute_baseline_path(self, platform_dir):
         """Return the absolute path to the top of the baseline tree for a
@@ -2581,7 +2581,7 @@ class Port(object):
 
         return True
 
-    def _build_path(self, *comps):
+    def build_path(self, *comps):
         """Returns a path from the build directory."""
         return self._build_path_with_target(self._options.target, *comps)
 
@@ -2631,7 +2631,7 @@ class Port(object):
             for font_dir in font_dirs:
                 font_path = self._filesystem.join(font_dir, font_file)
                 if not self._filesystem.isabs(font_path):
-                    font_path = self._build_path(font_path)
+                    font_path = self.build_path(font_path)
                 if self._check_file_exists(font_path, '', more_logging=False):
                     result.append(font_path)
                     exists = True

@@ -66,7 +66,7 @@ class LinuxPort(base.Port):
         assert self._version in self.SUPPORTED_VERSIONS
 
         if not self.get_option('disable_breakpad'):
-            self._dump_reader = DumpReaderLinux(host, self._build_path())
+            self._dump_reader = DumpReaderLinux(host, self.build_path())
         self._original_home = None
         self._original_display = None
         self._xvfb_process = None

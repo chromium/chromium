@@ -1066,7 +1066,7 @@ class PortTest(LoggingTestCase):
     def test_is_slow_wpt_test_idlharness_with_dcheck(self):
         port = self.make_port(with_tests=True)
         add_manifest_to_mock_filesystem(port)
-        port.host.filesystem.write_text_file(port._build_path('args.gn'),
+        port.host.filesystem.write_text_file(port.build_path('args.gn'),
                                              'dcheck_always_on=true\n')
         # We always consider idlharness tests slow, even if they aren't marked
         # such in the manifest. See https://crbug.com/1047818
@@ -1472,7 +1472,7 @@ class PortTest(LoggingTestCase):
             'build_directory': 'xcodebuild'
         })
         self.assertEqual(
-            self.make_port(options=options)._build_path(),
+            self.make_port(options=options).build_path(),
             '/mock-checkout/xcodebuild/Release')
 
         # Test that "out" is used as the default.
@@ -1481,7 +1481,7 @@ class PortTest(LoggingTestCase):
             'build_directory': None
         })
         self.assertEqual(
-            self.make_port(options=options)._build_path(),
+            self.make_port(options=options).build_path(),
             '/mock-checkout/out/Release')
 
     def test_dont_require_http_server(self):

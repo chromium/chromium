@@ -87,7 +87,7 @@ class WinPort(base.Port):
         if self.get_option('disable_breakpad'):
             self._dump_reader = None
         else:
-            self._dump_reader = DumpReaderWin(host, self._build_path())
+            self._dump_reader = DumpReaderWin(host, self.build_path())
 
         if port_name.endswith('arm64'):
             self._architecture = 'arm64'
@@ -247,7 +247,7 @@ class WinPort(base.Port):
 
     def _path_to_image_diff(self):
         binary_name = 'image_diff.exe'
-        return self._build_path(binary_name)
+        return self.build_path(binary_name)
 
     def look_for_new_crash_logs(self, crashed_processes, start_time):
         if self.get_option('disable_breakpad'):

@@ -104,7 +104,7 @@ class Chrome(Product):
             binary_path = self._host.filesystem.join('Chromium.app',
                                                      'Contents', 'MacOS',
                                                      'Chromium')
-        return self._port._build_path(binary_path)
+        return self._port.build_path(binary_path)
 
     @property
     def default_webdriver_binary(self):
@@ -112,7 +112,7 @@ class Chrome(Product):
             path = 'chromedriver.exe'
         else:
             path = 'chromedriver'  #linux and mac
-        return self._port._build_path(path)
+        return self._port.build_path(path)
 
 
 class ContentShell(Product):
@@ -134,7 +134,7 @@ class ContentShell(Product):
             binary_path = self._host.filesystem.join('Content Shell.app',
                                                      'Contents', 'MacOS',
                                                      'Content Shell')
-        return self._port._build_path(binary_path)
+        return self._port.build_path(binary_path)
 
 
 class ChromeiOS(Product):
@@ -279,7 +279,7 @@ class ChromeAndroidBase(Product):
 
     @property
     def default_webdriver_binary(self):
-        return self._port._build_path('clang_x64', 'chromedriver')
+        return self._port.build_path('clang_x64', 'chromedriver')
 
     def get_browser_package_name(self):
         """Get the name of the package to run tests against.
@@ -348,11 +348,11 @@ class WebView(ChromeAndroidBase):
 
     @property
     def default_browser_apk(self):
-        return self._port._build_path('apks', 'SystemWebViewShell.apk')
+        return self._port.build_path('apks', 'SystemWebViewShell.apk')
 
     @property
     def default_webview_provider(self):
-        return self._port._build_path('apks', 'SystemWebView.apk')
+        return self._port.build_path('apks', 'SystemWebView.apk')
 
     def _install_webview(self, device):
         # Prioritize local builds.
@@ -381,4 +381,4 @@ class ChromeAndroid(ChromeAndroidBase):
 
     @property
     def default_browser_apk(self):
-        return self._port._build_path('apks', 'ChromePublic.apk')
+        return self._port.build_path('apks', 'ChromePublic.apk')

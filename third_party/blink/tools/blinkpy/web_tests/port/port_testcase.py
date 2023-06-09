@@ -149,7 +149,7 @@ class PortTestCase(LoggingTestCase):
     def make_dcheck_port(self, options):
         host = MockSystemHost(os_name=self.os_name, os_version=self.os_version)
         host.filesystem.write_text_file(
-            self.make_port(host)._build_path('args.gn'),
+            self.make_port(host).build_path('args.gn'),
             'is_debug=false\ndcheck_always_on = true # comment\n')
         port = self.make_port(host, options=options)
         return port
