@@ -15,6 +15,8 @@ source_set("cells") {
     "signin_promo_view_delegate.h",
     "table_view_account_item.h",
     "table_view_account_item.mm",
+    "table_view_central_account_item.h",
+    "table_view_central_account_item.mm",
     "table_view_identity_cell.h",
     "table_view_identity_cell.mm",
     "table_view_identity_item.h",
@@ -57,6 +59,7 @@ source_set("unit_tests") {
   sources = [
     "signin_promo_view_unittest.mm",
     "table_view_account_item_unittest.mm",
+    "table_view_central_account_item_unittest.mm",
   ]
   deps = [
     ":cells",

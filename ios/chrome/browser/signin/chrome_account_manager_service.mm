@@ -307,6 +307,9 @@ ChromeAccountManagerService::GetAvatarCacheForIdentityAvatarSize(
     case IdentityAvatarSize::Large:
       avatar_cache = &large_avatar_cache_;
       break;
+    case IdentityAvatarSize::ExtraLarge:
+      avatar_cache = &extra_large_avatar_cache_;
+      break;
   }
   DCHECK(avatar_cache);
   if (!*avatar_cache) {

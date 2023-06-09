@@ -91,6 +91,9 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
     case IdentityAvatarSize::Large:
       size = 48.;
       break;
+    case IdentityAvatarSize::ExtraLarge:
+      size = 60.;
+      break;
   }
   DCHECK_NE(size, 0);
   return CGSizeMake(size, size);

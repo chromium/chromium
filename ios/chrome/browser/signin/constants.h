@@ -52,6 +52,7 @@ enum class IdentityAvatarSize {
   SmallSize,      // 32 pt.
   Regular,        // 40 pt.
   Large,          // 48 pt.
+  ExtraLarge,     // 60 pt.
 };
 
 namespace signin_ui {
