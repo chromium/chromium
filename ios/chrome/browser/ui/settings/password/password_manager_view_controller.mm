@@ -269,8 +269,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 // that of `mostRecentlyUpdatedPassword`.
 @property(nonatomic, weak) TableViewItem* mostRecentlyUpdatedItem;
 
-// YES, if the user has tapped on the "Check Now" button.
-@property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
+// YES, if the user triggered a password check by tapping on the "Check Now"
+// button.
+@property(nonatomic, assign) BOOL checkWasTriggeredManually;
 
 // Return YES if the search bar should be enabled.
 @property(nonatomic, assign) BOOL shouldEnableSearchBar;
@@ -1498,16 +1499,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     }
   }
 
-  // Notify the accessibility to focus on the password check status cell when
-  // the status changed to insecure (compromised, reused, weak or dismissed
-  // warnings), safe or error (i.e., any status other than default, running and
-  // disabled) . (Only do it after the user tap on the "Check Now" button.)
-  if (self.shouldFocusAccessibilityOnPasswordCheckStatus &&
-      state != PasswordCheckStateDefault &&
-      state != PasswordCheckStateRunning &&
-      state != PasswordCheckStateDisabled) {
+  // Notify accessibility to focus on the Password Check Status cell if needed.
+  if ([self shouldFocusAccessibilityOnPasswordCheckStatusForState:state]) {
     [self focusAccessibilityOnPasswordCheckStatus];
-    self.shouldFocusAccessibilityOnPasswordCheckStatus = NO;
+    self.checkWasTriggeredManually = NO;
   }
 }
 
@@ -1675,6 +1670,66 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                   animated:NO];
     self.mostRecentlyUpdatedItem = nil;
   }
+}
+
+// Returns YES if accessibility should focus on the Password Check Status cell.
+- (BOOL)shouldFocusAccessibilityOnPasswordCheckStatusForState:
+    (PasswordCheckUIState)state {
+  if (!UIAccessibilityIsVoiceOverRunning()) {
+    return false;
+  }
+
+  BOOL passwordCheckStateIsValid = state != PasswordCheckStateDefault &&
+                                   state != PasswordCheckStateRunning &&
+                                   state != PasswordCheckStateDisabled;
+
+  // When kIOSPasswordCheckup is disabled, accessibility should focus on the
+  // Password Check Status cell when:
+  // 1. The password check was triggered manually.
+  // AND
+  // 2. The password check state changed to insecure (compromised, reused, weak
+  // or dismissed warnings), safe or error (i.e., any state other than default,
+  // running and disabled).
+  if (!IsPasswordCheckupEnabled()) {
+    return self.checkWasTriggeredManually && passwordCheckStateIsValid;
+  }
+
+  // When kIOSPasswordCheckup is enabled, accessibility should focus on the
+  // Password Check Status cell when:
+  // 1. The password check was triggered manually (because the "Check Now"
+  // button dissapears afterwards, so the focus should move to the status cell).
+  // OR
+  // 2. The focus was already on the Password Check Status cell. AND
+  // 3. The password check state changed to insecure (compromised, reused, weak
+  // or dismissed warnings), safe or error (i.e., any state other than default,
+  // running and disabled).
+  return self.checkWasTriggeredManually ||
+         ([self isPasswordCheckStatusFocusedByVoiceOver] &&
+          passwordCheckStateIsValid);
+}
+
+// Returns YES if the Password Check Staus cell is currently focused by
+// accessibility.
+- (BOOL)isPasswordCheckStatusFocusedByVoiceOver {
+  if (![self.tableViewModel
+          hasItemForItemType:ItemTypePasswordCheckStatus
+           sectionIdentifier:SectionIdentifierPasswordCheck]) {
+    return false;
+  }
+
+  // Get the Password Check Status cell.
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:ItemTypePasswordCheckStatus
+                              sectionIdentifier:SectionIdentifierPasswordCheck];
+  UITableViewCell* passwordCheckStatusCell =
+      [self.tableView cellForRowAtIndexPath:indexPath];
+
+  // Get the view element that is currently focused.
+  UIAccessibilityElement* focusedElement = UIAccessibilityFocusedElement(
+      UIAccessibilityNotificationVoiceOverIdentifier);
+
+  return [passwordCheckStatusCell.accessibilityLabel
+      isEqualToString:focusedElement.accessibilityLabel];
 }
 
 // Notifies accessibility to focus on the Password Check Status cell when its
@@ -1977,7 +2032,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       if (self.passwordCheckState != PasswordCheckStateRunning) {
         [self.delegate startPasswordCheck];
         password_manager::LogStartPasswordCheckManually();
-        self.shouldFocusAccessibilityOnPasswordCheckStatus = YES;
+        self.checkWasTriggeredManually = YES;
       }
       break;
     case ItemTypeAddPasswordButton: {
