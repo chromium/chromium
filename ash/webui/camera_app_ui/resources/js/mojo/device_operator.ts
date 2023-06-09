@@ -51,8 +51,6 @@ import {
 /**
  * Parse the entry data according to its type.
  *
- * @param entry Camera metadata entry from which to parse the data according to
- *     its type.
  * @return An array containing elements whose types correspond to the format of
  *     input |tag|.
  * @throws If entry type is not supported.
@@ -92,10 +90,8 @@ export function parseMetadata(entry: CameraMetadataEntry): number[] {
 }
 
 /**
- * Gets the data from Camera metadata by its tag.
+ * Gets the data from Camera metadata by given |tag|.
  *
- * @param metadata Camera metadata from which to query the data.
- * @param tag Camera metadata tag to query for.
  * @return An array containing elements whose types correspond to the format of
  *     input |tag|. If nothing is found, returns an empty array.
  */
@@ -176,7 +172,7 @@ export class DeviceOperator {
       new Map<string, CameraInfo|Promise<CameraInfo>>();
 
   /**
-   * Map for camera info error handlers.
+   * Map which maps from device id to camera info error handlers.
    */
   private readonly cameraInfoErrorHandlers =
       new Map<string, (error: Error) => void>();
@@ -207,8 +203,6 @@ export class DeviceOperator {
   /**
    * Gets corresponding device remote by given id.
    *
-   * @param deviceId The id of target camera device.
-   * @return Corresponding device remote.
    * @throws Thrown when given device id is invalid.
    */
   private getDevice(deviceId: string): Promise<CameraAppDeviceRemote> {
@@ -300,7 +294,6 @@ export class DeviceOperator {
    *
    * @param deviceId The renderer-facing device id of the target camera which
    *     could be retrieved from MediaDeviceInfo.deviceId.
-   * @return Promise of supported resolutions.
    * @throws Thrown when fail to parse the metadata or the device operation is
    *    not supported.
    */
@@ -335,7 +328,6 @@ export class DeviceOperator {
    *
    * @param deviceId The renderer-facing device id of the target camera which
    *     could be retrieved from MediaDeviceInfo.deviceId.
-   * @return Promise of supported video configurations.
    * @throws Thrown when fail to parse the metadata or the device operation is
    *     not supported.
    */
@@ -374,7 +366,6 @@ export class DeviceOperator {
    *
    * @param deviceId The renderer-facing device id of the target camera which
    *     could be retrieved from MediaDeviceInfo.deviceId.
-   * @return Promise of device facing.
    * @throws Thrown when the device operation is not supported.
    */
   async getCameraFacing(deviceId: string): Promise<Facing> {
@@ -434,7 +425,6 @@ export class DeviceOperator {
    *
    * @param deviceId The renderer-facing device id of the target camera which
    *     could be retrieved from MediaDeviceInfo.deviceId.
-   * @return Promise of the active array size.
    * @throws Thrown when fail to parse the metadata or the device operation is
    *     not supported.
    */
@@ -452,7 +442,6 @@ export class DeviceOperator {
    *
    * @param deviceId The renderer-facing device id of the target camera which
    *     could be retrieved from MediaDeviceInfo.deviceId.
-   * @return Promise of the sensor orientation.
    * @throws Thrown when fail to parse the metadata or the device operation is
    *     not supported.
    */
@@ -530,7 +519,6 @@ export class DeviceOperator {
    *     could be retrieved from MediaDeviceInfo.deviceId.
    * @param captureIntent The purpose of this capture, to help the camera
    *     device decide optimal configurations.
-   * @return Promise for the operation.
    */
   async setCaptureIntent(deviceId: string, captureIntent: CaptureIntent):
       Promise<void> {
@@ -539,11 +527,8 @@ export class DeviceOperator {
   }
 
   /**
-   * Checks if portrait mode is supported.
-   *
    * @param deviceId The renderer-facing device id of the target camera which
    *     could be retrieved from MediaDeviceInfo.deviceId.
-   * @return Promise of the boolean result.
    * @throws Thrown when the device operation is not supported.
    */
   async isPortraitModeSupported(deviceId: string): Promise<boolean> {
@@ -559,12 +544,12 @@ export class DeviceOperator {
   }
 
   /**
-   * Adds a metadata observer to Camera App Device through Mojo IPC.
+   * Adds a metadata observer to Camera App Device through Mojo IPC and returns
+   * added observer endpoint.
    *
    * @param deviceId The id for target camera device.
    * @param callback Callback that handles the metadata.
    * @param streamType Stream type which the observer gets the metadata from.
-   * @return Added observer endpoint.
    * @throws If fails to construct device connection.
    */
   async addMetadataObserver(
@@ -581,7 +566,7 @@ export class DeviceOperator {
   }
 
   /**
-   * Adds observer to observe shutter event.
+   * Adds observer to observe shutter event and returns added observer endpoint.
    *
    * The shutter event is defined as CAMERA3_MSG_SHUTTER in
    * media/capture/video/chromeos/mojom/camera3.mojom which will be sent from
@@ -589,7 +574,6 @@ export class DeviceOperator {
    *
    * @param deviceId The id for target camera device.
    * @param callback Callback to trigger on shutter done.
-   * @return Added observer endpoint.
    * @throws If fails to construct device connection.
    */
   async addShutterObserver(deviceId: string, callback: () => void):
@@ -691,7 +675,6 @@ export class DeviceOperator {
    * display the camera preview upright in the UI.
    *
    * @param deviceId The id of target camera device.
-   * @return The camera frame rotation.
    */
   async getCameraFrameRotation(deviceId: string): Promise<number> {
     const device = await this.getDevice(deviceId);
@@ -852,8 +835,6 @@ export class DeviceOperator {
 
   /**
    * Gets if DeviceOperator is supported.
-   *
-   * @return True if the DeviceOperator is supported.
    */
   static isSupported(): boolean {
     return this.getInstance() !== null;

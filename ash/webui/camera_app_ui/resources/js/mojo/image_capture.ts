@@ -59,8 +59,6 @@ export class CrosImageCapture {
 
   /**
    * Gets the photo capabilities with the available options/effects.
-   *
-   * @return Promise for the result.
    */
   async getPhotoCapabilities(): Promise<PhotoCapabilities> {
     return this.capture.getPhotoCapabilities();
@@ -75,7 +73,6 @@ export class CrosImageCapture {
    *
    * @param photoSettings Photo settings for ImageCapture's takePhoto().
    * @param photoEffects Photo effects to be applied.
-   * @return A promise of the array containing promise of each photo result.
    */
   async takePhoto(photoSettings: PhotoSettings, photoEffects: Effect[] = []):
       Promise<TakePhotoResult[]> {
@@ -144,8 +141,6 @@ export class CrosImageCapture {
 
   /**
    * Adds an observer to save image metadata.
-   *
-   * @return Promise for the operation.
    */
   async addMetadataObserver(): Promise<void> {
     if (this.metadataObserver !== null) {
@@ -188,9 +183,6 @@ export class CrosImageCapture {
         this.deviceId, callback, StreamType.JPEG_OUTPUT);
   }
 
-  /**
-   * Removes the observer that saves metadata.
-   */
   removeMetadataObserver(): void {
     if (this.metadataObserver === null) {
       return;

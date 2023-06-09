@@ -130,9 +130,6 @@ export class ChromeHelper {
     return hasExternalScreen;
   }
 
-  /**
-   * Checks if the device is under tablet mode currently.
-   */
   async isTabletMode(): Promise<boolean> {
     const {isTabletMode} = await this.remote.isTabletMode();
     return isTabletMode;
@@ -150,8 +147,6 @@ export class ChromeHelper {
 
   /**
    * Triggers the begin of event tracing in Chrome.
-   *
-   * @param event Name of the event.
    */
   startTracing(event: string): void {
     this.remote.startPerfEventTrace(event);
@@ -159,8 +154,6 @@ export class ChromeHelper {
 
   /**
    * Triggers the end of event tracing in Chrome.
-   *
-   * @param event Name of the event.
    */
   stopTracing(event: string): void {
     this.remote.stopPerfEventTrace(event);
@@ -168,8 +161,6 @@ export class ChromeHelper {
 
   /**
    * Opens the file in Downloads folder by its |name| in gallery.
-   *
-   * @param name Name of the target file.
    */
   openFileInGallery(name: string): void {
     this.remote.openFileInGallery(name);
@@ -187,8 +178,6 @@ export class ChromeHelper {
 
   /**
    * Opens the given URL in the browser.
-   *
-   * @param url The URL to open.
    */
   openUrlInBrowser(url: string): void {
     this.remote.openUrlInBrowser({url: url});
@@ -196,8 +185,6 @@ export class ChromeHelper {
 
   /**
    * Checks return value from |handleCameraResult|.
-   *
-   * @param caller Caller identifier.
    */
   private async checkReturn(
       caller: string, value: Promise<{isSuccess: boolean}>): Promise<void> {
@@ -210,9 +197,7 @@ export class ChromeHelper {
   }
 
   /**
-   * Notifies ARC++ to finish the intent.
-   *
-   * @param intentId Intent id of the intent to be finished.
+   * Notifies ARC++ to finish the intent of given |intendId|.
    */
   async finish(intentId: number): Promise<void> {
     const ret =
@@ -293,9 +278,6 @@ export class ChromeHelper {
     }
   }
 
-  /**
-   * Gets the ready state of the document scanner.
-   */
   async getDocumentScannerReadyState():
       Promise<{supported: boolean, ready: boolean}> {
     const {readyState} = await this.remote.getDocumentScannerReadyState();
@@ -358,7 +340,6 @@ export class ChromeHelper {
   /**
    * Converts given |jpegBlobs| to PDF format.
    *
-   * @param jpegBlobs Blobs in JPEG format.
    * @return Blob in PDF format.
    */
   async convertToPdf(jpegBlobs: Blob[]): Promise<Blob> {
