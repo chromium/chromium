@@ -615,8 +615,6 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
     back_forward_cache_disabling_feature_tracker_.AddNonStickyFeature(
         feature, std::move(source_location), handle);
   }
-  if (policy.disable_align_wake_ups)
-    DisableAlignWakeUpsForProcess();
 }
 
 void FrameSchedulerImpl::OnStartedUsingStickyFeature(
@@ -629,8 +627,6 @@ void FrameSchedulerImpl::OnStartedUsingStickyFeature(
     back_forward_cache_disabling_feature_tracker_.AddStickyFeature(
         feature, std::move(source_location));
   }
-  if (policy.disable_align_wake_ups)
-    DisableAlignWakeUpsForProcess();
 }
 
 void FrameSchedulerImpl::OnStoppedUsingNonStickyFeature(

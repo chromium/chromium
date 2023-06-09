@@ -295,9 +295,6 @@ void WorkerSchedulerImpl::OnStartedUsingNonStickyFeature(
     const SchedulingPolicy& policy,
     std::unique_ptr<SourceLocation> source_location,
     SchedulingAffectingFeatureHandle* handle) {
-  if (policy.disable_align_wake_ups)
-    scheduler::DisableAlignWakeUpsForProcess();
-
   if (!policy.disable_back_forward_cache) {
     return;
   }
@@ -309,9 +306,6 @@ void WorkerSchedulerImpl::OnStartedUsingStickyFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy,
     std::unique_ptr<SourceLocation> source_location) {
-  if (policy.disable_align_wake_ups)
-    scheduler::DisableAlignWakeUpsForProcess();
-
   if (!policy.disable_back_forward_cache) {
     return;
   }

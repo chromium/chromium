@@ -272,13 +272,10 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   int max_nesting_level = features::IsMaxUnthrottledTimeoutNestingLevelEnabled()
                               ? features::GetMaxUnthrottledTimeoutNestingLevel()
                               : kMaxTimerNestingLevel;
-  // Under AlignWakeUps experiment, avoid timer alignment if the original delay
-  // is small, to avoid being affected by ongoing experiments on delay clamping
-  // MaxUnthrottledTimeoutNestingLevel and SetTimeoutZeroWithoutClamping.
-  // TODO(1153139) Remove this logic one experiments have shipped.
-  bool precise = (timeout <= kMinimumInterval) ||
-                 (scheduler::IsAlignWakeUpsDisabledForProcess() &&
-                  timeout < kMaxHighResolutionInterval);
+  // A timer with a long timeout probably doesn't need to run at a precise time,
+  // so allow some leeway on it. On the other hand, a timer with a short timeout
+  // may need to run on time to deliver the best user experience.
+  bool precise = (timeout < kMaxHighResolutionInterval);
 
   if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval) {
     timeout = kMinimumInterval;
