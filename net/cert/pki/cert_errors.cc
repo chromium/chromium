@@ -29,10 +29,10 @@ void AppendLinesWithIndentation(const std::string& text,
 
 CertError::CertError() = default;
 
-CertError::CertError(Severity severity,
-                     CertErrorId id,
-                     std::unique_ptr<CertErrorParams> params)
-    : severity(severity), id(id), params(std::move(params)) {}
+CertError::CertError(Severity in_severity,
+                     CertErrorId in_id,
+                     std::unique_ptr<CertErrorParams> in_params)
+    : severity(in_severity), id(in_id), params(std::move(in_params)) {}
 
 CertError::CertError(CertError&& other) = default;
 
