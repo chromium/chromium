@@ -108,9 +108,9 @@ found in the LICENSE file.
         selected-button-label="slideSelectedButtonLabel"
         unselected-button-label="slideUnselectedButtonLabel">
       <oobe-slide slot="slides">
-        <img slot="slide-img" aria-hidden="true"
-            class="update-illustration oobe-illustration"
-            srcset="images/update-no-waiting.svg">
+        <iron-icon slot="slide-img" icon="oobe-illos:update-no-waiting-illo"
+            class="illustration-jelly">
+        </iron-icon>
         <div slot="title">[[getUpdateSlideTitle_(locale, isOptOutEnabled)]]
         </div>
         <div slot="text">[[getUpdateSlideText_(locale, isOptOutEnabled)]]
@@ -169,8 +169,9 @@ found in the LICENSE file.
     [[i18nRecursive(locale, 'noUpdateAvailableText', 'productName')]]
   </div>
   <div slot="content" class="flex layout vertical center-justified center">
-    <img class="update-illustration oobe-illustration"
-        srcset="images/update-not-needed.svg" aria-hidden="true">
+    <iron-icon icon="oobe-illos:update-not-needed-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="opt-out-info-next" class="focus-on-show" inverse

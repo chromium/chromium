@@ -239,15 +239,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
   }
 
   /**
-   * Returns the src of the illustration.
-   * @private
-   */
-  getImageSource_() {
-    return this.isDarkModeActive_ ? 'images/blazey_dark.svg' :
-                                    'images/blazey_light.svg';
-  }
-
-  /**
    * Returns the src of the margin for the toggle.
    * @private
    */

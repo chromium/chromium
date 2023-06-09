@@ -20,12 +20,9 @@ found in the LICENSE file.
         </p>
     </div>
     <div slot="content"  class="flex layout vertical center-justified center">
-        <iron-media-query query="(prefers-color-scheme: dark)"
-            query-matches="{{isDarkModeActive_}}">
-        </iron-media-query>
-        <img class="oobe-illustration"
-          srcset="[[getImageSource_(isDarkModeActive_)]]"
-          aria-hidden="true">
+        <iron-icon icon="oobe-illos:drive-sync-illo"
+            class="illustration-jelly">
+        </iron-icon>
     </div>
     <div slot="bottom-buttons">
         <oobe-text-button on-click="onDeclineButtonClicked_"

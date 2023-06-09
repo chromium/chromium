@@ -65,15 +65,6 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
   static get properties() {
     return {
       /**
-       * Whether the drive pinning screen is being rendered in dark mode.
-       * @private {boolean}
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Available free space in the disk.
        * @private {String}
        */
@@ -129,16 +120,6 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
   setRequiredSpaceInfo(requiredSpace, freeSpace) {
     this.requiredSpace_ = requiredSpace;
     this.freeSpace_ = freeSpace;
-  }
-
-
-  /**
-   * Returns the src of the illustration.
-   * @private
-   */
-  getImageSource_() {
-    return this.isDarkModeActive_ ? 'images/drive_sync_dark.svg' :
-                                    'images/drive_sync_light.svg';
   }
 
   onAcceptButtonClicked_() {
