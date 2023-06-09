@@ -34,6 +34,7 @@ class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD1(SetIsEffectivelyFullscreen, void(WebFullscreenVideoStatus));
   MOCK_METHOD1(OnDisplayTypeChanged, void(DisplayType));
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
+  MOCK_CONST_METHOD0(HasReadableVideoFrame, bool());
 };
 }  // namespace
 

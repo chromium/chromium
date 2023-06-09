@@ -1492,6 +1492,10 @@ bool WebMediaPlayerImpl::HasAvailableVideoFrame() const {
   return has_first_frame_;
 }
 
+bool WebMediaPlayerImpl::HasReadableVideoFrame() const {
+  return has_first_frame_ && is_frame_readable_;
+}
+
 void WebMediaPlayerImpl::SetContentDecryptionModule(
     WebContentDecryptionModule* cdm,
     WebContentDecryptionModuleResult result) {
@@ -3771,11 +3775,15 @@ void WebMediaPlayerImpl::SetTickClockForTest(
   buffered_data_source_host_->SetTickClockForTest(tick_clock);
 }
 
-void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time) {
+void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time,
+                                      bool is_frame_readable) {
   DCHECK(!load_start_time_.is_null());
   DCHECK(!skip_metrics_due_to_startup_suspend_);
+
   has_first_frame_ = true;
   needs_first_frame_ = false;
+  is_frame_readable_ = is_frame_readable;
+
   const base::TimeDelta elapsed = frame_time - load_start_time_;
   media_metrics_provider_->SetTimeToFirstFrame(elapsed);
   WriteSplitHistogram<kPlaybackType | kEncrypted>(

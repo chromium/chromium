@@ -266,6 +266,11 @@ class WebMediaPlayer {
   // this just means the first frame has been delivered.
   virtual bool HasAvailableVideoFrame() const = 0;
 
+  // Returns true if the player has a frame available for presentation, and the
+  // frame is readable, i.e. it's not protected and can be read back into CPU
+  // memory.
+  virtual bool HasReadableVideoFrame() const = 0;
+
   // Renders the current frame into the provided cc::PaintCanvas.
   virtual void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) = 0;
 

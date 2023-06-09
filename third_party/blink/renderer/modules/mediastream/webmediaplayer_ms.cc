@@ -1130,6 +1130,10 @@ bool WebMediaPlayerMS::HasAvailableVideoFrame() const {
   return has_first_frame_;
 }
 
+bool WebMediaPlayerMS::HasReadableVideoFrame() const {
+  return has_first_frame_;
+}
+
 void WebMediaPlayerMS::OnFrameHidden() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

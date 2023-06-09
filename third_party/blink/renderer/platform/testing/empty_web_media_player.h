@@ -72,6 +72,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   absl::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   bool HasAvailableVideoFrame() const override { return false; }
+  bool HasReadableVideoFrame() const override { return false; }
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override {
     return base::SupportsWeakPtr<EmptyWebMediaPlayer>::AsWeakPtr();
   }

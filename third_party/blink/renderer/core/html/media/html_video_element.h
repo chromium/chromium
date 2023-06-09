@@ -92,6 +92,7 @@ class CORE_EXPORT HTMLVideoElement final
                          const cc::PaintFlags* paint_flags) const;
 
   bool HasAvailableVideoFrame() const;
+  bool HasReadableVideoFrame() const;
 
   void OnFirstFrame(base::TimeTicks frame_time,
                     size_t bytes_to_first_frame) final;

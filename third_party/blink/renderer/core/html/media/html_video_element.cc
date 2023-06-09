@@ -398,6 +398,13 @@ bool HTMLVideoElement::HasAvailableVideoFrame() const {
   return false;
 }
 
+bool HTMLVideoElement::HasReadableVideoFrame() const {
+  if (auto* wmp = GetWebMediaPlayer()) {
+    return wmp->HasReadableVideoFrame();
+  }
+  return false;
+}
+
 void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
                                     size_t bytes_to_first_frame) {
   DCHECK(GetWebMediaPlayer());

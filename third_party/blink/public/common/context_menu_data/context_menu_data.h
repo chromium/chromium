@@ -82,7 +82,7 @@ struct ContextMenuData {
     kMediaPictureInPicture = 1 << 11,
     kMediaCanLoop = 1 << 12,
     kMediaHasVideo = 1 << 13,
-    kMediaHasAvailableVideoFrame = 1 << 14,
+    kMediaHasReadableVideoFrame = 1 << 14,
     kMediaEncrypted = 1 << 15,
   };
 

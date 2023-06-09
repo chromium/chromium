@@ -369,6 +369,9 @@ bool VideoFrameCompositor::ProcessNewFrame(
   // subsequent PutCurrentFrame() call it will mark it as rendered.
   rendered_last_frame_ = false;
 
+  // TODO(crbug.com/1447318): Add other cases where the frame is not readable.
+  bool is_frame_readable = !frame->metadata().dcomp_surface;
+
   // Copy to a local variable to avoid potential deadlock when executing the
   // callback.
   OnNewFramePresentedCB frame_presented_cb;
@@ -378,8 +381,10 @@ bool VideoFrameCompositor::ProcessNewFrame(
     frame_presented_cb = std::move(new_presented_frame_cb_);
   }
 
-  if (new_processed_frame_cb_)
-    std::move(new_processed_frame_cb_).Run(tick_clock_->NowTicks());
+  if (new_processed_frame_cb_) {
+    std::move(new_processed_frame_cb_)
+        .Run(tick_clock_->NowTicks(), is_frame_readable);
+  }
 
   if (frame_presented_cb) {
     std::move(frame_presented_cb).Run();

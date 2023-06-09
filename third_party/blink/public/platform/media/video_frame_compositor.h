@@ -68,7 +68,8 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
       public cc::VideoFrameProvider {
  public:
   // Used to report back the time when the new frame has been processed.
-  using OnNewProcessedFrameCB = base::OnceCallback<void(base::TimeTicks)>;
+  using OnNewProcessedFrameCB =
+      base::OnceCallback<void(base::TimeTicks, bool is_frame_readable)>;
 
   using OnNewFramePresentedCB = base::OnceClosure;
 

@@ -511,8 +511,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       }
 
       auto* video_element = To<HTMLVideoElement>(media_element);
-      if (video_element->HasAvailableVideoFrame()) {
-        data.media_flags |= ContextMenuData::kMediaHasAvailableVideoFrame;
+      if (video_element->HasReadableVideoFrame()) {
+        data.media_flags |= ContextMenuData::kMediaHasReadableVideoFrame;
       }
     } else if (IsA<HTMLAudioElement>(*media_element)) {
       data.media_type = mojom::blink::ContextMenuDataMediaType::kAudio;

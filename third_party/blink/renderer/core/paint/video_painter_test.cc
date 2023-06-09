@@ -144,6 +144,7 @@ class MockWebMediaPlayer : public StubWebMediaPlayer {
   explicit MockWebMediaPlayer(WebMediaPlayerClient* client)
       : StubWebMediaPlayer(client) {}
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
+  MOCK_CONST_METHOD0(HasReadableVideoFrame, bool());
   MOCK_METHOD3(Paint,
                void(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&));
 };

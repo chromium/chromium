@@ -2631,10 +2631,10 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       ContextMenuForVideoWithAvailableFrame) {
+                       ContextMenuForVideoWithReadableFrame) {
   content::ContextMenuParams params;
   params.media_type = blink::mojom::ContextMenuDataMediaType::kVideo;
-  params.media_flags |= blink::ContextMenuData::kMediaHasAvailableVideoFrame;
+  params.media_flags |= blink::ContextMenuData::kMediaHasReadableVideoFrame;
 
   TestRenderViewContextMenu menu(*browser()
                                       ->tab_strip_model()
@@ -2644,6 +2644,22 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   menu.Init();
 
   EXPECT_TRUE(menu.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       ContextMenuForVideoWithoutReadableFrame) {
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kVideo;
+
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 params);
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
+  EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ContextMenuForEncryptedVideo) {
