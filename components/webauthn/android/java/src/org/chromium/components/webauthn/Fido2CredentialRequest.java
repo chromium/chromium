@@ -799,7 +799,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             PublicKeyCredentialCreationOptions options, Origin origin) {
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize());
-        final Context context = ContextUtils.getApplicationContext();
+        final Context context = getContext();
 
         final byte[] clientDataHash =
                 buildClientDataJsonAndComputeHash(ClientDataRequestType.WEB_AUTHN_CREATE,
@@ -938,7 +938,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private void getCredentialViaCredMan(
             PublicKeyCredentialRequestOptions options, Origin origin, boolean requestPasswords) {
-        final Context context = ContextUtils.getApplicationContext();
+        final Context context = getContext();
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -1105,7 +1105,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private void prefetchCredentialsViaCredMan(PublicKeyCredentialRequestOptions options,
             Origin origin, String callerOriginString, byte[] clientDataHash) {
-        final Context context = ContextUtils.getApplicationContext();
+        final Context context = getContext();
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -1338,6 +1338,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                                     passwordOptionBundle, passwordOptionBundle, false);
         }
         return passwordCredentialOption;
+    }
+
+    private Context getContext() {
+        if (mWebContents == null) {
+            return ContextUtils.getApplicationContext();
+        }
+        final Activity activity = mWebContents.getTopLevelNativeWindow().getActivity().get();
+        return activity == null ? ContextUtils.getApplicationContext() : activity;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

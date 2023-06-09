@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webauth;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 
+import android.app.Activity;
 import android.os.Build;
 
 import androidx.test.filters.SmallTest;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -103,12 +105,14 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Mock
     private RenderFrameHost mFrameHost;
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebContents mWebContents;
     @Mock
     GURLUtils.Natives mGURLUtilsJniMock;
     @Mock
     ClientDataJsonImpl.Natives mClientDataJsonImplMock;
+    @Mock
+    Activity mActivity;
 
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -156,6 +160,8 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mFrameHost.performGetAssertionWebAuthSecurityChecks(
                              any(String.class), any(Origin.class), anyBoolean()))
                 .thenReturn(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
+        Mockito.when(mWebContents.getTopLevelNativeWindow().getActivity().get())
+                .thenReturn(mActivity);
 
         mCredentialManager = new FakeAndroidCredentialManager();
         mRequest.setOverrideVersionCheckForTesting(true);
