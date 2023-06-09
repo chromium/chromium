@@ -1701,6 +1701,14 @@ const char kCastStreamingHardwareVp8Description[] =
     "supported by the platform (regardless of recommendation). If disabled, "
     "hardware VP8 encoding will never be used.";
 
+const char kCastStreamingPerformanceOverlayName[] =
+    "Toggle a performance metrics overlay while Cast Streaming";
+const char kCastStreamingPerformanceOverlayDescription[] =
+    "When enabled, a text overlay is rendered on top of each frame sent while "
+    "Cast Streaming that includes frame duration, resolution, timestamp, "
+    "low latency mode, capture duration, target playout delay, target bitrate, "
+    "and encoder utilitization.";
+
 const char kCastStreamingVp9Name[] =
     "Enable VP9 video encoding for Cast Streaming";
 const char kCastStreamingVp9Description[] =

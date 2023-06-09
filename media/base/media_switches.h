@@ -117,6 +117,8 @@ MEDIA_EXPORT extern const char kChromeOSVideoDecoderTaskRunner[];
 // /media/cast/encoding/encoding_support.h instead of accessing these features
 // directly.
 //
+// TODO(https://crbug.com/1453388): Guard Cast Sender flags with !IS_ANDROID.
+//
 // If enabled, completely disables use of H264 hardware encoding for Cast
 // Streaming sessions. Takes precedence over
 // kCastStreamingForceEnableHardwareH264.
@@ -166,9 +168,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kBresenhamCadence);
 // NOTE: callers should always use the free functions in
 // /media/cast/encoding/encoding_support.h instead of accessing these features
 // directly.
+// TODO(https://crbug.com/1453388): Guard Cast Sender flags with !IS_ANDROID.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingAv1);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingPerformanceOverlay);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingVp9);
-
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmHostVerification);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmProcessSiteIsolation);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -258,12 +261,13 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLearningSmoothnessExperiment);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaOptimizer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaPowerExperiment);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMemoryPressureBasedSourceBufferGC);
+// TODO(https://crbug.com/1453388): Guard Cast Sender flags with !IS_ANDROID.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenCastStreamingSession);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenVideoBitrateFactorInFrameDrops);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMultiPlaneFormatForHardwareVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMultiPlaneSoftwareVideoSharedImages);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMultiPlaneVideoCaptureSharedImages);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenCastStreamingSession);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kOpenscreenVideoBitrateFactorInFrameDrops);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOverlayFullscreenVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseBackgroundMutedAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformAudioEncoder);

@@ -66481,6 +66481,7 @@ from previous Chrome versions.
   <int value="1861515782" label="WebFeedOnboarding:enabled"/>
   <int value="1861521561" label="OmniboxLocalEntitySuggestions:enabled"/>
   <int value="1861699795" label="AddIdentityInCanMakePaymentEvent:disabled"/>
+  <int value="1862050002" label="CastStreamingPerformanceOverlay:enabled"/>
   <int value="1862126613" label="DesktopPWAsRunOnOsLogin:enabled"/>
   <int value="1862207743" label="enable-android-spellchecker"/>
   <int value="1863622457" label="WebAuthentication:enabled"/>
@@ -66942,6 +66943,7 @@ from previous Chrome versions.
   <int value="2099135667"
       label="EnableMachineLearningNeuralNetworkService:disabled"/>
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
+  <int value="2099676690" label="CastStreamingPerformanceOverlay:disabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
   <int value="2100128918" label="LibAssistantV2:enabled"/>
   <int value="2100547979" label="AdaptiveCharging:enabled"/>

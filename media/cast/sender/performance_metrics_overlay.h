@@ -51,21 +51,13 @@
 namespace media {
 namespace cast {
 
-// If the user has requested VideoFrames have a performance metrics overlay
-// rendered on them, this function copies the |source| frame and then renders an
-// overlay on the copy. Frame-level performance metrics will be rendered in the
-// lower-right corner of the frame, as described in the module-level comments
-// above.
-//
-// The verbose logging level for video_frame_overlay.cc determines which lines,
-// if any, are rendered: no VLOG level does nothing, level 1 renders the bottom
-// line only, level 2 renders the bottom and middle lines, and level 3 renders
-// all three lines. So, use the --vmodule=performance_metrics_overlay=3 command
-// line argument to turn on rendering of the entire overlay.
+// Copies the |source| frame and then renders an overlay on the
+// copy. Frame-level performance metrics will be rendered in the lower-right
+// corner of the frame, as described in the module-level comments above.
 //
 // Note: If |source| is an unsupported format, or no pixels need to be modified,
 // this function will just return |source|.
-scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
+scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
     base::TimeDelta target_playout_delay,
     bool in_low_latency_mode,
     int target_bitrate,

@@ -216,7 +216,7 @@ void RenderLineOfText(const std::string& line, int top, VideoFrame* frame) {
 
 }  // namespace
 
-scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
+scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
     base::TimeDelta target_playout_delay,
     bool in_low_latency_mode,
     int target_bitrate,
@@ -224,9 +224,6 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
     double encoder_utilization,
     double lossiness,
     scoped_refptr<VideoFrame> source) {
-  if (!VLOG_IS_ON(1))
-    return source;
-
   if (VideoFrame::PlaneHorizontalBitsPerPixel(source->format(), kPlane) != 8) {
     DLOG(WARNING) << "Cannot render overlay: Plane " << kPlane << " not 8bpp.";
     return source;
@@ -304,8 +301,9 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
 
   // Move up one line's worth of pixels.
   top -= line_height;
-  if (top < 0 || !VLOG_IS_ON(2))
+  if (top < 0) {
     return frame;
+  }
 
   // Line 2: Capture duration, target playout delay, low-latency mode, and
   // target bitrate.
@@ -329,8 +327,9 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
 
   // Move up one line's worth of pixels.
   top -= line_height;
-  if (top < 0 || !VLOG_IS_ON(3))
+  if (top < 0) {
     return frame;
+  }
 
   // Line 1: Recent utilization metrics.
   const int encoder_pct =

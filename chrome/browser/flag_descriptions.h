@@ -946,6 +946,9 @@ extern const char kCastStreamingHardwareH264Description[];
 extern const char kCastStreamingHardwareVp8Name[];
 extern const char kCastStreamingHardwareVp8Description[];
 
+extern const char kCastStreamingPerformanceOverlayName[];
+extern const char kCastStreamingPerformanceOverlayDescription[];
+
 extern const char kCastStreamingVp9Name[];
 extern const char kCastStreamingVp9Description[];
 

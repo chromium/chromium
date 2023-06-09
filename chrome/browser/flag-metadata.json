@@ -965,6 +965,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "cast-streaming-performance-overlay",
+    "owners": [ "jophba", "openscreen-eng" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cct-brand-transparency",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 115

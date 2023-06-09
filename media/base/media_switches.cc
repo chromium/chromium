@@ -1479,6 +1479,10 @@ BASE_FEATURE(kCastStreamingAv1,
              "CastStreamingAv1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCastStreamingPerformanceOverlay,
+             "CastStreamingPerformanceOverlay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether mirroring negotiations will include the VP9 codec for video
 // encoding.
 //

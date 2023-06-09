@@ -10,6 +10,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -309,17 +310,19 @@ void VideoSender::InsertRawVideoFrame(
 
   TRACE_COUNTER_ID1("cast.stream", "Video Target Bitrate", this, bitrate);
 
-  const scoped_refptr<VideoFrame> frame_to_encode =
-      MaybeRenderPerformanceMetricsOverlay(
-          frame_sender_->GetTargetPlayoutDelay(), low_latency_mode_, bitrate,
-          frames_in_encoder_ + 1, last_reported_encoder_utilization_,
-          last_reported_lossiness_, std::move(video_frame));
+  if (base::FeatureList::IsEnabled(media::kCastStreamingPerformanceOverlay)) {
+    video_frame = RenderPerformanceMetricsOverlay(
+        frame_sender_->GetTargetPlayoutDelay(), low_latency_mode_, bitrate,
+        frames_in_encoder_ + 1, last_reported_encoder_utilization_,
+        last_reported_lossiness_, std::move(video_frame));
+  }
+
   if (video_encoder_->EncodeVideoFrame(
-          frame_to_encode, reference_time,
+          video_frame, reference_time,
           base::BindOnce(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
-                         frame_to_encode))) {
+                         video_frame))) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "cast.stream", "Video Encode", TRACE_ID_LOCAL(frame_to_encode.get()),
+        "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
         "rtp_timestamp", rtp_timestamp.lower_32_bits());
     frames_in_encoder_++;
     duration_in_encoder_ += duration_added_by_next_frame;

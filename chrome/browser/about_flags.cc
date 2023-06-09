@@ -4815,6 +4815,11 @@ const FeatureEntry kFeatureEntries[] = {
          switches::kCastStreamingForceEnableHardwareVp8,
          switches::kCastStreamingForceDisableHardwareVp8)},
 
+    {"cast-streaming-performance-overlay",
+     flag_descriptions::kCastStreamingPerformanceOverlayName,
+     flag_descriptions::kCastStreamingPerformanceOverlayDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kCastStreamingPerformanceOverlay)},
+
     {"enable-openscreen-cast-streaming-session",
      flag_descriptions::kOpenscreenCastStreamingSessionName,
      flag_descriptions::kOpenscreenCastStreamingSessionDescription, kOsDesktop,
