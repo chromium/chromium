@@ -105,7 +105,7 @@ class IdHandler : public IdHandlerInterface {
 
  private:
   base::Lock lock_;
-  IdAllocator id_allocator_;
+  IdAllocator id_allocator_ GUARDED_BY(lock_);
 };
 
 // An id handler that requires Gen before Bind.
@@ -248,7 +248,8 @@ class StrictIdHandler : public IdHandlerInterface {
  private:
   enum IdState { kIdFree, kIdPendingFree, kIdInUse };
 
-  void CollectPendingFreeIds(GLES2Implementation* gl_impl) {
+  void CollectPendingFreeIds(GLES2Implementation* gl_impl)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     uint32_t flush_generation = gl_impl->helper()->flush_generation();
     ShareGroupContextData::IdHandlerData* ctxt_data =
         gl_impl->share_group_context_data()->id_handler_data(id_namespace_);
@@ -268,8 +269,8 @@ class StrictIdHandler : public IdHandlerInterface {
   int id_namespace_;
 
   base::Lock lock_;
-  std::vector<uint8_t> id_states_;
-  base::stack<uint32_t> free_ids_;
+  std::vector<uint8_t> id_states_ GUARDED_BY(lock_);
+  base::stack<uint32_t> free_ids_ GUARDED_BY(lock_);
 };
 
 // An id handler for ids that are never reused.
@@ -330,7 +331,7 @@ class NonReusedIdHandler : public IdHandlerInterface {
 
  private:
   base::Lock lock_;
-  GLuint last_id_;
+  GLuint last_id_ GUARDED_BY(lock_);
 };
 
 class RangeIdHandler : public RangeIdHandlerInterface {
@@ -359,7 +360,7 @@ class RangeIdHandler : public RangeIdHandlerInterface {
 
  private:
   base::Lock lock_;
-  IdAllocator id_allocator_;
+  IdAllocator id_allocator_ GUARDED_BY(lock_);
 };
 
 ShareGroup::ShareGroup(bool bind_generates_resource, uint64_t tracing_guid)

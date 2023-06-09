@@ -103,8 +103,6 @@ void ClientTransferCache::StartTransferCacheEntry(
 
 ClientDiscardableHandle ClientTransferCache::CreateDiscardableHandle(
     const EntryKey& key) {
-  lock_.AssertAcquired();
-
   ClientDiscardableHandle::Id discardable_handle_id =
       discardable_manager_.CreateHandle(client_->command_buffer());
   if (discardable_handle_id.is_null())
@@ -161,7 +159,6 @@ void ClientTransferCache::DeleteEntry(uint32_t type, uint32_t id) {
 
 ClientDiscardableHandle::Id ClientTransferCache::FindDiscardableHandleId(
     const EntryKey& key) {
-  lock_.AssertAcquired();
   auto id_map_it = discardable_handle_id_map_.find(key);
   if (id_map_it == discardable_handle_id_map_.end())
     return ClientDiscardableHandle::Id();
