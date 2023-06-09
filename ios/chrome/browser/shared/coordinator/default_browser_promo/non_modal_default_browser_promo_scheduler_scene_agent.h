@@ -9,9 +9,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
-class Browser;
-@class CommandDispatcher;
-
 // A scene-agent scheduler that determines when to show the non-modal default
 // browser promo based on many sources of data.
 @interface NonModalDefaultBrowserPromoSchedulerSceneAgent : ObservingSceneAgent
