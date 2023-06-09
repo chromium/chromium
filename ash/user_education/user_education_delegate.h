@@ -74,6 +74,12 @@ class ASH_EXPORT UserEducationDelegate {
                              ui::ElementContext element_context,
                              base::OnceClosure completed_callback,
                              base::OnceClosure aborted_callback) = 0;
+
+  // Aborts the currently running tutorial for the user associated with the
+  // given `account_id`, whether it was started by this delegate or not. Any
+  // `aborted_callback` passed in at the time of start will be called.
+  // NOTE: Currently only the primary user profile is supported.
+  virtual void AbortTutorial(const AccountId& account_id) = 0;
 };
 
 }  // namespace ash

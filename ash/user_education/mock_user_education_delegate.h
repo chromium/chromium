@@ -56,6 +56,7 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
                base::OnceClosure completed_callback,
                base::OnceClosure aborted_callback),
               (override));
+  MOCK_METHOD(void, AbortTutorial, (const AccountId& account_id), (override));
 };
 
 }  // namespace ash

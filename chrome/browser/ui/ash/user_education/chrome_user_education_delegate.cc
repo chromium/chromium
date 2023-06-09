@@ -134,6 +134,20 @@ void ChromeUserEducationDelegate::StartTutorial(
                      std::move(aborted_callback));
 }
 
+void ChromeUserEducationDelegate::AbortTutorial(const AccountId& account_id) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  CHECK(IsPrimaryProfile(profile));
+
+  UserEducationServiceFactory::GetForProfile(profile)
+      ->tutorial_service()
+      .AbortTutorial(/*abort_step=*/absl::nullopt);
+}
+
 void ChromeUserEducationDelegate::OnProfileAdded(Profile* profile) {
   // NOTE: User eduction in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.

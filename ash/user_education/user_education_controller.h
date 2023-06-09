@@ -60,6 +60,12 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
                      base::OnceClosure completed_callback,
                      base::OnceClosure aborted_callback);
 
+  // Aborts the currently running tutorial, whether it was started by this
+  // controller or not. Any `aborted_callback` passed in at the time of start
+  // will be called.
+  // NOTE: Currently only the primary user profile is supported.
+  void AbortTutorial(UserEducationPrivateApiKey);
+
  private:
   // SessionObserver:
   void OnChromeTerminating() override;

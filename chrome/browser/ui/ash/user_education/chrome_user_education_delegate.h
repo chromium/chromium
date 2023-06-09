@@ -44,6 +44,7 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
                      ui::ElementContext element_context,
                      base::OnceClosure completed_callback,
                      base::OnceClosure aborted_callback) override;
+  void AbortTutorial(const AccountId& account_id) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;

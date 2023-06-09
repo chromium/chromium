@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
@@ -37,6 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -176,8 +178,9 @@ TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
   EXPECT_TRUE(tutorial_registry.IsTutorialRegistered(tutorial_id_str));
 }
 
-// Verifies `StartTutorial()` starts a tutorial with the browser service.
-TEST_F(ChromeUserEducationDelegateTest, StartTutorial) {
+// Verifies `StartTutorial()` starts a tutorial with the browser service, and
+// `AbortTutorial()` will abort the tutorial.
+TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
   // Create a test element.
   const ui::ElementContext element_context(1);
   ui::test::TestElement test_element(kElementId, element_context);
@@ -199,11 +202,17 @@ TEST_F(ChromeUserEducationDelegateTest, StartTutorial) {
   EXPECT_FALSE(tutorial_service.IsRunningTutorial());
 
   // Attempt to start the tutorial.
-  delegate()->StartTutorial(account_id(), ash::TutorialId::kTest,
-                            element_context,
-                            /*completed_callback=*/base::DoNothing(),
-                            /*aborted_callback=*/base::DoNothing());
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, aborted_callback);
+  delegate()->StartTutorial(
+      account_id(), ash::TutorialId::kTest, element_context,
+      /*completed_callback=*/base::BindLambdaForTesting([]() { FAIL(); }),
+      aborted_callback.Get());
 
   // Confirm the tutorial is running.
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
+
+  // Abort the tutorial and expect the callback to be called.
+  EXPECT_CALL_IN_SCOPE(aborted_callback, Run,
+                       delegate()->AbortTutorial(account_id()));
+  EXPECT_FALSE(tutorial_service.IsRunningTutorial());
 }
