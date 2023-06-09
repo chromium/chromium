@@ -217,7 +217,8 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             @Override
             public void onScrollStarted(
                     int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
-                mScrollState.onScrollStarted(isDirectionUp);
+                // Only send the event if there has been a down scroll.
+                if (!mScrollState.onScrollStarted(isDirectionUp)) return;
                 // If we shouldn't send the real values, always send false.
                 notifyVerticalScrollEvent(mShouldSendRealValues && isDirectionUp);
             }
@@ -374,6 +375,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         int mScrollOffsetUpdateFrequency = NONE;
         int mAfterScrollEndThresholdMs = DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
         Long mTimeLastOnScrollEnded;
+        boolean mHadFirstDownScroll;
 
         /**
          * @param frequency The {@link RootScrollOffsetUpdateFrequency.EnumType}, can be |NONE| or
@@ -386,13 +388,20 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             mAfterScrollEndThresholdMs = afterScrollEndThreshold;
         }
 
-        void onScrollStarted(boolean isDirectionUp) {
+        /**
+         * @param isDirectionUp Whether the scroll direction is up.
+         * @return Whether there has been a down scroll.
+         */
+        boolean onScrollStarted(boolean isDirectionUp) {
             // We shouldn't get an |onScrollStarted()| call while a scroll is still in progress,
             // but it can happen. Call |onScrollEnded()| to make sure we're in a valid state.
             if (mIsScrollActive) onScrollEnded(false);
             mIsScrollActive = true;
             mIsDirectionUp = isDirectionUp;
             mTimeLastOnScrollEnded = null;
+            if (isDirectionUp && !mHadFirstDownScroll) return false;
+            mHadFirstDownScroll = true;
+            return true;
         }
 
         /**
@@ -405,6 +414,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                         timeSinceLastOnScrollEndedMillis());
             }
             boolean validUpdateAfterScrollEnd = isValidUpdateAfterScrollEnd();
+            if (!mHadFirstDownScroll) return validUpdateAfterScrollEnd;
             if (mIsScrollActive || validUpdateAfterScrollEnd) {
                 int scrollPercentage =
                         Math.round(((float) verticalScrollOffset / maxVerticalScrollOffset) * 100);
@@ -422,6 +432,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
          */
         boolean onScrollDirectionChanged(boolean isDirectionUp) {
             if (mIsScrollActive && isDirectionUp != mIsDirectionUp) {
+                // If the scroll direction changed, either the previous direction was or the new
+                // direction is a down scroll.
+                mHadFirstDownScroll = true;
                 mIsDirectionUp = isDirectionUp;
                 return true;
             }
@@ -452,6 +465,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         void resetMaxScrollPercentage() {
             mMaxScrollPercentage = 0;
             mMaxReportedScrollPercentage = 0;
+            mHadFirstDownScroll = false;
         }
 
         static @NonNull ScrollState from(Tab tab) {
