@@ -35,10 +35,6 @@
 
 class PrefService;
 
-#if BUILDFLAG(IS_ANDROID)
-class WebAuthnCredManDelegate;
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace autofill {
 class AutofillDownloadManager;
 class LogManager;
@@ -78,6 +74,12 @@ class DeviceAuthenticator;
 namespace version_info {
 enum class Channel;
 }
+
+namespace webauthn {
+#if BUILDFLAG(IS_ANDROID)
+class WebAuthnCredManDelegate;
+#endif  // BUILDFLAG(IS_ANDROID)
+}  // namespace webauthn
 
 namespace password_manager {
 
@@ -474,8 +476,8 @@ class PasswordManagerClient {
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the WebAuthnCredManDelegate for the driver.
-  virtual WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
-      PasswordManagerDriver* driver);
+  virtual webauthn::WebAuthnCredManDelegate*
+  GetWebAuthnCredManDelegateForDriver(PasswordManagerDriver* driver);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns the Chrome channel for the installation.

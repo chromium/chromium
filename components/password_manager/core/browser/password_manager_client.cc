@@ -166,7 +166,7 @@ PasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-WebAuthnCredManDelegate*
+webauthn::WebAuthnCredManDelegate*
 PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
     PasswordManagerDriver* driver) {
   return nullptr;

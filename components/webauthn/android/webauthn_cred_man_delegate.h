@@ -6,30 +6,28 @@
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/supports_user_data.h"
 
 namespace content {
-class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace webauthn {
+
 // This class is responsible for caching and serving CredMan calls. Android U+
 // only.
-class WebAuthnCredManDelegate : public base::SupportsUserData::Data {
+class WebAuthnCredManDelegate {
  public:
   explicit WebAuthnCredManDelegate(content::WebContents* web_contents);
 
   WebAuthnCredManDelegate(const WebAuthnCredManDelegate&) = delete;
   WebAuthnCredManDelegate& operator=(const WebAuthnCredManDelegate&) = delete;
 
-  ~WebAuthnCredManDelegate() override;
+  ~WebAuthnCredManDelegate();
 
   // Called when a Web Authentication Conditional UI request is received. This
   // caches the callback that will complete the request after user
   // interaction.
   void OnCredManConditionalRequestPending(
-      content::RenderFrameHost* render_frame_host,
       bool has_results,
       base::RepeatingCallback<void(bool)> full_assertion_request);
 
@@ -52,17 +50,12 @@ class WebAuthnCredManDelegate : public base::SupportsUserData::Data {
 
   static bool IsCredManEnabled();
 
-  // Returns a delegate associated with the |web_contents|. It creates one if
-  // one does not already exist.
-  // The delegate is destroyed along with the WebContents and so should not be
-  // cached.
-  static WebAuthnCredManDelegate* GetRequestDelegate(
-      content::WebContents* web_contents);
-
  private:
   bool has_results_ = false;
   base::RepeatingCallback<void(bool)> full_assertion_request_;
   base::RepeatingCallback<void(bool)> request_completion_callback_;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_

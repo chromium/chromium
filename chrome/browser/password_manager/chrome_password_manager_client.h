@@ -64,10 +64,6 @@ class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupControllerImpl;
 class Profile;
 
-#if BUILDFLAG(IS_ANDROID)
-class WebAuthnCredManDelegate;
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace autofill {
 class LogManager;
 class RoutingLogManager;
@@ -90,6 +86,12 @@ namespace password_manager {
 class WebAuthnCredentialsDelegate;
 class CredManController;
 }
+
+namespace webauthn {
+#if BUILDFLAG(IS_ANDROID)
+class WebAuthnCredManDelegate;
+#endif  // BUILDFLAG(IS_ANDROID)
+}  // namespace webauthn
 
 // ChromePasswordManagerClient implements the PasswordManagerClient interface.
 class ChromePasswordManagerClient
@@ -271,7 +273,7 @@ class ChromePasswordManagerClient
   GetWebAuthnCredentialsDelegateForDriver(
       password_manager::PasswordManagerDriver* driver) override;
 #if BUILDFLAG(IS_ANDROID)
-  WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
+  webauthn::WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
       password_manager::PasswordManagerDriver* driver) override;
 #endif  // BUILDFLAG(IS_ANDROID)
   version_info::Channel GetChannel() const override;

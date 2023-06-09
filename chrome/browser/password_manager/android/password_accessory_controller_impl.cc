@@ -344,9 +344,12 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
       GetManualFillingController()->Hide();
       return;
     case autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
-      if (WebAuthnCredManDelegate* delegate =
-              WebAuthnCredManDelegate::GetRequestDelegate(&GetWebContents())) {
-        delegate->TriggerFullRequest();
+      if (password_manager::PasswordManagerDriver* driver =
+              driver_supplier_.Run(&GetWebContents())) {
+        if (webauthn::WebAuthnCredManDelegate* delegate =
+                password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
+          delegate->TriggerFullRequest();
+        }
       }
       return;
     case autofill::AccessoryAction::CROSS_DEVICE_PASSKEY:
@@ -450,15 +453,18 @@ void PasswordAccessoryControllerImpl::OnGenerationRequested(
 
 void PasswordAccessoryControllerImpl::UpdateCredManReentryUi(
     autofill::mojom::FocusedFieldType focused_field_type) {
-  if (!WebAuthnCredManDelegate::IsCredManEnabled()) {
+  if (!webauthn::WebAuthnCredManDelegate::IsCredManEnabled()) {
     return;  // No updates required.
   }
-  if (WebAuthnCredManDelegate* delegate =
-          WebAuthnCredManDelegate::GetRequestDelegate(&GetWebContents())) {
-    GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
-        ShouldShowCredManReentryAction(focused_field_type,
-                                       delegate->HasResults()),
-        autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+  if (password_manager::PasswordManagerDriver* driver =
+          driver_supplier_.Run(&GetWebContents())) {
+    if (webauthn::WebAuthnCredManDelegate* delegate =
+            password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
+      GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
+          ShouldShowCredManReentryAction(focused_field_type,
+                                         delegate->HasResults()),
+          autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+    }
   }
 }
 

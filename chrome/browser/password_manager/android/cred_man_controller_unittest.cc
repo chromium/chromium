@@ -20,6 +20,8 @@ using testing::Return;
 
 namespace password_manager {
 
+using webauthn::WebAuthnCredManDelegate;
+
 class TestPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MOCK_METHOD(WebAuthnCredManDelegate*,
@@ -69,8 +71,7 @@ TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_full_assertion_request;
   web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
-      /*render_frame_host=*/nullptr, /*has_results=*/false,
-      mock_full_assertion_request.Get());
+      /*has_results=*/false, mock_full_assertion_request.Get());
 
   ASSERT_FALSE(controller()->Show(driver(), /*is_webauthn_form=*/true));
 }
@@ -84,8 +85,7 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_full_assertion_request;
   web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
-      /*render_frame_host=*/nullptr, /*has_results=*/true,
-      mock_full_assertion_request.Get());
+      /*has_results=*/true, mock_full_assertion_request.Get());
 
   ASSERT_TRUE(controller()->Show(driver(), /*is_webauthn_form=*/true));
 }

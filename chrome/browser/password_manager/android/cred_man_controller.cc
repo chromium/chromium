@@ -17,10 +17,11 @@ CredManController::~CredManController() = default;
 
 bool CredManController::Show(PasswordManagerDriver* driver,
                              bool is_webauthn_form) {
-  if (!is_webauthn_form || !WebAuthnCredManDelegate::IsCredManEnabled()) {
+  if (!is_webauthn_form ||
+      !webauthn::WebAuthnCredManDelegate::IsCredManEnabled()) {
     return false;
   }
-  WebAuthnCredManDelegate* cred_man_delegate =
+  webauthn::WebAuthnCredManDelegate* cred_man_delegate =
       client_->GetWebAuthnCredManDelegateForDriver(driver);
   // webauthn forms without passkeys should show TouchToFill bottom sheet.
   if (cred_man_delegate->HasResults()) {

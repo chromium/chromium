@@ -97,6 +97,8 @@ source_set("android") {
     "webauthn_client_android.h",
     "webauthn_cred_man_delegate.cc",
     "webauthn_cred_man_delegate.h",
+    "webauthn_cred_man_delegate_factory.cc",
+    "webauthn_cred_man_delegate_factory.h",
   ]
   deps = [
     ":jni_headers",
@@ -113,10 +115,15 @@ source_set("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "webauthn_cred_man_delegate_unittest.cc" ]
+  sources = [
+    "webauthn_cred_man_delegate_factory_unittest.cc",
+    "webauthn_cred_man_delegate_unittest.cc",
+  ]
   deps = [
     ":android",
     "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
