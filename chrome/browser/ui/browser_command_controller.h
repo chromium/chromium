@@ -178,9 +178,6 @@ class BrowserCommandController : public CommandUpdater,
   // Updates the save-page-as command state.
   void UpdateSaveAsState();
 
-  // Updates the show-sync command state.
-  void UpdateShowSyncState(bool show_main_ui);
-
   // Ask the Reload/Stop button to change its icon, and update the Stop command
   // state.  |is_loading| is true if the current WebContents is loading.
   // |force| is true if the button should change its icon immediately.
@@ -218,7 +215,6 @@ class BrowserCommandController : public CommandUpdater,
 
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;
-  BooleanPrefMember pref_signin_allowed_;
 
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;

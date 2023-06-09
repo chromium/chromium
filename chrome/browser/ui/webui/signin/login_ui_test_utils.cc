@@ -21,7 +21,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -486,8 +485,10 @@ bool SignInWithUI(Browser* browser,
       IdentityManagerFactory::GetForProfile(browser->profile()));
 
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_MENU;
-  chrome::ShowBrowserSignin(browser, access_point, signin::ConsentLevel::kSync);
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+  browser->signin_view_controller()->ShowDiceEnableSyncTab(
+      access_point, signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+      /*email_hint=*/std::string());
   content::WebContents* active_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   DCHECK(active_contents);

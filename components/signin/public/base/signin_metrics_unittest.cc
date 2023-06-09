@@ -16,7 +16,6 @@ namespace {
 const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_START_PAGE,
     AccessPoint::ACCESS_POINT_NTP_LINK,
-    AccessPoint::ACCESS_POINT_MENU,
     AccessPoint::ACCESS_POINT_SETTINGS,
     AccessPoint::ACCESS_POINT_SUPERVISED_USER,
     AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
@@ -50,7 +49,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
 const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_START_PAGE,
     AccessPoint::ACCESS_POINT_NTP_LINK,
-    AccessPoint::ACCESS_POINT_MENU,
     AccessPoint::ACCESS_POINT_SETTINGS,
     AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
     AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
@@ -82,8 +80,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "StartPage";
       case AccessPoint::ACCESS_POINT_NTP_LINK:
         return "NTP";
-      case AccessPoint::ACCESS_POINT_MENU:
-        return "Menu";
       case AccessPoint::ACCESS_POINT_SETTINGS:
         return "Settings";
       case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
