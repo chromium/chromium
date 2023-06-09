@@ -2137,6 +2137,12 @@
           ],
         },
       },
+      'mac13-arm64-rel-tests': {
+        'ci_only': False,
+        'swarming': {
+          'shards': 12,
+        },
+      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [

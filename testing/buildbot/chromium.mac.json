@@ -26428,7 +26428,7 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
-        "ci_only": true,
+        "ci_only": false,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -26441,7 +26441,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 12
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
