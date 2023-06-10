@@ -9,7 +9,15 @@ processes that execute within a very restrictive environment. The only resources
 sandboxed processes can freely use are CPU cycles and memory. For example,
 sandboxes processes cannot write to disk or display their own windows. What
 exactly they can do is controlled by an explicit policy. Chromium renderers are
-sandboxed processes.
+sandboxed processes, meaning they operate in an isolated environment with very limited
+resources. The exact capabilities of these processes are governed by an explicit policy,
+which determines the premissions and access rights of each process.
+
+This architecture ensures that even if a vulnerabilitiy is exploited in a web page's
+rendering process, the impact is confined to the sandbox and does not compromise the use's
+system. This is part of Chromium's multi-process architecture, which aims to improve
+the browser's overall security and stability. When a web page is loaded in the browser,
+the task of rendering the page is handled by these sandboxed renderer processes.
 
 ### What does and doesn't it protect against?
 
