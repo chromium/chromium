@@ -61,16 +61,16 @@ RegexTokenizer::RegexTokenizer(const std::string& regex_pattern,
 }
 
 TokenizerResult RegexTokenizer::Tokenize(const std::string& input) {
-  re2::StringPiece leftover(input.data());
-  re2::StringPiece last_end = leftover;
+  absl::string_view leftover(input.data());
+  absl::string_view last_end = leftover;
 
   TokenizerResult result;
 
   // Keep looking for split points until we have reached the end of the input.
-  re2::StringPiece extracted_delim_token;
+  absl::string_view extracted_delim_token;
   while (RE2::FindAndConsume(&leftover, delim_re_, &extracted_delim_token)) {
-    re2::StringPiece token(last_end.data(),
-                           extracted_delim_token.data() - last_end.data());
+    absl::string_view token(last_end.data(),
+                            extracted_delim_token.data() - last_end.data());
     bool has_non_empty_token = token.length() > 0;
 
     last_end = leftover;

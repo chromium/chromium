@@ -28,14 +28,14 @@ void RegexSplitImpl(absl::string_view input,
                     std::vector<absl::string_view>* tokens,
                     std::vector<T>* begin_offsets,
                     std::vector<T>* end_offsets) {
-  re2::StringPiece leftover(input.data());
-  re2::StringPiece last_end = leftover;
+  absl::string_view leftover(input.data());
+  absl::string_view last_end = leftover;
 
   // Keep looking for split points until we have reached the end of the input.
-  re2::StringPiece extracted_delim_token;
+  absl::string_view extracted_delim_token;
   while (RE2::FindAndConsume(&leftover, re2, &extracted_delim_token)) {
-    re2::StringPiece token(last_end.data(),
-                           extracted_delim_token.data() - last_end.data());
+    absl::string_view token(last_end.data(),
+                            extracted_delim_token.data() - last_end.data());
     bool has_non_empty_token = token.length() > 0;
     bool should_include_delim =
         include_delimiter && include_delim_regex.FullMatch(
@@ -44,7 +44,7 @@ void RegexSplitImpl(absl::string_view input,
 
     // Mark the end of the previous token, only if there was something.
     if (has_non_empty_token) {
-      tokens->push_back(absl::string_view(token.data(), token.size()));
+      tokens->push_back(token);
       // Mark the end of the last token
       begin_offsets->push_back(token.data() - input.data());
       end_offsets->push_back(token.data() + token.length() - input.begin());
@@ -52,8 +52,7 @@ void RegexSplitImpl(absl::string_view input,
 
     if (should_include_delim) {
       // If desired, include the deliminator as a token.
-      tokens->push_back(absl::string_view(extracted_delim_token.data(),
-                                          extracted_delim_token.size()));
+      tokens->push_back(extracted_delim_token);
       // Mark the end of the token at the end of the beginning of the delimiter.
       begin_offsets->push_back(extracted_delim_token.data() - input.begin());
       end_offsets->push_back(extracted_delim_token.data() +
@@ -63,7 +62,7 @@ void RegexSplitImpl(absl::string_view input,
 
   // Close the last token.
   if (!leftover.empty()) {
-    tokens->push_back(absl::string_view(leftover.data(), leftover.size()));
+    tokens->push_back(leftover);
     begin_offsets->push_back(leftover.data() - input.begin());
     end_offsets->push_back(leftover.data() + leftover.length() - input.begin());
   }

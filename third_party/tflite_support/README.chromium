@@ -20,7 +20,7 @@ Third party dependencies:
 - tensorflow-text
 
 Modifications:
-01) Use re2::StringPiece instead of absl::string_view in regex_tokenizer.cc
+01) Patch since removed
 02) Remove support for sentencepiece tokenization because the required overhead
     isn't worth adding this functionality, esp since no feature team needs it.
 03) Remove the ABSL_DEPRECATED annotation from a deprecated struct since this
