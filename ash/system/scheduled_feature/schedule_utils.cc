@@ -36,6 +36,12 @@ std::string ToString(const std::vector<Slot>& schedule) {
   return ss.str();
 }
 
+// Working with null and infinite `base::Time` instances are invalid and cause
+// undue complexity to account for. They should never be provided by the caller.
+bool IsValidTimestamp(const base::Time t) {
+  return !t.is_null() && !t.is_inf();
+}
+
 // The returned vector has one `Slot` per `ScheduleCheckpoint` and is
 // sorted by `Slot::time`. The time at which `Slot` <i> ends is by definition
 // `Slot` <i + 1>'s `time`. Also note that:
@@ -121,6 +127,9 @@ Position GetCurrentPosition(const base::Time now,
                             const base::Time start_time,
                             const base::Time end_time,
                             const ScheduleType schedule_type) {
+  CHECK(IsValidTimestamp(now));
+  CHECK(IsValidTimestamp(start_time));
+  CHECK(IsValidTimestamp(end_time));
   const std::vector<Slot> schedule =
       BuildSchedule(now, start_time, end_time, schedule_type);
   DCHECK(!schedule.empty());
@@ -142,6 +151,8 @@ Position GetCurrentPosition(const base::Time now,
 
 base::Time ShiftWithinOneDayFrom(const base::Time origin,
                                  const base::Time time_in) {
+  CHECK(IsValidTimestamp(origin));
+  CHECK(IsValidTimestamp(time_in));
   const base::TimeDelta amount_to_advance_time_in =
       (origin - time_in).CeilToMultiple(kOneDay);
   return time_in + amount_to_advance_time_in;
