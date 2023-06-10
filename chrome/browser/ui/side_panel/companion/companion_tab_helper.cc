@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
@@ -52,8 +53,7 @@ void CompanionTabHelper::ShowCompanionSidePanelForImage(
   CHECK(delegate_);
 
   // Create upload URL to load in companion.
-  std::string upload_url_string =
-      companion::features::kImageUploadURLForCompanion.Get();
+  std::string upload_url_string = companion::GetImageUploadURLForCompanion();
   base::StrAppend(&upload_url_string, {"?", additional_query_params_modified});
   GURL upload_url = GURL(upload_url_string);
   CHECK(upload_url.is_valid());

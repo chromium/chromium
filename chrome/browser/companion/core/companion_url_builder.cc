@@ -7,9 +7,9 @@
 #include "base/base64.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/constants.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -64,19 +64,19 @@ CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
 
 CompanionUrlBuilder::~CompanionUrlBuilder() = default;
 
-GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
+GURL CompanionUrlBuilder::BuildCompanionURL(const GURL& page_url) {
   return BuildCompanionURL(page_url, /*text_query=*/"");
 }
 
-GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
+GURL CompanionUrlBuilder::BuildCompanionURL(const GURL& page_url,
                                             const std::string& text_query) {
-  return AppendCompanionParamsToURL(GetHomepageURLForCompanion(), page_url,
-                                    text_query);
+  return AppendCompanionParamsToURL(GURL(GetHomepageURLForCompanion()),
+                                    page_url, text_query);
 }
 
 GURL CompanionUrlBuilder::AppendCompanionParamsToURL(
-    GURL base_url,
-    GURL page_url,
+    const GURL& base_url,
+    const GURL& page_url,
     const std::string& text_query) {
   GURL url_with_query_params = base_url;
   // Fill the protobuf with the required query params.
@@ -105,7 +105,8 @@ GURL CompanionUrlBuilder::AppendCompanionParamsToURL(
   return url_with_query_params;
 }
 
-std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(GURL page_url) {
+std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
+    const GURL& page_url) {
   // Fill the protobuf with the required query params.
   companion::proto::CompanionUrlParams url_params;
   bool is_msbb_enabled =
@@ -135,10 +136,6 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(GURL page_url) {
   std::string base64_encoded_proto;
   base::Base64Encode(url_params.SerializeAsString(), &base64_encoded_proto);
   return base64_encoded_proto;
-}
-
-GURL CompanionUrlBuilder::GetHomepageURLForCompanion() {
-  return GURL(features::kHomepageURLForCompanion.Get());
 }
 
 }  // namespace companion

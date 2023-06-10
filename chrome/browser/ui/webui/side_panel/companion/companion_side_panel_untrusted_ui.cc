@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 
-#include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_companion_resources.h"
@@ -33,12 +33,11 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome-untrusted://resources 'self';");
   // Allow the companion homepage URL to be embedded in this WebUI.
-  GURL frameSrcUrl = GURL(companion::features::kHomepageURLForCompanion.Get())
-                         .GetWithEmptyPath();
-  std::string frameSrcString =
-      frameSrcUrl.is_valid()
-          ? frameSrcUrl.spec()
-          : companion::features::kHomepageURLForCompanion.Get();
+  GURL frameSrcUrl =
+      GURL(companion::GetHomepageURLForCompanion()).GetWithEmptyPath();
+  std::string frameSrcString = frameSrcUrl.is_valid()
+                                   ? frameSrcUrl.spec()
+                                   : companion::GetHomepageURLForCompanion();
   // Allow iframing accounts page due to potential redirects.
   std::string frameSrcDirective =
       std::string("frame-src https://accounts.google.com ") + frameSrcString +

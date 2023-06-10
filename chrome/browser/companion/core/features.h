@@ -15,12 +15,6 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kSidePanelCompanion);
 BASE_DECLARE_FEATURE(kCompanionEnabledByObservingExpsNavigations);
-extern const base::FeatureParam<std::string> kHomepageURLForCompanion;
-extern const base::FeatureParam<std::string> kImageUploadURLForCompanion;
-extern const base::FeatureParam<std::string> kExpsRegistrationSuccessPageURLs;
-extern const base::FeatureParam<bool> kEnableOpenCompanionForImageSearch;
-extern const base::FeatureParam<bool> kEnableOpenCompanionForWebSearch;
-extern const base::FeatureParam<bool> kOpenLinksInCurrentTab;
 
 }  // namespace features
 

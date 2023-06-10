@@ -7,6 +7,7 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -18,9 +19,9 @@ ExpsRegistrationSuccessObserver::ExpsRegistrationSuccessObserver(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ExpsRegistrationSuccessObserver>(
           *web_contents) {
-  const auto& url_strings_to_match = base::SplitString(
-      companion::features::kExpsRegistrationSuccessPageURLs.Get(), ",",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const auto& url_strings_to_match =
+      base::SplitString(companion::GetExpsRegistrationSuccessPageURLs(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& url_string : url_strings_to_match) {
     urls_to_match_against_.emplace_back(url_string);
   }

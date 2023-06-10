@@ -23,24 +23,6 @@ BASE_FEATURE(kCompanionEnabledByObservingExpsNavigations,
              "CompanionEnabledByObservingExpsNavigations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
-    &kSidePanelCompanion, "companion-homepage-url",
-    "https://lens.google.com/companion"};
-
-constexpr base::FeatureParam<std::string> kImageUploadURLForCompanion{
-    &kSidePanelCompanion, "companion-image-upload-url",
-    "https://lens.google.com/upload"};
-constexpr base::FeatureParam<bool> kEnableOpenCompanionForImageSearch{
-    &kSidePanelCompanion, "open-companion-for-image-search", true};
-constexpr base::FeatureParam<bool> kEnableOpenCompanionForWebSearch{
-    &kSidePanelCompanion, "open-companion-for-web-search", true};
-constexpr base::FeatureParam<bool> kOpenLinksInCurrentTab{
-    &kSidePanelCompanion, "open-links-in-current-tab", true};
-
-constexpr base::FeatureParam<std::string> kExpsRegistrationSuccessPageURLs{
-    &kCompanionEnabledByObservingExpsNavigations,
-    "exps-registration-success-page-urls", ""};
-
 }  // namespace features
 
 namespace switches {
