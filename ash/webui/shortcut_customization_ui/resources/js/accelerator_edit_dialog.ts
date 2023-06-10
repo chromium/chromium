@@ -18,6 +18,7 @@ import {getTemplate} from './accelerator_edit_dialog.html.js';
 import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, AcceleratorState} from './shortcut_types.js';
+import {compareAcceleratorInfos} from './shortcut_utils.js';
 
 export interface AcceleratorEditDialogElement {
   $: {
@@ -124,7 +125,9 @@ export class AcceleratorEditDialogElement extends
   updateDialogAccelerators(updatedAccels: AcceleratorInfo[]): void {
     this.set('acceleratorInfos', []);
     this.getViewList().render();
-    this.acceleratorInfos = updatedAccels;
+    this.acceleratorInfos = updatedAccels.filter(
+        accel => accel.state !== AcceleratorState.kDisabledByUser &&
+            accel.state !== AcceleratorState.kDisabledByUnavailableKeys);
   }
 
   protected onDoneButtonClicked(): void {
@@ -183,11 +186,9 @@ export class AcceleratorEditDialogElement extends
         });
   }
 
-  protected getFilteredAccelerators(accelerators: AcceleratorInfo[]):
+  protected getSortedAccelerators(accelerators: AcceleratorInfo[]):
       AcceleratorInfo[] {
-    return accelerators.filter(
-        accel => accel.state !== AcceleratorState.kDisabledByUser &&
-            accel.state !== AcceleratorState.kDisabledByUnavailableKeys);
+    return accelerators.sort(compareAcceleratorInfos);
   }
 }
 

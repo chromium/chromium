@@ -44,18 +44,24 @@ suite('acceleratorEditDialogTest', function() {
     viewElement = null;
   });
 
-  test('LoadsBasicDialog', async () => {
+  test('LoadsBasicDialogWithCorrectOrder', async () => {
+    // [ctrl + shift + g].
     const acceleratorInfo1: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*keyDisplay=*/ 'g');
-
+    // [c].
+    const acceleratorInfo3: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.NONE,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    // [ctrl + c].
     const acceleratorInfo2: AcceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL,
         /*key=*/ 67,
         /*keyDisplay=*/ 'c');
 
-    const accelerators = [acceleratorInfo1, acceleratorInfo2];
+    const accelerators = [acceleratorInfo1, acceleratorInfo2, acceleratorInfo3];
 
     const description = 'test shortcut';
 
@@ -67,35 +73,45 @@ suite('acceleratorEditDialogTest', function() {
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
-    assertEquals(2, acceleratorElements.length);
+    assertEquals(3, acceleratorElements.length);
     assertEquals(
         description,
         dialog!.querySelector('#dialogTitle')!.textContent!.trim());
 
+    // Accelerator is sorted, the order is updated to be [c], [ctrl+c],
+    // [ctrl+shift+g]
     const accelView1 =
         acceleratorElements[0]!.shadowRoot!.querySelector('accelerator-view');
     const keys1 = accelView1!.shadowRoot!.querySelectorAll('input-key');
-    // SHIFT + CONTROL + g
-    assertEquals(3, keys1.length);
+    // [c]
+    assertEquals(1, keys1.length);
     assertEquals(
-        'ctrl',
-        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
-    assertEquals(
-        'shift',
-        keys1[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
-    assertEquals(
-        'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'c', keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
 
     const accelView2 =
         acceleratorElements[1]!.shadowRoot!.querySelector('accelerator-view');
     const keys2 = accelView2!.shadowRoot!.querySelectorAll('input-key');
-    // CONTROL + c
+    // [ctrl + c]
     assertEquals(2, keys2.length);
     assertEquals(
         'ctrl',
         keys2[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
         'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+
+    const accelView3 =
+        acceleratorElements[2]!.shadowRoot!.querySelector('accelerator-view');
+    const keys3 = accelView3!.shadowRoot!.querySelectorAll('input-key');
+    // [ctrl + shift + g]
+    assertEquals(3, keys3.length);
+    assertEquals(
+        'ctrl',
+        keys3[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+    assertEquals(
+        'shift',
+        keys3[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+    assertEquals(
+        'g', keys3[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
 
     // Clicking on "Done" button will close the dialog.
     const button = dialog!.querySelector('#doneButton') as CrButtonElement;
@@ -235,8 +251,16 @@ suite('acceleratorEditDialogTest', function() {
     const dialog =
         viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
     assertTrue(dialog.open);
-    const acceleratorElements =
-        dialog.querySelectorAll('accelerator-edit-view');
+    let acceleratorElements = dialog.querySelectorAll('accelerator-edit-view');
+
+    // Expect there are 3 accelerators before update.
+    assertEquals(3, acceleratorElements.length);
+
+    // Trigger updateDialogAccelerators() to filter out disabled accelerators.
+    viewElement!.updateDialogAccelerators(accelerators);
+
+    await flush();
+    acceleratorElements = dialog.querySelectorAll('accelerator-edit-view');
 
     // Expect acceleratorInfo1 and acceleratorInfo2 are filtered out.
     assertEquals(1, acceleratorElements.length);
