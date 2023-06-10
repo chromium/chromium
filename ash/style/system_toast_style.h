@@ -50,12 +50,7 @@ class ASH_EXPORT SystemToastStyle : public views::View {
   // Updates the toast label text.
   void SetText(const std::u16string& text);
 
-  // Adds a second `views::LabelButton` to the end of the toast.
-  void AddSecondButton(base::RepeatingClosure second_button_callback,
-                       const std::u16string& second_button_text);
-
   views::LabelButton* dismiss_button() const { return dismiss_button_; }
-  views::LabelButton* second_button() const { return second_button_; }
   views::Label* label() const { return label_; }
 
  private:
@@ -72,7 +67,6 @@ class ASH_EXPORT SystemToastStyle : public views::View {
   // Owned by views hierarchy.
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   raw_ptr<views::LabelButton, ExperimentalAsh> dismiss_button_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> second_button_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> leading_icon_view_ = nullptr;
 
   // Tells the toast if the dismiss button is already highlighted if one exists.

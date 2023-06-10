@@ -71,7 +71,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
   auto nudge = GetShownNudges()[id];
   ASSERT_TRUE(nudge);
   EXPECT_TRUE(nudge->GetVisible());
-  EXPECT_EQ(text, nudge->GetText());
+  EXPECT_EQ(text, nudge->GetBodyText());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
   // Cancel the nudge, expect it to be removed from the shown nudges map.
@@ -218,7 +218,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
   // Show a nudge with some initial contents.
   ShowNudge(id, anchor_view, text);
   auto nudge = GetShownNudges()[id];
-  EXPECT_EQ(text, nudge->GetText());
+  EXPECT_EQ(text, nudge->GetBodyText());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
   // Attempt to show a nudge with different contents but with the same id.
@@ -226,7 +226,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
 
   // Previously shown nudge should be cancelled and replaced with new nudge.
   nudge = GetShownNudges()[id];
-  EXPECT_EQ(text_2, nudge->GetText());
+  EXPECT_EQ(text_2, nudge->GetBodyText());
   EXPECT_EQ(anchor_view_2, nudge->GetAnchorView());
 
   // Cleanup.

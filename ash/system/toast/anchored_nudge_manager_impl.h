@@ -49,7 +49,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager {
   // Returns true if `id` is stored in `shown_nudges_`.
   bool IsNudgeShown(const std::string& id);
 
-  const std::u16string& GetNudgeTextForTest(const std::string& id);
+  const std::u16string& GetNudgeBodyTextForTest(const std::string& id);
   views::View* GetNudgeAnchorViewForTest(const std::string& id);
   views::LabelButton* GetNudgeDismissButtonForTest(const std::string& id);
   views::LabelButton* GetNudgeSecondButtonForTest(const std::string& id);

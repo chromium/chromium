@@ -51,7 +51,7 @@ bool IsNudgeShown(const std::string& id) {
 }
 
 const std::u16string& GetNudgeText(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeTextForTest(id);
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeBodyTextForTest(id);
 }
 
 views::View* GetNudgeAnchorView(const std::string& id) {

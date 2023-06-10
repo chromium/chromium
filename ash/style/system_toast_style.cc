@@ -218,17 +218,6 @@ void SystemToastStyle::SetText(const std::u16string& text) {
   label_->SetText(text);
 }
 
-void SystemToastStyle::AddSecondButton(
-    base::RepeatingClosure second_button_callback,
-    const std::u16string& second_button_text) {
-  CHECK(dismiss_button_);
-  second_button_ = AddChildView(std::make_unique<PillButton>(
-      std::move(second_button_callback), second_button_text,
-      PillButton::Type::kAccentFloatingWithoutIcon));
-  second_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  UpdateInsideBorderInsets();
-}
-
 void SystemToastStyle::AddedToWidget() {
   // Attach the shadow at the bottom of the widget layer.
   auto* shadow_layer = shadow_->GetLayer();
@@ -243,9 +232,9 @@ void SystemToastStyle::AddedToWidget() {
 
 void SystemToastStyle::UpdateInsideBorderInsets() {
   static_cast<views::BoxLayout*>(GetLayoutManager())
-      ->set_inside_border_insets(ComputeInsets(
-          !!dismiss_button_ || !!second_button_, label_->GetRequiredLines() > 1,
-          !leading_icon_->is_empty()));
+      ->set_inside_border_insets(ComputeInsets(!!dismiss_button_,
+                                               label_->GetRequiredLines() > 1,
+                                               !leading_icon_->is_empty()));
   InvalidateLayout();
 }
 
